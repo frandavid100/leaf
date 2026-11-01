@@ -1,8 +1,10 @@
 use super::*;
 
-thread_local!{static CSS_INSTALLED:Cell<bool>=const{Cell::new(false)};}
+thread_local! {static CSS_INSTALLED:Cell<bool>=const{Cell::new(false)};}
 pub(super) fn install_css() {
-    if CSS_INSTALLED.with(|s|s.replace(true)){return;}
+    if CSS_INSTALLED.with(|s| s.replace(true)) {
+        return;
+    }
     let provider = gtk::CssProvider::new();
     // Adwaita suministra color, espaciados y estados; CSS mínimo para papel.
     provider.load_from_data("
@@ -24,8 +26,9 @@ pub(super) fn install_css() {
     ");
     if let Some(display) = gdk::Display::default() {
         gtk::style_context_add_provider_for_display(
-            &display, &provider, gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+            &display,
+            &provider,
+            gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
         );
     }
 }
-

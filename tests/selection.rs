@@ -1,6 +1,8 @@
 use wordcraft_doc::{Document, StoryRef};
 use wordcraft_engine::Session;
-use wordcraft_gnome::selection::{hit, set_caret, select_range, move_caret, select_all, copy_text, geometry};
+use wordcraft_gnome::selection::{
+    copy_text, geometry, hit, move_caret, select_all, select_range, set_caret,
+};
 
 #[test]
 fn coordinates_reach_real_caret_and_selection() {
@@ -62,8 +64,12 @@ fn selection_can_cross_wordcraft_pages() {
     let b = hit(&mut session, 1, p1.w / 2.0, p1.h / 2.0).unwrap();
     select_range(&mut session, &a, &b).unwrap();
     let selection = geometry(&mut session);
-    assert!(selection.highlights.iter().any(|r| r.page == 0),
-        "selection should highlight page 1");
-    assert!(selection.highlights.iter().any(|r| r.page == 1),
-        "selection should highlight page 2");
+    assert!(
+        selection.highlights.iter().any(|r| r.page == 0),
+        "selection should highlight page 1"
+    );
+    assert!(
+        selection.highlights.iter().any(|r| r.page == 1),
+        "selection should highlight page 2"
+    );
 }

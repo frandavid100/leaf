@@ -1,5 +1,7 @@
 use super::*;
 
+/// One tab's canonical WordCraft session plus disposable view geometry/caches.
+/// UI code may replace the caches; document edits always use Session commands.
 pub(super) struct Current {
     pub(super) session: Session,
     pub(super) sizes: Vec<(f32, f32)>,
@@ -16,11 +18,14 @@ pub(super) struct Current {
     pub(super) painted_thumbs: HashSet<usize>,
     pub(super) overlay_pages: HashSet<usize>,
     pub(super) overlay_header: Option<Region>,
-    pub(super) thumbnail_fallback: Vec<(f64,f64)>,
+    pub(super) thumbnail_fallback: Vec<(f64, f64)>,
     pub(super) active: usize,
     pub(super) status_active: Option<usize>,
 }
 
+/// Handles and lifecycle state for one tab. Workspace owns Rc<Ui>; callbacks
+/// and back references to Workspace stay weak. release_document tears down
+/// timers, controllers, popovers and workers before the tab owner is removed.
 pub(super) struct Ui {
     pub(super) current: RefCell<Option<Current>>,
     pub(super) header_context: gtk::Box,
@@ -42,10 +47,15 @@ pub(super) struct Ui {
     pub(super) paragraph: RefCell<Option<Rc<ParagraphPopover>>>,
     pub(super) picture: RefCell<Option<Rc<PicturePopover>>>,
     pub(super) table_popover: RefCell<Option<gtk::Popover>>,
-    pub(super) tab_bar:adw::TabBar,
-    pub(super) outside_controller:RefCell<Option<gtk::GestureClick>>,
-    pub(super) context_popovers:RefCell<Vec<(glib::WeakRef<gtk::PopoverMenu>,Option<Rc<ContextFormatLease>>)>>,
-    pub(super) format_group:Rc<FormatPopoverGroup>,
+    pub(super) tab_bar: adw::TabBar,
+    pub(super) outside_controller: RefCell<Option<gtk::GestureClick>>,
+    pub(super) context_popovers: RefCell<
+        Vec<(
+            glib::WeakRef<gtk::PopoverMenu>,
+            Option<Rc<ContextFormatLease>>,
+        )>,
+    >,
+    pub(super) format_group: Rc<FormatPopoverGroup>,
     pub(super) search_highlights: Rc<RefCell<Vec<selection::Rect>>>,
     pub(super) document_name: RefCell<String>,
     pub(super) layout_pending: Cell<bool>,
@@ -67,11 +77,11 @@ pub(super) struct Ui {
     pub(super) closing_confirmed: Cell<bool>,
     pub(super) tab_page: RefCell<Option<adw::TabPage>>,
     pub(super) closed: Cell<bool>,
-    pub(super) autosave_source:RefCell<Option<glib::SourceId>>,
-    pub(super) theme_signal:RefCell<Option<glib::SignalHandlerId>>,
+    pub(super) autosave_source: RefCell<Option<glib::SourceId>>,
+    pub(super) theme_signal: RefCell<Option<glib::SignalHandlerId>>,
     pub(super) restoring: Cell<bool>,
     pub(super) autosave_error: RefCell<Option<String>>,
-    pub(super) pending_tab_close: RefCell<Option<(adw::TabView,adw::TabPage)>>,
+    pub(super) pending_tab_close: RefCell<Option<(adw::TabView, adw::TabPage)>>,
     pub(super) save_path: RefCell<Option<PathBuf>>,
     pub(super) source_path: RefCell<Option<PathBuf>>,
     pub(super) format_toolbar: gtk::ScrolledWindow,
@@ -79,7 +89,7 @@ pub(super) struct Ui {
     pub(super) format_buttons: RefCell<Vec<gtk::MenuButton>>,
     pub(super) style: RefCell<Option<Rc<StylePopover>>>,
     pub(super) text_tools: RefCell<Option<Rc<TextTools>>>,
-    pub(super) format_reflowing:Cell<bool>,
+    pub(super) format_reflowing: Cell<bool>,
     pub(super) sidebar_selector: gtk::Box,
     pub(super) _bottom_heights: gtk::SizeGroup,
     pub(super) format_bold: gtk::ToggleButton,
@@ -91,4 +101,3 @@ pub(super) struct Ui {
     pub(super) font_button: gtk::Button,
     pub(super) size_input: gtk::SpinButton,
 }
-

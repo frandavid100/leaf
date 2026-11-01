@@ -1,28 +1,38 @@
 //! Native GTK frontend. Shared tab state lives here; WordCraft remains the model.
 use adw::prelude::*;
-use adw::{Application, ApplicationWindow, HeaderBar, StatusPage, Toast, ToastOverlay, ToolbarView, WindowTitle};
+use adw::{
+    Application, ApplicationWindow, HeaderBar, StatusPage, Toast, ToastOverlay, ToolbarView,
+    WindowTitle,
+};
 use glib::value::ToValue;
 use glib::variant::ToVariant;
 use gtk::{gdk, gio, glib};
-use std::{cell::{Cell, RefCell}, collections::HashSet, path::{Path, PathBuf}, rc::Rc};
+use std::{
+    cell::{Cell, RefCell},
+    collections::HashSet,
+    path::{Path, PathBuf},
+    rc::Rc,
+};
 use wordcraft_doc::Pos;
-use wordcraft_gnome::selection::{self, SelectionGeometry};
+use wordcraft_engine::Session;
 use wordcraft_gnome::editing::{self, Edit};
 use wordcraft_gnome::formatting::{self, Format};
-use wordcraft_engine::Session;
-use wordcraft_gnome::{open_document, render_page_screen as render_page, sample_session};
+use wordcraft_gnome::selection::{self, SelectionGeometry};
 use wordcraft_gnome::viewer_layout::{self, THUMB_SCALE};
+use wordcraft_gnome::{open_document, render_page_screen as render_page, sample_session};
 
-use wordcraft_gnome::header_footer::{self,Region,NumberPosition};
-use wordcraft_gnome::page_options::{self,Options as HeaderOptions,Links};
-use wordcraft_gnome::proofing::{self,Issue as ProofIssue};
-use wordcraft_gnome::document_properties::{ColumnSetup,ColumnScope,ColumnKind};
-use wordcraft_gnome::{pictures,document_properties::{self,PageSetup},pdf_export};
+use wordcraft_gnome::document_properties::ColumnScope;
+use wordcraft_gnome::header_footer::{self, Region};
+use wordcraft_gnome::page_options;
+use wordcraft_gnome::proofing;
+use wordcraft_gnome::{
+    document_properties::{self, PageSetup},
+    pdf_export, pictures,
+};
 
 const APP_VERSION: &str = "0.1.0-alpha.13";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
-
 
 mod state;
 use state::*;
@@ -147,8 +157,17 @@ mod view_tests_checks;
 use view_tests_checks::*;
 
 mod application;
-pub(crate) fn run(){application::run();}
+pub(crate) fn run() {
+    application::run();
+}
 
-#[path="diagnostics/register.rs"]
+#[path = "diagnostics/register.rs"]
 mod diagnostic_registration;
 use diagnostic_registration::*;
+
+#[path = "diagnostics/motion.rs"]
+mod motion_checks;
+use motion_checks::*;
+#[path = "diagnostics/startup.rs"]
+mod startup_demos;
+use startup_demos::*;

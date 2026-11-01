@@ -12,34 +12,59 @@ pub struct CaretMotion {
 }
 
 impl CaretMotion {
-    pub fn position(&self) -> Option<&Rect> { self.displayed.as_ref() }
-    pub fn is_moving(&self) -> bool { self.from.is_some() }
-    pub fn finish(&mut self) { self.displayed = self.target.clone(); self.from = None; }
+    pub fn position(&self) -> Option<&Rect> {
+        self.displayed.as_ref()
+    }
+    pub fn is_moving(&self) -> bool {
+        self.from.is_some()
+    }
+    pub fn finish(&mut self) {
+        self.displayed = self.target.clone();
+        self.from = None;
+    }
 
     pub fn retarget(&mut self, target: Option<Rect>, now: i64, animate: bool) {
         self.advance(now);
         if self.target == target {
-            if !animate { self.finish(); }
+            if !animate {
+                self.finish();
+            }
             return;
         }
         // New documents, hidden/selected carets and page transitions snap.
         // Never draw a caret flying through page margins or unrelated pages.
-        let same_page = matches!((&self.displayed, &target), (Some(a), Some(b)) if a.page == b.page);
-        self.from = if animate && same_page { self.displayed.clone() } else { None };
+        let same_page =
+            matches!((&self.displayed, &target), (Some(a), Some(b)) if a.page == b.page);
+        self.from = if animate && same_page {
+            self.displayed.clone()
+        } else {
+            None
+        };
         self.target = target;
         self.start = now;
-        if !self.is_moving() { self.finish(); }
+        if !self.is_moving() {
+            self.finish();
+        }
     }
 
     pub fn advance(&mut self, now: i64) {
-        let (Some(from), Some(to)) = (&self.from, &self.target) else { return };
+        let (Some(from), Some(to)) = (&self.from, &self.target) else {
+            return;
+        };
         let t = ((now - self.start) as f64 / DURATION_US as f64).clamp(0.0, 1.0);
-        if t >= 1.0 { self.finish(); return; }
+        if t >= 1.0 {
+            self.finish();
+            return;
+        }
         let t = 1.0 - (1.0 - t).powi(3);
         let lerp = |a, b| a + (b - a) * t;
-        self.displayed = Some(Rect { page: to.page,
-            x: lerp(from.x, to.x), y: lerp(from.y, to.y),
-            width: lerp(from.width, to.width), height: lerp(from.height, to.height) });
+        self.displayed = Some(Rect {
+            page: to.page,
+            x: lerp(from.x, to.x),
+            y: lerp(from.y, to.y),
+            width: lerp(from.width, to.width),
+            height: lerp(from.height, to.height),
+        });
     }
 }
 
@@ -47,7 +72,13 @@ impl CaretMotion {
 mod tests {
     use super::*;
     fn rect(page: usize, x: f64) -> Option<Rect> {
-        Some(Rect { page, x, y: 20.0, width: 1.0, height: 16.0 })
+        Some(Rect {
+            page,
+            x,
+            y: 20.0,
+            width: 1.0,
+            height: 16.0,
+        })
     }
     #[test]
     fn rapid_typing_retargets_from_current_visual_position_and_finishes() {

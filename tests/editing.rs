@@ -1,9 +1,11 @@
 use wordcraft_doc::{Document, StoryRef};
 use wordcraft_engine::Session;
-use wordcraft_gnome::editing::{apply, Edit};
-use wordcraft_gnome::selection::{select_all, move_caret};
+use wordcraft_gnome::editing::{Edit, apply};
+use wordcraft_gnome::selection::{move_caret, select_all};
 
-fn body(s: &Session) -> String { s.doc.plain_text(StoryRef::Body) }
+fn body(s: &Session) -> String {
+    s.doc.plain_text(StoryRef::Body)
+}
 
 #[test]
 fn inserting_unicode_text_and_undoing_is_lossless() {
@@ -53,9 +55,14 @@ fn lengthy_edit_changes_pagination_without_losing_content() {
     let mut s = Session::new(Document::from_text("Inicio"));
     let before = s.layout().pages.len();
     move_caret(&mut s, "docEnd", false).unwrap();
-    let added = ("Texto de prueba suficientemente largo para ocupar una línea entera. ".repeat(3) + "\n").repeat(90);
+    let added = ("Texto de prueba suficientemente largo para ocupar una línea entera. ".repeat(3)
+        + "\n")
+        .repeat(90);
     apply(&mut s, Edit::Paste(added)).unwrap();
     let after = s.layout().pages.len();
-    assert!(after > before, "a large paste should grow the document beyond one page");
+    assert!(
+        after > before,
+        "a large paste should grow the document beyond one page"
+    );
     assert!(body(&s).contains("Texto de prueba"));
 }

@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """Extract Leaf's literal t! messages for gettext/Weblate; deterministic output."""
 import argparse,json,pathlib,re,subprocess,sys,gettext,xml.etree.ElementTree as ET
+from translation_source import messages
+
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser();p.add_argument('--check',action='store_true');p.add_argument('--compile',action='store_true');a=p.parse_args()
 refs={}
 for file in sorted((ROOT/'src').rglob('*.rs')):
  if file.name=='i18n.rs':continue
  text=file.read_text()
- for m in re.finditer(r'(?<![\w])(?:wordcraft_gnome::)?t!\(("(?:\\.|[^"\\])*")\)',text):
-  value=json.loads(m[1]);refs.setdefault(value,[]).append(f'{file.relative_to(ROOT)}:{text.count(chr(10),0,m.start())+1}')
+ for value,line in messages(text):
+  refs.setdefault(value,[]).append(f'{file.relative_to(ROOT)}:{line}')
 desktop=ROOT/'data/io.github.frandavid100.leaf.desktop'
 meta=ROOT/'data/io.github.frandavid100.leaf.metainfo.xml'
 desktop_source=pathlib.Path(str(desktop)+'.in').read_text()

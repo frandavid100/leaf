@@ -2,4 +2,6 @@
 #[path = "../gnome/mod.rs"]
 mod gnome;
 
-fn main(){gnome::run();}
+fn main() {
+    gnome::run();
+}

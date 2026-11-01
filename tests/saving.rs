@@ -1,7 +1,10 @@
+use serde_json::json;
 use wordcraft_doc::{Document, StoryRef};
 use wordcraft_engine::Session;
-use wordcraft_gnome::{saving, formatting::{self, Format}, selection};
-use serde_json::json;
+use wordcraft_gnome::{
+    formatting::{self, Format},
+    saving, selection,
+};
 
 #[test]
 fn edited_formatted_documents_reopen_as_docx_and_odt() {
@@ -23,11 +26,15 @@ fn edited_formatted_documents_reopen_as_docx_and_odt() {
         assert_eq!(state["bold"], true);
         assert_eq!(state["size"], 18.0);
         let para = reopened.doc.para_at(&reopened.sel.focus).unwrap();
-        assert_eq!(reopened.doc.styles.resolve_para(&para.props).align,
-            wordcraft_doc::props::Align::Center);
+        assert_eq!(
+            reopened.doc.styles.resolve_para(&para.props).align,
+            wordcraft_doc::props::Align::Center
+        );
         assert!(!reopened.layout().pages.is_empty());
         // A subsequent save must update the same copy.
-        reopened.run("text.insert", &json!({"text":"Segunda versión"})).unwrap();
+        reopened
+            .run("text.insert", &json!({"text":"Segunda versión"}))
+            .unwrap();
         saving::save(&mut reopened, &path).unwrap();
         let again = wordcraft_gnome::open_document(&path).unwrap();
         assert_eq!(again.doc.plain_text(StoryRef::Body), "Segunda versión");

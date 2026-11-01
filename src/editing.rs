@@ -20,19 +20,19 @@ pub enum Edit {
 pub fn apply(session: &mut Session, edit: Edit) -> Result<bool, String> {
     let rev = session.rev();
     let (command, args) = match edit {
-        Edit::Insert(text) if !text.is_empty() =>
-            ("text.insert", json!({"text": text})),
+        Edit::Insert(text) if !text.is_empty() => ("text.insert", json!({"text": text})),
         Edit::Insert(_) => return Ok(false),
         Edit::Paragraph => ("text.newParagraph", json!({})),
         Edit::LineBreak => ("text.lineBreak", json!({})),
         Edit::Backspace => ("text.backspace", json!({})),
         Edit::Delete => ("text.delete", json!({})),
-        Edit::Paste(text) if !text.is_empty() =>
-            ("edit.pasteText", json!({"text": text})),
+        Edit::Paste(text) if !text.is_empty() => ("edit.pasteText", json!({"text": text})),
         Edit::Paste(_) => return Ok(false),
         Edit::Undo => ("edit.undo", json!({})),
         Edit::Redo => ("edit.redo", json!({})),
     };
-    session.run(command, &args).map_err(|error| error.to_string())?;
+    session
+        .run(command, &args)
+        .map_err(|error| error.to_string())?;
     Ok(session.rev() != rev)
 }

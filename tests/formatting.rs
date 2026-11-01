@@ -1,15 +1,22 @@
 use wordcraft_doc::{Document, StoryRef};
 use wordcraft_engine::Session;
-use wordcraft_gnome::formatting::{apply, Format};
-use wordcraft_gnome::selection::{select_all, move_caret};
+use wordcraft_gnome::formatting::{Format, apply};
+use wordcraft_gnome::selection::{move_caret, select_all};
 
-fn text(s: &Session) -> String { s.doc.plain_text(StoryRef::Body) }
+fn text(s: &Session) -> String {
+    s.doc.plain_text(StoryRef::Body)
+}
 
 #[test]
 fn inline_formatting_keeps_content_and_works_with_undo() {
     let mut s = Session::new(Document::from_text("Texto de ejemplo"));
     select_all(&mut s).unwrap();
-    for action in [Format::Bold, Format::Italic, Format::Underline, Format::FontSize(18)] {
+    for action in [
+        Format::Bold,
+        Format::Italic,
+        Format::Underline,
+        Format::FontSize(18),
+    ] {
         apply(&mut s, action).unwrap();
         assert_eq!(text(&s), "Texto de ejemplo");
     }
@@ -21,9 +28,16 @@ fn inline_formatting_keeps_content_and_works_with_undo() {
 fn paragraph_styles_and_alignment_work_in_real_wordcraft() {
     let mut s = Session::new(Document::from_text("Primer párrafo"));
     move_caret(&mut s, "docStart", false).unwrap();
-    for action in [Format::Heading1, Format::Heading2, Format::Heading3,
-                   Format::Normal, Format::AlignLeft, Format::AlignCenter,
-                   Format::AlignRight, Format::Justify] {
+    for action in [
+        Format::Heading1,
+        Format::Heading2,
+        Format::Heading3,
+        Format::Normal,
+        Format::AlignLeft,
+        Format::AlignCenter,
+        Format::AlignRight,
+        Format::Justify,
+    ] {
         apply(&mut s, action).unwrap();
         assert_eq!(text(&s), "Primer párrafo");
         assert!(!s.layout().pages.is_empty());
@@ -35,7 +49,8 @@ fn selected_document_remains_editable_after_formatting() {
     let mut s = Session::new(Document::from_text("Hola"));
     select_all(&mut s).unwrap();
     apply(&mut s, Format::Bold).unwrap();
-    s.run("text.insert", &serde_json::json!({"text":"Adiós"})).unwrap();
+    s.run("text.insert", &serde_json::json!({"text":"Adiós"}))
+        .unwrap();
     assert_eq!(text(&s), "Adiós");
 }
 
@@ -76,11 +91,20 @@ fn font_fractional_size_and_lists_survive_save_and_reopen() {
     wordcraft_gnome::saving::save(&mut s, &path).unwrap();
     let mut reopened = wordcraft_gnome::open_document(&path).unwrap();
     select_all(&mut reopened).unwrap();
-    let state = reopened.run("format.state", &serde_json::json!({})).unwrap();
+    let state = reopened
+        .run("format.state", &serde_json::json!({}))
+        .unwrap();
     assert_eq!(state["font"], "DejaVu Sans");
     assert_eq!(state["size"], 13.5);
     let para = reopened.doc.para_at(&reopened.sel.focus).unwrap();
-    assert!(reopened.doc.styles.resolve_para(&para.props).numbering.is_some());
+    assert!(
+        reopened
+            .doc
+            .styles
+            .resolve_para(&para.props)
+            .numbering
+            .is_some()
+    );
     assert_eq!(text(&reopened), "Primero\nSegundo");
     apply(&mut reopened, Format::Numbering).unwrap();
     assert!(reopened.can_undo());

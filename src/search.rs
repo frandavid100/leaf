@@ -1,7 +1,7 @@
 //! Sidebar search uses WordCraft's literal matcher, including table text.
+use crate::selection::{self, Rect};
 use wordcraft_doc::Pos;
 use wordcraft_engine::Session;
-use crate::selection::{self, Rect};
 
 #[derive(Clone, Debug)]
 pub struct Hit {
@@ -17,92 +17,174 @@ pub struct Hit {
 }
 
 pub fn query(s: &mut Session, text: &str, match_case: bool) -> Result<Vec<Hit>, String> {
-    if text.is_empty() { s.find.results.clear(); return Ok(Vec::new()); }
+    if text.is_empty() {
+        s.find.results.clear();
+        return Ok(Vec::new());
+    }
     // Advanced Find searches the body without moving the live selection.
-    s.run("edit.advancedFind", &serde_json::json!({"text":text,"in":"main",
+    s.run(
+        "edit.advancedFind",
+        &serde_json::json!({"text":text,"in":"main",
         "matchCase":match_case,"special":false,"regex":false,"wildcards":false,
         "wholeWord":false,"matchPrefix":false,"matchSuffix":false,
-        "ignorePunct":false,"ignoreSpace":false,"highlight":false})).map_err(|e|e.to_string())?;
+        "ignorePunct":false,"ignoreSpace":false,"highlight":false}),
+    )
+    .map_err(|e| e.to_string())?;
     let positions = s.find.results.clone();
     let layout = s.layout();
-    let revision = s.rev();let document=s.document_id();
-    Ok(positions.into_iter().map(|(start,end)| {
-        let p = s.doc.para_at(&start).map(|p| p.text.as_str()).unwrap_or("");
-        let before = p.get(..start.off).unwrap_or("").chars().rev().take(28).collect::<Vec<_>>().into_iter().rev().collect();
-        let same = start.story == end.story && start.path == end.path;
-        let matched = if same { p.get(start.off..end.off).unwrap_or(text).to_string() } else { text.to_string() };
-        let tail = s.doc.para_at(&end).and_then(|p|p.text.get(end.off..)).unwrap_or("");
-        let after = tail.chars().take(55).collect();
-        let rects: Vec<Rect> = layout.selection_rects(&s.doc,&start,&end,0).into_iter()
-            .map(|(page,r)|Rect {page,x:r.x as f64,y:r.y as f64,width:r.w as f64,height:r.h as f64}).collect();
-        let page = rects.first().map(|r|r.page);
-        Hit {start,end,before,matched,after,page,rects,revision,document}
-    }).collect())
+    let revision = s.rev();
+    let document = s.document_id();
+    Ok(positions
+        .into_iter()
+        .map(|(start, end)| {
+            let p = s.doc.para_at(&start).map(|p| p.text.as_str()).unwrap_or("");
+            let before = p
+                .get(..start.off)
+                .unwrap_or("")
+                .chars()
+                .rev()
+                .take(28)
+                .collect::<Vec<_>>()
+                .into_iter()
+                .rev()
+                .collect();
+            let same = start.story == end.story && start.path == end.path;
+            let matched = if same {
+                p.get(start.off..end.off).unwrap_or(text).to_string()
+            } else {
+                text.to_string()
+            };
+            let tail = s
+                .doc
+                .para_at(&end)
+                .and_then(|p| p.text.get(end.off..))
+                .unwrap_or("");
+            let after = tail.chars().take(55).collect();
+            let rects: Vec<Rect> = layout
+                .selection_rects(&s.doc, &start, &end, 0)
+                .into_iter()
+                .map(|(page, r)| Rect {
+                    page,
+                    x: r.x as f64,
+                    y: r.y as f64,
+                    width: r.w as f64,
+                    height: r.h as f64,
+                })
+                .collect();
+            let page = rects.first().map(|r| r.page);
+            Hit {
+                start,
+                end,
+                before,
+                matched,
+                after,
+                page,
+                rects,
+                revision,
+                document,
+            }
+        })
+        .collect())
 }
 
 pub fn select(s: &mut Session, hit: &Hit) -> Result<(), String> {
-    if s.document_id()!=hit.document || s.rev()!=hit.revision {return Err(wordcraft_gnome::t!("The document has changed; search results have been updated").into());}
-    selection::select_range(s,&hit.start,&hit.end)
+    if s.document_id() != hit.document || s.rev() != hit.revision {
+        return Err(wordcraft_gnome::t!(
+            "The document has changed; search results have been updated"
+        )
+        .into());
+    }
+    selection::select_range(s, &hit.start, &hit.end)
 }
 
 pub fn replace(s: &mut Session, hit: &Hit, with: &str) -> Result<(), String> {
-    select(s,hit)?;
+    select(s, hit)?;
     // Literal input: replacement strings such as ^p or $1 must not be expanded.
-    crate::editing::apply(s, if with.is_empty() {crate::editing::Edit::Delete} else {crate::editing::Edit::Insert(with.to_owned())}).map(|_|())
+    crate::editing::apply(
+        s,
+        if with.is_empty() {
+            crate::editing::Edit::Delete
+        } else {
+            crate::editing::Edit::Insert(with.to_owned())
+        },
+    )
+    .map(|_| ())
 }
 
 /// One native WordCraft command, therefore one undo step for the whole batch.
-pub fn replace_all(s:&mut Session,text:&str,with:&str,match_case:bool)->Result<usize,String>{
-    let hits=query(s,text,match_case)?;let Some(first)=hits.first()else{return Ok(0);};
-    selection::set_caret(s,&first.start,false)?;
-    let result=s.run("edit.replaceAll",&serde_json::json!({"text":text,"with":with,
-        "special":false,"regex":false,"wildcards":false,"matchCase":match_case}))
-        .map_err(|e|e.to_string())?;
-    Ok(result["replaced"].as_u64().unwrap_or(0)as usize)
+pub fn replace_all(
+    s: &mut Session,
+    text: &str,
+    with: &str,
+    match_case: bool,
+) -> Result<usize, String> {
+    let hits = query(s, text, match_case)?;
+    let Some(first) = hits.first() else {
+        return Ok(0);
+    };
+    selection::set_caret(s, &first.start, false)?;
+    let result = s
+        .run(
+            "edit.replaceAll",
+            &serde_json::json!({"text":text,"with":with,
+        "special":false,"regex":false,"wildcards":false,"matchCase":match_case}),
+        )
+        .map_err(|e| e.to_string())?;
+    Ok(result["replaced"].as_u64().unwrap_or(0) as usize)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use wordcraft_doc::{Document,StoryRef};
+    use wordcraft_doc::{Document, StoryRef};
     #[test]
-    fn bulk_replace_is_literal_case_sensitive_and_a_single_undo_step(){
-        let mut s=Session::new(Document::from_text("Hola hola hola"));
-        assert_eq!(replace_all(&mut s,"hola","$1 ^p",true).unwrap(),2);
-        assert_eq!(s.doc.plain_text(StoryRef::Body),"Hola $1 ^p $1 ^p");
-        s.run("edit.undo",&serde_json::json!({})).unwrap();assert_eq!(s.doc.plain_text(StoryRef::Body),"Hola hola hola");
-        assert_eq!(replace_all(&mut s,"hola","",false).unwrap(),3);
-        assert_eq!(s.doc.plain_text(StoryRef::Body),"  ");
-        s.run("edit.undo",&serde_json::json!({})).unwrap();assert_eq!(query(&mut s,"hola",false).unwrap().len(),3);
+    fn bulk_replace_is_literal_case_sensitive_and_a_single_undo_step() {
+        let mut s = Session::new(Document::from_text("Hola hola hola"));
+        assert_eq!(replace_all(&mut s, "hola", "$1 ^p", true).unwrap(), 2);
+        assert_eq!(s.doc.plain_text(StoryRef::Body), "Hola $1 ^p $1 ^p");
+        s.run("edit.undo", &serde_json::json!({})).unwrap();
+        assert_eq!(s.doc.plain_text(StoryRef::Body), "Hola hola hola");
+        assert_eq!(replace_all(&mut s, "hola", "", false).unwrap(), 3);
+        assert_eq!(s.doc.plain_text(StoryRef::Body), "  ");
+        s.run("edit.undo", &serde_json::json!({})).unwrap();
+        assert_eq!(query(&mut s, "hola", false).unwrap().len(), 3);
     }
     #[test]
     fn results_include_tables_and_pages_beyond_the_first() {
-        let mut s=crate::sample_session();
-        let table=query(&mut s,"Mara O.",true).unwrap();
-        assert_eq!(table.len(),1);assert!(table[0].start.path.cell().is_some());
+        let mut s = crate::sample_session();
+        let table = query(&mut s, "Mara O.", true).unwrap();
+        assert_eq!(table.len(), 1);
+        assert!(table[0].start.path.cell().is_some());
         assert!(table[0].page.is_some());
-        replace(&mut s,&table[0],"Otra persona").unwrap();
-        assert!(query(&mut s,"Mara O.",true).unwrap().is_empty());
-        let text=(0..160).map(|i|format!("Coincidencia número {i}\n")).collect::<String>();
-        let mut s=Session::new(Document::from_text(&text));
-        let hits=query(&mut s,"Coincidencia",true).unwrap();
-        assert_eq!(hits.len(),160);assert!(hits.last().unwrap().page.unwrap()>0);
+        replace(&mut s, &table[0], "Otra persona").unwrap();
+        assert!(query(&mut s, "Mara O.", true).unwrap().is_empty());
+        let text = (0..160)
+            .map(|i| format!("Coincidencia número {i}\n"))
+            .collect::<String>();
+        let mut s = Session::new(Document::from_text(&text));
+        let hits = query(&mut s, "Coincidencia", true).unwrap();
+        assert_eq!(hits.len(), 160);
+        assert!(hits.last().unwrap().page.unwrap() > 0);
     }
     #[test]
     fn results_preserve_selection_case_and_undo_and_reject_stale_rows() {
-        let mut s=Session::new(Document::from_text("Árbol árbol árbol"));
-        let selection=s.sel.clone();let rev=s.rev();
-        let hits=query(&mut s,"árbol",false).unwrap();
-        assert_eq!(hits.len(),3);assert_eq!(s.sel,selection);assert_eq!(s.rev(),rev);
-        assert_eq!(query(&mut s,"árbol",true).unwrap().len(),2);
-        assert!(!hits[1].rects.is_empty());assert!(hits[1].before.contains("Árbol"));
-        replace(&mut s,&hits[1],"$1 ^p").unwrap();
-        assert_eq!(s.doc.plain_text(StoryRef::Body),"Árbol $1 ^p árbol");
-        assert!(replace(&mut s,&hits[2],"stale").is_err());
-        s.run("edit.undo",&serde_json::json!({})).unwrap();
-        assert_eq!(s.doc.plain_text(StoryRef::Body),"Árbol árbol árbol");
-        assert_eq!(query(&mut s,"árbol",false).unwrap().len(),3);
-        let mut other=Session::new(Document::from_text("árbol diferente"));
-        assert!(replace(&mut other,&hits[0],"wrong document").is_err());
+        let mut s = Session::new(Document::from_text("Árbol árbol árbol"));
+        let selection = s.sel.clone();
+        let rev = s.rev();
+        let hits = query(&mut s, "árbol", false).unwrap();
+        assert_eq!(hits.len(), 3);
+        assert_eq!(s.sel, selection);
+        assert_eq!(s.rev(), rev);
+        assert_eq!(query(&mut s, "árbol", true).unwrap().len(), 2);
+        assert!(!hits[1].rects.is_empty());
+        assert!(hits[1].before.contains("Árbol"));
+        replace(&mut s, &hits[1], "$1 ^p").unwrap();
+        assert_eq!(s.doc.plain_text(StoryRef::Body), "Árbol $1 ^p árbol");
+        assert!(replace(&mut s, &hits[2], "stale").is_err());
+        s.run("edit.undo", &serde_json::json!({})).unwrap();
+        assert_eq!(s.doc.plain_text(StoryRef::Body), "Árbol árbol árbol");
+        assert_eq!(query(&mut s, "árbol", false).unwrap().len(), 3);
+        let mut other = Session::new(Document::from_text("árbol diferente"));
+        assert!(replace(&mut other, &hits[0], "wrong document").is_err());
     }
 }

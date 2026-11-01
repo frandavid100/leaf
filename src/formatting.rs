@@ -4,11 +4,23 @@ use wordcraft_engine::Session;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Format {
-    Bold, Italic, Underline,
-    Normal, NoSpacing, Heading1, Heading2, Heading3,
-    AlignLeft, AlignCenter, AlignRight, Justify,
+    Bold,
+    Italic,
+    Underline,
+    Normal,
+    NoSpacing,
+    Heading1,
+    Heading2,
+    Heading3,
+    AlignLeft,
+    AlignCenter,
+    AlignRight,
+    Justify,
     FontSize(u8),
-    Bullets, Numbering, Indent, Outdent,
+    Bullets,
+    Numbering,
+    Indent,
+    Outdent,
 }
 
 pub fn apply(session: &mut Session, action: Format) -> Result<(), String> {
@@ -29,9 +41,12 @@ pub fn apply(session: &mut Session, action: Format) -> Result<(), String> {
         Format::AlignCenter => ("para.alignCenter", json!({})),
         Format::AlignRight => ("para.alignRight", json!({})),
         Format::Justify => ("para.justify", json!({})),
-        Format::FontSize(size) if (6..=96).contains(&size) =>
-            ("format.size", json!({"size": size})),
-        Format::FontSize(_) => return Err(wordcraft_gnome::t!("Font size must be between 6 and 96 points").into()),
+        Format::FontSize(size) if (6..=96).contains(&size) => {
+            ("format.size", json!({"size": size}))
+        }
+        Format::FontSize(_) => {
+            return Err(wordcraft_gnome::t!("Font size must be between 6 and 96 points").into());
+        }
     };
     session.run(name, &params).map_err(|err| err.to_string())?;
     Ok(())
@@ -42,13 +57,19 @@ pub fn size(session: &mut Session, points: f64) -> Result<(), String> {
     if !points.is_finite() || !(1.0..=1638.0).contains(&points) {
         return Err(wordcraft_gnome::t!("Size must be between 1 and 1638 points").into());
     }
-    session.run("format.size", &json!({"size":points})).map_err(|e| e.to_string())?;
+    session
+        .run("format.size", &json!({"size":points}))
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
 
 pub fn font(session: &mut Session, name: &str) -> Result<(), String> {
     let name = name.trim();
-    if name.is_empty() { return Err(wordcraft_gnome::t!("Choose a font family").into()); }
-    session.run("format.font", &json!({"name":name})).map_err(|e| e.to_string())?;
+    if name.is_empty() {
+        return Err(wordcraft_gnome::t!("Choose a font family").into());
+    }
+    session
+        .run("format.font", &json!({"name":name}))
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
