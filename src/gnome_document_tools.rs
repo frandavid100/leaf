@@ -81,12 +81,12 @@ fn install_picture_controls(ui:&Rc<Ui>,parent:&ApplicationWindow,bar:&gtk::Box)-
     state.refresh();(menu,state)
 }
 
-struct DocumentProperties {window:adw::Window,width:gtk::SpinButton,height:gtk::SpinButton,top:gtk::SpinButton,bottom:gtk::SpinButton,left:gtk::SpinButton,right:gtk::SpinButton,apply:gtk::Button}
+struct DocumentProperties {window:adw::Window,width:gtk::SpinButton,height:gtk::SpinButton,top:gtk::SpinButton,bottom:gtk::SpinButton,left:gtk::SpinButton,right:gtk::SpinButton,apply:gtk::Button,headers:Rc<HeaderControls>}
 fn properties_number(group:&adw::PreferencesGroup,label:&str,value:f32)->gtk::SpinButton{
     let row=adw::ActionRow::new();row.set_title(label);let n=mm_input(value as f64/PT_PER_MM,0.0,1584.0/PT_PER_MM);row.add_suffix(&n);row.set_activatable_widget(Some(&n));accessible_name(&n,label);group.add(&row);n
 }
 fn show_document_properties(ui:&Rc<Ui>,parent:&ApplicationWindow)->DocumentProperties {
-    let state={let value=ui.current.borrow();PageSetup::current(&value.as_ref().unwrap().session)};let identity=document_identity(ui);
+    let (state,section)={let mut value=ui.current.borrow_mut();let s=&mut value.as_mut().unwrap().session;let i=page_options::current_section(s);let p=s.doc.sections()[i].1;(PageSetup{width:p.page_w,height:p.page_h,top:p.margin_top,bottom:p.margin_bottom,left:p.margin_left,right:p.margin_right},i)};let identity=document_identity(ui);
     let window=adw::Window::builder().title(wordcraft_gnome::t!("Document Properties")).transient_for(parent).modal(true).default_width(480).default_height(650).build();
     let toolbar=ToolbarView::new();let header=HeaderBar::new();header.set_show_end_title_buttons(false);header.set_show_start_title_buttons(false);
     let cancel=gtk::Button::with_label(wordcraft_gnome::t!("Cancel"));header.pack_start(&cancel);let apply=gtk::Button::with_label(wordcraft_gnome::t!("Apply"));apply.set_widget_name("document-properties-apply");apply.add_css_class("suggested-action");header.pack_end(&apply);toolbar.add_top_bar(&header);
@@ -101,20 +101,24 @@ fn show_document_properties(ui:&Rc<Ui>,parent:&ApplicationWindow)->DocumentPrope
     let scope=adw::ComboRow::new();scope.set_title(wordcraft_gnome::t!("Apply To"));scope.set_model(Some(&gtk::StringList::new(&[wordcraft_gnome::t!("Whole Document"),wordcraft_gnome::t!("Current Section")])));
     let multi=ui.current.borrow().as_ref().is_some_and(|d|d.session.doc.sections().len()>1);scope.set_selected(if multi{1}else{0});scope.set_visible(multi);margins.add(&scope);
     let message=gtk::Label::new(None);message.set_wrap(true);message.add_css_class("error");let errors=adw::PreferencesGroup::new();errors.add(&message);page.add(&errors);message.set_visible(false);
-    toolbar.set_content(Some(&page));window.set_content(Some(&toolbar));
+    let stack=gtk::Stack::new();stack.set_transition_type(gtk::StackTransitionType::Crossfade);
+    stack.add_titled(&page,Some("page"),wordcraft_gnome::t!("Page"));
+    let header_page=adw::PreferencesPage::new();let headers=HeaderControls::new(ui,&header_page,section);stack.add_titled(&header_page,Some("headers"),wordcraft_gnome::t!("Headers and Footers"));
+    let switcher=gtk::StackSwitcher::new();switcher.set_stack(Some(&stack));switcher.set_halign(gtk::Align::Center);switcher.set_margin_top(6);switcher.set_margin_bottom(6);toolbar.add_top_bar(&switcher);
+    toolbar.set_content(Some(&stack));window.set_content(Some(&toolbar));
     let syncing=Rc::new(Cell::new(false));
     {let width=width.downgrade();let height=height.downgrade();let orientation=orientation.downgrade();let syncing=syncing.clone();sizes.connect_selected_notify(move|r|{let Some(i)=r.selected().checked_sub(1)else{return;};let Some(&(a,b))=presets.get(i as usize)else{return;};let(Some(width),Some(height),Some(orientation))=(width.upgrade(),height.upgrade(),orientation.upgrade())else{return;};syncing.set(true);let (a,b)=if orientation.selected()==1{(b,a)}else{(a,b)};width.set_value(a);height.set_value(b);syncing.set(false);});}
     {let width=width.downgrade();let height=height.downgrade();let syncing=syncing.clone();orientation.connect_selected_notify(move|r|{let(Some(width),Some(height))=(width.upgrade(),height.upgrade())else{return;};let (w,h)=(width.value(),height.value());if (r.selected()==1&&w<h)||(r.selected()==0&&w>h){syncing.set(true);width.set_value(h);height.set_value(w);syncing.set(false);}});}
     for n in [&width,&height]{let sizes=sizes.downgrade();let orientation=orientation.downgrade();let width=width.downgrade();let height=height.downgrade();let syncing=syncing.clone();n.connect_value_changed(move |_|{if !syncing.get(){let(Some(sizes),Some(orientation),Some(width),Some(height))=(sizes.upgrade(),orientation.upgrade(),width.upgrade(),height.upgrade())else{return;};sizes.set_selected(0);orientation.set_selected(if width.value()>height.value(){1}else{0});}});}
     {let weak=window.downgrade();cancel.connect_clicked(move |_|{if let Some(w)=weak.upgrade(){w.close();}});}
-    {let ui=ui.clone();let window=window.downgrade();let fields=[width.clone(),height.clone(),top.clone(),bottom.clone(),left.clone(),right.clone()];apply.connect_clicked(glib::clone!(#[weak] ui, move |_|{
+    {let ui=ui.clone();let window=window.downgrade();let fields=[width.clone(),height.clone(),top.clone(),bottom.clone(),left.clone(),right.clone()];let headers=headers.clone();apply.connect_clicked(glib::clone!(#[weak] ui, move |_|{
         if ui.closed.get()||document_identity(&ui)!=identity{message.set_text(wordcraft_gnome::t!("The document has changed. Close and reopen its properties."));message.set_visible(true);return;}
         for n in &fields{n.update();}let values=fields.each_ref().map(|n|n.value()as f32*PT_PER_MM as f32);
         let setup=PageSetup{width:values[0],height:values[1],top:values[2],bottom:values[3],left:values[4],right:values[5]};
-        let result={let mut value=ui.current.borrow_mut();document_properties::apply(&mut value.as_mut().unwrap().session,setup,scope.selected()==0)};
+        let result={let mut value=ui.current.borrow_mut();apply_properties(&mut value.as_mut().unwrap().session,setup,scope.selected()==0,section,&headers.values())};
         match result {Ok(changed)=>{if changed{after_content_change(&ui);}if let Some(w)=window.upgrade(){w.close();}},Err(e)=>{message.set_text(&e);message.set_visible(true);}}
     }));}
-    window.present();DocumentProperties{window,width,height,top,bottom,left,right,apply}
+    window.present();DocumentProperties{window,width,height,top,bottom,left,right,apply,headers}
 }
 fn export_pdf_dialog(ui:&Rc<Ui>,parent:&ApplicationWindow){
     let dialog=gtk::FileDialog::new();dialog.set_title(wordcraft_gnome::t!("Export to PDF"));dialog.set_modal(true);

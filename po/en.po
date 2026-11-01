@@ -1621,3 +1621,159 @@ msgstr "Return to Document"
 
 msgid "The document has changed; open this dialog again."
 msgstr "The document has changed; open this dialog again."
+
+msgid "Add to Dictionary"
+msgstr "Add to Dictionary"
+
+msgid "Change"
+msgstr "Change"
+
+msgid "Check Complete"
+msgstr "Check Complete"
+
+msgid "Check Spelling as You Type"
+msgstr "Check Spelling as You Type"
+
+msgid "Check the header/footer distances and starting page number."
+msgstr "Check the header/footer distances and starting page number."
+
+msgid "Checking…"
+msgstr "Checking…"
+
+msgid "Choose a valid section."
+msgstr "Choose a valid section."
+
+msgid "Continue from Previous Section"
+msgstr "Continue from Previous Section"
+
+msgid "Different First Page"
+msgstr "Different First Page"
+
+msgid "Different Odd and Even Pages"
+msgstr "Different Odd and Even Pages"
+
+msgid "Do Not Check Spelling or Grammar"
+msgstr "Do Not Check Spelling or Grammar"
+
+msgid "Existing Format"
+msgstr "Existing Format"
+
+msgid "First Section"
+msgstr "First Section"
+
+msgid "First-page settings, numbering and distances apply to the selected section. Odd/even headers apply to the whole document."
+msgstr "First-page settings, numbering and distances apply to the selected section. Odd/even headers apply to the whole document."
+
+msgid "Footer from Bottom (mm)"
+msgstr "Footer from Bottom (mm)"
+
+msgid "Footers"
+msgstr "Footers"
+
+msgid "Header and Footer Options"
+msgstr "Header and Footer Options"
+
+msgid "Header from Top (mm)"
+msgstr "Header from Top (mm)"
+
+msgid "Headers"
+msgstr "Headers"
+
+msgid "Headers and Footers"
+msgstr "Headers and Footers"
+
+msgid "Ignore All"
+msgstr "Ignore All"
+
+msgid "Independent"
+msgstr "Independent"
+
+msgid "Independent copies keep the current content. Linking uses the previous section; existing separate content remains available through Undo."
+msgstr "Independent copies keep the current content. Linking uses the previous section; existing separate content remains available through Undo."
+
+msgid "Keep Existing Links"
+msgstr "Keep Existing Links"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "Language Tag"
+msgstr "Language Tag"
+
+msgid "Languages without installed dictionaries are skipped."
+msgstr "Languages without installed dictionaries are skipped."
+
+msgid "Link to Previous Section"
+msgstr "Link to Previous Section"
+
+msgid "Linked to Previous Section"
+msgstr "Linked to Previous Section"
+
+msgid "Make Independent Copies"
+msgstr "Make Independent Copies"
+
+msgid "No dictionary is installed for this language. Its spelling cannot be checked."
+msgstr "No dictionary is installed for this language. Its spelling cannot be checked."
+
+msgid "No issues found in text with available proofing tools."
+msgstr "No issues found in text with available proofing tools."
+
+msgid "Number Format"
+msgstr "Number Format"
+
+msgid "Other Language"
+msgstr "Other Language"
+
+msgid "Page Numbering"
+msgstr "Page Numbering"
+
+msgid "Replacement"
+msgstr "Replacement"
+
+msgid "Section"
+msgstr "Section"
+
+msgid "Section Links"
+msgstr "Section Links"
+
+msgid "Selection or Typing Position"
+msgstr "Selection or Typing Position"
+
+msgid "Skip"
+msgstr "Skip"
+
+msgid "Some Variants Are Linked"
+msgstr "Some Variants Are Linked"
+
+msgid "Spelling and Grammar"
+msgstr "Spelling and Grammar"
+
+msgid "Spelling and Grammar…"
+msgstr "Spelling and Grammar…"
+
+msgid "Spelling tools are available for this language."
+msgstr "Spelling tools are available for this language."
+
+msgid "Start At"
+msgstr "Start At"
+
+msgid "Starting Page Number"
+msgstr "Starting Page Number"
+
+msgid "Text Language"
+msgstr "Text Language"
+
+msgid "Text Language…"
+msgstr "Text Language…"
+
+msgid "The spelling check could not finish."
+msgstr "The spelling check could not finish."
+
+msgid "The text has changed. Check it again."
+msgstr "The text has changed. Check it again."
+
+msgid "Use a language tag such as es-ES or en-GB."
+msgstr "Use a language tag such as es-ES or en-GB."
+
+msgid "Use for New Documents"
+msgstr "Use for New Documents"

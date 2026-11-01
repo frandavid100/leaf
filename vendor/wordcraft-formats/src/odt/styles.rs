@@ -6,6 +6,8 @@ use super::{Align, Arc, Columns, Fmt, HashMap, Kind, Rgb, VAlign, model};
 
 #[derive(Clone, Debug, Default)]
 struct FmtDelta {
+    lang: Option<Arc<str>>,
+    no_proof: Option<bool>,
     bold: Option<bool>,
     italic: Option<bool>,
     underline: Option<bool>,
@@ -24,7 +26,8 @@ impl FmtDelta {
         macro_rules! set {
             ($($k:ident),*) => { $( if let Some(v) = self.$k.clone() { f.$k = v; } )* };
         }
-        set!(bold, italic, underline, strike, sup, sub, code);
+        set!(bold, italic, underline, strike, sup, sub, code, no_proof);
+        if let Some(lang)=&self.lang{f.lang=Some(lang.clone());}
         if self.color.is_some() {
             f.color = self.color;
         }
@@ -94,6 +97,14 @@ fn default_font(a: &Attrs) -> Option<String> {
 
 fn text_properties(a: &Attrs, style: &mut StyleInfo) {
     let fmt = &mut style.fmt;
+    if let Some(primary)=get(a,"fo:language").or_else(||get(a,"style:rfc-language-tag")) {
+        let unchecked=primary=="zxx"||primary=="none"||get(a,"leaf:no-proof")==Some("true");
+        fmt.no_proof=Some(unchecked);
+        let tag=if unchecked{get(a,"leaf:language").map(str::to_owned)}else if let Some(tag)=get(a,"style:rfc-language-tag"){Some(tag.to_string())}else{
+            Some(match get(a,"fo:country").filter(|r|*r!="none"){Some(country)=>format!("{primary}-{country}"),None=>primary.to_string()})
+        };
+        if let Some(tag)=tag.filter(|s|s.len()<=63&&s.chars().all(|c|c.is_ascii_alphanumeric()||c=='-')){fmt.lang=Some(tag.into());}
+    }
     let is_bold = |weight: &str| {
         let weight = weight.trim();
         weight.eq_ignore_ascii_case("bold") || weight.parse::<u32>().is_ok_and(|n| n >= 600)
@@ -144,6 +155,7 @@ pub(super) struct Styles {
     pub(super) lists: HashMap<String, Vec<bool>>,
     /// Font of `style:default-style` for paragraphs (the document default, ODF 1.3 §16.4).
     default_font: Option<String>,
+    default_language: Option<String>,
 }
 
 impl Styles {
@@ -171,6 +183,7 @@ impl Styles {
                 "default-style" if q.starts_with("style:") => in_default = get(&a, "style:family") == Some("paragraph"),
                 "text-properties" if in_default && cur.is_none() => {
                     self.default_font = default_font(&a);
+                    let mut info=StyleInfo::default();text_properties(&a,&mut info);self.default_language=info.fmt.lang.as_deref().map(str::to_owned);
                 }
                 "text-properties" => {
                     if let Some((_, s)) = &mut cur {
@@ -280,6 +293,8 @@ impl Styles {
     pub(super) fn doc_font(&self) -> Option<String> {
         self.map.get("Standard").filter(|s| !s.auto).and_then(|s| s.fmt.font.as_deref().map(str::to_string)).or_else(|| self.default_font.clone())
     }
+
+    pub(super) fn doc_language(&self)->Option<String>{self.default_language.clone()}
 
     fn chain<'a>(&'a self, name: &'a str) -> Vec<(&'a str, &'a StyleInfo)> {
         let mut out = Vec::new();

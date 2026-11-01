@@ -19,8 +19,15 @@ pub fn autosave_mode() -> u32 {
 }
 pub fn set_autosave_mode(mode: u32) -> Result<(), String> {
     if mode > 2 { return Err(wordcraft_gnome::t!("Unknown Autosave Mode").into()); }
-    let dir = config_root(); std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    let temp = dir.join(format!("preferences-{}.tmp", std::process::id()));
-    std::fs::write(&temp, serde_json::json!({"autosave":mode}).to_string()).map_err(|e| e.to_string())?;
-    std::fs::rename(temp, dir.join("preferences.json")).map_err(|e| e.to_string())
+    update("autosave",serde_json::json!(mode))
 }
+fn read()->serde_json::Value{std::fs::read(config_root().join("preferences.json")).ok().and_then(|v|serde_json::from_slice(&v).ok()).filter(|v:&serde_json::Value|v.is_object()).unwrap_or_else(||serde_json::json!({}))}
+fn update(key:&str,value:serde_json::Value)->Result<(),String>{
+    let dir=config_root();std::fs::create_dir_all(&dir).map_err(|e|e.to_string())?;
+    let mut settings=read();settings[key]=value;let temp=dir.join(format!("preferences-{}.tmp",std::process::id()));
+    std::fs::write(&temp,settings.to_string()).map_err(|e|e.to_string())?;std::fs::rename(temp,dir.join("preferences.json")).map_err(|e|e.to_string())
+}
+pub fn default_language()->Option<String>{read()["language"].as_str().map(str::to_owned)}
+pub fn set_default_language(tag:&str)->Result<(),String>{let tag=wordcraft_engine::proof::lang::normalize_tag(tag).ok_or(wordcraft_gnome::t!("Use a language tag such as es-ES or en-GB."))?;update("language",serde_json::json!(tag))}
+pub fn check_spelling()->bool{read()["spelling"].as_bool().unwrap_or(true)}
+pub fn set_check_spelling(on:bool)->Result<(),String>{update("spelling",serde_json::json!(on))}

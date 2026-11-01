@@ -29,6 +29,8 @@ fn setup_main_actions(host:&Rc<Workspace>,app:&Application){
     window_action(host,"insert-header",|h|{if let Some(ui)=selected_ui(h){enter_header(&ui,Region::Header);}});
     window_action(host,"insert-footer",|h|{if let Some(ui)=selected_ui(h){enter_header(&ui,Region::Footer);}});
     window_action(host,"insert-page-number",|h|{if let Some(ui)=selected_ui(h){show_page_number(&ui,&h.window);}});
+    window_action(host,"check-spelling",|h|{if let Some(ui)=selected_ui(h){show_spelling(&ui,&h.window);}});
+    window_action(host,"text-language",|h|{if let Some(ui)=selected_ui(h){show_text_language(&ui,&h.window);}});
     window_action(host,"columns",|h|{if let Some(ui)=selected_ui(h){show_columns(&ui,&h.window);}});
     window_action(host,"document-properties",|h|{if let Some(ui)=selected_ui(h){show_document_properties(&ui,&h.window);}});
     window_action(host,"print",|h|{if let Some(ui)=selected_ui(h){print_document(&ui,&h.window);}});
@@ -40,7 +42,7 @@ fn setup_main_actions(host:&Rc<Workspace>,app:&Application){
         let w=adw::AboutWindow::new();w.set_transient_for(Some(&h.window));w.set_application_name("Leaf");w.set_application_icon(APP_ID);w.set_version(APP_VERSION);w.set_developer_name(wordcraft_gnome::t!("Leaf Project"));w.set_license_type(gtk::License::Gpl30);
         w.set_website("https://github.com/frandavid100/leaf");w.set_issue_url("https://github.com/frandavid100/leaf/issues");w.set_comments(wordcraft_gnome::t!("Document editor for GNOME powered by WordCraft."));w.add_link(wordcraft_gnome::t!("Help Translate Leaf"),"https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/TRANSLATING.md");w.present();
     });
-    for(name,keys)in[("new-tab",vec!["<Control>n","<Control>t"]),("new-window",vec!["<Control><Shift>n"]),("tab-overview",vec!["<Control><Shift>o"]),("open",vec!["<Control>o"]),("preferences",vec!["<Control>comma"]),("shortcuts",vec!["<Control>question"]),("help",vec!["F1"]),("print",vec!["<Control>p"]) ]{app.set_accels_for_action(&format!("win.{name}"),&keys);}
+    for(name,keys)in[("new-tab",vec!["<Control>n","<Control>t"]),("new-window",vec!["<Control><Shift>n"]),("tab-overview",vec!["<Control><Shift>o"]),("open",vec!["<Control>o"]),("preferences",vec!["<Control>comma"]),("shortcuts",vec!["<Control>question"]),("help",vec!["F1"]),("print",vec!["<Control>p"]),("check-spelling",vec!["F7"]) ]{app.set_accels_for_action(&format!("win.{name}"),&keys);}
     let weak=Rc::downgrade(host);host.tabs.connect_selected_page_notify(move |_|{if let Some(h)=weak.upgrade(){refresh_main_actions(&h);}});
 }
 fn menu_item(menu:&gio::Menu,label:&str,action:&str,accel:Option<&str>){
@@ -59,7 +61,7 @@ fn install_document_menu(button:&gtk::MenuButton){
     let history=gio::Menu::new();menu_item(&history,wordcraft_gnome::t!("Undo"),"undo",Some("<Control>z"));menu_item(&history,wordcraft_gnome::t!("Redo"),"redo",Some("<Control><Shift>z"));root.append_section(None,&history);
     let save=gio::Menu::new();menu_item(&save,wordcraft_gnome::t!("Save"),"save",Some("<Control>s"));menu_item(&save,wordcraft_gnome::t!("Save As…"),"save-as",Some("<Control><Shift>s"));root.append_section(None,&save);
     let add=gio::Menu::new();menu_item(&add,wordcraft_gnome::t!("Table…"),"insert-table",None);menu_item(&add,wordcraft_gnome::t!("Image…"),"insert-picture",None);menu_item(&add,wordcraft_gnome::t!("Header"),"insert-header",None);menu_item(&add,wordcraft_gnome::t!("Footer"),"insert-footer",None);menu_item(&add,wordcraft_gnome::t!("Page Number…"),"insert-page-number",None);root.append_submenu(Some(wordcraft_gnome::t!("Insert")),&add);
-    let properties=gio::Menu::new();menu_item(&properties,wordcraft_gnome::t!("Document Properties…"),"document-properties",None);menu_item(&properties,wordcraft_gnome::t!("Export to PDF…"),"export-pdf",None);menu_item(&properties,wordcraft_gnome::t!("Print…"),"print",Some("<Control>p"));root.append_section(None,&properties);button.set_menu_model(Some(&root));
+    let properties=gio::Menu::new();menu_item(&properties,wordcraft_gnome::t!("Document Properties…"),"document-properties",None);menu_item(&properties,wordcraft_gnome::t!("Export to PDF…"),"export-pdf",None);menu_item(&properties,wordcraft_gnome::t!("Print…"),"print",Some("<Control>p"));menu_item(&properties,wordcraft_gnome::t!("Spelling and Grammar…"),"check-spelling",Some("F7"));root.append_section(None,&properties);button.set_menu_model(Some(&root));
 }
 fn show_editor_help(parent:&ApplicationWindow){
     let w=adw::Window::builder().transient_for(parent).title(wordcraft_gnome::t!("Leaf Help")).default_width(520).default_height(520).build();let toolbar=ToolbarView::new();toolbar.add_top_bar(&HeaderBar::new());

@@ -114,7 +114,7 @@ fn parse_full(bytes: &[u8]) -> Result<(Flow, SectionProps), String> {
 }
 
 /// [`parse_full`], plus whether change tracking is on (`None`: the document has no tracked changes).
-fn parse_tracked(bytes: &[u8]) -> Result<(Flow, SectionProps, Option<bool>, Option<String>, page_parts::Parts), String> {
+fn parse_tracked(bytes: &[u8]) -> Result<(Flow, SectionProps, Option<bool>, Option<String>, Option<String>, page_parts::Parts), String> {
     let mut z = zip::ZipArchive::new(Cursor::new(bytes)).map_err(|e| format!("ODT: not a valid package ({e})"))?;
     if let Some(mt) = read_entry(&mut z, "mimetype") {
         let mt = String::from_utf8_lossy(&mt);
@@ -154,17 +154,18 @@ fn parse_tracked(bytes: &[u8]) -> Result<(Flow, SectionProps, Option<bool>, Opti
         blocks.push(FBlock::Para(Para::default()));
     }
     let track = body.track;
-    Ok((Flow { blocks, meta }, last, track, styles.doc_font(), parts))
+    Ok((Flow { blocks, meta }, last, track, styles.doc_font(), styles.doc_language(), parts))
 }
 
 /// Parse an `.odt` package into a document.
 pub fn import(bytes: &[u8]) -> Result<Document, String> {
     model::begin_import();
-    let (flow, last, track, font, parts) = parse_tracked(bytes)?;
+    let (flow, last, track, font, language, parts) = parse_tracked(bytes)?;
     let mut doc = model::to_doc(&flow);
     if font.is_some() {
         doc.styles.default_chr.font = font;
     }
+    if language.is_some(){doc.styles.default_chr.lang=language;}
     doc.last_section = last;
     page_parts::add(&mut doc, parts);
     if let Some(t) = track {
@@ -256,6 +257,9 @@ fn apply_layout(a: &Attrs, sec: &mut SectionProps) {
         sec.page_w = w;
         sec.page_h = h;
     }
+    sec.header=len("leaf:header-distance").unwrap_or(sec.header).min(1584.0);
+    sec.footer=len("leaf:footer-distance").unwrap_or(sec.footer).min(1584.0);
+    sec.page_num_format=if let Some(value)=get(a,"leaf:number-format"){wordcraft_doc::section::NumFormat::from_ooxml(value)}else{wordcraft_doc::section::NumFormat::from_ooxml(match get(a,"style:num-format"){Some("i")=>"lowerRoman",Some("I")=>"upperRoman",Some("a")=>"lowerLetter",Some("A")=>"upperLetter",_=>"decimal"})};
     sec.landscape = match get(a, "style:print-orientation") {
         Some("landscape") => true,
         Some("portrait") => false,

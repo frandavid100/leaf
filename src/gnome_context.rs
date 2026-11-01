@@ -115,6 +115,16 @@ fn show_document_context(ui:&Rc<Ui>,parent:&ApplicationWindow,x:i32,y:i32,kind:D
     if let Some(s)=ui.picture.borrow().as_ref(){if s.pop.parent().as_ref()==Some(ui.document_box.upcast_ref()){s.pop.set_pointing_to(Some(&gdk::Rectangle::new(x,y,1,1)));}}
     let group=gio::SimpleActionGroup::new();pop.insert_action_group("context",Some(&group));
     let (selected,merge)=ui.current.borrow().as_ref().map(|d|(!d.session.sel.is_collapsed(),wordcraft_gnome::tables::selected_cells(&d.session)>1)).unwrap_or_default();
+    if kind!=DocumentContext::Picture {
+        let issue={let mut v=ui.current.borrow_mut();v.as_mut().and_then(|d|{let pos=d.session.sel.focus.clone();proofing::at(&mut d.session,&pos)})};
+        if let Some(issue)=issue {
+            let identity=document_identity(ui);
+            let spelling=gio::Menu::new();let suggestions={let mut v=ui.current.borrow_mut();proofing::suggestions(&mut v.as_mut().unwrap().session,&issue)};
+            for (n,text) in suggestions.into_iter().enumerate(){let i=issue.clone();let replacement=text.clone();context_item(&spelling,&group,&pop,ui,&text,&format!("spelling-{n}"),true,move|u|{if document_identity(u)==identity{proof_replace(u,&i,&replacement);}else{u.toasts.add_toast(Toast::new(wordcraft_gnome::t!("The text has changed. Check it again.")));}});}
+            if issue.spelling {for (name,label,add_word) in [("ignore-word",wordcraft_gnome::t!("Ignore All"),false),("add-word",wordcraft_gnome::t!("Add to Dictionary"),true)]{let issue=issue.clone();context_item(&spelling,&group,&pop,ui,label,name,true,move|u|{if document_identity(u)!=identity{return;}let result={let mut v=u.current.borrow_mut();let s=&mut v.as_mut().unwrap().session;if add_word{proofing::add(s,&issue)}else{proofing::ignore(s,&issue)}};if let Err(e)=result{u.toasts.add_toast(Toast::new(&e));}refresh_all_proofing(u);});}}
+            root.append_section(None,&spelling);
+        }
+    }
     let edit=gio::Menu::new();
     context_item(&edit,&group,&pop,ui,wordcraft_gnome::t!("Cut"),"cut",selected,|u|{if context_copy(u){apply_user_edit(u,Edit::Delete);}});
     context_item(&edit,&group,&pop,ui,wordcraft_gnome::t!("Copy"),"copy",selected,|u|{context_copy(u);});

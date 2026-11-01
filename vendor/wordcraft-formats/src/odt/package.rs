@@ -9,12 +9,13 @@ fn columns_xml(c: &Columns) -> String {
 
 /// One master page per entry of `pages` (name, setup), each with its own page layout `pm1`, `pm2`…
 /// (§16.5, §16.9); the first is the default one, "Standard".
-fn styles_xml(pages: &[(String, wordcraft_doc::SectionProps)], body_font: &str, master_content: &[String], automatic: &str) -> String {
+fn styles_xml(pages: &[(String, wordcraft_doc::SectionProps)], body_font: &str, body_language: Option<&str>, master_content: &[String], automatic: &str, links: &[(u8,u8)], odd_even: bool) -> String {
     let mut s = format!("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<office:document-styles {NS}><office:styles>");
     s.push_str(&format!(
         "<style:default-style style:family=\"paragraph\"><style:paragraph-properties fo:margin-bottom=\"8pt\"/><style:text-properties fo:font-family=\"'{}'\" fo:font-size=\"12pt\"/></style:default-style>",
         x(body_font)
     ));
+    if let Some(tag)=body_language{let marker=" fo:font-size=\"12pt\"/>";let language=format!(" fo:font-size=\"12pt\" fo:language=\"{}\" style:rfc-language-tag=\"{}\"/>",x(tag.split('-').next().unwrap_or(tag)),x(tag));s=s.replacen(marker,&language,1);}
     s.push_str("<style:style style:name=\"Standard\" style:family=\"paragraph\" style:class=\"text\"/>");
     s.push_str("<style:style style:name=\"Heading\" style:family=\"paragraph\" style:parent-style-name=\"Standard\" style:class=\"text\"><style:paragraph-properties fo:margin-top=\"12pt\" fo:margin-bottom=\"4pt\" fo:keep-with-next=\"always\"/><style:text-properties fo:color=\"#0f4761\"/></style:style>");
     let sizes = [20.0, 16.0, 14.0, 12.0, 12.0, 11.0];
@@ -34,7 +35,7 @@ fn styles_xml(pages: &[(String, wordcraft_doc::SectionProps)], body_font: &str, 
         // A page of several columns carries them in its layout.
         let cols = if sec.columns.count > 1 { columns_xml(&sec.columns) } else { String::new() };
         s.push_str(&format!(
-            "<style:page-layout style:name=\"pm{}\"><style:page-layout-properties fo:page-width=\"{}\" fo:page-height=\"{}\" fo:margin-top=\"{}\" fo:margin-bottom=\"{}\" fo:margin-left=\"{}\" fo:margin-right=\"{}\" style:print-orientation=\"{}\">{cols}</style:page-layout-properties></style:page-layout>",
+            "<style:page-layout style:name=\"pm{}\"><style:page-layout-properties fo:page-width=\"{}\" fo:page-height=\"{}\" fo:margin-top=\"{}\" fo:margin-bottom=\"{}\" fo:margin-left=\"{}\" fo:margin-right=\"{}\" style:print-orientation=\"{}\" style:num-format=\"{}\" leaf:header-distance=\"{}\" leaf:footer-distance=\"{}\" leaf:number-format=\"{}\">{cols}</style:page-layout-properties></style:page-layout>",
             i + 1,
             pt(sec.page_w),
             pt(sec.page_h),
@@ -42,12 +43,14 @@ fn styles_xml(pages: &[(String, wordcraft_doc::SectionProps)], body_font: &str, 
             pt(sec.margin_bottom),
             pt(sec.margin_left),
             pt(sec.margin_right),
-            if sec.page_w > sec.page_h { "landscape" } else { "portrait" }
+            if sec.page_w > sec.page_h { "landscape" } else { "portrait" },
+            match sec.page_num_format.ooxml(){"lowerRoman"=>"i","upperRoman"=>"I","lowerLetter"=>"a","upperLetter"=>"A",_=>"1"},pt(sec.header),pt(sec.footer),sec.page_num_format.ooxml()
         ));
     }
     s.push_str("</office:automatic-styles><office:master-styles>");
-    for (i, (name, _)) in pages.iter().enumerate() {
-        s.push_str(&format!("<style:master-page style:name=\"{}\" style:page-layout-name=\"pm{}\">{}</style:master-page>", x(name), i + 1, master_content.get(i).map(String::as_str).unwrap_or("")));
+    for (i, (name, sec)) in pages.iter().enumerate() {
+        let extra=links.get(i).map(|(h,f)|format!(" leaf:header-links=\"{h}\" leaf:footer-links=\"{f}\" leaf:first-page=\"{}\" leaf:odd-even=\"{odd_even}\"",sec.title_page)).unwrap_or_default();
+        s.push_str(&format!("<style:master-page style:name=\"{}\" style:page-layout-name=\"pm{}\"{extra}>{}</style:master-page>", x(name), i + 1, master_content.get(i).map(String::as_str).unwrap_or("")));
     }
     s.push_str("</office:master-styles></office:document-styles>\n");
     s
@@ -125,6 +128,7 @@ pub fn export(doc: &Document) -> Result<Vec<u8>, String> {
     let sections = flow_sections(&flow.blocks, &doc.last_section);
     // One master page per section that starts a page; the first one is "Standard".
     let mut pages: Vec<(String, SectionProps)> = Vec::new();
+    let mut links=Vec::new();
     // The columns of the page in force: a continuous section with others is a `text:section`.
     let mut page_cols = Columns::default();
     let mut previous = SectionProps::default();
@@ -135,6 +139,8 @@ pub fn export(doc: &Document) -> Result<Vec<u8>, String> {
         if new_page {
             let name = if k == 0 { "Standard".to_string() } else { format!("Page{}", pages.len() + 1) };
             pages.push((name.clone(), sec.clone()));
+            let mask=|s:wordcraft_doc::section::HeaderSet|if k==0{0}else{u8::from(s.default.is_none())|u8::from(s.even.is_none())*2|u8::from(s.first.is_none())*4};
+            links.push((mask(raw_sec.headers),mask(raw_sec.footers)));
             page_cols = sec.columns.clone();
             // The first section needs its paragraph to name the page only to restart numbering.
             if k > 0 || sec.page_num_start.is_some() {
@@ -172,10 +178,10 @@ pub fn export(doc: &Document) -> Result<Vec<u8>, String> {
     // Preserve those in unused master pages, without activating them in the body.
     let used: std::collections::HashSet<u32> = pages.iter().flat_map(|(_, sec)| {
         [sec.headers.default, sec.footers.default,
-         if sec.title_page { sec.headers.first } else { None },
-         if sec.title_page { sec.footers.first } else { None },
-         if doc.settings.even_odd_headers { sec.headers.even } else { None },
-         if doc.settings.even_odd_headers { sec.footers.even } else { None }].into_iter().flatten()
+         sec.headers.first,
+         sec.footers.first,
+         sec.headers.even,
+         sec.footers.even].into_iter().flatten()
     }).collect();
     let mut unused: Vec<_> = doc.parts.iter().filter(|(id, part)| !used.contains(id)
         && matches!(part.kind, wordcraft_doc::PartKind::Header | wordcraft_doc::PartKind::Footer)).collect();
@@ -200,6 +206,8 @@ pub fn export(doc: &Document) -> Result<Vec<u8>, String> {
                     w.blocks(&header_flow.blocks, &mut content, 0);
                     w.close_ins(&mut content);
                     content.push_str(&format!("</style:{prefix}{slot}>"));
+                }else if slot=="-first"&&sec.title_page||slot=="-left"&&doc.settings.even_odd_headers {
+                    content.push_str(&format!("<style:{prefix}{slot}><text:p/></style:{prefix}{slot}>"));
                 }
             }
         }
@@ -215,7 +223,7 @@ pub fn export(doc: &Document) -> Result<Vec<u8>, String> {
         w.automatic_styles()
     );
     let body_font = doc.styles.default_chr.font.clone().unwrap_or_else(|| wordcraft_doc::styles::BODY_FONT.to_string());
-    let styles = styles_xml(&pages, &body_font, &master_content, &w.automatic_styles());
+    let styles = styles_xml(&pages, &body_font, doc.styles.default_chr.lang.as_deref(), &master_content, &w.automatic_styles(), &links, doc.settings.even_odd_headers);
     let meta = meta_xml(&flow.meta);
     let mut manifest = String::from(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<manifest:manifest xmlns:manifest=\"urn:oasis:names:tc:opendocument:xmlns:manifest:1.0\" manifest:version=\"1.3\">\n<manifest:file-entry manifest:full-path=\"/\" manifest:version=\"1.3\" manifest:media-type=\"application/vnd.oasis.opendocument.text\"/>\n<manifest:file-entry manifest:full-path=\"content.xml\" manifest:media-type=\"text/xml\"/>\n<manifest:file-entry manifest:full-path=\"styles.xml\" manifest:media-type=\"text/xml\"/>\n<manifest:file-entry manifest:full-path=\"meta.xml\" manifest:media-type=\"text/xml\"/>\n",

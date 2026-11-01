@@ -9,6 +9,8 @@ fn release_document(ui:&Rc<Ui>) {
     if ui.closed.replace(true){return;}
     if let Some(source)=ui.autosave_source.borrow_mut().take(){source.remove();}
     ui.printing.cancel();
+    let spelling=ui.spelling.borrow_mut().take();
+    if let Some(s)=spelling{if let Some(id)=s.source.borrow_mut().take(){id.remove();}s.window.close();}
     if let Some(id)=ui.theme_signal.borrow_mut().take(){adw::StyleManager::default().disconnect(id);}
     // The bar lives inside a tab: detach its strong TabView reference before
     // closing a whole window, where individual pages are not detached first.

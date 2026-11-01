@@ -53,7 +53,8 @@ fn linked_headers_survive_section_boundaries_without_new_body_text(){
  if let Block::Para(p)=Arc::make_mut(&mut d.body[0]){p.section=Some(Box::new(first));}
  d.parts.insert(1,Part{kind:PartKind::Header,blocks:vec![paragraph("Shared header")],body:Default::default()});
  let out=roundtrip(&d);assert_eq!(out.plain_text(StoryRef::Body),d.plain_text(StoryRef::Body));
- for(_,s)in out.sections(){assert_eq!(id_text(&out,s.headers.default),"Shared header");}
+ let sections=out.sections();assert_eq!(id_text(&out,sections[0].1.headers.default),"Shared header");assert!(sections[1].1.headers.default.is_none());
+ let mut session=Session::new(out);assert_eq!(session.layout().pages[1].header_story,session.doc.sections()[0].1.headers.default);
 }
 #[test]
 fn empty_documents_do_not_gain_page_parts(){

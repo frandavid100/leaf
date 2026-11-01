@@ -31,6 +31,7 @@ pub(super) const NS: &str = concat!(
     "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" ",
     "xmlns:meta=\"urn:oasis:names:tc:opendocument:xmlns:meta:1.0\" ",
     "xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" ",
+    "xmlns:leaf=\"https://github.com/frandavid100/leaf/ns/odt/1.0\" ",
     "office:version=\"1.3\""
 );
 
@@ -81,6 +82,14 @@ pub(super) struct Writer {
 
 fn text_props(f: &Fmt) -> String {
     let mut p = String::new();
+    if f.no_proof {
+        p.push_str(" fo:language=\"zxx\" leaf:no-proof=\"true\"");
+        if let Some(tag)=&f.lang {p.push_str(&format!(" leaf:language=\"{}\"",x(tag)));}
+    }else if let Some(tag)=&f.lang {
+        let primary=tag.split('-').next().unwrap_or(tag);
+        p.push_str(&format!(" fo:language=\"{}\" style:rfc-language-tag=\"{}\"",x(primary),x(tag)));
+        if let Some(region)=tag.split('-').skip(1).find(|s|s.len()==2||s.len()==3&&s.chars().all(|c|c.is_ascii_digit())){p.push_str(&format!(" fo:country=\"{}\"",x(region)));}
+    }
     if f.bold {
         p.push_str(" fo:font-weight=\"bold\" style:font-weight-asian=\"bold\" style:font-weight-complex=\"bold\"");
     }

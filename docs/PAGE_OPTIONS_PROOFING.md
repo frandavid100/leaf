@@ -1,0 +1,13 @@
+# Section options and local proofing
+
+Alpha.10 implementation, pending CI validation.
+
+Document Properties has Page and Headers and Footers pages. Header settings target the chosen section; odd/even mode is document-wide. First-page mode, distances, number format, start/continuation and link controls are staged until Apply. Separating a section copies inherited content before editing; linking returns it to the preceding section and can be undone. Existing inactive variants are preserved. Page and header changes form one undo operation and roll back together on errors.
+
+Spelling and Grammar is available in the document menu / F7. A worker scans a document clone using WordCraft’s existing proofing APIs, with at most 500 reported issues per pass. Choose suggestions or type a replacement; Skip moves on, Ignore All suppresses a word for the running app, and Add to Dictionary persists custom words. The native right-click menu offers suggestions for the clicked misspelling. Languages with no available dictionary are explicitly identified; grammar checks are the engine’s limited rules, not a general grammar service.
+
+Text Language in the Text popover applies to the selection/typing position or all shown document stories. The language of new documents is stored separately from current-file edits. English uses upstream tools; pinned RLA-ES Spanish dictionaries are bundled. Other languages depend on tools supported/found by the engine. Text and custom dictionaries stay local. Live spell-mark preferences and custom words do not dirty documents or add undo steps.
+
+DOCX preserves native document properties. ODT now preserves standard text language/number-format attributes and inactive variants; Leaf extensions keep section-link masks, exact editor distances and original languages of unchecked text. External editors may ignore or strip those extensions, or use different page geometry. Continuous-section page-style behavior and arbitrary field codes remain outside the current compatibility claim. This is an extension of the existing isolated formats patch, not a renderer or dependency revision change.
+
+Focused validation includes independent/copied/linked headers, displayed section targeting, numbering, undo/redo and protection, mixed-language/no-proof DOCX/ODT saves, real Spanish dictionary checks, stale corrections, persistent custom words, native dialogs/context actions and teardown with background scans. Full compatibility corpus reruns remain manual; public screenshots and Weblate setup remain with the maintainer.

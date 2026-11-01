@@ -71,7 +71,7 @@ fn chrome_ui_test(ui:&Rc<Ui>,menu:&gtk::MenuButton,app:&Application){
     let add=model.item_link(2,"submenu").unwrap();assert_eq!(add.n_items(),5);
     assert_eq!(add.item_attribute_value(0,"action",None).unwrap().get::<String>().unwrap(),"win.insert-table");
     assert_eq!(add.item_attribute_value(1,"action",None).unwrap().get::<String>().unwrap(),"win.insert-picture");
-    let extra=model.item_link(3,"section").unwrap();assert_eq!(extra.n_items(),3);
+    let extra=model.item_link(3,"section").unwrap();assert_eq!(extra.n_items(),4);
     assert_eq!(extra.item_attribute_value(0,"action",None).unwrap().get::<String>().unwrap(),"win.document-properties");
     assert_eq!(extra.item_attribute_value(1,"action",None).unwrap().get::<String>().unwrap(),"win.export-pdf");
     assert_eq!(extra.item_attribute_value(2,"action",None).unwrap().get::<String>().unwrap(),"win.print");

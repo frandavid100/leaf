@@ -51,6 +51,8 @@ fn fmt_of(doc: &Document, cp: &CharProps, in_code: bool) -> Fmt {
     let code = !in_code && e.font.as_deref().is_some_and(is_mono);
     Fmt {
         page_field: None,
+        lang: e.lang.as_deref().map(Arc::from),
+        no_proof: e.no_proof.unwrap_or(false),
         bold: e.bold.unwrap_or(false),
         italic: e.italic.unwrap_or(false),
         underline: e.underline.is_some_and(|u| u != Underline::None) && e.link.is_none(),
@@ -158,6 +160,8 @@ fn flow_paras_in(doc: &Document, p: &Paragraph, tracked: bool) -> Vec<Para> {
         let hidden = props.hidden.unwrap_or(false) || props.del.is_some();
         let hidden_text = props.hidden.unwrap_or(false) || (props.del.is_some() && !tracked);
         let mut f = fmt_of(doc, props, in_code);
+        let resolved=doc.styles.resolve_char(p.props.style.as_deref(),props);
+        f.lang=resolved.lang.as_deref().map(Arc::from);f.no_proof=resolved.no_proof;
         if tracked {
             (f.ins, f.del) = rev_marks(doc, props);
             f.fmt_change = props.fmt_change.as_deref().map(|c| Box::new(FmtChange { mark: rev_mark(doc, c.rev), old: fmt_of(doc, &c.old, in_code) }));

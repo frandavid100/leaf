@@ -12,6 +12,8 @@ use super::{
 pub fn char_props(f: &Fmt) -> CharProps {
     let on = |b: bool| if b { Some(true) } else { None };
     CharProps {
+        lang: f.lang.as_deref().map(str::to_owned),
+        no_proof: if f.no_proof {Some(true)}else{None},
         bold: on(f.bold),
         italic: on(f.italic),
         underline: if f.underline { Some(Underline::Single) } else { None },

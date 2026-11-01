@@ -7,7 +7,7 @@ refs={}
 for file in sorted((ROOT/'src').rglob('*.rs')):
  if file.name=='i18n.rs':continue
  text=file.read_text()
- for m in re.finditer(r'(?:wordcraft_gnome::)?t!\(("(?:\\.|[^"\\])*")\)',text):
+ for m in re.finditer(r'(?<![\w])(?:wordcraft_gnome::)?t!\(("(?:\\.|[^"\\])*")\)',text):
   value=json.loads(m[1]);refs.setdefault(value,[]).append(f'{file.relative_to(ROOT)}:{text.count(chr(10),0,m.start())+1}')
 desktop=ROOT/'data/io.github.frandavid100.leaf.desktop'
 meta=ROOT/'data/io.github.frandavid100.leaf.metainfo.xml'

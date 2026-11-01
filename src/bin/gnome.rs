@@ -14,7 +14,7 @@ use wordcraft_engine::Session;
 use wordcraft_gnome::{open_document, render_page_screen as render_page, sample_session};
 use wordcraft_gnome::viewer_layout::{self, THUMB_SCALE};
 
-const APP_VERSION: &str = "0.1.0-alpha.9";
+const APP_VERSION: &str = "0.1.0-alpha.10";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -41,6 +41,7 @@ struct Ui {
     header_context: gtk::Box,
     header_label: gtk::Label,
     printing: PrintState,
+    spelling: RefCell<Option<Rc<SpellReview>>>,
     document_box: gtk::Fixed,
     thumbnails_box: gtk::Box,
     scroll: gtk::ScrolledWindow,
@@ -687,6 +688,7 @@ fn clear_canvas(canvas:&gtk::Fixed){
 }
 
 fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
+    wordcraft_gnome::proofing::configure(&mut session);
     if ui.closed.get(){return;}
     if !session.recovery_ready() {
         if let Err(e)=session.enable_recovery(wordcraft_gnome::preferences::recovery_root(),std::sync::Arc::new(||{})) {
@@ -864,6 +866,8 @@ include!("../gnome_lifecycle.rs");
 include!("../gnome_localization.rs");
 include!("../gnome_document_tools.rs");
 include!("../gnome_headers.rs");
+include!("../gnome_page_options.rs");
+include!("../gnome_proofing.rs");
 include!("../gnome_format_panels.rs");
 include!("../gnome_tables.rs");
 include!("../gnome_context.rs");
@@ -1067,6 +1071,8 @@ fn build_tab(
     sizes.set_row_spacing(6); sizes.set_column_spacing(6);
     text_options.append(&sizes);
     let more_text=gtk::Button::with_label(wordcraft_gnome::t!("More Text Options…"));
+    let language_button=gtk::Button::with_label(wordcraft_gnome::t!("Text Language…"));
+    text_options.append(&language_button);
     text_options.append(&more_text);
     text_popover.set_child(Some(&text_options));
     let text_menu = gtk::MenuButton::new();
@@ -1140,6 +1146,7 @@ fn build_tab(
         pending_tab_close: RefCell::new(None),
         save_path: RefCell::new(None),
         source_path: RefCell::new(None),
+        spelling: RefCell::new(None),
         header_context,header_label,
         format_toolbar,adaptive:RefCell::new(None),format_buttons:RefCell::new(Vec::new()),style:RefCell::new(None),text_tools:RefCell::new(None),format_reflowing:Cell::new(false),sidebar_selector:selector_bar.clone(),_bottom_heights:bottom_heights,
         format_bold: bold_button.clone(),
@@ -1158,6 +1165,7 @@ fn build_tab(
 
 
     {let weak=Rc::downgrade(&ui);close_header.connect_clicked(move|_|{if let Some(ui)=weak.upgrade(){header_change(&ui,header_footer::close);}});}
+    {let weak=Rc::downgrade(&ui);let parent=window.downgrade();language_button.connect_clicked(move|_|{if let(Some(ui),Some(parent))=(weak.upgrade(),parent.upgrade()){show_text_language(&ui,&parent);}});}
     install_accessibility(&ui,&app_menu,&compact_app_menu);
     let text_tools=install_text_pages(&ui,&text_popover,&text_options,&inline_buttons,&text_header,&more_text);ui.text_tools.replace(Some(text_tools));
     let paragraph_popover=install_paragraph_popover(&ui,&align_menu);ui.paragraph.replace(Some(paragraph_popover.clone()));
@@ -1702,6 +1710,9 @@ fn build_tab(
                 eprintln!("SPLIT_POINTER_READY {} {} {} {}",(x+body.x()as f64+body.width()as f64/2.0)as i32,(y+body.y()as f64+body.height()as f64/2.0)as i32,(x+arrow.x()as f64+arrow.width()as f64/2.0)as i32,(y+arrow.y()as f64+arrow.height()as f64/2.0)as i32);
             });
         });
+    }
+    for (flag,proof) in [("--page-options-ui-test",false),("--proofing-ui-test",true)]{
+        if std::env::args().any(|a|a==flag){let u=ui.clone();let w=window.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||{if proof{proofing_ui_test(&u,&w,&a);}else{page_options_ui_test(&u,&w,&a);}});}
     }
     if std::env::args().any(|a|a=="--headers-ui-test"||a=="--headers-pointer-test") {
         let u=ui.clone();let w=window.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||header_footer_ui_test(&u,&w,&a,std::env::args().any(|x|x=="--headers-pointer-test")));

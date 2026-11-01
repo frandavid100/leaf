@@ -1621,3 +1621,159 @@ msgstr "Volver al documento"
 
 msgid "The document has changed; open this dialog again."
 msgstr "El documento ha cambiado; vuelve a abrir este diálogo."
+
+msgid "Add to Dictionary"
+msgstr "Añadir al diccionario"
+
+msgid "Change"
+msgstr "Cambiar"
+
+msgid "Check Complete"
+msgstr "Revisión terminada"
+
+msgid "Check Spelling as You Type"
+msgstr "Revisar la ortografía mientras se escribe"
+
+msgid "Check the header/footer distances and starting page number."
+msgstr "Comprueba las distancias del encabezado y el pie y el número de página inicial."
+
+msgid "Checking…"
+msgstr "Revisando…"
+
+msgid "Choose a valid section."
+msgstr "Elige una sección válida."
+
+msgid "Continue from Previous Section"
+msgstr "Continuar desde la sección anterior"
+
+msgid "Different First Page"
+msgstr "Primera página diferente"
+
+msgid "Different Odd and Even Pages"
+msgstr "Páginas pares e impares diferentes"
+
+msgid "Do Not Check Spelling or Grammar"
+msgstr "No revisar la ortografía ni la gramática"
+
+msgid "Existing Format"
+msgstr "Formato existente"
+
+msgid "First Section"
+msgstr "Primera sección"
+
+msgid "First-page settings, numbering and distances apply to the selected section. Odd/even headers apply to the whole document."
+msgstr "Las opciones de primera página, numeración y distancias se aplican a la sección seleccionada. Los encabezados pares e impares se aplican a todo el documento."
+
+msgid "Footer from Bottom (mm)"
+msgstr "Pie desde el borde inferior (mm)"
+
+msgid "Footers"
+msgstr "Pies de página"
+
+msgid "Header and Footer Options"
+msgstr "Opciones de encabezado y pie de página"
+
+msgid "Header from Top (mm)"
+msgstr "Encabezado desde el borde superior (mm)"
+
+msgid "Headers"
+msgstr "Encabezados"
+
+msgid "Headers and Footers"
+msgstr "Encabezados y pies de página"
+
+msgid "Ignore All"
+msgstr "Ignorar todas"
+
+msgid "Independent"
+msgstr "Independiente"
+
+msgid "Independent copies keep the current content. Linking uses the previous section; existing separate content remains available through Undo."
+msgstr "Las copias independientes conservan el contenido actual. Al vincular se usa la sección anterior; puedes recuperar el contenido independiente con Deshacer."
+
+msgid "Keep Existing Links"
+msgstr "Conservar los vínculos existentes"
+
+msgid "Language"
+msgstr "Idioma"
+
+msgid "Language Tag"
+msgstr "Código de idioma"
+
+msgid "Languages without installed dictionaries are skipped."
+msgstr "Se omiten los idiomas sin diccionario instalado."
+
+msgid "Link to Previous Section"
+msgstr "Vincular a la sección anterior"
+
+msgid "Linked to Previous Section"
+msgstr "Vinculado a la sección anterior"
+
+msgid "Make Independent Copies"
+msgstr "Crear copias independientes"
+
+msgid "No dictionary is installed for this language. Its spelling cannot be checked."
+msgstr "No hay ningún diccionario instalado para este idioma. No se puede revisar su ortografía."
+
+msgid "No issues found in text with available proofing tools."
+msgstr "No se han encontrado errores en el texto que dispone de herramientas de revisión."
+
+msgid "Number Format"
+msgstr "Formato de número"
+
+msgid "Other Language"
+msgstr "Otro idioma"
+
+msgid "Page Numbering"
+msgstr "Numeración de páginas"
+
+msgid "Replacement"
+msgstr "Sustitución"
+
+msgid "Section"
+msgstr "Sección"
+
+msgid "Section Links"
+msgstr "Vínculos entre secciones"
+
+msgid "Selection or Typing Position"
+msgstr "Selección o posición de escritura"
+
+msgid "Skip"
+msgstr "Omitir"
+
+msgid "Some Variants Are Linked"
+msgstr "Algunas variantes están vinculadas"
+
+msgid "Spelling and Grammar"
+msgstr "Ortografía y gramática"
+
+msgid "Spelling and Grammar…"
+msgstr "Ortografía y gramática…"
+
+msgid "Spelling tools are available for this language."
+msgstr "Hay herramientas de revisión ortográfica para este idioma."
+
+msgid "Start At"
+msgstr "Empezar en"
+
+msgid "Starting Page Number"
+msgstr "Número de página inicial"
+
+msgid "Text Language"
+msgstr "Idioma del texto"
+
+msgid "Text Language…"
+msgstr "Idioma del texto…"
+
+msgid "The spelling check could not finish."
+msgstr "La revisión ortográfica no ha podido terminar."
+
+msgid "The text has changed. Check it again."
+msgstr "El texto ha cambiado. Vuelve a revisarlo."
+
+msgid "Use a language tag such as es-ES or en-GB."
+msgstr "Usa un código de idioma como es-ES o en-GB."
+
+msgid "Use for New Documents"
+msgstr "Usar en documentos nuevos"

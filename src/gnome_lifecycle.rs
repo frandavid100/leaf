@@ -41,6 +41,8 @@ impl LifecycleAudit {
             let context=show_document_context(&ui,&host.window,140,160,DocumentContext::Text);context.popdown();
             schedule_thumbnail_refresh(&ui);
             if self.extra {
+                let language=show_text_language(&ui,&host.window);self.dialogs.borrow_mut().push(language.window.downgrade());language.window.close();
+                show_spelling(&ui,&host.window);let spell=ui.spelling.borrow().as_ref().unwrap().window.clone();self.dialogs.borrow_mut().push(spell.downgrade());spell.close();
                 let props=show_document_properties(&ui,&host.window);self.dialogs.borrow_mut().push(props.window.downgrade());props.window.close();
                 let columns=show_columns(&ui,&host.window);self.dialogs.borrow_mut().push(columns.window.downgrade());self.columns.borrow_mut().push(Rc::downgrade(&columns.controls));columns.window.close();
                 {let mut d=ui.current.borrow_mut();d.as_mut().unwrap().session.run("select.all",&serde_json::json!({})).unwrap();}

@@ -86,6 +86,8 @@ pub(crate) fn begin_import() {
 /// Character formatting the text formats can express.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Fmt {
+    pub lang: Option<Arc<str>>,
+    pub no_proof: bool,
     /// PAGE/NUMPAGES field carried through ODT; the text is its cached result.
     pub page_field: Option<&'static str>,
     pub bold: bool,
@@ -294,7 +296,7 @@ impl Para {
         s
     }
     pub fn is_empty(&self) -> bool {
-        self.inlines.iter().all(|i| matches!(i, Inline::Text(t, _) if t.is_empty()))
+        self.inlines.iter().all(|i| matches!(i, Inline::Text(t, f) if t.is_empty()&&f.page_field.is_none()))
     }
 
     /// Remove whitespace at the very start and end of the paragraph's text.

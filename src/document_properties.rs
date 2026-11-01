@@ -18,7 +18,9 @@ impl PageSetup {
     }
 }
 pub fn apply(s:&mut Session,setup:PageSetup,whole:bool)->Result<bool,String>{
-    let current=page::section_index_of_focus(s);
+    apply_at(s,setup,whole,page::section_index_of_focus(s))
+}
+pub fn apply_at(s:&mut Session,setup:PageSetup,whole:bool,current:usize)->Result<bool,String>{
     let paths=s.doc.para_paths(StoryRef::Body);
     let mut start=0;let mut changes=Vec::new();
     for (i,(end,old)) in s.doc.sections().into_iter().enumerate(){
