@@ -23,6 +23,12 @@ A successful test is useful too: add your environment, file origin/format and th
 
 From the document menu’s Insert submenu, add a header/footer and type directly on the page. Return to the body with Escape, then click the header on a later page and confirm that editing/caret stays on that page. Insert a page number in a footer containing existing text and check that the text remains. Add a page in the body, check numbering/total pages, then save and reopen both DOCX and ODT copies. Compare with another editor. [Automated validation and current limits](HEADERS_FOOTERS.md).
 
+## Section options and spelling
+
+In Document Properties → Headers and Footers, choose a section and try first-page/odd-even settings, numbering format/start/continuation, distances and independent copies. Edit the copied header and check that the previous section stays unchanged. Undo the whole property operation, redo, save/reopen DOCX and ODT copies, and compare. ODT extension limitations are [documented](PAGE_OPTIONS_PROOFING.md).
+
+In Text → Text Language, apply English/Spanish to a selected range and then the whole document; check mixed text, unchecked quotations and the language of a new tab. Use F7 and right-click to correct a typo. Add an invented word to the personal dictionary, restart Leaf and verify it is remembered; toggling live spell marks must not mark a document modified. Try closing a tab while the review panel is checking it.
+
 ## Keyboard and printing
 
 Use F6 / Shift+F6 to move between document, sidebar and formatting controls; F10 opens the main menu. Check Escape, Enter, table Tab / Shift+Tab and native search-field shortcuts in wide and narrow windows. See [scope and remaining accessibility limits](KEYBOARD_PRINTING.md): the custom canvas still lacks complete screen-reader text access.

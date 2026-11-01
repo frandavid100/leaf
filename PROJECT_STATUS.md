@@ -2,7 +2,24 @@
 
 Actualizado: 1 de noviembre de 2026. Punto de entrada para continuar desde otra conversación.
 
-## Última entrega: alpha.9 — encabezados, pies y numeración (01-11-2026)
+## Última entrega: alpha.10 — secciones, ortografía e idioma del texto (01-11-2026)
+
+Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.10
+Código, tag y paquete: `612357ec0b70f38222f9ebea4180c5654e09b5b8`. Flatpak x86_64: **10.521.560 bytes**, SHA256 `018ee7a40b2ca5ae7e5c0e25371b031c1e751d0b6bb4a6dbdb063652c6f85686`. [CI completa](https://github.com/frandavid100/leaf/actions/runs/41294178799); [uso y límites](docs/PAGE_OPTIONS_PROOFING.md); [evidencia](docs/PAGE_OPTIONS_PROOFING_VALIDATION.json).
+
+Propiedades del documento tiene dos páginas. La nueva permite elegir sección, primera página diferente, pares/impares (global), distancias del encabezado/pie, formato y reinicio/continuación de numeración y vínculos con la sección anterior. Separar crea copias independientes del contenido heredado, incluidos casos de referencias compartidas; vincular conserva el contenido anterior disponible mediante deshacer. Los cambios de página y cabeceras se aplican en una operación atómica. Se conserva el punto de retorno al cuerpo al cambiar propiedades desde un encabezado.
+
+Ortografía y gramática está en el menú del documento / F7. Revisión de una copia en segundo plano (máximo 500 incidencias por pasada), sugerencias, sustitución, omitir, ignorar todas y diccionario personal persistente; también hay sugerencias en el menú contextual nativo. Texto → Idioma del texto permite selección/posición de escritura o documento completo, no revisar y preferencia para documentos nuevos. Los ajustes de usuario se combinan en el JSON existente. Se conservan formato pendiente, idioma de escritura y retorno del encabezado al aplicar un idioma global.
+
+Se reutilizan las herramientas de WordCraft: inglés incorporado y diccionarios españoles RLA-ES fijados a LibreOffice/dictionaries `4f1df64b2e8e14751aa7c2205d170ca016071315`, sin modificar, con autoría, licencia GPL y hashes en data/dictionaries. El paquete los instala en /app/share/hunspell. Otros idiomas indican cuándo no hay diccionario; la gramática es la limitada que ofrece el motor. Todo se procesa localmente.
+
+Tercer parche aislado de formatos para idioma/no-proof, formato de número y asociaciones de variantes inactivas. Atributos Leaf adicionales conservan vínculos entre secciones, distancias exactas y el idioma original del texto no revisable en ODT. Otros editores pueden ignorarlos o eliminarlos; no se promete geometría idéntica ni semántica de secciones continua en todos ellos. Se evita acumular copias redundantes en historias vinculadas. Los tres parches se han reaplicado sobre upstream y reproducen exactamente el src vendorizado. No cambia la revisión del motor ni del renderizador ni se añaden dependencias Rust.
+
+Validación: 87 tests sin interfaz, compilación optimizada GTK y pruebas de propiedades/revisión nuevas; regresiones completas previas, escalado 100/200%, idiomas, oscuro, teclado e impresión. Cierre de diálogos de idioma y revisión con trabajador incluido en la prueba de vida de objetos. Flatpak: nuevas funciones, actualización desde alpha.9 y datos al reinstalar, todo correcto. Ambos ZIP descargados con hashes comprobados y siete SHA256SUMS correctos. Captura interna de propiedades revisada. 562 mensajes gettext; extracción corregida para no capturar format! como t!. No se ha repetido el corpus completo, ni probado manualmente GNOME OS / Orca / impresora real.
+
+La petición «hazlo todo» de esta entrega queda completada. Weblate y capturas públicas siguen a cargo del usuario; no reintentar el alta desde el navegador remoto. Siguiente prioridad propuesta: pruebas del usuario con documentos reales y correcciones concretas, sin autorización automática de más funciones.
+
+## Entrega anterior: alpha.9 — encabezados, pies y numeración (01-11-2026)
 
 Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.9
 Fuente nativa, tag y paquete: `42f5fd39fa4c11c076202b98289285e1c5739eb0`. Flatpak x86_64: **10.239.224 bytes**, SHA256 `60e91b5105a5d33a97be8720efca377fa698c3d0d98f92037b08590d881d13aa`. [CI verificada](https://github.com/frandavid100/leaf/actions/runs/41288461088); [uso y límites](docs/HEADERS_FOOTERS.md); [evidencia](docs/HEADER_FOOTER_VALIDATION.json).

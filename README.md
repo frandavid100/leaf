@@ -14,7 +14,8 @@ Leaf is an experimental document editor for Linux, built with GTK4 and libadwait
 
 - Open, edit and save DOCX and ODT documents; export to PDF and print through the system dialog.
 - Text formatting, paragraph settings, section columns, styles, tables and inline images.
-- Direct header/footer editing and automatic page numbers, including DOCX/ODT save/reopen.
+- Direct header/footer editing, automatic page numbers and section-specific page options.
+- Local spelling review (F7/context menu), text languages and bundled Spanish dictionaries.
 - Undo/redo, rich clipboard operations and sidebar search with replacement.
 - Multiple tabs and windows; page thumbnails and heading navigation.
 - Adaptive editing controls, dark document pages and configurable autosave/recovery.
@@ -24,9 +25,9 @@ These are implemented features, not a claim of complete Microsoft Word or LibreO
 
 ## Try Leaf
 
-The current **x86_64 Flatpak alpha** is available on [GitHub Releases](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.9). Download `Leaf-0.1.0-alpha.9-x86_64.flatpak` and open it with GNOME Software, or follow [installation instructions](packaging/INSTALL.md). It uses the GNOME 49 runtime from Flathub, downloaded separately if missing. Leaf itself is not currently on Flathub.
+The current **x86_64 Flatpak alpha** is available on [GitHub Releases](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.10). Download `Leaf-0.1.0-alpha.10-x86_64.flatpak` and open it with GNOME Software, or follow [installation instructions](packaging/INSTALL.md). It uses the GNOME 49 runtime from Flathub, downloaded separately if missing. Leaf itself is not currently on Flathub.
 
-Alpha.9 adds direct header/footer editing and automatic numbering in the document menu’s Insert submenu. [Usage, validation and limits](docs/HEADERS_FOOTERS.md). Alpha.8 provides English/Spanish localization and dark document pages that follow GNOME appearance. [Help translate Leaf](docs/TRANSLATING.md). Hosted Weblate activation is pending the owner’s account setup; PO contributions through GitHub are available now. The alpha.6 lifetime fixes remain included; [audit and limits](docs/GTK_LIFECYCLE_AUDIT_2026-10-31.md).
+Alpha.10 adds section-aware headers/footers, numbering controls, local spelling review and text languages. [Usage, validation and ODT interoperability limits](docs/PAGE_OPTIONS_PROOFING.md). Alpha.9 adds direct header/footer editing and automatic numbering in the document menu’s Insert submenu. [Usage, validation and limits](docs/HEADERS_FOOTERS.md). Alpha.8 provides English/Spanish localization and dark document pages that follow GNOME appearance. [Help translate Leaf](docs/TRANSLATING.md). Hosted Weblate activation is pending the owner’s account setup; PO contributions through GitHub are available now. The alpha.6 lifetime fixes remain included; [audit and limits](docs/GTK_LIFECYCLE_AUDIT_2026-10-31.md).
 
 The installed package has passed automated launcher, interface, document-portal opening and persistent-data upgrade/reinstall checks on Ubuntu CI. Manual testing on GNOME OS and with your own documents is still needed. This standalone bundle has no automatic Leaf update feed.
 

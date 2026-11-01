@@ -3,11 +3,17 @@
 Actualizada: 1 de noviembre de 2026. Estado técnico en [PROJECT_STATUS.md](PROJECT_STATUS.md).
 Las fases siguientes son propuestas; no implican autorización para implementarlas todas.
 
+## Completado: secciones, revisión e idioma — alpha.10
+
+Configuración de primera página, pares/impares, distancias, numeración y vínculos/copia independiente por sección en Propiedades del documento. Revisión ortográfica local en menú/F7/contextual, diccionario personal, idioma por texto/documento y preferencia para nuevos documentos. Inglés y diccionarios españoles incluidos. Correcciones ODT aisladas y reproducibles, con límites de interoperabilidad documentados. [Uso y evidencia](docs/PAGE_OPTIONS_PROOFING.md). 87 tests y CI nativa/Flatpak completos; artefactos descargados y verificados; actualización desde alpha.9 comprobada.
+
+Propuesta siguiente: recoger pruebas reales de GNOME OS y documentos del usuario, corregir pérdidas o interacciones reproducibles y avanzar en accesibilidad del lienzo. Mantener el corpus completo manual, sin exigirlo por versión. Nuevas funciones siguen requiriendo una petición o autorización concreta. Weblate y capturas públicas quedan para el usuario.
+
 ## Completado: encabezados, pies y numeración — alpha.9
 
 Opciones dentro de «Insertar», edición directa sobre la página, salida al cuerpo con Esc, numeración automática sin reemplazar el contenido previo y conservación de PAGE/NUMPAGES en ODT mediante parche aislado. Tests nativos y del Flatpak, actualización desde alpha.8 y artefactos verificados. [Uso, evidencia y límites](docs/HEADERS_FOOTERS.md).
 
-Propuestas pendientes: controles para primera página/paridad y vinculación entre secciones; seguir priorizando fiabilidad con documentos reales y accesibilidad del lienzo. No implican autorización para implementarlas ahora. Weblate y capturas públicas quedan para el usuario.
+Los controles de primera página/paridad y vinculación se completaron en alpha.10. Se sigue priorizando fiabilidad con documentos reales y accesibilidad del lienzo.
 
 ## Completado: español/inglés y documento oscuro — alpha.8
 

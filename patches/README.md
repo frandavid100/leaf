@@ -10,7 +10,7 @@ On an engine update: compare the upstream ODT implementation first. If fixed ups
 
 The exporter shares one Writer across body and page parts so automatic-style and picture identifiers cannot collide. Both XML style scopes receive those definitions. Page parts include nested tables and picture resources. The ODT-only export view disables the common flow model's visual-header heuristic; actual RowProps.header flags remain. Other format converters are unchanged.
 
-Unused imported header/footer stories are retained in unreferenced master pages. Disabled first/even content is also retained there, without enabling those modes; its disabled-slot association is an existing importer limitation. This is a targeted preservation fix, not full ODF page-style support.
+Unused imported header/footer stories are retained in unreferenced master pages. The initial patch retained disabled first/even content there without enabling those modes; alpha.10 additionally preserves its disabled-slot association. This is a targeted preservation fix, not full ODF page-style support.
 
 
 ## Automatic page fields — alpha.9

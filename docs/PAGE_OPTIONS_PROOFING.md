@@ -1,6 +1,6 @@
 # Section options and local proofing
 
-Alpha.10 implementation, pending CI validation.
+[Alpha.10 is published](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.10) from `612357ec0b70f38222f9ebea4180c5654e09b5b8`. [Native and installed Flatpak CI](https://github.com/frandavid100/leaf/actions/runs/41294178799) passed: 87 root tests (4 new section-property tests and 5 new proofing tests), both new native UI diagnostics and their installed-package equivalents, and the existing regressions. Native/package artifact ZIP digests and all seven package checksums were independently verified. [Machine-readable evidence](PAGE_OPTIONS_PROOFING_VALIDATION.json).
 
 Document Properties has Page and Headers and Footers pages. Header settings target the chosen section; odd/even mode is document-wide. First-page mode, distances, number format, start/continuation and link controls are staged until Apply. Separating a section copies inherited content before editing; linking returns it to the preceding section and can be undone. Existing inactive variants are preserved. Page and header changes form one undo operation and roll back together on errors.
 
@@ -11,3 +11,5 @@ Text Language in the Text popover applies to the selection/typing position or al
 DOCX preserves native document properties. ODT now preserves standard text language/number-format attributes and inactive variants; Leaf extensions keep section-link masks, exact editor distances and original languages of unchecked text. External editors may ignore or strip those extensions, or use different page geometry. Continuous-section page-style behavior and arbitrary field codes remain outside the current compatibility claim. This is an extension of the existing isolated formats patch, not a renderer or dependency revision change.
 
 Focused validation includes independent/copied/linked headers, displayed section targeting, numbering, undo/redo and protection, mixed-language/no-proof DOCX/ODT saves, real Spanish dictionary checks, stale corrections, persistent custom words, native dialogs/context actions and teardown with background scans. Full compatibility corpus reruns remain manual; public screenshots and Weblate setup remain with the maintainer.
+
+The three formats patches were reapplied to the pinned upstream source and reproduced the vendored src tree exactly. An internal document-properties screenshot was inspected; public screenshots remain the maintainer’s responsibility. These automated checks do not replace manual GNOME OS, Orca, real-printer or external-editor validation.
