@@ -153,7 +153,7 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     }
     assert!(menu.popover().unwrap().is::<gtk::PopoverMenu>());
     let model = menu.menu_model().unwrap();
-    assert_eq!(model.n_items(), 4);
+    assert_eq!(model.n_items(), 6);
     for (section, actions) in [
         (0, ["win.undo", "win.redo"]),
         (1, ["win.save", "win.save-as"]),

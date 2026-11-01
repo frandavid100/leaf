@@ -156,4 +156,6 @@ pub mod proofing;
 
 pub mod accessible_text;
 pub mod annotations;
+pub mod links;
 pub mod printing;
+pub mod text_properties;

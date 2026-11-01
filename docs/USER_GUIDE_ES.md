@@ -11,10 +11,10 @@ importantes en otro editor. [Instalación Flatpak](../packaging/INSTALL.md).
 - Ctrl+O abre; Ctrl+N/Ctrl+T crean otra pestaña; Ctrl+Mayús+N crea otra ventana;
   Ctrl+W cierra la pestaña. Los documentos conservan sus estados independientes.
 - El menú de tres puntos corresponde al documento: Guardar, Guardar como,
-  Insertar, propiedades, PDF, imprimir y revisión ortográfica, entre otras acciones.
+  Insertar, propiedades, PDF, imprimir, zoom y modo Edición/Revisión.
 - Ctrl+S guarda y Ctrl+Mayús+S abre Guardar como. DOCX/ODT se eligen por el
-  sufijo del archivo; el selector confirma sobrescrituras. La primera propuesta
-  de guardado protege el original mediante una copia. Al cerrar con cambios se
+  sufijo del archivo. Un documento abierto se guarda sobre su archivo; un documento
+  nuevo pide su destino la primera vez. Guardar como elige otra copia. Al cerrar con cambios se
   puede cancelar, descartar o guardar. El indicador ● acompaña al nombre.
 - Exportar a PDF es independiente del archivo editable y no cambia su destino
   ni historial. Imprimir está en el menú y en Ctrl+P.
@@ -39,7 +39,9 @@ de formato quedan contenidas en el menú contextual.
 
 Estilo muestra los estilos del documento con búsqueda, aplicación y gestión.
 Párrafo reúne alineación, listas, sangría, interlineado, bordes/sombreado y columnas.
-Texto contiene fuente, tamaño, formato e idioma. Las opciones avanzadas están
+Texto contiene fuente y tamaño editables en una fila, con menús de opciones y
+vistas previas. Los valores válidos de formato se aplican directamente. Los paneles
+fijados siguen la selección y muestran valores mixtos. Texto también contiene formato e idioma. Las opciones avanzadas están
 un nivel dentro de sus paneles. Columnas admite el alcance que ofrece su editor;
 las anchuras desiguales tienen limitaciones de conservación en ODT.
 También hay [fallos visuales comunicados](TEST_RESULTS.md) con anchuras desiguales
@@ -51,7 +53,9 @@ propiedades en DOCX no garantiza que esa disposición se dibuje correctamente.
 Se añaden desde Insertar o el clic derecho. Los marcadores aparecen bajo su título
 en Navegación; la tercera pestaña muestra solo comentarios, con una burbuja por
 hilo y separadores entre mensajes. Pulsa un marcador o «Ir al comentario» para
-seleccionar su texto. Los marcadores requieren un nombre
+seleccionar su texto. Clicar el texto anclado abre Comentarios y resalta sus hilos.
+Preferencias permite configurar la identidad de nuevos comentarios y revisiones;
+no cambia los autores existentes. Los marcadores requieren un nombre
 único de hasta 40 caracteres, empezando por letra, sin espacios.
 
 En cada comentario puedes responder; su menú permite editar, resolver/reabrir o
@@ -129,3 +133,8 @@ Los tests automáticos no sustituyen la experiencia humana en cada entorno.
 Para modificar el programa: [arquitectura](ARCHITECTURE.md), [contribuir](../CONTRIBUTING.md)
 y [continuar en otra conversación](CONTINUING.md). El [historial](history/README.md)
 conserva las versiones anteriores de esta guía y del plan de desarrollo.
+
+El menú principal permite seguir el tema del sistema o elegir claro/oscuro. El
+menú de documento reúne zoom y modo Edición/Revisión. Revisión registra los
+cambios posteriores; cambiar de modo conserva las revisiones existentes y es
+independiente de la revisión ortográfica.

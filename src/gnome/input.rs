@@ -16,6 +16,12 @@ pub(super) fn install_pointer_and_view_input(
             #[weak]
             ui,
             move |gesture, count, x, y| {
+                ui.pointer_moved.set(false);
+                if leave_header_outside_at(&ui, x, y) == Some(false) {
+                    ui.document_box.grab_focus();
+                    refresh_selection(&ui);
+                    return;
+                }
                 if count == 2 && enter_empty_header_at(&ui, x, y) {
                     return;
                 }
@@ -62,6 +68,34 @@ pub(super) fn install_pointer_and_view_input(
                 refresh_selection(&ui);
             }
         ));
+        let weak = Rc::downgrade(&ui);
+        click.connect_released(move |gesture, count, x, y| {
+            let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+                return;
+            };
+            if count != 1
+                || ui.pointer_moved.get()
+                || gesture
+                    .current_event_state()
+                    .contains(gdk::ModifierType::SHIFT_MASK)
+            {
+                return;
+            }
+            let Some(pos) = pos_at_canvas(&ui, x, y) else {
+                return;
+            };
+            let ids = ui
+                .current
+                .borrow()
+                .as_ref()
+                .map(|d| wordcraft_gnome::annotations::threads_at(&d.session, &pos))
+                .unwrap_or_default();
+            if !ids.is_empty() {
+                if let Some(panel) = ui.annotations.borrow().as_ref() {
+                    panel.reveal(ids);
+                }
+            }
+        });
         document_box.add_controller(click);
     }
     // One drag gesture for the entire document, including page boundaries.
@@ -85,6 +119,9 @@ pub(super) fn install_pointer_and_view_input(
                 #[weak]
                 ui,
                 move |gesture, dx, dy| {
+                    if dx.abs() > 4.0 || dy.abs() > 4.0 {
+                        ui.pointer_moved.set(true);
+                    }
                     let Some((sx, sy)) = gesture.start_point() else {
                         return;
                     };

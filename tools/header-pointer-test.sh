@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run under xvfb-run: click a repeated header on page two, then Escape to body.
+# Run under xvfb-run: click a repeated header on page two, then click blank canvas to return to the body.
 set -euo pipefail
 GSK_RENDERER=cairo ./target/release/wordcraft-gnome --headers-pointer-test 2>headers-pointer.log &
 leaf_pid=$!
@@ -17,7 +17,8 @@ for marker in HEADER_POINTER_READY HEADER_RETURN_READY; do
     read -r _ leaf_x leaf_y < <(grep HEADER_POINTER_READY headers-pointer.log | tail -n1)
     xdotool mousemove --window "$leaf_window" "$leaf_x" "$leaf_y" click 1
   else
-    xdotool key Escape
+    read -r _ leaf_x leaf_y < <(grep HEADER_RETURN_READY headers-pointer.log | tail -n1)
+    xdotool mousemove --window "$leaf_window" "$leaf_x" "$leaf_y" click 1
   fi
 done
 wait "$leaf_pid" || { cat headers-pointer.log; exit 1; }

@@ -169,36 +169,24 @@ pub(super) fn table_measurement(
     n.set_digits(1);
     n.set_value(value);
     n.set_valign(gtk::Align::Center);
-    let b = gtk::Button::with_label(wordcraft_gnome::t!("Apply"));
-    b.set_valign(gtk::Align::Center);
     accessible_name(&n, label);
-    accessible_name(
-        &b,
-        &wordcraft_gnome::i18n::interpolate(
-            wordcraft_gnome::t!("Apply {label}"),
-            &[("label", format!("{}", label))],
-        ),
-    );
     row.set_activatable_widget(Some(&n));
     row.add_suffix(&n);
-    row.add_suffix(&b);
     g.add(&row);
-    let ui = ui.clone();
-    let w = w.clone();
-    b.connect_clicked(glib::clone!(
-        #[weak]
-        ui,
-        #[weak]
-        w,
-        move |_| {
-            n.update();
-            let mut args = extra.clone();
-            args[key] = serde_json::json!(n.value());
-            if let Err(e) = format_execute(&ui, command, args) {
-                w.add_toast(Toast::new(&e));
+    let weak = Rc::downgrade(ui);
+    let weak_window = w.downgrade();
+    bind_numeric(ui, &n, move |value| {
+        let ui = weak.upgrade().ok_or("Document closed")?;
+        let mut args = extra.clone();
+        args[key] = serde_json::json!(value);
+        let result = immediate_format(&ui, command, args);
+        if let Err(e) = &result {
+            if let Some(w) = weak_window.upgrade() {
+                w.add_toast(Toast::new(e));
             }
         }
-    ));
+        result
+    });
 }
 
 pub(super) fn show_table_properties(ui: &Rc<Ui>, parent: &ApplicationWindow) {

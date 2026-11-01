@@ -111,6 +111,59 @@ pub fn anchor_in(list: &[Comment], id: u32) -> Option<Pos> {
     None
 }
 
+pub fn thread_root(list: &[Comment], id: u32) -> u32 {
+    let mut at = id;
+    let mut seen = std::collections::HashSet::new();
+    while seen.insert(at) {
+        let Some(parent) = list
+            .iter()
+            .find(|c| c.id == at)
+            .and_then(|c| c.parent)
+            .filter(|p| list.iter().any(|c| c.id == *p))
+        else {
+            return at;
+        };
+        at = parent;
+    }
+    seen.into_iter().min().unwrap_or(id)
+}
+
+/// All matching threads in reading order, including overlapping comment ranges.
+pub fn threads_at(session: &Session, pos: &Pos) -> Vec<u32> {
+    let list = comments(session);
+    let mut matches = Vec::new();
+    for c in &list {
+        let Some(anchor) = &c.anchor else { continue };
+        if anchor.story != pos.story || anchor > pos {
+            continue;
+        }
+        let end = session
+            .doc
+            .para_paths(anchor.story)
+            .into_iter()
+            .skip_while(|p| p != &anchor.path)
+            .find_map(|path| {
+                let p = session.doc.para(anchor.story, &path)?;
+                let off = p.objects_with_offsets().find_map(|(off, o)| {
+                    matches!(o,wordcraft_doc::InlineObject::CommentEnd{id}if *id==c.id)
+                        .then_some(off)
+                })?;
+                Some(Pos {
+                    story: anchor.story,
+                    path,
+                    off,
+                })
+            });
+        if end.as_ref().is_some_and(|end| pos < end) {
+            let root = thread_root(&list, c.id);
+            if !matches.contains(&root) {
+                matches.push(root);
+            }
+        }
+    }
+    matches
+}
+
 pub fn goto_comment(session: &mut Session, id: u32) -> Result<(), String> {
     let list = comments(session);
     let mut anchor = anchor_in(&list, id).ok_or(wordcraft_gnome::t!(

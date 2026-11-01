@@ -22,7 +22,7 @@ pub(super) fn localization_ui_test(ui: &Rc<Ui>, app: &Application) {
     );
     let menu = gtk::MenuButton::new();
     install_main_menu(&menu);
-    let section = menu.menu_model().unwrap().item_link(0, "section").unwrap();
+    let section = menu.menu_model().unwrap().item_link(1, "section").unwrap();
     let label = section
         .item_attribute_value(0, "label", None)
         .unwrap()

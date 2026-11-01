@@ -55,19 +55,10 @@ pub(super) fn panel_action(
     command: &'static str,
     args: serde_json::Value,
 ) {
-    let row = adw::ActionRow::new();
-    row.set_title(label);
-    let b = gtk::Button::with_label(wordcraft_gnome::t!("Apply"));
-    b.set_valign(gtk::Align::Center);
-    accessible_name(
-        &b,
-        &wordcraft_gnome::i18n::interpolate(
-            wordcraft_gnome::t!("Apply {label}"),
-            &[("label", format!("{}", label))],
-        ),
-    );
-    row.add_suffix(&b);
-    g.add(&row);
+    let b = gtk::Button::with_label(label);
+    b.set_halign(gtk::Align::Fill);
+    accessible_name(&b, label);
+    g.add(&b);
     let ui = ui.clone();
     let w = w.clone();
     b.connect_clicked(glib::clone!(
@@ -226,29 +217,48 @@ pub(super) fn selection_character(ui: &Rc<Ui>) -> serde_json::Value {
     let Some(doc) = value.as_ref() else {
         return serde_json::json!({});
     };
-    let style = doc
-        .session
-        .doc
-        .para_at(&doc.session.sel.focus)
-        .and_then(|p| p.props.style.as_deref());
-    serde_json::to_value(
-        doc.session
-            .doc
-            .styles
-            .resolve_char(style, &doc.session.caret_props()),
-    )
-    .unwrap_or_default()
+    let mut states = wordcraft_gnome::text_properties::selected_resolved(&doc.session)
+        .into_iter()
+        .filter_map(|p| serde_json::to_value(p).ok());
+    let Some(mut state) = states.next() else {
+        return serde_json::json!({});
+    };
+    for next in states {
+        if let Some(fields) = state.as_object_mut() {
+            for (key, value) in fields {
+                if next.get(key) != Some(value) {
+                    *value = serde_json::Value::Null;
+                }
+            }
+        }
+    }
+    state
 }
 pub(super) fn selection_paragraph(ui: &Rc<Ui>) -> serde_json::Value {
     let value = ui.current.borrow();
     let Some(doc) = value.as_ref() else {
         return serde_json::json!({});
     };
-    doc.session
-        .doc
-        .para_at(&doc.session.sel.focus)
-        .and_then(|p| serde_json::to_value(doc.session.doc.styles.resolve_para(&p.props)).ok())
-        .unwrap_or_default()
+    let mut states = wordcraft_gnome::text_properties::paragraph_positions(&doc.session)
+        .into_iter()
+        .filter_map(|pos| {
+            doc.session.doc.para_at(&pos).and_then(|p| {
+                serde_json::to_value(doc.session.doc.styles.resolve_para(&p.props)).ok()
+            })
+        });
+    let Some(mut state) = states.next() else {
+        return serde_json::json!({});
+    };
+    for next in states {
+        if let Some(fields) = state.as_object_mut() {
+            for (key, value) in fields {
+                if next.get(key) != Some(value) {
+                    *value = serde_json::Value::Null;
+                }
+            }
+        }
+    }
+    state
 }
 pub(super) fn show_text_options(ui: &Rc<Ui>, _parent: &ApplicationWindow) {
     if let Some(s) = ui.text_tools.borrow().as_ref() {

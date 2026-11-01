@@ -26,6 +26,13 @@ desde alpha.13, portales y Orca automatizada. [Registro](docs/BOOKMARKS_COMMENTS
 La protección general frente a cambios externos sigue aplazada. No iniciar
 nuevas etapas de Orca.
 
+## En curso: revisión de issues y alpha.16
+
+David ha autorizado revisar los 24 issues, cerrar los verificados y publicar otra
+alpha. [Alcance](docs/ISSUE_SWEEP_ALPHA16.md): 15 correcciones preparadas; columnas,
+tablas avanzadas, pares/impares, el caso de espaciado e herencia de revisión
+permanecen abiertos. No ampliar a otras propuestas durante esta entrega.
+
 ## Completado: refinamiento de paneles y metadatos para alpha.15
 
 Marcadores integrados bajo títulos de Navegación, una burbuja por hilo de
@@ -38,7 +45,7 @@ Flatpak instalado, actualización desde alpha.14, portales y regresión Orca/AT-
 ## Orden de prioridad después de esta revisión
 
 Estas son propuestas; requieren un fallo concreto o una petición antes de actuar.
-La entrega anterior está completada; no hay otra ampliación elegida.
+La revisión de issues es el trabajo elegido. Las demás ampliaciones siguen pendientes de elección.
 
 | Prioridad | Trabajo | Qué permite darlo por resuelto |
 | --- | --- | --- |

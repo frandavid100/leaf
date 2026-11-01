@@ -429,6 +429,18 @@ pub(super) fn show_document_context(
         &group,
         &pop,
         ui,
+        wordcraft_gnome::t!("Link"),
+        "link",
+        selected,
+        |u| {
+            show_link(u);
+        },
+    );
+    context_item(
+        &edit,
+        &group,
+        &pop,
+        ui,
         wordcraft_gnome::t!("Cut"),
         "cut",
         selected,

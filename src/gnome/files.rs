@@ -65,22 +65,6 @@ pub(super) fn ask_discard(
 }
 
 pub(super) fn save_to(ui: &Rc<Ui>, path: &Path) -> bool {
-    // Protect the originally opened file during this experimental phase.
-    let original = ui.source_path.borrow().clone();
-    if wordcraft_gnome::preferences::autosave_mode() != 2
-        && original.as_ref().is_some_and(|p| {
-            p == path
-                || p.canonicalize()
-                    .ok()
-                    .zip(path.canonicalize().ok())
-                    .is_some_and(|(a, b)| a == b)
-        })
-    {
-        ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
-            "Choose another name to protect the original document."
-        )));
-        return false;
-    }
     let result = {
         let mut state = ui.current.borrow_mut();
         let Some(doc) = state.as_mut() else {
@@ -127,7 +111,11 @@ pub(super) fn save_document(
         cancel_tab_close(ui);
         return;
     }
-    let existing = ui.save_path.borrow().clone();
+    let existing = ui
+        .save_path
+        .borrow()
+        .clone()
+        .or_else(|| ui.source_path.borrow().clone());
     let needs_docx = ui
         .current
         .borrow()

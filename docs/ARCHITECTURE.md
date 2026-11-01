@@ -25,6 +25,12 @@ this is not a claim that every panel is an independent library. Prefer explicit
 imports when adding new cross-module dependencies; avoid restoring the old
 include-based namespace.
 
+Selection-dependent formatting uses `src/text_properties.rs`; native immediate
+controls and undo coalescing live in `src/gnome/text_controls.rs`. Link edits use
+`src/links.rs` through public command registration and the native dialog in
+`src/gnome/links.rs`. Issue-sweep controls are exercised in the opt-in
+`src/gnome/diagnostics/issues.rs`; no parallel text or history model is added.
+
 ## Ownership and data flow
 
 `Workspace` owns the window, tabs and strong `Rc<Ui>` owners. `Ui.host` points

@@ -26,6 +26,32 @@ pub fn list(session: &Session) -> Vec<Style> {
     styles
 }
 pub fn current(session: &Session) -> Option<String> {
+    if !session.sel.is_collapsed() {
+        let mut current = None;
+        let (a, b) = session.sel.ordered();
+        for path in session.doc.paths_between(&a, &b) {
+            if path == b.path && b.off == 0 && path != a.path {
+                continue;
+            }
+            let Some(p) = session.doc.para(a.story, &path) else {
+                continue;
+            };
+            let from = if path == a.path { a.off } else { 0 };
+            let to = if path == b.path { b.off } else { p.len() };
+            let para = p.props.style.as_deref().unwrap_or("Normal");
+            for (range, props) in p.run_ranges() {
+                if range.end <= from || range.start >= to {
+                    continue;
+                }
+                let style = props.style.as_deref().unwrap_or(para);
+                if current.as_deref().is_some_and(|old| old != style) {
+                    return None;
+                }
+                current = Some(style.to_string());
+            }
+        }
+        return current;
+    }
     session
         .caret_props()
         .style

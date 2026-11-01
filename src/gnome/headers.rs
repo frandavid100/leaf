@@ -23,37 +23,44 @@ pub(super) fn enter_header(ui: &Rc<Ui>, region: Region) {
     let page = ui.current.borrow().as_ref().map(|d| d.active).unwrap_or(0);
     header_change(ui, |s| header_footer::enter(s, page, region));
 }
-pub(super) fn refresh_header_context(ui: &Rc<Ui>) {
-    let region = ui
-        .current
-        .borrow()
-        .as_ref()
-        .and_then(|d| header_footer::active(&d.session));
-    ui.header_context.set_visible(region.is_some());
-    if let Some(region) = region {
-        ui.header_label.set_text(if region == Region::Header {
-            wordcraft_gnome::t!("Editing Header")
-        } else {
-            wordcraft_gnome::t!("Editing Footer")
-        });
-    }
-}
 
-pub(super) fn header_context_bar() -> (gtk::Box, gtk::Label, gtk::Button) {
-    let bar = gtk::Box::new(gtk::Orientation::Horizontal, 12);
-    bar.add_css_class("toolbar");
-    bar.set_visible(false);
-    let label = gtk::Label::new(None);
-    label.set_xalign(0.0);
-    label.set_hexpand(true);
-    label.set_margin_start(12);
-    bar.append(&label);
-    let close = gtk::Button::with_label(wordcraft_gnome::t!("Return to Document"));
-    close.set_widget_name("close-header-footer");
-    bar.append(&close);
-    (bar, label, close)
+/// A canvas click leaves the active page story when it is outside that region.
+/// The result distinguishes blank canvas from a page, so a gap cannot re-enter
+/// a header through the ordinary clamped page hit test.
+pub(super) fn leave_header_outside_at(ui: &Rc<Ui>, x: f64, y: f64) -> Option<bool> {
+    let inside_page = {
+        let mut value = ui.current.borrow_mut();
+        let d = value.as_mut()?;
+        let active = header_footer::active(&d.session)?;
+        let mut in_page = false;
+        for (i, frame) in d.page_frames.iter().enumerate() {
+            let Some(r) = frame.compute_bounds(&ui.document_box) else {
+                continue;
+            };
+            if x < r.x() as f64
+                || x > (r.x() + r.width()) as f64
+                || y < r.y() as f64
+                || y > (r.y() + r.height()) as f64
+            {
+                continue;
+            }
+            in_page = true;
+            let py = ((y - r.y() as f64) / d.zoom as f64) as f32;
+            if let Some((_, header)) = d.session.layout().header_footer_zone(i, py) {
+                if (header && active == Region::Header) || (!header && active == Region::Footer) {
+                    return None;
+                }
+            }
+            break;
+        }
+        if let Err(e) = header_footer::close(&mut d.session) {
+            ui.toasts.add_toast(Toast::new(&e));
+            return None;
+        }
+        in_page
+    };
+    Some(inside_page)
 }
-
 // Double-clicking a previously empty page margin creates its editable story.
 pub(super) fn enter_empty_header_at(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
     let target = {
@@ -95,17 +102,15 @@ pub(super) fn enter_empty_header_at(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
 
 pub(super) struct PageNumberDialog {
     pub(super) window: adw::Window,
-    pub(super) position: adw::ComboRow,
-    pub(super) align: adw::ComboRow,
     pub(super) total: gtk::Switch,
     pub(super) insert: gtk::Button,
 }
 pub(super) fn show_page_number(ui: &Rc<Ui>, parent: &ApplicationWindow) -> PageNumberDialog {
     let identity = document_identity(ui);
-    let (page, in_header) = {
+    let (page, selection) = {
         let value = ui.current.borrow();
         let d = value.as_ref().unwrap();
-        (d.active, d.session.in_header_footer())
+        (d.active, d.session.sel.clone())
     };
     let window = adw::Window::builder()
         .title(wordcraft_gnome::t!("Page Number"))
@@ -130,25 +135,6 @@ pub(super) fn show_page_number(ui: &Rc<Ui>, parent: &ApplicationWindow) -> PageN
         "Page numbers update automatically. Existing header and footer content is kept."
     )));
     body.add(&group);
-    let position = adw::ComboRow::new();
-    position.set_title(wordcraft_gnome::t!("Position"));
-    position.set_model(Some(&gtk::StringList::new(&[
-        wordcraft_gnome::t!("At the Cursor"),
-        wordcraft_gnome::t!("In the Header"),
-        wordcraft_gnome::t!("In the Footer"),
-    ])));
-    position.set_selected(if in_header { 0 } else { 2 });
-    group.add(&position);
-    let align = adw::ComboRow::new();
-    align.set_title(wordcraft_gnome::t!("Alignment"));
-    align.set_model(Some(&gtk::StringList::new(&[
-        wordcraft_gnome::t!("Left"),
-        wordcraft_gnome::t!("Centered"),
-        wordcraft_gnome::t!("Right"),
-    ])));
-    align.set_selected(1);
-    align.set_sensitive(!in_header);
-    group.add(&align);
     let row = adw::ActionRow::new();
     row.set_title(wordcraft_gnome::t!("Include Total Pages"));
     let total = gtk::Switch::new();
@@ -156,14 +142,6 @@ pub(super) fn show_page_number(ui: &Rc<Ui>, parent: &ApplicationWindow) -> PageN
     row.add_suffix(&total);
     row.set_activatable_widget(Some(&total));
     group.add(&row);
-    {
-        let a = align.downgrade();
-        position.connect_selected_notify(move |p| {
-            if let Some(a) = a.upgrade() {
-                a.set_sensitive(p.selected() != 0);
-            }
-        });
-    }
     let error = gtk::Label::new(None);
     error.set_wrap(true);
     error.add_css_class("error");
@@ -185,8 +163,6 @@ pub(super) fn show_page_number(ui: &Rc<Ui>, parent: &ApplicationWindow) -> PageN
     {
         let weak = Rc::downgrade(ui);
         let w = window.downgrade();
-        let p = position.clone();
-        let a = align.clone();
         let total = total.clone();
         insert.connect_clicked(move |_| {
             let (Some(ui), Some(w)) = (weak.upgrade(), w.upgrade()) else {
@@ -203,19 +179,17 @@ pub(super) fn show_page_number(ui: &Rc<Ui>, parent: &ApplicationWindow) -> PageN
                 let Some(d) = value.as_mut() else {
                     return;
                 };
+                if d.session.sel != selection {
+                    error.set_text(wordcraft_gnome::t!(
+                        "The selection has changed; open this dialog again."
+                    ));
+                    return;
+                }
                 header_footer::insert_number(
                     &mut d.session,
                     page,
-                    match p.selected() {
-                        1 => NumberPosition::Header,
-                        2 => NumberPosition::Footer,
-                        _ => NumberPosition::Current,
-                    },
-                    match a.selected() {
-                        0 => "left",
-                        2 => "right",
-                        _ => "center",
-                    },
+                    NumberPosition::Current,
+                    "left",
                     total.is_active(),
                 )
             };
@@ -237,8 +211,6 @@ pub(super) fn show_page_number(ui: &Rc<Ui>, parent: &ApplicationWindow) -> PageN
     window.present();
     PageNumberDialog {
         window,
-        position,
-        align,
         total,
         insert,
     }

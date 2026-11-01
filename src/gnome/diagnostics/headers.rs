@@ -30,13 +30,26 @@ pub(super) fn header_footer_ui_test(
     };
     header_change(ui, |s| header_footer::enter(s, 1, Region::Header));
     apply_user_edit(ui, Edit::Insert("Editable page header".into()));
-    assert!(ui.header_context.is_visible());
+    assert!(
+        ui.current
+            .borrow()
+            .as_ref()
+            .unwrap()
+            .session
+            .in_header_footer()
+    );
+    assert!(find_widget(&ui.sidebar, "close-header-footer").is_none());
     header_change(ui, header_footer::close);
-    assert!(!ui.header_context.is_visible());
+    assert!(
+        !ui.current
+            .borrow()
+            .as_ref()
+            .unwrap()
+            .session
+            .in_header_footer()
+    );
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.sel, back);
     let dialog = show_page_number(ui, parent);
-    dialog.position.set_selected(2);
-    dialog.align.set_selected(2);
     dialog.total.set_active(true);
     dialog.insert.emit_clicked();
     assert!(!dialog.window.is_visible());
@@ -44,9 +57,35 @@ pub(super) fn header_footer_ui_test(
         ui.current
             .borrow()
             .as_ref()
-            .and_then(|d| header_footer::active(&d.session)),
-        Some(Region::Footer)
+            .unwrap()
+            .session
+            .sel
+            .focus
+            .story,
+        wordcraft_doc::StoryRef::Body
     );
+    apply_user_edit(ui, Edit::Undo);
+    header_change(ui, |s| header_footer::enter(s, 1, Region::Footer));
+    let dialog = show_page_number(ui, parent);
+    dialog.total.set_active(true);
+    dialog.insert.emit_clicked();
+    assert_eq!(
+        ui.current
+            .borrow()
+            .as_ref()
+            .unwrap()
+            .session
+            .sel
+            .focus
+            .story,
+        ui.current.borrow().as_ref().unwrap().session.doc.sections()[0]
+            .1
+            .footers
+            .default
+            .map(wordcraft_doc::StoryRef::Part)
+            .unwrap()
+    );
+    header_change(ui, header_footer::close);
     header_change(ui, |s| header_footer::enter(s, 1, Region::Header));
     ui.dirty.set(false);
     ui.current.borrow_mut().as_mut().unwrap().session.dirty = false;
@@ -87,14 +126,27 @@ pub(super) fn header_footer_ui_test(
                 }
                 assert!(!u.dirty.get());
                 if pointer {
-                    eprintln!("HEADER_RETURN_READY");
+                    let r = u.document_box.compute_bounds(&w).unwrap();
+                    eprintln!(
+                        "HEADER_RETURN_READY {} {}",
+                        (r.x() + 2.0) as i32,
+                        (r.y() + r.height() / 2.0) as i32
+                    );
                 } else {
-                    header_change(&u, header_footer::close);
+                    assert_eq!(leave_header_outside_at(&u, -5.0, -5.0), Some(false));
+                    refresh_selection(&u);
                 }
                 glib::timeout_add_local_once(
                     std::time::Duration::from_secs(if pointer { 2 } else { 0 }),
                     move || {
-                        assert!(!u.header_context.is_visible());
+                        assert!(
+                            !u.current
+                                .borrow()
+                                .as_ref()
+                                .unwrap()
+                                .session
+                                .in_header_footer()
+                        );
                         let v = u.current.borrow();
                         let d = v.as_ref().unwrap();
                         assert_eq!(d.session.sel, back);

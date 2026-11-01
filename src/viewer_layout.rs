@@ -29,30 +29,38 @@ pub struct Arrangement {
 /// Keep document order, with no cover-page exception. Never shrink to force a spread.
 pub fn arrange(sizes: &[(f32, f32)], zoom: f32, available: f64) -> Arrangement {
     let z = f64::from(zoom_clamped(zoom));
-    let pair = sizes
-        .chunks(2)
-        .filter(|c| c.len() == 2)
-        .map(|c| (f64::from(c[0].0) * z).ceil() + (f64::from(c[1].0) * z).ceil() + PAGE_GAP * 3.0)
-        .fold(0.0, f64::max);
+    let mut slots = [0.0_f64; 2];
+    for (i, size) in sizes.iter().enumerate() {
+        slots[i % 2] = slots[i % 2].max((f64::from(size.0) * z).ceil());
+    }
+    let pair = slots[0] + slots[1] + PAGE_GAP * 3.0;
     let columns = if sizes.len() > 1 && pair <= available {
         2
     } else {
         1
     };
-    let width = sizes
-        .chunks(columns)
-        .map(|c| {
-            c.iter().map(|s| (f64::from(s.0) * z).ceil()).sum::<f64>()
-                + PAGE_GAP * (c.len() + 1) as f64
-        })
-        .fold(0.0, f64::max);
+    let width = if columns == 2 {
+        pair
+    } else {
+        sizes
+            .chunks(columns)
+            .map(|c| {
+                c.iter().map(|s| (f64::from(s.0) * z).ceil()).sum::<f64>()
+                    + PAGE_GAP * (c.len() + 1) as f64
+            })
+            .fold(0.0, f64::max)
+    };
     let mut pages = Vec::new();
     let mut rows = Vec::new();
     let mut y = PAGE_GAP;
     for c in sizes.chunks(columns) {
         let row_width = c.iter().map(|s| (f64::from(s.0) * z).ceil()).sum::<f64>()
             + PAGE_GAP * (c.len().saturating_sub(1)) as f64;
-        let mut x = (width - row_width) / 2.0;
+        let mut x = if columns == 2 {
+            PAGE_GAP
+        } else {
+            (width - row_width) / 2.0
+        };
         let height = c
             .iter()
             .map(|s| (f64::from(s.1) * z).ceil())
@@ -71,7 +79,7 @@ pub fn arrange(sizes: &[(f32, f32)], zoom: f32, available: f64) -> Arrangement {
                 width: w,
                 height: (f64::from(h) * z).ceil(),
             });
-            x += w + PAGE_GAP;
+            x += if columns == 2 { slots[0] } else { w } + PAGE_GAP;
         }
         y += height + PAGE_GAP;
     }
@@ -127,7 +135,7 @@ mod spreads {
         assert_eq!(spread.pages[2].y, 22.0 + 792.0 + 22.0);
         assert_eq!(spread.page_at(spread.pages[1].x + 50.0, 100.0), 1);
         assert_eq!(spread.visible(0.0, 100.0), vec![0, 1]);
-        assert_eq!(spread.pages[2].x, (spread.width - 400.0) / 2.0);
+        assert_eq!(spread.pages[2].x, spread.pages[0].x);
         assert_eq!(arrange(&sizes, 0.5, 900.0).columns, 2);
         assert_eq!(arrange(&sizes, 2.0, 1500.0).columns, 1);
         assert!(arrange(&[], 1.0, 900.0).visible(0.0, 900.0).is_empty());

@@ -1,13 +1,16 @@
-Leaf 0.1.0-alpha.15 refines navigation, comments and proofing, and adds editable document metadata.
+Leaf 0.1.0-alpha.16 addresses the open-issue review requested by the maintainer.
 
-Bookmarks now appear in Navigation beneath the heading that contains them. Collapsing a section hides its bookmarks; bookmarks before the first heading remain at the top. New bookmarks open Navigation, while the third sidebar tab is dedicated to Comments.
+- Keep an unpaired final page in the left slot. Round screen page corners without changing pagination or exports.
+- Leave header/footer editing by clicking outside its region; remove the extra mode bar. Insert page numbers at the original cursor, including body text, without position/alignment controls.
+- Apply valid paragraph, text and table measurements immediately, with validation and grouped undo. Keep pinned formatting synchronized with the current selection and mixed values.
+- Compact editable Font/Size selectors: font previews at the current size and common plus effective document sizes, including fractional sizes and other text stories.
+- Navigate from comment anchors to their threads, including overlaps, while preserving drag selection.
+- Persistent System/Light/Dark choices in the main menu; compact zoom and per-document Editing/Reviewing modes in the document menu. Reviewing records subsequent edits as tracked changes.
+- Save an opened writable document directly with Ctrl+S or Save. Keep Save As separate and recovery enabled by default.
+- Configure the author of new comments/revisions in Preferences; default to the system account and preserve previous authorship.
+- Create/edit a selection's link from its context menu while preserving text and formatting. Mixed links are explicit.
+- Enable manual page dimensions only for Custom paper sizes.
 
-Each comment thread is a single rounded bubble with horizontal separators between messages and subtle vertical guides for replies. Dates use the local display format. Reply, edit, resolve/reopen, delete and navigation actions remain available.
+Columns, advanced mouse table interactions, odd/even story independence, the reported document-specific spacing case and coordinated language/proofing inheritance remain open. Engine, dependencies, vendor and patches are unchanged. ODT still cannot preserve comments/category with this exporter; Leaf offers DOCX.
 
-Spelling and Grammar shows a clean issue list: selecting an issue only selects and scrolls to its text. The introductory instruction and correction panel are removed. Corrections remain available in the document context menu. The document menu no longer contains a spelling entry; F7 and the sidebar still open review. Check-as-you-type remains in Preferences.
-
-Document Properties adds an Information tab for title, subject, author, keywords and category. Apply commits metadata and page/header changes as one undo step; Cancel leaves the document unchanged. The author field describes the document and does not change the author of new comments.
-
-DOCX preserves all five fields and comment threads. ODT comments and category remain unsupported by the pinned exporter: Leaf prevents ODT saves with either and offers DOCX. Other core metadata fields are preserved in ODT. WordCraft, dependencies and existing format patches are unchanged.
-
-Install Leaf-0.1.0-alpha.15-x86_64.flatpak over alpha.14. This remains an experimental AI-assisted editor.
+Install Leaf-0.1.0-alpha.16-x86_64.flatpak over alpha.15. Experimental, AI-assisted development; automated checks do not replace testing important documents in another editor.

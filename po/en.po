@@ -1942,3 +1942,36 @@ msgstr "Save as DOCX to preserve the document category. The current ODT exporter
 
 msgid "Group bookmarks under navigation headings, combine comment threads in shared bubbles, simplify the spelling sidebar and edit document title, subject, author, keywords and category."
 msgstr "Group bookmarks under navigation headings, combine comment threads in shared bubbles, simplify the spelling sidebar and edit document title, subject, author, keywords and category."
+
+msgid "Follow System"
+msgstr "Follow System"
+
+msgid "Light"
+msgstr "Light"
+
+msgid "Dark"
+msgstr "Dark"
+
+msgid "Link"
+msgstr "Link"
+
+msgid "This selection contains different links. Enter a destination to replace them all."
+msgstr "This selection contains different links. Enter a destination to replace them all."
+
+msgid "Editing"
+msgstr "Editing"
+
+msgid "Reviewing"
+msgstr "Reviewing"
+
+msgid "Mixed"
+msgstr "Mixed"
+
+msgid "User Name"
+msgstr "User Name"
+
+msgid "Select the text to link."
+msgstr "Select the text to link."
+
+msgid "Enter your name."
+msgstr "Enter your name."

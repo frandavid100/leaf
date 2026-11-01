@@ -116,12 +116,14 @@ pub(super) fn pin_test_step(t: Rc<PinTest>, step: u8) {
             );
             popover_pin(&t.tp).set_active(false);
             ui.size_input.set_value(18.0);
-            find_widget(&t.tp.child().unwrap(), "text-apply-size")
-                .unwrap()
-                .downcast::<gtk::Button>()
-                .unwrap()
-                .emit_clicked();
-            assert!(!t.tp.is_visible());
+            assert!(t.tp.is_visible(), "editing a value keeps its popover open");
+            assert_eq!(
+                wordcraft_engine::cmd::format::state(
+                    &ui.current.borrow().as_ref().unwrap().session
+                )["size"],
+                18.0
+            );
+            t.tp.popdown();
             format_execute(ui, "insert.table", serde_json::json!({"rows":2,"cols":2})).unwrap();
             t.tb.popup();
             let table = t.tb.popover().unwrap();

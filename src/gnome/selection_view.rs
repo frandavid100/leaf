@@ -64,7 +64,15 @@ pub(super) fn refresh_selection(ui: &Rc<Ui>) {
     }
     refresh_overlay_layers(ui);
     refresh_format_controls(ui);
-    refresh_header_context(ui);
+    if let Some(style) = ui.style.borrow().as_ref() {
+        style.sync_selection();
+    }
+    if let Some(paragraph) = ui.paragraph.borrow().as_ref() {
+        paragraph.sync_selection();
+    }
+    if let Some(text) = ui.text_tools.borrow().as_ref() {
+        text.sync_selection();
+    }
     if let Some(p) = ui.picture.borrow().as_ref() {
         p.refresh();
     }
@@ -106,15 +114,7 @@ pub(super) fn refresh_overlay_layers(ui: &Rc<Ui>) {
 
 pub(super) fn refresh_format_controls(ui: &Rc<Ui>) {
     let _perf = perf_scope("leaf.refresh_format_controls");
-    let state = {
-        let Ok(mut current) = ui.current.try_borrow_mut() else {
-            return;
-        };
-        current.as_mut().and_then(|doc| {
-            let _p = perf_scope("boundary.format_state");
-            doc.session.run("format.state", &serde_json::json!({})).ok()
-        })
-    };
+    let state = selection_character(ui);
     if let Some(doc) = ui.current.borrow().as_ref() {
         ui.undo_button.set_sensitive(doc.session.can_undo());
         ui.redo_button.set_sensitive(doc.session.can_redo());
@@ -122,23 +122,42 @@ pub(super) fn refresh_format_controls(ui: &Rc<Ui>) {
     if let Some(host) = ui.host.upgrade() {
         refresh_main_actions(&host);
     }
-    let Some(state) = state else { return };
+    let effective = &state;
     ui.format_syncing.set(true);
     for (button, property) in [
         (&ui.format_bold, "bold"),
         (&ui.format_italic, "italic"),
         (&ui.format_underline, "underline"),
     ] {
-        let active = state
-            .get(property)
-            .and_then(|x| x.as_bool())
-            .unwrap_or(false);
+        let mixed = effective.get(property).is_some_and(|v| v.is_null());
+        let active = if property == "underline" {
+            effective[property].as_str().is_some_and(|s| s != "none")
+        } else {
+            effective[property].as_bool().unwrap_or(false)
+        };
         button.set_active(active);
+        button.update_state(&[gtk::accessible::State::Pressed(if mixed {
+            gtk::AccessibleTristate::Mixed
+        } else if active {
+            gtk::AccessibleTristate::True
+        } else {
+            gtk::AccessibleTristate::False
+        })]);
+        if mixed {
+            button.add_css_class("mixed");
+        } else {
+            button.remove_css_class("mixed");
+        }
     }
     if let Some(font) = state["font"].as_str() {
-        ui.font_button.set_label(font);
+        if ui.font_input.text() != font {
+            ui.font_input.set_text(font);
+        }
+        ui.font_input.remove_css_class("error");
     } else {
-        ui.font_button.set_label("Varias fuentes");
+        ui.font_input.set_text("");
+        ui.font_input
+            .set_placeholder_text(Some(wordcraft_gnome::t!("Mixed")));
     }
     if let Some(size) = state["size"].as_f64() {
         ui.size_input.set_value(size);

@@ -11,6 +11,12 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## Revisión autorizada en curso: alpha.16
+
+24 issues revisados; 15 correcciones preparadas y nueve mantenidas abiertas.
+[Alcance y comprobaciones](docs/ISSUE_SWEEP_ALPHA16.md). La entrega y el cierre
+se harán tras validar la interfaz nativa y el Flatpak instalado.
+
 ## Última versión publicada
 
 [Alpha.15, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.15).

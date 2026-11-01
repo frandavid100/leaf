@@ -441,6 +441,10 @@ pub(super) fn show_document_properties(
     paper.add(&orientation);
     let width = properties_number(&paper, wordcraft_gnome::t!("Width (mm)"), state.width);
     let height = properties_number(&paper, wordcraft_gnome::t!("Height (mm)"), state.height);
+    width.set_widget_name("paper-width");
+    height.set_widget_name("paper-height");
+    sizes.set_widget_name("paper-size");
+    orientation.set_widget_name("paper-orientation");
     let presets = [
         (210.0, 297.0),
         (148.0, 210.0),
@@ -458,6 +462,8 @@ pub(super) fn show_document_properties(
             sizes.set_selected(i as u32 + 1);
         }
     }
+    width.set_sensitive(sizes.selected() == 0);
+    height.set_sensitive(sizes.selected() == 0);
     let margins = adw::PreferencesGroup::new();
     margins.set_title(wordcraft_gnome::t!("Margins"));
     page.add(&margins);
@@ -542,6 +548,10 @@ pub(super) fn show_document_properties(
         let orientation = orientation.downgrade();
         let syncing = syncing.clone();
         sizes.connect_selected_notify(move |r| {
+            if let (Some(width), Some(height)) = (width.upgrade(), height.upgrade()) {
+                width.set_sensitive(r.selected() == 0);
+                height.set_sensitive(r.selected() == 0);
+            }
             let Some(i) = r.selected().checked_sub(1) else {
                 return;
             };

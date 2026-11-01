@@ -21,6 +21,26 @@ pub(super) struct StylePopover {
     pub(super) header: Rc<FormatHeader>,
 }
 impl StylePopover {
+    pub(super) fn sync_selection(&self) {
+        let Some(ui) = self.ui.upgrade() else { return };
+        let current = ui
+            .current
+            .borrow()
+            .as_ref()
+            .and_then(|d| wordcraft_gnome::styles::current(&d.session));
+        let mut row = self.list.first_child();
+        while let Some(w) = row {
+            row = w.next_sibling();
+            let active = current
+                .as_ref()
+                .is_some_and(|id| find_widget(&w, &format!("style-apply-{id}")).is_some());
+            if active {
+                w.add_css_class("current-style");
+            } else {
+                w.remove_css_class("current-style");
+            }
+        }
+    }
     pub(super) fn report(&self, text: &str) {
         self.message.set_text(text);
         self.message.set_visible(!text.is_empty());

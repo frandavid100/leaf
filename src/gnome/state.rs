@@ -28,8 +28,6 @@ pub(super) struct Current {
 /// timers, controllers, popovers and workers before the tab owner is removed.
 pub(super) struct Ui {
     pub(super) current: RefCell<Option<Current>>,
-    pub(super) header_context: gtk::Box,
-    pub(super) header_label: gtk::Label,
     pub(super) printing: PrintState,
     pub(super) spelling: RefCell<Option<Rc<SpellReview>>>,
     pub(super) document_box: DocumentCanvas,
@@ -43,6 +41,7 @@ pub(super) struct Ui {
     pub(super) outline: RefCell<Option<Rc<OutlinePanel>>>,
     pub(super) annotations: RefCell<Option<Rc<AnnotationPanel>>>,
     pub(super) annotation_dialog: RefCell<Option<adw::Window>>,
+    pub(super) link_dialog: RefCell<Option<adw::Window>>,
     pub(super) host: std::rc::Weak<Workspace>,
     pub(super) open_button: gtk::Button,
     pub(super) search: RefCell<Option<Rc<SearchPanel>>>,
@@ -73,6 +72,7 @@ pub(super) struct Ui {
     pub(super) caret_motion: Rc<RefCell<wordcraft_gnome::caret_motion::CaretMotion>>,
     pub(super) caret_tick_active: Cell<bool>,
     pub(super) drag_anchor: RefCell<Option<Pos>>,
+    pub(super) pointer_moved: Cell<bool>,
     pub(super) dirty: Cell<bool>,
     pub(super) thumbnail_refresh_pending: Cell<bool>,
     pub(super) thumbnail_bounds_pending: Cell<bool>,
@@ -100,6 +100,8 @@ pub(super) struct Ui {
     pub(super) format_syncing: Cell<bool>,
     pub(super) undo_button: gtk::Button,
     pub(super) redo_button: gtk::Button,
-    pub(super) font_button: gtk::Button,
+    pub(super) font_input: gtk::Entry,
+    pub(super) text_controls: RefCell<Option<Rc<TextControls>>>,
+    pub(super) format_sequence: RefCell<Option<FormatSequence>>,
     pub(super) size_input: gtk::SpinButton,
 }

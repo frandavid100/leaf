@@ -19,7 +19,14 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
     if ui.closed.replace(true) {
         return;
     }
+    if let Some(text) = ui.text_controls.borrow().as_ref() {
+        text.stop();
+    }
     ui.document_box.reset();
+    let link = ui.link_dialog.borrow_mut().take();
+    if let Some(window) = link {
+        window.close();
+    }
     let dialog = ui.annotation_dialog.borrow_mut().take();
     if let Some(dialog) = dialog {
         dialog.close();
@@ -300,6 +307,39 @@ pub(super) fn show_preferences(parent: &ApplicationWindow) -> adw::PreferencesWi
     dialog.set_modal(true);
     dialog.set_title(Some(wordcraft_gnome::t!("Preferences")));
     let page = adw::PreferencesPage::new();
+    let identity = adw::PreferencesGroup::new();
+    let name = adw::EntryRow::new();
+    name.set_title(wordcraft_gnome::t!("User Name"));
+    name.set_widget_name("preferences-user-name");
+    name.set_text(&wordcraft_gnome::preferences::user_name());
+    identity.add(&name);
+    page.add(&identity);
+    let weak = dialog.downgrade();
+    name.connect_changed(move |entry| {
+        if entry.text().trim().is_empty() {
+            entry.add_css_class("error");
+            return;
+        }
+        entry.remove_css_class("error");
+        if let Err(e) = wordcraft_gnome::preferences::set_user_name(&entry.text()) {
+            if let Some(d) = weak.upgrade() {
+                d.add_toast(Toast::new(&e));
+            }
+            return;
+        }
+        WORKSPACES.with(|hosts| {
+            for host in hosts.borrow().iter() {
+                for (_, ui) in host.docs.borrow().iter() {
+                    if let Some(d) = ui.current.borrow_mut().as_mut() {
+                        let _ = d.session.run(
+                            "file.setAuthor",
+                            &serde_json::json!({"name":entry.text().trim()}),
+                        );
+                    }
+                }
+            }
+        });
+    });
     let group = adw::PreferencesGroup::new();
     group.set_title(wordcraft_gnome::t!("Autosave"));
     group.set_description(Some(wordcraft_gnome::t!("Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved.")));

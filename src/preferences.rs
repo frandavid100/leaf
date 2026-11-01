@@ -67,3 +67,54 @@ pub fn check_spelling() -> bool {
 pub fn set_check_spelling(on: bool) -> Result<(), String> {
     update("spelling", serde_json::json!(on))
 }
+
+pub fn system_user_name() -> String {
+    let uid = std::fs::read_to_string("/proc/self/status")
+        .ok()
+        .and_then(|s| {
+            s.lines().find_map(|l| {
+                l.strip_prefix("Uid:")
+                    .and_then(|v| v.split_whitespace().next())
+                    .map(str::to_owned)
+            })
+        });
+    if let (Some(uid), Ok(passwd)) = (uid, std::fs::read_to_string("/etc/passwd")) {
+        if let Some(name) = passwd.lines().find_map(|line| {
+            let fields: Vec<_> = line.split(':').collect();
+            (fields.len() > 2 && fields[2] == uid).then(|| fields[0].to_string())
+        }) {
+            return name;
+        }
+    }
+    ["USER", "LOGNAME"]
+        .into_iter()
+        .find_map(|key| {
+            std::env::var(key)
+                .ok()
+                .filter(|s| !s.trim().is_empty() && s != "unknown")
+        })
+        .unwrap_or_default()
+}
+pub fn user_name() -> String {
+    read()["user_name"]
+        .as_str()
+        .filter(|s| !s.trim().is_empty())
+        .map(str::to_owned)
+        .unwrap_or_else(system_user_name)
+}
+pub fn set_user_name(name: &str) -> Result<(), String> {
+    if name.trim().is_empty() {
+        return Err(wordcraft_gnome::t!("Enter your name.").into());
+    }
+    update("user_name", serde_json::json!(name.trim()))
+}
+/// 0 follows the system, 1 light, 2 dark.
+pub fn theme() -> u32 {
+    read()["theme"].as_u64().filter(|n| *n <= 2).unwrap_or(0) as u32
+}
+pub fn set_theme(mode: u32) -> Result<(), String> {
+    if mode > 2 {
+        return Err("Unknown theme".into());
+    }
+    update("theme", serde_json::json!(mode))
+}

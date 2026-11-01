@@ -40,6 +40,22 @@ pub(super) fn refresh_main_actions(host: &Workspace) {
             a.set_enabled(on);
         }
     }
+    if let Some(action) = host
+        .window
+        .lookup_action("editing-mode")
+        .and_then(|a| a.downcast::<gio::SimpleAction>().ok())
+    {
+        let reviewing = ui
+            .as_ref()
+            .and_then(|u| {
+                u.current
+                    .borrow()
+                    .as_ref()
+                    .map(|d| d.session.doc.settings.track_changes)
+            })
+            .unwrap_or(false);
+        action.set_state(&(if reviewing { "reviewing" } else { "editing" }).to_variant());
+    }
 }
 pub(super) fn window_action(
     host: &Rc<Workspace>,
@@ -59,6 +75,56 @@ pub(super) fn host_app(host: &Workspace) -> Option<Application> {
     host.window.application()?.downcast::<Application>().ok()
 }
 pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
+    let mode = gio::SimpleAction::new_stateful(
+        "editing-mode",
+        Some(glib::VariantTy::STRING),
+        &"editing".to_variant(),
+    );
+    let weak = Rc::downgrade(host);
+    mode.connect_activate(move |_, value| {
+        let Some(host) = weak.upgrade() else { return };
+        let Some(ui) = selected_ui(&host) else { return };
+        let Some(value) = value
+            .and_then(|v| v.str())
+            .filter(|s| ["editing", "reviewing"].contains(s))
+        else {
+            return;
+        };
+        let result = {
+            let mut current = ui.current.borrow_mut();
+            let Some(d) = current.as_mut() else { return };
+            if d.session.doc.settings.track_changes == (value == "reviewing") {
+                return;
+            }
+            d.session
+                .run(
+                    "review.trackChanges",
+                    &serde_json::json!({"value":value == "reviewing"}),
+                )
+                .map(|_| ())
+        };
+        match result {
+            Ok(()) => {
+                ui.dirty.set(true);
+                sync_tab(&ui);
+                let scroll = (
+                    ui.scroll.hadjustment().value(),
+                    ui.scroll.vadjustment().value(),
+                );
+                refresh_pages(&ui);
+                let weak = Rc::downgrade(&ui);
+                glib::idle_add_local_once(move || {
+                    if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
+                        ui.scroll.hadjustment().set_value(scroll.0);
+                        ui.scroll.vadjustment().set_value(scroll.1);
+                    }
+                });
+            }
+            Err(e) => ui.toasts.add_toast(Toast::new(&e.to_string())),
+        }
+        refresh_main_actions(&host);
+    });
+    host.window.add_action(&mode);
     window_action(host, "new-tab", |h| {
         if let Some(app) = host_app(h) {
             blank_tab(&app, h);
@@ -269,7 +335,16 @@ pub(super) fn install_main_menu(button: &gtk::MenuButton) {
     menu_item(&help, wordcraft_gnome::t!("Help"), "help", Some("F1"));
     menu_item(&help, wordcraft_gnome::t!("About Leaf"), "about", None);
     root.append_section(None, &help);
+    let theme = gio::MenuItem::new(None, None);
+    theme.set_attribute_value("custom", Some(&"theme-selector".to_variant()));
+    root.insert_item(0, &theme);
     button.set_menu_model(Some(&root));
+    if let Some(pop) = button
+        .popover()
+        .and_then(|p| p.downcast::<gtk::PopoverMenu>().ok())
+    {
+        pop.add_child(&theme_selector(), "theme-selector");
+    }
 }
 pub(super) fn install_document_menu(button: &gtk::MenuButton) {
     let root = gio::Menu::new();
@@ -345,6 +420,19 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton) {
         Some("<Control>p"),
     );
     root.append_section(None, &properties);
+    let zoom = gio::MenuItem::new(None, None);
+    zoom.set_attribute_value("custom", Some(&"zoom-controls".to_variant()));
+    root.append_item(&zoom);
+    let modes = gio::Menu::new();
+    for (label, mode) in [
+        (wordcraft_gnome::t!("Editing"), "editing"),
+        (wordcraft_gnome::t!("Reviewing"), "reviewing"),
+    ] {
+        let item = gio::MenuItem::new(Some(label), None);
+        item.set_action_and_target_value(Some("win.editing-mode"), Some(&mode.to_variant()));
+        modes.append_item(&item);
+    }
+    root.append_section(None, &modes);
     button.set_menu_model(Some(&root));
 }
 pub(super) fn show_editor_help(parent: &ApplicationWindow) {

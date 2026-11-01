@@ -20,6 +20,12 @@ pub(super) fn run() {
         println!("PACKAGE_STORAGE_OK");
         return;
     }
+    if std::env::args().any(|a| a == "--issue-preferences-read-test") {
+        assert_eq!(wordcraft_gnome::preferences::user_name(), "Leaf QA");
+        assert_eq!(wordcraft_gnome::preferences::theme(), 2);
+        println!("ISSUE_PREFERENCES_RESTART_OK");
+        return;
+    }
     glib::set_application_name("Leaf");
     let input_files: Vec<_> = std::env::args_os()
         .skip(1)
@@ -37,7 +43,10 @@ pub(super) fn run() {
         .application_id(APP_ID)
         .flags(gio::ApplicationFlags::NON_UNIQUE)
         .build();
-    app.connect_startup(|_| gtk::Window::set_default_icon_name(APP_ID));
+    app.connect_startup(|_| {
+        gtk::Window::set_default_icon_name(APP_ID);
+        apply_theme(wordcraft_gnome::preferences::theme());
+    });
     app.connect_activate(move |app| {
         if !input_files.is_empty() {
             for argument in &input_files {

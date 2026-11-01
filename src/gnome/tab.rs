@@ -170,38 +170,8 @@ pub(super) fn build_tab(
     sidebar_pages.add_named(&navigation, Some("navigation"));
     sidebar_toolbar.set_content(Some(&sidebar_pages));
 
-    let zoom_buttons = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    zoom_buttons.set_halign(gtk::Align::End);
-    zoom_buttons.set_valign(gtk::Align::End);
-    zoom_buttons.set_margin_end(16);
-    zoom_buttons.set_margin_bottom(16);
-    zoom_in.add_css_class("osd");
-    zoom_out.add_css_class("osd");
-    zoom_in.add_css_class("circular");
-    zoom_out.add_css_class("circular");
-    zoom_buttons.append(&zoom_in);
-    zoom_buttons.append(&zoom_out);
-    let zoom_popover = gtk::Popover::new();
-    let zoom_options = gtk::Box::new(gtk::Orientation::Vertical, 6);
-    zoom_options.set_margin_top(12);
-    zoom_options.set_margin_bottom(12);
-    zoom_options.set_margin_start(12);
-    zoom_options.set_margin_end(12);
-    zoom_options.append(&zoom_label);
-    zoom_options.append(&normal_zoom);
-    zoom_options.append(&fit_button);
-    zoom_popover.set_child(Some(&zoom_options));
-    let zoom_menu = gtk::MenuButton::new();
-    zoom_menu.set_icon_name("view-more-symbolic");
-    zoom_menu.set_tooltip_text(Some(wordcraft_gnome::t!("Zoom Options")));
-    zoom_menu.add_css_class("osd");
-    zoom_menu.add_css_class("circular");
-    zoom_menu.set_popover(Some(&zoom_popover));
-    zoom_menu.set_direction(gtk::ArrowType::Up);
-    zoom_buttons.append(&zoom_menu);
     let canvas_overlay = gtk::Overlay::new();
     canvas_overlay.set_child(Some(&scroll));
-    canvas_overlay.add_overlay(&zoom_buttons);
     stack.add_named(&canvas_overlay, Some("pages"));
     stack.set_visible_child_name("empty");
 
@@ -265,34 +235,28 @@ pub(super) fn build_tab(
         &format_group,
     );
     text_options.append(&inline_buttons);
-    let font_label = gtk::Label::new(Some(wordcraft_gnome::t!("Font")));
-    font_label.set_halign(gtk::Align::Start);
-    text_options.append(&font_label);
-    let font_dialog = gtk::FontDialog::new();
-    font_dialog.set_title(wordcraft_gnome::t!("Choose Font"));
-    let font_button = gtk::Button::with_label(wordcraft_gnome::t!("Choose Font…"));
-    font_button.set_tooltip_text(Some(wordcraft_gnome::t!("Choose an Installed Font Family")));
-    text_options.append(&font_button);
-    let size_label = gtk::Label::new(Some(wordcraft_gnome::t!("Font Size")));
-    size_label.set_halign(gtk::Align::Start);
-    text_options.append(&size_label);
-    let custom_size_row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    let selectors = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    let font_input = gtk::Entry::new();
+    font_input.set_widget_name("text-font");
+    font_input.set_placeholder_text(Some(wordcraft_gnome::t!("Font")));
+    font_input.set_width_chars(12);
+    font_input.set_hexpand(true);
+    accessible_name(&font_input, wordcraft_gnome::t!("Font"));
+    let (font_selector, font_choices_menu, font_choices) =
+        text_selector(&font_input, "text-font-choices");
+    selectors.append(&font_selector);
     let size_input = gtk::SpinButton::with_range(1.0, 1638.0, 0.5);
-    size_input.set_digits(1);
+    size_input.set_digits(2);
     size_input.set_value(12.0);
-    size_input.set_hexpand(true);
-    size_input.set_tooltip_text(Some(wordcraft_gnome::t!(
-        "Size in Points, Including Decimals"
-    )));
-    let apply_size = gtk::Button::with_label(wordcraft_gnome::t!("Apply"));
-    apply_size.set_widget_name("text-apply-size");
-    custom_size_row.append(&size_input);
-    custom_size_row.append(&apply_size);
-    text_options.append(&custom_size_row);
-    let sizes = gtk::Grid::new();
-    sizes.set_row_spacing(6);
-    sizes.set_column_spacing(6);
-    text_options.append(&sizes);
+    size_input.set_width_chars(5);
+    size_input.set_widget_name("text-size");
+    size_input.set_update_policy(gtk::SpinButtonUpdatePolicy::IfValid);
+    accessible_name(&size_input, wordcraft_gnome::t!("Font Size"));
+    let (size_selector, size_choices_menu, size_choices) =
+        text_selector(&size_input, "text-size-choices");
+    size_selector.set_hexpand(false);
+    selectors.append(&size_selector);
+    text_options.append(&selectors);
     let more_text = gtk::Button::with_label(wordcraft_gnome::t!("More Text Options…"));
     let language_button = gtk::Button::with_label(wordcraft_gnome::t!("Text Language…"));
     text_options.append(&language_button);
@@ -306,16 +270,11 @@ pub(super) fn build_tab(
     text_menu.set_popover(Some(&text_popover));
     text_menu.set_direction(gtk::ArrowType::Up);
 
-    let mut format_actions: Vec<(gtk::Button, Format, gtk::Popover)> = Vec::new();
+    let format_actions: Vec<(gtk::Button, Format, gtk::Popover)> = Vec::new();
     let style_menu = gtk::MenuButton::new();
     format_menu_label(&style_menu, wordcraft_gnome::t!("Style"));
     style_menu.set_direction(gtk::ArrowType::Up);
     style_menu.set_tooltip_text(Some(wordcraft_gnome::t!("Apply and Manage Styles")));
-    for (index, size) in [10u8, 11, 12, 14, 16, 18, 24, 36].iter().enumerate() {
-        let button = gtk::Button::with_label(&format!("{size} pt"));
-        sizes.attach(&button, (index % 4) as i32, (index / 4) as i32, 1, 1);
-        format_actions.push((button, Format::FontSize(*size), text_popover.clone()));
-    }
     let align_menu = gtk::MenuButton::new();
     format_menu_label(&align_menu, wordcraft_gnome::t!("Paragraph"));
     align_menu.set_direction(gtk::ArrowType::Up);
@@ -339,8 +298,6 @@ pub(super) fn build_tab(
     tab_bar.set_view(Some(&host.tabs));
     tab_bar.set_autohide(true);
     document_toolbar.add_top_bar(&tab_bar);
-    let (header_context, header_label, close_header) = header_context_bar();
-    document_toolbar.add_top_bar(&header_context);
     document_toolbar.add_bottom_bar(&format_toolbar);
     document_toolbar.set_content(Some(&toasts));
 
@@ -375,6 +332,7 @@ pub(super) fn build_tab(
         caret_motion: Rc::new(RefCell::new(Default::default())),
         caret_tick_active: Cell::new(false),
         drag_anchor: RefCell::new(None),
+        pointer_moved: Cell::new(false),
         dirty: Cell::new(false),
         thumbnail_refresh_pending: Cell::new(false),
         thumbnail_bounds_pending: Cell::new(false),
@@ -389,8 +347,6 @@ pub(super) fn build_tab(
         save_path: RefCell::new(None),
         source_path: RefCell::new(None),
         spelling: RefCell::new(None),
-        header_context,
-        header_label,
         format_toolbar,
         adaptive: RefCell::new(None),
         format_buttons: RefCell::new(Vec::new()),
@@ -405,7 +361,9 @@ pub(super) fn build_tab(
         format_syncing: Cell::new(false),
         undo_button: undo_button.clone(),
         redo_button: redo_button.clone(),
-        font_button: font_button.clone(),
+        font_input: font_input.clone(),
+        text_controls: RefCell::new(None),
+        format_sequence: RefCell::new(None),
         size_input: size_input.clone(),
         document_box,
         thumbnails_box,
@@ -418,6 +376,7 @@ pub(super) fn build_tab(
         outline: RefCell::new(None),
         annotations: RefCell::new(None),
         annotation_dialog: RefCell::new(None),
+        link_dialog: RefCell::new(None),
         host: Rc::downgrade(host),
         open_button: open_button.clone(),
         search: RefCell::new(None),
@@ -441,12 +400,27 @@ pub(super) fn build_tab(
     });
 
     {
-        let weak = Rc::downgrade(&ui);
-        close_header.connect_clicked(move |_| {
-            if let Some(ui) = weak.upgrade() {
-                header_change(&ui, header_footer::close);
-            }
-        });
+        let row = gtk::Box::new(gtk::Orientation::Horizontal, 4);
+        row.set_widget_name("zoom-controls");
+        row.set_halign(gtk::Align::Center);
+        ui.zoom_out.set_widget_name("zoom-out");
+        ui.zoom_in.set_widget_name("zoom-in");
+        normal_zoom.set_widget_name("zoom-reset");
+        normal_zoom.set_child(Some(&ui.zoom_label));
+        fit_button.set_widget_name("zoom-fit-width");
+        fit_button.set_child(Some(&gtk::Image::from_icon_name("zoom-fit-best-symbolic")));
+        accessible_name(&fit_button, wordcraft_gnome::t!("Fit Width"));
+        fit_button.set_tooltip_text(Some(wordcraft_gnome::t!("Fit Width")));
+        row.append(&ui.zoom_out);
+        row.append(&normal_zoom);
+        row.append(&fit_button);
+        row.append(&ui.zoom_in);
+        if let Some(pop) = menu_button
+            .popover()
+            .and_then(|p| p.downcast::<gtk::PopoverMenu>().ok())
+        {
+            pop.add_child(&row, "zoom-controls");
+        }
     }
     {
         let weak = Rc::downgrade(&ui);
@@ -567,73 +541,13 @@ pub(super) fn build_tab(
             }
         ));
     }
-    {
-        let ui = ui.clone();
-        let popover = text_popover.clone();
-        let parent = window.clone();
-        font_button.connect_clicked(glib::clone!(
-            #[weak]
-            ui,
-            #[weak]
-            popover,
-            #[weak]
-            parent,
-            move |_| {
-                close_format_popover(&popover);
-                let ui = ui.clone();
-                font_dialog.choose_family(
-                    Some(&parent),
-                    None::<&gtk::pango::FontFamily>,
-                    None::<&gio::Cancellable>,
-                    glib::clone!(
-                        #[weak]
-                        ui,
-                        move |result| {
-                            if ui.closed.get() {
-                                return;
-                            }
-                            match result {
-                                Ok(family) => {
-                                    let name = family.name();
-                                    apply_format_operation(&ui, |session| {
-                                        formatting::font(session, &name)
-                                    });
-                                }
-                                Err(e)
-                                    if e.matches(gtk::DialogError::Dismissed)
-                                        || e.matches(gtk::DialogError::Cancelled) => {}
-                                Err(e) => ui.toasts.add_toast(Toast::new(
-                                    &wordcraft_gnome::i18n::interpolate(
-                                        wordcraft_gnome::t!("Could Not Choose Font: {e}"),
-                                        &[("e", format!("{}", e))],
-                                    ),
-                                )),
-                            }
-                        }
-                    ),
-                );
-            }
-        ));
-    }
-    {
-        let ui = ui.clone();
-        let popover = text_popover.clone();
-        let input = size_input.clone();
-        apply_size.connect_clicked(glib::clone!(
-            #[weak]
-            ui,
-            #[weak]
-            popover,
-            #[weak]
-            input,
-            move |_| {
-                input.update();
-                let size = input.value();
-                close_format_popover(&popover);
-                apply_format_operation(&ui, |session| formatting::size(session, size));
-            }
-        ));
-    }
+    ui.text_controls.replace(Some(install_text_controls(
+        &ui,
+        font_choices_menu,
+        size_choices_menu,
+        font_choices,
+        size_choices,
+    )));
     // All formatting commands preserve the selection and return keyboard
     // focus to the editable document.
     for (button, action) in [
@@ -673,7 +587,7 @@ pub(super) fn build_tab(
     install_pointer_and_view_input(&ui, &compact_app_menu, &compact_search);
     {
         let ui = ui.clone();
-        let menu = zoom_popover.clone();
+        let menu = menu_button.popover().unwrap();
         fit_button.connect_clicked(glib::clone!(
             #[weak]
             ui,
@@ -687,7 +601,7 @@ pub(super) fn build_tab(
     }
     {
         let ui = ui.clone();
-        let menu = zoom_popover.clone();
+        let menu = menu_button.popover().unwrap();
         normal_zoom.connect_clicked(glib::clone!(
             #[weak]
             ui,
@@ -887,7 +801,7 @@ pub(super) fn build_tab(
             ),
         );
     }
-    install_menu_demos(&text_menu, &zoom_menu);
+    install_menu_demos(&text_menu, &menu_button);
     if sample_on_start || initial_loaded {
         let ui = ui.clone();
         glib::idle_add_local_once(move || fit_width(&ui));

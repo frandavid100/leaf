@@ -1942,3 +1942,36 @@ msgstr "Guarda en DOCX para conservar la categoría del documento. El exportador
 
 msgid "Group bookmarks under navigation headings, combine comment threads in shared bubbles, simplify the spelling sidebar and edit document title, subject, author, keywords and category."
 msgstr "Agrupa los marcadores bajo los títulos, reúne cada hilo de comentarios en una burbuja, simplifica la revisión lateral y permite editar título, asunto, autor, palabras clave y categoría del documento."
+
+msgid "Follow System"
+msgstr "Seguir el sistema"
+
+msgid "Light"
+msgstr "Claro"
+
+msgid "Dark"
+msgstr "Oscuro"
+
+msgid "Link"
+msgstr "Vínculo"
+
+msgid "This selection contains different links. Enter a destination to replace them all."
+msgstr "La selección contiene vínculos diferentes. Introduce un destino para reemplazarlos todos."
+
+msgid "Editing"
+msgstr "Edición"
+
+msgid "Reviewing"
+msgstr "Revisión"
+
+msgid "Mixed"
+msgstr "Mixto"
+
+msgid "User Name"
+msgstr "Nombre de usuario"
+
+msgid "Select the text to link."
+msgstr "Selecciona el texto del vínculo."
+
+msgid "Enter your name."
+msgstr "Introduce tu nombre."

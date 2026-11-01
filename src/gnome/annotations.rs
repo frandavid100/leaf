@@ -6,10 +6,41 @@ pub(super) struct AnnotationPanel {
     ui: std::rc::Weak<Ui>,
     toggle: gtk::ToggleButton,
     content: gtk::Box,
+    scroll: gtk::ScrolledWindow,
+    pub(super) active: RefCell<HashSet<u32>>,
+    document: Cell<Option<u64>>,
     pending: Cell<bool>,
 }
 
 impl AnnotationPanel {
+    pub(super) fn reveal(self: &Rc<Self>, ids: Vec<u32>) {
+        let Some(ui) = self.ui.upgrade() else { return };
+        self.document.set(
+            ui.current
+                .borrow()
+                .as_ref()
+                .map(|d| d.session.document_id()),
+        );
+        self.active.replace(ids.iter().copied().collect());
+        self.show();
+        let identity = document_identity(&ui);
+        let weak = Rc::downgrade(self);
+        glib::timeout_add_local_once(std::time::Duration::from_millis(80), move || {
+            let Some(panel) = weak.upgrade() else { return };
+            let Some(ui) = panel.ui.upgrade() else { return };
+            if document_identity(&ui) != identity {
+                return;
+            }
+            if let Some(card) = ids
+                .first()
+                .and_then(|id| find_widget(&panel.content, &format!("comment-thread-{id}")))
+            {
+                if let Some(bounds) = card.compute_bounds(&panel.content) {
+                    panel.scroll.vadjustment().set_value(bounds.y() as f64);
+                }
+            }
+        });
+    }
     pub(super) fn show(self: &Rc<Self>) {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return;
@@ -44,11 +75,21 @@ impl AnnotationPanel {
         if !self.toggle.is_active() {
             return;
         }
-        let (comments, writable) = {
+        let (comments, writable, id) = {
             let value = ui.current.borrow();
             let Some(d) = value.as_ref() else { return };
-            (model::comments(&d.session), model::can_comment(&d.session))
+            (
+                model::comments(&d.session),
+                model::can_comment(&d.session),
+                d.session.document_id(),
+            )
         };
+        if self.document.replace(Some(id)) != Some(id) {
+            self.active.borrow_mut().clear();
+        }
+        self.active
+            .borrow_mut()
+            .retain(|id| comments.iter().any(|c| c.id == *id));
         clear_box(&self.content);
         self.content
             .append(&section_label(wordcraft_gnome::t!("Comments")));
@@ -66,7 +107,13 @@ impl AnnotationPanel {
         }
         for c in &comments {
             if !seen.contains(&c.id) {
-                self.append_thread(&ui, &comments, c.id, writable, &mut seen);
+                self.append_thread(
+                    &ui,
+                    &comments,
+                    model::thread_root(&comments, c.id),
+                    writable,
+                    &mut seen,
+                );
             }
         }
     }
@@ -82,6 +129,10 @@ impl AnnotationPanel {
         let thread = gtk::Box::new(gtk::Orientation::Vertical, 0);
         thread.set_widget_name(&format!("comment-thread-{root}"));
         thread.add_css_class("card");
+        thread.add_css_class("comment-thread");
+        if self.active.borrow().contains(&root) {
+            thread.add_css_class("selected");
+        }
         thread.set_overflow(gtk::Overflow::Hidden);
         let mut stack = vec![(root, 0usize)];
         while let Some((id, depth)) = stack.pop() {
@@ -378,6 +429,9 @@ pub(super) fn install_annotations(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc
         ui: Rc::downgrade(ui),
         toggle: toggle.clone(),
         content,
+        scroll,
+        active: RefCell::new(HashSet::new()),
+        document: Cell::new(None),
         pending: Cell::new(false),
     });
     let weak = Rc::downgrade(&panel);

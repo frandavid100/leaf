@@ -137,9 +137,48 @@ pub(super) struct TextTools {
     pub(super) stack: gtk::Stack,
     pub(super) detail: gtk::Box,
     pub(super) header: Rc<FormatHeader>,
+    active_page: RefCell<Option<String>>,
+    displayed: RefCell<serde_json::Value>,
 }
 impl TextTools {
+    pub(super) fn sync_selection(self: &Rc<Self>) {
+        let Some(ui) = self.ui.upgrade() else { return };
+        let Some(pop) = self.popover.upgrade().filter(|p| p.is_visible()) else {
+            return;
+        };
+        let state = selection_character(&ui);
+        if *self.displayed.borrow() == state {
+            return;
+        }
+        if ui
+            .host
+            .upgrade()
+            .and_then(|h| gtk::prelude::GtkWindowExt::focus(&h.window))
+            .is_some_and(|w| w.is_ancestor(&pop))
+        {
+            return;
+        }
+        self.displayed.replace(state);
+        let page = self.active_page.borrow().clone();
+        if let Some(page) = page {
+            let scroll = self
+                .detail
+                .ancestor(gtk::ScrolledWindow::static_type())
+                .and_then(|w| w.downcast::<gtk::ScrolledWindow>().ok());
+            let y = scroll.as_ref().map(|s| s.vadjustment().value());
+            self.page(&page);
+            if let (Some(scroll), Some(y)) = (scroll, y) {
+                let weak = scroll.downgrade();
+                glib::idle_add_local_once(move || {
+                    if let Some(s) = weak.upgrade() {
+                        s.vadjustment().set_value(y);
+                    }
+                });
+            }
+        }
+    }
     pub(super) fn home(self: &Rc<Self>) {
+        self.active_page.replace(None);
         self.header.home();
         self.stack.set_visible_child_name("main");
     }
@@ -245,18 +284,19 @@ impl TextTools {
         e.set_placeholder_text(Some("RGB: 2266AA"));
         accessible_name(&e, wordcraft_gnome::t!("Hexadecimal RGB Color"));
         self.detail.append(&e);
-        let b = style_menu_button(wordcraft_gnome::t!("Apply Color"));
-        self.detail.append(&b);
         let weak = Rc::downgrade(self);
-        b.connect_clicked(move |_| {
+        e.connect_changed(move |entry| {
             if let Some(s) = weak.upgrade() {
-                let c = e.text().trim().trim_start_matches('#').to_string();
+                let c = entry.text().trim().trim_start_matches('#').to_string();
                 if c.len() == 6 && c.bytes().all(|b| b.is_ascii_hexdigit()) {
-                    s.execute(cmd, serde_json::json!({"color":c}));
-                } else if let Some(ui) = s.ui.upgrade() {
-                    ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
-                        "Enter Six Hexadecimal Digits"
-                    )));
+                    entry.remove_css_class("error");
+                    if let Some(ui) = s.ui.upgrade() {
+                        if let Err(e) = immediate_format(&ui, cmd, serde_json::json!({"color":c})) {
+                            ui.toasts.add_toast(Toast::new(&e));
+                        }
+                    }
+                } else if !c.is_empty() {
+                    entry.add_css_class("error");
                 }
             }
         });
@@ -264,10 +304,21 @@ impl TextTools {
     pub(super) fn toggle(self: &Rc<Self>, label: &str, on: bool, cmd: &'static str) {
         let b = gtk::CheckButton::with_label(label);
         b.set_active(on);
+        if let Some(ui) = self.ui.upgrade() {
+            let state = selection_character(&ui);
+            let key = match cmd {
+                "format.strikethrough" => "strike",
+                "format.doubleStrikethrough" => "doubleStrike",
+                "format.allCaps" => "caps",
+                _ => cmd.rsplit('.').next().unwrap_or(""),
+            };
+            b.set_inconsistent(state.get(key).is_some_and(|v| v.is_null()));
+        }
         self.detail.append(&b);
         let weak = Rc::downgrade(self);
         b.connect_toggled(move |b| {
             if let Some(s) = weak.upgrade() {
+                b.set_inconsistent(false);
                 s.execute(cmd, serde_json::json!({"value":b.is_active()}));
             }
         });
@@ -288,6 +339,7 @@ impl TextTools {
         n
     }
     pub(super) fn page(self: &Rc<Self>, page: &str) {
+        self.active_page.replace(Some(page.into()));
         clear_box(&self.detail);
         let Some(ui) = self.ui.upgrade() else {
             return;
@@ -401,10 +453,25 @@ impl TextTools {
                     -100.0,
                     100.0,
                 );
-                let b = style_menu_button(wordcraft_gnome::t!("Apply Spacing"));
-                self.detail.append(&b);
-                let weak = Rc::downgrade(self);
-                b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){spacing.update();scale.update();position.update();s.execute("format.set",serde_json::json!({"props":{"spacing":spacing.value(),"scale":scale.value(),"position":position.value()}}));}});
+                for (n, key) in [
+                    (&spacing, "spacing"),
+                    (&scale, "scale"),
+                    (&position, "position"),
+                ] {
+                    n.set_widget_name(&format!("text-{key}"));
+                    if state[key].is_null() {
+                        n.set_text("");
+                    }
+                    let weak = Rc::downgrade(&ui);
+                    bind_numeric(&ui, n, move |value| {
+                        let ui = weak.upgrade().ok_or("Document closed")?;
+                        immediate_format(
+                            &ui,
+                            "format.set",
+                            serde_json::json!({"props":{key:value}}),
+                        )
+                    });
+                }
             }
             "color" => {
                 self.color(wordcraft_gnome::t!("Text Color"), "format.color");
@@ -558,6 +625,8 @@ pub(super) fn install_text_pages(
         stack,
         detail,
         header: header.clone(),
+        active_page: RefCell::new(None),
+        displayed: RefCell::new(serde_json::Value::Null),
     });
     let weak = Rc::downgrade(&s);
     more.connect_clicked(move |_| {

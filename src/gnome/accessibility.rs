@@ -90,7 +90,7 @@ pub(super) fn install_accessibility(
             wordcraft_gnome::t!("Zoom Out"),
         ),
         (
-            ui.font_button.clone().upcast(),
+            ui.font_input.clone().upcast(),
             wordcraft_gnome::t!("Font Family"),
         ),
         (

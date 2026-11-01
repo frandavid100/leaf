@@ -21,7 +21,6 @@ pub(super) fn document_page_picture() -> gtk::Picture {
     let image = gtk::Picture::new();
     image.set_can_shrink(false);
     image.set_content_fit(gtk::ContentFit::Fill);
-    image.add_css_class("document-sheet");
     image
 }
 
@@ -442,6 +441,8 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
         picture.set_margin_top(11);
         picture.set_margin_bottom(11);
         let frame = gtk::Overlay::new();
+        frame.add_css_class("document-sheet");
+        frame.set_overflow(gtk::Overflow::Hidden);
         frame.set_size_request(width.ceil() as i32, height.ceil() as i32);
         frame.set_halign(gtk::Align::Center);
         frame.set_valign(gtk::Align::Start);

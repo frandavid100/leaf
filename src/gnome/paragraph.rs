@@ -12,6 +12,8 @@ pub(super) struct ParagraphPopover {
     pub(super) spacing: Cell<f64>,
     pub(super) shade: RefCell<String>,
     pub(super) border: RefCell<serde_json::Value>,
+    active_page: RefCell<Option<String>>,
+    displayed: RefCell<serde_json::Value>,
 }
 pub(super) fn paragraph_icon(name: &str) -> gtk::Widget {
     let area = gtk::DrawingArea::new();
@@ -132,6 +134,130 @@ pub(super) fn paragraph_icon(name: &str) -> gtk::Widget {
     area.upcast()
 }
 impl ParagraphPopover {
+    pub(super) fn sync_selection(self: &Rc<Self>) {
+        let Some(ui) = self.ui.upgrade() else { return };
+        let Some(pop) = self.popover.upgrade().filter(|p| p.is_visible()) else {
+            return;
+        };
+        let state = selection_paragraph(&ui);
+        if *self.displayed.borrow() == state {
+            return;
+        }
+        if ui
+            .host
+            .upgrade()
+            .and_then(|h| gtk::prelude::GtkWindowExt::focus(&h.window))
+            .is_some_and(|w| w.is_ancestor(&pop))
+        {
+            return;
+        }
+        self.displayed.replace(state);
+        let page = self.active_page.borrow().clone();
+        let scroll = self
+            .detail
+            .ancestor(gtk::ScrolledWindow::static_type())
+            .and_then(|w| w.downcast::<gtk::ScrolledWindow>().ok());
+        let y = scroll.as_ref().map(|s| s.vadjustment().value());
+        if let Some(page) = page {
+            self.page(&page);
+        } else {
+            self.home();
+        }
+        if let (Some(scroll), Some(y)) = (scroll, y) {
+            let weak = scroll.downgrade();
+            glib::idle_add_local_once(move || {
+                if let Some(s) = weak.upgrade() {
+                    s.vadjustment().set_value(y);
+                }
+            });
+        }
+    }
+    fn number_action(
+        self: &Rc<Self>,
+        n: &gtk::SpinButton,
+        command: &'static str,
+        key: &'static str,
+        property: &'static str,
+    ) {
+        let apply = {
+            let weak = Rc::downgrade(self);
+            move |n: &gtk::SpinButton| {
+                let Some(s) = weak.upgrade() else { return };
+                let Some(ui) = s.ui.upgrade().filter(|u| !u.closed.get()) else {
+                    return;
+                };
+                if ui.format_syncing.get() {
+                    return;
+                }
+                let text = n.text().trim().replace(',', ".");
+                let Some(mut value) = (!text.ends_with('.'))
+                    .then(|| text.parse::<f64>().ok())
+                    .flatten()
+                    .filter(|v| {
+                        v.is_finite()
+                            && *v >= n.adjustment().lower()
+                            && *v <= n.adjustment().upper()
+                    })
+                else {
+                    n.add_css_class("error");
+                    return;
+                };
+                n.remove_css_class("error");
+                if key == "level" {
+                    value -= 1.0;
+                }
+                let state = selection_paragraph(&ui);
+                let old = property
+                    .split('.')
+                    .try_fold(&state, |v, k| v.get(k))
+                    .and_then(|v| v.as_f64());
+                let rule_ok =
+                    command != "para.lineSpacing" || state["lineSpacing"]["rule"] == "exact";
+                if rule_ok && old.is_some_and(|old| (old - value).abs() < 0.001) {
+                    return;
+                }
+                if let Err(e) = immediate_format(&ui, command, serde_json::json!({key:value})) {
+                    s.message.set_text(&e);
+                    s.message.set_visible(true);
+                }
+            }
+        };
+        let action: Rc<dyn Fn(&gtk::SpinButton)> = Rc::new(apply);
+        let execute = action.clone();
+        n.connect_value_changed(move |n| execute(n));
+        let generation = Rc::new(Cell::new(0u64));
+        let weak_ui = self.ui.clone();
+        let weak_n = n.downgrade();
+        n.connect_changed(move |_| {
+            let Some(ui) = weak_ui.upgrade() else { return };
+            if ui.format_syncing.get() {
+                return;
+            }
+            let next = generation.get().wrapping_add(1);
+            generation.set(next);
+            let generation = generation.clone();
+            let weak_n = weak_n.clone();
+            let action = action.clone();
+            let weak_ui = Rc::downgrade(&ui);
+            let identity = document_identity(&ui);
+            let selected = ui.current.borrow().as_ref().map(|d| d.session.sel.clone());
+            glib::timeout_add_local_once(std::time::Duration::from_millis(350), move || {
+                if generation.get() != next {
+                    return;
+                }
+                let (Some(ui), Some(n)) = (weak_ui.upgrade(), weak_n.upgrade()) else {
+                    return;
+                };
+                if ui.closed.get()
+                    || document_identity(&ui) != identity
+                    || ui.current.borrow().as_ref().map(|d| d.session.sel.clone()) != selected
+                {
+                    return;
+                }
+                action(&n);
+            });
+        });
+    }
     pub(super) fn execute(self: &Rc<Self>, command: &str, args: serde_json::Value) {
         if let Some(ui) = self.ui.upgrade() {
             match format_execute(&ui, command, args) {
@@ -260,6 +386,7 @@ impl ParagraphPopover {
         row.append(&split);
     }
     pub(super) fn home(self: &Rc<Self>) {
+        self.active_page.replace(None);
         self.header.home();
         clear_box(&self.main);
         let Some(ui) = self.ui.upgrade() else {
@@ -425,7 +552,8 @@ impl ParagraphPopover {
         l.set_wrap(true);
         row.append(&l);
         let n = gtk::SpinButton::with_range(min, max, 0.5);
-        n.set_digits(1);
+        n.set_digits(2);
+        n.set_update_policy(gtk::SpinButtonUpdatePolicy::IfValid);
         n.set_width_chars(6);
         n.set_value(value);
         accessible_name(&n, label);
@@ -443,6 +571,7 @@ impl ParagraphPopover {
         self.detail.append(&self.action(label, name, command, args));
     }
     pub(super) fn page(self: &Rc<Self>, page: &str) {
+        self.active_page.replace(Some(page.to_string()));
         let weak = Rc::downgrade(self);
         self.header.back(wordcraft_gnome::t!("Paragraph"), move || {
             if let Some(s) = weak.upgrade() {
@@ -533,18 +662,7 @@ impl ParagraphPopover {
                 );
                 level.set_digits(0);
                 level.set_increments(1.0, 1.0);
-                let b = style_menu_button(wordcraft_gnome::t!("Apply Level"));
-                self.detail.append(&b);
-                let weak = Rc::downgrade(self);
-                b.connect_clicked(move |_| {
-                    if let Some(s) = weak.upgrade() {
-                        level.update();
-                        s.execute(
-                            "para.listLevel",
-                            serde_json::json!({"level":level.value_as_int()-1}),
-                        );
-                    }
-                });
+                self.number_action(&level, "para.listLevel", "level", "numbering.level");
                 self.button(
                     wordcraft_gnome::t!("Restart Numbering at 1"),
                     "paragraph-list-restart",
@@ -572,11 +690,17 @@ impl ParagraphPopover {
                     -1584.0,
                     1584.0,
                 );
-                let b = style_menu_button(wordcraft_gnome::t!("Apply Indents"));
-                b.set_widget_name("paragraph-apply-indents");
-                self.detail.append(&b);
-                let weak = Rc::downgrade(self);
-                b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){left.update();right.update();first.update();s.execute("para.indents",serde_json::json!({"left":left.value(),"right":right.value(),"firstLine":first.value()}));}});
+                for (n, key, property) in [
+                    (&left, "left", "indentLeft"),
+                    (&right, "right", "indentRight"),
+                    (&first, "firstLine", "indentFirst"),
+                ] {
+                    n.set_widget_name(&format!("paragraph-{property}"));
+                    if state[property].is_null() {
+                        n.set_text("");
+                    }
+                    self.number_action(n, "para.indents", key, property);
+                }
             }
             "spacing" => {
                 self.title(wordcraft_gnome::t!("Line Spacing"));
@@ -597,19 +721,17 @@ impl ParagraphPopover {
                         }
                     });
                 }
-                let exact = self.number(wordcraft_gnome::t!("Exactly (pt)"), 14.0, 1.0, 500.0);
-                let b = style_menu_button(wordcraft_gnome::t!("Apply Exact Line Spacing"));
-                self.detail.append(&b);
-                let weak = Rc::downgrade(self);
-                b.connect_clicked(move |_| {
-                    if let Some(s) = weak.upgrade() {
-                        exact.update();
-                        s.execute(
-                            "para.lineSpacing",
-                            serde_json::json!({"exactly":exact.value()}),
-                        );
-                    }
-                });
+                let exact = self.number(
+                    wordcraft_gnome::t!("Exactly (pt)"),
+                    state["lineSpacing"]["value"].as_f64().unwrap_or(14.0),
+                    1.0,
+                    500.0,
+                );
+                exact.set_widget_name("paragraph-exact-line-spacing");
+                if state["lineSpacing"]["rule"] != "exact" {
+                    exact.set_text("");
+                }
+                self.number_action(&exact, "para.lineSpacing", "exactly", "lineSpacing.value");
                 self.title(wordcraft_gnome::t!("Paragraph Spacing (pt)"));
                 let before = self.number(
                     wordcraft_gnome::t!("Before"),
@@ -623,19 +745,16 @@ impl ParagraphPopover {
                     0.0,
                     1584.0,
                 );
-                let b = style_menu_button(wordcraft_gnome::t!("Apply Spacing"));
-                self.detail.append(&b);
-                let weak = Rc::downgrade(self);
-                b.connect_clicked(move |_| {
-                    if let Some(s) = weak.upgrade() {
-                        before.update();
-                        after.update();
-                        s.execute(
-                            "para.spacing",
-                            serde_json::json!({"before":before.value(),"after":after.value()}),
-                        );
+                for (n, key, property) in [
+                    (&before, "before", "spaceBefore"),
+                    (&after, "after", "spaceAfter"),
+                ] {
+                    n.set_widget_name(&format!("paragraph-{property}"));
+                    if state[property].is_null() {
+                        n.set_text("");
                     }
-                });
+                    self.number_action(n, "para.spacing", key, property);
+                }
             }
             "shading" => {
                 self.title(wordcraft_gnome::t!("Shading"));
@@ -810,9 +929,15 @@ impl ParagraphPopover {
     pub(super) fn toggle(self: &Rc<Self>, label: &str, active: bool, command: &'static str) {
         let b = gtk::CheckButton::with_label(label);
         b.set_active(active);
+        if let Some(ui) = self.ui.upgrade() {
+            let state = selection_paragraph(&ui);
+            let key = command.rsplit('.').next().unwrap_or("");
+            b.set_inconsistent(state.get(key).is_some_and(|v| v.is_null()));
+        }
         self.detail.append(&b);
         let weak = Rc::downgrade(self);
         b.connect_toggled(move |b| {
+            b.set_inconsistent(false);
             if let Some(s) = weak.upgrade() {
                 s.execute(command, serde_json::json!({"value":b.is_active()}));
             }
@@ -834,14 +959,24 @@ impl ParagraphPopover {
         let e = gtk::Entry::new();
         e.set_placeholder_text(Some("RGB hexadecimal: FFF2CC"));
         self.detail.append(&e);
-        let b = style_menu_button(label);
-        self.detail.append(&b);
+        let _ = label;
         let weak = Rc::downgrade(self);
-        b.connect_clicked(move |_| {
+        e.connect_changed(move |entry| {
             if let Some(s) = weak.upgrade() {
-                if let Some(c) = s.valid_color(&e) {
+                let c = entry.text().trim().trim_start_matches('#').to_string();
+                if c.len() == 6 && c.bytes().all(|b| b.is_ascii_hexdigit()) {
+                    entry.remove_css_class("error");
                     s.shade.replace(c.clone());
-                    s.execute("para.shading", serde_json::json!({"color":c}));
+                    if let Some(ui) = s.ui.upgrade() {
+                        if let Err(e) =
+                            immediate_format(&ui, "para.shading", serde_json::json!({"color":c}))
+                        {
+                            s.message.set_text(&e);
+                            s.message.set_visible(true);
+                        }
+                    }
+                } else if !c.is_empty() {
+                    entry.add_css_class("error");
                 }
             }
         });
@@ -900,6 +1035,8 @@ pub(super) fn install_paragraph_popover(
         spacing: Cell::new(1.5),
         shade: RefCell::new("FFF2CC".into()),
         border: RefCell::new(serde_json::json!({"kind":"outside","width":0.5,"color":"000000"})),
+        active_page: RefCell::new(None),
+        displayed: RefCell::new(serde_json::Value::Null),
     });
     let state = s.clone();
     pop.connect_show(glib::clone!(

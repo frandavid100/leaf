@@ -177,6 +177,10 @@ pub fn initialize() {
 }
 pub fn configure(s: &mut Session) {
     initialize();
+    let name = crate::preferences::user_name();
+    if !name.is_empty() {
+        let _ = s.run("file.setAuthor", &json!({"name":name}));
+    }
     let dir = crate::preferences::config_root();
     if std::fs::create_dir_all(&dir).is_ok() {
         s.user_dict_path = Some(dir.join("custom-dictionary.txt"));

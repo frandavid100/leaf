@@ -41,6 +41,33 @@ pub(super) fn install_diagnostics(
         titles_toggle,
         search_panel,
     } = controls;
+    if std::env::args().any(|a| a == "--issue-sweep-ui-test") {
+        let (u, w, h, a, m, main, pm, tm) = (
+            ui.clone(),
+            window.clone(),
+            host.clone(),
+            app.clone(),
+            menu_button.clone(),
+            app_menu.clone(),
+            align_menu.clone(),
+            text_menu.clone(),
+        );
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+            issue_sweep_ui_test(&u, &w, &h, &a, &m, &main, &pm, &tm)
+        });
+    }
+    if std::env::args().any(|a| a == "--comment-pointer-test") {
+        let (u, w, a) = (ui.clone(), window.clone(), app.clone());
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+            comment_pointer_ui_test(&u, &w, &a)
+        });
+    }
+    if std::env::args().any(|a| a == "--save-current-file-test") {
+        let (u, w, a) = (ui.clone(), window.clone(), app.clone());
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+            save_current_file_ui_test(&u, &w, &a)
+        });
+    }
     if std::env::args().any(|a| {
         matches!(
             a.as_str(),
