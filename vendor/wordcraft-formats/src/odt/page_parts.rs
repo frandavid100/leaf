@@ -156,7 +156,7 @@ pub(super) fn read(xml: &[u8], styles: &Styles, pages: &mut Pages, fetch: &mut d
                     if mask&bit==0{continue;}
                     let same=match (*slot,old){
                         (Some(a),Some(b))=>out.parts.get(a as usize-1).zip(out.parts.get(b as usize-1)).is_some_and(|(a,b)|a==b),
-                        (Some(a),None)=>out.parts.get(a as usize-1).is_some_and(|(_,bs)|bs.iter().all(|b|matches!(b,FBlock::Para(p)if p.is_blank()))),
+                        (Some(a),None)=>out.parts.get(a as usize-1).is_some_and(|(_,bs)|bs.iter().all(|b|matches!(b,FBlock::Para(p)if p.is_empty()))),
                         (None,_)=>true,
                     };
                     if same{if let Some(id)=slot.take(){out.discard.insert(id);}}

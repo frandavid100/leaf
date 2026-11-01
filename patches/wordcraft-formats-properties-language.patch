@@ -196,7 +196,7 @@ index 9e13b4a..dd52cad 100644
      let mut manifest = String::from(
          "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<manifest:manifest xmlns:manifest=\"urn:oasis:names:tc:opendocument:xmlns:manifest:1.0\" manifest:version=\"1.3\">\n<manifest:file-entry manifest:full-path=\"/\" manifest:version=\"1.3\" manifest:media-type=\"application/vnd.oasis.opendocument.text\"/>\n<manifest:file-entry manifest:full-path=\"content.xml\" manifest:media-type=\"text/xml\"/>\n<manifest:file-entry manifest:full-path=\"styles.xml\" manifest:media-type=\"text/xml\"/>\n<manifest:file-entry manifest:full-path=\"meta.xml\" manifest:media-type=\"text/xml\"/>\n",
 diff --git a/crates/formats/src/odt/page_parts.rs b/crates/formats/src/odt/page_parts.rs
-index ce7ed90..4ede574 100644
+index ce7ed90..35de839 100644
 --- a/crates/formats/src/odt/page_parts.rs
 +++ b/crates/formats/src/odt/page_parts.rs
 @@ -43,7 +43,7 @@ impl Slot {
@@ -282,7 +282,7 @@ index ce7ed90..4ede574 100644
 +                    if mask&bit==0{continue;}
 +                    let same=match (*slot,old){
 +                        (Some(a),Some(b))=>out.parts.get(a as usize-1).zip(out.parts.get(b as usize-1)).is_some_and(|(a,b)|a==b),
-+                        (Some(a),None)=>out.parts.get(a as usize-1).is_some_and(|(_,bs)|bs.iter().all(|b|matches!(b,FBlock::Para(p)if p.is_blank()))),
++                        (Some(a),None)=>out.parts.get(a as usize-1).is_some_and(|(_,bs)|bs.iter().all(|b|matches!(b,FBlock::Para(p)if p.is_empty()))),
 +                        (None,_)=>true,
 +                    };
 +                    if same{if let Some(id)=slot.take(){out.discard.insert(id);}}
