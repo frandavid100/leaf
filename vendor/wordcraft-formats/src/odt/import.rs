@@ -184,9 +184,13 @@ pub(super) struct Pages {
 }
 
 fn read_pages(xml: &[u8]) -> Pages {
-    let mut layouts: HashMap<String, (Attrs, Option<Columns>)> = HashMap::new();
+    #[derive(Default)]
+    struct Layout { attrs:Attrs, columns:Option<Columns>, header:Option<Attrs>, footer:Option<Attrs> }
+    let mut layouts: HashMap<String, Layout> = HashMap::new();
     let mut cur: Option<String> = None;
-    let mut masters: Vec<(String, String)> = Vec::new();
+    let mut part:Option<bool>=None;
+    let mut master:Option<usize>=None;
+    let mut masters: Vec<(String, String, bool, bool)> = Vec::new();
     events(xml, |ev| match ev {
         Ev::Start(q, a) => match local(&q) {
             "page-layout" if q.starts_with("style:") => cur = get(&a, "style:name").map(String::from),
@@ -194,40 +198,72 @@ fn read_pages(xml: &[u8]) -> Pages {
                 if let Some(n) = &cur
                     && layouts.len() < MAX_SECTIONS
                 {
-                    layouts.insert(n.clone(), (a, None));
+                    layouts.insert(n.clone(), Layout{attrs:a,..Default::default()});
                 }
             }
+            "header-style"=>part=Some(false),
+            "footer-style"=>part=Some(true),
+            "header-footer-properties"=>{
+                if let Some(layout)=cur.as_ref().and_then(|n|layouts.get_mut(n)){
+                    match part{Some(false)=>layout.header=Some(a),Some(true)=>layout.footer=Some(a),None=>{}}
+                }
+            },
             "columns" if q.starts_with("style:") => {
                 if let Some(l) = cur.as_ref().and_then(|n| layouts.get_mut(n)) {
-                    l.1 = Some(columns_of(&a));
+                    l.columns = Some(columns_of(&a));
                 }
             }
             "column-sep" => {
-                if let Some(c) = cur.as_ref().and_then(|n| layouts.get_mut(n)).and_then(|l| l.1.as_mut()) {
+                if let Some(c) = cur.as_ref().and_then(|n| layouts.get_mut(n)).and_then(|l| l.columns.as_mut()) {
                     c.separator = column_sep(&a);
                 }
             }
             "master-page" if masters.len() < MAX_SECTIONS => {
                 if let (Some(n), Some(l)) = (get(&a, "style:name"), get(&a, "style:page-layout-name")) {
-                    masters.push((n.to_string(), l.to_string()));
+                    masters.push((n.to_string(), l.to_string(),false,false));
+                    master=Some(masters.len()-1);
                 }
             }
+            "header"|"header-first"|"header-left" if q.starts_with("style:")=>{
+                if get(&a,"style:display")!=Some("false")&&let Some(m)=master.and_then(|i|masters.get_mut(i)){m.2=true;}
+            },
+            "footer"|"footer-first"|"footer-left" if q.starts_with("style:")=>{
+                if get(&a,"style:display")!=Some("false")&&let Some(m)=master.and_then(|i|masters.get_mut(i)){m.3=true;}
+            },
             _ => {}
         },
         Ev::End(q) => {
             if local(&q) == "page-layout" {
                 cur = None;
             }
+            if matches!(local(&q),"header-style"|"footer-style"){part=None;}
+            if local(&q)=="master-page"{master=None;}
         }
         Ev::Text(_) => {}
     });
     let mut pages = Pages::default();
-    for (name, layout) in masters {
-        let Some((a, cols)) = layouts.get(&layout) else { continue };
+    for (name, layout,header,footer) in masters {
+        let Some(layout) = layouts.get(&layout) else { continue };
         let mut sec = SectionProps::default();
-        apply_layout(a, &mut sec);
+        apply_layout(&layout.attrs, &mut sec);
+        for (enabled,props,edge,margin,cached,nominal,spacing) in [
+            (header,&layout.header,&mut sec.header,&mut sec.margin_top,"leaf:header-distance","leaf:body-margin-top","fo:margin-bottom"),
+            (footer,&layout.footer,&mut sec.footer,&mut sec.margin_bottom,"leaf:footer-distance","leaf:body-margin-bottom","fo:margin-top")
+        ] {
+            if !enabled{continue;}
+            let Some(props)=props else{continue;};
+            let len=|attrs:&Attrs,key:&str|get(attrs,key).and_then(length).filter(|v|v.is_finite()&&*v>=0.0).map(|v|v.min(1584.0));
+            let height=len(props,"svg:height").or_else(||len(props,"fo:min-height")).unwrap_or(0.0);
+            *edge=*margin;
+            // Writer's minimum/fixed header height includes its body spacing.
+            *margin=(*margin+height.max(len(props,spacing).unwrap_or(0.0))).min(1584.0);
+            // Ignore stale cached distances when an independent editor provides
+            // real ODF geometry. Only retain an overlapping nominal margin when
+            // the page edge still agrees with the cache written alongside it.
+            if len(&layout.attrs,cached).is_some_and(|v|(v-*edge).abs()<0.02)&&let Some(v)=len(&layout.attrs,nominal){*margin=v;}
+        }
         // A one-column layout keeps the default columns (and their gap).
-        if let Some(c) = cols.as_ref().filter(|c| c.count > 1) {
+        if let Some(c) = layout.columns.as_ref().filter(|c| c.count > 1) {
             sec.columns = c.clone();
         }
         if pages.first.is_none() {
@@ -259,7 +295,16 @@ fn apply_layout(a: &Attrs, sec: &mut SectionProps) {
     }
     sec.header=len("leaf:header-distance").unwrap_or(sec.header).min(1584.0);
     sec.footer=len("leaf:footer-distance").unwrap_or(sec.footer).min(1584.0);
-    sec.page_num_format=if let Some(value)=get(a,"leaf:number-format"){wordcraft_doc::section::NumFormat::from_ooxml(value)}else{wordcraft_doc::section::NumFormat::from_ooxml(match get(a,"style:num-format"){Some("i")=>"lowerRoman",Some("I")=>"upperRoman",Some("a")=>"lowerLetter",Some("A")=>"upperLetter",_=>"decimal"})};
+    let standard=get(a,"style:num-format");
+    let cached=get(a,"leaf:number-format");
+    // The standard property is authoritative after an external edit. Preserve
+    // an exotic cached enum only while its exported fallback still agrees.
+    let fallback=|value:&str|match value{"lowerRoman"=>"i","upperRoman"=>"I","lowerLetter"=>"a","upperLetter"=>"A",_=>"1"};
+    sec.page_num_format=wordcraft_doc::section::NumFormat::from_ooxml(
+        match cached.filter(|v|standard.is_none_or(|s|s==fallback(v))){
+            Some(value)=>value,
+            None=>match standard{Some("i")=>"lowerRoman",Some("I")=>"upperRoman",Some("a")=>"lowerLetter",Some("A")=>"upperLetter",_=>"decimal"}
+        });
     sec.landscape = match get(a, "style:print-orientation") {
         Some("landscape") => true,
         Some("portrait") => false,

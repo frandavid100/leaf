@@ -119,6 +119,11 @@ def compare(before, after, lo, pdf_text):
     check("Header edge distance recognised independently", bool(active_headers) and all(abs(s["TopMargin"]*72/2540-before["sections"][0]["header"]) < .2 for s in active_headers), str([s["TopMargin"]*72/2540 for s in active_headers]))
     check("Footer edge distance recognised independently", bool(active_footers) and all(abs(s["BottomMargin"]*72/2540-before["sections"][0]["footer"]) < .2 for s in active_footers), str([s["BottomMargin"]*72/2540 for s in active_footers]))
     check("Section count retained", len(before["sections"]) == len(after["sections"]), f'{len(before["sections"])} -> {len(after["sections"])}')
+    for kind in ["headers", "footers"]:
+        links = lambda state: [[s[kind][slot] is None for slot in ["default", "first", "even"]] for s in state["sections"]]
+        a, b = links(before), links(after)
+        check("Previous-section link semantics: " + kind, a == b, f"{a} -> {b}")
+    check("Displayed header sequence retained", [p["header"] for p in before["pages"]] == [p["header"] for p in after["pages"]])
     for key in ["header", "footer", "marginTop", "marginBottom", "pageNumFormat", "pageNumStart", "titlePage"]:
         a = [s[key] for s in before["sections"]]
         b = [s[key] for s in after["sections"]]

@@ -19,6 +19,7 @@
   <url type="help">https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/TESTING.md</url>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.0-alpha.11" date="2026-11-01" type="development"><description><p>Preserve standard ODF header and footer geometry across independent LibreOffice edits, and respect externally changed number formats.</p></description></release>
     <release version="0.1.0-alpha.10" date="2026-11-01" type="development"><description><p>Section-aware headers and footers, page numbering controls, native spelling review and text languages with bundled Spanish dictionaries.</p></description></release>
     <release version="0.1.0-alpha.9" date="2026-11-01" type="development"><description><p>Edit headers and footers directly on the document and insert automatic page numbers without replacing existing content.</p></description></release>
     <release version="0.1.0-alpha.8" date="2026-11-01" type="development"><description><p>Complete localized validation messages and verify live dark/light page and thumbnail textures.</p></description></release>

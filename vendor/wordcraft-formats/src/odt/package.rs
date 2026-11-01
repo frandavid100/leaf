@@ -34,13 +34,31 @@ fn styles_xml(pages: &[(String, wordcraft_doc::SectionProps)], body_font: &str, 
     for (i, (_, sec)) in pages.iter().enumerate() {
         // A page of several columns carries them in its layout.
         let cols = if sec.columns.count > 1 { columns_xml(&sec.columns) } else { String::new() };
+        let content=master_content.get(i).map(String::as_str).unwrap_or("");
+        let enabled=|name:&str|["","-first","-left"].iter().any(|slot|content.contains(&format!("<style:{name}{slot}>")));
+        let has_header=enabled("header");let has_footer=enabled("footer");
+        // ODF page margins end at the OUTSIDE of a header/footer. Word's body
+        // margins include them. Reserve the difference and let content consume
+        // the intervening spacing before it grows into the body, as Writer does
+        // when importing DOCX. No font measurement or cached Leaf data is needed.
+        let page_part=|name:&str,space:f32,side:&str|{
+            let space=space.max(0.0);let minimum=space.min(72.0/25.4);
+            format!("<style:{name}-style><style:header-footer-properties fo:min-height=\"{}\" fo:margin-{side}=\"{}\" style:dynamic-spacing=\"true\"/></style:{name}-style>",pt(space),pt(space-minimum))
+        };
+        let header=if has_header{page_part("header",sec.margin_top-sec.header,"bottom")}else{String::new()};
+        let footer=if has_footer{page_part("footer",sec.margin_bottom-sec.footer,"top")}else{String::new()};
+        // An overlapping header has no distinct nominal body margin in ODF.
+        // Keep that unusual engine setting separately; normal geometry uses ODF.
+        let nominal=format!("{}{}",
+            if has_header&&sec.header>sec.margin_top{format!(" leaf:body-margin-top=\"{}\"",pt(sec.margin_top))}else{String::new()},
+            if has_footer&&sec.footer>sec.margin_bottom{format!(" leaf:body-margin-bottom=\"{}\"",pt(sec.margin_bottom))}else{String::new()});
         s.push_str(&format!(
-            "<style:page-layout style:name=\"pm{}\"><style:page-layout-properties fo:page-width=\"{}\" fo:page-height=\"{}\" fo:margin-top=\"{}\" fo:margin-bottom=\"{}\" fo:margin-left=\"{}\" fo:margin-right=\"{}\" style:print-orientation=\"{}\" style:num-format=\"{}\" leaf:header-distance=\"{}\" leaf:footer-distance=\"{}\" leaf:number-format=\"{}\">{cols}</style:page-layout-properties></style:page-layout>",
+            "<style:page-layout style:name=\"pm{}\"><style:page-layout-properties fo:page-width=\"{}\" fo:page-height=\"{}\" fo:margin-top=\"{}\" fo:margin-bottom=\"{}\" fo:margin-left=\"{}\" fo:margin-right=\"{}\" style:print-orientation=\"{}\" style:num-format=\"{}\" leaf:header-distance=\"{}\" leaf:footer-distance=\"{}\" leaf:number-format=\"{}\"{nominal}>{cols}</style:page-layout-properties>{header}{footer}</style:page-layout>",
             i + 1,
             pt(sec.page_w),
             pt(sec.page_h),
-            pt(sec.margin_top),
-            pt(sec.margin_bottom),
+            pt(if has_header{sec.header}else{sec.margin_top}),
+            pt(if has_footer{sec.footer}else{sec.margin_bottom}),
             pt(sec.margin_left),
             pt(sec.margin_right),
             if sec.page_w > sec.page_h { "landscape" } else { "portrait" },
