@@ -235,7 +235,7 @@ Focused tests cover active first/even/default slots, nested tables, header image
 
 Source GTK minimum is now 4.14 for GtkPrintDialog (GNOME 49 runtime already satisfies it). src/printing.rs prepares a private disposable PDF via the existing engine file.exportPdf command on a new Session from a document clone; it does not save the live Session. src/gnome_printing.rs owns per-tab cancellation/duplicate suppression, worker lifecycle and GTK callback cleanup. Keep the temporary source until the print callback; keep the application hold during worker export so closing the last window still permits cleanup. Cancellation cannot interrupt the synchronous PDF conversion but prevents a later dialog. No new Rust dependency, renderer or engine patch is added.
 
-src/gnome_accessibility.rs supplies F6/Shift+F6 pane navigation and F10 main-menu access, with capture restricted to those keys. Existing entry shortcuts, context keys, tab switching and table Tab behavior remain. Numeric control helpers and custom icon controls have explicit accessible labels. The custom canvas still lacks a complete GtkAccessibleText interface; do not describe this as full Orca support. See docs/KEYBOARD_PRINTING.md for evidence and remaining manual tests.
+src/gnome_accessibility.rs supplies F6/Shift+F6 pane navigation and F10 main-menu access, with capture restricted to those keys. Existing entry shortcuts, context keys, tab switching and table Tab behavior remain. Numeric control helpers and custom icon controls have explicit accessible labels. Alpha.12 adds the initial GtkAccessibleText adapter described below; do not describe it as full document accessibility. See docs/KEYBOARD_PRINTING.md for the original control/printing evidence.
 
 The hermetic print portal is test-only, never installed. Run it only on a private D-Bus session. It verifies PDF file-descriptor handoff, text, duplicate suppression, success/dismissal/error and cleanup. The installed sandbox also opens and cancels the real system dialog. Tests do not verify a physical printer.
 
@@ -266,3 +266,30 @@ Proofing uses the pinned engine’s layout/proof APIs and review commands. Scan 
 Spanish Hunspell data in data/dictionaries is pinned independently, unmodified, with original credits, GPL text and checksums. Install it under /app/share/hunspell; native builds use the source directory. English tools remain upstream built-ins. Missing dictionaries must be reported rather than claiming text was checked. Include this runtime data when comparing tested sources for binary reuse. Gettext extraction now avoids matching the suffix of format! as a t! macro.
 
 The third isolated formats patch preserves the newly exposed ODT properties and language metadata; review/remove it when upstream catches up. Exact distances, unchecked-text original languages and section links use explicit Leaf extension attributes. Other ODF editors may ignore/strip these extensions; visible content is also exported in ordinary ODF elements. Continuous-section page-style fidelity remains limited upstream.
+
+
+## Document text accessibility — alpha.12
+
+`src/gnome_canvas.rs` subclasses the existing visible GtkFixed and implements
+GtkAccessibleText. `src/accessible_text.rs` is a read-only derived index of the
+active WordCraft story; canonical text, selection and all edits remain in Session.
+The index translates Unicode character offsets to engine UTF-8 byte positions.
+Word/sentence segmentation directly uses the already locked
+unicode-segmentation 1.13.3 crate; no transitive version or engine revision changed.
+
+Preserve weak Ui ownership, revision/document/story caching, and old-delete /
+new-insert notification ordering. Never hold RefCell borrows across GTK update
+notifications. Visual line queries must use DocLayout::line_span, not a guessed
+text wrap. Do not introduce a second editable buffer or hidden GtkTextView.
+
+The minimum GTK remains 4.14. Remote EditableText actions, later GTK caret setters
+and character geometry, rich attributes and table/image/field semantics are not
+implemented by this first-stage adapter. Source text is not yet filtered to match
+every hidden-text/revision view. See docs/ACCESSIBLE_DOCUMENT_TEXT.md and its JSON
+evidence. The optional audit uses actual AT-SPI, real keyboard input and unmodified
+Orca; generated speech logs are not human listening or braille validation.
+
+The proven native source is d17d12fe9271eaa682cab62333d7e8d873022074 /
+run 41303104863. Packaging-only reuse is pinned explicitly in the workflow and
+requires source identity. The installed sandbox has its own reader check before
+publication. Do not bypass either guard when changing application code.

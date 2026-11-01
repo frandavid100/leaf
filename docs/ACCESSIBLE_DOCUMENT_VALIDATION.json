@@ -227,7 +227,45 @@
         }
       ]
     },
-    "engine_log": "ACCESSIBLE_DOCUMENT_READY\nACCESSIBLE_DOCUMENT_ENGINE_OK\n"
+    "engine_log": "ACCESSIBLE_DOCUMENT_READY\nACCESSIBLE_DOCUMENT_ENGINE_OK\n",
+    "speech_transcript": [
+      "12:24:34.444080 - SPEECH OUTPUT: 'Screen reader on.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:36.236300 - SPEECH OUTPUT: 'F6' {'established': False}",
+      "12:24:36.286874 - SPEECH OUTPUT: 'Search Document toggle button not pressed.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:36.295589 - SPEECH OUTPUT: 'not pressed' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:36.483704 - SPEECH OUTPUT: 'F6' {'established': False}",
+      "12:24:36.551882 - SPEECH OUTPUT: 'Style toggle button not pressed.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:36.575170 - SPEECH OUTPUT: 'not pressed' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:36.734602 - SPEECH OUTPUT: 'F6' {'established': False}",
+      "12:24:36.792659 - SPEECH OUTPUT: 'Document Content text.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:36.794361 - SPEECH OUTPUT: 'First paragraph for Orca.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:36.796129 - SPEECH OUTPUT: 'F6 switches between the document, sidebar and formatting controls. Tab moves between table cells. Shift+F10 opens the context menu.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:36.991854 - SPEECH OUTPUT: 'left control' {'established': False}",
+      "12:24:37.101745 - SPEECH OUTPUT: 'Café, español y 😀.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:37.161105 - SPEECH OUTPUT: 'left shift' {'established': False}",
+      "12:24:37.268975 - SPEECH OUTPUT: 'C' {'established': False, 'average-pitch': 7.0, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:37.269638 - SPEECH OUTPUT: 'selected' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:37.561304 - SPEECH OUTPUT: 'left shift' {'established': False}",
+      "12:24:37.671396 - SPEECH OUTPUT: 'a' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:37.672089 - SPEECH OUTPUT: 'selected' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:37.962783 - SPEECH OUTPUT: 'left shift' {'established': False}",
+      "12:24:38.073330 - SPEECH OUTPUT: 'f' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:38.074035 - SPEECH OUTPUT: 'selected' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:38.364572 - SPEECH OUTPUT: 'left shift' {'established': False}",
+      "12:24:38.474693 - SPEECH OUTPUT: 'é' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:38.475340 - SPEECH OUTPUT: 'selected' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:38.783601 - SPEECH OUTPUT: 'left shift' {'established': False}",
+      "12:24:38.815482 - SPEECH OUTPUT: 'Selection deleted.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:38.837886 - SPEECH OUTPUT: 'X' {'established': False, 'average-pitch': 7.0}",
+      "12:24:38.857970 - SPEECH OUTPUT: 'left control' {'established': False}",
+      "12:24:38.885235 - SPEECH OUTPUT: 'z' {'established': False}",
+      "12:24:38.902628 - SPEECH OUTPUT: 'left control' {'established': False}",
+      "12:24:38.908389 - SPEECH OUTPUT: 'a' {'established': False}",
+      "12:24:38.939787 - SPEECH OUTPUT: 'left control' {'established': False}",
+      "12:24:39.038042 - SPEECH OUTPUT: 'Café, español y 😀.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:24:39.097979 - SPEECH OUTPUT: 'left control' {'established': False}",
+      "12:24:39.115443 - SPEECH OUTPUT: 'First paragraph for Orca.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}"
+    ]
   },
   "scope": "Ordinary active-story source text through GtkAccessibleText; normal keyboard reading, cursor, selection, typing and undo. Not complete rich-document accessibility.",
   "not_tested": [
@@ -238,6 +276,271 @@
     "Newer GTK geometry/caret setter APIs"
   ],
   "flatpak_validation": {
-    "status": "pending installed audit; publication is gated on success"
+    "status": "passed; prerelease published after successful installed checks",
+    "run": 41306799036,
+    "job": 124848748645,
+    "artifact_id": 13083940918,
+    "artifact_zip_sha256": "55a686740d556ed54f44a5994652c0376877d3e25b115a8d6f1a3dd3723e5304",
+    "independently_downloaded_and_verified": true,
+    "published_assets_verified": 8,
+    "sha256sums_verified": 7,
+    "source_commit": "7d90cd69d1c7234d6e5627918a735024b110b14e",
+    "tag_commit": "7d90cd69d1c7234d6e5627918a735024b110b14e",
+    "release_url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.12",
+    "bundle_size_bytes": 10546536,
+    "bundle_sha256": "462bf10d26031c991551d3f5631a49d802e9e4174deafed870be7561185d8564",
+    "result": {
+      "baseline": false,
+      "orca_version": "46.1",
+      "role": "text",
+      "interfaces": [
+        "Accessible",
+        "Action",
+        "Component",
+        "Text"
+      ],
+      "speech_is_generated_transcript_not_human_listening": true,
+      "text_supported": true,
+      "text": "First paragraph for Orca.\nCafé, español y 😀.\nFinal paragraph.",
+      "count": 61,
+      "caret": 0,
+      "sandbox": true,
+      "orca_announcements": {
+        "paragraph": true,
+        "selection": true,
+        "typed_character": true,
+        "restored_paragraph": true
+      },
+      "keyboard_read_edit_select_undo": true,
+      "events": [
+        {
+          "type": "object:children-changed:add",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "[panel | ]"
+        },
+        {
+          "type": "object:text-changed:insert",
+          "detail1": 0,
+          "detail2": 61,
+          "text": "First paragraph for Orca.\nCafé, español y 😀.\nFinal paragraph."
+        },
+        {
+          "type": "object:state-changed:focused",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:state-changed:focused",
+          "detail1": 1,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 26,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 27,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 28,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 29,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 30,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-changed:delete",
+          "detail1": 26,
+          "detail2": 4,
+          "text": "Café"
+        },
+        {
+          "type": "object:text-changed:insert",
+          "detail1": 26,
+          "detail2": 1,
+          "text": "X"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 27,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-changed:delete",
+          "detail1": 26,
+          "detail2": 1,
+          "text": "X"
+        },
+        {
+          "type": "object:text-changed:insert",
+          "detail1": 26,
+          "detail2": 4,
+          "text": "Café"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 30,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 61,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 26,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 45,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 26,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "0"
+        }
+      ]
+    },
+    "speech_transcript": [
+      "12:32:34.474138 - SPEECH OUTPUT: 'Screen reader on.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:35.075412 - SPEECH OUTPUT: 'Document Content text.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:35.077213 - SPEECH OUTPUT: 'F6 switches between the document, sidebar and formatting controls. Tab moves between table cells. Shift+F10 opens the context menu.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:36.819291 - SPEECH OUTPUT: 'F6' {'established': False}",
+      "12:32:36.874825 - SPEECH OUTPUT: 'Search Document toggle button not pressed.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:36.890059 - SPEECH OUTPUT: 'not pressed' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:37.068199 - SPEECH OUTPUT: 'F6' {'established': False}",
+      "12:32:37.130416 - SPEECH OUTPUT: 'Style toggle button not pressed.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:37.132271 - SPEECH OUTPUT: 'opens popup' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:37.153765 - SPEECH OUTPUT: 'not pressed' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:37.318815 - SPEECH OUTPUT: 'F6' {'established': False}",
+      "12:32:37.372908 - SPEECH OUTPUT: 'Document Content text.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:37.374722 - SPEECH OUTPUT: 'First paragraph for Orca.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:37.376353 - SPEECH OUTPUT: 'F6 switches between the document, sidebar and formatting controls. Tab moves between table cells. Shift+F10 opens the context menu.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:37.577176 - SPEECH OUTPUT: 'left control' {'established': False}",
+      "12:32:37.688363 - SPEECH OUTPUT: 'Café, español y 😀.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:37.698798 - SPEECH OUTPUT: 'left shift' {'established': False}",
+      "12:32:37.806477 - SPEECH OUTPUT: 'C' {'established': False, 'average-pitch': 7.0, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:37.807104 - SPEECH OUTPUT: 'selected' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:38.100720 - SPEECH OUTPUT: 'left shift' {'established': False}",
+      "12:32:38.208474 - SPEECH OUTPUT: 'a' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:38.209138 - SPEECH OUTPUT: 'selected' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:38.502616 - SPEECH OUTPUT: 'left shift' {'established': False}",
+      "12:32:38.609841 - SPEECH OUTPUT: 'f' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:38.610465 - SPEECH OUTPUT: 'selected' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:38.903880 - SPEECH OUTPUT: 'left shift' {'established': False}",
+      "12:32:39.011654 - SPEECH OUTPUT: 'é' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:39.012283 - SPEECH OUTPUT: 'selected' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:39.321450 - SPEECH OUTPUT: 'left shift' {'established': False}",
+      "12:32:39.346631 - SPEECH OUTPUT: 'Selection deleted.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:39.371979 - SPEECH OUTPUT: 'X' {'established': False, 'average-pitch': 7.0}",
+      "12:32:39.403174 - SPEECH OUTPUT: 'left control' {'established': False}",
+      "12:32:39.409941 - SPEECH OUTPUT: 'z' {'established': False}",
+      "12:32:39.438929 - SPEECH OUTPUT: 'left control' {'established': False}",
+      "12:32:39.445306 - SPEECH OUTPUT: 'a' {'established': False}",
+      "12:32:39.463328 - SPEECH OUTPUT: 'left control' {'established': False}",
+      "12:32:39.496914 - SPEECH OUTPUT: 'A toast appeared: Unsaved changes. Save a copy to keep them.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:39.560088 - SPEECH OUTPUT: 'Café, español y 😀.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}",
+      "12:32:39.587795 - SPEECH OUTPUT: 'left control' {'established': False}",
+      "12:32:39.603663 - SPEECH OUTPUT: 'First paragraph for Orca.' {'established': False, 'family': {'name': None, 'gender': None, 'lang': None, 'dialect': None, 'variant': None}}"
+    ],
+    "engine_log": "MESA-EGL: warning: DRI3 error: Could not get DRI3 device\nMESA-EGL: warning: Ensure your X server supports DRI3 to get accelerated rendering\nACCESSIBLE_DOCUMENT_READY\nACCESSIBLE_DOCUMENT_ENGINE_OK\n",
+    "other_checks": [
+      "Upgrade from alpha.11",
+      "Launcher and document portal",
+      "Persistent data through reinstall",
+      "HiDPI",
+      "English/Spanish and dark mode",
+      "Lifecycle regressions",
+      "Headers, page options and proofing",
+      "System print dialog and portal handoff"
+    ]
   }
 }

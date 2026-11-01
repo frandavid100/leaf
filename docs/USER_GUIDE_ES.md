@@ -175,3 +175,16 @@ Tabla e Imagen se insertan desde Añadir en el menú del documento (tres puntos)
 
 
 Estilo, Párrafo y Texto se abren también como submenús dentro del clic derecho, con su propia vuelta al contexto; no abren los desplegables de la cabecera. Comparten controles, estados y chincheta. Las transiciones animan el tamaño como Añadir y respetan el movimiento reducido. Las opciones avanzadas de Texto se distribuyen en subpáginas del mismo menú.
+
+
+## Lectura inicial con Orca
+
+Alpha.12 expone el texto normal del documento, el cursor y la selección mediante
+GtkAccessibleText. Activa Orca y usa F6/Mayús+F6 para llegar al documento. Las
+flechas, Mayús+flechas, escritura y Ctrl+Z siguen trabajando sobre WordCraft.
+La prueba automática confirma lectura, anuncios de selección y de un carácter
+escrito, y recuperación del texto mediante deshacer.
+
+Es una primera etapa: tablas, imágenes, campos y atributos de formato todavía
+necesitan semántica accesible propia; tampoco se han validado braille ni una
+sesión humana completa. [Diseño, pruebas y límites](ACCESSIBLE_DOCUMENT_TEXT.md).

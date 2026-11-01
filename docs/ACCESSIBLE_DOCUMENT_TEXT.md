@@ -54,7 +54,13 @@ Los resultados, revisiones y hashes verificados quedan en
 La validación nativa supera 97 tests y la prueba independiente con Orca 46.1
 confirma anuncios de párrafo, selección, carácter escrito y texto restaurado.
 F6 recorre panel, herramientas y documento antes de iniciar la lectura.
-El paquete no se publica hasta superar también la prueba instalada.
+El Flatpak instalado supera la misma prueba con Orca 46.1 y se publica como
+[alpha.12](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.12).
+Se han descargado y verificado independientemente ambos ZIP de auditoría/paquete,
+los siete checksums y los ocho assets publicados.
+La prueba anterior confirma que alpha.11 no exponía el texto del lienzo;
+la nueva confirma 61 caracteres Unicode, selección Café (26–30), sustitución
+por X y restauración exacta del documento canónico al deshacer.
 
 Las transcripciones son evidencia de los anuncios generados automáticamente;
 no equivalen a escuchar una sesión completa ni a probar una línea braille.

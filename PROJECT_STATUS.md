@@ -2,7 +2,22 @@
 
 Actualizado: 1 de noviembre de 2026. Punto de entrada para continuar desde otra conversación.
 
-## Última entrega: alpha.11 — interoperabilidad verificada con Writer (01-11-2026)
+## Última entrega: alpha.12 — accesibilidad inicial del texto con Orca (01-11-2026)
+
+Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.12
+Tag y paquete: `7d90cd69d1c7234d6e5627918a735024b110b14e`. Fuente nativa: `d17d12fe9271eaa682cab62333d7e8d873022074`, igualdad funcional comprobada antes de reutilizar el ejecutable. Flatpak x86_64 **10.546.536 bytes**, SHA256 `462bf10d26031c991551d3f5631a49d802e9e4174deafed870be7561185d8564`.
+
+El lienzo visible implementa GtkAccessibleText mediante una subclase GtkFixed. Índice de lectura derivado de la historia activa de WordCraft, con conversión entre caracteres Unicode y bytes UTF-8; el motor conserva documento, selección, edición e historial. Líneas visuales consultadas mediante DocLayout::line_span. Notificaciones de inserción, borrado, cursor y selección sin préstamos RefCell durante emisiones; referencias débiles y vaciado al cerrar la pestaña. El índice se reutiliza al mover el cursor. Unicode-segmentation ya estaba fijado transitivamente; ahora se declara directamente sin cambiar versiones transitivas. Motor/renderizador y parches de formatos sin cambios.
+
+Validación nativa 41303104863, job 124837953224: **97 tests**, release GTK y regresiones de interfaz, localización/oscuro, encabezados/revisión, ciclo de vida, teclado/impresión, menús/adaptación e HiDPI. Se omite únicamente el benchmark costoso debug/release porque no cambia el renderizador. Artefacto nativo 13081379894 descargado y verificado; SHA256 ZIP `733b7c0bba3f9a28ced274c3e4595198c78d65dfbf2515e0b96152ad4bd73488`.
+
+Auditoría independiente real AT-SPI y Orca 46.1: 41306304305, harness `a126b34affe0a2f6cf26065ba98dbc5e6b71eacb`. Alpha.11 no exporta el lienzo genérico, aunque sí los controles nativos. Alpha.12 exporta Text, 61 caracteres Unicode, cursor y selección; F6 recorre panel/herramientas/documento, se lee un párrafo, se selecciona Café, se escribe X y se deshace. Orca genera anuncios de lectura, selección, carácter escrito y texto restaurado. El proceso Leaf verifica su documento canónico idéntico al inicial. ZIP 13083615784 descargado/verificado, SHA256 `2f5b81301d3623d3a94678e5076b0a4ad267ffc07943a310cc14f2453db99bb0`.
+
+Paquete 41306799036, job 124848748645: la misma prueba con Orca pasa dentro del Flatpak, además de actualización desde alpha.11, lanzador/portal, datos al reinstalar, idioma/oscuro/HiDPI, vida de objetos, revisión y encabezados, diálogo e impresión por portal. ZIP 13083940918 descargado/verificado, SHA256 `55a686740d556ed54f44a5994652c0376877d3e25b115a8d6f1a3dd3723e5304`; siete SHA256SUMS y ocho tamaños/digests de assets publicados coinciden. Tag comprobado y captura interna de lanzador revisada; capturas públicas sin modificar. [Diseño y límites](docs/ACCESSIBLE_DOCUMENT_TEXT.md), [resultados y transcripciones durables](docs/ACCESSIBLE_DOCUMENT_VALIDATION.json).
+
+Primera etapa completada, no accesibilidad total: texto fuente de la historia activa, sin semántica completa de tablas/imágenes/campos, atributos ricos ni filtrado de todas las revisiones/texto oculto. No se implementan EditableText remoto ni setters/geometría de GTK posteriores a 4.14. Transcripciones generadas automáticamente; no prueba de escucha humana ni braille. No se repite el corpus de documentos. Weblate y capturas públicas siguen a cargo del usuario. Siguiente propuesta: revisión real con usuarios de Orca y reproducciones concretas antes de ampliar semántica; no implica autorización automática de más funciones.
+
+## Entrega anterior: alpha.11 — interoperabilidad verificada con Writer (01-11-2026)
 
 Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.11
 Tag y paquete: `04ea596dc61a9823008b8375d41ccf8613f4c6ac`. Código nativo compilado y auditado: `125b6ab96db54169e9f652517d2e255039a66e36`; igualdad funcional de src/Cargo/tests/vendor/po/data/examples/trabajador/parches comprobada antes de reutilizar el ejecutable. Datos del paquete: Flatpak x86_64 **10.686.424 bytes**, SHA256 `6b9ed787b8403b19f4df3de3bbdc5c848361dfeac805615adc99dcaa586ce98f`.

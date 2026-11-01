@@ -31,7 +31,7 @@ In Text → Text Language, apply English/Spanish to a selected range and then th
 
 ## Keyboard and printing
 
-Use F6 / Shift+F6 to move between document, sidebar and formatting controls; F10 opens the main menu. Check Escape, Enter, table Tab / Shift+Tab and native search-field shortcuts in wide and narrow windows. See [scope and remaining accessibility limits](KEYBOARD_PRINTING.md): the custom canvas still lacks complete screen-reader text access.
+Use F6 / Shift+F6 to move between document, sidebar and formatting controls; F10 opens the main menu. Check Escape, Enter, table Tab / Shift+Tab and native search-field shortcuts in wide and narrow windows. Alpha.12 exposes ordinary document text, cursor and selection through GtkAccessibleText. With Orca active, use F6 to focus the document, read with arrow keys, select an accented word, type over it and undo. Report missing or incorrect announcements separately from visual layout. [Scope, automated reader evidence and remaining limits](ACCESSIBLE_DOCUMENT_TEXT.md): full rich-document semantics, braille and remote editing actions remain incomplete.
 
 From the document menu or Ctrl+P, open Print with unsaved text, then cancel. The editable destination, dirty state and undo history should stay unchanged. Print a copy or use Print to File and check dimensions, orientation, images and text. On a suitable printer, check ranges, copies and duplex. Automated portal tests do not establish physical-printer support.
 

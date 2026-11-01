@@ -3,6 +3,12 @@
 Actualizada: 1 de noviembre de 2026. Estado técnico en [PROJECT_STATUS.md](PROJECT_STATUS.md).
 Las fases siguientes son propuestas; no implican autorización para implementarlas todas.
 
+## Completado: texto accesible del documento — alpha.12
+
+GtkAccessibleText en el lienzo visible: texto Unicode, líneas reales, cursor, selección y notificaciones de edición. WordCraft sigue siendo el modelo y motor de edición. 97 tests y regresiones GTK correctos. Auditoría independiente con AT-SPI y Orca 46.1, seguida de la misma prueba dentro del Flatpak: lectura, selección, carácter escrito y restauración al deshacer. Alpha.12 publicada, artefactos y ocho assets verificados. [Diseño, evidencia y alcance](docs/ACCESSIBLE_DOCUMENT_TEXT.md).
+
+Pendiente de trabajo futuro: semántica de tablas/imágenes/campos, atributos ricos, filtrado según vistas y operaciones AT avanzadas. Las transcripciones automáticas no sustituyen una sesión humana con Orca/braille. Propuesta siguiente: recoger esas sesiones y corregir fallos reproducibles; no ampliar funciones sin autorización. Weblate/capturas públicas siguen a cargo del usuario; corpus completo sin repetir.
+
 ## Completado: comprobación independiente y geometría ODT — alpha.11
 
 Cuatro DOCX/ODT generados y editados realmente con Writer; reabiertos/guardados otra vez con Leaf y ODT importados sin atributos Leaf. Corregidas distancias y reservas de encabezados/pies mediante ODF estándar y prioridad de propiedades estándar frente a datos privados obsoletos. Alpha.11 publicada. Cuatro regresiones nuevas; 91 tests, validación nativa/Flatpak completa y actualización desde alpha.10 comprobada. Artefactos descargados y hashes verificados. [Método, resultados y límites](docs/INTEROPERABILITY_AUDIT.md).
