@@ -76,6 +76,8 @@ artefacto `13080586471`, SHA256
 El número de criterios creció después para medir explícitamente los vínculos;
 no comparar porcentajes agregados de ambas pasadas como una mejora global.
 
+La corrección se distribuye en [alpha.11](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.11). Pasaron 91 tests, compilación GTK optimizada, regresiones de interfaz y comprobaciones del Flatpak instalado/actualizado desde alpha.10. Los hashes del artefacto descargado y de todos los assets publicados coinciden.
+
 ## Límites confirmados
 
 - Writer 24.2.7 elimina `w:noProof` al guardar los DOCX de la prueba. La entrada

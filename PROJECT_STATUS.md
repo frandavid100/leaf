@@ -2,7 +2,22 @@
 
 Actualizado: 1 de noviembre de 2026. Punto de entrada para continuar desde otra conversación.
 
-## Última entrega: alpha.10 — secciones, ortografía e idioma del texto (01-11-2026)
+## Última entrega: alpha.11 — interoperabilidad verificada con Writer (01-11-2026)
+
+Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.11
+Tag y paquete: `04ea596dc61a9823008b8375d41ccf8613f4c6ac`. Código nativo compilado y auditado: `125b6ab96db54169e9f652517d2e255039a66e36`; igualdad funcional de src/Cargo/tests/vendor/po/data/examples/trabajador/parches comprobada antes de reutilizar el ejecutable. Datos del paquete: Flatpak x86_64 **10.686.424 bytes**, SHA256 `6b9ed787b8403b19f4df3de3bbdc5c848361dfeac805615adc99dcaa586ce98f`.
+
+Comprobación independiente completada por petición del usuario, sin solicitarle archivos: cuatro DOCX/ODT sintéticos con una/tres secciones, variantes de encabezado, campos de página, numeración reiniciada, distancias e idiomas. Writer 24.2.7 abre, modifica y guarda realmente los archivos; Leaf los reabre, guarda y reabre. También se importan ODT creados por Writer sin atributos Leaf. No se ha repetido el corpus completo de 24 archivos ni impuesto una prueba por versión. [Informe](docs/INTEROPERABILITY_AUDIT.md), [evidencia durable](docs/INTEROPERABILITY_VALIDATION.json).
+
+Corregida geometría ODT: reservas y espaciado dinámico estándar del encabezado/pie; lectura de partes activas, distancias de 21/27pt y márgenes del cuerpo 72pt conservados incluso sin metadatos propios. Propiedades estándar y formatos comunes de número prevalecen sobre valores Leaf obsoletos. Cuarto parche aislado y reproducible de wordcraft-formats; sin revisión nueva del motor/renderizador ni dependencias de ejecución. Tres fixtures sintéticos pequeños y cuatro regresiones nuevas.
+
+Resultados: texto, variantes, PAGE/NUMPAGES, inglés/español y propiedades geométricas conservados en la muestra corregida. 100/108 criterios correctos; los ocho avisos se mantienen visibles: Writer elimina w:noProof en DOCX y materializa vínculos de secciones en copias independientes en ambos formatos. Los archivos originales ya contienen los elementos correctos; no inferir vínculos de contenidos idénticos ni anunciar compatibilidad general. Sigue sin implementarse toda la geometría ODF (bordes/rellenos, altura fija, espaciado no dinámico, secciones continuas).
+
+Validación nativa completa 41299085582, job 124826083383: **91 tests**, release GTK, catálogos/oscuro, encabezados/idioma/revisión, ciclos de vida, teclado/impresión, menús/pestañas/adaptación, HiDPI y checksum de píxeles debug/release. Auditoría independiente 41299085581, job 124826083285; ZIP 13080537464 descargado y verificado, SHA256 5578d93f0088e1407dd495d5afc4bf41a338fb3cdd8f440624a2e8c1c385740c. Nativo 13081250451, SHA256 ZIP 5799e78bada196782d56b1c863c77c81b656f5c8ecb4a6d464079c2264b18436, también descargado/verificado. Captura interna de Writer corregida revisada. Paquete 41300371715, job 124829862862, correcto: actualización desde alpha.10, funciones e HiDPI dentro del sandbox, impresión por portal, lanzador y datos al reinstalar. ZIP 13080768944 descargado y verificado, SHA256 b48e75efc791150f4b370a23fa478199e8a779c95277cf722c89955be211ef4c; siete SHA256SUMS y ocho tamaños/digests de assets publicados coinciden. Tag comprobado y captura interna del lanzador revisada..
+
+La petición de ejecutar esta comprobación por cuenta propia queda completada. Weblate y capturas públicas continúan a cargo del usuario. La muestra nueva no incluye tablas/imágenes; no se afirma prueba manual GNOME OS, Microsoft Word, Orca o impresora física. Las siguientes mejoras siguen siendo propuestas, no autorización general.
+
+## Entrega anterior: alpha.10 — secciones, ortografía e idioma del texto (01-11-2026)
 
 Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.10
 Código, tag y paquete: `612357ec0b70f38222f9ebea4180c5654e09b5b8`. Flatpak x86_64: **10.521.560 bytes**, SHA256 `018ee7a40b2ca5ae7e5c0e25371b031c1e751d0b6bb4a6dbdb063652c6f85686`. [CI completa](https://github.com/frandavid100/leaf/actions/runs/41294178799); [uso y límites](docs/PAGE_OPTIONS_PROOFING.md); [evidencia](docs/PAGE_OPTIONS_PROOFING_VALIDATION.json).

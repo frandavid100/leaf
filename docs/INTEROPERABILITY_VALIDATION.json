@@ -609,5 +609,39 @@
       "HiDPI 100/200%",
       "reproducible debug/release pixel checksums"
     ]
+  },
+  "package": {
+    "run": 41300371715,
+    "job": 124829862862,
+    "conclusion": "success",
+    "release_url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.11",
+    "tag": "v0.1.0-alpha.11",
+    "tag_commit": "04ea596dc61a9823008b8375d41ccf8613f4c6ac",
+    "compiled_source_commit": "125b6ab96db54169e9f652517d2e255039a66e36",
+    "source_identity_guard_passed": true,
+    "artifact": {
+      "id": 13080768944,
+      "zip_sha256": "b48e75efc791150f4b370a23fa478199e8a779c95277cf722c89955be211ef4c",
+      "independently_downloaded": true
+    },
+    "bundle": {
+      "name": "Leaf-0.1.0-alpha.11-x86_64.flatpak",
+      "bytes": 10686424,
+      "sha256": "6b9ed787b8403b19f4df3de3bbdc5c848361dfeac805615adc99dcaa586ce98f"
+    },
+    "upgrade_from": "v0.1.0-alpha.10",
+    "checks": [
+      "installed application launcher",
+      "section properties and spelling review UI",
+      "English/Spanish and live dark mode",
+      "HiDPI 200%",
+      "GTK lifetime regression",
+      "external document portal opening",
+      "native print dialog and simulated portal handoff",
+      "uninstall/reinstall preserves data"
+    ],
+    "all_7_SHA256SUMS_verified": true,
+    "all_8_release_asset_sizes_and_digests_match_downloaded_artifact": true,
+    "installed_internal_screenshot_reviewed": true
   }
 }

@@ -3,6 +3,12 @@
 Actualizada: 1 de noviembre de 2026. Estado técnico en [PROJECT_STATUS.md](PROJECT_STATUS.md).
 Las fases siguientes son propuestas; no implican autorización para implementarlas todas.
 
+## Completado: comprobación independiente y geometría ODT — alpha.11
+
+Cuatro DOCX/ODT generados y editados realmente con Writer; reabiertos/guardados otra vez con Leaf y ODT importados sin atributos Leaf. Corregidas distancias y reservas de encabezados/pies mediante ODF estándar y prioridad de propiedades estándar frente a datos privados obsoletos. Alpha.11 publicada. Cuatro regresiones nuevas; 91 tests, validación nativa/Flatpak completa y actualización desde alpha.10 comprobada. Artefactos descargados y hashes verificados. [Método, resultados y límites](docs/INTEROPERABILITY_AUDIT.md).
+
+Writer elimina la exclusión de revisión de DOCX y convierte partes vinculadas en copias independientes en esta muestra; el contenido visible permanece. Esas diferencias quedan registradas, no se ocultan tras un resultado global correcto. Auditoría manual opcional, sin obligación por versión; corpus completo sin repetir. No se han implementado más funciones ni accesibilidad completa del lienzo. Siguiente propuesta: recoger reproducciones de usuarios y revisión manual GNOME OS; Weblate/capturas públicas pendientes del usuario.
+
 ## Completado: secciones, revisión e idioma — alpha.10
 
 Configuración de primera página, pares/impares, distancias, numeración y vínculos/copia independiente por sección en Propiedades del documento. Revisión ortográfica local en menú/F7/contextual, diccionario personal, idioma por texto/documento y preferencia para nuevos documentos. Inglés y diccionarios españoles incluidos. Correcciones ODT aisladas y reproducibles, con límites de interoperabilidad documentados. [Uso y evidencia](docs/PAGE_OPTIONS_PROOFING.md). 87 tests y CI nativa/Flatpak completos; artefactos descargados y verificados; actualización desde alpha.9 comprobada.
