@@ -33,7 +33,7 @@ pub fn apply_at(s:&mut Session,setup:PageSetup,whole:bool,current:usize)->Result
         }start=end+1;
     }
     if changes.is_empty(){return Ok(false);}
-    let snap=s.edit_snapshot();let mark=s.undo_mark();let sel=s.sel.clone();let pending=s.pending.clone();
+    let snap=s.edit_snapshot();let mark=s.undo_mark();let sel=s.sel.clone();let pending=s.pending.clone();let hf_return=s.hf_return.clone();let page_hint=s.page_hint;
     let result=(||{
         // Anchor the grouped undo before moving to any other section.
         s.checkpoint(wordcraft_gnome::t!("Document Properties"));
@@ -45,7 +45,7 @@ pub fn apply_at(s:&mut Session,setup:PageSetup,whole:bool,current:usize)->Result
         s.run("select.range",&json!({"anchor":sel.anchor,"focus":sel.focus}))?;
         Ok::<_,wordcraft_engine::CmdError>(())
     })();
-    match result {Ok(())=>{s.pending=pending;s.merge_undo_since(mark);Ok(true)},Err(e)=>{s.restore(snap);s.pending=pending;Err(e.to_string())}}
+    match result {Ok(())=>{s.pending=pending;s.hf_return=hf_return;s.page_hint=page_hint;s.merge_undo_since(mark);Ok(true)},Err(e)=>{s.restore(snap);s.pending=pending;s.hf_return=hf_return;s.page_hint=page_hint;Err(e.to_string())}}
 }
 
 /// Column layout is still owned by WordCraft, including section creation around selected text.

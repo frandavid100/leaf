@@ -38,6 +38,6 @@ fn protected_and_stale_text_are_not_changed(){
 
 #[test]
 fn whole_document_language_updates_typing_without_losing_other_pending_format(){
-    let mut s=Session::new(Document::from_text("Hello"));s.pending.lang=Some("es-ES".into());s.pending.bold=Some(true);
-    proofing::language(&mut s,"en-GB",false,true).unwrap();assert_eq!(s.pending.lang.as_deref(),Some("en-GB"));assert_eq!(s.pending.bold,Some(true));assert_eq!(s.pending.no_proof,Some(false));
+    let mut s=Session::new(Document::from_text("Hello"));s.pending=Some(wordcraft_doc::CharProps{lang:Some("es-ES".into()),bold:Some(true),..Default::default()});
+    proofing::language(&mut s,"en-GB",false,true).unwrap();assert_eq!(s.pending.as_ref().unwrap().lang.as_deref(),Some("en-GB"));assert_eq!(s.pending.as_ref().unwrap().bold,Some(true));assert_eq!(s.pending.as_ref().unwrap().no_proof,Some(false));
 }

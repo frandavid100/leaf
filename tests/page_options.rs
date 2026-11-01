@@ -44,3 +44,9 @@ fn relinking_and_header_editing_target_the_displayed_section(){
     assert_eq!(s.layout().pages[1].header_story,s.doc.sections()[0].1.headers.default);
     s.run("review.restrict",&json!({"mode":"readOnly"})).unwrap();let doc=s.doc.clone();let depth=s.undo_depth();o.header=0.0;assert!(page_options::apply(&mut s,&o).is_err());assert_eq!(s.doc,doc);assert_eq!(s.undo_depth(),depth);
 }
+
+#[test]
+fn page_setup_keeps_header_return_position(){
+    let mut s=fixture();selection::set_caret(&mut s,&Pos::body(1,4),false).unwrap();let body=s.sel.clone();header_footer::enter(&mut s,1,Region::Header).unwrap();let header=s.sel.clone();
+    let mut setup=wordcraft_gnome::document_properties::PageSetup::current(&s);setup.left+=5.0;wordcraft_gnome::document_properties::apply(&mut s,setup,true).unwrap();assert_eq!(s.sel,header);header_footer::close(&mut s).unwrap();assert_eq!(s.sel,body);
+}
