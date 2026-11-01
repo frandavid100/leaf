@@ -163,6 +163,8 @@ pub(super) fn format_popover_header(
     title: &str,
     group: &Rc<FormatPopoverGroup>,
 ) -> Rc<FormatHeader> {
+    root.set_margin_top(0);
+    root.set_spacing(6);
     // Modality never changes on a mapped popup: pinning cannot blink/remap it.
     pop.set_autohide(false);
     let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);

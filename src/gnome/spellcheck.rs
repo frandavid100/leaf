@@ -110,13 +110,12 @@ impl SpellReview {
             self.list.remove(&child);
         }
         self.status.set_visible(true);
-        self.status
-            .set_text(wordcraft_gnome::t!("The text has changed. Check it again."));
+        self.status.set_text(wordcraft_gnome::t!("Checking…"));
         if let Some(id) = self.debounce.borrow_mut().take() {
             id.remove();
         }
         self.queued.set(false);
-        if self.toggle.is_active() && wordcraft_gnome::preferences::check_spelling() {
+        if self.toggle.is_active() {
             let weak = Rc::downgrade(self);
             let id =
                 glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
@@ -196,7 +195,7 @@ impl SpellReview {
         });
         self.source.replace(Some(id));
     }
-    fn render_list(&self) {
+    fn render_list(self: &Rc<Self>) {
         while let Some(child) = self.list.first_child() {
             self.list.remove(&child);
         }
@@ -230,7 +229,36 @@ impl SpellReview {
             message.set_max_width_chars(1);
             message.add_css_class("dim-label");
             content.append(&message);
-            row.set_child(Some(&content));
+            content.set_hexpand(true);
+            let line = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+            line.append(&content);
+            let menu = gtk::MenuButton::new();
+            menu.set_icon_name("view-more-symbolic");
+            menu.add_css_class("flat");
+            menu.set_widget_name(&format!("proofing-menu-{n}"));
+            menu.set_valign(gtk::Align::Start);
+            accessible_name(&menu, wordcraft_gnome::t!("Spelling actions"));
+            let weak = Rc::downgrade(self);
+            let issue = issue.clone();
+            let identity = self.identity.get();
+            menu.set_create_popup_func(move |button| {
+                let Some(panel) = weak.upgrade() else { return };
+                let Some(ui) = panel
+                    .ui
+                    .upgrade()
+                    .filter(|u| !u.closed.get() && document_identity(u) == identity)
+                else {
+                    return;
+                };
+                let root = gio::Menu::new();
+                let group = gio::SimpleActionGroup::new();
+                let pop = gtk::PopoverMenu::from_model(Some(&root));
+                pop.insert_action_group("context", Some(&group));
+                append_proofing_actions(&root, &group, &pop, &ui, issue.clone());
+                button.set_popover(Some(&pop));
+            });
+            line.append(&menu);
+            row.set_child(Some(&line));
             self.list.append(&row);
         }
     }
@@ -286,23 +314,7 @@ pub(super) fn show_spelling(ui: &Rc<Ui>, _parent: &ApplicationWindow) {
 pub(super) fn install_spelling(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<SpellReview> {
     let body = gtk::Box::new(gtk::Orientation::Vertical, 8);
     body.set_widget_name("proofing-panel");
-    let heading = gtk::Box::new(gtk::Orientation::Horizontal, 6);
-    heading.set_margin_start(10);
-    heading.set_margin_end(6);
-    heading.set_margin_top(8);
-    let title = gtk::Label::new(Some(wordcraft_gnome::t!("Spelling and Grammar")));
-    title.set_wrap(true);
-    title.set_xalign(0.0);
-    title.set_hexpand(true);
-    title.add_css_class("heading");
-    heading.append(&title);
-    let refresh = gtk::Button::from_icon_name("view-refresh-symbolic");
-    refresh.set_widget_name("proofing-refresh");
-    refresh.add_css_class("flat");
-    accessible_name(&refresh, wordcraft_gnome::t!("Check Again"));
-    refresh.set_tooltip_text(Some(wordcraft_gnome::t!("Check Again")));
-    heading.append(&refresh);
-    body.append(&heading);
+    accessible_name(&body, wordcraft_gnome::t!("Spelling and Grammar"));
     let status = gtk::Label::new(None);
     status.set_widget_name("proofing-status");
     status.set_visible(false);
@@ -344,12 +356,6 @@ pub(super) fn install_spelling(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Sp
             if let Some(s) = weak.upgrade() {
                 s.show();
             }
-        }
-    });
-    let weak = Rc::downgrade(&s);
-    refresh.connect_clicked(move |_| {
-        if let Some(s) = weak.upgrade() {
-            s.scan();
         }
     });
     let weak = Rc::downgrade(&s);
@@ -494,7 +500,7 @@ pub(super) fn show_text_language(ui: &Rc<Ui>, parent: &ApplicationWindow) -> Lan
                 return;
             };
             if ui.closed.get() || document_identity(&ui) != identity {
-                message.set_text(wordcraft_gnome::t!("The text has changed. Check it again."));
+                message.set_text(wordcraft_gnome::t!("Checking…"));
                 return;
             }
             let result = {

@@ -135,3 +135,27 @@ pub(super) fn show_link(ui: &Rc<Ui>) -> Option<LinkDialog> {
         apply,
     })
 }
+
+/// Resolve the actual pointer position without moving the editor selection.
+pub(super) fn link_at_canvas_position(ui: &Rc<Ui>, pos: &Pos) -> Option<String> {
+    let v = ui.current.borrow();
+    links::at(&v.as_ref()?.session, pos)
+}
+pub(super) fn launch_document_link(ui: &Rc<Ui>, url: &str) {
+    let Some(host) = ui.host.upgrade() else {
+        return;
+    };
+    if std::env::args().any(|a| a == "--interaction-pointer-test") {
+        eprintln!("LINK_ACTIVATED {url}");
+        return;
+    }
+    let launcher = gtk::UriLauncher::new(url);
+    let weak = Rc::downgrade(ui);
+    launcher.launch(Some(&host.window), gio::Cancellable::NONE, move |result| {
+        if let (Some(ui), Err(e)) = (weak.upgrade(), result) {
+            if !ui.closed.get() {
+                ui.toasts.add_toast(Toast::new(&e.to_string()));
+            }
+        }
+    });
+}

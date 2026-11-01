@@ -139,7 +139,14 @@ impl ParagraphPopover {
         let Some(pop) = self.popover.upgrade().filter(|p| p.is_visible()) else {
             return;
         };
-        let state = selection_paragraph(&ui);
+        let mut state = selection_paragraph(&ui);
+        if self.active_page.borrow().as_deref() == Some("columns") {
+            state["target"] = serde_json::json!(ui.current.borrow().as_ref().map(|d| (
+                d.session.document_id(),
+                d.session.rev(),
+                format!("{:?}", d.session.sel)
+            )));
+        }
         if *self.displayed.borrow() == state {
             return;
         }

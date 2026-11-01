@@ -366,61 +366,7 @@ pub(super) fn show_document_context(
             })
         };
         if let Some(issue) = issue {
-            let identity = document_identity(ui);
-            let spelling = gio::Menu::new();
-            let suggestions = {
-                let mut v = ui.current.borrow_mut();
-                proofing::suggestions(&mut v.as_mut().unwrap().session, &issue)
-            };
-            for (n, text) in suggestions.into_iter().enumerate() {
-                let i = issue.clone();
-                let replacement = text.clone();
-                context_item(
-                    &spelling,
-                    &group,
-                    &pop,
-                    ui,
-                    &text,
-                    &format!("spelling-{n}"),
-                    true,
-                    move |u| {
-                        if document_identity(u) == identity {
-                            proof_replace(u, &i, &replacement);
-                        } else {
-                            u.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
-                                "The text has changed. Check it again."
-                            )));
-                        }
-                    },
-                );
-            }
-            if issue.spelling {
-                for (name, label, add_word) in [
-                    ("ignore-word", wordcraft_gnome::t!("Ignore All"), false),
-                    ("add-word", wordcraft_gnome::t!("Add to Dictionary"), true),
-                ] {
-                    let issue = issue.clone();
-                    context_item(&spelling, &group, &pop, ui, label, name, true, move |u| {
-                        if document_identity(u) != identity {
-                            return;
-                        }
-                        let result = {
-                            let mut v = u.current.borrow_mut();
-                            let s = &mut v.as_mut().unwrap().session;
-                            if add_word {
-                                proofing::add(s, &issue)
-                            } else {
-                                proofing::ignore(s, &issue)
-                            }
-                        };
-                        if let Err(e) = result {
-                            u.toasts.add_toast(Toast::new(&e));
-                        }
-                        refresh_all_proofing(u);
-                    });
-                }
-            }
-            root.append_section(None, &spelling);
+            append_proofing_actions(&root, &group, &pop, ui, issue);
         }
     }
     let edit = gio::Menu::new();
@@ -816,4 +762,68 @@ pub(super) fn tool_diagnostics() -> bool {
                 | "--document-tools-test"
         )
     })
+}
+
+pub(super) fn append_proofing_actions(
+    root: &gio::Menu,
+    group: &gio::SimpleActionGroup,
+    pop: &gtk::PopoverMenu,
+    ui: &Rc<Ui>,
+    issue: proofing::Issue,
+) {
+    let identity = document_identity(ui);
+    let spelling = gio::Menu::new();
+    let suggestions = {
+        let mut v = ui.current.borrow_mut();
+        proofing::suggestions(&mut v.as_mut().unwrap().session, &issue)
+    };
+    for (n, text) in suggestions.into_iter().enumerate() {
+        let i = issue.clone();
+        let replacement = text.clone();
+        context_item(
+            &spelling,
+            &group,
+            &pop,
+            ui,
+            &text,
+            &format!("spelling-{n}"),
+            true,
+            move |u| {
+                if document_identity(u) == identity {
+                    proof_replace(u, &i, &replacement);
+                } else {
+                    u.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
+                        "The text has changed. Check it again."
+                    )));
+                }
+            },
+        );
+    }
+    if issue.spelling {
+        for (name, label, add_word) in [
+            ("ignore-word", wordcraft_gnome::t!("Ignore All"), false),
+            ("add-word", wordcraft_gnome::t!("Add to Dictionary"), true),
+        ] {
+            let issue = issue.clone();
+            context_item(&spelling, &group, &pop, ui, label, name, true, move |u| {
+                if document_identity(u) != identity {
+                    return;
+                }
+                let result = {
+                    let mut v = u.current.borrow_mut();
+                    let s = &mut v.as_mut().unwrap().session;
+                    if add_word {
+                        proofing::add(s, &issue)
+                    } else {
+                        proofing::ignore(s, &issue)
+                    }
+                };
+                if let Err(e) = result {
+                    u.toasts.add_toast(Toast::new(&e));
+                }
+                refresh_all_proofing(u);
+            });
+        }
+    }
+    root.append_section(None, &spelling);
 }

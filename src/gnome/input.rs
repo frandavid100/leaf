@@ -60,6 +60,7 @@ pub(super) fn install_pointer_and_view_input(
             ui,
             move |gesture, count, x, y| {
                 ui.pointer_moved.set(false);
+                ui.word_drag.borrow_mut().take();
                 if leave_header_outside_at(&ui, x, y) == Some(false) {
                     ui.document_box.grab_focus();
                     refresh_selection(&ui);
@@ -81,6 +82,16 @@ pub(super) fn install_pointer_and_view_input(
                 let Some(pos) = pos_at_canvas(&ui, x, y) else {
                     return;
                 };
+                if count == 1
+                    && gesture
+                        .current_event_state()
+                        .contains(gdk::ModifierType::CONTROL_MASK)
+                {
+                    if let Some(url) = link_at_canvas_position(&ui, &pos) {
+                        launch_document_link(&ui, &url);
+                        return;
+                    }
+                }
                 ui.document_box.grab_focus();
                 let shift = gesture
                     .current_event_state()
@@ -97,6 +108,13 @@ pub(super) fn install_pointer_and_view_input(
                         } else {
                             None
                         };
+                        if count == 2 {
+                            if let Some(range) = selection::word_range(&doc.session, &pos) {
+                                selection::select_range(&mut doc.session, &range.0, &range.1)?;
+                                ui.word_drag.replace(Some(range));
+                                return Ok(());
+                            }
+                        }
                         if let Some(cmd) = cmd {
                             doc.session
                                 .run(cmd, &serde_json::json!({}))
@@ -150,8 +168,18 @@ pub(super) fn install_pointer_and_view_input(
             drag.connect_drag_begin(glib::clone!(
                 #[weak]
                 ui,
-                move |_, x, y| {
-                    *ui.drag_anchor.borrow_mut() = pos_at_canvas(&ui, x, y);
+                move |gesture, x, y| {
+                    *ui.drag_anchor.borrow_mut() = if gesture
+                        .current_event_state()
+                        .contains(gdk::ModifierType::SHIFT_MASK)
+                    {
+                        ui.current
+                            .borrow()
+                            .as_ref()
+                            .map(|d| d.session.sel.anchor.clone())
+                    } else {
+                        pos_at_canvas(&ui, x, y)
+                    };
                     ui.document_box.grab_focus();
                 }
             ));
@@ -162,31 +190,19 @@ pub(super) fn install_pointer_and_view_input(
                 #[weak]
                 ui,
                 move |gesture, dx, dy| {
-                    if dx.abs() > 4.0 || dy.abs() > 4.0 {
-                        ui.pointer_moved.set(true);
+                    if dx.abs() <= 4.0 && dy.abs() <= 4.0 {
+                        return;
                     }
+                    ui.pointer_moved.set(true);
                     let Some((sx, sy)) = gesture.start_point() else {
                         return;
                     };
-                    let Some(anchor) = ui.drag_anchor.borrow().clone() else {
-                        return;
-                    };
-                    let Some(focus) = pos_at_canvas(&ui, sx + dx, sy + dy) else {
-                        return;
-                    };
-                    if anchor.story != focus.story {
-                        return;
+                    update_document_drag(&ui, sx + dx, sy + dy);
+                    if let Some(r) = ui.document_box.compute_bounds(&ui.scroll) {
+                        ui.drag_point
+                            .set(Some((r.x() as f64 + sx + dx, r.y() as f64 + sy + dy)));
+                        schedule_drag_scroll(&ui);
                     }
-                    let result = {
-                        let mut value = ui.current.borrow_mut();
-                        value
-                            .as_mut()
-                            .map(|doc| selection::select_range(&mut doc.session, &anchor, &focus))
-                    };
-                    if let Some(Err(e)) = result {
-                        ui.toasts.add_toast(Toast::new(&e));
-                    }
-                    refresh_selection(&ui);
                 }
             ));
         }
@@ -196,11 +212,17 @@ pub(super) fn install_pointer_and_view_input(
                 #[weak]
                 ui,
                 move |_, _, _| {
-                    ui.drag_anchor.borrow_mut().take();
+                    stop_document_drag(&ui);
                     refresh_selection(&ui);
                 }
             ));
         }
+        let weak = Rc::downgrade(&ui);
+        drag.connect_cancel(move |_, _| {
+            if let Some(ui) = weak.upgrade() {
+                stop_document_drag(&ui);
+            }
+        });
         ui.document_box.add_controller(drag);
     }
 
@@ -339,7 +361,7 @@ pub(super) fn install_keyboard_input(
         // the key controller instead of being converted into characters.
         let input = gtk::IMMulticontext::new();
         input.set_client_widget(Some(&ui.document_box));
-        controller.set_im_context(Some(&input));
+        // Attach the canvas IM only while the canvas owns keyboard focus.
         {
             let ui = ui.clone();
             input.connect_commit(glib::clone!(
@@ -354,16 +376,21 @@ pub(super) fn install_keyboard_input(
         }
         {
             let input = input.clone();
+            let controller = controller.downgrade();
             ui.document_box.connect_notify_local(
                 Some("has-focus"),
                 glib::clone!(
                     #[weak]
                     input,
                     move |widget, _| {
-                        if widget.has_focus() {
-                            input.focus_in();
-                        } else {
-                            input.focus_out();
+                        if let Some(controller) = controller.upgrade() {
+                            if widget.has_focus() {
+                                controller.set_im_context(Some(&input));
+                                input.focus_in();
+                            } else {
+                                input.focus_out();
+                                controller.set_im_context(None::<&gtk::IMContext>);
+                            }
                         }
                     }
                 ),
@@ -607,4 +634,95 @@ pub(super) fn install_keyboard_input(
         ));
         scroll.add_controller(controller);
     }
+}
+
+pub(super) fn stop_document_drag(ui: &Rc<Ui>) {
+    if let Some(id) = ui.drag_scroll.borrow_mut().take() {
+        id.remove();
+    }
+    ui.drag_point.set(None);
+    ui.drag_anchor.borrow_mut().take();
+    ui.word_drag.borrow_mut().take();
+}
+fn update_document_drag(ui: &Rc<Ui>, x: f64, y: f64) {
+    let Some(anchor) = ui.drag_anchor.borrow().clone() else {
+        return;
+    };
+    let Some(focus) = pos_at_canvas(ui, x, y) else {
+        return;
+    };
+    if anchor.story != focus.story {
+        return;
+    }
+    let result = {
+        let mut v = ui.current.borrow_mut();
+        v.as_mut().map(|d| {
+            let (a, b) = ui
+                .word_drag
+                .borrow()
+                .as_ref()
+                .and_then(|r| selection::word_drag_range(&d.session, r, &focus))
+                .unwrap_or((anchor, focus));
+            selection::select_range(&mut d.session, &a, &b)
+        })
+    };
+    if let Some(Err(e)) = result {
+        ui.toasts.add_toast(Toast::new(&e));
+    }
+    refresh_selection(ui);
+}
+fn schedule_drag_scroll(ui: &Rc<Ui>) {
+    if ui.drag_scroll.borrow().is_some() {
+        return;
+    }
+    let identity = document_identity(ui);
+    let weak = Rc::downgrade(ui);
+    let id = glib::timeout_add_local(std::time::Duration::from_millis(16), move || {
+        let Some(ui) = weak.upgrade() else {
+            return glib::ControlFlow::Break;
+        };
+        if ui.closed.get()
+            || document_identity(&ui) != identity
+            || ui.drag_anchor.borrow().is_none()
+        {
+            ui.drag_scroll.borrow_mut().take();
+            return glib::ControlFlow::Break;
+        }
+        let Some((x, y)) = ui.drag_point.get() else {
+            ui.drag_scroll.borrow_mut().take();
+            return glib::ControlFlow::Break;
+        };
+        let velocity = |p: f64, extent: f64| {
+            if p < 28.0 {
+                (p - 28.0).max(-24.0)
+            } else if p > extent - 28.0 {
+                (p - extent + 28.0).min(24.0)
+            } else {
+                0.0
+            }
+        };
+        let mut moved = false;
+        for (adj, p, extent) in [
+            (ui.scroll.hadjustment(), x, ui.scroll.width() as f64),
+            (ui.scroll.vadjustment(), y, ui.scroll.height() as f64),
+        ] {
+            let value = (adj.value() + velocity(p, extent)).clamp(
+                adj.lower(),
+                (adj.upper() - adj.page_size()).max(adj.lower()),
+            );
+            if (value - adj.value()).abs() > 0.01 {
+                adj.set_value(value);
+                moved = true;
+            }
+        }
+        if !moved {
+            ui.drag_scroll.borrow_mut().take();
+            return glib::ControlFlow::Break;
+        }
+        if let Some(r) = ui.document_box.compute_bounds(&ui.scroll) {
+            update_document_drag(&ui, x - r.x() as f64, y - r.y() as f64);
+        }
+        glib::ControlFlow::Continue
+    });
+    ui.drag_scroll.replace(Some(id));
 }

@@ -422,7 +422,9 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton) {
     root.append_section(None, &properties);
     let zoom = gio::MenuItem::new(None, None);
     zoom.set_attribute_value("custom", Some(&"zoom-controls".to_variant()));
-    root.append_item(&zoom);
+    let zoom_section = gio::Menu::new();
+    zoom_section.append_item(&zoom);
+    root.prepend_section(None, &zoom_section);
     let modes = gio::Menu::new();
     for (label, mode) in [
         (wordcraft_gnome::t!("Editing"), "editing"),

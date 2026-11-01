@@ -26,6 +26,12 @@ desde alpha.13, portales y Orca automatizada. [Registro](docs/BOOKMARKS_COMMENTS
 La protección general frente a cambios externos sigue aplazada. No iniciar
 nuevas etapas de Orca.
 
+## En curso: segunda revisión y alpha.17
+
+David autoriza resolver los pendientes posibles y publicar otra alpha.
+[Alcance y candidatos](docs/ISSUE_SWEEP_ALPHA17.md). Cerrar solo después de
+validar; conservar las limitaciones y los demás issues abiertos.
+
 ## Completado: revisión de issues y alpha.16
 
 Publicada y verificada tras revisar 32 issues (24 iniciales y ocho nuevos).

@@ -307,10 +307,6 @@ impl TextControls {
             let button = gtk::Button::new();
             button.add_css_class("flat");
             let body = gtk::Box::new(gtk::Orientation::Vertical, 4);
-            let caption = gtk::Label::new(Some(&family));
-            caption.set_xalign(0.0);
-            caption.add_css_class("caption");
-            body.append(&caption);
             let preview = gtk::Label::new(Some(&family));
             preview.set_widget_name("font-preview");
             preview.set_xalign(0.0);
@@ -355,7 +351,12 @@ impl TextControls {
             .map(|d| wordcraft_gnome::text_properties::used_sizes(&d.session))
             .unwrap_or_default();
         for size in sizes {
-            let button = gtk::Button::with_label(&format!("{size} pt"));
+            let button = gtk::Button::with_label(&format!(
+                "{} pt",
+                format!("{size:.2}")
+                    .trim_end_matches('0')
+                    .trim_end_matches('.')
+            ));
             button.add_css_class("flat");
             button.set_widget_name(&format!("size-choice-{size}"));
             let weak = Rc::downgrade(self);

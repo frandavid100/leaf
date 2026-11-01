@@ -17,7 +17,8 @@ fn odd_pages_share_left_slot_at_every_zoom_and_single_pages_remain_centered() {
             (612., 600.),
             (500., 792.),
         ];
-        let spread = viewer_layout::arrange(&sizes, zoom, 5000.);
+        let spread =
+            viewer_layout::arrange(&sizes, zoom, 2.0 * (612.0 * zoom as f64).ceil() + 66.0);
         assert_eq!(spread.columns, 2);
         for i in [0, 2, 4] {
             assert_eq!(spread.pages[i].x, spread.pages[0].x);

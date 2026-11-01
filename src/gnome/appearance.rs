@@ -11,7 +11,8 @@ pub(super) fn apply_theme(mode: u32) {
 pub(super) fn theme_selector() -> gtk::Box {
     let row = gtk::Box::new(gtk::Orientation::Horizontal, 12);
     row.set_widget_name("theme-selector");
-    row.set_halign(gtk::Align::Center);
+    row.set_halign(gtk::Align::Fill);
+    row.set_hexpand(true);
     row.set_margin_top(6);
     row.set_margin_bottom(6);
     let mut buttons: Vec<gtk::ToggleButton> = Vec::new();
@@ -25,6 +26,7 @@ pub(super) fn theme_selector() -> gtk::Box {
     {
         let button = gtk::ToggleButton::new();
         button.set_widget_name(&format!("theme-{mode}"));
+        button.set_hexpand(true);
         button.add_css_class("circular");
         button.add_css_class("flat");
         accessible_name(&button, label);
@@ -33,10 +35,12 @@ pub(super) fn theme_selector() -> gtk::Box {
             button.set_group(Some(first));
         }
         let circle = gtk::DrawingArea::new();
-        circle.set_content_width(32);
-        circle.set_content_height(32);
+        circle.set_content_width(64);
+        circle.set_content_height(64);
         let weak = button.downgrade();
-        circle.set_draw_func(move |_, cr, _, _| {
+        circle.set_draw_func(move |w, cr, width, height| {
+            cr.translate((width as f64 - 64.0) / 2.0, (height as f64 - 64.0) / 2.0);
+            cr.scale(2.0, 2.0);
             cr.arc(16.0, 16.0, 11.0, 0.0, std::f64::consts::TAU);
             cr.set_source_rgb(
                 if mode == 2 { 0.2 } else { 0.95 },
@@ -60,8 +64,18 @@ pub(super) fn theme_selector() -> gtk::Box {
                 let _ = cr.fill();
             }
             if weak.upgrade().is_some_and(|b| b.is_active()) {
-                cr.set_source_rgb(0.2, 0.5, 0.9);
-                cr.arc(25.0, 25.0, 7.0, 0.0, std::f64::consts::TAU);
+                let accent = w.style_context().lookup_color("accent_bg_color");
+                if let Some(c) = accent {
+                    cr.set_source_rgba(
+                        c.red() as f64,
+                        c.green() as f64,
+                        c.blue() as f64,
+                        c.alpha() as f64,
+                    );
+                } else {
+                    cr.set_source_rgb(0.2, 0.5, 0.9);
+                }
+                cr.arc(25.0, 25.0, 4.5, 0.0, std::f64::consts::TAU);
                 let _ = cr.fill();
                 cr.set_source_rgb(1.0, 1.0, 1.0);
                 cr.set_line_width(2.0);
@@ -110,7 +124,7 @@ pub(super) fn install_css() {
       .document-sheet { background: white; border-radius: 6px; box-shadow: 0 1px 4px alpha(black, 0.15); }
       .leaf-dark-document .document-sheet, .leaf-dark-document .thumbnail-sheet { background: #333333; }
       .thumbnail-sheet { background: white; border-radius: 6px; border: 1px solid alpha(black, 0.12); background-clip: content-box; }
-      .thumbnail-button { padding: 12px; min-width: 0; min-height: 0; }
+      .thumbnail-button { padding: 8px 12px; min-width: 0; min-height: 0; }
       .thumbnail-button.selected-thumb { background: alpha(@window_fg_color, 0.09); }
       .sidebar-selector button { border-radius: 10px; }
       .comment-thread.selected { outline: 2px solid @accent_color; outline-offset: -2px; }

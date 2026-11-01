@@ -91,8 +91,7 @@ impl AnnotationPanel {
             .borrow_mut()
             .retain(|id| comments.iter().any(|c| c.id == *id));
         clear_box(&self.content);
-        self.content
-            .append(&section_label(wordcraft_gnome::t!("Comments")));
+        accessible_name(&self.content, wordcraft_gnome::t!("Comments"));
         if comments.is_empty() {
             self.content
                 .append(&annotation_label(wordcraft_gnome::t!("No Comments"), true));
@@ -169,14 +168,6 @@ fn annotation_label(text: &str, dim: bool) -> gtk::Label {
     if dim {
         label.add_css_class("dim-label");
     }
-    label
-}
-
-fn section_label(text: &str) -> gtk::Label {
-    let label = annotation_label(text, false);
-    label.add_css_class("heading");
-    label.set_margin_top(12);
-    label.set_margin_bottom(4);
     label
 }
 

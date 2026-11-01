@@ -22,6 +22,7 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
     if let Some(text) = ui.text_controls.borrow().as_ref() {
         text.stop();
     }
+    stop_document_drag(ui);
     ui.document_box.reset();
     let link = ui.link_dialog.borrow_mut().take();
     if let Some(window) = link {
@@ -309,7 +310,7 @@ pub(super) fn show_preferences(parent: &ApplicationWindow) -> adw::PreferencesWi
     let page = adw::PreferencesPage::new();
     let identity = adw::PreferencesGroup::new();
     let name = adw::EntryRow::new();
-    name.set_title(wordcraft_gnome::t!("User Name"));
+    name.set_title(wordcraft_gnome::t!("Author Name"));
     name.set_widget_name("preferences-user-name");
     name.set_text(&wordcraft_gnome::preferences::user_name());
     identity.add(&name);

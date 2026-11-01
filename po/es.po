@@ -1975,3 +1975,12 @@ msgstr "Selecciona el texto del vínculo."
 
 msgid "Enter your name."
 msgstr "Introduce tu nombre."
+
+msgid "Spelling actions"
+msgstr "Acciones de revisión"
+
+msgid "Ctrl+click to open a link"
+msgstr "Ctrl+clic para abrir un vínculo"
+
+msgid "Author Name"
+msgstr "Nombre del autor"

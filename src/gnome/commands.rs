@@ -93,13 +93,7 @@ pub(super) fn apply_user_edit(ui: &Rc<Ui>, edit: Edit) {
     };
     match changed {
         Some(Ok(true)) => {
-            let first_edit = !ui.dirty.get();
             after_content_change(ui);
-            if first_edit {
-                ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
-                    "Unsaved changes. Save a copy to keep them."
-                )));
-            }
         }
         Some(Ok(false)) | None => {}
         Some(Err(err)) => ui.toasts.add_toast(Toast::new(&err)),

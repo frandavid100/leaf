@@ -336,11 +336,8 @@ pub(super) fn fit_width(ui: &Rc<Ui>) {
         };
         doc.fit_to_width = true;
         let natural = viewer_layout::arrange(&doc.sizes, 1.0, width);
-        let maximum = doc
-            .sizes
-            .chunks(natural.columns)
-            .map(|c| c.iter().map(|s| s.0 as f64).sum::<f64>())
-            .fold(1.0, f64::max);
+        let maximum =
+            (natural.width - viewer_layout::PAGE_GAP * (natural.columns + 1) as f64).max(1.0);
         ((width - viewer_layout::PAGE_GAP * (natural.columns + 1) as f64 - 2.0) / maximum) as f32
     };
     zoom_to(ui, zoom);
@@ -545,8 +542,8 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
         content.append(&thumb);
         content.append(&number);
         button.set_child(Some(&content));
-        button.set_margin_top(7);
-        button.set_margin_bottom(14);
+        button.set_margin_top(6);
+        button.set_margin_bottom(10);
         {
             let ui = ui.clone();
             button.connect_clicked(glib::clone!(
@@ -564,7 +561,7 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
     let thumbnail_fallback = sizes
         .iter()
         .map(|&(_, h)| {
-            let height = (f64::from(h) * f64::from(THUMB_SCALE)).ceil() + 59.0;
+            let height = (f64::from(h) * f64::from(THUMB_SCALE)).ceil() + 46.0;
             let bounds = (offset, offset + height);
             offset += height;
             bounds

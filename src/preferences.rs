@@ -79,21 +79,38 @@ pub fn system_user_name() -> String {
             })
         });
     if let (Some(uid), Ok(passwd)) = (uid, std::fs::read_to_string("/etc/passwd")) {
-        if let Some(name) = passwd.lines().find_map(|line| {
-            let fields: Vec<_> = line.split(':').collect();
-            (fields.len() > 2 && fields[2] == uid).then(|| fields[0].to_string())
-        }) {
+        if let Some(name) = real_name_from_passwd(&passwd, &uid) {
             return name;
         }
     }
-    ["USER", "LOGNAME"]
-        .into_iter()
-        .find_map(|key| {
-            std::env::var(key)
-                .ok()
-                .filter(|s| !s.trim().is_empty() && s != "unknown")
-        })
-        .unwrap_or_default()
+    String::new()
+}
+fn real_name_from_passwd(passwd: &str, uid: &str) -> Option<String> {
+    passwd.lines().find_map(|line| {
+        let f: Vec<_> = line.split(':').collect();
+        (f.len() > 4 && f[2] == uid)
+            .then(|| f[4].split(',').next().unwrap_or("").trim().to_owned())
+            .filter(|s| !s.is_empty())
+    })
+}
+#[cfg(test)]
+mod names {
+    #[test]
+    fn default_uses_full_name_without_turning_login_into_a_real_name() {
+        assert_eq!(
+            super::real_name_from_passwd(
+                "david:x:1000:1000:David Prieto,Room:/home/david:/bin/bash",
+                "1000"
+            )
+            .as_deref(),
+            Some("David Prieto")
+        );
+        assert_eq!(
+            super::real_name_from_passwd("david:x:1000:1000::/home/david:/bin/bash", "1000"),
+            None
+        );
+        assert_eq!(super::real_name_from_passwd("broken", "1000"), None);
+    }
 }
 pub fn user_name() -> String {
     read()["user_name"]

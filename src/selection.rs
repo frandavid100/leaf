@@ -48,6 +48,31 @@ pub fn select_range(session: &mut Session, anchor: &Pos, focus: &Pos) -> Result<
     Ok(())
 }
 
+/// Keep the engine's script-aware word boundaries, excluding its optional
+/// trailing spaces. The selection itself, rather than copied output, is changed.
+pub fn word_range(session: &Session, pos: &Pos) -> Option<(Pos, Pos)> {
+    let p = session.doc.para_at(pos)?;
+    let (a, b) = p.word_at(pos.off);
+    let end = a + p.text[a..b].trim_end_matches(char::is_whitespace).len();
+    let mut start = pos.clone();
+    start.off = a;
+    let mut finish = pos.clone();
+    finish.off = if end > a { end } else { b };
+    Some((start, finish))
+}
+
+pub fn word_drag_range(session: &Session, start: &(Pos, Pos), target: &Pos) -> Option<(Pos, Pos)> {
+    if target.story != start.0.story {
+        return None;
+    }
+    let (a, b) = word_range(session, target)?;
+    Some(if target < &start.0 {
+        (start.1.clone(), a)
+    } else {
+        (start.0.clone(), b.max(start.1.clone()))
+    })
+}
+
 pub fn move_caret(session: &mut Session, action: &str, extend: bool) -> Result<(), String> {
     let id = match action {
         "left" => "caret.left",

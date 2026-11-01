@@ -11,6 +11,12 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## En preparación: alpha.17
+
+Nueva revisión autorizada de los 28 issues abiertos. Candidatos: #12, #18, #19,
+#22, #25–#29 y #31–#39. #30 recibe mejoras parciales. Cierre y publicación
+pendientes de validación nativa/instalada. [Alcance](docs/ISSUE_SWEEP_ALPHA17.md).
+
 ## Última versión publicada
 
 [Alpha.16, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.16).

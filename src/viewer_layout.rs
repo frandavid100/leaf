@@ -29,34 +29,37 @@ pub struct Arrangement {
 /// Keep document order, with no cover-page exception. Never shrink to force a spread.
 pub fn arrange(sizes: &[(f32, f32)], zoom: f32, available: f64) -> Arrangement {
     let z = f64::from(zoom_clamped(zoom));
-    let mut slots = [0.0_f64; 2];
-    for (i, size) in sizes.iter().enumerate() {
-        slots[i % 2] = slots[i % 2].max((f64::from(size.0) * z).ceil());
+    let widths: Vec<f64> = sizes.iter().map(|s| (s.0 as f64 * z).ceil()).collect();
+    let minimum = widths
+        .iter()
+        .copied()
+        .fold(f64::INFINITY, f64::min)
+        .max(1.0);
+    let limit = (((available - PAGE_GAP) / (minimum + PAGE_GAP))
+        .floor()
+        .max(1.0) as usize)
+        .min(sizes.len().max(1));
+    let mut columns = 1;
+    let mut slots = vec![widths.iter().copied().fold(0.0, f64::max)];
+    for count in (2..=limit).rev() {
+        let mut candidate = vec![0.0_f64; count];
+        for (i, w) in widths.iter().enumerate() {
+            candidate[i % count] = candidate[i % count].max(*w);
+        }
+        if candidate.iter().sum::<f64>() + PAGE_GAP * (count + 1) as f64 <= available {
+            columns = count;
+            slots = candidate;
+            break;
+        }
     }
-    let pair = slots[0] + slots[1] + PAGE_GAP * 3.0;
-    let columns = if sizes.len() > 1 && pair <= available {
-        2
-    } else {
-        1
-    };
-    let width = if columns == 2 {
-        pair
-    } else {
-        sizes
-            .chunks(columns)
-            .map(|c| {
-                c.iter().map(|s| (f64::from(s.0) * z).ceil()).sum::<f64>()
-                    + PAGE_GAP * (c.len() + 1) as f64
-            })
-            .fold(0.0, f64::max)
-    };
+    let width = slots.iter().sum::<f64>() + PAGE_GAP * (columns + 1) as f64;
     let mut pages = Vec::new();
     let mut rows = Vec::new();
     let mut y = PAGE_GAP;
     for c in sizes.chunks(columns) {
         let row_width = c.iter().map(|s| (f64::from(s.0) * z).ceil()).sum::<f64>()
             + PAGE_GAP * (c.len().saturating_sub(1)) as f64;
-        let mut x = if columns == 2 {
+        let mut x = if columns > 1 {
             PAGE_GAP
         } else {
             (width - row_width) / 2.0
@@ -71,7 +74,7 @@ pub fn arrange(sizes: &[(f32, f32)], zoom: f32, available: f64) -> Arrangement {
             first: pages.len(),
             count: c.len(),
         });
-        for &(w, h) in c {
+        for (slot, &(w, h)) in c.iter().enumerate() {
             let w = (f64::from(w) * z).ceil();
             pages.push(PageBox {
                 x,
@@ -79,7 +82,7 @@ pub fn arrange(sizes: &[(f32, f32)], zoom: f32, available: f64) -> Arrangement {
                 width: w,
                 height: (f64::from(h) * z).ceil(),
             });
-            x += if columns == 2 { slots[0] } else { w } + PAGE_GAP;
+            x += if columns > 1 { slots[slot] } else { w } + PAGE_GAP;
         }
         y += height + PAGE_GAP;
     }
@@ -136,7 +139,7 @@ mod spreads {
         assert_eq!(spread.page_at(spread.pages[1].x + 50.0, 100.0), 1);
         assert_eq!(spread.visible(0.0, 100.0), vec![0, 1]);
         assert_eq!(spread.pages[2].x, spread.pages[0].x);
-        assert_eq!(arrange(&sizes, 0.5, 900.0).columns, 2);
+        assert_eq!(arrange(&sizes, 0.5, 900.0).columns, 3);
         assert_eq!(arrange(&sizes, 2.0, 1500.0).columns, 1);
         assert!(arrange(&[], 1.0, 900.0).visible(0.0, 900.0).is_empty());
     }

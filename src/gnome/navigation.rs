@@ -219,8 +219,41 @@ impl OutlinePanel {
             ui.sidebar.set_show_sidebar(false);
         }
         refresh_selection(&ui);
-        caret_ensure_visible(&ui);
         ui.document_box.grab_focus();
+        let weak = Rc::downgrade(&ui);
+        let target = pos.clone();
+        let identity = document_identity(&ui);
+        glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
+            let Some(ui) = weak
+                .upgrade()
+                .filter(|u| !u.closed.get() && document_identity(u) == identity)
+            else {
+                return;
+            };
+            let y = {
+                let mut v = ui.current.borrow_mut();
+                let d = v.as_mut().unwrap();
+                if d.session.sel.focus != target {
+                    return;
+                }
+                d.session
+                    .layout()
+                    .caret_on(&target, d.session.page_hint)
+                    .and_then(|c| {
+                        d.page_frames
+                            .get(c.page)
+                            .and_then(|f| f.compute_bounds(&ui.document_box))
+                            .map(|r| r.y() as f64 + c.top as f64 * d.zoom as f64 - 12.0)
+                    })
+            };
+            if let Some(y) = y {
+                let adj = ui.scroll.vadjustment();
+                adj.set_value(y.clamp(
+                    adj.lower(),
+                    (adj.upper() - adj.page_size()).max(adj.lower()),
+                ));
+            }
+        });
     }
 }
 pub(super) fn install_outline(

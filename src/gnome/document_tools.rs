@@ -492,10 +492,9 @@ pub(super) fn show_document_properties(
     message.set_margin_end(12);
     message.set_margin_bottom(12);
     message.set_visible(false);
-    let stack = gtk::Stack::new();
+    let stack = adw::ViewStack::new();
     stack.set_widget_name("document-properties-pages");
     stack.set_vexpand(true);
-    stack.set_transition_type(gtk::StackTransitionType::Crossfade);
     let information = adw::PreferencesPage::new();
     let properties = adw::PreferencesGroup::new();
     properties.set_description(Some(wordcraft_gnome::t!(
@@ -530,8 +529,9 @@ pub(super) fn show_document_properties(
         Some("headers"),
         wordcraft_gnome::t!("Headers and Footers"),
     );
-    let switcher = gtk::StackSwitcher::new();
+    let switcher = adw::ViewSwitcher::new();
     switcher.set_stack(Some(&stack));
+    switcher.set_policy(adw::ViewSwitcherPolicy::Narrow);
     switcher.set_halign(gtk::Align::Center);
     switcher.set_margin_top(6);
     switcher.set_margin_bottom(6);

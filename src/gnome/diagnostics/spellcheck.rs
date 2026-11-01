@@ -88,11 +88,8 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                 context.popdown();
                 apply_user_edit(&ui, Edit::Insert("profesor".into()));
                 // Manual review remains available with live checking disabled.
-                find_widget(&ui.navigation_pages, "proofing-refresh")
-                    .unwrap()
-                    .downcast::<gtk::Button>()
-                    .unwrap()
-                    .emit_clicked();
+                assert!(find_widget(&ui.navigation_pages, "proofing-refresh").is_none());
+                // The visible list refreshes automatically after this edit.
                 assert!(
                     ui.current
                         .borrow()

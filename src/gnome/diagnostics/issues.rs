@@ -28,6 +28,18 @@ pub(super) fn issue_sweep_ui_test(
         "Issues",
     );
     let props = show_document_properties(ui, window);
+    let pages = find_widget(&props.window, "document-properties-pages")
+        .unwrap()
+        .downcast::<adw::ViewStack>()
+        .unwrap();
+    let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
+    props.metadata[0].set_text("Pending title");
+    pages.set_visible_child_name("page");
+    pages.set_visible_child_name("headers");
+    pages.set_visible_child_name("information");
+    assert_eq!(props.metadata[0].text(), "Pending title");
+    assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, before);
+    eprintln!("ISSUE_NATIVE_VIEW_SWITCHER_OK");
     let sizes = find_widget(&props.window, "paper-size")
         .unwrap()
         .downcast::<adw::ComboRow>()
@@ -168,7 +180,9 @@ pub(super) fn issue_sweep_ui_test(
     let pop = document_menu.popover().unwrap();
     assert!(find_widget(&pop, "zoom-controls").is_some());
     assert!(find_widget(&ui.scroll, "zoom-controls").is_none());
+    document_menu.popup();
     click(&pop, "zoom-reset");
+    assert!(pop.is_visible());
     assert_eq!(ui.current.borrow().as_ref().unwrap().zoom, 1.0);
     assert!(!ui.current.borrow().as_ref().unwrap().fit_to_width);
     click(&pop, "zoom-in");
@@ -176,6 +190,8 @@ pub(super) fn issue_sweep_ui_test(
     click(&pop, "zoom-reset");
     click(&pop, "zoom-fit-width");
     assert!(ui.current.borrow().as_ref().unwrap().fit_to_width);
+    assert!(pop.is_visible());
+    pop.popdown();
     eprintln!("ISSUE_ZOOM_MENU_OK percentage={}", ui.zoom_label.text());
 
     let theme = main_menu.popover().unwrap();
@@ -310,6 +326,36 @@ pub(super) fn issue_sweep_ui_test(
     paragraph.header.pin.set_active(false);
     paragraph.popover.upgrade().unwrap().popdown();
     eprintln!("ISSUE_PINNED_PARAGRAPH_IMMEDIATE_OK");
+    paragraph_menu.popup();
+    paragraph.header.pin.set_active(true);
+    paragraph.page("columns");
+    ui.document_box.grab_focus();
+    {
+        let mut v = ui.current.borrow_mut();
+        v.as_mut()
+            .unwrap()
+            .session
+            .run("layout.columns", &json!({"count":2,"gap":36}))
+            .unwrap();
+    }
+    let depth = ui.current.borrow().as_ref().unwrap().session.undo_depth();
+    refresh_selection(ui);
+    assert_eq!(
+        find_widget(&paragraph.detail, "columns-count")
+            .unwrap()
+            .downcast::<gtk::SpinButton>()
+            .unwrap()
+            .value(),
+        2.0
+    );
+    assert_eq!(
+        ui.current.borrow().as_ref().unwrap().session.undo_depth(),
+        depth
+    );
+    paragraph.header.pin.set_active(false);
+    paragraph.popover.upgrade().unwrap().popdown();
+    eprintln!("ISSUE_COLUMNS_SYNC_OK");
+
     {
         let mut current = ui.current.borrow_mut();
         let s = &mut current.as_mut().unwrap().session;

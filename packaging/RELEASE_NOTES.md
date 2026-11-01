@@ -1,16 +1,14 @@
-Leaf 0.1.0-alpha.16 addresses the open-issue review requested by the maintainer.
+Leaf 0.1.0-alpha.17 fixes interaction and presentation reports from the alpha.16 review.
 
-- Keep an unpaired final page in the left slot. Round screen page corners without changing pagination or exports.
-- Leave header/footer editing by clicking outside its region; remove the extra mode bar. Insert page numbers at the original cursor, including body text, without position/alignment controls.
-- Apply valid paragraph, text and table measurements immediately, with validation and grouped undo. Keep pinned formatting synchronized with the current selection and mixed values.
-- Compact editable Font/Size selectors: font previews at the current size and common plus effective document sizes, including fractional sizes and other text stories.
-- Navigate from comment anchors to their threads, including overlaps, while preserving drag selection.
-- Persistent System/Light/Dark choices in the main menu; compact zoom and per-document Editing/Reviewing modes in the document menu. Reviewing records subsequent edits as tracked changes.
-- Save an opened writable document directly with Ctrl+S or Save. Keep Save As separate and recovery enabled by default.
-- Configure the author of new comments/revisions in Preferences; default to the system account and preserve previous authorship.
-- Create/edit a selection's link from its context menu while preserving text and formatting. Mixed links are explicit.
-- Enable manual page dimensions only for Custom paper sizes.
+- Correct canvas input-method ownership so Font and Size accept real keyboard input. Font choices show each family once in its own typeface.
+- Shift+click keeps the original anchor; double-click excludes trailing spaces; double-click dragging selects complete words in both directions, with viewport-edge scrolling.
+- New ordinary links are blue/underlined. Ctrl+click opens the destination using the native URI launcher and Flatpak portal; the canvas tooltip explains the gesture.
+- The theme selector uses larger circles and the current accent. Zoom is a flat row at the top of the document menu and keeps that menu open during adjustments.
+- Author preferences default to the account's real/full name, preserving explicit custom names and existing authorship.
+- Heading jumps align near the top. Page rows show as many pages as fit, with stable incomplete-row alignment; thumbnail gaps are slightly reduced.
+- Pinned Columns controls follow section/selection changes. Formatting headers have less padding; Document Properties uses the supported native libadwaita view switcher.
+- Spelling entries have proofing-only menus sharing the document's suggestions/actions. Sidebar headings/manual refresh and the routine Pending Changes toast are removed; visible spelling results refresh automatically.
 
-Columns, advanced mouse table interactions, odd/even story independence, the reported document-specific spacing case and coordinated language/proofing inheritance remain open. Engine, dependencies, vendor and patches are unchanged. ODT still cannot preserve comments/category with this exporter; Leaf offers DOCX.
+The spelling/default inheritance redesign (#14–#16 and the remaining part of #30), upstream columns, advanced mouse table handles, odd/even independence and the document-specific spacing report remain open. Engine, dependencies, vendor and patches are unchanged. ODT comments/category still require DOCX for preservation.
 
-Install Leaf-0.1.0-alpha.16-x86_64.flatpak over alpha.15. Experimental, AI-assisted development; automated checks do not replace testing important documents in another editor.
+Install Leaf-0.1.0-alpha.17-x86_64.flatpak over alpha.16. Experimental, AI-assisted development. See docs/ISSUE_SWEEP_ALPHA17.md for verified scope and limitations.

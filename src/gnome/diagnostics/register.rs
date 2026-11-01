@@ -41,6 +41,18 @@ pub(super) fn install_diagnostics(
         titles_toggle,
         search_panel,
     } = controls;
+    if std::env::args().any(|a| a == "--uri-launch-test") {
+        let u = ui.clone();
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1000), move || {
+            launch_document_link(&u, "https://example.org/leaf-launch-test")
+        });
+    }
+    if std::env::args().any(|a| a == "--interaction-pointer-test") {
+        let (u, w, a, m) = (ui.clone(), window.clone(), app.clone(), text_menu.clone());
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+            interaction_pointer_test(&u, &w, &a, &m)
+        });
+    }
     if host.tabs.n_pages() == 1 && std::env::args().any(|a| a == "--issue-sweep-ui-test") {
         let (u, w, h, a, m, main, pm, tm) = (
             ui.clone(),

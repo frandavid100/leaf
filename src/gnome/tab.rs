@@ -88,6 +88,7 @@ pub(super) fn build_tab(
     document_box.set_halign(gtk::Align::Center);
     document_box.set_focusable(true);
     document_box.set_cursor_from_name(Some("text"));
+    document_box.set_tooltip_text(Some(wordcraft_gnome::t!("Ctrl+click to open a link")));
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_hexpand(true);
     scroll.set_vexpand(true);
@@ -206,7 +207,7 @@ pub(super) fn build_tab(
     format_bar.append(&history_tools);
     let history_separator = gtk::Separator::new(gtk::Orientation::Vertical);
     format_bar.append(&history_separator);
-    let format_tools = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    let format_tools = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     format_bar.append(&format_tools);
     let bold_button = gtk::ToggleButton::with_label("B");
     bold_button.set_tooltip_text(Some(wordcraft_gnome::t!("Bold (Ctrl+B)")));
@@ -331,6 +332,9 @@ pub(super) fn build_tab(
         selection_zoom: Rc::new(Cell::new(1.0)),
         caret_motion: Rc::new(RefCell::new(Default::default())),
         caret_tick_active: Cell::new(false),
+        drag_scroll: RefCell::new(None),
+        drag_point: Cell::new(None),
+        word_drag: RefCell::new(None),
         drag_anchor: RefCell::new(None),
         pointer_moved: Cell::new(false),
         dirty: Cell::new(false),
@@ -400,8 +404,17 @@ pub(super) fn build_tab(
     });
 
     {
-        let row = gtk::Box::new(gtk::Orientation::Horizontal, 4);
+        let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+        row.set_margin_top(6);
+        row.set_margin_bottom(6);
         row.set_widget_name("zoom-controls");
+        for b in [&ui.zoom_out, &normal_zoom, &fit_button, &ui.zoom_in] {
+            b.add_css_class("flat");
+        }
+        ui.zoom_out
+            .set_child(Some(&gtk::Image::from_icon_name("list-remove-symbolic")));
+        ui.zoom_in
+            .set_child(Some(&gtk::Image::from_icon_name("list-add-symbolic")));
         row.set_halign(gtk::Align::Center);
         ui.zoom_out.set_widget_name("zoom-out");
         ui.zoom_in.set_widget_name("zoom-in");
@@ -589,32 +602,24 @@ pub(super) fn build_tab(
     install_pointer_and_view_input(&ui, &compact_app_menu, &compact_search);
     {
         let ui = ui.clone();
-        let menu = menu_button.popover().unwrap();
         fit_button.connect_clicked(glib::clone!(
             #[weak]
             ui,
-            #[weak]
-            menu,
             move |_| {
                 fit_width(&ui);
-                menu.popdown();
             }
         ));
     }
     {
         let ui = ui.clone();
-        let menu = menu_button.popover().unwrap();
         normal_zoom.connect_clicked(glib::clone!(
             #[weak]
             ui,
-            #[weak]
-            menu,
             move |_| {
                 if let Some(doc) = ui.current.borrow_mut().as_mut() {
                     doc.fit_to_width = false;
                 }
                 zoom_to(&ui, 1.0);
-                menu.popdown();
             }
         ));
     }

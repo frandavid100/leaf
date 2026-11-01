@@ -18,6 +18,22 @@ pub fn state(s: &Session) -> LinkState {
     }
     first.map(LinkState::Uniform).unwrap_or(LinkState::None)
 }
+pub fn at(s: &Session, pos: &wordcraft_doc::Pos) -> Option<String> {
+    let p = s.doc.para_at(pos)?;
+    let resolved = |off| {
+        s.doc
+            .styles
+            .resolve_char(p.props.style.as_deref(), p.props_of_char(off))
+            .link
+    };
+    resolved(pos.off).or_else(|| {
+        p.text
+            .get(..pos.off)?
+            .char_indices()
+            .next_back()
+            .and_then(|(off, _)| resolved(off))
+    })
+}
 fn command(s: &mut Session, v: &Value) -> CmdResult {
     let url = v["url"]
         .as_str()
@@ -28,8 +44,21 @@ fn command(s: &mut Session, v: &Value) -> CmdResult {
     let creating = v["creating"].as_bool().unwrap_or(false);
     wordcraft_engine::cmd::format::apply(s, &|c| {
         c.link = Some(url.clone());
-        if creating && c.style.is_none() {
-            c.style = Some("Hyperlink".into());
+        if creating {
+            if c.style.is_none() {
+                c.style = Some("Hyperlink".into());
+            }
+            if c.color.is_none()
+                || matches!(c.color, Some(wordcraft_doc::props::TextColor::Auto))
+                || matches!(c.color,Some(wordcraft_doc::props::TextColor::Rgb(rgb)) if rgb.hex()=="000000")
+            {
+                c.color = Some(wordcraft_doc::props::TextColor::Rgb(
+                    wordcraft_doc::props::Rgb::parse("0066CC").unwrap(),
+                ));
+            }
+            if c.underline.is_none() || c.underline == Some(wordcraft_doc::props::Underline::None) {
+                c.underline = Some(wordcraft_doc::props::Underline::Single);
+            }
         }
     })
 }
