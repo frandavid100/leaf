@@ -61,6 +61,10 @@ esta reorganización estructural.
 
 - Fidelidad de documentos complejos; [ODT](docs/ODT_PRESERVATION_2026-10-31.md)
   y [límites observados con Writer](docs/INTEROPERABILITY_AUDIT.md).
+- Columnas: David comunica fallos de anchuras desiguales y separadores al aplicar
+  columnas a texto seleccionado; también los observa en WordCraft. [Informe humano
+  y alcance de las pruebas](docs/TEST_RESULTS.md). Pendiente de reproducción mínima;
+  conservar propiedades DOCX no demuestra una maquetación visual correcta.
 - Imágenes flotantes, tiradores de tablas, fórmulas y otras funciones avanzadas
   aún no implementadas. No se consideran tareas autorizadas por esta lista.
 - Semántica accesible completa de tablas/imágenes/campos y operaciones AT

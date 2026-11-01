@@ -42,6 +42,9 @@ Párrafo reúne alineación, listas, sangría, interlineado, bordes/sombreado y 
 Texto contiene fuente, tamaño, formato e idioma. Las opciones avanzadas están
 un nivel dentro de sus paneles. Columnas admite el alcance que ofrece su editor;
 las anchuras desiguales tienen limitaciones de conservación en ODT.
+También hay [fallos visuales comunicados](TEST_RESULTS.md) con anchuras desiguales
+y separadores al aplicar columnas a texto seleccionado. La conservación de sus
+propiedades en DOCX no garantiza que esa disposición se dibuje correctamente.
 
 ## Navegar y buscar
 
