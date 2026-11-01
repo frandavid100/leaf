@@ -52,15 +52,19 @@ def record(event):
         pass
 
 
-def find_canvas():
+def find_named(name):
     for app in pyatspi.Registry.getDesktop(0):
         try:
             app.set_cache_mask(Atspi.Cache.NONE)
-            found = pyatspi.findDescendant(app, lambda obj: obj.name == "Document Content")
+            found = pyatspi.findDescendant(app, lambda obj: obj.name == name)
             if found is not None:
                 return found
         except Exception:
             continue
+
+
+def find_canvas():
+    return find_named("Document Content")
 
 
 def dump_tree():
@@ -103,6 +107,24 @@ def main():
                 app = subprocess.Popen([str(binary), "--test-document" if baseline else "--a11y-ui-test"], env=env, stdout=log, stderr=subprocess.STDOUT)
                 if not baseline:
                     wait(lambda: "ACCESSIBLE_DOCUMENT_READY" in (OUT / "leaf.log").read_text(), 25)
+                else:
+                    # GtkFixed's original generic canvas is omitted from the
+                    # exported tree altogether. Prove the client is working by
+                    # finding and focusing a native control, then record absence.
+                    menu = wait(lambda: find_named("Main Menu"), 25)
+                    dump_tree()
+                    canvas = find_canvas()
+                    window = wait(lambda: command("xdotool", "search", "--onlyvisible", "--pid", app.pid).splitlines()[0])
+                    command("xdotool", "windowfocus", "--sync", window)
+                    menu.queryComponent().grabFocus()
+                    time.sleep(.5)
+                    spin()
+                    result = {"baseline": True, "orca_version": command("orca", "--version").strip(), "native_control_exposed": True, "canvas_exposed": canvas is not None, "text_supported": canvas is not None and "Text" in pyatspi.listInterfaces(canvas), "speech_is_generated_transcript_not_human_listening": True}
+                    assert not result["text_supported"]
+                    (OUT / "result.json").write_text(json.dumps(result, indent=2) + "\n")
+                    (OUT / "orca-speech.txt").write_text("\n".join(line for line in orca_log.read_text(errors="replace").splitlines() if "SPEECH OUTPUT:" in line) + "\n")
+                    print("A11Y_BASELINE_NO_TEXT_CONFIRMED", flush=True)
+                    return
                 try:
                     canvas = wait(find_canvas, 25)
                 finally:
