@@ -100,6 +100,8 @@ def main():
         env.update(XDG_CONFIG_HOME=profile, XDG_CACHE_HOME=profile, LEAF_CONFIG_HOME=profile)
         command("gsettings", "set", "org.gnome.desktop.interface", "toolkit-accessibility", "true")
         orca_log = OUT / "orca-debug.log"
+        def speech_lines():
+            return [line for line in orca_log.read_text(errors="replace").splitlines() if "SPEECH OUTPUT:" in line]
         orca_out = (OUT / "orca-process.log").open("w")
         orca = subprocess.Popen(["orca", "--replace", "--enable=speech,echo-by-character", "--disable=braille", "--user-prefs=" + profile + "/orca", "--debug-file=" + str(orca_log)], env=env, stdout=orca_out, stderr=subprocess.STDOUT)
         app = None
@@ -166,22 +168,26 @@ def main():
                     command("xdotool", "key", "--clearmodifiers", "Down")
                     second = len(FIXTURE.split("\n")[0]) + 1
                     wait(lambda: text.caretOffset == second)
+                    wait(lambda: any("Café" in line for line in speech_lines()))
                     value = Atspi.Text.get_string_at_offset(canvas, second, Atspi.TextGranularity.WORD)
                     word, start, end = value.content, value.start_offset, value.end_offset
                     assert "Café" in word, (word, start, end)
-                    command("xdotool", "key", "--clearmodifiers", "shift+Right", "shift+Right", "shift+Right", "shift+Right")
+                    command("xdotool", "key", "--delay", "200", "--clearmodifiers", "shift+Right", "shift+Right", "shift+Right", "shift+Right")
                     wait(lambda: text.getNSelections() == 1)
                     a, b = text.getSelection(0)
                     assert (a,b) == (second,second+4), (a,b)
+                    wait(lambda: any("selected" in line.lower() for line in speech_lines()))
                     command("xdotool", "type", "--clearmodifiers", "--delay", "150", "X")
                     expected = FIXTURE.replace("Café", "X")
                     wait(lambda: text.getText(0,-1) == expected)
+                    wait(lambda: any("SPEECH OUTPUT: 'X'" in line or "SPEECH OUTPUT: 'capital X'" in line for line in speech_lines()))
                     command("xdotool", "key", "--clearmodifiers", "ctrl+z")
                     wait(lambda: text.getText(0,-1) == FIXTURE)
                     command("xdotool", "key", "--clearmodifiers", "ctrl+a")
                     wait(lambda: text.getSelection(0) == (0,len(FIXTURE)))
                     command("xdotool", "key", "--clearmodifiers", "ctrl+Home", "Down", "Down", "Up")
-                    wait(lambda: orca_log.exists() and "Café" in orca_log.read_text(errors="replace"))
+                    wait(lambda: sum("Café" in line for line in speech_lines()) >= 2)
+                    result["orca_announcements"] = {"paragraph": True, "selection": True, "typed_character": True, "restored_paragraph": True}
                     command("xdotool", "key", "--clearmodifiers", "ctrl+Home")
                     wait(lambda: text.caretOffset == 0)
                     finish.touch()
