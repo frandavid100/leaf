@@ -46,7 +46,7 @@ pub fn add(s:&mut Session,i:&Issue)->Result<(),String>{
 /// Apply to the selection/typing position or every visible story in one undo step.
 pub fn language(s:&mut Session,tag:&str,no_proof:bool,whole:bool)->Result<bool,String>{
     let tag=wordcraft_engine::proof::lang::normalize_tag(tag).ok_or(wordcraft_gnome::t!("Use a language tag such as es-ES or en-GB."))?;
-    let doc=s.doc.clone();let snapshot=s.edit_snapshot();let selection=s.sel.clone();let pending=s.pending.clone();let default=s.prefs.default_language.clone();let mark=s.undo_mark();
+    let doc=s.doc.clone();let snapshot=s.edit_snapshot();let selection=s.sel.clone();let pending=s.pending.clone();let default=s.prefs.default_language.clone();let mark=s.undo_mark();let back=s.hf_return.clone();let hint=s.page_hint;
     let result=(||{
         if whole{
             s.checkpoint(wordcraft_gnome::t!("Text Language"));
@@ -54,11 +54,11 @@ pub fn language(s:&mut Session,tag:&str,no_proof:bool,whole:bool)->Result<bool,S
                 let a=s.doc.start_of(story);let b=s.doc.end_of(story);crate::selection::select_range(s,&a,&b)?;
                 s.join_next_undo();s.run("review.language",&json!({"lang":tag,"noProof":no_proof,"default":story==StoryRef::Body})).map_err(|e|e.to_string())?;
             }
-            crate::selection::select_range(s,&selection.anchor,&selection.focus)?;s.pending=pending.clone();s.merge_undo_since(mark);
+            crate::selection::select_range(s,&selection.anchor,&selection.focus)?;s.pending=pending.clone();s.pending.lang=Some(tag.clone());s.pending.no_proof=Some(no_proof);s.merge_undo_since(mark);
         }else{s.run("review.language",&json!({"lang":tag,"noProof":no_proof})).map_err(|e|e.to_string())?;}
         Ok::<_,String>(s.doc!=doc)
     })();
-    s.prefs.default_language=default;
+    s.prefs.default_language=default;s.hf_return=back;s.page_hint=hint;
     match result{Ok(changed)=>Ok(changed),Err(e)=>{s.restore(snapshot);s.pending=pending;Err(e)}}
 }
 pub fn state(s:&mut Session)->Value{s.run("format.state",&json!({})).unwrap_or(Value::Null)}

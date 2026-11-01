@@ -35,3 +35,9 @@ fn protected_and_stale_text_are_not_changed(){
     let mut s=Session::new(Document::from_text("Stale qqqwordzz."));let issue=proofing::issues(&s).into_iter().find(|i|i.text=="qqqwordzz").unwrap();s.run("text.insert",&json!({"text":"prefix "})).unwrap();let doc=s.doc.clone();assert!(proofing::replace(&mut s,&issue,"changed").is_err());assert_eq!(s.doc,doc);
     s.run("review.restrict",&json!({"mode":"readOnly"})).unwrap();let doc=s.doc.clone();let depth=s.undo_depth();assert!(proofing::language(&mut s,"es-ES",false,true).is_err());assert_eq!(s.doc,doc);assert_eq!(s.undo_depth(),depth);
 }
+
+#[test]
+fn whole_document_language_updates_typing_without_losing_other_pending_format(){
+    let mut s=Session::new(Document::from_text("Hello"));s.pending.lang=Some("es-ES".into());s.pending.bold=Some(true);
+    proofing::language(&mut s,"en-GB",false,true).unwrap();assert_eq!(s.pending.lang.as_deref(),Some("en-GB"));assert_eq!(s.pending.bold,Some(true));assert_eq!(s.pending.no_proof,Some(false));
+}

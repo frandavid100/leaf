@@ -18,7 +18,7 @@ fn independent_headers_keep_content_and_options_are_atomic(){
     page_options::apply(&mut s,&o).unwrap();assert_eq!(s.undo_depth(),depth+1);assert_eq!(s.sel,sel);assert_eq!(s.doc.plain_text(StoryRef::Body),before.plain_text(StoryRef::Body));
     let sections=s.doc.sections();assert_eq!(sections[0].1,before.sections()[0].1);let p=sections[1].1;let inherited=sections[0].1.headers.default.unwrap();let own=p.headers.default.unwrap();assert_ne!(own,inherited);assert_eq!(s.doc.plain_text(StoryRef::Part(own)),"Shared header");
     assert!(p.title_page);assert!(s.doc.settings.even_odd_headers);assert_eq!(p.page_num_start,Some(7));assert_eq!(p.page_num_format,NumFormat::LowerRoman);
-    assert_eq!(s.layout().pages[1].number,7);
+    assert_eq!(s.layout().pages.iter().find(|p|p.section==1).unwrap().number,7);
     let applied=s.doc.clone();s.run("edit.undo",&json!({})).unwrap();assert_eq!(s.doc,before);s.run("edit.redo",&json!({})).unwrap();assert_eq!(s.doc,applied);
     let end=s.doc.end_of(StoryRef::Part(own));selection::set_caret(&mut s,&end,false).unwrap();s.run("text.insert",&json!({"text":" edited"})).unwrap();assert_eq!(s.doc.plain_text(StoryRef::Part(inherited)),"Shared header");
     let current=Options::current(&s,1);assert!(!page_options::apply(&mut s,&current).unwrap());
