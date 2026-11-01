@@ -14,7 +14,9 @@ Alpha.4 repairs the ODT header/footer and repeating-row defects found in our one
 
 The current development version implements DOCX/ODT editing and saving, PDF export, native printing, section columns, styles, tables, inline images, tabs and sidebar search/replacement. Complex document fidelity is still being tested: use copies of your files.
 
-**[Download the current x86_64 Flatpak alpha](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.12).** Open the `.flatpak` with GNOME Software or follow the release's INSTALL.md. The GNOME 49 runtime is downloaded from Flathub if required. Leaf itself is not on Flathub. This is experimental: use copies of your documents.
+**[Download the current x86_64 Flatpak alpha](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.13).** Open the `.flatpak` with GNOME Software or follow the release's INSTALL.md. The GNOME 49 runtime is downloaded from Flathub if required. Leaf itself is not on Flathub. This is experimental: use copies of your documents.
+
+Alpha.13 reduces unnecessary GTK frontend work in long documents: initial thumbnail rasterization is bounded to the viewport, cursor/selection redraws touch only affected pages, and closed search panels stop rebuilding results. WordCraft, renderer and dependencies remain unchanged. [Before/after measurements, verified installed tests and limitations](https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/HOST_PERFORMANCE_AUDIT.md). No universal speed or memory improvement is claimed.
 
 Alpha.12 adds initial document text accessibility through GtkAccessibleText on the visible canvas. Real AT-SPI and Orca 46.1 tests passed both natively and inside the installed Flatpak: Unicode text, F6 focus navigation, selection announcements, a typed character and restoration through undo. [Scope, verified evidence and remaining limits](https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/ACCESSIBLE_DOCUMENT_TEXT.md). Full table/image/field semantics, rich attributes and advanced assistive-technology operations remain incomplete; generated speech logs are not human listening or braille tests.
 
