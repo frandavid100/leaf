@@ -78,7 +78,7 @@ impl ColumnSetup {
     }
 }
 pub fn apply_columns(s:&mut Session,setup:&ColumnSetup,scope:ColumnScope)->Result<bool,String>{
-    if scope==ColumnScope::Selection&&!page::selection_sectionable(s){return Err("Selecciona texto del cuerpo del documento, fuera de las tablas.".into());}
+    if scope==ColumnScope::Selection&&!page::selection_sectionable(s){return Err(wordcraft_gnome::t!("Select text in the document body, outside tables.").into());}
     if scope==ColumnScope::Forward&&(s.sel.focus.story!=StoryRef::Body||s.sel.focus.path.depth()!=0){return Err(wordcraft_gnome::t!("Place the cursor in the document body, outside a table.").into());}
     let focus=page::sect(s);let mut setup=setup.clone();
     let keep=|old:f32,new:f32|if (old-new).abs()<0.02{old}else{new};

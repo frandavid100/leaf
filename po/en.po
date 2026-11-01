@@ -1549,3 +1549,24 @@ msgstr "Edit DOCX and ODT files, use text and paragraph styles, work with tables
 msgid "Leaf follows your system language in English and Spanish. Other languages can be contributed using gettext catalogs. Development, documentation and artwork have used substantial AI assistance."
 msgstr "Leaf follows your system language in English and Spanish. Other languages can be contributed using gettext catalogs. Development, documentation and artwork have used substantial AI assistance."
 
+msgid "Horizontal"
+msgstr "Horizontal"
+
+msgid "The path is not UTF-8"
+msgstr "The path is not UTF-8"
+
+msgid "The file name must end in .docx or .odt"
+msgstr "The file name must end in .docx or .odt"
+
+msgid "Select an Image"
+msgstr "Select an Image"
+
+msgid "Select text in the document body, outside tables."
+msgstr "Select text in the document body, outside tables."
+
+msgid "Enter a Style Name"
+msgstr "Enter a Style Name"
+
+msgid "The style no longer exists"
+msgstr "The style no longer exists"
+

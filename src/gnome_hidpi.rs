@@ -25,6 +25,13 @@ mod page_paintable {
         }
     }
     glib::wrapper! {pub struct PagePaintable(ObjectSubclass<imp::PagePaintable>) @implements gdk::Paintable;}
+    // Diagnostic sample of the actual installed GTK paintable, not a fresh render.
+    pub fn paper_pixel(paintable:&gdk::Paintable)->[u8;4]{
+        let p=paintable.downcast_ref::<PagePaintable>().unwrap();let data=p.imp().data.get().unwrap();
+        let width=data.0.width()as usize;let height=data.0.height()as usize;
+        let mut pixels=vec![0; width*height*4];data.0.download(&mut pixels,width*4);
+        pixels[..4].try_into().unwrap()
+    }
     pub fn new(image:wordcraft_gnome::PageImage,width:i32,height:i32)->PagePaintable {
         let paintable:PagePaintable=glib::Object::new();
         paintable.imp().data.set((texture(image),width,height)).unwrap();

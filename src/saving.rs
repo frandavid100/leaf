@@ -8,7 +8,7 @@ pub fn save(session: &mut Session, path: &Path) -> Result<(), String> {
     if !["docx", "odt"].iter().any(|x| ext.eq_ignore_ascii_case(x)) {
         return Err(wordcraft_gnome::t!("Use a .docx or .odt extension").into());
     }
-    let path = path.to_str().ok_or("La ruta no es UTF-8")?;
+    let path = path.to_str().ok_or(wordcraft_gnome::t!("The path is not UTF-8"))?;
     let result = session.run("file.saveAs", &json!({"path": path}))
         .map_err(|e| e.to_string())?;
     if result["saved"] != true { return Err(wordcraft_gnome::t!("WordCraft did not confirm that the document was saved").into()); }
@@ -21,5 +21,5 @@ pub fn destination(path: &Path) -> Result<std::path::PathBuf, String> {
     let ext = path.extension().and_then(|x| x.to_str()).unwrap_or("");
     if ["docx", "odt"].iter().any(|x| ext.eq_ignore_ascii_case(x)) {
         Ok(path.to_path_buf())
-    } else { Err("El nombre debe terminar en .docx o .odt".into()) }
+    } else { Err(wordcraft_gnome::t!("The file name must end in .docx or .odt").into()) }
 }

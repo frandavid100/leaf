@@ -3,7 +3,7 @@
 set -euo pipefail
 app_id=io.github.frandavid100.leaf
 runtime_version=49
-version=0.1.0-alpha.7
+version=0.1.0-alpha.8
 binary=${1:?Usage: build-bundle.sh TESTED_BINARY}
 work=flatpak-build
 repo=flatpak-repo

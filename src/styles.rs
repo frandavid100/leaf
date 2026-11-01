@@ -15,7 +15,7 @@ pub fn current(session:&Session)->Option<String>{
 pub enum Edit{Apply(String),Update(String),Rename(String,String),Delete(String),Create(String)}
 pub fn edit(session:&mut Session,edit:Edit)->Result<Option<String>,String>{
     let name_ok=|name:&str,except:Option<&str>|->Result<String,String>{
-        let name=name.trim();if name.is_empty(){return Err("Escribe un nombre para el estilo".into());}
+        let name=name.trim();if name.is_empty(){return Err(wordcraft_gnome::t!("Enter a Style Name").into());}
         if session.doc.styles.styles.iter().any(|s|Some(s.id.as_str())!=except && (s.name.eq_ignore_ascii_case(name)||s.id.eq_ignore_ascii_case(name))){return Err("Ya existe un estilo con ese nombre".into());}
         Ok(name.to_owned())
     };
@@ -35,7 +35,7 @@ pub fn edit(session:&mut Session,edit:Edit)->Result<Option<String>,String>{
 /// Render a real style in an isolated sample: source selection, revision,
 /// history and dirty state cannot be affected by a preview.
 pub fn preview(source:&Session,id:&str)->Result<PageImage,String>{
-    if !list(source).iter().any(|s|s.id==id){return Err("El estilo ya no existe".into());}
+    if !list(source).iter().any(|s|s.id==id){return Err(wordcraft_gnome::t!("The style no longer exists").into());}
     let mut doc=Document::from_text(wordcraft_gnome::t!("Aa Bb Cc · Sample Text"));doc.styles=source.doc.styles.clone();
     let mut sample=Session::new(doc);sample.view.proofing=false;
     sample.run("select.all",&json!({"whole":true})).map_err(|e|e.to_string())?;

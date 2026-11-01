@@ -697,6 +697,10 @@ msgstr ""
 msgid "Enter Six RGB Digits, for Example 2266AA"
 msgstr ""
 
+#: src/styles.rs:18
+msgid "Enter a Style Name"
+msgstr ""
+
 #: src/gnome_columns.rs:37
 msgid "Equal"
 msgstr ""
@@ -813,6 +817,10 @@ msgstr ""
 msgid "Highlight"
 msgstr ""
 
+#: src/gnome_tables.rs:74
+msgid "Horizontal"
+msgstr ""
+
 #: src/gnome_paragraph.rs:142
 msgid "Horizontal Line"
 msgstr ""
@@ -925,7 +933,7 @@ msgstr ""
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: src/gnome_document_tools.rs:95 src/gnome_tables.rs:74
+#: src/gnome_document_tools.rs:95
 msgid "Landscape"
 msgstr ""
 
@@ -1481,8 +1489,16 @@ msgstr ""
 msgid "Select Table"
 msgstr ""
 
+#: src/pictures.rs:14 src/pictures.rs:24 src/pictures.rs:28 src/pictures.rs:35 src/pictures.rs:38
+msgid "Select an Image"
+msgstr ""
+
 #: src/gnome_document_tools.rs:57
 msgid "Select an image in the document to edit it."
+msgstr ""
+
+#: src/document_properties.rs:81
+msgid "Select text in the document body, outside tables."
 msgstr ""
 
 #: src/gnome_tables.rs:65
@@ -1721,6 +1737,10 @@ msgstr ""
 msgid "The file does not exist or is not a regular file"
 msgstr ""
 
+#: src/saving.rs:24
+msgid "The file name must end in .docx or .odt"
+msgstr ""
+
 #: src/lib.rs:33
 msgid "The file path cannot be represented as UTF-8"
 msgstr ""
@@ -1733,6 +1753,10 @@ msgstr ""
 msgid "The page exceeds the preview size limit"
 msgstr ""
 
+#: src/pdf_export.rs:6 src/pictures.rs:18 src/pictures.rs:25 src/saving.rs:11
+msgid "The path is not UTF-8"
+msgstr ""
+
 #: src/lib.rs:64
 msgid "The requested page does not exist"
 msgstr ""
@@ -1743,6 +1767,10 @@ msgstr ""
 
 #: src/document_properties.rs:28
 msgid "The section does not contain an editable paragraph"
+msgstr ""
+
+#: src/styles.rs:38
+msgid "The style no longer exists"
 msgstr ""
 
 #: src/gnome_styles.rs:85
