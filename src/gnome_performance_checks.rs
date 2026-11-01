@@ -2,7 +2,9 @@
 fn host_cache_ui_test(ui:&Rc<Ui>,app:&Application){
     ui.document_box.settings().set_property("gtk-enable-animations",false);
     let text=(0..400).map(|i|format!("Row {i}: {} useful document content café.",if i%25==0{"needle"}else{"ordinary"})).collect::<Vec<_>>().join("\n");
-    opened(ui,Session::new(wordcraft_doc::Document::from_text(&text)),"Host cache regression");
+    let opening=perf_phase("open_unallocated",||opened(ui,Session::new(wordcraft_doc::Document::from_text(&text)),"Host cache regression"));
+    let count=ui.current.borrow().as_ref().unwrap().sizes.len();
+    assert!(opening["inclusive_spans"]["boundary.thumbnail_raster"]["calls"].as_u64().unwrap_or(0)<count as u64,"opening must not rasterize every unallocated thumbnail");
     let u=ui.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(500),move||{
         let ui=&u;let pages=ui.current.borrow().as_ref().unwrap().sizes.len();assert!(pages>5);
         let original=ui.current.borrow().as_ref().unwrap().session.doc.clone();

@@ -81,6 +81,7 @@ struct Ui {
     drag_anchor: RefCell<Option<Pos>>,
     dirty: Cell<bool>,
     thumbnail_refresh_pending: Cell<bool>,
+    thumbnail_bounds_pending: Cell<bool>,
     closing_confirmed: Cell<bool>,
     tab_page: RefCell<Option<adw::TabPage>>,
     closed: Cell<bool>,
@@ -589,11 +590,20 @@ fn refresh_thumbnails(ui: &Rc<Ui>) {
     let bottom = top + adj.page_size().max(600.0);
     if let Ok(mut borrowed) = ui.current.try_borrow_mut() {
         if let Some(doc) = borrowed.as_mut() {
-            let visible=viewer_layout::ordered_visible_range(doc.sizes.len(),top-250.0,bottom+250.0,|i|{
+            if doc.sizes.is_empty(){return;}
+            let allocation=|i:usize|{
                 perf_count("thumbnail_bounds",1);
                 doc.thumb_buttons[i].compute_bounds(&ui.thumbnails_box)
-                    .map(|r|(r.y()as f64,(r.y()+r.height())as f64))
-                    .filter(|(start,end)|end>start&&*end>0.0).unwrap_or(doc.thumbnail_fallback[i])
+                    .map(|r|(r.y()as f64,(r.y()+r.height())as f64)).filter(|(start,end)|end>start&&*end>0.0)
+            };
+            // Newly appended GTK children can all report the same origin before
+            // allocation. Treat that as an unallocated list, not every page visible.
+            let allocated=match (allocation(0),allocation(doc.sizes.len()-1)){
+                (Some(first),Some(last))=>doc.sizes.len()==1||last.0>=first.1,
+                _=>false,
+            };
+            let visible=viewer_layout::ordered_visible_range(doc.sizes.len(),top-250.0,bottom+250.0,|i|{
+                if allocated{allocation(i).unwrap_or(doc.thumbnail_fallback[i])}else{doc.thumbnail_fallback[i]}
             });
             let old:Vec<usize>=doc.painted_thumbs.iter().copied().filter(|i|!visible.contains(i)).collect();
             for i in old{doc.painted_thumbs.remove(&i);doc.thumbs[i].set_paintable(None::<&gdk::Paintable>);}
@@ -1172,7 +1182,7 @@ fn build_tab(
         caret_motion: Rc::new(RefCell::new(Default::default())),
         caret_tick_active: Cell::new(false),
         drag_anchor: RefCell::new(None),
-        dirty: Cell::new(false), thumbnail_refresh_pending: Cell::new(false),
+        dirty: Cell::new(false), thumbnail_refresh_pending: Cell::new(false),thumbnail_bounds_pending:Cell::new(false),
         closing_confirmed: Cell::new(false),
         tab_page: RefCell::new(Some(tab_page.clone())), closed: Cell::new(false),autosave_source:RefCell::new(None),theme_signal:RefCell::new(None),
         restoring: Cell::new(false), autosave_error: RefCell::new(None),
@@ -1427,6 +1437,11 @@ fn build_tab(
     {
         let ui = ui.clone();
         ui.thumbnails_scroll.vadjustment().connect_value_changed(glib::clone!(#[weak] ui, move |_| refresh_thumbnails(&ui)));
+        let weak=Rc::downgrade(&ui);
+        ui.thumbnails_scroll.vadjustment().connect_changed(move |_|{
+            let Some(ui)=weak.upgrade()else{return;};if ui.thumbnail_bounds_pending.replace(true){return;}
+            let weak=Rc::downgrade(&ui);glib::idle_add_local_once(move||{if let Some(ui)=weak.upgrade(){ui.thumbnail_bounds_pending.set(false);if !ui.closed.get(){refresh_thumbnails(&ui);}}});
+        });
     }
     {
         let weak=Rc::downgrade(&ui);
