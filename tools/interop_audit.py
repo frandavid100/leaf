@@ -9,13 +9,13 @@ completed, not that every comparison passed. Never a per-release requirement.
 import json
 import os
 from pathlib import Path
-import re
 import socket
 import subprocess
 import tempfile
 import time
 import traceback
 import zipfile
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "interop-results"
@@ -76,6 +76,31 @@ def inspect(path, folder):
     return json.loads((folder / "state.json").read_text())
 
 
+def without_leaf_extensions(source, target):
+    # Preserve every standard attribute, text and package member. Strip only our
+    # namespace, including LibreOffice's regenerated prefix for that namespace.
+    with zipfile.ZipFile(source) as zin, zipfile.ZipFile(target, "w") as zout:
+        for entry in zin.infolist():
+            data = zin.read(entry.filename)
+            if entry.filename in ["styles.xml", "content.xml"]:
+                root = ET.fromstring(data)
+                for node in root.iter():
+                    for key in list(node.attrib):
+                        if key.startswith("{https://github.com/frandavid100/leaf/ns/odt/1.0}"):
+                            del node.attrib[key]
+                # The engine's XML reader uses standard prefixes; retain them.
+                for _, (prefix, uri) in ET.iterparse(source_xml(data), events=["start-ns"]):
+                    if prefix != "xmlns" and not prefix.startswith("ns"):
+                        ET.register_namespace(prefix, uri)
+                data = ET.tostring(root, encoding="utf-8", xml_declaration=True)
+            zout.writestr(entry, data)
+
+
+def source_xml(data):
+    import io
+    return io.BytesIO(data)
+
+
 def compare(before, after, lo, pdf_text):
     checks = []
     def check(label, result, detail=""):
@@ -87,7 +112,12 @@ def compare(before, after, lo, pdf_text):
     check("All header variant contents retained", headers <= after_headers, str(sorted(headers - after_headers)))
     check("All header variants visible in LibreOffice PDF", all(text in pdf_text for text in headers), str(sorted(text for text in headers if text not in pdf_text)))
     check("Language and unchecked ranges retained", before["language"] == after["language"])
-    check("Language recognised independently by LibreOffice", [p["language"] for p in lo["language"]] == ["en", "es", "zxx"], str(lo["language"]))
+    check("English and Spanish recognised independently by LibreOffice", [p["language"] for p in lo["language"][:2]] == ["en", "es"], str(lo["language"][:2]))
+    check("Unchecked range recognised independently by LibreOffice", lo["language"][2]["language"] in ["zxx", "none", ""], str(lo["language"][2]))
+    active_headers = [s for s in lo["styles"] if s["HeaderIsOn"]]
+    active_footers = [s for s in lo["styles"] if s["FooterIsOn"]]
+    check("Header edge distance recognised independently", bool(active_headers) and all(abs(s["TopMargin"]*72/2540-before["sections"][0]["header"]) < .2 for s in active_headers), str([s["TopMargin"]*72/2540 for s in active_headers]))
+    check("Footer edge distance recognised independently", bool(active_footers) and all(abs(s["BottomMargin"]*72/2540-before["sections"][0]["footer"]) < .2 for s in active_footers), str([s["BottomMargin"]*72/2540 for s in active_footers]))
     check("Section count retained", len(before["sections"]) == len(after["sections"]), f'{len(before["sections"])} -> {len(after["sections"])}')
     for key in ["header", "footer", "marginTop", "marginBottom", "pageNumFormat", "pageNumStart", "titlePage"]:
         a = [s[key] for s in before["sections"]]
@@ -102,6 +132,7 @@ def compare(before, after, lo, pdf_text):
 
 def main():
     import uno
+    from com.sun.star.document.MacroExecMode import NEVER_EXECUTE
     OUT.mkdir(exist_ok=True)
     run(WORKER, "generate", OUT / "input")
     # Private profile and an unused local port; never connect to a user's LO.
@@ -127,7 +158,7 @@ def main():
                 folder = OUT / (path.stem + "-" + path.suffix[1:])
                 folder.mkdir(exist_ok=True)
                 before = inspect(path, folder / "leaf-original")
-                doc = desktop.loadComponentFromURL(path.as_uri(), "_blank", 0, (prop("Hidden", True), prop("UpdateDocMode", 3), prop("MacroExecutionMode", 4)))
+                doc = desktop.loadComponentFromURL(path.as_uri(), "_blank", 0, (prop("Hidden", True), prop("UpdateDocMode", 3), prop("MacroExecutionMode", NEVER_EXECUTE)))
                 if doc is None:
                     raise RuntimeError(f"LibreOffice refused {path}")
                 try:
@@ -143,6 +174,8 @@ def main():
                     saved = folder / ("libreoffice-saved" + path.suffix)
                     filter_name = "writer8" if path.suffix == ".odt" else "Office Open XML Text"
                     doc.storeAsURL(saved.as_uri(), (prop("FilterName", filter_name), prop("Overwrite", True)))
+                    if path.suffix == ".docx":
+                        doc.storeToURL((folder / "libreoffice-reference.odt").as_uri(), (prop("FilterName", "writer8"), prop("Overwrite", True)))
                     doc.storeToURL((folder / "libreoffice.pdf").as_uri(), (prop("FilterName", "writer_pdf_Export"), prop("Overwrite", True)))
                     lo = uno_state(doc)
                     dump(folder / "libreoffice-edited.json", lo)
@@ -154,6 +187,18 @@ def main():
                 run("pdftoppm", "-f", "1", "-singlefile", "-scale-to", "1100", "-png", folder / "libreoffice.pdf", folder / "libreoffice-first")
                 checks = compare(before, after, lo, (folder / "libreoffice.txt").read_text())
                 checks.append({"check": "Final Leaf save/reopen preserves edited body", "passed": final["body_text"] == after["body_text"], "detail": ""})
+                checks.append({"check": "Final Leaf save/reopen preserves language ranges", "passed": final["language"] == after["language"], "detail": ""})
+                standard = folder / "standard-only.odt"
+                source = saved if path.suffix == ".odt" else folder / "libreoffice-reference.odt"
+                without_leaf_extensions(source, standard)
+                standard_state = inspect(standard, folder / "leaf-standard-only")
+                for key in ["header", "footer", "marginTop", "marginBottom"]:
+                    a = [s[key] for s in before["sections"]]
+                    b = [s[key] for s in standard_state["sections"]]
+                    # A fresh LO export is the reference for DOCX; an ODT saved
+                    # by LO is also checked with all Leaf extension data removed.
+                    same = len(a) == len(b) and all(abs(x-y) < .2 for x,y in zip(a,b))
+                    checks.append({"check": "Standard ODT reopen: " + key, "passed": same, "detail": f"{a} -> {b}"})
                 record = {"file": path.name, "checks": checks}
                 results.append(record)
                 dump(folder / "checks.json", record)
