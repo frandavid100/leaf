@@ -173,20 +173,25 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     assert!(find_widget(&ui.format_toolbar, "table-menu").is_none());
     assert!(find_widget(&ui.format_toolbar, "picture-menu").is_none());
     let add = model.item_link(2, "submenu").unwrap();
-    assert_eq!(add.n_items(), 5);
+    let actions = (0..add.n_items())
+        .map(|i| {
+            add.item_attribute_value(i, "action", None)
+                .unwrap()
+                .get::<String>()
+                .unwrap()
+        })
+        .collect::<Vec<_>>();
     assert_eq!(
-        add.item_attribute_value(0, "action", None)
-            .unwrap()
-            .get::<String>()
-            .unwrap(),
-        "win.insert-table"
-    );
-    assert_eq!(
-        add.item_attribute_value(1, "action", None)
-            .unwrap()
-            .get::<String>()
-            .unwrap(),
-        "win.insert-picture"
+        actions,
+        [
+            "win.insert-table",
+            "win.insert-picture",
+            "win.insert-bookmark",
+            "win.insert-comment",
+            "win.insert-header",
+            "win.insert-footer",
+            "win.insert-page-number",
+        ]
     );
     let extra = model.item_link(3, "section").unwrap();
     assert_eq!(extra.n_items(), 4);

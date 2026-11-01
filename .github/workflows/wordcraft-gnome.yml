@@ -78,6 +78,11 @@ jobs:
       - name: Verify WordCraft boundary for this performance audit
         if: contains(github.event.head_commit.message, '[perf-candidate]')
         run: git diff --exit-code a1670541e9500fa329c16a42c8e908122db1ecaa -- Cargo.toml Cargo.lock vendor patches
+      - name: Native document menu actions
+        run: |
+          set -o pipefail
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --chrome-ui-test 2>&1 | tee document-chrome.log
+          grep -q DOCUMENT_CHROME_OK document-chrome.log
       - name: Host-only performance regression
         run: |
           set -o pipefail
@@ -326,8 +331,6 @@ jobs:
             run_case vista-buscar-estrecha.png --search-demo --narrow
             GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --nav-ui-test 2> sidebar-navigation.log
             grep -q SIDEBAR_NAVIGATION_OK sidebar-navigation.log
-            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --chrome-ui-test 2> document-chrome.log
-            grep -q DOCUMENT_CHROME_OK document-chrome.log
             GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --pin-ui-test 2> popover-pin.log
             grep -q POPOVER_PIN_OK popover-pin.log
             run_case vista-titulos.png --outline-demo
