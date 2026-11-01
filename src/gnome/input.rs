@@ -5,6 +5,41 @@ pub(super) fn install_pointer_and_view_input(
     compact_app_menu: &gtk::MenuButton,
     compact_search: &gtk::Button,
 ) {
+    // The centered page stack can be narrower than its viewport. Its surrounding
+    // background belongs to the scroller, so page-stack gestures never see it.
+    let outside = gtk::GestureClick::new();
+    outside.set_button(gdk::BUTTON_PRIMARY);
+    outside.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let weak = Rc::downgrade(ui);
+    outside.connect_pressed(move |gesture, _, x, y| {
+        let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+            return;
+        };
+        let contains = |widget: &gtk::Widget| {
+            widget.compute_bounds(&ui.scroll).is_some_and(|r| {
+                x >= r.x() as f64
+                    && x <= (r.x() + r.width()) as f64
+                    && y >= r.y() as f64
+                    && y <= (r.y() + r.height()) as f64
+            })
+        };
+        if contains(ui.document_box.upcast_ref())
+            || contains(&ui.scroll.vscrollbar())
+            || contains(&ui.scroll.hscrollbar())
+        {
+            return;
+        }
+        let active = ui
+            .current
+            .borrow()
+            .as_ref()
+            .is_some_and(|d| d.session.in_header_footer());
+        if active {
+            gesture.set_state(gtk::EventSequenceState::Claimed);
+            header_change(&ui, header_footer::close);
+        }
+    });
+    ui.scroll.add_controller(outside);
     // Click sets the caret, double-click selects a word and triple-click
     // selects a paragraph. Coordinates are relative to the document stack.
     {
