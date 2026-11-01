@@ -12,10 +12,26 @@ La reorganización queda validada: 99 tests Rust, cuatro Python, formato,
 traducciones, enlaces, GTK/HiDPI y Orca automatizada. [Informe](docs/MAINTAINABILITY_REVIEW.md).
 [Mapa de código](docs/ARCHITECTURE.md) · [Continuidad](docs/CONTINUING.md).
 
+## En curso: alpha.14 acumulada — anotaciones y revisión lateral
+
+**Autorizado por David:** añadirlos desde Insertar y el menú contextual; compartir
+una tercera pestaña del panel lateral. Conectar creación, navegación, gestión de
+hilos e historial a WordCraft. Validar los controles GTK y la conservación DOCX.
+El ODT actual pierde comentarios: impedir esa pérdida en Leaf, documentar la
+reproducción para upstream y conservar recuperación. [Detalle](docs/BOOKMARKS_COMMENTS.md).
+
+David ha autorizado además trasladar Ortografía y gramática a una cuarta pestaña
+lateral con lista de errores navegable y mover la revisión al escribir a
+Preferencias. Subir y publicar una única release tras la validación.
+[Alcance de la revisión lateral](docs/PROOFING_SIDEBAR.md).
+
+La protección general frente a cambios externos se ha aplazado para priorizar
+esta función visible. No iniciar nuevas etapas de Orca.
+
 ## Orden de prioridad después de esta revisión
 
 Estas son propuestas; requieren un fallo concreto o una petición antes de actuar.
-No hay una ampliación funcional elegida ni autorizada en este momento.
+Los marcadores y comentarios anteriores son la ampliación elegida actualmente.
 
 | Prioridad | Trabajo | Qué permite darlo por resuelto |
 | --- | --- | --- |
@@ -25,7 +41,7 @@ No hay una ampliación funcional elegida ni autorizada en este momento.
 
 Mientras no haya informes, el mantenimiento y las comprobaciones automáticas
 pueden continuar sin exigir una base de probadores. No inventar incidencias:
-GitHub no muestra ninguna abierta al revisar este plan.
+consultar las incidencias vigentes en GitHub antes de elegir un fallo.
 
 ## Aplazado o dependiente de otra persona
 

@@ -58,13 +58,14 @@ session while inspecting it.
 | Open/save/close confirmation | [files.rs](../src/gnome/files.rs), [workspace.rs](../src/gnome/workspace.rs) | [saving.rs](../src/saving.rs); saving/recovery_search tests. |
 | Pages, zoom, thumbnails, HiDPI | [view.rs](../src/gnome/view.rs), [paintable.rs](../src/gnome/paintable.rs) | [viewer_layout.rs](../src/viewer_layout.rs); hidpi tests and `--host-cache-ui-test`. |
 | Search and headings | [search.rs](../src/gnome/search.rs), [navigation.rs](../src/gnome/navigation.rs) | [search.rs](../src/search.rs), [navigation.rs](../src/navigation.rs); `--search-ui-test`, `--nav-ui-test`. |
+| Bookmarks and comments | [annotations.rs](../src/gnome/annotations.rs), [annotation_dialog.rs](../src/gnome/annotation_dialog.rs) | [annotations.rs](../src/annotations.rs); annotations tests and `--annotations-ui-test`. Save guard in saving.rs, recovery fallback in workspace.rs. |
 | Styles | [styles.rs](../src/gnome/styles.rs) | [styles.rs](../src/styles.rs); styles tests and `--styles-ui-test`. |
 | Paragraph/text panels | [paragraph.rs](../src/gnome/paragraph.rs), [format_controls.rs](../src/gnome/format_controls.rs), [adaptive.rs](../src/gnome/adaptive.rs) | [formatting.rs](../src/formatting.rs); formatting tests, `--paragraph-ui-test`. |
 | Context, pinning and contained pages | [context.rs](../src/gnome/context.rs), [popovers.rs](../src/gnome/popovers.rs) | Context pointer, `--pin-ui-test`, `--adaptive-ui-test` in CI. |
 | Tables | [tables.rs](../src/gnome/tables.rs) | [tables.rs](../src/tables.rs); tables tests and real Tab/Shift+Tab input. |
 | Images, page properties, PDF | [document_tools.rs](../src/gnome/document_tools.rs) | [pictures.rs](../src/pictures.rs), [document_properties.rs](../src/document_properties.rs), [pdf_export.rs](../src/pdf_export.rs); document_tools tests. |
 | Headers, numbering, columns | [headers.rs](../src/gnome/headers.rs), [header_options.rs](../src/gnome/header_options.rs), [columns.rs](../src/gnome/columns.rs) | [header_footer.rs](../src/header_footer.rs), [page_options.rs](../src/page_options.rs); headers/page_options/columns tests. |
-| Local spelling and languages | [spellcheck.rs](../src/gnome/spellcheck.rs) | [proofing.rs](../src/proofing.rs); proofing tests and `--proofing-ui-test`. |
+| Local spelling and languages | [spellcheck.rs](../src/gnome/spellcheck.rs) | [proofing.rs](../src/proofing.rs); proofing tests and `--proofing-ui-test` (sidebar, Preferences and stale worker rejection). |
 | Printing | [printing.rs](../src/gnome/printing.rs) | [printing.rs](../src/printing.rs); [print harness](../tools/print_test.sh). |
 | Accessible text and focus | [canvas.rs](../src/gnome/canvas.rs), [accessibility.rs](../src/gnome/accessibility.rs) | [accessible_text.rs](../src/accessible_text.rs); [AT-SPI/Orca audit](../tools/accessibility_audit.py). |
 | Localization | [i18n.rs](../src/i18n.rs), [po](../po) | [update_translations.py](../tools/update_translations.py), [translation_source.py](../tools/translation_source.py). |

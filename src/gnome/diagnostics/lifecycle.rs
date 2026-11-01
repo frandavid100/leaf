@@ -118,9 +118,9 @@ impl LifecycleAudit {
                 self.dialogs.borrow_mut().push(language.window.downgrade());
                 language.window.close();
                 show_spelling(&ui, &host.window);
-                let spell = ui.spelling.borrow().as_ref().unwrap().window.clone();
-                self.dialogs.borrow_mut().push(spell.downgrade());
-                spell.close();
+                let spell = ui.spelling.borrow().as_ref().unwrap().clone();
+                assert!(spell.toggle.is_active());
+                spell.toggle.set_active(false);
                 let props = show_document_properties(&ui, &host.window);
                 self.dialogs.borrow_mut().push(props.window.downgrade());
                 props.window.close();

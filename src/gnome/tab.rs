@@ -139,9 +139,33 @@ pub(super) fn build_tab(
     titles_toggle.add_css_class("flat");
     titles_toggle.set_widget_name("sidebar-outline");
     titles_toggle.set_group(Some(&pages_toggle));
+    let annotations_toggle = gtk::ToggleButton::new();
+    accessible_name(
+        &annotations_toggle,
+        wordcraft_gnome::t!("Bookmarks and Comments"),
+    );
+    annotations_toggle.set_icon_name("bookmark-new-symbolic");
+    annotations_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Bookmarks and Comments")));
+    annotations_toggle.set_hexpand(true);
+    annotations_toggle.add_css_class("flat");
+    annotations_toggle.set_widget_name("sidebar-annotations");
+    annotations_toggle.set_group(Some(&pages_toggle));
+    let proofing_toggle = gtk::ToggleButton::new();
+    accessible_name(
+        &proofing_toggle,
+        wordcraft_gnome::t!("Spelling and Grammar"),
+    );
+    proofing_toggle.set_icon_name("tools-check-spelling-symbolic");
+    proofing_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Spelling and Grammar")));
+    proofing_toggle.set_hexpand(true);
+    proofing_toggle.add_css_class("flat");
+    proofing_toggle.set_widget_name("sidebar-proofing");
+    proofing_toggle.set_group(Some(&pages_toggle));
     pages_toggle.set_active(true);
     selector.append(&pages_toggle);
     selector.append(&titles_toggle);
+    selector.append(&annotations_toggle);
+    selector.append(&proofing_toggle);
     let selector_bar = gtk::Box::new(gtk::Orientation::Vertical, 0);
     selector_bar.add_css_class("toolbar");
     selector_bar.append(&selector);
@@ -395,6 +419,8 @@ pub(super) fn build_tab(
         sidebar_pages,
         navigation_pages,
         outline: RefCell::new(None),
+        annotations: RefCell::new(None),
+        annotation_dialog: RefCell::new(None),
         host: Rc::downgrade(host),
         open_button: open_button.clone(),
         search: RefCell::new(None),
@@ -463,6 +489,10 @@ pub(super) fn build_tab(
     }
     let outline_panel = install_outline(&ui, &pages_toggle, &titles_toggle);
     ui.outline.replace(Some(outline_panel.clone()));
+    ui.annotations
+        .replace(Some(install_annotations(&ui, &annotations_toggle)));
+    ui.spelling
+        .replace(Some(install_spelling(&ui, &proofing_toggle)));
     let search_panel = install_search_panel(&ui, &search_toggle, &compact_search);
     ui.search.replace(Some(search_panel.clone()));
     style_menu.set_widget_name("style-menu");

@@ -24,26 +24,33 @@ No hay feed automático de actualizaciones ni publicación en Flathub.
 [Validación y límites de alpha.13](docs/HOST_PERFORMANCE_VALIDATION.json).
 No equivale a pruebas humanas de todos los documentos, lectores o impresoras.
 
-## Trabajo autorizado en esta conversación
+## Trabajo autorizado en curso
 
-Revisión de claridad del código, organización, documentación para contribuidores
-y continuidad entre chats, y actualización de la hoja de ruta.
+David ha autorizado subir los cambios acumulados y publicar alpha.14 tras la
+validación, incluyendo **revisión en el panel lateral** y **marcadores y comentarios**: creación desde Insertar y el menú
+contextual, y una tercera pestaña compartida del panel lateral. Se usa el modelo,
+los comandos y el historial de WordCraft, sin modificar motor ni formatos.
 
-Se reorganiza GTK en módulos privados bajo `src/gnome/`, se separan diagnósticos
-bajo `src/gnome/diagnostics/` y se normaliza el formato de las fuentes Leaf.
-El ejecutable interno y sus argumentos se conservan. WordCraft, renderizador,
-parches existentes, dependencias y comportamiento de documento no se amplían.
-Se mantiene alpha.13 como versión pública; esta revisión es de mantenimiento.
+La implementación incluye una cuarta pestaña con la lista de errores, navegación
+por clic, correcciones y revisión manual con F7. La revisión mientras se escribe
+se configura exclusivamente en Preferencias. [Detalle](docs/PROOFING_SIDEBAR.md).
 
-**Revisión completada y validada:** fuente `3d5e6826ec6311b23dcaac638a580cf76be2d04e`.
-[CI nativa 41320879043](https://github.com/frandavid100/leaf/actions/runs/41320879043):
-99 tests Rust, cuatro Python, formato, enlaces, catálogos y regresiones GTK/HiDPI.
-[Orca/AT-SPI 41321948699](https://github.com/frandavid100/leaf/actions/runs/41321948699)
-también correcto sobre ese ejecutable. Ambos artefactos descargados/verificados.
-[Revisión y límites](docs/MAINTAINABILITY_REVIEW.md),
-[evidencia](docs/MAINTAINABILITY_VALIDATION.json). La portada, CONTRIBUTING y
-AGENTS de main dirigen a la rama actual. No se ha publicado otro instalable por
-esta reorganización estructural.
+Está preparada y pendiente de validación gráfica: marcadores (crear, navegar y eliminar),
+comentarios y respuestas (crear, editar, resolver/reabrir y eliminar), navegación
+al texto anotado, nombres únicos y guardas de identidad/revisión en diálogos.
+DOCX debe conservar los hilos. El exportador ODT fijado **omite comentarios y
+convierte intervalos de marcador en posiciones**; Leaf bloquea guardado ODT con
+comentarios y mantiene recuperación si el autoguardado directo resulta incompatible.
+[Alcance, pruebas y reproducción para upstream](docs/BOOKMARKS_COMMENTS.md).
+Han pasado 105 pruebas Rust, cuatro Python, formato, traducciones, enlaces,
+comprobación de tipos GTK y compilación optimizada.
+El entorno local impide crear sockets para Xvfb: las pruebas GTK, el Flatpak y
+la actualización desde alpha.13 quedan pendientes. No hay una nueva versión
+publicada; alpha.13 sigue siendo la pública. La subida y publicación acumulada
+ya están autorizadas; no se requiere otra confirmación para esta entrega.
+
+La revisión anterior de organización y continuidad está terminada y validada:
+[revisión](docs/MAINTAINABILITY_REVIEW.md), [evidencia](docs/MAINTAINABILITY_VALIDATION.json).
 
 ## Qué está implementado
 
@@ -53,7 +60,7 @@ esta reorganización estructural.
 | Página | Columnas, propiedades, encabezados/pies, campos de página y opciones por sección. [Encabezados](docs/HEADERS_FOOTERS.md), [opciones e idioma](docs/PAGE_OPTIONS_PROOFING.md) |
 | Interfaz | GTK4/libadwaita, pestañas/ventanas, búsqueda/reemplazo, miniaturas/títulos, contexto nativo y controles adaptables. |
 | Salida y recuperación | PDF, impresión por portal y preferencias de autoguardado/recuperación. [Impresión](docs/KEYBOARD_PRINTING.md) |
-| Idiomas y apariencia | 562 mensajes gettext, inglés/español y páginas oscuras. [Traducciones](docs/TRANSLATING.md) |
+| Idiomas y apariencia | 599 mensajes gettext, inglés/español y páginas oscuras. [Traducciones](docs/TRANSLATING.md) |
 | Accesibilidad | Texto normal, cursor y selección mediante GtkAccessibleText; prueba real AT-SPI/Orca automatizada. [Alcance](docs/ACCESSIBLE_DOCUMENT_TEXT.md) |
 | Rendimiento | Miniaturas acotadas, invalidación de capas afectadas y búsqueda cerrada sin trabajo redundante. [Mediciones](docs/HOST_PERFORMANCE_AUDIT.md) |
 
@@ -79,6 +86,6 @@ las capturas con otras de CI ni repetir el intento de acceso en el navegador rem
 Las traducciones por PR ya son posibles. La preparación de Flathub requerirá
 revisar sus requisitos vigentes y participación humana; no se inicia ahora.
 
-No hay incidencias abiertas verificadas en GitHub al revisar esta página.
+Consultar las incidencias actuales en GitHub; no inferir su estado de este resumen.
 La [hoja de ruta](ROADMAP.md) distingue propuestas y trabajo aplazado: no añade
 funciones automáticamente ni bloquea el desarrollo esperando probadores.

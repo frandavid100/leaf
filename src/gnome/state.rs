@@ -41,6 +41,8 @@ pub(super) struct Ui {
     pub(super) sidebar_pages: gtk::Stack,
     pub(super) navigation_pages: gtk::Stack,
     pub(super) outline: RefCell<Option<Rc<OutlinePanel>>>,
+    pub(super) annotations: RefCell<Option<Rc<AnnotationPanel>>>,
+    pub(super) annotation_dialog: RefCell<Option<adw::Window>>,
     pub(super) host: std::rc::Weak<Workspace>,
     pub(super) open_button: gtk::Button,
     pub(super) search: RefCell<Option<Rc<SearchPanel>>>,

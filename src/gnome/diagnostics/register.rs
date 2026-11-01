@@ -41,6 +41,14 @@ pub(super) fn install_diagnostics(
         titles_toggle,
         search_panel,
     } = controls;
+    if std::env::args().any(|a| a == "--annotations-ui-test" || a == "--annotations-demo") {
+        let u = ui.clone();
+        let w = window.clone();
+        let a = app.clone();
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1000), move || {
+            annotations_ui_test(&u, &w, &a);
+        });
+    }
     if std::env::args().any(|a| a == "--localization-ui-test") {
         let u = ui.clone();
         let a = app.clone();
@@ -183,6 +191,7 @@ pub(super) fn install_diagnostics(
     for (flag, proof) in [
         ("--page-options-ui-test", false),
         ("--proofing-ui-test", true),
+        ("--proofing-demo", true),
     ] {
         if std::env::args().any(|a| a == flag) {
             let u = ui.clone();
@@ -436,7 +445,7 @@ pub(super) fn install_diagnostics(
     if std::env::args().any(|a| a == "--preferences-demo") {
         let w = window.clone();
         glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
-            show_preferences(&w)
+            show_preferences(&w);
         });
     }
     if std::env::args().any(|a| a == "--search-demo") {

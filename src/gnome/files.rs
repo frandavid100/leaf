@@ -128,7 +128,16 @@ pub(super) fn save_document(
         return;
     }
     let existing = ui.save_path.borrow().clone();
-    if !save_as {
+    let needs_docx = ui
+        .current
+        .borrow()
+        .as_ref()
+        .is_some_and(|d| !d.session.doc.comments.is_empty());
+    let incompatible = needs_docx
+        && existing
+            .as_ref()
+            .is_some_and(|p| p.extension().is_some_and(|e| e.eq_ignore_ascii_case("odt")));
+    if !save_as && !incompatible {
         if let Some(path) = existing {
             if save_to(ui, &path) {
                 done();
@@ -159,6 +168,7 @@ pub(super) fn save_document(
         .and_then(|p| p.extension())
         .and_then(|x| x.to_str())
         .unwrap_or("docx");
+    let ext = if needs_docx { "docx" } else { ext };
     dialog.set_initial_name(Some(&format!("{name}-copia.{ext}")));
     if let Some(folder) = source.as_ref().and_then(|p| p.parent()) {
         dialog.set_initial_folder(Some(&gio::File::for_path(folder)));

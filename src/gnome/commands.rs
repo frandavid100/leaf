@@ -72,6 +72,12 @@ pub(super) fn after_content_change(ui: &Rc<Ui>) {
     if let Some(s) = ui.outline.borrow().as_ref() {
         s.schedule();
     }
+    if let Some(s) = ui.annotations.borrow().as_ref() {
+        s.schedule();
+    }
+    if let Some(s) = ui.spelling.borrow().as_ref() {
+        s.invalidate();
+    }
     ui.dirty.set(true);
 
     sync_tab(ui);

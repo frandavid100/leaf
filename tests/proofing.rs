@@ -4,6 +4,35 @@ use wordcraft_engine::Session;
 use wordcraft_gnome::{proofing, selection};
 
 #[test]
+fn explicit_issue_list_and_navigation_work_with_live_checking_disabled() {
+    proofing::initialize();
+    let mut session = Session::new(Document::from_text("El qqqmanualzz examen."));
+    proofing::language(&mut session, "es-ES", false, true).unwrap();
+    session.view.proofing = false;
+    session.prefs.check_spelling = false;
+    let before = (
+        session.doc.clone(),
+        session.rev(),
+        session.undo_depth(),
+        session.dirty,
+    );
+    let issues = proofing::issues(&session);
+    let issue = issues.iter().find(|i| i.text == "qqqmanualzz").unwrap();
+    proofing::select(&mut session, issue).unwrap();
+    assert_eq!(selection::copy_text(&mut session).unwrap(), "qqqmanualzz");
+    assert_eq!(
+        (
+            session.doc.clone(),
+            session.rev(),
+            session.undo_depth(),
+            session.dirty
+        ),
+        before
+    );
+    assert!(!session.view.proofing);
+}
+
+#[test]
 fn english_suggestions_replacement_and_custom_dictionary() {
     proofing::initialize();
     let mut s = Session::new(Document::from_text("The qqqspelingzzz word."));

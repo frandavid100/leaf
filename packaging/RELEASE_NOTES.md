@@ -1,5 +1,9 @@
-Leaf 0.1.0-alpha.13 reduces unnecessary work in the GTK frontend: caret animation invalidates its own page, selection/search changes repaint their old and new pages, thumbnail visibility uses indexed GTK bounds, and closed search panels stop recalculating results until reopened. Header/footer guides retain deliberate full invalidation.
+Leaf 0.1.0-alpha.14 adds bookmarks and comments through Insert and the document context menu, with a shared third sidebar tab.
 
-WordCraft, the renderer, formats patches, Cargo configuration and dependencies are unchanged. The optional synthetic performance audit compares actual before/after release binaries on the same runner, using AB/BA order, alongside native correctness and UI regressions. All 99 native tests and the host regression passed. In the 164-page synthetic case, initial thumbnail rasterization falls from 164 pages to 4 and the widget/raster setup phase falls from about 316 ms to 31 ms, excluding import and first layout. 80 cursor moves request 80 overlay redraws instead of 13,120. Typing/undo and engine layout times do not show a consistent improvement. Verified data and limitations: docs/HOST_PERFORMANCE_AUDIT.md and docs/HOST_PERFORMANCE_VALIDATION.json. No universal application speedup or memory reduction is claimed.
+Create, navigate to and delete named bookmarks; create, edit and reply to comments, resolve/reopen threads and confirm deletion. Document changes use WordCraft commands and undo/redo. English/Spanish and native wide/narrow/dark views are included.
 
-Install Leaf-0.1.0-alpha.13-x86_64.flatpak over alpha.12. English/Spanish, dark documents, HiDPI and first-stage Orca access remain included. Experimental AI-assisted development. Public screenshots and Weblate setup remain with the maintainer.
+Spelling and grammar now has a fourth sidebar tab with a clickable issue list and correction controls. F7 opens manual review; check-as-you-type lives in Preferences. Background scans are coalesced and discard obsolete document positions.
+
+DOCX preserves comment threads. The pinned WordCraft ODT exporter omits comments and turns bookmark ranges into point locations: Leaf blocks ODT saves containing comments, suggests DOCX and keeps native recovery when direct ODT autosave is incompatible. This limitation is documented and reproduced without modifying the engine.
+
+Install Leaf-0.1.0-alpha.14-x86_64.flatpak over alpha.13. This remains an experimental AI-assisted editor. Public screenshots and Weblate setup remain with the maintainer.

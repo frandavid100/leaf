@@ -112,6 +112,16 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
             choose_picture(&ui, &h.window, false);
         }
     });
+    window_action(host, "insert-bookmark", |h| {
+        if let Some(ui) = selected_ui(h) {
+            show_annotation_dialog(&ui, AnnotationEdit::Bookmark);
+        }
+    });
+    window_action(host, "insert-comment", |h| {
+        if let Some(ui) = selected_ui(h) {
+            show_annotation_dialog(&ui, AnnotationEdit::NewComment);
+        }
+    });
     window_action(host, "insert-header", |h| {
         if let Some(ui) = selected_ui(h) {
             enter_header(&ui, Region::Header);
@@ -157,7 +167,9 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
             export_pdf_dialog(&ui, &h.window);
         }
     });
-    window_action(host, "preferences", |h| show_preferences(&h.window));
+    window_action(host, "preferences", |h| {
+        show_preferences(&h.window);
+    });
     window_action(host, "shortcuts", |h| show_keyboard_shortcuts(&h.window));
     window_action(host, "help", |h| show_editor_help(&h.window));
     window_action(host, "about", |h| {
@@ -292,6 +304,18 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton) {
     let add = gio::Menu::new();
     menu_item(&add, wordcraft_gnome::t!("Table…"), "insert-table", None);
     menu_item(&add, wordcraft_gnome::t!("Image…"), "insert-picture", None);
+    menu_item(
+        &add,
+        wordcraft_gnome::t!("Bookmark…"),
+        "insert-bookmark",
+        Some("<Control><Shift>F5"),
+    );
+    menu_item(
+        &add,
+        wordcraft_gnome::t!("Comment…"),
+        "insert-comment",
+        Some("<Control><Alt>m"),
+    );
     menu_item(&add, wordcraft_gnome::t!("Header"), "insert-header", None);
     menu_item(&add, wordcraft_gnome::t!("Footer"), "insert-footer", None);
     menu_item(
@@ -339,7 +363,7 @@ pub(super) fn show_editor_help(parent: &ApplicationWindow) {
     let toolbar = ToolbarView::new();
     toolbar.add_top_bar(&HeaderBar::new());
     let text = wordcraft_gnome::t!(
-        "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages and Headings. Select a thumbnail or heading to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Add in the document menu inserts tables and images; right-click edits them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
+        "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Headings, and Bookmarks and Comments. Select a thumbnail or heading to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks and comment threads are managed in the third sidebar tab. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
     );
     let l = gtk::Label::new(Some(text));
     l.set_wrap(true);

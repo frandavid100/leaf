@@ -380,6 +380,9 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
     if ui.closed.get() {
         return;
     }
+    if let Some(s) = ui.spelling.borrow().as_ref() {
+        s.invalidate();
+    }
     if !session.recovery_ready() {
         if let Err(e) = session.enable_recovery(
             wordcraft_gnome::preferences::recovery_root(),
@@ -411,6 +414,9 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
         s.schedule();
     }
     if let Some(s) = ui.outline.borrow().as_ref() {
+        s.schedule();
+    }
+    if let Some(s) = ui.annotations.borrow().as_ref() {
         s.schedule();
     }
     clear_canvas(&ui.document_box);

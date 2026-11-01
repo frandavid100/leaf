@@ -46,9 +46,40 @@ También hay [fallos visuales comunicados](TEST_RESULTS.md) con anchuras desigua
 y separadores al aplicar columnas a texto seleccionado. La conservación de sus
 propiedades en DOCX no garantiza que esa disposición se dibuje correctamente.
 
+## Marcadores y comentarios
+
+Se añaden desde Insertar o el clic derecho. La tercera pestaña lateral muestra
+los marcadores por nombre y los comentarios con sus respuestas. Pulsa un marcador
+o «Ir al comentario» para seleccionar su texto. Los marcadores requieren un nombre
+único de hasta 40 caracteres, empezando por letra, sin espacios.
+
+En cada comentario puedes responder; su menú permite editar, resolver/reabrir o
+eliminar. La eliminación pide confirmación e incluye las respuestas. Deshacer y
+rehacer conservan el historial. Ctrl+Mayús+F5 añade marcador; Ctrl+Alt+M añade
+comentario; Ctrl+Intro envía el comentario y Escape cancela el diálogo.
+
+**Guarda los comentarios en DOCX.** El exportador actual de WordCraft no los
+conserva en ODT: Leaf bloquea ese guardado y propone DOCX. Si el autoguardado directo
+apuntaba a ODT, mantiene una copia de recuperación. Los marcadores ODT conservan
+nombre y posición, pero no el intervalo seleccionado. [Alcance](BOOKMARKS_COMMENTS.md).
+
+## Ortografía y gramática
+
+La cuarta pestaña lateral muestra una lista de errores. Pulsa una fila para ir al
+texto y seleccionar el fragmento. Debajo aparecen las sugerencias y las opciones
+Cambiar, Ignorar todas y Añadir al diccionario cuando corresponden al error.
+F7 abre la pestaña; el botón de volver a revisar actualiza la lista manualmente.
+
+**Preferencias → Ortografía y gramática** contiene la opción de revisar mientras
+se escribe. Al activarla se actualizan los subrayados y la lista visible tras una
+pausa breve. Al desactivarla puedes seguir revisando manualmente con F7. Una
+edición invalida las posiciones anteriores para impedir correcciones equivocadas.
+Se conservan los idiomas por fragmento y la exclusión de revisión. Los idiomas
+sin diccionario instalado se omiten y la gramática usa las reglas de WordCraft.
+
 ## Navegar y buscar
 
-El panel lateral se abre por defecto y permite Páginas o Títulos. La lupa activa
+El panel lateral se abre por defecto y permite Páginas, Títulos, Marcadores y comentarios y Ortografía y gramática. La lupa activa
 la búsqueda (Ctrl+F); Ctrl+H muestra reemplazo. Las opciones incluyen distinguir
 mayúsculas y reemplazar. Cada resultado muestra contexto y página; se puede
 reemplazar uno o todos. La consulta se conserva al cerrar y se actualiza al abrirla.
@@ -59,8 +90,8 @@ La apariencia de páginas y miniaturas sigue el modo claro/oscuro de GNOME.
 
 ## Insertar y configurar
 
-Insertar, en los tres puntos, contiene tabla, imagen, encabezado, pie y número de
-página. Las tablas e imágenes se editan desde su menú contextual; no hay botones
+Insertar, en los tres puntos, contiene tabla, imagen, marcador, comentario,
+encabezado, pie y número de página. Las tablas e imágenes se editan desde su menú contextual; no hay botones
 permanentes Tabla/Imagen en la barra. Tab/Mayús+Tab recorren celdas y Tab al final
 puede añadir una fila. Las imágenes son en línea, con tamaño/proporción, sustitución
 y eliminación; no se ofrece posicionamiento flotante.

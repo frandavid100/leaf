@@ -1780,3 +1780,129 @@ msgstr "Usar en documentos nuevos"
 
 msgid "Document protection prevents changing header/footer settings"
 msgstr "La protección del documento impide cambiar las opciones de encabezado y pie de página"
+
+msgid "A bookmark with this name already exists."
+msgstr "Ya existe un marcador con este nombre."
+
+msgid "Add Bookmark"
+msgstr "Añadir marcador"
+
+msgid "Add Bookmark…"
+msgstr "Añadir marcador…"
+
+msgid "Add Comment"
+msgstr "Añadir comentario"
+
+msgid "Add Comment…"
+msgstr "Añadir comentario…"
+
+msgid "Bookmark Name"
+msgstr "Nombre del marcador"
+
+msgid "Bookmarks"
+msgstr "Marcadores"
+
+msgid "Bookmarks and Comments"
+msgstr "Marcadores y comentarios"
+
+msgid "Bookmarks can only be added to the editable document body."
+msgstr "Los marcadores solo se pueden añadir al cuerpo editable del documento."
+
+msgid "Bookmark…"
+msgstr "Marcador…"
+
+msgid "Comment Options"
+msgstr "Opciones del comentario"
+
+msgid "Comment Text"
+msgstr "Texto del comentario"
+
+msgid "Comments"
+msgstr "Comentarios"
+
+msgid "Comment…"
+msgstr "Comentario…"
+
+msgid "Delete Bookmark"
+msgstr "Eliminar marcador"
+
+msgid "Delete Comment?"
+msgstr "¿Eliminar comentario?"
+
+msgid "Delete Comment…"
+msgstr "Eliminar comentario…"
+
+msgid "Edit Comment"
+msgstr "Editar comentario"
+
+msgid "Edit Comment…"
+msgstr "Editar comentario…"
+
+msgid "Enter some comment text."
+msgstr "Escribe el texto del comentario."
+
+msgid "Go to Comment"
+msgstr "Ir al comentario"
+
+msgid "No Bookmarks"
+msgstr "No hay marcadores"
+
+msgid "No Comments"
+msgstr "No hay comentarios"
+
+msgid "ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."
+msgstr "El exportador actual de WordCraft no conserva los comentarios en ODT. Guarda como DOCX para conservarlos."
+
+msgid "Reopen Comment"
+msgstr "Reabrir comentario"
+
+msgid "Reply"
+msgstr "Responder"
+
+msgid "Reply to Comment"
+msgstr "Responder al comentario"
+
+msgid "Resolve Comment"
+msgstr "Resolver comentario"
+
+msgid "Resolved"
+msgstr "Resuelto"
+
+msgid "Save comments as DOCX. ODT does not preserve them."
+msgstr "Guarda los comentarios como DOCX. ODT no los conserva."
+
+msgid "Start with a letter. Use letters, numbers or underscores; no spaces."
+msgstr "Empieza por una letra. Usa letras, números o guiones bajos, sin espacios."
+
+msgid "The document has changed; try again."
+msgstr "El documento ha cambiado; vuelve a intentarlo."
+
+msgid "The selection has changed; open this dialog again."
+msgstr "La selección ha cambiado; vuelve a abrir este diálogo."
+
+msgid "This also deletes its replies. You can undo this change."
+msgstr "También se eliminarán sus respuestas. Puedes deshacer este cambio."
+
+msgid "This annotation cannot be added or changed here."
+msgstr "No se puede añadir ni modificar esta anotación aquí."
+
+msgid "This comment has no visible anchor in the document."
+msgstr "Este comentario no tiene un anclaje visible en el documento."
+
+msgid "Use a name beginning with a letter, with letters, numbers or underscores, and at most 40 characters."
+msgstr "Usa un nombre que empiece por una letra, con letras, números o guiones bajos, y un máximo de 40 caracteres."
+
+msgid "Add native bookmarks and comment threads with a shared sidebar and protect comments from unsupported ODT saves."
+msgstr "Añade marcadores e hilos de comentarios nativos con un panel lateral compartido y protege los comentarios frente al guardado ODT no compatible."
+
+msgid "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Headings, and Bookmarks and Comments. Select a thumbnail or heading to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks and comment threads are managed in the third sidebar tab. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
+msgstr "DOCUMENTOS\nPestaña nueva en el menú principal crea un documento vacío. El menú principal permite abrir documentos DOCX/ODT, ventanas nuevas y mostrar todas las pestañas. Guardar: Ctrl+S; Guardar como: Ctrl+Mayús+S.\n\nNAVEGACIÓN\nLos botones inferiores del panel izquierdo alternan Páginas, Títulos y Marcadores y comentarios. Pulsa una miniatura o un título para ir a esa parte del documento. La lupa abre la búsqueda; Escape vuelve a la vista anterior.\n\nBUSCAR Y REEMPLAZAR\nCtrl+F abre la búsqueda. Sus tres puntos permiten distinguir mayúsculas y activar Reemplazar. El botón junto al segundo campo reemplaza todas las coincidencias en un solo paso de deshacer; cada resultado conserva su reemplazo individual.\n\nEDICIÓN\nEstilo, Párrafo y Texto están como iconos a la derecha de la cabecera, con Deshacer/Rehacer a la izquierda. En ventanas estrechas los cinco pasan a la barra inferior. El clic derecho ofrece sus propias páginas de formato dentro del mismo menú. Insertar en el menú del documento permite añadir tablas, imágenes, marcadores y comentarios. Los marcadores y los hilos de comentarios se gestionan en la tercera pestaña del panel lateral. Guarda los comentarios en DOCX; ODT no los conserva. Las flechas abren subopciones. Ctrl+Z deshace y Ctrl+Mayús+Z rehace.\n\nAUTOGUARDADO\nPreferencias permite desactivar el autoguardado, usar un archivo de recuperación o guardar en el propio archivo. Recuperar documentos está en el menú principal."
+
+msgid "Check Again"
+msgstr "Volver a revisar"
+
+msgid "Check Spelling and Grammar as You Type"
+msgstr "Revisar la ortografía y gramática mientras se escribe"
+
+msgid "Select an issue to review it."
+msgstr "Selecciona un error para revisarlo."

@@ -307,6 +307,17 @@ pub(super) fn install_keyboard_input(
                 let shift = modifiers.contains(gdk::ModifierType::SHIFT_MASK);
                 let control = modifiers.contains(gdk::ModifierType::CONTROL_MASK);
                 if ui.document_box.has_focus() {
+                    if control && shift && key == gdk::Key::F5 {
+                        show_annotation_dialog(&ui, AnnotationEdit::Bookmark);
+                        return glib::Propagation::Stop;
+                    }
+                    if control
+                        && modifiers.contains(gdk::ModifierType::ALT_MASK)
+                        && matches!(key, gdk::Key::m | gdk::Key::M)
+                    {
+                        show_annotation_dialog(&ui, AnnotationEdit::NewComment);
+                        return glib::Propagation::Stop;
+                    }
                     if key == gdk::Key::Escape
                         && ui
                             .current

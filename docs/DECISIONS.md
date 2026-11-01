@@ -10,6 +10,10 @@ propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funcion
 | Actualizaciones de la base | Mantener dependencias fijadas y modificaciones separadas. | Seguir [UPDATING_WORDCRAFT](../UPDATING_WORDCRAFT.md) cuando se autorice una actualización. |
 | Diseño | GTK4/libadwaita y convenciones GNOME. | Conservar controles nativos, orden Estilo → Párrafo → Texto, adaptación ancho/estrecho y menús contextuales contenidos. |
 | Ciclo de vida | Propietarios explícitos, callbacks débiles y limpieza al cerrar. | No reintroducir ciclos Rc/widget; comprobar cierre de pestañas/ventanas y trabajadores. |
+| Marcadores y comentarios | Creación desde Insertar/contexto; tercera pestaña lateral compartida. | WordCraft conserva datos e historial. DOCX conserva los hilos; bloquear ODT con comentarios mientras el exportador los omita. |
+| Ortografía y gramática | Cuarta pestaña lateral con lista de errores; clic para seleccionar el texto. Revisión al escribir solo en Preferencias. | F7 permite revisión manual aunque la automática esté desactivada; invalidar posiciones obsoletas y coalescer el trabajo. |
+| Alpha.14 acumulada | David autoriza subir anotaciones y revisión lateral y publicar tras validarlas. | Completar CI nativa e instalada y verificar release; no pedir otra confirmación para este alcance. |
+| Conflictos con cambios externos | Aplazados para priorizar marcadores/comentarios. | No iniciar esa ampliación ahora. |
 | Orca | La primera etapa se conserva; ampliaciones aplazadas. | Mantener las regresiones actuales sin iniciar tablas/imágenes accesibles por cuenta propia. |
 | Pruebas con personas | Esperar a que haya usuarios disponibles. | Diferenciar éxito automático de prueba humana; no bloquear trabajo independiente. |
 | Capturas | David proporcionará las públicas. | No sustituirlas por capturas de CI. Las capturas internas son solo validación. |

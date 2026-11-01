@@ -3,7 +3,18 @@ use serde_json::json;
 use std::path::Path;
 use wordcraft_engine::Session;
 
+/// Prevent silent loss through the pinned upstream ODT exporter. The recovery
+/// copy is engine-native; this guard applies to document files and autosave.
+pub fn annotation_format_error(session: &Session, path: &Path) -> Option<&'static str> {
+    (path.extension().is_some_and(|e| e.eq_ignore_ascii_case("odt"))
+        && !session.doc.comments.is_empty())
+        .then(|| wordcraft_gnome::t!("ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."))
+}
+
 pub fn save(session: &mut Session, path: &Path) -> Result<(), String> {
+    if let Some(error) = annotation_format_error(session, path) {
+        return Err(error.into());
+    }
     let ext = path.extension().and_then(|x| x.to_str()).unwrap_or("");
     if !["docx", "odt"].iter().any(|x| ext.eq_ignore_ascii_case(x)) {
         return Err(wordcraft_gnome::t!("Use a .docx or .odt extension").into());

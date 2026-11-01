@@ -1780,3 +1780,129 @@ msgstr "Use for New Documents"
 
 msgid "Document protection prevents changing header/footer settings"
 msgstr "Document protection prevents changing header/footer settings"
+
+msgid "A bookmark with this name already exists."
+msgstr "A bookmark with this name already exists."
+
+msgid "Add Bookmark"
+msgstr "Add Bookmark"
+
+msgid "Add Bookmark…"
+msgstr "Add Bookmark…"
+
+msgid "Add Comment"
+msgstr "Add Comment"
+
+msgid "Add Comment…"
+msgstr "Add Comment…"
+
+msgid "Bookmark Name"
+msgstr "Bookmark Name"
+
+msgid "Bookmarks"
+msgstr "Bookmarks"
+
+msgid "Bookmarks and Comments"
+msgstr "Bookmarks and Comments"
+
+msgid "Bookmarks can only be added to the editable document body."
+msgstr "Bookmarks can only be added to the editable document body."
+
+msgid "Bookmark…"
+msgstr "Bookmark…"
+
+msgid "Comment Options"
+msgstr "Comment Options"
+
+msgid "Comment Text"
+msgstr "Comment Text"
+
+msgid "Comments"
+msgstr "Comments"
+
+msgid "Comment…"
+msgstr "Comment…"
+
+msgid "Delete Bookmark"
+msgstr "Delete Bookmark"
+
+msgid "Delete Comment?"
+msgstr "Delete Comment?"
+
+msgid "Delete Comment…"
+msgstr "Delete Comment…"
+
+msgid "Edit Comment"
+msgstr "Edit Comment"
+
+msgid "Edit Comment…"
+msgstr "Edit Comment…"
+
+msgid "Enter some comment text."
+msgstr "Enter some comment text."
+
+msgid "Go to Comment"
+msgstr "Go to Comment"
+
+msgid "No Bookmarks"
+msgstr "No Bookmarks"
+
+msgid "No Comments"
+msgstr "No Comments"
+
+msgid "ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."
+msgstr "ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."
+
+msgid "Reopen Comment"
+msgstr "Reopen Comment"
+
+msgid "Reply"
+msgstr "Reply"
+
+msgid "Reply to Comment"
+msgstr "Reply to Comment"
+
+msgid "Resolve Comment"
+msgstr "Resolve Comment"
+
+msgid "Resolved"
+msgstr "Resolved"
+
+msgid "Save comments as DOCX. ODT does not preserve them."
+msgstr "Save comments as DOCX. ODT does not preserve them."
+
+msgid "Start with a letter. Use letters, numbers or underscores; no spaces."
+msgstr "Start with a letter. Use letters, numbers or underscores; no spaces."
+
+msgid "The document has changed; try again."
+msgstr "The document has changed; try again."
+
+msgid "The selection has changed; open this dialog again."
+msgstr "The selection has changed; open this dialog again."
+
+msgid "This also deletes its replies. You can undo this change."
+msgstr "This also deletes its replies. You can undo this change."
+
+msgid "This annotation cannot be added or changed here."
+msgstr "This annotation cannot be added or changed here."
+
+msgid "This comment has no visible anchor in the document."
+msgstr "This comment has no visible anchor in the document."
+
+msgid "Use a name beginning with a letter, with letters, numbers or underscores, and at most 40 characters."
+msgstr "Use a name beginning with a letter, with letters, numbers or underscores, and at most 40 characters."
+
+msgid "Add native bookmarks and comment threads with a shared sidebar and protect comments from unsupported ODT saves."
+msgstr "Add native bookmarks and comment threads with a shared sidebar and protect comments from unsupported ODT saves."
+
+msgid "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Headings, and Bookmarks and Comments. Select a thumbnail or heading to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks and comment threads are managed in the third sidebar tab. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
+msgstr "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Headings, and Bookmarks and Comments. Select a thumbnail or heading to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks and comment threads are managed in the third sidebar tab. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
+
+msgid "Check Again"
+msgstr "Check Again"
+
+msgid "Check Spelling and Grammar as You Type"
+msgstr "Check Spelling and Grammar as You Type"
+
+msgid "Select an issue to review it."
+msgstr "Select an issue to review it."

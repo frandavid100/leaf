@@ -20,16 +20,18 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
         return;
     }
     ui.document_box.reset();
+    let dialog = ui.annotation_dialog.borrow_mut().take();
+    if let Some(dialog) = dialog {
+        dialog.close();
+    }
+    ui.annotations.borrow_mut().take();
     if let Some(source) = ui.autosave_source.borrow_mut().take() {
         source.remove();
     }
     ui.printing.cancel();
     let spelling = ui.spelling.borrow_mut().take();
     if let Some(s) = spelling {
-        if let Some(id) = s.source.borrow_mut().take() {
-            id.remove();
-        }
-        s.window.close();
+        s.stop();
     }
     if let Some(id) = ui.theme_signal.borrow_mut().take() {
         adw::StyleManager::default().disconnect(id);
@@ -292,7 +294,7 @@ pub(super) fn blank_tab(app: &Application, host: &Rc<Workspace>) {
     );
 }
 
-pub(super) fn show_preferences(parent: &ApplicationWindow) {
+pub(super) fn show_preferences(parent: &ApplicationWindow) -> adw::PreferencesWindow {
     let dialog = adw::PreferencesWindow::new();
     dialog.set_transient_for(Some(parent));
     dialog.set_modal(true);
@@ -324,8 +326,30 @@ pub(super) fn show_preferences(parent: &ApplicationWindow) {
     ));
     group.add(&row);
     page.add(&group);
+    let proofing = adw::PreferencesGroup::new();
+    proofing.set_title(wordcraft_gnome::t!("Spelling and Grammar"));
+    let live = option_switch(
+        &proofing,
+        wordcraft_gnome::t!("Check Spelling and Grammar as You Type"),
+    );
+    live.set_widget_name("preferences-live-proofing");
+    accessible_name(
+        &live,
+        wordcraft_gnome::t!("Check Spelling and Grammar as You Type"),
+    );
+    live.set_active(wordcraft_gnome::preferences::check_spelling());
+    let weak = dialog.downgrade();
+    live.connect_active_notify(move |toggle| {
+        if let Err(e) = set_live_proofing(toggle.is_active()) {
+            if let Some(dialog) = weak.upgrade() {
+                dialog.add_toast(Toast::new(&e));
+            }
+        }
+    });
+    page.add(&proofing);
     dialog.add(&page);
     dialog.present();
+    dialog
 }
 
 pub(super) fn install_autosave(ui: &Rc<Ui>) {
@@ -350,8 +374,12 @@ pub(super) fn install_autosave(ui: &Rc<Ui>) {
                     .borrow()
                     .clone()
                     .or_else(|| doc.session.path.clone());
+                let blocked = path.as_ref().and_then(|p| {
+                    wordcraft_gnome::saving::annotation_format_error(&doc.session, p)
+                });
                 if mode == 1
                     || (mode == 2 && path.is_none())
+                    || (mode == 2 && blocked.is_some())
                     || ui.restoring.get()
                     || !doc.session.recovery_ready()
                 {
@@ -366,7 +394,10 @@ pub(super) fn install_autosave(ui: &Rc<Ui>) {
                     }
                 }
                 ticks.set(ticks.get() + 1);
-                if mode == 2 && ui.dirty.get() && ticks.get() % 30 == 0 {
+                if mode == 2 && ui.dirty.get() && blocked.is_some() {
+                    error = blocked.map(str::to_string);
+                }
+                if mode == 2 && ui.dirty.get() && blocked.is_none() && ticks.get() % 30 == 0 {
                     if let Some(path) = path {
                         match wordcraft_gnome::saving::save(&mut doc.session, &path) {
                             Ok(()) => {

@@ -30,7 +30,7 @@ use wordcraft_gnome::{
     pdf_export, pictures,
 };
 
-const APP_VERSION: &str = "0.1.0-alpha.13";
+const APP_VERSION: &str = "0.1.0-alpha.14";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -60,6 +60,10 @@ mod menus;
 use menus::*;
 mod navigation;
 use navigation::*;
+mod annotations;
+use annotations::*;
+mod annotation_dialog;
+use annotation_dialog::*;
 mod header_options;
 use header_options::*;
 mod paragraph;
@@ -164,6 +168,10 @@ pub(crate) fn run() {
 #[path = "diagnostics/register.rs"]
 mod diagnostic_registration;
 use diagnostic_registration::*;
+
+#[path = "diagnostics/annotations.rs"]
+mod annotation_checks;
+use annotation_checks::*;
 
 #[path = "diagnostics/motion.rs"]
 mod motion_checks;

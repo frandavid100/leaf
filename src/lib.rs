@@ -155,4 +155,5 @@ pub mod pictures;
 pub mod proofing;
 
 pub mod accessible_text;
+pub mod annotations;
 pub mod printing;
