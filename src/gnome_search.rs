@@ -29,8 +29,9 @@ impl SearchPanel {
         });
     }
     fn refresh(self:&Rc<Self>) {
+        let _perf=perf_scope("leaf.search_refresh");
         let Some(ui)=self.ui.upgrade().filter(|u|!u.closed.get())else{return;};
-        let result={let mut state=ui.current.borrow_mut();state.as_mut().map(|d|wordcraft_gnome::search::query(&mut d.session,&self.query.text(),self.match_case.is_active()))};
+        let result={let mut state=ui.current.borrow_mut();state.as_mut().map(|d|{let _p=perf_scope("boundary.search_query");wordcraft_gnome::search::query(&mut d.session,&self.query.text(),self.match_case.is_active())})};
         let (hits,error)=match result {Some(Ok(h))=>(h,None),Some(Err(e))=>(Vec::new(),Some(e)),None=>(Vec::new(),None)};
         while let Some(child)=self.list.first_child(){self.list.remove(&child);}
         ui.search_highlights.borrow_mut().clear();
@@ -39,6 +40,7 @@ impl SearchPanel {
         self.status.set_text(error.as_deref().unwrap_or(if self.query.text().is_empty(){wordcraft_gnome::t!("Type to Search")}else{wordcraft_gnome::t!("No Matches")}));
         self.replace_all.set_sensitive(!hits.is_empty());
         for (index,hit) in hits.iter().enumerate(){
+            perf_count("search_rows",1);
             let row=gtk::ListBoxRow::new();row.set_widget_name(&format!("search-hit-{index}"));
             let content=gtk::Box::new(gtk::Orientation::Horizontal,6);content.set_margin_top(1);content.set_margin_bottom(1);content.set_margin_start(8);content.set_margin_end(6);
             let snippet=gtk::Label::new(None);snippet.set_xalign(0.0);snippet.set_hexpand(true);snippet.set_ellipsize(gtk::pango::EllipsizeMode::End);snippet.set_max_width_chars(1);

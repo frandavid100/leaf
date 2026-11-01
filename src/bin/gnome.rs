@@ -106,6 +106,8 @@ struct Ui {
     size_input: gtk::SpinButton,
 }
 
+include!("../gnome_performance.rs");
+
 fn texture(img: wordcraft_gnome::PageImage) -> gdk::MemoryTexture {
     let bytes = glib::Bytes::from_owned(img.rgba);
     gdk::MemoryTexture::new(
@@ -116,10 +118,11 @@ fn texture(img: wordcraft_gnome::PageImage) -> gdk::MemoryTexture {
 
 
 fn refresh_selection(ui: &Rc<Ui>) {
+    let _perf=perf_scope("leaf.refresh_selection");
     let snapshot = {
         let Ok(mut value) = ui.current.try_borrow_mut() else { return };
         let Some(doc) = value.as_mut() else { return };
-        selection::geometry(&mut doc.session)
+        { let _p=perf_scope("boundary.selection_geometry"); selection::geometry(&mut doc.session) }
     };
     let now = ui.document_box.frame_clock().map(|c| c.frame_time()).unwrap_or(0);
     let animate = ui.document_box.is_mapped()
@@ -139,7 +142,7 @@ fn refresh_selection(ui: &Rc<Ui>) {
                 motion.is_moving()
             };
             if let Some(doc) = ui.current.borrow().as_ref() {
-                for area in &doc.selection_areas { area.queue_draw(); }
+                for area in &doc.selection_areas { perf_count("overlay_queue",1); area.queue_draw(); }
             }
             if moving { glib::ControlFlow::Continue } else {
                 ui.caret_tick_active.set(false);
@@ -149,7 +152,7 @@ fn refresh_selection(ui: &Rc<Ui>) {
     }
     if let Ok(value) = ui.current.try_borrow() {
         if let Some(doc) = value.as_ref() {
-            for area in &doc.selection_areas { area.queue_draw(); }
+            for area in &doc.selection_areas { perf_count("overlay_queue",1); area.queue_draw(); }
         }
     }
     refresh_format_controls(ui);
@@ -161,10 +164,11 @@ fn refresh_selection(ui: &Rc<Ui>) {
 /// Reflect the actual WordCraft formatting state, rather than leaving B/I/U
 /// buttons visually disconnected from the selected text.
 fn refresh_format_controls(ui: &Rc<Ui>) {
+    let _perf=perf_scope("leaf.refresh_format_controls");
     let state = {
         let Ok(mut current) = ui.current.try_borrow_mut() else { return };
         current.as_mut()
-            .and_then(|doc| doc.session.run("format.state", &serde_json::json!({})).ok())
+            .and_then(|doc| {let _p=perf_scope("boundary.format_state");doc.session.run("format.state", &serde_json::json!({})).ok()})
     };
     if let Some(doc) = ui.current.borrow().as_ref() {
         ui.undo_button.set_sensitive(doc.session.can_undo());
@@ -257,7 +261,7 @@ fn selected_command(ui: &Rc<Ui>, action: &str, extend: bool) {
             if action == "select-all" {
                 selection::select_all(&mut doc.session)
             } else {
-                selection::move_caret(&mut doc.session, action, extend)
+                {let _p=perf_scope("boundary.move_caret");selection::move_caret(&mut doc.session, action, extend)}
             }
         })
     };
@@ -270,10 +274,11 @@ fn copy_selection(ui:&Rc<Ui>){context_copy(ui);}
 
 
 fn after_content_change(ui: &Rc<Ui>) {
+    let _perf=perf_scope("leaf.after_content_change");
     let (rebuild, old_zoom, fit_width_mode, old_scroll) = {
         let mut state = ui.current.borrow_mut();
         let Some(doc) = state.as_mut() else { return };
-        let layout = doc.session.layout();
+        let layout = {let _p=perf_scope("boundary.layout_after_edit");doc.session.layout()};
         let sizes: Vec<(f32, f32)> = layout.pages.iter().map(|p| (p.w, p.h)).collect();
         let needs_rebuild = sizes != doc.sizes;
         if !needs_rebuild {
@@ -328,7 +333,7 @@ fn after_content_change(ui: &Rc<Ui>) {
 fn apply_user_edit(ui: &Rc<Ui>, edit: Edit) {
     let changed = {
         let mut value = ui.current.borrow_mut();
-        value.as_mut().map(|doc| editing::apply(&mut doc.session, edit))
+        value.as_mut().map(|doc| {let _p=perf_scope("boundary.edit");editing::apply(&mut doc.session, edit)})
     };
     match changed {
         Some(Ok(true)) => {
@@ -522,6 +527,7 @@ fn refresh_document_appearance(ui:&Rc<Ui>){
 }
 
 fn refresh_pages(ui: &Rc<Ui>) {
+    let _perf=perf_scope("leaf.refresh_pages");
     sync_raster_scale(ui);
     let adj = ui.scroll.vadjustment();
     let top = adj.value();
@@ -540,7 +546,7 @@ fn refresh_pages(ui: &Rc<Ui>) {
             }
             for index in visible {
                 if !doc.painted_pages.contains(&index) {
-                    match render_page(&mut doc.session, index, doc.zoom * doc.raster_scale as f32, adw::StyleManager::default().is_dark()) {
+                    match {let _p=perf_scope("boundary.page_raster"); render_page(&mut doc.session, index, doc.zoom * doc.raster_scale as f32, adw::StyleManager::default().is_dark())} {
                         Ok(img) => {
                             doc.pages[index].set_paintable(Some(&page_paintable::new(img, (doc.sizes[index].0*doc.zoom).ceil() as i32, (doc.sizes[index].1*doc.zoom).ceil() as i32)));
                             doc.painted_pages.insert(index);
@@ -557,6 +563,7 @@ fn refresh_pages(ui: &Rc<Ui>) {
 
 /// Renderizar miniaturas solo alrededor de la zona desplazada del panel.
 fn refresh_thumbnails(ui: &Rc<Ui>) {
+    let _perf=perf_scope("leaf.refresh_thumbnails");
     sync_raster_scale(ui);
     if !ui.sidebar.shows_sidebar() { return; }
     let adj = ui.thumbnails_scroll.vadjustment();
@@ -568,10 +575,11 @@ fn refresh_thumbnails(ui: &Rc<Ui>) {
             for i in 0..doc.sizes.len() {
                 let (_, h) = doc.sizes[i];
                 let height = (f64::from(h) * f64::from(THUMB_SCALE)).ceil() + 59.0;
+                perf_count("thumbnail_bounds",1);
                 let (start,end)=doc.thumb_buttons[i].compute_bounds(&ui.thumbnails_box).map(|r|(r.y()as f64,(r.y()+r.height())as f64)).filter(|(_,end)|*end>0.0).unwrap_or((offset,offset+height));
                 let is_visible = start <= bottom + 250.0 && end >= top - 250.0;
                 if is_visible && !doc.painted_thumbs.contains(&i) {
-                    if let Ok(image) = render_page(&mut doc.session, i, THUMB_SCALE * doc.raster_scale as f32, adw::StyleManager::default().is_dark()) {
+                    if let Ok(image) = {let _p=perf_scope("boundary.thumbnail_raster");render_page(&mut doc.session, i, THUMB_SCALE * doc.raster_scale as f32, adw::StyleManager::default().is_dark())} {
                         doc.thumbs[i].set_paintable(Some(&page_paintable::new(image, (doc.sizes[i].0*THUMB_SCALE).ceil() as i32, (doc.sizes[i].1*THUMB_SCALE).ceil() as i32)));
                         doc.painted_thumbs.insert(i);
                     }
@@ -690,6 +698,7 @@ fn clear_canvas(canvas:&impl IsA<gtk::Fixed>){
 }
 
 fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
+    let _perf=perf_scope("leaf.opened");
     wordcraft_gnome::proofing::configure(&mut session);
     if ui.closed.get(){return;}
     if !session.recovery_ready() {
@@ -697,7 +706,7 @@ fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
             ui.toasts.add_toast(Toast::new(&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Recovery: {e}"), &[("e", format!("{}", e))])));
         }
     }
-    let layout = session.layout();
+    let layout = {let _p=perf_scope("boundary.layout_opened");session.layout()};
     let sizes: Vec<(f32,f32)> = layout.pages.iter().map(|p| (p.w, p.h)).collect();
     if sizes.is_empty() {
         ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("The document contains no pages")));
@@ -719,6 +728,7 @@ fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
     let mut thumb_buttons = Vec::with_capacity(sizes.len());
 
     for (i, &(width, height)) in sizes.iter().enumerate() {
+        perf_count("page_widgets",1);
         let picture = document_page_picture();
         picture.set_size_request(width.ceil() as i32, height.ceil() as i32);
         picture.set_halign(gtk::Align::Center);
@@ -1731,6 +1741,7 @@ fn build_tab(
     }
     if std::env::args().any(|a|a=="--columns-demo"){let u=ui.clone();let m=align_menu.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(1100),move||{m.popup();if let Some(s)=u.paragraph.borrow().as_ref(){s.page("columns");}});}
     if std::env::args().any(|a|a=="--print-ui-test"){let u=ui.clone();let w=window.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||print_ui_test(&u,&w,&a));}
+    if std::env::args().any(|a|a=="--performance-ui-test"){let u=ui.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||performance_ui_test(&u,&a));}
     if std::env::args().any(|a|a=="--a11y-ui-test"){let u=ui.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||accessible_document_ui_test(&u,&a));}
     if std::env::args().any(|a|a=="--keyboard-ui-test"){let u=ui.clone();let w=window.clone();let m=app_menu.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||keyboard_ui_test(&u,&w,&m,&a));}
     if std::env::args().any(|a|a=="--hidpi-ui-test"){let u=ui.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(1300),move||hidpi_ui_test(&u,&a));}

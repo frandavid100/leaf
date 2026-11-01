@@ -1,0 +1,32 @@
+name: Optional Leaf host performance baseline
+on:
+  push:
+    branches: [wordcraft-saving]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  baseline:
+    if: contains(github.event.head_commit.message, '[perf-baseline]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth gettext
+      - run: cargo test --locked && cargo build --release --locked --features gui --bin wordcraft-gnome
+      - name: Measure unchanged host before optimization
+        run: |
+          mkdir -p perf-baseline
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LEAF_PERF_PARAGRAPHS=600 LEAF_PERF_REPORT="$PWD/perf-baseline/report.json" LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a timeout 180s ./target/release/wordcraft-gnome --performance-ui-test 2>&1 | tee perf-baseline/probe.log
+          grep -q LEAF_PERFORMANCE_OK perf-baseline/probe.log
+          cp target/release/wordcraft-gnome perf-baseline/
+          git rev-parse HEAD > perf-baseline/source-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: leaf-perf-baseline
+          path: perf-baseline/
