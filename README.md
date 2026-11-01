@@ -14,9 +14,11 @@ Alpha.4 repairs the ODT header/footer and repeating-row defects found in our one
 
 The current development version implements DOCX/ODT editing and saving, PDF export, native printing, section columns, styles, tables, inline images, tabs and sidebar search/replacement. Complex document fidelity is still being tested: use copies of your files.
 
-**[Download the current x86_64 Flatpak alpha](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.11).** Open the `.flatpak` with GNOME Software or follow the release's INSTALL.md. The GNOME 49 runtime is downloaded from Flathub if required. Leaf itself is not on Flathub. This is experimental: use copies of your documents.
+**[Download the current x86_64 Flatpak alpha](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.12).** Open the `.flatpak` with GNOME Software or follow the release's INSTALL.md. The GNOME 49 runtime is downloaded from Flathub if required. Leaf itself is not on Flathub. This is experimental: use copies of your documents.
 
-Alpha.5 adds native printing (document menu / Ctrl+P), F6 pane navigation and clearer accessible control names. [Validation and remaining accessibility/printing limits](https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/KEYBOARD_PRINTING.md). The custom document canvas does not yet provide full screen-reader text access.
+Alpha.12 adds initial document text accessibility through GtkAccessibleText on the visible canvas. Real AT-SPI and Orca 46.1 tests passed both natively and inside the installed Flatpak: Unicode text, F6 focus navigation, selection announcements, a typed character and restoration through undo. [Scope, verified evidence and remaining limits](https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/ACCESSIBLE_DOCUMENT_TEXT.md). Full table/image/field semantics, rich attributes and advanced assistive-technology operations remain incomplete; generated speech logs are not human listening or braille tests.
+
+Alpha.5 adds native printing (document menu / Ctrl+P), F6 pane navigation and clearer accessible control names. [Validation and remaining accessibility/printing limits](https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/KEYBOARD_PRINTING.md). Alpha.12 provides initial ordinary-text access; full rich-document screen-reader support remains incomplete.
 
 Alpha.6 fixes retained GTK tab/window state, explicitly disconnects timers/controllers and adds focused lifetime regressions. Both native and installed Flatpak checks passed; measurements, source revisions and limits are documented in the [GTK ownership/memory audit](https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/GTK_LIFECYCLE_AUDIT_2026-10-31.md).
 
