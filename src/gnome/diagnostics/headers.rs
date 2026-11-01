@@ -108,7 +108,12 @@ pub(super) fn header_footer_ui_test(
             (pos, x, y)
         };
         if pointer {
-            eprintln!("HEADER_POINTER_READY {} {}", x as i32, y as i32);
+            let (tx, ty) = w.surface_transform();
+            eprintln!(
+                "HEADER_POINTER_READY {} {}",
+                (x - tx) as i32,
+                (y - ty) as i32
+            );
         } else {
             let mut v = u.current.borrow_mut();
             selection::set_caret(&mut v.as_mut().unwrap().session, &expected, false).unwrap();
@@ -127,10 +132,19 @@ pub(super) fn header_footer_ui_test(
                 assert!(!u.dirty.get());
                 if pointer {
                     let r = u.scroll.compute_bounds(&w).unwrap();
+                    let document = u.document_box.compute_bounds(&w).unwrap();
+                    let x = r.x() as f64 + ((document.x() - r.x()).max(8.0) / 2.0) as f64;
+                    let y = (r.y() + r.height() / 2.0) as f64;
+                    let (tx, ty) = w.surface_transform();
+                    eprintln!(
+                        "HEADER_RETURN_TARGET transform={tx},{ty} picked={:?}",
+                        w.pick(x, y, gtk::PickFlags::DEFAULT)
+                            .map(|p| p.type_().name().to_string())
+                    );
                     eprintln!(
                         "HEADER_RETURN_READY {} {}",
-                        (r.x() + 2.0) as i32,
-                        (r.y() + r.height() / 2.0) as i32
+                        (x - tx) as i32,
+                        (y - ty) as i32
                     );
                 } else {
                     assert_eq!(leave_header_outside_at(&u, -5.0, -5.0), Some(false));

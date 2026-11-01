@@ -29,7 +29,7 @@ msgstr ""
 msgid "About Leaf"
 msgstr ""
 
-#: src/gnome/tab.rs:59
+#: src/gnome/tab.rs:59 src/gnome/tab.rs:410 src/gnome/tab.rs:411
 msgid "Actual Size (100%)"
 msgstr ""
 
@@ -533,7 +533,7 @@ msgstr ""
 msgid "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Navigation, Comments, and Spelling and Grammar. Navigation groups bookmarks under their headings. Select a thumbnail, heading or bookmark to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks appear in Navigation; each comment thread shares one bubble in Comments. Spelling issues only select their text; corrections remain in the document context menu. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
 msgstr ""
 
-#: src/gnome/tab.rs:638
+#: src/gnome/tab.rs:640
 msgid "DOCX and ODT Documents"
 msgstr ""
 
@@ -653,7 +653,7 @@ msgstr ""
 msgid "Do Not Check Spelling or Grammar"
 msgstr ""
 
-#: src/gnome/application.rs:65 src/gnome/files.rs:153 src/gnome/tab.rs:674
+#: src/gnome/application.rs:65 src/gnome/files.rs:153 src/gnome/tab.rs:676
 msgid "Document"
 msgstr ""
 
@@ -833,7 +833,7 @@ msgstr ""
 msgid "Fit Contents"
 msgstr ""
 
-#: src/gnome/tab.rs:58 src/gnome/tab.rs:412 src/gnome/tab.rs:413 src/gnome/tables.rs:223
+#: src/gnome/tab.rs:58 src/gnome/tab.rs:414 src/gnome/tab.rs:415 src/gnome/tables.rs:223
 msgid "Fit Width"
 msgstr ""
 
@@ -1253,7 +1253,7 @@ msgstr ""
 msgid "Navigation"
 msgstr ""
 
-#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:141 src/gnome/tab.rs:715 src/gnome/workspace.rs:299
+#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:141 src/gnome/tab.rs:717 src/gnome/workspace.rs:299
 msgid "New Document"
 msgstr ""
 
@@ -1349,7 +1349,7 @@ msgstr ""
 msgid "Only DOCX and ODT files are supported"
 msgstr ""
 
-#: src/gnome/application.rs:57 src/gnome/tab.rs:663
+#: src/gnome/application.rs:57 src/gnome/tab.rs:665
 msgid "Only local files are supported"
 msgstr ""
 
@@ -1357,7 +1357,7 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: src/gnome/tab.rs:636
+#: src/gnome/tab.rs:638
 msgid "Open Document"
 msgstr ""
 
@@ -1429,7 +1429,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:216 src/gnome/context.rs:532 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/register.rs:101 src/gnome/paragraph.rs:577 src/gnome/paragraph.rs:1001 src/gnome/tab.rs:279 src/gnome/tab.rs:492
+#: src/gnome/context.rs:216 src/gnome/context.rs:532 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/register.rs:101 src/gnome/paragraph.rs:577 src/gnome/paragraph.rs:1001 src/gnome/tab.rs:279 src/gnome/tab.rs:494
 msgid "Paragraph"
 msgstr ""
 
@@ -1505,7 +1505,7 @@ msgstr ""
 msgid "RGB Color, for Example 2266AA"
 msgstr ""
 
-#: src/gnome/tab.rs:785
+#: src/gnome/tab.rs:787
 msgid "Recover"
 msgstr ""
 
@@ -1909,7 +1909,7 @@ msgstr ""
 msgid "Strikethrough"
 msgstr ""
 
-#: src/gnome/context.rs:213 src/gnome/context.rs:531 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/register.rs:100 src/gnome/styles.rs:391 src/gnome/tab.rs:275 src/gnome/tab.rs:491
+#: src/gnome/context.rs:213 src/gnome/context.rs:531 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/register.rs:100 src/gnome/styles.rs:391 src/gnome/tab.rs:275 src/gnome/tab.rs:493
 msgid "Style"
 msgstr ""
 
@@ -1977,7 +1977,7 @@ msgstr ""
 msgid "Teal"
 msgstr ""
 
-#: src/gnome/adaptive.rs:352 src/gnome/context.rs:219 src/gnome/context.rs:533 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:102 src/gnome/tab.rs:234 src/gnome/tab.rs:266 src/gnome/tab.rs:493
+#: src/gnome/adaptive.rs:352 src/gnome/context.rs:219 src/gnome/context.rs:533 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:102 src/gnome/tab.rs:234 src/gnome/tab.rs:266 src/gnome/tab.rs:495
 msgid "Text"
 msgstr ""
 
@@ -2113,7 +2113,7 @@ msgstr ""
 msgid "The text has changed. Check it again."
 msgstr ""
 
-#: src/gnome/tab.rs:784
+#: src/gnome/tab.rs:786
 msgid "There Are Documents to Recover"
 msgstr ""
 

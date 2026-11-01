@@ -407,6 +407,8 @@ pub(super) fn build_tab(
         ui.zoom_in.set_widget_name("zoom-in");
         normal_zoom.set_widget_name("zoom-reset");
         normal_zoom.set_child(Some(&ui.zoom_label));
+        accessible_name(&normal_zoom, wordcraft_gnome::t!("Actual Size (100%)"));
+        normal_zoom.set_tooltip_text(Some(wordcraft_gnome::t!("Actual Size (100%)")));
         fit_button.set_widget_name("zoom-fit-width");
         fit_button.set_child(Some(&gtk::Image::from_icon_name("zoom-fit-best-symbolic")));
         accessible_name(&fit_button, wordcraft_gnome::t!("Fit Width"));
