@@ -100,6 +100,11 @@ def main():
     with tempfile.TemporaryDirectory(prefix="leaf-a11y-") as profile:
         env = os.environ.copy()
         env.update(XDG_CONFIG_HOME=profile, XDG_CACHE_HOME=profile, LEAF_CONFIG_HOME=profile)
+        # A bare Xvfb has no window activation protocol; use a real WM so Orca
+        # receives the same active-window/focus sequence as on a desktop.
+        wm_out = (OUT / "window-manager.log").open("w")
+        wm = subprocess.Popen(["openbox", "--sm-disable"], env=env, stdout=wm_out, stderr=subprocess.STDOUT)
+        wait(lambda: command("xdotool", "get_desktop").strip(), 15)
         command("gsettings", "set", "org.gnome.desktop.interface", "toolkit-accessibility", "true")
         orca_log = OUT / "orca-debug.log"
         def speech_lines():
@@ -148,7 +153,7 @@ def main():
                     dump_tree()
                     canvas = find_canvas()
                     window = wait(lambda: command("xdotool", "search", "--onlyvisible", "--pid", app.pid).splitlines()[0])
-                    command("xdotool", "windowfocus", "--sync", window)
+                    command("xdotool", "windowactivate", "--sync", window)
                     command("xdotool", "key", "--clearmodifiers", "F10", "Escape")
                     time.sleep(.5)
                     spin()
@@ -163,7 +168,7 @@ def main():
                 finally:
                     dump_tree()
                 window = wait(lambda: command("xdotool", "search", "--onlyvisible", *( ["--name", "^Leaf$"] if sandbox else ["--pid", app.pid] )).splitlines()[0])
-                command("xdotool", "windowfocus", "--sync", window)
+                command("xdotool", "windowactivate", "--sync", window)
                 command("xdotool", "key", "--clearmodifiers", "ctrl+Home")
                 wait(lambda: canvas.getState().contains(pyatspi.STATE_FOCUSED))
                 result = {"baseline": baseline, "orca_version": command("orca", "--version").strip(), "role": canvas.getRoleName(), "interfaces": list(pyatspi.listInterfaces(canvas)), "speech_is_generated_transcript_not_human_listening": True}
@@ -228,7 +233,7 @@ def main():
                     print("ORCA_DOCUMENT_SPEECH_OK", flush=True)
         finally:
             (OUT / "events.json").write_text(json.dumps(events, indent=2, ensure_ascii=False) + "\n")
-            for process in [app, orca]:
+            for process in [app, orca, wm]:
                 if process is not None and process.poll() is None:
                     process.terminate()
                     try:
@@ -236,6 +241,7 @@ def main():
                     except subprocess.TimeoutExpired:
                         process.kill()
             orca_out.close()
+            wm_out.close()
             collector.join(timeout=2)
             os.close(master)
 

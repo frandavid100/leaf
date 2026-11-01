@@ -33,7 +33,7 @@ jobs:
       - name: Install independent assistive technology clients
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libgtk-4-1 libadwaita-1-0 xvfb xauth xdotool orca python3-pyatspi dbus-x11 at-spi2-core gsettings-desktop-schemas
+          sudo apt-get install -y --no-install-recommends libgtk-4-1 libadwaita-1-0 xvfb xauth xdotool openbox orca python3-pyatspi dbus-x11 at-spi2-core gsettings-desktop-schemas
           chmod +x native-artifact/wordcraft-gnome baseline-artifact/wordcraft-gnome
       - name: Probe original canvas through AT-SPI and Orca
         env:
