@@ -166,7 +166,8 @@ def main():
                     command("xdotool", "key", "--clearmodifiers", "Down")
                     second = len(FIXTURE.split("\n")[0]) + 1
                     wait(lambda: text.caretOffset == second)
-                    word, start, end = text.getTextAtOffset(second, pyatspi.TEXT_BOUNDARY_WORD_START)
+                    value = Atspi.Text.get_string_at_offset(canvas, second, Atspi.TextGranularity.WORD)
+                    word, start, end = value.content, value.start_offset, value.end_offset
                     assert "Café" in word, (word, start, end)
                     command("xdotool", "key", "--clearmodifiers", "shift+Right", "shift+Right", "shift+Right", "shift+Right")
                     wait(lambda: text.getNSelections() == 1)
