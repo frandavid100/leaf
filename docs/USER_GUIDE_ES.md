@@ -79,7 +79,8 @@ sin diccionario instalado se omiten y la gramática usa las reglas de WordCraft.
 
 ## Navegar y buscar
 
-El panel lateral se abre por defecto y permite Páginas, Títulos, Marcadores y comentarios y Ortografía y gramática. La lupa activa
+El panel lateral se abre por defecto y ofrece cuatro pestañas: Páginas, Títulos,
+Marcadores y comentarios, y Ortografía y gramática. La lupa activa
 la búsqueda (Ctrl+F); Ctrl+H muestra reemplazo. Las opciones incluyen distinguir
 mayúsculas y reemplazar. Cada resultado muestra contexto y página; se puede
 reemplazar uno o todos. La consulta se conserva al cerrar y se actualiza al abrirla.
@@ -91,7 +92,8 @@ La apariencia de páginas y miniaturas sigue el modo claro/oscuro de GNOME.
 ## Insertar y configurar
 
 Insertar, en los tres puntos, contiene tabla, imagen, marcador, comentario,
-encabezado, pie y número de página. Las tablas e imágenes se editan desde su menú contextual; no hay botones
+encabezado, pie y número de página. Las tablas e imágenes se editan desde su menú
+contextual; no hay botones
 permanentes Tabla/Imagen en la barra. Tab/Mayús+Tab recorren celdas y Tab al final
 puede añadir una fila. Las imágenes son en línea, con tamaño/proporción, sustitución
 y eliminación; no se ofrece posicionamiento flotante.

@@ -56,13 +56,13 @@ La reproducción está preparada; no se ha abierto una issue upstream desde aqu�
 
 ## Comprobaciones
 
-Las 104 pruebas Rust (incluidas cinco de anotaciones), cuatro Python, formato,
-catálogos y enlaces han pasado localmente. La validación GTK está bloqueada
-localmente porque este entorno prohíbe crear sockets (Xvfb no puede arrancar).
-La comprobación de tipos GTK y la compilación optimizada de la fuente final han
-pasado, conservando panic unwinding. Se ha verificado `Leaf 0.1.0-alpha.14` con
-`--version`. No publicar sin los checks GTK/Flatpak de CI.
-No hay una nueva release publicada. [Registro](BOOKMARKS_COMMENTS_VALIDATION.json).
+La validación nativa acumulada de alpha.14 ha pasado: 105 pruebas Rust, cuatro
+Python, formato, catálogos, enlaces, compilación optimizada y toda la ronda GTK,
+incluidos inglés/español, claro/oscuro, ventanas estrechas y HiDPI.
+[CI de la fuente final](https://github.com/frandavid100/leaf/actions/runs/41341927920).
+El entorno local no permite sockets para Xvfb; las comprobaciones gráficas se
+han ejecutado en CI. El Flatpak instalado y la publicación siguen pendientes.
+[Registro](BOOKMARKS_COMMENTS_VALIDATION.json).
 
 ```sh
 cargo test --locked --test annotations

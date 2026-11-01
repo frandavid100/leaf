@@ -35,7 +35,7 @@ La implementación incluye una cuarta pestaña con la lista de errores, navegaci
 por clic, correcciones y revisión manual con F7. La revisión mientras se escribe
 se configura exclusivamente en Preferencias. [Detalle](docs/PROOFING_SIDEBAR.md).
 
-Está preparada y pendiente de validación gráfica: marcadores (crear, navegar y eliminar),
+La validación nativa ha pasado. Se incluyen marcadores (crear, navegar y eliminar),
 comentarios y respuestas (crear, editar, resolver/reabrir y eliminar), navegación
 al texto anotado, nombres únicos y guardas de identidad/revisión en diálogos.
 DOCX debe conservar los hilos. El exportador ODT fijado **omite comentarios y
@@ -44,8 +44,10 @@ comentarios y mantiene recuperación si el autoguardado directo resulta incompat
 [Alcance, pruebas y reproducción para upstream](docs/BOOKMARKS_COMMENTS.md).
 Han pasado 105 pruebas Rust, cuatro Python, formato, traducciones, enlaces,
 comprobación de tipos GTK y compilación optimizada.
-El entorno local impide crear sockets para Xvfb: las pruebas GTK, el Flatpak y
-la actualización desde alpha.13 quedan pendientes. No hay una nueva versión
+[La CI nativa completa](https://github.com/frandavid100/leaf/actions/runs/41341927920)
+ha pasado, con fuente `727b3434bc4df2da1ec62c17e04353ac28b87955`. Las pruebas
+gráficas se ejecutan en CI porque el entorno local no permite sockets para Xvfb.
+El Flatpak y la actualización desde alpha.13 quedan pendientes. No hay una nueva versión
 publicada; alpha.13 sigue siendo la pública. La subida y publicación acumulada
 ya están autorizadas; no se requiere otra confirmación para esta entrega.
 

@@ -1,7 +1,9 @@
 {
-  "base_commit": "f11fbe558c5d7903b4044cfd99399dec948ac8c8",
-  "status": "implemented locally; publication blocked pending explicit authorization",
-  "rust_tests_passed": 104,
+  "version": "Leaf 0.1.0-alpha.14",
+  "status": "native validation passed; installed Flatpak validation pending",
+  "native_source": "727b3434bc4df2da1ec62c17e04353ac28b87955",
+  "native_run": 41341927920,
+  "rust_tests_passed": 105,
   "annotation_tests_passed": 5,
   "python_tests_passed": 4,
   "translations_messages": 599,
@@ -11,15 +13,13 @@
     "ODT bookmarks retain name/location, not their original range"
   ],
   "not_yet_verified": [
-    "interactive GTK checks in CI",
     "installed Flatpak",
-    "upgrade from alpha.13"
+    "upgrade from alpha.13",
+    "installed Orca regression"
   ],
-  "source_rust_tests_passed": 104,
-  "gui_type_check": "passed: cargo check --locked --features gui --bin wordcraft-gnome",
-  "native_gui_test": "blocked: the host denies socket creation, so Xvfb cannot listen",
-  "optimized_link": "passed: cargo build --release --locked --features gui --bin wordcraft-gnome after clearing stale Leaf ThinLTO artifacts",
-  "source_commit": "9cc7b00",
-  "optimized_binary_sha256": "ebbd2f7c8eb05b39c39ba5527921fec6008d0010a3bf2dc808723415b81e6986",
-  "version": "Leaf 0.1.0-alpha.14"
+  "native_run_url": "https://github.com/frandavid100/leaf/actions/runs/41341927920",
+  "native_artifact_id": 13098575240,
+  "native_artifact_sha256": "7342c5caa22965075eb64a371cd6c915526c6feebcf237d437c0ee1897e6120b",
+  "native_binary_sha256": "3a28d981450f55242a0f1fc9234b7dfcea89b2a7be57e66238da0f46a76763a7",
+  "native_ui": "passed: English/Spanish annotations and proofing, dark/narrow/wide, HiDPI, context/menus, keyboard, printing and lifecycle"
 }

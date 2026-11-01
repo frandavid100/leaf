@@ -42,9 +42,12 @@ límite de 500 avisos por análisis. No se añade un servicio remoto ni dependen
   `--proofing-demo`; el Flatpak instalado repite la prueba funcional. Capturas solo
   para QA, sin sustituir las públicas a cargo de David.
 
-La validación gráfica está pendiente de CI: el entorno de edición local prohíbe
-los sockets necesarios para Xvfb. No considerar publicada alpha.14 antes de
-comprobar las pruebas instaladas y los archivos de la release.
+La validación gráfica nativa ha pasado en la
+[CI de la fuente final](https://github.com/frandavid100/leaf/actions/runs/41341927920),
+incluidas las capturas anchas/estrechas/oscuras y el descarte de resultados obsoletos.
+El ajuste automático del zoom conserva el panel abierto; solo la navegación explícita
+por página cierra la superposición estrecha. El Flatpak instalado y la publicación
+están pendientes.
 
 Código: [panel](../src/gnome/spellcheck.rs), [Preferencias](../src/gnome/workspace.rs),
 [adaptador](../src/proofing.rs), [diagnóstico](../src/gnome/diagnostics/spellcheck.rs).
