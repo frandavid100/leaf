@@ -126,7 +126,7 @@ pub(super) fn header_footer_ui_test(
                 }
                 assert!(!u.dirty.get());
                 if pointer {
-                    let r = u.document_box.compute_bounds(&w).unwrap();
+                    let r = u.scroll.compute_bounds(&w).unwrap();
                     eprintln!(
                         "HEADER_RETURN_READY {} {}",
                         (r.x() + 2.0) as i32,
