@@ -1,5 +1,19 @@
 use super::*;
 
+fn has_submenu(menu: &gio::MenuModel, label: &str) -> bool {
+    (0..menu.n_items()).any(|i| {
+        (menu
+            .item_attribute_value(i, "label", None)
+            .and_then(|v| v.get::<String>())
+            .as_deref()
+            == Some(label)
+            && menu.item_link(i, "submenu").is_some())
+            || menu
+                .item_link(i, "section")
+                .is_some_and(|section| has_submenu(&section, label))
+    })
+}
+
 pub(super) fn context_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
     use gdk::prelude::PopupExt;
     opened(
@@ -188,15 +202,10 @@ pub(super) fn context_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
                 );
                 table_command(&ui, "insert.table", serde_json::json!({"rows":2,"cols":2}));
                 let table = show_document_context(&ui, &parent, 100, 150, DocumentContext::Table);
-                assert!(
-                    table
-                        .menu_model()
-                        .unwrap()
-                        .item_link(1, "section")
-                        .unwrap()
-                        .item_link(0, "submenu")
-                        .is_some()
-                );
+                assert!(has_submenu(
+                    &table.menu_model().unwrap(),
+                    wordcraft_gnome::t!("Add")
+                ));
                 context_activate_row(&table, wordcraft_gnome::t!("Select"));
                 context_activate_row(&table, wordcraft_gnome::t!("Column"));
                 assert!(

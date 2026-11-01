@@ -33,7 +33,7 @@ msgstr ""
 msgid "Actual Size (100%)"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:80 src/gnome/context.rs:584
+#: src/gnome/annotation_dialog.rs:80 src/gnome/context.rs:584 src/gnome/diagnostics/context.rs:207
 msgid "Add"
 msgstr ""
 
@@ -437,7 +437,7 @@ msgstr ""
 msgid "Color and Effects"
 msgstr ""
 
-#: src/gnome/context.rs:605 src/gnome/context.rs:614 src/gnome/diagnostics/context.rs:201
+#: src/gnome/context.rs:605 src/gnome/context.rs:614 src/gnome/diagnostics/context.rs:210
 msgid "Column"
 msgstr ""
 
@@ -481,7 +481,7 @@ msgstr ""
 msgid "Content Alignment"
 msgstr ""
 
-#: src/gnome/diagnostics/context.rs:10
+#: src/gnome/diagnostics/context.rs:24
 msgid "Contexts"
 msgstr ""
 
@@ -489,7 +489,7 @@ msgstr ""
 msgid "Continue from Previous Section"
 msgstr ""
 
-#: src/gnome/context.rs:446 src/gnome/diagnostics/context.rs:60 src/gnome/diagnostics/context.rs:243
+#: src/gnome/context.rs:446 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:252
 msgid "Copy"
 msgstr ""
 
@@ -577,7 +577,7 @@ msgstr ""
 msgid "Custom Widths"
 msgstr ""
 
-#: src/gnome/context.rs:432 src/gnome/diagnostics/context.rs:105
+#: src/gnome/context.rs:432 src/gnome/diagnostics/context.rs:119
 msgid "Cut"
 msgstr ""
 
@@ -661,7 +661,7 @@ msgstr ""
 msgid "Descending (Z–A)"
 msgstr ""
 
-#: src/gnome/diagnostics/context.rs:248
+#: src/gnome/diagnostics/context.rs:257
 msgid "Destination"
 msgstr ""
 
@@ -1021,7 +1021,7 @@ msgstr ""
 msgid "Image"
 msgstr ""
 
-#: src/gnome/context.rs:536 src/gnome/diagnostics/context.rs:238
+#: src/gnome/context.rs:536 src/gnome/diagnostics/context.rs:247
 msgid "Image Size…"
 msgstr ""
 
@@ -1265,7 +1265,7 @@ msgstr ""
 msgid "More Paragraph Options…"
 msgstr ""
 
-#: src/gnome/context.rs:639 src/gnome/diagnostics/context.rs:208
+#: src/gnome/context.rs:639 src/gnome/diagnostics/context.rs:217
 msgid "More Table Options…"
 msgstr ""
 
@@ -1469,7 +1469,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:216 src/gnome/context.rs:520 src/gnome/diagnostics/context.rs:132 src/gnome/diagnostics/register.rs:69 src/gnome/paragraph.rs:447 src/gnome/paragraph.rs:865 src/gnome/tab.rs:323 src/gnome/tab.rs:521
+#: src/gnome/context.rs:216 src/gnome/context.rs:520 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/register.rs:69 src/gnome/paragraph.rs:447 src/gnome/paragraph.rs:865 src/gnome/tab.rs:323 src/gnome/tab.rs:521
 msgid "Paragraph"
 msgstr ""
 
@@ -1485,7 +1485,7 @@ msgstr ""
 msgid "Paragraph Style"
 msgstr ""
 
-#: src/gnome/context.rs:462 src/gnome/diagnostics/context.rs:89
+#: src/gnome/context.rs:462 src/gnome/diagnostics/context.rs:103
 msgid "Paste"
 msgstr ""
 
@@ -1781,11 +1781,11 @@ msgstr ""
 msgid "Section Links"
 msgstr ""
 
-#: src/gnome/context.rs:600 src/gnome/diagnostics/context.rs:200
+#: src/gnome/context.rs:600 src/gnome/diagnostics/context.rs:209
 msgid "Select"
 msgstr ""
 
-#: src/gnome/context.rs:472 src/gnome/diagnostics/context.rs:120
+#: src/gnome/context.rs:472 src/gnome/diagnostics/context.rs:134
 msgid "Select All"
 msgstr ""
 
@@ -1957,7 +1957,7 @@ msgstr ""
 msgid "Strikethrough"
 msgstr ""
 
-#: src/gnome/context.rs:213 src/gnome/context.rs:519 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:131 src/gnome/diagnostics/register.rs:68 src/gnome/styles.rs:371 src/gnome/tab.rs:314 src/gnome/tab.rs:520
+#: src/gnome/context.rs:213 src/gnome/context.rs:519 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/register.rs:68 src/gnome/styles.rs:371 src/gnome/tab.rs:314 src/gnome/tab.rs:520
 msgid "Style"
 msgstr ""
 
@@ -2021,7 +2021,7 @@ msgstr ""
 msgid "Teal"
 msgstr ""
 
-#: src/gnome/adaptive.rs:300 src/gnome/context.rs:219 src/gnome/context.rs:521 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:133 src/gnome/diagnostics/register.rs:70 src/gnome/tab.rs:267 src/gnome/tab.rs:305 src/gnome/tab.rs:522
+#: src/gnome/adaptive.rs:300 src/gnome/context.rs:219 src/gnome/context.rs:521 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:70 src/gnome/tab.rs:267 src/gnome/tab.rs:305 src/gnome/tab.rs:522
 msgid "Text"
 msgstr ""
 
