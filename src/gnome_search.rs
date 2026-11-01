@@ -106,7 +106,7 @@ fn install_search_panel(ui:&Rc<Ui>,toggle:&gtk::ToggleButton,compact:&gtk::Butto
     let weak=Rc::downgrade(&s);replace.connect_toggled(move |b|{if let Some(s)=weak.upgrade(){s.replacement_row.set_visible(b.is_active());s.refresh();}});
     let weak=Rc::downgrade(&s);toggle.connect_toggled(move|b|{if let Some(s)=weak.upgrade(){if let Some(ui)=s.ui.upgrade(){
         ui.sidebar_pages.set_visible_child_name(if b.is_active(){"search"}else{"navigation"});
-        if b.is_active(){ui.sidebar.set_show_sidebar(true);s.query.grab_focus();s.refresh();}else{ui.search_highlights.borrow_mut().clear();refresh_selection(&ui);}
+        if b.is_active(){ui.sidebar.set_show_sidebar(true);s.query.grab_focus();s.refresh();}else{ui.search_highlights.borrow_mut().clear();refresh_selection(&ui);refresh_thumbnails(&ui);}
     }}});
     let weak=Rc::downgrade(&s);compact.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){s.show(false);}});
     let weak=Rc::downgrade(&s);list.connect_row_activated(move|_,r|{if let Some(s)=weak.upgrade(){s.activate(r.index() as usize);}});

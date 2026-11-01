@@ -24,7 +24,11 @@ fn host_cache_ui_test(ui:&Rc<Ui>,app:&Application){
         assert!(hidden["inclusive_spans"].get("boundary.search_query").is_none());
         selected_command(ui,"docStart",false);apply_user_edit(ui,Edit::Insert("needle ".into()));
         search.show(false);search.refresh();assert_eq!(search.hits.borrow().len(),17,"reopening search must refresh stale hidden results");
-        apply_user_edit(ui,Edit::Undo);search.refresh();assert_eq!(search.hits.borrow().len(),16);search.toggle.set_active(false);
+        apply_user_edit(ui,Edit::Undo);search.refresh();assert_eq!(search.hits.borrow().len(),16);
+        // Simulate the coalesced edit invalidation while thumbnails are hidden.
+        {let mut d=ui.current.borrow_mut();let d=d.as_mut().unwrap();for i in d.painted_thumbs.drain(){d.thumbs[i].set_paintable(None::<&gdk::Paintable>);}}
+        search.toggle.set_active(false);
+        assert!(!ui.current.borrow().as_ref().unwrap().painted_thumbs.is_empty(),"closing search restores invalidated thumbnail rasters immediately");
         assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc,original);
         for fraction in [0.0,0.5,1.0]{
             let adj=ui.thumbnails_scroll.vadjustment();adj.set_value((adj.upper()-adj.page_size()).max(0.0)*fraction);refresh_thumbnails(ui);
