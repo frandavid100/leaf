@@ -41,7 +41,12 @@ pub(super) fn install_diagnostics(
         titles_toggle,
         search_panel,
     } = controls;
-    if std::env::args().any(|a| a == "--annotations-ui-test" || a == "--annotations-demo") {
+    if std::env::args().any(|a| {
+        matches!(
+            a.as_str(),
+            "--annotations-ui-test" | "--annotations-demo" | "--bookmarks-demo"
+        )
+    }) {
         let u = ui.clone();
         let w = window.clone();
         let a = app.clone();

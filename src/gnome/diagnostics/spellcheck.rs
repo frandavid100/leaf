@@ -50,6 +50,16 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                     "scanning must not navigate"
                 );
                 assert!(s.issues.borrow().len() >= 2);
+                assert!(!s.status.is_visible(), "no introductory text above issues");
+                assert_eq!(
+                    find_widget(&ui.navigation_pages, "proofing-panel")
+                        .unwrap()
+                        .last_child(),
+                    find_widget(&ui.navigation_pages, "proofing-scroll"),
+                    "no correction menu below the issue list"
+                );
+                let rev = ui.current.borrow().as_ref().unwrap().session.rev();
+                let dirty = ui.dirty.get();
                 let index = s
                     .issues
                     .borrow()
@@ -61,7 +71,9 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                     .unwrap()
                     .emit_by_name::<()>("activate", &[]);
                 assert_eq!(s.item().unwrap().text, "qqqgtkwordzz");
-                assert!(s.add.is_sensitive());
+                assert_eq!(ui.current.borrow().as_ref().unwrap().session.rev(), rev);
+                assert_eq!(ui.dirty.get(), dirty);
+                assert!(!s.status.is_visible());
                 {
                     let mut v = ui.current.borrow_mut();
                     assert_eq!(
@@ -74,8 +86,13 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                     context_model_row(&context, wordcraft_gnome::t!("Add to Dictionary")).is_some()
                 );
                 context.popdown();
-                s.replacement.set_text("profesor");
-                s.change.emit_clicked();
+                apply_user_edit(&ui, Edit::Insert("profesor".into()));
+                // Manual review remains available with live checking disabled.
+                find_widget(&ui.navigation_pages, "proofing-refresh")
+                    .unwrap()
+                    .downcast::<gtk::Button>()
+                    .unwrap()
+                    .emit_clicked();
                 assert!(
                     ui.current
                         .borrow()
@@ -102,7 +119,6 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                 let old = s.item().unwrap();
                 apply_user_edit(&ui, Edit::Insert("otro".into()));
                 assert!(s.issues.borrow().is_empty());
-                assert!(!s.details.is_visible());
                 assert!(s.debounce.borrow().is_none(), "live checking is disabled");
                 {
                     let mut v = ui.current.borrow_mut();

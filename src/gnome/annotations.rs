@@ -44,25 +44,12 @@ impl AnnotationPanel {
         if !self.toggle.is_active() {
             return;
         }
-        let (bookmarks, comments, writable) = {
+        let (comments, writable) = {
             let value = ui.current.borrow();
             let Some(d) = value.as_ref() else { return };
-            (
-                model::bookmarks(&d.session),
-                model::comments(&d.session),
-                model::can_comment(&d.session),
-            )
+            (model::comments(&d.session), model::can_comment(&d.session))
         };
         clear_box(&self.content);
-        self.content
-            .append(&section_label(wordcraft_gnome::t!("Bookmarks")));
-        if bookmarks.is_empty() {
-            self.content
-                .append(&annotation_label(wordcraft_gnome::t!("No Bookmarks"), true));
-        }
-        for name in bookmarks {
-            self.content.append(&bookmark_row(&ui, &name));
-        }
         self.content
             .append(&section_label(wordcraft_gnome::t!("Comments")));
         if comments.is_empty() {
@@ -92,6 +79,10 @@ impl AnnotationPanel {
         writable: bool,
         seen: &mut HashSet<u32>,
     ) {
+        let thread = gtk::Box::new(gtk::Orientation::Vertical, 0);
+        thread.set_widget_name(&format!("comment-thread-{root}"));
+        thread.add_css_class("card");
+        thread.set_overflow(gtk::Overflow::Hidden);
         let mut stack = vec![(root, 0usize)];
         while let Some((id, depth)) = stack.pop() {
             if !seen.insert(id) {
@@ -100,7 +91,10 @@ impl AnnotationPanel {
             let Some(c) = comments.iter().find(|c| c.id == id) else {
                 continue;
             };
-            self.content.append(&comment_card(
+            if thread.first_child().is_some() {
+                thread.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+            }
+            thread.append(&comment_message(
                 ui,
                 c,
                 depth,
@@ -111,6 +105,7 @@ impl AnnotationPanel {
                 stack.push((reply.id, depth + 1));
             }
         }
+        self.content.append(&thread);
     }
 }
 
@@ -160,10 +155,15 @@ fn annotation_navigate(ui: &Rc<Ui>, f: impl FnOnce(&mut Session) -> Result<(), S
     ui.document_box.grab_focus();
 }
 
-fn bookmark_row(ui: &Rc<Ui>, name: &str) -> gtk::Box {
+pub(super) fn bookmark_row(ui: &Rc<Ui>, name: &str) -> gtk::Box {
     let row = gtk::Box::new(gtk::Orientation::Horizontal, 2);
     let go = gtk::Button::new();
-    go.set_child(Some(&annotation_label(name, false)));
+    let label = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    label.append(&gtk::Image::from_icon_name("bookmark-new-symbolic"));
+    let text = annotation_label(name, false);
+    text.set_hexpand(true);
+    label.append(&text);
+    go.set_child(Some(&label));
     go.set_hexpand(true);
     go.add_css_class("flat");
     go.set_widget_name(&format!("bookmark-go-{name}"));
@@ -198,18 +198,24 @@ fn bookmark_row(ui: &Rc<Ui>, name: &str) -> gtk::Box {
     row
 }
 
-fn comment_card(
+fn comment_message(
     ui: &Rc<Ui>,
     c: &model::Comment,
     depth: usize,
     writable: bool,
     has_anchor: bool,
 ) -> gtk::Box {
-    let card = gtk::Box::new(gtk::Orientation::Vertical, 6);
-    card.set_widget_name(&format!("comment-{}", c.id));
-    card.add_css_class("card");
-    card.set_margin_start((depth.min(2) * 10) as i32);
+    let message = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    message.set_widget_name(&format!("comment-{}", c.id));
+    message.set_margin_start((depth.min(2) * 10) as i32);
+    if depth > 0 {
+        let branch = gtk::Separator::new(gtk::Orientation::Vertical);
+        branch.set_margin_top(10);
+        branch.set_margin_bottom(10);
+        message.append(&branch);
+    }
     let body = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    body.set_hexpand(true);
     body.set_margin_start(10);
     body.set_margin_end(10);
     body.set_margin_top(10);
@@ -219,7 +225,12 @@ fn comment_card(
     author.add_css_class("heading");
     body.append(&author);
     if !c.date.is_empty() {
-        let date = annotation_label(&c.date, true);
+        let formatted = glib::DateTime::from_iso8601(&c.date, None)
+            .and_then(|d| d.to_local())
+            .and_then(|d| d.format("%x %H:%M"))
+            .map(|s| s.to_string())
+            .unwrap_or_else(|_| c.date.clone());
+        let date = annotation_label(&formatted, true);
         date.add_css_class("caption");
         body.append(&date);
     }
@@ -289,7 +300,7 @@ fn comment_card(
     menu.set_menu_model(Some(&items));
     actions.append(&menu);
     body.append(&actions);
-    card.append(&body);
+    message.append(&body);
     let weak = Rc::downgrade(ui);
     go.connect_clicked(move |_| {
         if let Some(ui) = annotation_target(&weak, identity) {
@@ -302,7 +313,7 @@ fn comment_card(
             show_annotation_dialog(&ui, AnnotationEdit::Reply(id));
         }
     });
-    card
+    message
 }
 
 pub(super) fn annotation_target(
@@ -315,6 +326,9 @@ pub(super) fn annotation_target(
             "The document has changed; try again."
         )));
         if let Some(panel) = ui.annotations.borrow().as_ref() {
+            panel.schedule();
+        }
+        if let Some(panel) = ui.outline.borrow().as_ref() {
             panel.schedule();
         }
         return None;
@@ -356,6 +370,7 @@ pub(super) fn install_annotations(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc
     content.set_margin_end(10);
     content.set_margin_bottom(12);
     let scroll = gtk::ScrolledWindow::new();
+    scroll.set_widget_name("comments-panel");
     scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
     scroll.set_child(Some(&content));
     ui.navigation_pages.add_named(&scroll, Some("annotations"));

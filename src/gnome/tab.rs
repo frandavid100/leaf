@@ -132,20 +132,17 @@ pub(super) fn build_tab(
     pages_toggle.add_css_class("flat");
     pages_toggle.set_widget_name("sidebar-pages");
     let titles_toggle = gtk::ToggleButton::new();
-    accessible_name(&titles_toggle, wordcraft_gnome::t!("Headings"));
+    accessible_name(&titles_toggle, wordcraft_gnome::t!("Navigation"));
     titles_toggle.set_child(Some(&sidebar_icon("outline")));
-    titles_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Headings")));
+    titles_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Navigation")));
     titles_toggle.set_hexpand(true);
     titles_toggle.add_css_class("flat");
     titles_toggle.set_widget_name("sidebar-outline");
     titles_toggle.set_group(Some(&pages_toggle));
     let annotations_toggle = gtk::ToggleButton::new();
-    accessible_name(
-        &annotations_toggle,
-        wordcraft_gnome::t!("Bookmarks and Comments"),
-    );
-    annotations_toggle.set_icon_name("bookmark-new-symbolic");
-    annotations_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Bookmarks and Comments")));
+    accessible_name(&annotations_toggle, wordcraft_gnome::t!("Comments"));
+    annotations_toggle.set_icon_name("chat-bubbles-symbolic");
+    annotations_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Comments")));
     annotations_toggle.set_hexpand(true);
     annotations_toggle.add_css_class("flat");
     annotations_toggle.set_widget_name("sidebar-annotations");

@@ -66,8 +66,8 @@ nombre y posición, pero no el intervalo seleccionado. [Alcance](BOOKMARKS_COMME
 ## Ortografía y gramática
 
 La cuarta pestaña lateral muestra una lista de errores. Pulsa una fila para ir al
-texto y seleccionar el fragmento. Debajo aparecen las sugerencias y las opciones
-Cambiar, Ignorar todas y Añadir al diccionario cuando corresponden al error.
+texto y seleccionar el fragmento. La lista solo navega; las sugerencias y las
+opciones de corrección siguen en el menú contextual del texto.
 F7 abre la pestaña; el botón de volver a revisar actualiza la lista manualmente.
 
 **Preferencias → Ortografía y gramática** contiene la opción de revisar mientras
@@ -79,8 +79,11 @@ sin diccionario instalado se omiten y la gramática usa las reglas de WordCraft.
 
 ## Navegar y buscar
 
-El panel lateral se abre por defecto y ofrece cuatro pestañas: Páginas, Títulos,
-Marcadores y comentarios, y Ortografía y gramática. La lupa activa
+El panel lateral se abre por defecto y ofrece cuatro pestañas: Páginas, Navegación,
+Comentarios y Ortografía y gramática. Navegación integra los marcadores bajo su
+título y los oculta al plegar la sección; los anteriores al primer título se
+muestran al principio. Cada hilo de comentarios comparte una burbuja con
+separadores entre mensajes. La lupa activa
 la búsqueda (Ctrl+F); Ctrl+H muestra reemplazo. Las opciones incluyen distinguir
 mayúsculas y reemplazar. Cada resultado muestra contexto y página; se puede
 reemplazar uno o todos. La consulta se conserva al cerrar y se actualiza al abrirla.

@@ -83,14 +83,6 @@ pub(super) struct SpellReview {
     pub(super) toggle: gtk::ToggleButton,
     pub(super) list: gtk::ListBox,
     pub(super) status: gtk::Label,
-    pub(super) details: gtk::ScrolledWindow,
-    pub(super) word: gtk::Label,
-    pub(super) message: gtk::Label,
-    pub(super) replacement: gtk::Entry,
-    pub(super) suggestions: gtk::Box,
-    pub(super) change: gtk::Button,
-    pub(super) ignore_all: gtk::Button,
-    pub(super) add: gtk::Button,
     pub(super) index: Cell<Option<usize>>,
     pub(super) issues: RefCell<Vec<ProofIssue>>,
     pub(super) identity: Cell<Option<(u64, u64)>>,
@@ -114,10 +106,10 @@ impl SpellReview {
         self.identity.set(None);
         self.index.set(None);
         self.issues.borrow_mut().clear();
-        self.details.set_visible(false);
         while let Some(child) = self.list.first_child() {
             self.list.remove(&child);
         }
+        self.status.set_visible(true);
         self.status
             .set_text(wordcraft_gnome::t!("The text has changed. Check it again."));
         if let Some(id) = self.debounce.borrow_mut().take() {
@@ -160,10 +152,10 @@ impl SpellReview {
         let generation = self.generation.get();
         self.identity.set(None);
         self.index.set(None);
-        self.details.set_visible(false);
         while let Some(child) = self.list.first_child() {
             self.list.remove(&child);
         }
+        self.status.set_visible(true);
         self.status.set_text(wordcraft_gnome::t!("Checking…"));
         let (tx, rx) = std::sync::mpsc::channel();
         std::thread::spawn(move || {
@@ -209,11 +201,10 @@ impl SpellReview {
             self.list.remove(&child);
         }
         let issues = self.issues.borrow();
-        self.status.set_text(if issues.is_empty() {
-            wordcraft_gnome::t!("No issues found in text with available proofing tools.")
-        } else {
-            wordcraft_gnome::t!("Select an issue to review it.")
-        });
+        self.status.set_visible(issues.is_empty());
+        self.status.set_text(wordcraft_gnome::t!(
+            "No issues found in text with available proofing tools."
+        ));
         self.status.set_tooltip_text(Some(wordcraft_gnome::t!(
             "Languages without installed dictionaries are skipped."
         )));
@@ -256,64 +247,17 @@ impl SpellReview {
         }
         self.index.set(Some(index));
         let Some(issue) = self.item() else { return };
-        let suggestions = {
+        {
             let mut v = ui.current.borrow_mut();
             let Some(d) = v.as_mut() else { return };
             if let Err(e) = proofing::select(&mut d.session, &issue) {
-                self.status.set_text(&e);
+                ui.toasts.add_toast(Toast::new(&e));
                 return;
             }
-            proofing::suggestions(&mut d.session, &issue)
-        };
-        self.word.set_text(&issue.text);
-        self.message.set_text(&issue.message);
-        self.replacement.set_text(
-            suggestions
-                .first()
-                .map(String::as_str)
-                .unwrap_or(&issue.text),
-        );
-        self.details.set_visible(true);
-        let writable = ui.current.borrow().as_ref().is_some_and(|d| {
-            !matches!(
-                d.session.doc.settings.protection.as_deref(),
-                Some("readOnly" | "forms" | "comments")
-            )
-        });
-        self.change.set_sensitive(writable);
-        self.replacement.set_sensitive(writable);
-        self.add.set_sensitive(issue.spelling);
-        self.ignore_all.set_sensitive(issue.spelling);
-        clear_box(&self.suggestions);
-        for text in suggestions.into_iter().take(3) {
-            let button = gtk::Button::with_label(&text);
-            button.set_sensitive(writable);
-            let weak = Rc::downgrade(self);
-            button.connect_clicked(move |_| {
-                if let Some(s) = weak.upgrade() {
-                    s.replacement.set_text(&text);
-                    s.replace();
-                }
-            });
-            self.suggestions.append(&button);
         }
         refresh_selection(&ui);
         caret_ensure_visible(&ui);
         ui.document_box.grab_focus();
-    }
-    pub(super) fn replace(self: &Rc<Self>) {
-        let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
-            return;
-        };
-        if document_identity(&ui) != self.identity.get() {
-            self.invalidate();
-            self.scan();
-            return;
-        }
-        if let Some(issue) = self.item() {
-            proof_replace(&ui, &issue, &self.replacement.text());
-            self.scan();
-        }
     }
     pub(super) fn show(self: &Rc<Self>) {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
@@ -341,6 +285,7 @@ pub(super) fn show_spelling(ui: &Rc<Ui>, _parent: &ApplicationWindow) {
 
 pub(super) fn install_spelling(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<SpellReview> {
     let body = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    body.set_widget_name("proofing-panel");
     let heading = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     heading.set_margin_start(10);
     heading.set_margin_end(6);
@@ -358,7 +303,9 @@ pub(super) fn install_spelling(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Sp
     refresh.set_tooltip_text(Some(wordcraft_gnome::t!("Check Again")));
     heading.append(&refresh);
     body.append(&heading);
-    let status = gtk::Label::new(Some(wordcraft_gnome::t!("Select an issue to review it.")));
+    let status = gtk::Label::new(None);
+    status.set_widget_name("proofing-status");
+    status.set_visible(false);
     status.set_wrap(true);
     status.set_xalign(0.0);
     status.set_max_width_chars(1);
@@ -371,61 +318,18 @@ pub(super) fn install_spelling(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Sp
     list.set_activate_on_single_click(true);
     list.add_css_class("navigation-sidebar");
     let scroll = gtk::ScrolledWindow::new();
+    scroll.set_widget_name("proofing-scroll");
     scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
     scroll.set_vexpand(true);
     scroll.set_min_content_height(70);
     scroll.set_child(Some(&list));
     body.append(&scroll);
-    let detail = gtk::Box::new(gtk::Orientation::Vertical, 6);
-    detail.set_margin_start(10);
-    detail.set_margin_end(10);
-    detail.set_margin_bottom(10);
-    let word = gtk::Label::new(None);
-    word.add_css_class("heading");
-    word.set_wrap(true);
-    word.set_xalign(0.0);
-    detail.append(&word);
-    let message = gtk::Label::new(None);
-    message.set_wrap(true);
-    message.set_wrap_mode(gtk::pango::WrapMode::WordChar);
-    message.set_xalign(0.0);
-    message.set_max_width_chars(1);
-    detail.append(&message);
-    let suggestions = gtk::Box::new(gtk::Orientation::Vertical, 3);
-    detail.append(&suggestions);
-    let replacement = gtk::Entry::new();
-    replacement.set_placeholder_text(Some(wordcraft_gnome::t!("Replacement")));
-    accessible_name(&replacement, wordcraft_gnome::t!("Replacement"));
-    detail.append(&replacement);
-    let change = gtk::Button::with_label(wordcraft_gnome::t!("Change"));
-    change.add_css_class("suggested-action");
-    detail.append(&change);
-    let ignore_all = gtk::Button::with_label(wordcraft_gnome::t!("Ignore All"));
-    detail.append(&ignore_all);
-    let add = gtk::Button::with_label(wordcraft_gnome::t!("Add to Dictionary"));
-    detail.append(&add);
-    let details = gtk::ScrolledWindow::new();
-    details.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
-    details.set_max_content_height(260);
-    details.set_min_content_height(100);
-    details.set_propagate_natural_height(true);
-    details.set_child(Some(&detail));
-    details.set_visible(false);
-    body.append(&details);
     ui.navigation_pages.add_named(&body, Some("proofing"));
     let s = Rc::new(SpellReview {
         ui: Rc::downgrade(ui),
         toggle: toggle.clone(),
         list,
         status,
-        details,
-        word,
-        message,
-        replacement,
-        suggestions,
-        change,
-        ignore_all,
-        add,
         index: Cell::new(None),
         issues: RefCell::new(Vec::new()),
         identity: Cell::new(None),
@@ -454,43 +358,6 @@ pub(super) fn install_spelling(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Sp
             s.select(row.index() as usize);
         }
     });
-    let weak = Rc::downgrade(&s);
-    s.change.connect_clicked(move |_| {
-        if let Some(s) = weak.upgrade() {
-            s.replace();
-        }
-    });
-    for (button, add_word) in [(&s.ignore_all, false), (&s.add, true)] {
-        let weak = Rc::downgrade(&s);
-        button.connect_clicked(move |_| {
-            let Some(s) = weak.upgrade() else { return };
-            let Some(ui) = s.ui.upgrade().filter(|u| !u.closed.get()) else {
-                return;
-            };
-            if document_identity(&ui) != s.identity.get() {
-                s.invalidate();
-                s.scan();
-                return;
-            }
-            if let Some(issue) = s.item() {
-                let result = {
-                    let mut value = ui.current.borrow_mut();
-                    let Some(d) = value.as_mut() else { return };
-                    if add_word {
-                        proofing::add(&mut d.session, &issue)
-                    } else {
-                        proofing::ignore(&mut d.session, &issue)
-                    }
-                };
-                if let Err(e) = result {
-                    s.status.set_text(&e);
-                    return;
-                }
-                refresh_all_proofing(&ui);
-                s.scan();
-            }
-        });
-    }
     s
 }
 

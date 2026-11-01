@@ -33,6 +33,9 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     {
         let mut value = ui.current.borrow_mut();
         let d = value.as_mut().unwrap();
+        d.session
+            .run("para.heading1", &serde_json::json!({}))
+            .unwrap();
         selection::select_range(&mut d.session, &Pos::body(0, 0), &Pos::body(0, 5)).unwrap();
     }
     gio::prelude::ActionGroupExt::activate_action(parent, "insert-bookmark", None);
@@ -47,9 +50,39 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     );
     assert_eq!(
         ui.navigation_pages.visible_child_name().as_deref(),
-        Some("annotations")
+        Some("outline")
     );
     assert!(find_widget(&ui.navigation_pages, "bookmark-go-Café_1").is_some());
+    let heading = find_widget(&ui.navigation_pages, "outline-heading-0").unwrap();
+    assert_eq!(
+        heading.next_sibling(),
+        find_widget(&ui.navigation_pages, "outline-bookmark-Café_1")
+    );
+    let expander = heading
+        .first_child()
+        .unwrap()
+        .first_child()
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap();
+    expander.emit_clicked();
+    assert!(find_widget(&ui.navigation_pages, "bookmark-go-Café_1").is_none());
+    find_widget(&ui.navigation_pages, "outline-heading-0")
+        .unwrap()
+        .first_child()
+        .unwrap()
+        .first_child()
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap()
+        .emit_clicked();
+    let rev = ui.current.borrow().as_ref().unwrap().session.rev();
+    find_widget(&ui.navigation_pages, "bookmark-go-Café_1")
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap()
+        .emit_clicked();
+    assert_eq!(ui.current.borrow().as_ref().unwrap().session.rev(), rev);
     let duplicate = show_annotation_dialog(ui, AnnotationEdit::Bookmark).unwrap();
     duplicate.name.set_text("Café_1");
     duplicate.submit.emit_clicked();
@@ -79,6 +112,27 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
         .unwrap()
         .id;
     panel.refresh();
+    let comments_view = find_widget(&ui.navigation_pages, "comments-panel").unwrap();
+    assert!(find_widget(&comments_view, "bookmark-go-Café_1").is_none());
+    let thread = find_widget(&ui.navigation_pages, &format!("comment-thread-{root}")).unwrap();
+    assert!(thread.has_css_class("card"));
+    for id in [root, reply_id] {
+        let message = find_widget(&ui.navigation_pages, &format!("comment-{id}")).unwrap();
+        assert!(!message.has_css_class("card"));
+        assert_eq!(
+            message.parent(),
+            Some(thread.clone()),
+            "one bubble per thread"
+        );
+    }
+    assert!(
+        thread
+            .first_child()
+            .unwrap()
+            .next_sibling()
+            .unwrap()
+            .is::<gtk::Separator>()
+    );
     let options =
         find_widget(&ui.navigation_pages, &format!("comment-options-{reply_id}")).unwrap();
     options.activate_action("annotation.edit", None).unwrap();
@@ -126,6 +180,11 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     assert!(stale.window.is_visible());
     stale.window.close();
     panel.show();
+    if std::env::args().any(|a| a == "--bookmarks-demo") {
+        ui.outline.borrow().as_ref().unwrap().show();
+        eprintln!("ANNOTATIONS_DEMO_READY");
+        return;
+    }
     if std::env::args().any(|a| a == "--annotations-demo") {
         eprintln!("ANNOTATIONS_DEMO_READY");
         return;

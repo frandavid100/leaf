@@ -203,7 +203,11 @@ pub(super) fn show_annotation_dialog(
                 if changed {
                     after_content_change(&ui);
                 }
-                if let Some(panel) = ui.annotations.borrow().as_ref() {
+                if matches!(edit, AnnotationEdit::Bookmark) {
+                    if let Some(panel) = ui.outline.borrow().as_ref() {
+                        panel.show();
+                    }
+                } else if let Some(panel) = ui.annotations.borrow().as_ref() {
                     panel.show();
                 }
                 ui.document_box.grab_focus();

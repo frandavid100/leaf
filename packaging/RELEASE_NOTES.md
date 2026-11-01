@@ -1,9 +1,11 @@
-Leaf 0.1.0-alpha.14 adds bookmarks and comments through Insert and the document context menu, with a shared third sidebar tab.
+Leaf 0.1.0-alpha.15 refines the sidebar based on testing feedback.
 
-Create, navigate to and delete named bookmarks; create, edit and reply to comments, resolve/reopen threads and confirm deletion. Document changes use WordCraft commands and undo/redo. English/Spanish and native wide/narrow/dark views are included.
+Bookmarks now appear in Navigation beneath the heading that contains them. Collapsing a section hides its bookmarks; bookmarks before the first heading remain at the top. New bookmarks open Navigation, while the third sidebar tab is dedicated to Comments.
 
-Spelling and grammar now has a fourth sidebar tab with a clickable issue list and correction controls. F7 opens manual review; check-as-you-type lives in Preferences. Background scans are coalesced and discard obsolete document positions. Automatic viewport refits preserve open review sidebars in narrow windows.
+Each comment thread is a single rounded bubble with horizontal separators between messages and subtle vertical guides for replies. Dates use the local display format. Reply, edit, resolve/reopen, delete and navigation actions remain available.
 
-DOCX preserves comment threads. The pinned WordCraft ODT exporter omits comments and turns bookmark ranges into point locations: Leaf blocks ODT saves containing comments, suggests DOCX and keeps native recovery when direct ODT autosave is incompatible. This limitation is documented and reproduced without modifying the engine.
+Spelling and Grammar shows a clean issue list: selecting an issue only selects and scrolls to its text. The introductory instruction and correction panel are removed. Corrections remain available in the document context menu. The document menu no longer contains a spelling entry; F7 and the sidebar still open review. Check-as-you-type remains in Preferences.
 
-Install Leaf-0.1.0-alpha.14-x86_64.flatpak over alpha.13. This remains an experimental AI-assisted editor. Public screenshots and Weblate setup remain with the maintainer.
+DOCX preserves comment threads. ODT comments remain unsupported by the pinned exporter: Leaf prevents ODT saves with comments and offers DOCX. WordCraft, dependencies and existing format patches are unchanged.
+
+Install Leaf-0.1.0-alpha.15-x86_64.flatpak over alpha.14. This remains an experimental AI-assisted editor.

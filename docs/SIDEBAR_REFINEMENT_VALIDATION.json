@@ -1,0 +1,25 @@
+{
+  "version": "Leaf 0.1.0-alpha.15",
+  "status": "local checks passed; native GUI and installed Flatpak validation pending",
+  "changes": [
+    "bookmarks grouped under headings in Navigation, with folding and front matter fallback",
+    "comments-only third tab, one bubble per thread with message separators",
+    "proofing rows only select/scroll; no introductory instruction or correction panel",
+    "spelling entry removed from document menu; F7 retained"
+  ],
+  "boundary": "WordCraft, Cargo.toml, Cargo.lock, vendor and patches unchanged",
+  "regressions": [
+    "bookmark ownership for nested headings and front matter, outline edits and undo",
+    "real GTK bookmark creation/navigation/folding, shared comment bubble and horizontal separators",
+    "real proofing selection without document edits or correction panel; manual/live/stale scans",
+    "document menu contains properties, export and print only"
+  ],
+  "known_limits": [
+    "ODT comments unsupported; Leaf blocks saves to prevent loss",
+    "ODT bookmark ranges become point locations"
+  ],
+  "rust_tests_passed": 106,
+  "python_tests_passed": 4,
+  "translations_messages": 592,
+  "gtk_check": "passed"
+}

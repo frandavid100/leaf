@@ -344,12 +344,6 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton) {
         "print",
         Some("<Control>p"),
     );
-    menu_item(
-        &properties,
-        wordcraft_gnome::t!("Spelling and Grammar…"),
-        "check-spelling",
-        Some("F7"),
-    );
     root.append_section(None, &properties);
     button.set_menu_model(Some(&root));
 }
@@ -363,7 +357,7 @@ pub(super) fn show_editor_help(parent: &ApplicationWindow) {
     let toolbar = ToolbarView::new();
     toolbar.add_top_bar(&HeaderBar::new());
     let text = wordcraft_gnome::t!(
-        "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Headings, and Bookmarks and Comments. Select a thumbnail or heading to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks and comment threads are managed in the third sidebar tab. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
+        "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Navigation, Comments, and Spelling and Grammar. Navigation groups bookmarks under their headings. Select a thumbnail, heading or bookmark to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks appear in Navigation; each comment thread shares one bubble in Comments. Spelling issues only select their text; corrections remain in the document context menu. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
     );
     let l = gtk::Label::new(Some(text));
     l.set_wrap(true);

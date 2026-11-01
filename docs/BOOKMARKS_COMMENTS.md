@@ -2,9 +2,14 @@
 
 ## Alcance autorizado
 
-Crear desde **Insertar** y el menú contextual; gestionar ambos en la tercera
-pestaña **Marcadores y comentarios**. Modelo, historial y serialización pertenecen
-a WordCraft; Leaf solo añade adaptadores, controles y protección de guardado.
+Crear desde **Insertar** y el menú contextual. Desde alpha.15, los marcadores
+aparecen en **Navegación** bajo el último título anterior; se ocultan al plegarlo.
+Los anteriores al primer título aparecen al principio y los documentos sin títulos
+siguen mostrando sus marcadores. La creación abre Navegación.
+La tercera pestaña queda dedicada a **Comentarios**. Cada hilo comparte una burbuja
+con separadores horizontales entre mensajes y guías verticales para las respuestas,
+sin tarjetas independientes. Modelo, historial y serialización pertenecen a WordCraft;
+Leaf solo añade adaptadores, controles y protección de guardado.
 
 - Marcadores: nombre único visible, creación sobre el cursor o selección del cuerpo,
   navegación al intervalo y eliminación. Los nombres reservados que empiezan por
@@ -56,7 +61,7 @@ La reproducción está preparada; no se ha abierto una issue upstream desde aqu�
 
 ## Comprobaciones
 
-La validación nativa acumulada de alpha.14 ha pasado: 105 pruebas Rust, cuatro
+La validación nativa acumulada de la base alpha.14 ha pasado: 105 pruebas Rust, cuatro
 Python, formato, catálogos, enlaces, compilación optimizada y toda la ronda GTK,
 incluidos inglés/español, claro/oscuro, ventanas estrechas y HiDPI.
 [CI de la fuente final](https://github.com/frandavid100/leaf/actions/runs/41341927920).
@@ -82,6 +87,11 @@ cambio búsqueda/panel y rechazo de un diálogo obsoleto. Comprueba además que 
 editor se cierre al liberar el documento. CI ejecuta inglés y español y conserva
 capturas internas de ventana ancha, estrecha y oscura. Las capturas públicas
 siguen siendo responsabilidad de David.
+
+La revisión alpha.15 añade una regresión de pertenencia de marcadores (títulos
+anidados, prefacio y cambios de nivel/deshacer) y comprueba en GTK el plegado,
+la navegación y una única burbuja con separadores por hilo. Se valida de nuevo
+antes de publicar.
 
 Mapa: [adaptador](../src/annotations.rs), [panel](../src/gnome/annotations.rs),
 [diálogos](../src/gnome/annotation_dialog.rs), [pruebas](../tests/annotations.rs),

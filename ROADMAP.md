@@ -26,10 +26,18 @@ desde alpha.13, portales y Orca automatizada. [Registro](docs/BOOKMARKS_COMMENTS
 La protección general frente a cambios externos sigue aplazada. No iniciar
 nuevas etapas de Orca.
 
+## En curso: refinamiento de paneles para alpha.15
+
+Marcadores integrados bajo títulos de Navegación, una burbuja por hilo de
+comentarios y revisión lateral solo para navegar. Retirar la entrada de revisión
+del menú de documento. Petición de David tras probar alpha.14; implementar y
+validar los paneles nativos y el Flatpak antes de entregar.
+[Comprobaciones](docs/SIDEBAR_REFINEMENT_VALIDATION.json).
+
 ## Orden de prioridad después de esta revisión
 
 Estas son propuestas; requieren un fallo concreto o una petición antes de actuar.
-La entrega acumulada anterior está completada; no hay otra ampliación elegida.
+El refinamiento de paneles anterior es el trabajo elegido actualmente.
 
 | Prioridad | Trabajo | Qué permite darlo por resuelto |
 | --- | --- | --- |

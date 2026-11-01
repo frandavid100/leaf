@@ -30,7 +30,15 @@ arranque de escritorio, portales de documentos/impresión y Orca/AT-SPI automati
 La descarga pública y sus sumas se han verificado. No equivale a pruebas humanas
 de todos los documentos, lectores o impresoras.
 
-## Entrega acumulada completada
+## Trabajo actual: refinamiento de los paneles para alpha.15
+
+David pide integrar marcadores bajo los títulos de Navegación, dedicar la tercera
+pestaña a Comentarios con una burbuja por hilo y separadores, y simplificar
+Revisión a navegación sin instrucciones ni bloque de correcciones. Se retira
+Ortografía y gramática del menú de documento. Implementado localmente; validación
+gráfica y publicación aún pendientes. [Detalle y comprobaciones](docs/SIDEBAR_REFINEMENT_VALIDATION.json).
+
+## Base publicada: entrega acumulada alpha.14
 
 Los **marcadores y comentarios** se crean desde Insertar y el menú contextual,
 y comparten la tercera pestaña lateral. Incluye creación, navegación, eliminación,

@@ -36,6 +36,7 @@ pub(super) fn sidebar_icon(kind: &str) -> gtk::Widget {
 }
 pub(super) struct OutlinePanel {
     pub(super) ui: std::rc::Weak<Ui>,
+    toggle: gtk::ToggleButton,
     pub(super) list: gtk::ListBox,
     pub(super) status: gtk::Label,
     pub(super) collapsed: RefCell<std::collections::HashSet<String>>,
@@ -43,6 +44,19 @@ pub(super) struct OutlinePanel {
     pub(super) pending: Cell<bool>,
 }
 impl OutlinePanel {
+    pub(super) fn show(self: &Rc<Self>) {
+        let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
+            return;
+        };
+        if let Some(search) = ui.search.borrow().as_ref() {
+            search.toggle.set_active(false);
+        }
+        self.toggle.set_active(true);
+        ui.sidebar_pages.set_visible_child_name("navigation");
+        ui.navigation_pages.set_visible_child_name("outline");
+        ui.sidebar_button.set_active(true);
+        self.refresh();
+    }
     pub(super) fn schedule(self: &Rc<Self>) {
         if !self
             .ui
@@ -66,24 +80,27 @@ impl OutlinePanel {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
-        let (headings, focus) = {
+        let (headings, bookmarks, focus) = {
             let value = ui.current.borrow();
             let Some(d) = value.as_ref() else {
                 return;
             };
-            (
-                wordcraft_gnome::navigation::headings(&d.session.doc),
-                d.session.sel.focus.clone(),
-            )
+            let headings = wordcraft_gnome::navigation::headings(&d.session.doc);
+            let bookmarks = wordcraft_gnome::navigation::bookmarks(&d.session.doc, &headings);
+            (headings, bookmarks, d.session.sel.focus.clone())
         };
         while let Some(child) = self.list.first_child() {
             self.list.remove(&child);
         }
-        self.status.set_visible(headings.is_empty());
+        self.status
+            .set_visible(headings.is_empty() && bookmarks.is_empty());
         self.positions.borrow_mut().clear();
         let mut hidden: Option<u8> = None;
         let current = headings.iter().rposition(|h| h.pos <= focus);
         let mut selected = None;
+        for mark in bookmarks.iter().filter(|b| b.heading.is_none()) {
+            self.append_bookmark(&ui, mark, 0);
+        }
         for (i, h) in headings.iter().enumerate() {
             if let Some(level) = hidden {
                 if h.level > level {
@@ -91,7 +108,8 @@ impl OutlinePanel {
                 }
                 hidden = None;
             }
-            let has_children = headings.get(i + 1).is_some_and(|n| n.level > h.level);
+            let has_children = headings.get(i + 1).is_some_and(|n| n.level > h.level)
+                || bookmarks.iter().any(|b| b.heading == Some(i));
             let key = format!("{:?}:{}", h.pos.path, h.text);
             let collapsed = self.collapsed.borrow().contains(&key);
             if collapsed && has_children {
@@ -155,10 +173,33 @@ impl OutlinePanel {
             if current == Some(i) {
                 selected = Some(row);
             }
+            if !collapsed {
+                for mark in bookmarks.iter().filter(|b| b.heading == Some(i)) {
+                    self.append_bookmark(&ui, mark, h.level + 1);
+                }
+            }
         }
         if let Some(row) = selected {
             self.list.select_row(Some(&row));
         }
+    }
+    fn append_bookmark(
+        &self,
+        ui: &Rc<Ui>,
+        mark: &wordcraft_gnome::navigation::Bookmark,
+        level: u8,
+    ) {
+        let row = gtk::ListBoxRow::new();
+        row.set_widget_name(&format!("outline-bookmark-{}", mark.name));
+        // The nested buttons provide keyboard navigation and separate deletion.
+        row.set_activatable(false);
+        row.set_selectable(false);
+        let content = bookmark_row(ui, &mark.name);
+        content.set_margin_start(12 + i32::from(level.min(9)) * 12);
+        content.set_margin_end(6);
+        row.set_child(Some(&content));
+        self.list.append(&row);
+        self.positions.borrow_mut().push(mark.pos.clone());
     }
     pub(super) fn goto(&self, pos: &Pos) {
         let Some(ui) = self.ui.upgrade() else {
@@ -206,6 +247,7 @@ pub(super) fn install_outline(
     ui.navigation_pages.add_named(&scroll, Some("outline"));
     let s = Rc::new(OutlinePanel {
         ui: Rc::downgrade(ui),
+        toggle: titles.clone(),
         list,
         status,
         collapsed: RefCell::new(Default::default()),

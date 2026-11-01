@@ -194,7 +194,7 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
         ]
     );
     let extra = model.item_link(3, "section").unwrap();
-    assert_eq!(extra.n_items(), 4);
+    assert_eq!(extra.n_items(), 3);
     assert_eq!(
         extra
             .item_attribute_value(0, "action", None)
