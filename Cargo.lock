@@ -2054,6 +2054,7 @@ dependencies = [
  "gtk4",
  "libadwaita",
  "serde_json",
+ "unicode-segmentation",
  "wordcraft-doc",
  "wordcraft-engine",
  "wordcraft-render",

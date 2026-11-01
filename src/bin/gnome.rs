@@ -14,7 +14,7 @@ use wordcraft_engine::Session;
 use wordcraft_gnome::{open_document, render_page_screen as render_page, sample_session};
 use wordcraft_gnome::viewer_layout::{self, THUMB_SCALE};
 
-const APP_VERSION: &str = "0.1.0-alpha.11";
+const APP_VERSION: &str = "0.1.0-alpha.12";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -42,7 +42,7 @@ struct Ui {
     header_label: gtk::Label,
     printing: PrintState,
     spelling: RefCell<Option<Rc<SpellReview>>>,
-    document_box: gtk::Fixed,
+    document_box: DocumentCanvas,
     thumbnails_box: gtk::Box,
     scroll: gtk::ScrolledWindow,
     thumbnails_scroll: gtk::ScrolledWindow,
@@ -155,6 +155,7 @@ fn refresh_selection(ui: &Rc<Ui>) {
     refresh_format_controls(ui);
     refresh_header_context(ui);
     if let Some(p)=ui.picture.borrow().as_ref(){p.refresh();}
+    ui.document_box.sync(ui);
 }
 
 /// Reflect the actual WordCraft formatting state, rather than leaving B/I/U
@@ -681,7 +682,8 @@ fn schedule_layout(ui:&Rc<Ui>){
         if fit {fit_width(&ui);}else{layout_pages(&ui);refresh_pages(&ui);}
     });
 }
-fn clear_canvas(canvas:&gtk::Fixed){
+fn clear_canvas(canvas:&impl IsA<gtk::Fixed>){
+    let canvas:&gtk::Fixed=canvas.as_ref();
     // Tool popovers belong to the tab, not to a page. Preserve their parent
     // and native surface when rebuilding pages or replacing the document.
     let mut child=canvas.first_child();while let Some(w)=child{child=w.next_sibling();if !w.is::<gtk::Popover>(){canvas.remove(&w);}}
@@ -879,6 +881,7 @@ include!("../gnome_navigation.rs");
 include!("../gnome_menus.rs");
 include!("../gnome_printing.rs");
 include!("../gnome_accessibility.rs");
+include!("../gnome_canvas.rs");
 include!("../gnome_paragraph.rs");
 include!("../gnome_view_tests.rs");
 include!("../gnome_hidpi.rs");
@@ -949,7 +952,7 @@ fn build_tab(
         .build();
     stack.add_named(&empty, Some("empty"));
 
-    let document_box = gtk::Fixed::new();
+    let document_box = DocumentCanvas::new();
     document_box.set_valign(gtk::Align::Start);
     document_box.set_halign(gtk::Align::Center);
     document_box.set_focusable(true);
@@ -1728,6 +1731,7 @@ fn build_tab(
     }
     if std::env::args().any(|a|a=="--columns-demo"){let u=ui.clone();let m=align_menu.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(1100),move||{m.popup();if let Some(s)=u.paragraph.borrow().as_ref(){s.page("columns");}});}
     if std::env::args().any(|a|a=="--print-ui-test"){let u=ui.clone();let w=window.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||print_ui_test(&u,&w,&a));}
+    if std::env::args().any(|a|a=="--a11y-ui-test"){let u=ui.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||accessible_document_ui_test(&u,&a));}
     if std::env::args().any(|a|a=="--keyboard-ui-test"){let u=ui.clone();let w=window.clone();let m=app_menu.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||keyboard_ui_test(&u,&w,&m,&a));}
     if std::env::args().any(|a|a=="--hidpi-ui-test"){let u=ui.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(1300),move||hidpi_ui_test(&u,&a));}
     if std::env::args().any(|a|a=="--columns-ui-test"){let u=ui.clone();let w=window.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(1100),move||columns_ui_test(&u,&w,&a));}

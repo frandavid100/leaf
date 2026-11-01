@@ -7,6 +7,7 @@ fn shutdown_workspaces(){
 fn forget_workspace(host:&Rc<Workspace>){WORKSPACES.with(|v|v.borrow_mut().retain(|h|!Rc::ptr_eq(h,host)));}
 fn release_document(ui:&Rc<Ui>) {
     if ui.closed.replace(true){return;}
+    ui.document_box.reset();
     if let Some(source)=ui.autosave_source.borrow_mut().take(){source.remove();}
     ui.printing.cancel();
     let spelling=ui.spelling.borrow_mut().take();

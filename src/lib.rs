@@ -108,3 +108,4 @@ pub mod proofing;
 pub mod pdf_export;
 
 pub mod printing;
+pub mod accessible_text;

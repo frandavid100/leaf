@@ -29,7 +29,9 @@ fn focus_zone(ui: &Rc<Ui>, backwards: bool) {
     }
 }
 fn install_accessibility(ui: &Rc<Ui>, main: &gtk::MenuButton, compact: &gtk::MenuButton) {
+    ui.document_box.bind(ui);
     accessible_name(&ui.document_box,wordcraft_gnome::t!("Document Content"));
+    ui.document_box.update_property(&[gtk::accessible::Property::MultiLine(true),gtk::accessible::Property::ReadOnly(false)]);
     ui.document_box.update_property(&[gtk::accessible::Property::Description(wordcraft_gnome::t!("F6 switches between the document, sidebar and formatting controls. Tab moves between table cells. Shift+F10 opens the context menu."))]);
     for (w,name) in [(ui.sidebar_button.clone().upcast::<gtk::Widget>(),wordcraft_gnome::t!("Show or Hide Sidebar")),
         (ui.zoom_in.clone().upcast(),wordcraft_gnome::t!("Zoom In")),(ui.zoom_out.clone().upcast(),wordcraft_gnome::t!("Zoom Out")),
