@@ -16,7 +16,7 @@ import traceback
 
 import gi
 gi.require_version("Atspi", "2.0")
-from gi.repository import GLib
+from gi.repository import GLib, Atspi
 import pyatspi
 
 OUT = Path("a11y-results").resolve()
@@ -55,6 +55,7 @@ def record(event):
 def find_canvas():
     for app in pyatspi.Registry.getDesktop(0):
         try:
+            app.set_cache_mask(Atspi.Cache.NONE)
             found = pyatspi.findDescendant(app, lambda obj: obj.name == "Document Content")
             if found is not None:
                 return found
@@ -65,9 +66,10 @@ def find_canvas():
 def dump_tree():
     nodes = []
     def visit(obj, depth):
-        if depth > 14 or len(nodes) > 500:
+        if depth > 40 or len(nodes) > 500:
             return
         try:
+            obj.set_cache_mask(Atspi.Cache.NONE)
             nodes.append({"depth": depth, "name": obj.name, "role": obj.getRoleName(), "interfaces": list(pyatspi.listInterfaces(obj))})
             for child in obj:
                 visit(child, depth+1)
@@ -85,7 +87,7 @@ def main():
     OUT.mkdir(exist_ok=True)
     baseline = "--baseline" in sys.argv
     binary = Path(sys.argv[1]).resolve()
-    for kind in ["object:text-changed", "object:text-caret-moved", "object:text-selection-changed", "object:state-changed:focused"]:
+    for kind in ["object:children-changed", "object:text-changed", "object:text-caret-moved", "object:text-selection-changed", "object:state-changed:focused"]:
         pyatspi.Registry.registerEventListener(record, kind)
     with tempfile.TemporaryDirectory(prefix="leaf-a11y-") as profile:
         env = os.environ.copy()
@@ -99,6 +101,8 @@ def main():
             wait(lambda: orca_log.exists() and "ORCA: Initialized" in orca_log.read_text(errors="replace"), 30)
             with (OUT / "leaf.log").open("w") as log:
                 app = subprocess.Popen([str(binary), "--test-document" if baseline else "--a11y-ui-test"], env=env, stdout=log, stderr=subprocess.STDOUT)
+                if not baseline:
+                    wait(lambda: "ACCESSIBLE_DOCUMENT_READY" in (OUT / "leaf.log").read_text(), 25)
                 try:
                     canvas = wait(find_canvas, 25)
                 finally:
