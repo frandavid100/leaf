@@ -54,9 +54,27 @@ def record(event):
 
 def find_canvas():
     for app in pyatspi.Registry.getDesktop(0):
-        found = pyatspi.findDescendant(app, lambda obj: obj.name == "Document Content")
-        if found is not None:
-            return found
+        try:
+            found = pyatspi.findDescendant(app, lambda obj: obj.name == "Document Content")
+            if found is not None:
+                return found
+        except Exception:
+            continue
+
+
+def dump_tree():
+    nodes = []
+    def visit(obj, depth):
+        if depth > 14 or len(nodes) > 500:
+            return
+        try:
+            nodes.append({"depth": depth, "name": obj.name, "role": obj.getRoleName(), "interfaces": list(pyatspi.listInterfaces(obj))})
+            for child in obj:
+                visit(child, depth+1)
+        except Exception as error:
+            nodes.append({"depth": depth, "error": str(error)})
+    visit(pyatspi.Registry.getDesktop(0), 0)
+    (OUT / "tree.json").write_text(json.dumps(nodes, indent=2, ensure_ascii=False))
 
 
 def command(*args):
@@ -81,7 +99,10 @@ def main():
             wait(lambda: orca_log.exists() and "ORCA: Initialized" in orca_log.read_text(errors="replace"), 30)
             with (OUT / "leaf.log").open("w") as log:
                 app = subprocess.Popen([str(binary), "--test-document" if baseline else "--a11y-ui-test"], env=env, stdout=log, stderr=subprocess.STDOUT)
-                canvas = wait(find_canvas, 25)
+                try:
+                    canvas = wait(find_canvas, 25)
+                finally:
+                    dump_tree()
                 window = wait(lambda: command("xdotool", "search", "--onlyvisible", "--pid", app.pid).splitlines()[0])
                 command("xdotool", "windowfocus", "--sync", window)
                 canvas.queryComponent().grabFocus()
