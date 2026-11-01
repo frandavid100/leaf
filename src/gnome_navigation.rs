@@ -26,7 +26,7 @@ impl OutlinePanel{
             let collapsed=self.collapsed.borrow().contains(&key);if collapsed&&has_children{hidden=Some(h.level);}
             let row=gtk::ListBoxRow::new();row.set_widget_name(&format!("outline-heading-{i}"));
             let content=gtk::Box::new(gtk::Orientation::Horizontal,2);content.set_margin_start(6+i32::from(h.level.min(8))*12);content.set_margin_end(8);content.set_margin_top(3);content.set_margin_bottom(3);
-            let arrow=gtk::Button::with_label(if collapsed{"›"}else{"⌄"});arrow.add_css_class("flat");arrow.add_css_class("outline-expander");arrow.set_opacity(if has_children{1.0}else{0.0});arrow.set_can_target(has_children);arrow.set_focusable(has_children);arrow.set_tooltip_text(Some(if collapsed{"Expandir sección"}else{"Contraer sección"}));accessible_name(&arrow,&format!("{} {}",if collapsed{"Expandir"}else{"Contraer"},h.text));content.append(&arrow);
+            let arrow=gtk::Button::with_label(if collapsed{"›"}else{"⌄"});arrow.add_css_class("flat");arrow.add_css_class("outline-expander");arrow.set_opacity(if has_children{1.0}else{0.0});arrow.set_can_target(has_children);arrow.set_focusable(has_children);arrow.set_tooltip_text(Some(if collapsed{wordcraft_gnome::t!("Expand Section")}else{wordcraft_gnome::t!("Collapse Section")}));accessible_name(&arrow,&format!("{} {}",if collapsed{wordcraft_gnome::t!("Expand")}else{wordcraft_gnome::t!("Collapse")},h.text));content.append(&arrow);
             let label=gtk::Label::new(Some(&h.text));label.set_xalign(0.0);label.set_hexpand(true);label.set_ellipsize(gtk::pango::EllipsizeMode::End);label.set_max_width_chars(1);label.set_tooltip_text(Some(&h.text));if h.level==0{label.add_css_class("heading");}content.append(&label);row.set_child(Some(&content));self.list.append(&row);
             let weak=Rc::downgrade(self);arrow.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){let mut keys=s.collapsed.borrow_mut();if !keys.remove(&key){keys.insert(key.clone());}drop(keys);s.refresh();}});
             self.positions.borrow_mut().push(h.pos.clone());
@@ -42,7 +42,7 @@ impl OutlinePanel{
     }
 }
 fn install_outline(ui:&Rc<Ui>,pages:&gtk::ToggleButton,titles:&gtk::ToggleButton)->Rc<OutlinePanel>{
-    let box_=gtk::Box::new(gtk::Orientation::Vertical,6);let status=gtk::Label::new(Some("No hay títulos en este documento"));status.set_wrap(true);status.set_margin_start(12);status.set_margin_end(12);status.set_margin_top(18);status.add_css_class("dim-label");box_.append(&status);
+    let box_=gtk::Box::new(gtk::Orientation::Vertical,6);let status=gtk::Label::new(Some(wordcraft_gnome::t!("No Headings in This Document")));status.set_wrap(true);status.set_margin_start(12);status.set_margin_end(12);status.set_margin_top(18);status.add_css_class("dim-label");box_.append(&status);
     let list=gtk::ListBox::new();list.set_activate_on_single_click(true);list.add_css_class("navigation-sidebar");box_.append(&list);
     let scroll=gtk::ScrolledWindow::new();scroll.set_policy(gtk::PolicyType::Never,gtk::PolicyType::Automatic);scroll.set_vexpand(true);scroll.set_child(Some(&box_));ui.navigation_pages.add_named(&scroll,Some("outline"));
     let s=Rc::new(OutlinePanel{ui:Rc::downgrade(ui),list,status,collapsed:RefCell::new(Default::default()),positions:RefCell::new(Vec::new()),pending:Cell::new(false)});

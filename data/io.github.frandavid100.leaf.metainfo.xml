@@ -4,29 +4,59 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   <name>Leaf</name>
-  <developer id="io.github.frandavid100"><name>Leaf contributors</name></developer>
+  <developer id="io.github.frandavid100">
+    <name>Leaf contributors</name>
+  </developer>
   <summary>Create and edit documents</summary>
-  <summary xml:lang="es">Crea y edita documentos</summary>
   <description>
     <p>Leaf is an experimental GTK4 and libadwaita document editor powered by WordCraft.</p>
     <p>Edit DOCX and ODT files, use text and paragraph styles, work with tables and inline images, and export PDFs. Browse page thumbnails or headings, search and replace text, and open multiple documents.</p>
-    <p>This alpha is primarily available in Spanish. Test copies of your documents: complex file fidelity is still being evaluated. Development, documentation and artwork have used substantial AI assistance.</p>
+    <p>Leaf follows your system language in English and Spanish. Other languages can be contributed using gettext catalogs. Development, documentation and artwork have used substantial AI assistance.</p>
+    <p xml:lang="es">Leaf es un editor de documentos experimental para GTK4 y libadwaita basado en WordCraft.</p>
+    <p xml:lang="es">Edita archivos DOCX y ODT, aplica estilos de texto y párrafo, trabaja con tablas e imágenes en línea y exporta archivos PDF. Navega por miniaturas o títulos, busca y reemplaza texto y abre varios documentos.</p>
+    <p xml:lang="es">Leaf utiliza el idioma del sistema en español e inglés. Se pueden aportar otros idiomas mediante catálogos gettext. El desarrollo, la documentación y las ilustraciones han utilizado asistencia considerable de IA.</p>
   </description>
   <launchable type="desktop-id">io.github.frandavid100.leaf.desktop</launchable>
   <url type="homepage">https://github.com/frandavid100/leaf</url>
   <url type="bugtracker">https://github.com/frandavid100/leaf/issues</url>
   <url type="help">https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/TESTING.md</url>
-  <content_rating type="oars-1.1"/>
+  <content_rating type="oars-1.1" />
   <releases>
-    <release version="0.1.0-alpha.6" date="2026-10-31" type="development"><description><p>Release closed GTK document and window state, weaken signal captures and stop obsolete callbacks.</p></description></release>
-    <release version="0.1.0-alpha.5" date="2026-10-31" type="development"><description><p>Native printing with private PDF snapshots, keyboard pane navigation and clearer accessible control labels.</p></description></release>
-    <release version="0.1.0-alpha.4" date="2026-10-31" type="development"><description><p>Preserve ODT headers, footers and their tables and images; retain explicit repeating table rows.</p></description></release>
-    <release version="0.1.0-alpha.3" date="2026-10-31" type="development"><description><p>Correct document and thumbnail rendering density on HiDPI displays.</p></description></release>
+    <release version="0.1.0-alpha.7" date="2026-11-01" type="development">
+      <description>
+        <p>English and Spanish localization, community translation catalogs, and native engine dark document rendering.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.6" date="2026-10-31" type="development">
+      <description>
+        <p>Release closed GTK document and window state, weaken signal captures and stop obsolete callbacks.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.5" date="2026-10-31" type="development">
+      <description>
+        <p>Native printing with private PDF snapshots, keyboard pane navigation and clearer accessible control labels.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.4" date="2026-10-31" type="development">
+      <description>
+        <p>Preserve ODT headers, footers and their tables and images; retain explicit repeating table rows.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.3" date="2026-10-31" type="development">
+      <description>
+        <p>Correct document and thumbnail rendering density on HiDPI displays.</p>
+      </description>
+    </release>
     <release version="0.1.0-alpha.2" date="2026-10-31" type="development">
-      <description><p>Column layout controls and native symbolic formatting icons.</p></description>
+      <description>
+        <p>Column layout controls and native symbolic formatting icons.</p>
+      </description>
     </release>
     <release version="0.1.0-alpha.1" date="2026-10-31" type="development">
-      <description><p>First GitHub Flatpak alpha for testing document editing on Linux.</p></description>
+      <description>
+        <p>First GitHub Flatpak alpha for testing document editing on Linux.</p>
+      </description>
     </release>
   </releases>
+  <summary xml:lang="es">Crea y edita documentos</summary>
 </component>

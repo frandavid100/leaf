@@ -19,7 +19,7 @@ fn print_document(ui: &Rc<Ui>, parent: &ApplicationWindow) {
     let cancel = gio::Cancellable::new();
     ui.printing.pending.replace(Some(cancel.clone())); ui.printing.outcome.set(None);
     if let Some(host) = ui.host.upgrade() { refresh_main_actions(&host); }
-    ui.toasts.add_toast(Toast::new("Preparando impresión…"));
+    ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("Preparing to Print…")));
     let title = format!("Imprimir — {}", ui.document_name.borrow());
     let weak = Rc::downgrade(ui); let parent = parent.downgrade();
     // Keep the main loop alive for cleanup if the last tab closes during export.
@@ -31,7 +31,7 @@ fn print_document(ui: &Rc<Ui>, parent: &ApplicationWindow) {
         let file = match prepared {
             Ok(Ok(file)) => file,
             result => {
-                let message = match result { Ok(Err(e)) => e, _ => "No se pudo preparar el PDF de impresión".into() };
+                let message = match result { Ok(Err(e)) => e, _ => wordcraft_gnome::t!("Could Not Prepare Print PDF").into() };
                 ui.toasts.add_toast(Toast::new(&message)); finish_print(&ui, PrintOutcome::Failed); return;
             }
         };
@@ -42,9 +42,9 @@ fn print_document(ui: &Rc<Ui>, parent: &ApplicationWindow) {
             drop(file); drop(hold);
             if let Some(ui) = weak.upgrade() {
                 let outcome = match result {
-                    Ok(()) => { if !ui.closed.get() { ui.toasts.add_toast(Toast::new("Documento enviado a impresión")); } PrintOutcome::Submitted },
+                    Ok(()) => { if !ui.closed.get() { ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("Document Sent to Printer"))); } PrintOutcome::Submitted },
                     Err(e) if e.matches(gtk::DialogError::Cancelled) || e.matches(gtk::DialogError::Dismissed) || e.matches(gio::IOErrorEnum::Cancelled) => PrintOutcome::Dismissed,
-                    Err(e) => { if !ui.closed.get() { ui.toasts.add_toast(Toast::new(&format!("No se pudo imprimir: {e}"))); } PrintOutcome::Failed }
+                    Err(e) => { if !ui.closed.get() { ui.toasts.add_toast(Toast::new(&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Could Not Print: {e}"), &[("e", format!("{}", e))]))); } PrintOutcome::Failed }
                 };
                 finish_print(&ui, outcome);
             }

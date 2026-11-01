@@ -80,7 +80,7 @@ fn mount_context_formats(ui:&Rc<Ui>,host:&gtk::PopoverMenu)->Rc<ContextFormatLea
     host.set_autohide(false);ui.format_group.show(host.upcast_ref());
     ui.format_group.hosts.borrow_mut().retain(|p|p.upgrade().is_some());ui.format_group.hosts.borrow_mut().push(host.clone().upcast::<gtk::Popover>().downgrade());
     let mut entries=Vec::new();
-    for(name,label,id)in[("style-menu","Estilo","context-style"),("paragraph-menu","Párrafo","context-paragraph"),("text-menu","Texto","context-text")]{
+    for(name,label,id)in[("style-menu",wordcraft_gnome::t!("Style"),"context-style"),("paragraph-menu",wordcraft_gnome::t!("Paragraph"),"context-paragraph"),("text-menu",wordcraft_gnome::t!("Text"),"context-text")]{
         let Some(origin)=format_button(ui,name).and_then(|m|m.popover())else{continue;};
         let header=ui.format_group.entries.borrow().iter().find(|(p,_)|p.upgrade().as_ref()==Some(&origin)).map(|(_,h)|h.clone());
         let (Some(body),Some(header))=(origin.child(),header)else{continue;};origin.set_child(None::<&gtk::Widget>);
@@ -116,33 +116,33 @@ fn show_document_context(ui:&Rc<Ui>,parent:&ApplicationWindow,x:i32,y:i32,kind:D
     let group=gio::SimpleActionGroup::new();pop.insert_action_group("context",Some(&group));
     let (selected,merge)=ui.current.borrow().as_ref().map(|d|(!d.session.sel.is_collapsed(),wordcraft_gnome::tables::selected_cells(&d.session)>1)).unwrap_or_default();
     let edit=gio::Menu::new();
-    context_item(&edit,&group,&pop,ui,"Cortar","cut",selected,|u|{if context_copy(u){apply_user_edit(u,Edit::Delete);}});
-    context_item(&edit,&group,&pop,ui,"Copiar","copy",selected,|u|{context_copy(u);});
+    context_item(&edit,&group,&pop,ui,wordcraft_gnome::t!("Cut"),"cut",selected,|u|{if context_copy(u){apply_user_edit(u,Edit::Delete);}});
+    context_item(&edit,&group,&pop,ui,wordcraft_gnome::t!("Copy"),"copy",selected,|u|{context_copy(u);});
     let formats=ui.document_box.clipboard().formats();
     let can_paste=formats.contains_type(String::static_type())||formats.contain_mime_type("text/plain")||formats.contain_mime_type("text/plain;charset=utf-8");
-    context_item(&edit,&group,&pop,ui,"Pegar","paste",can_paste,context_paste);
-    context_item(&edit,&group,&pop,ui,"Seleccionar todo","select-all",true,|u|selected_command(u,"select-all",false));root.append_section(None,&edit);
+    context_item(&edit,&group,&pop,ui,wordcraft_gnome::t!("Paste"),"paste",can_paste,context_paste);
+    context_item(&edit,&group,&pop,ui,wordcraft_gnome::t!("Select All"),"select-all",true,|u|selected_command(u,"select-all",false));root.append_section(None,&edit);
     let specific=gio::Menu::new();
     match kind {
         DocumentContext::Text=>{
-            for(label,id)in[("Estilo","context-style"),("Párrafo","context-paragraph"),("Texto","context-text")]{let page=gio::Menu::new();let item=gio::MenuItem::new(None,None);item.set_attribute_value("custom",Some(&id.to_variant()));page.append_item(&item);specific.append_submenu(Some(label),&page);}
+            for(label,id)in[(wordcraft_gnome::t!("Style"),"context-style"),(wordcraft_gnome::t!("Paragraph"),"context-paragraph"),(wordcraft_gnome::t!("Text"),"context-text")]{let page=gio::Menu::new();let item=gio::MenuItem::new(None,None);item.set_attribute_value("custom",Some(&id.to_variant()));page.append_item(&item);specific.append_submenu(Some(label),&page);}
         },
         DocumentContext::Picture=>{
-            context_item(&specific,&group,&pop,ui,"Tamaño de la imagen…","picture-size",true,|u|context_picture_editor(u));
-            context_item(&specific,&group,&pop,ui,"Restaurar tamaño original","picture-original",true,|u|{tools_change(u,pictures::original);});
-            let p=parent.downgrade();context_item(&specific,&group,&pop,ui,"Sustituir imagen…","picture-replace",true,move|u|{if let Some(p)=p.upgrade(){choose_picture(u,&p,true);}});
-            context_item(&specific,&group,&pop,ui,"Eliminar imagen","picture-delete",true,|u|{tools_change(u,pictures::delete);});
+            context_item(&specific,&group,&pop,ui,wordcraft_gnome::t!("Image Size…"),"picture-size",true,|u|context_picture_editor(u));
+            context_item(&specific,&group,&pop,ui,wordcraft_gnome::t!("Restore Original Size"),"picture-original",true,|u|{tools_change(u,pictures::original);});
+            let p=parent.downgrade();context_item(&specific,&group,&pop,ui,wordcraft_gnome::t!("Replace Image…"),"picture-replace",true,move|u|{if let Some(p)=p.upgrade(){choose_picture(u,&p,true);}});
+            context_item(&specific,&group,&pop,ui,wordcraft_gnome::t!("Delete Image"),"picture-delete",true,|u|{tools_change(u,pictures::delete);});
         },
         DocumentContext::Table=>{
             for(title,prefix,items)in[
-                ("Añadir","insert",vec![("Fila encima","table.insertRowAbove"),("Fila debajo","table.insertRowBelow"),("Columna a la izquierda","table.insertColumnLeft"),("Columna a la derecha","table.insertColumnRight")]),
-                ("Seleccionar","select",vec![("Celda","table.selectCell"),("Fila","table.selectRow"),("Columna","table.selectColumn"),("Tabla","table.selectTable")]),
-                ("Eliminar","delete",vec![("Fila","table.deleteRow"),("Columna","table.deleteColumn"),("Tabla","table.deleteTable")])]{
+                (wordcraft_gnome::t!("Add"),"insert",vec![(wordcraft_gnome::t!("Row Above"),"table.insertRowAbove"),(wordcraft_gnome::t!("Row Below"),"table.insertRowBelow"),(wordcraft_gnome::t!("Column to the Left"),"table.insertColumnLeft"),(wordcraft_gnome::t!("Column to the Right"),"table.insertColumnRight")]),
+                (wordcraft_gnome::t!("Select"),"select",vec![(wordcraft_gnome::t!("Cell"),"table.selectCell"),(wordcraft_gnome::t!("Row"),"table.selectRow"),(wordcraft_gnome::t!("Column"),"table.selectColumn"),(wordcraft_gnome::t!("Table"),"table.selectTable")]),
+                (wordcraft_gnome::t!("Delete"),"delete",vec![(wordcraft_gnome::t!("Row"),"table.deleteRow"),(wordcraft_gnome::t!("Column"),"table.deleteColumn"),(wordcraft_gnome::t!("Table"),"table.deleteTable")])]{
                 let sub=gio::Menu::new();for(i,(label,cmd))in items.into_iter().enumerate(){context_item(&sub,&group,&pop,ui,label,&format!("{prefix}-{i}"),true,move|u|table_command(u,cmd,serde_json::json!({})));}specific.append_submenu(Some(title),&sub);
             }
-            context_item(&specific,&group,&pop,ui,"Más opciones de tabla…","table-tools",true,context_table_editor);
-            context_item(&specific,&group,&pop,ui,"Combinar celdas","merge",merge,|u|table_command(u,"table.merge",serde_json::json!({})));
-            let p=parent.downgrade();context_item(&specific,&group,&pop,ui,"Propiedades y dividir celdas…","table-properties",true,move|u|{if let Some(p)=p.upgrade(){show_table_properties(u,&p);}});
+            context_item(&specific,&group,&pop,ui,wordcraft_gnome::t!("More Table Options…"),"table-tools",true,context_table_editor);
+            context_item(&specific,&group,&pop,ui,wordcraft_gnome::t!("Merge Cells"),"merge",merge,|u|table_command(u,"table.merge",serde_json::json!({})));
+            let p=parent.downgrade();context_item(&specific,&group,&pop,ui,wordcraft_gnome::t!("Properties and Split Cells…"),"table-properties",true,move|u|{if let Some(p)=p.upgrade(){show_table_properties(u,&p);}});
         }
     }
     root.append_section(None,&specific);
@@ -182,7 +182,7 @@ fn context_table_editor(ui:&Rc<Ui>){if let Some(p)=ui.table_popover.borrow().as_
 fn tool_diagnostics()->bool{std::env::args().any(|a|matches!(a.as_str(),"--pin-ui-test"|"--table-menu-demo"|"--table-properties-demo"|"--table-insert-demo"|"--picture-demo"|"--document-properties-demo"|"--document-tools-test"))}
 fn context_ui_test(ui:&Rc<Ui>,parent:&ApplicationWindow,app:&Application){
     use gdk::prelude::PopupExt;
-    opened(ui,Session::new(wordcraft_doc::Document::from_text("Hello world, texto de prueba\nSegundo párrafo")),"Contextos");
+    opened(ui,Session::new(wordcraft_doc::Document::from_text("Hello world, texto de prueba\nSegundo párrafo")),wordcraft_gnome::t!("Contexts"));
     {let mut value=ui.current.borrow_mut();let d=value.as_mut().unwrap();d.session.run("select.range",&serde_json::json!({"anchor":Pos::body(0,0),"focus":Pos::body(0,11)})).unwrap();}
     refresh_selection(ui);
     let ui=ui.clone();let parent=parent.clone();let app=app.clone();
@@ -192,19 +192,19 @@ fn context_ui_test(ui:&Rc<Ui>,parent:&ApplicationWindow,app:&Application){
         glib::timeout_add_local_once(std::time::Duration::from_secs(2),move||{
             {let value=ui.current.borrow();let d=value.as_ref().unwrap();assert_eq!(d.session.sel,sel,"right click must preserve selected text");assert_eq!(d.session.rev(),rev);}
             let pop=style_widget(&ui.document_box,"document-context-menu").unwrap().downcast::<gtk::PopoverMenu>().unwrap();assert!(pop.is_mapped());assert!(!ui.document_box.has_focus(),"context menu must receive keyboard focus");assert_eq!(pop.menu_model().unwrap().n_items(),2);
-            let row=context_model_row(&pop,"Copiar").unwrap();let r=row.compute_bounds(&pop).unwrap();let surface=pop.surface().unwrap().downcast::<gdk::Popup>().unwrap();let(tx,ty)=pop.surface_transform();
+            let row=context_model_row(&pop,wordcraft_gnome::t!("Copy")).unwrap();let r=row.compute_bounds(&pop).unwrap();let surface=pop.surface().unwrap().downcast::<gdk::Popup>().unwrap();let(tx,ty)=pop.surface_transform();
             eprintln!("CONTEXT_ACTION_READY {} {}",(surface.position_x()as f64-tx+r.x()as f64+r.width()as f64/2.0)as i32,(surface.position_y()as f64-ty+r.y()as f64+r.height()as f64/2.0)as i32);
             glib::timeout_add_local_once(std::time::Duration::from_millis(700),move||{
             assert!(RICH_CLIPBOARD.with(|c|c.borrow().is_some()),"real native row click must copy");assert!(ui.document_box.has_focus(),"closing context must return keyboard focus to editor");
 
             {let mut value=ui.current.borrow_mut();selection::set_caret(&mut value.as_mut().unwrap().session,&Pos::body(1,0),false).unwrap();}
-            let edit=show_document_context(&ui,&parent,100,150,DocumentContext::Text);context_activate_row(&edit,"Pegar");assert!(ui.current.borrow().as_ref().unwrap().session.can_undo());apply_user_edit(&ui,Edit::Undo);
+            let edit=show_document_context(&ui,&parent,100,150,DocumentContext::Text);context_activate_row(&edit,wordcraft_gnome::t!("Paste"));assert!(ui.current.borrow().as_ref().unwrap().session.can_undo());apply_user_edit(&ui,Edit::Undo);
             {let mut value=ui.current.borrow_mut();value.as_mut().unwrap().session.run("select.range",&serde_json::json!({"anchor":Pos::body(0,0),"focus":Pos::body(0,11)})).unwrap();}
-            let edit=show_document_context(&ui,&parent,100,150,DocumentContext::Text);context_activate_row(&edit,"Cortar");
+            let edit=show_document_context(&ui,&parent,100,150,DocumentContext::Text);context_activate_row(&edit,wordcraft_gnome::t!("Cut"));
             assert_eq!(ui.current.borrow_mut().as_mut().unwrap().session.doc.para_at(&Pos::body(0,0)).unwrap().text,", texto de prueba");
             apply_user_edit(&ui,Edit::Undo);
-            let edit=show_document_context(&ui,&parent,100,150,DocumentContext::Text);context_activate_row(&edit,"Seleccionar todo");assert!(!ui.current.borrow().as_ref().unwrap().session.sel.is_collapsed());
-            for (label,name) in [("Estilo","style-menu"),("Párrafo","paragraph-menu"),("Texto","text-menu")]{let edit=show_document_context(&ui,&parent,100,150,DocumentContext::Text);context_activate_row(&edit,label);let m=format_button(&ui,name).unwrap();assert!(!m.popover().unwrap().is_visible(),"context must not open toolbar popup");assert!(m.popover().unwrap().child().is_none(),"controls must be embedded in context");assert_eq!(edit.visible_submenu().as_deref(),Some(label));edit.popdown();assert!(m.popover().unwrap().child().is_some(),"closing context must return controls");}
+            let edit=show_document_context(&ui,&parent,100,150,DocumentContext::Text);context_activate_row(&edit,wordcraft_gnome::t!("Select All"));assert!(!ui.current.borrow().as_ref().unwrap().session.sel.is_collapsed());
+            for (label,name) in [(wordcraft_gnome::t!("Style"),"style-menu"),(wordcraft_gnome::t!("Paragraph"),"paragraph-menu"),(wordcraft_gnome::t!("Text"),"text-menu")]{let edit=show_document_context(&ui,&parent,100,150,DocumentContext::Text);context_activate_row(&edit,label);let m=format_button(&ui,name).unwrap();assert!(!m.popover().unwrap().is_visible(),"context must not open toolbar popup");assert!(m.popover().unwrap().child().is_none(),"controls must be embedded in context");assert_eq!(edit.visible_submenu().as_deref(),Some(label));edit.popdown();assert!(m.popover().unwrap().child().is_some(),"closing context must return controls");}
 
             {let mut value=ui.current.borrow_mut();value.as_mut().unwrap().session.run("select.range",&serde_json::json!({"anchor":Pos::body(0,0),"focus":Pos::body(0,11)})).unwrap();}
             // Clicking outside the selection moves the caret, without a mutation.
@@ -212,19 +212,19 @@ fn context_ui_test(ui:&Rc<Ui>,parent:&ApplicationWindow,app:&Application){
             assert_eq!(context_prepare(&ui,cx,cy),Some(DocumentContext::Text));assert!(ui.current.borrow().as_ref().unwrap().session.sel.is_collapsed());
             table_command(&ui,"insert.table",serde_json::json!({"rows":2,"cols":2}));
             let table=show_document_context(&ui,&parent,100,150,DocumentContext::Table);assert!(table.menu_model().unwrap().item_link(1,"section").unwrap().item_link(0,"submenu").is_some());
-            context_activate_row(&table,"Seleccionar");context_activate_row(&table,"Columna");assert!(wordcraft_gnome::tables::selected_cells(&ui.current.borrow().as_ref().unwrap().session)>1);
-            let table=show_document_context(&ui,&parent,100,150,DocumentContext::Table);context_activate_row(&table,"Más opciones de tabla…");assert!(ui.table_popover.borrow().as_ref().unwrap().is_visible());ui.table_popover.borrow().as_ref().unwrap().popdown();
+            context_activate_row(&table,wordcraft_gnome::t!("Select"));context_activate_row(&table,wordcraft_gnome::t!("Column"));assert!(wordcraft_gnome::tables::selected_cells(&ui.current.borrow().as_ref().unwrap().session)>1);
+            let table=show_document_context(&ui,&parent,100,150,DocumentContext::Table);context_activate_row(&table,wordcraft_gnome::t!("More Table Options…"));assert!(ui.table_popover.borrow().as_ref().unwrap().is_visible());ui.table_popover.borrow().as_ref().unwrap().popdown();
             document_tools_fixture(&ui);
             let u=ui.clone();let p=parent.clone();let a=app.clone();
             glib::timeout_add_local_once(std::time::Duration::from_millis(400),move||{
                 let (x,y,rev)={let mut value=u.current.borrow_mut();let d=value.as_mut().unwrap();let hit=d.session.layout().find_object(0,|_|true).unwrap();let r=d.page_frames[hit.page].compute_bounds(&u.document_box).unwrap();let rect=hit.bounds();let point=(r.x()as f64+(rect.x+rect.w/2.0)as f64*d.zoom as f64,r.y()as f64+(rect.y+rect.h/2.0)as f64*d.zoom as f64,d.session.rev());d.session.run("caret.docStart",&serde_json::json!({})).unwrap();point};
                 assert_eq!(context_prepare(&u,x,y),Some(DocumentContext::Picture));assert_eq!(u.current.borrow().as_ref().unwrap().session.rev(),rev);
                 let pop=show_document_context(&u,&p,x as i32,y as i32,DocumentContext::Picture);
-                context_activate_row(&pop,"Tamaño de la imagen…");assert!(u.picture.borrow().as_ref().unwrap().pop.is_visible());u.picture.borrow().as_ref().unwrap().pop.popdown();
+                context_activate_row(&pop,wordcraft_gnome::t!("Image Size…"));assert!(u.picture.borrow().as_ref().unwrap().pop.is_visible());u.picture.borrow().as_ref().unwrap().pop.popdown();
                 let pop=show_document_context(&u,&p,x as i32,y as i32,DocumentContext::Picture);
-                context_activate_row(&pop,"Copiar");
+                context_activate_row(&pop,wordcraft_gnome::t!("Copy"));
                 // A separate document must receive the image fragment, not U+FFFC.
-                opened(&u,Session::new(wordcraft_doc::Document::from_text("")),"Destino");context_paste(&u);
+                opened(&u,Session::new(wordcraft_doc::Document::from_text("")),wordcraft_gnome::t!("Destination"));context_paste(&u);
                 assert!(u.current.borrow_mut().as_mut().unwrap().session.layout().find_object(0,|_|true).is_some());
                 apply_user_edit(&u,Edit::Undo);assert!(u.current.borrow_mut().as_mut().unwrap().session.layout().find_object(0,|_|true).is_none());
                 // An external clipboard owner invalidates our rich fragment.

@@ -18,8 +18,8 @@ struct StylePopover {
 impl StylePopover {
     fn report(&self,text:&str){self.message.set_text(text);self.message.set_visible(!text.is_empty());}
     fn run(&self,edit:wordcraft_gnome::styles::Edit)->Result<Option<String>,String>{
-        let ui=self.ui.upgrade().ok_or("El documento está cerrado")?;
-        let (result,changed)={let mut s=ui.current.borrow_mut();let d=s.as_mut().ok_or("No hay documento")?;
+        let ui=self.ui.upgrade().ok_or(wordcraft_gnome::t!("The document is closed"))?;
+        let (result,changed)={let mut s=ui.current.borrow_mut();let d=s.as_mut().ok_or(wordcraft_gnome::t!("No document"))?;
             let rev=d.session.rev();let result=wordcraft_gnome::styles::edit(&mut d.session,edit)?;(result,d.session.rev()!=rev)};
         if changed{after_content_change(&ui);}else{refresh_selection(&ui);}
         Ok(result)
@@ -36,9 +36,9 @@ impl StylePopover {
             let apply=gtk::Button::new();apply.add_css_class("flat");apply.set_hexpand(true);apply.set_widget_name(&format!("style-apply-{}",st.id));
             let label=gtk::Label::new(Some(&st.name));label.set_xalign(0.0);label.set_hexpand(true);label.set_ellipsize(gtk::pango::EllipsizeMode::End);label.set_max_width_chars(28);
             let content=gtk::Box::new(gtk::Orientation::Horizontal,8);content.append(&label);
-            let kind=gtk::Label::new(Some(if st.kind==wordcraft_doc::styles::StyleKind::Paragraph{"¶"}else{"a"}));kind.add_css_class("dim-label");kind.set_tooltip_text(Some(if st.kind==wordcraft_doc::styles::StyleKind::Paragraph{"Estilo de párrafo"}else{"Estilo de carácter"}));content.append(&kind);
-            if current.as_deref()==Some(st.id.as_str()){apply.set_tooltip_text(Some("Estilo actual"));}
-            accessible_name(&apply,&format!("Aplicar estilo {}",st.name));apply.set_child(Some(&content));row.append(&apply);
+            let kind=gtk::Label::new(Some(if st.kind==wordcraft_doc::styles::StyleKind::Paragraph{"¶"}else{"a"}));kind.add_css_class("dim-label");kind.set_tooltip_text(Some(if st.kind==wordcraft_doc::styles::StyleKind::Paragraph{wordcraft_gnome::t!("Paragraph Style")}else{wordcraft_gnome::t!("Character Style")}));content.append(&kind);
+            if current.as_deref()==Some(st.id.as_str()){apply.set_tooltip_text(Some(wordcraft_gnome::t!("Current Style")));}
+            accessible_name(&apply,&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Apply Style {}"), &[("0", format!("{}", st.name))]));apply.set_child(Some(&content));row.append(&apply);
             let manage=gtk::Button::with_label("›");manage.add_css_class("flat");manage.set_tooltip_text(Some(&format!("Gestionar «{}»",st.name)));manage.set_widget_name(&format!("style-manage-{}",st.id));accessible_name(&manage,&format!("Gestionar {}",st.name));row.append(&manage);
             let weak=Rc::downgrade(self);let id=st.id.clone();apply.connect_clicked(move|_|{if let Some(s)=weak.upgrade(){
                 match s.run(wordcraft_gnome::styles::Edit::Apply(id.clone())){Ok(_)=>{s.refresh_list();if let Some(p)=s.popover.upgrade(){close_format_popover(&p);}if let Some(ui)=s.ui.upgrade(){ui.document_box.grab_focus();caret_ensure_visible(&ui);}},Err(e)=>s.report(&e)}
@@ -46,7 +46,7 @@ impl StylePopover {
             let weak=Rc::downgrade(self);manage.connect_clicked(move|_|{if let Some(s)=weak.upgrade(){s.show_detail(&st.id);}});
             self.list.append(&row);
         }
-        if count==0{let label=gtk::Label::new(Some("No se encontraron estilos"));label.add_css_class("dim-label");label.set_margin_top(18);label.set_margin_bottom(18);self.list.append(&label);}
+        if count==0{let label=gtk::Label::new(Some(wordcraft_gnome::t!("No Styles Found")));label.add_css_class("dim-label");label.set_margin_top(18);label.set_margin_bottom(18);self.list.append(&label);}
     }
     fn main(self:&Rc<Self>){self.header.home();self.report("");self.refresh_list();self.stack.set_visible_child_name("list");}
     fn back(self:&Rc<Self>,container:&gtk::Box,label:&str,id:Option<String>){
@@ -59,34 +59,34 @@ impl StylePopover {
     fn action(self:&Rc<Self>,label:&str,name:&str,edit:wordcraft_gnome::styles::Edit,stay:Option<String>)->gtk::Button{
         let b=style_menu_button(label);b.set_widget_name(name);
         let weak=Rc::downgrade(self);b.connect_clicked(move|_|{if let Some(s)=weak.upgrade(){match s.run(edit.clone()){
-            Ok(_)=>{if let Some(id)=&stay{s.show_detail(id);s.report("Estilo actualizado");}else{s.main();s.report("Estilo eliminado");}},Err(e)=>s.report(&e)
+            Ok(_)=>{if let Some(id)=&stay{s.show_detail(id);s.report(wordcraft_gnome::t!("Style Updated"));}else{s.main();s.report(wordcraft_gnome::t!("Style Deleted"));}},Err(e)=>s.report(&e)
         }}});b
     }
     fn show_detail(self:&Rc<Self>,id:&str){
-        let Some(st)=self.style(id)else{self.main();return;};self.report("");clear_box(&self.detail);self.back(&self.detail,"Estilos",None);
+        let Some(st)=self.style(id)else{self.main();return;};self.report("");clear_box(&self.detail);self.back(&self.detail,wordcraft_gnome::t!("Styles"),None);
         let title=gtk::Label::new(Some(&st.name));title.set_xalign(0.0);title.set_wrap(true);title.set_max_width_chars(28);title.add_css_class("heading");title.set_margin_top(6);self.detail.append(&title);
-        let kind=gtk::Label::new(Some(if st.kind==wordcraft_doc::styles::StyleKind::Paragraph{"Estilo de párrafo"}else{"Estilo de texto"}));kind.set_xalign(0.0);kind.add_css_class("dim-label");self.detail.append(&kind);
+        let kind=gtk::Label::new(Some(if st.kind==wordcraft_doc::styles::StyleKind::Paragraph{wordcraft_gnome::t!("Paragraph Style")}else{wordcraft_gnome::t!("Text Style")}));kind.set_xalign(0.0);kind.add_css_class("dim-label");self.detail.append(&kind);
         if let Some(ui)=self.ui.upgrade(){let preview={let state=ui.current.borrow();state.as_ref().map(|d|wordcraft_gnome::styles::preview(&d.session,id))};
             if let Some(Ok(image))=preview{let picture=gtk::Picture::for_paintable(&texture(image));picture.set_content_fit(gtk::ContentFit::ScaleDown);picture.set_size_request(290,85);picture.add_css_class("document-sheet");picture.set_margin_top(8);picture.set_margin_bottom(8);picture.set_widget_name("style-preview");self.detail.append(&picture);}
         }
         self.detail.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-        let update=self.action("Actualizar según la selección","style-update",wordcraft_gnome::styles::Edit::Update(st.id.clone()),Some(st.id.clone()));self.detail.append(&update);
-        let rename=style_menu_button("Renombrar…");rename.set_widget_name("style-rename");self.detail.append(&rename);
+        let update=self.action(wordcraft_gnome::t!("Update from Selection"),"style-update",wordcraft_gnome::styles::Edit::Update(st.id.clone()),Some(st.id.clone()));self.detail.append(&update);
+        let rename=style_menu_button(wordcraft_gnome::t!("Rename…"));rename.set_widget_name("style-rename");self.detail.append(&rename);
         let weak=Rc::downgrade(self);let style=st.clone();rename.connect_clicked(move|_|{if let Some(s)=weak.upgrade(){s.show_form(Some(&style.id));}});
-        let delete=self.action("Eliminar estilo","style-delete",wordcraft_gnome::styles::Edit::Delete(st.id.clone()),None);
-        delete.set_sensitive(!st.builtin);if st.builtin{delete.set_tooltip_text(Some("Los estilos integrados no se pueden eliminar"));}self.detail.append(&delete);
+        let delete=self.action(wordcraft_gnome::t!("Delete Style"),"style-delete",wordcraft_gnome::styles::Edit::Delete(st.id.clone()),None);
+        delete.set_sensitive(!st.builtin);if st.builtin{delete.set_tooltip_text(Some(wordcraft_gnome::t!("Built-in styles cannot be deleted")));}self.detail.append(&delete);
         self.stack.set_visible_child_name("detail");
     }
     fn show_form(self:&Rc<Self>,id:Option<&str>){
         self.report("");clear_box(&self.form);let style=id.and_then(|id|self.style(id));
-        self.back(&self.form,style.as_ref().map(|s|s.name.as_str()).unwrap_or("Estilos"),style.as_ref().map(|s|s.id.clone()));
-        let title=gtk::Label::new(Some(if style.is_some(){"Renombrar estilo"}else{"Nuevo estilo"}));title.set_xalign(0.0);title.add_css_class("heading");title.set_margin_top(8);self.form.append(&title);
-        let entry=gtk::Entry::new();entry.set_placeholder_text(Some("Nombre del estilo"));entry.set_widget_name("style-name");entry.set_hexpand(true);if let Some(st)=&style{entry.set_text(&st.name);}self.form.append(&entry);
-        if style.is_none(){let hint=gtk::Label::new(Some("Se creará con el formato de la selección actual."));hint.set_wrap(true);hint.set_xalign(0.0);hint.add_css_class("dim-label");self.form.append(&hint);}
-        let commit=gtk::Button::with_label(if style.is_some(){"Renombrar"}else{"Crear estilo"});commit.add_css_class("suggested-action");commit.set_widget_name("style-commit");self.form.append(&commit);
+        self.back(&self.form,style.as_ref().map(|s|s.name.as_str()).unwrap_or(wordcraft_gnome::t!("Styles")),style.as_ref().map(|s|s.id.clone()));
+        let title=gtk::Label::new(Some(if style.is_some(){wordcraft_gnome::t!("Rename Style")}else{wordcraft_gnome::t!("New Style")}));title.set_xalign(0.0);title.add_css_class("heading");title.set_margin_top(8);self.form.append(&title);
+        let entry=gtk::Entry::new();entry.set_placeholder_text(Some(wordcraft_gnome::t!("Style Name")));entry.set_widget_name("style-name");entry.set_hexpand(true);if let Some(st)=&style{entry.set_text(&st.name);}self.form.append(&entry);
+        if style.is_none(){let hint=gtk::Label::new(Some(wordcraft_gnome::t!("The style will use the formatting of the current selection.")));hint.set_wrap(true);hint.set_xalign(0.0);hint.add_css_class("dim-label");self.form.append(&hint);}
+        let commit=gtk::Button::with_label(if style.is_some(){wordcraft_gnome::t!("Rename")}else{wordcraft_gnome::t!("Create Style")});commit.add_css_class("suggested-action");commit.set_widget_name("style-commit");self.form.append(&commit);
         let weak=Rc::downgrade(self);let input=entry.clone();commit.connect_clicked(move|_|{if let Some(s)=weak.upgrade(){
             let edit=if let Some(st)=&style{wordcraft_gnome::styles::Edit::Rename(st.id.clone(),input.text().to_string())}else{wordcraft_gnome::styles::Edit::Create(input.text().to_string())};
-            match s.run(edit){Ok(_)=>{s.search.set_text("");s.main();s.report("Estilo guardado");},Err(e)=>s.report(&e)}
+            match s.run(edit){Ok(_)=>{s.search.set_text("");s.main();s.report(wordcraft_gnome::t!("Style Saved"));},Err(e)=>s.report(&e)}
         }});
         let b=commit.downgrade();entry.connect_activate(move|_|{if let Some(b)=b.upgrade(){b.emit_clicked();}});
         self.stack.set_visible_child_name("form");entry.grab_focus();entry.select_region(0,-1);
@@ -95,11 +95,11 @@ impl StylePopover {
 fn install_style_popover(ui:&Rc<Ui>,menu:&gtk::MenuButton)->Rc<StylePopover>{
     let pop=gtk::Popover::new();pop.add_css_class("style-popover");let root=gtk::Box::new(gtk::Orientation::Vertical,6);root.set_width_request(330);
     root.set_margin_top(8);root.set_margin_bottom(8);root.set_margin_start(8);root.set_margin_end(8);
-    let header=format_popover_header(&pop,&root,"Estilo",&ui.format_group);header.button.set_widget_name("style-back");
+    let header=format_popover_header(&pop,&root,wordcraft_gnome::t!("Style"),&ui.format_group);header.button.set_widget_name("style-back");
     let stack=gtk::Stack::new();stack.set_transition_type(gtk::StackTransitionType::SlideLeftRight);stack.set_vhomogeneous(false);stack.set_hhomogeneous(false);stack.set_interpolate_size(true);
-    let main=gtk::Box::new(gtk::Orientation::Vertical,6);let search=gtk::SearchEntry::new();search.set_placeholder_text(Some("Buscar estilos"));search.set_widget_name("style-search");main.append(&search);
+    let main=gtk::Box::new(gtk::Orientation::Vertical,6);let search=gtk::SearchEntry::new();search.set_placeholder_text(Some(wordcraft_gnome::t!("Search Styles")));search.set_widget_name("style-search");main.append(&search);
     let list=gtk::Box::new(gtk::Orientation::Vertical,0);let scroll=gtk::ScrolledWindow::new();scroll.set_policy(gtk::PolicyType::Never,gtk::PolicyType::Automatic);scroll.set_min_content_height(240);scroll.set_max_content_height(340);scroll.set_propagate_natural_height(true);scroll.set_child(Some(&list));main.append(&scroll);
-    main.append(&gtk::Separator::new(gtk::Orientation::Horizontal));let create=style_menu_button("Nuevo estilo…");create.set_widget_name("style-new");create.add_css_class("flat");main.append(&create);
+    main.append(&gtk::Separator::new(gtk::Orientation::Horizontal));let create=style_menu_button(wordcraft_gnome::t!("New Style…"));create.set_widget_name("style-new");create.add_css_class("flat");main.append(&create);
     let detail=gtk::Box::new(gtk::Orientation::Vertical,6);let form=gtk::Box::new(gtk::Orientation::Vertical,8);
     stack.add_named(&main,Some("list"));stack.add_named(&detail,Some("detail"));stack.add_named(&form,Some("form"));root.append(&stack);
     let message=gtk::Label::new(None);message.set_wrap(true);message.set_max_width_chars(36);message.set_xalign(0.0);message.set_visible(false);root.append(&message);pop.set_child(Some(&root));

@@ -9,6 +9,7 @@ fn release_document(ui:&Rc<Ui>) {
     if ui.closed.replace(true){return;}
     if let Some(source)=ui.autosave_source.borrow_mut().take(){source.remove();}
     ui.printing.cancel();
+    if let Some(id)=ui.theme_signal.borrow_mut().take(){adw::StyleManager::default().disconnect(id);}
     // The bar lives inside a tab: detach its strong TabView reference before
     // closing a whole window, where individual pages are not detached first.
     // Unmap first: libadwaita 1.5 finishes tab animations on unmap.
@@ -122,22 +123,22 @@ fn make_window(app: &Application, sample: bool, sidebar: bool, narrow: bool, dar
 
 fn blank_tab(app:&Application, host:&Rc<Workspace>) {
     build_tab(app,host,false,true,false,false,false,false,false,
-        Some((Session::new(wordcraft_doc::Document::new()),"Documento nuevo".into())));
+        Some((Session::new(wordcraft_doc::Document::new()),wordcraft_gnome::t!("New Document").into())));
 }
 
 fn show_preferences(parent:&ApplicationWindow) {
     let dialog=adw::PreferencesWindow::new();
-    dialog.set_transient_for(Some(parent));dialog.set_modal(true);dialog.set_title(Some("Preferencias"));
+    dialog.set_transient_for(Some(parent));dialog.set_modal(true);dialog.set_title(Some(wordcraft_gnome::t!("Preferences")));
     let page=adw::PreferencesPage::new();let group=adw::PreferencesGroup::new();
-    group.set_title("Autoguardado");
-    group.set_description(Some("Recuperación: copia separada cada 10 segundos. Archivo: guarda cada 30 segundos; sin nombre usa recuperación hasta el primer guardado."));
-    let row=adw::ComboRow::new();row.set_title("Guardar automáticamente");
-    row.set_model(Some(&gtk::StringList::new(&["Desactivado","Archivo de recuperación","En el propio archivo"])));
+    group.set_title(wordcraft_gnome::t!("Autosave"));
+    group.set_description(Some(wordcraft_gnome::t!("Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved.")));
+    let row=adw::ComboRow::new();row.set_title(wordcraft_gnome::t!("Autosave"));
+    row.set_model(Some(&gtk::StringList::new(&[wordcraft_gnome::t!("Disabled"),wordcraft_gnome::t!("Recovery File"),wordcraft_gnome::t!("Document File")])));
     row.set_selected(wordcraft_gnome::preferences::autosave_mode());
     let dialog2=dialog.clone();
     row.connect_selected_notify(glib::clone!(#[weak] dialog2, move |row| {
         if let Err(e)=wordcraft_gnome::preferences::set_autosave_mode(row.selected()) {
-            dialog2.add_toast(Toast::new(&format!("No se guardaron las preferencias: {e}")));
+            dialog2.add_toast(Toast::new(&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Could Not Save Preferences: {e}"), &[("e", format!("{}", e))])));
         }
     }));
     group.add(&row);page.add(&group);dialog.add(&page);dialog.present();
@@ -174,7 +175,7 @@ fn install_autosave(ui:&Rc<Ui>) {
                 if let Some(e)=doc.session.recovery_error() {error=Some(e.to_string());}
             }
         }
-        if reloaded {after_content_change(&ui);ui.document_name.replace("Documento recuperado".into());sync_tab(&ui);ui.source_path.replace(None);ui.save_path.replace(None);}
+        if reloaded {after_content_change(&ui);ui.document_name.replace(wordcraft_gnome::t!("Recovered Document").into());sync_tab(&ui);ui.source_path.replace(None);ui.save_path.replace(None);}
         if saved {ui.source_path.replace(None);ui.dirty.set(false);sync_tab(&ui);}
         if let Some(e)=error {
             if ui.autosave_error.borrow().as_deref()!=Some(&e) {
@@ -194,11 +195,11 @@ fn sync_tab(ui:&Rc<Ui>) {
 
 fn show_recovery(ui:&Rc<Ui>, parent:&ApplicationWindow, app:&Application, host:&Rc<Workspace>) {
     let records=ui.current.borrow().as_ref().map(|d|d.session.recovery_documents()).unwrap_or_default();
-    let dialog=adw::Window::builder().transient_for(parent).modal(true).title("Recuperar documentos")
+    let dialog=adw::Window::builder().transient_for(parent).modal(true).title(wordcraft_gnome::t!("Recover Documents"))
         .default_width(420).default_height(240).build();
     let toolbar=ToolbarView::new();toolbar.add_top_bar(&HeaderBar::new());
     let list=gtk::Box::new(gtk::Orientation::Vertical,8);list.set_margin_top(16);list.set_margin_bottom(16);list.set_margin_start(16);list.set_margin_end(16);
-    if records.is_empty(){list.append(&gtk::Label::new(Some("No hay documentos pendientes de recuperar.")));}
+    if records.is_empty(){list.append(&gtk::Label::new(Some(wordcraft_gnome::t!("There are no documents to recover."))));}
     for record in records {
         let button=gtk::Button::with_label(&record.name);let app=app.clone();let host=host.clone();let dialog=dialog.clone();
         button.connect_clicked(glib::clone!(#[weak] app, #[weak] host, #[weak] dialog, move |_| {
@@ -218,7 +219,7 @@ fn show_recovery(ui:&Rc<Ui>, parent:&ApplicationWindow, app:&Application, host:&
                         if !doc.session.recovery_ready() {
                             attempts.set(attempts.get()+1);
                             if attempts.get()<200{return glib::ControlFlow::Continue;}
-                            ui2.toasts.add_toast(Toast::new("No se pudo cargar la lista de recuperación"));
+                            ui2.toasts.add_toast(Toast::new(wordcraft_gnome::t!("Could Not Load Recovery List")));
                             return glib::ControlFlow::Break;
                         }
                         match doc.session.run("file.recover",&serde_json::json!({"restore":id})) {

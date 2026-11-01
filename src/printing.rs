@@ -13,7 +13,7 @@ impl PrintFile {
         let directory = std::env::temp_dir().join(format!("leaf-print-{}-{tick}-{}", std::process::id(), NEXT.fetch_add(1, Ordering::Relaxed)));
         let mut builder = std::fs::DirBuilder::new();
         #[cfg(unix)] { use std::os::unix::fs::DirBuilderExt; builder.mode(0o700); }
-        builder.create(&directory).map_err(|e| format!("No se pudo preparar la impresión: {e}"))?;
+        builder.create(&directory).map_err(|e| wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Could Not Prepare Printing: {e}"), &[("e", format!("{}", e))]))?;
         let file = Self { directory };
         crate::pdf_export::export(&mut Session::new(document), &file.path())?;
         Ok(file)

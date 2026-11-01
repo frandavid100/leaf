@@ -9,8 +9,8 @@ impl PageSetup {
     pub fn current(s:&Session)->Self {let p=page::sect(s);Self{width:p.page_w,height:p.page_h,top:p.margin_top,bottom:p.margin_bottom,left:p.margin_left,right:p.margin_right}}
     fn section(self,mut p:SectionProps)->Result<SectionProps,String>{
         let nums=[self.width,self.height,self.top,self.bottom,self.left,self.right];
-        if nums.iter().any(|n|!n.is_finite())||!(7.2..=1584.0).contains(&self.width)||!(7.2..=1584.0).contains(&self.height)||nums[2..].iter().any(|n|*n<0.0){return Err("Revisa el tamaño de página y los márgenes".into());}
-        if !page::margins_fit((self.width,self.height),(self.top,self.bottom,self.left,self.right),p.gutter){return Err("Los márgenes no dejan espacio suficiente para el texto".into());}
+        if nums.iter().any(|n|!n.is_finite())||!(7.2..=1584.0).contains(&self.width)||!(7.2..=1584.0).contains(&self.height)||nums[2..].iter().any(|n|*n<0.0){return Err(wordcraft_gnome::t!("Check the page size and margins").into());}
+        if !page::margins_fit((self.width,self.height),(self.top,self.bottom,self.left,self.right),p.gutter){return Err(wordcraft_gnome::t!("The margins leave insufficient room for text").into());}
         // Displaying millimetres to two decimals must not dirty an unchanged page.
         let keep=|old:f32,new:f32|if (old-new).abs()<0.02{old}else{new};
         p.page_w=keep(p.page_w,self.width);p.page_h=keep(p.page_h,self.height);p.landscape=p.page_w>p.page_h;
@@ -25,7 +25,7 @@ pub fn apply(s:&mut Session,setup:PageSetup,whole:bool)->Result<bool,String>{
         if whole||i==current {
             let new=setup.section(old.clone())?;
             if new!=*old {
-                let path=paths.iter().find(|p|p.0.first().is_some_and(|n|(*n as usize)>=start&&(*n as usize)<=end)).ok_or("La sección no contiene un párrafo editable")?;
+                let path=paths.iter().find(|p|p.0.first().is_some_and(|n|(*n as usize)>=start&&(*n as usize)<=end)).ok_or(wordcraft_gnome::t!("The section does not contain an editable paragraph"))?;
                 changes.push((Pos{story:StoryRef::Body,path:path.clone(),off:0},new));
             }
         }start=end+1;
@@ -34,7 +34,7 @@ pub fn apply(s:&mut Session,setup:PageSetup,whole:bool)->Result<bool,String>{
     let snap=s.edit_snapshot();let mark=s.undo_mark();let sel=s.sel.clone();let pending=s.pending.clone();
     let result=(||{
         // Anchor the grouped undo before moving to any other section.
-        s.checkpoint("Propiedades del documento");
+        s.checkpoint(wordcraft_gnome::t!("Document Properties"));
         for (pos,props) in changes {
             s.run("caret.set",&json!({"pos":pos}))?;
             s.join_next_undo();
@@ -60,8 +60,8 @@ impl ColumnSetup {
     }
     pub fn resolved(&self,text_width:f32)->Result<wordcraft_doc::section::Columns,String>{
         use wordcraft_doc::section::Columns;
-        let bad=||"Las columnas no caben en el espacio de texto. Reduce su número, anchura o separación.".to_string();
-        if !(1..=12).contains(&self.count)||!self.space.is_finite()||!(0.0..=300.0).contains(&self.space){return Err("Usa entre 1 y 12 columnas y una separación de 0 a 105,83 mm.".into());}
+        let bad=||wordcraft_gnome::t!("The columns do not fit in the text area. Reduce their number, width or spacing.").to_string();
+        if !(1..=12).contains(&self.count)||!self.space.is_finite()||!(0.0..=300.0).contains(&self.space){return Err(wordcraft_gnome::t!("Use 1 to 12 columns with spacing between 0 and 105.83 mm.").into());}
         let count=if matches!(self.kind,ColumnKind::Left|ColumnKind::Right){2}else{self.count};
         let widths=match self.kind {
             ColumnKind::Equal=>Vec::new(),
@@ -79,7 +79,7 @@ impl ColumnSetup {
 }
 pub fn apply_columns(s:&mut Session,setup:&ColumnSetup,scope:ColumnScope)->Result<bool,String>{
     if scope==ColumnScope::Selection&&!page::selection_sectionable(s){return Err("Selecciona texto del cuerpo del documento, fuera de las tablas.".into());}
-    if scope==ColumnScope::Forward&&(s.sel.focus.story!=StoryRef::Body||s.sel.focus.path.depth()!=0){return Err("Sitúa el cursor en el cuerpo del documento, fuera de una tabla.".into());}
+    if scope==ColumnScope::Forward&&(s.sel.focus.story!=StoryRef::Body||s.sel.focus.path.depth()!=0){return Err(wordcraft_gnome::t!("Place the cursor in the document body, outside a table.").into());}
     let focus=page::sect(s);let mut setup=setup.clone();
     let keep=|old:f32,new:f32|if (old-new).abs()<0.02{old}else{new};
     setup.space=keep(focus.columns.space,setup.space);
@@ -105,7 +105,7 @@ pub fn apply_columns(s:&mut Session,setup:&ColumnSetup,scope:ColumnScope)->Resul
     let mut args=json!({"count":wanted.count,"space":wanted.space,"separator":wanted.separator,"apply":match scope{ColumnScope::Section=>"section",ColumnScope::Document=>"document",ColumnScope::Selection=>"selection",ColumnScope::Forward=>"forward"}});
     if !wanted.widths.is_empty(){args["widths"]=json!(wanted.widths);}
     let result=(||{
-        s.checkpoint("Columnas");
+        s.checkpoint(wordcraft_gnome::t!("Columns"));
         if scope==ColumnScope::Section{s.run("caret.set",&json!({"pos":sel.focus}))?;}
         s.join_next_undo();s.run("layout.columns",&args)?;
         if matches!(scope,ColumnScope::Section|ColumnScope::Document){s.run("select.range",&json!({"anchor":sel.anchor,"focus":sel.focus}))?;}

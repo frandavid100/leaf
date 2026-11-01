@@ -29,13 +29,13 @@ fn focus_zone(ui: &Rc<Ui>, backwards: bool) {
     }
 }
 fn install_accessibility(ui: &Rc<Ui>, main: &gtk::MenuButton, compact: &gtk::MenuButton) {
-    accessible_name(&ui.document_box,"Contenido del documento");
-    ui.document_box.update_property(&[gtk::accessible::Property::Description("F6 cambia entre documento, panel lateral y formato. Tab navega entre celdas de una tabla. Mayús+F10 abre el menú contextual.")]);
-    for (w,name) in [(ui.sidebar_button.clone().upcast::<gtk::Widget>(),"Mostrar u ocultar el panel lateral"),
-        (ui.zoom_in.clone().upcast(),"Ampliar zoom"),(ui.zoom_out.clone().upcast(),"Reducir zoom"),
-        (ui.font_button.clone().upcast(),"Familia tipográfica"),(ui.size_input.clone().upcast(),"Tamaño de letra en puntos"),
-        (main.clone().upcast(),"Menú principal"),(compact.clone().upcast(),"Menú principal")] { accessible_name(&w,name); }
-    for (w,name) in [(&ui.format_bold,"Negrita"),(&ui.format_italic,"Cursiva"),(&ui.format_underline,"Subrayado")] { accessible_name(w,name); }
+    accessible_name(&ui.document_box,wordcraft_gnome::t!("Document Content"));
+    ui.document_box.update_property(&[gtk::accessible::Property::Description(wordcraft_gnome::t!("F6 switches between the document, sidebar and formatting controls. Tab moves between table cells. Shift+F10 opens the context menu."))]);
+    for (w,name) in [(ui.sidebar_button.clone().upcast::<gtk::Widget>(),wordcraft_gnome::t!("Show or Hide Sidebar")),
+        (ui.zoom_in.clone().upcast(),wordcraft_gnome::t!("Zoom In")),(ui.zoom_out.clone().upcast(),wordcraft_gnome::t!("Zoom Out")),
+        (ui.font_button.clone().upcast(),wordcraft_gnome::t!("Font Family")),(ui.size_input.clone().upcast(),wordcraft_gnome::t!("Font Size in Points")),
+        (main.clone().upcast(),wordcraft_gnome::t!("Main Menu")),(compact.clone().upcast(),wordcraft_gnome::t!("Main Menu"))] { accessible_name(&w,name); }
+    for (w,name) in [(&ui.format_bold,wordcraft_gnome::t!("Bold")),(&ui.format_italic,wordcraft_gnome::t!("Italic")),(&ui.format_underline,wordcraft_gnome::t!("Underline"))] { accessible_name(w,name); }
     let keys=gtk::EventControllerKey::new();keys.set_propagation_phase(gtk::PropagationPhase::Capture);
     let weak=Rc::downgrade(ui);let main=main.downgrade();let compact=compact.downgrade();
     keys.connect_key_pressed(move |_,key,_,mods| {

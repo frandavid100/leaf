@@ -31,23 +31,23 @@ fn columns_editor(ui:&Rc<Ui>,on_applied:impl Fn()+'static)->ColumnEditor {
         (ColumnSetup::current(s),wordcraft_engine::cmd::page::sect(s).text_width(),wordcraft_engine::cmd::page::selection_sectionable(s),s.sel.focus.story==wordcraft_doc::StoryRef::Body&&s.sel.focus.path.depth()==0)};
     let identity=document_identity(ui);
     let page=gtk::Box::new(gtk::Orientation::Vertical,12);page.set_margin_start(4);page.set_margin_end(4);
-    let apply=gtk::Button::with_label("Aplicar");apply.add_css_class("suggested-action");apply.set_widget_name("columns-apply");
-    let group=adw::PreferencesGroup::new();group.set_title("Distribución");page.append(&group);
+    let apply=gtk::Button::with_label(wordcraft_gnome::t!("Apply"));apply.add_css_class("suggested-action");apply.set_widget_name("columns-apply");
+    let group=adw::PreferencesGroup::new();group.set_title(wordcraft_gnome::t!("Layout"));page.append(&group);
     let preview=gtk::DrawingArea::new();preview.set_content_width(320);preview.set_content_height(112);preview.set_halign(gtk::Align::Fill);group.add(&preview);
-    let mode=adw::ComboRow::new();mode.set_title("Anchuras");mode.set_model(Some(&gtk::StringList::new(&["Iguales","Izquierda más estrecha","Derecha más estrecha","Personalizadas"])));mode.set_selected(if initial.kind==ColumnKind::Custom{3}else{0});group.add(&mode);
-    let count=gtk::SpinButton::with_range(1.0,12.0,1.0);count.set_value(initial.count.clamp(1,12)as f64);count.set_valign(gtk::Align::Center);count.set_width_chars(3);count.set_widget_name("columns-count");let row=adw::ActionRow::new();row.set_title("Número de columnas");row.add_suffix(&count);row.set_activatable_widget(Some(&count));accessible_name(&count,"Número de columnas");group.add(&row);
-    let gap=properties_number(&group,"Separación (mm)",initial.space);gap.set_range(0.0,300.0/PT_PER_MM);gap.set_widget_name("columns-gap");
-    let separator=gtk::Switch::new();separator.set_active(initial.separator);separator.set_valign(gtk::Align::Center);let row=adw::ActionRow::new();row.set_title("Línea entre columnas");row.set_activatable_widget(Some(&separator));row.add_suffix(&separator);group.add(&row);
-    let format_note=gtk::Label::new(Some("Las anchuras desiguales se conservan en DOCX. En ODT, el motor las guarda como columnas iguales."));format_note.set_wrap(true);format_note.set_xalign(0.0);format_note.add_css_class("dim-label");format_note.set_margin_start(12);format_note.set_margin_end(12);group.add(&format_note);
-    let custom=adw::PreferencesGroup::new();custom.set_title("Anchuras personalizadas");custom.set_description(Some("Anchura y separación posterior, en milímetros. La última columna no tiene separación posterior."));page.append(&custom);
+    let mode=adw::ComboRow::new();mode.set_title(wordcraft_gnome::t!("Widths"));mode.set_model(Some(&gtk::StringList::new(&[wordcraft_gnome::t!("Equal"),wordcraft_gnome::t!("Narrow Left Column"),wordcraft_gnome::t!("Narrow Right Column"),wordcraft_gnome::t!("Custom")])));mode.set_selected(if initial.kind==ColumnKind::Custom{3}else{0});group.add(&mode);
+    let count=gtk::SpinButton::with_range(1.0,12.0,1.0);count.set_value(initial.count.clamp(1,12)as f64);count.set_valign(gtk::Align::Center);count.set_width_chars(3);count.set_widget_name("columns-count");let row=adw::ActionRow::new();row.set_title(wordcraft_gnome::t!("Number of Columns"));row.add_suffix(&count);row.set_activatable_widget(Some(&count));accessible_name(&count,wordcraft_gnome::t!("Number of Columns"));group.add(&row);
+    let gap=properties_number(&group,wordcraft_gnome::t!("Spacing (mm)"),initial.space);gap.set_range(0.0,300.0/PT_PER_MM);gap.set_widget_name("columns-gap");
+    let separator=gtk::Switch::new();separator.set_active(initial.separator);separator.set_valign(gtk::Align::Center);let row=adw::ActionRow::new();row.set_title(wordcraft_gnome::t!("Line Between Columns"));row.set_activatable_widget(Some(&separator));row.add_suffix(&separator);group.add(&row);
+    let format_note=gtk::Label::new(Some(wordcraft_gnome::t!("Unequal widths are preserved in DOCX. In ODT, the engine saves them as equal-width columns.")));format_note.set_wrap(true);format_note.set_xalign(0.0);format_note.add_css_class("dim-label");format_note.set_margin_start(12);format_note.set_margin_end(12);group.add(&format_note);
+    let custom=adw::PreferencesGroup::new();custom.set_title(wordcraft_gnome::t!("Custom Widths"));custom.set_description(Some(wordcraft_gnome::t!("Width and following spacing in millimeters. The last column has no following spacing.")));page.append(&custom);
     let mut widths=Vec::new();let mut rows=Vec::new();
     for i in 0..12 {
         let (w,g)=initial.widths.get(i).copied().unwrap_or(((text_width-initial.space*(initial.count.saturating_sub(1))as f32)/initial.count.max(1)as f32,initial.space));
-        let row=adw::ActionRow::new();row.set_title(&format!("Columna {}",i+1));let width=mm_input(w as f64/PT_PER_MM,18.0/PT_PER_MM,1584.0/PT_PER_MM);width.set_width_chars(5);width.set_tooltip_text(Some("Anchura (mm)"));width.update_property(&[gtk::accessible::Property::Label(&format!("Anchura de columna {} (mm)",i+1))]);
-        let after=mm_input(g as f64/PT_PER_MM,0.0,300.0/PT_PER_MM);after.set_width_chars(5);after.set_tooltip_text(Some("Separación posterior (mm)"));after.update_property(&[gtk::accessible::Property::Label(&format!("Separación tras columna {} (mm)",i+1))]);row.add_suffix(&width);row.add_suffix(&after);custom.add(&row);rows.push(row);widths.push((width,after));
+        let row=adw::ActionRow::new();row.set_title(&format!("Columna {}",i+1));let width=mm_input(w as f64/PT_PER_MM,18.0/PT_PER_MM,1584.0/PT_PER_MM);width.set_width_chars(5);width.set_tooltip_text(Some(wordcraft_gnome::t!("Width (mm)")));width.update_property(&[gtk::accessible::Property::Label(&format!("Anchura de columna {} (mm)",i+1))]);
+        let after=mm_input(g as f64/PT_PER_MM,0.0,300.0/PT_PER_MM);after.set_width_chars(5);after.set_tooltip_text(Some(wordcraft_gnome::t!("Following Spacing (mm)")));after.update_property(&[gtk::accessible::Property::Label(&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Spacing After Column {} (mm)"), &[("0", format!("{}", i+1))]))]);row.add_suffix(&width);row.add_suffix(&after);custom.add(&row);rows.push(row);widths.push((width,after));
     }
-    let scopes_group=adw::PreferencesGroup::new();page.append(&scopes_group);let scope=adw::ComboRow::new();scope.set_title("Aplicar a");let mut labels=vec!["Sección actual","Todo el documento"];let mut scopes=vec![ColumnScope::Section,ColumnScope::Document];if can_select{labels.push("Texto seleccionado");scopes.push(ColumnScope::Selection);}if can_forward{labels.push("Desde aquí en adelante");scopes.push(ColumnScope::Forward);}scope.set_model(Some(&gtk::StringList::new(&labels)));if can_select{scope.set_selected(2);}scopes_group.add(&scope);
-    let hint=adw::ActionRow::new();hint.set_title("Texto seleccionado");hint.set_subtitle("Crea secciones continuas alrededor del texto, sin cambiar el resto del documento.");hint.set_visible(can_select);scopes_group.add(&hint);
+    let scopes_group=adw::PreferencesGroup::new();page.append(&scopes_group);let scope=adw::ComboRow::new();scope.set_title(wordcraft_gnome::t!("Apply To"));let mut labels=vec![wordcraft_gnome::t!("Current Section"),wordcraft_gnome::t!("Whole Document")];let mut scopes=vec![ColumnScope::Section,ColumnScope::Document];if can_select{labels.push(wordcraft_gnome::t!("Selected Text"));scopes.push(ColumnScope::Selection);}if can_forward{labels.push(wordcraft_gnome::t!("From This Point Onwards"));scopes.push(ColumnScope::Forward);}scope.set_model(Some(&gtk::StringList::new(&labels)));if can_select{scope.set_selected(2);}scopes_group.add(&scope);
+    let hint=adw::ActionRow::new();hint.set_title(wordcraft_gnome::t!("Selected Text"));hint.set_subtitle(wordcraft_gnome::t!("Creates continuous sections around the selected text, leaving the rest of the document unchanged."));hint.set_visible(can_select);scopes_group.add(&hint);
     let error=gtk::Label::new(None);error.set_wrap(true);error.add_css_class("error");error.set_visible(false);let errors=adw::PreferencesGroup::new();errors.add(&error);page.append(&errors);
     let controls=Rc::new(ColumnControls{mode,count,gap,separator,custom,widths,rows,format_note,scope,scopes,preview,text_width,last_count:Cell::new(initial.count.clamp(1,12)),last_mode:Cell::new(if initial.kind==ColumnKind::Custom{3}else{0})});
     {let weak=Rc::downgrade(&controls);controls.mode.connect_selected_notify(move |_|{if let Some(c)=weak.upgrade(){c.refresh();}});}
@@ -65,7 +65,7 @@ fn columns_editor(ui:&Rc<Ui>,on_applied:impl Fn()+'static)->ColumnEditor {
     {let c=controls.clone();page.connect_destroy(move |_|{let _=&c;});}
     {let weak=Rc::downgrade(&controls);let ui=Rc::downgrade(ui);apply.connect_clicked(move |_|{
         let(Some(c),Some(ui))=(weak.upgrade(),ui.upgrade())else{return;};
-        if ui.closed.get()||document_identity(&ui)!=identity{error.set_text("El documento ha cambiado. Cierra y vuelve a abrir Columnas.");error.set_visible(true);return;}
+        if ui.closed.get()||document_identity(&ui)!=identity{error.set_text(wordcraft_gnome::t!("The document has changed. Close and reopen Columns."));error.set_visible(true);return;}
         c.count.update();c.gap.update();for(w,g)in &c.widths{w.update();g.update();}
         let setup=c.setup();let scope=c.scopes[c.scope.selected()as usize];let result={let mut d=ui.current.borrow_mut();document_properties::apply_columns(&mut d.as_mut().unwrap().session,&setup,scope)};
         match result{Ok(changed)=>{if changed{after_content_change(&ui);}on_applied();},Err(e)=>{error.set_text(&e);error.set_visible(true);}}
@@ -73,9 +73,9 @@ fn columns_editor(ui:&Rc<Ui>,on_applied:impl Fn()+'static)->ColumnEditor {
     controls.refresh();ColumnEditor{root:page,controls,apply}
 }
 fn show_columns(ui:&Rc<Ui>,parent:&ApplicationWindow)->ColumnsDialog {
- let window=adw::Window::builder().title("Columnas").transient_for(parent).modal(true).default_width(480).default_height(620).build();
+ let window=adw::Window::builder().title(wordcraft_gnome::t!("Columns")).transient_for(parent).modal(true).default_width(480).default_height(620).build();
  let weak=window.downgrade();let editor=columns_editor(ui,move||{if let Some(w)=weak.upgrade(){w.close();}});
- let toolbar=ToolbarView::new();let header=HeaderBar::new();let cancel=gtk::Button::with_label("Cancelar");header.pack_start(&cancel);header.pack_end(&editor.apply);toolbar.add_top_bar(&header);
+ let toolbar=ToolbarView::new();let header=HeaderBar::new();let cancel=gtk::Button::with_label(wordcraft_gnome::t!("Cancel"));header.pack_start(&cancel);header.pack_end(&editor.apply);toolbar.add_top_bar(&header);
  let scroll=gtk::ScrolledWindow::new();scroll.set_child(Some(&editor.root));toolbar.set_content(Some(&scroll));window.set_content(Some(&toolbar));
  let weak=window.downgrade();cancel.connect_clicked(move |_|{if let Some(w)=weak.upgrade(){w.close();}});
  window.present();ColumnsDialog{window,controls:editor.controls,apply:editor.apply}

@@ -29,14 +29,14 @@ impl PicturePopover {
 }
 fn choose_picture(ui:&Rc<Ui>,parent:&ApplicationWindow,replace:bool){
     let identity=document_identity(ui);let target=ui.current.borrow().as_ref().and_then(|d|pictures::selected(&d.session));
-    let dialog=gtk::FileDialog::new();dialog.set_modal(true);dialog.set_title(if replace{"Sustituir imagen"}else{"Insertar imagen"});
-    let filter=gtk::FileFilter::new();filter.set_name(Some("Imágenes (PNG, JPEG, GIF, WebP, BMP, TIFF)"));
+    let dialog=gtk::FileDialog::new();dialog.set_modal(true);dialog.set_title(if replace{wordcraft_gnome::t!("Replace Image")}else{wordcraft_gnome::t!("Insert Image")});
+    let filter=gtk::FileFilter::new();filter.set_name(Some(wordcraft_gnome::t!("Images (PNG, JPEG, GIF, WebP, BMP, TIFF)")));
     for mime in ["image/png","image/jpeg","image/gif","image/webp","image/bmp","image/tiff"]{filter.add_mime_type(mime);}
     let filters=gio::ListStore::new::<gtk::FileFilter>();filters.append(&filter);dialog.set_filters(Some(&filters));
     let ui=ui.clone();dialog.open(Some(parent),None::<&gio::Cancellable>,glib::clone!(#[weak] ui, move|result|match result{
         Ok(file)=>{
-            if ui.closed.get()||document_identity(&ui)!=identity{ui.toasts.add_toast(Toast::new("El documento ha cambiado; vuelve a elegir la imagen"));return;}
-            let Some(path)=file.path()else{ui.toasts.add_toast(Toast::new("Elige un archivo local"));return;};
+            if ui.closed.get()||document_identity(&ui)!=identity{ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("The document has changed; choose the image again")));return;}
+            let Some(path)=file.path()else{ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("Choose a Local File")));return;};
             if replace&&ui.current.borrow().as_ref().and_then(|d|pictures::selected(&d.session))!=target{return;}
             if tools_change(&ui,|s|if replace{pictures::replace(s,&path)}else{pictures::insert(s,&path)}){
                 if let Some(p)=ui.picture.borrow().as_ref(){p.refresh();close_format_popover(&p.pop);}
@@ -48,23 +48,23 @@ fn choose_picture(ui:&Rc<Ui>,parent:&ApplicationWindow,replace:bool){
     }));
 }
 fn install_picture_controls(ui:&Rc<Ui>,parent:&ApplicationWindow,bar:&gtk::Box)->(gtk::MenuButton,Rc<PicturePopover>){
-    let menu=gtk::MenuButton::new();format_menu_label(&menu,"Imagen");menu.set_direction(gtk::ArrowType::Up);bar.append(&menu);
+    let menu=gtk::MenuButton::new();format_menu_label(&menu,wordcraft_gnome::t!("Image"));menu.set_direction(gtk::ArrowType::Up);bar.append(&menu);
     let pop=gtk::Popover::new();pop.add_css_class("format-popover");
     let root=gtk::Box::new(gtk::Orientation::Vertical,8);root.set_width_request(300);
     root.set_margin_top(8);root.set_margin_bottom(8);root.set_margin_start(8);root.set_margin_end(8);
-    format_popover_header(&pop,&root,"Imagen",&ui.format_group);
-    let insert=style_menu_button("Insertar imagen…");insert.set_widget_name("picture-insert");insert.set_visible(tool_diagnostics());root.append(&insert);
-    let hint=gtk::Label::new(Some("Selecciona una imagen en el documento para modificarla."));hint.set_wrap(true);hint.set_max_width_chars(30);hint.add_css_class("dim-label");root.append(&hint);
+    format_popover_header(&pop,&root,wordcraft_gnome::t!("Image"),&ui.format_group);
+    let insert=style_menu_button(wordcraft_gnome::t!("Insert Image…"));insert.set_widget_name("picture-insert");insert.set_visible(tool_diagnostics());root.append(&insert);
+    let hint=gtk::Label::new(Some(wordcraft_gnome::t!("Select an image in the document to edit it.")));hint.set_wrap(true);hint.set_max_width_chars(30);hint.add_css_class("dim-label");root.append(&hint);
     let context=gtk::Box::new(gtk::Orientation::Vertical,8);context.set_widget_name("picture-context");root.append(&context);
     context.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     let width=mm_input(30.0,1.0/PT_PER_MM,4000.0/PT_PER_MM);width.set_widget_name("picture-width");
     let height=mm_input(15.0,1.0/PT_PER_MM,4000.0/PT_PER_MM);height.set_widget_name("picture-height");
-    for(label,n)in[("Anchura (mm)",&width),("Altura (mm)",&height)]{let row=gtk::Box::new(gtk::Orientation::Horizontal,8);let l=gtk::Label::new(Some(label));l.set_xalign(0.0);l.set_hexpand(true);row.append(&l);row.append(n);context.append(&row);}
-    let lock=gtk::CheckButton::with_label("Mantener proporción");lock.set_active(true);context.append(&lock);
-    let apply=style_menu_button("Aplicar tamaño");apply.set_widget_name("picture-apply");context.append(&apply);
-    let original=style_menu_button("Restaurar tamaño original");original.set_widget_name("picture-original");context.append(&original);
-    let replace=style_menu_button("Sustituir imagen…");replace.set_widget_name("picture-replace");context.append(&replace);
-    let delete=style_menu_button("Eliminar imagen");delete.set_widget_name("picture-delete");context.append(&delete);
+    for(label,n)in[(wordcraft_gnome::t!("Width (mm)"),&width),(wordcraft_gnome::t!("Height (mm)"),&height)]{let row=gtk::Box::new(gtk::Orientation::Horizontal,8);let l=gtk::Label::new(Some(label));l.set_xalign(0.0);l.set_hexpand(true);row.append(&l);row.append(n);context.append(&row);}
+    let lock=gtk::CheckButton::with_label(wordcraft_gnome::t!("Keep Aspect Ratio"));lock.set_active(true);context.append(&lock);
+    let apply=style_menu_button(wordcraft_gnome::t!("Apply Size"));apply.set_widget_name("picture-apply");context.append(&apply);
+    let original=style_menu_button(wordcraft_gnome::t!("Restore Original Size"));original.set_widget_name("picture-original");context.append(&original);
+    let replace=style_menu_button(wordcraft_gnome::t!("Replace Image…"));replace.set_widget_name("picture-replace");context.append(&replace);
+    let delete=style_menu_button(wordcraft_gnome::t!("Delete Image"));delete.set_widget_name("picture-delete");context.append(&delete);
     // Keep the header fixed when the window is short.
     let scroll=gtk::ScrolledWindow::new();scroll.set_policy(gtk::PolicyType::Never,gtk::PolicyType::Automatic);scroll.set_max_content_height(440);scroll.set_propagate_natural_height(true);
     let body=gtk::Box::new(gtk::Orientation::Vertical,8);root.remove(&insert);root.remove(&hint);root.remove(&context);body.append(&insert);body.append(&hint);body.append(&context);scroll.set_child(Some(&body));root.append(&scroll);
@@ -87,18 +87,18 @@ fn properties_number(group:&adw::PreferencesGroup,label:&str,value:f32)->gtk::Sp
 }
 fn show_document_properties(ui:&Rc<Ui>,parent:&ApplicationWindow)->DocumentProperties {
     let state={let value=ui.current.borrow();PageSetup::current(&value.as_ref().unwrap().session)};let identity=document_identity(ui);
-    let window=adw::Window::builder().title("Propiedades del documento").transient_for(parent).modal(true).default_width(480).default_height(650).build();
+    let window=adw::Window::builder().title(wordcraft_gnome::t!("Document Properties")).transient_for(parent).modal(true).default_width(480).default_height(650).build();
     let toolbar=ToolbarView::new();let header=HeaderBar::new();header.set_show_end_title_buttons(false);header.set_show_start_title_buttons(false);
-    let cancel=gtk::Button::with_label("Cancelar");header.pack_start(&cancel);let apply=gtk::Button::with_label("Aplicar");apply.set_widget_name("document-properties-apply");apply.add_css_class("suggested-action");header.pack_end(&apply);toolbar.add_top_bar(&header);
-    let page=adw::PreferencesPage::new();let paper=adw::PreferencesGroup::new();paper.set_title("Página");page.add(&paper);
-    let sizes=adw::ComboRow::new();sizes.set_title("Tamaño de papel");sizes.set_model(Some(&gtk::StringList::new(&["Personalizado","A4","A5","A3","Carta","Legal"])));paper.add(&sizes);
-    let orientation=adw::ComboRow::new();orientation.set_title("Orientación");orientation.set_model(Some(&gtk::StringList::new(&["Vertical","Horizontal"])));orientation.set_selected(if state.width>state.height{1}else{0});paper.add(&orientation);
-    let width=properties_number(&paper,"Anchura (mm)",state.width);let height=properties_number(&paper,"Altura (mm)",state.height);
+    let cancel=gtk::Button::with_label(wordcraft_gnome::t!("Cancel"));header.pack_start(&cancel);let apply=gtk::Button::with_label(wordcraft_gnome::t!("Apply"));apply.set_widget_name("document-properties-apply");apply.add_css_class("suggested-action");header.pack_end(&apply);toolbar.add_top_bar(&header);
+    let page=adw::PreferencesPage::new();let paper=adw::PreferencesGroup::new();paper.set_title(wordcraft_gnome::t!("Page"));page.add(&paper);
+    let sizes=adw::ComboRow::new();sizes.set_title(wordcraft_gnome::t!("Paper Size"));sizes.set_model(Some(&gtk::StringList::new(&[wordcraft_gnome::t!("Custom"),"A4","A5","A3",wordcraft_gnome::t!("Letter"),"Legal"])));paper.add(&sizes);
+    let orientation=adw::ComboRow::new();orientation.set_title(wordcraft_gnome::t!("Orientation"));orientation.set_model(Some(&gtk::StringList::new(&[wordcraft_gnome::t!("Portrait"),wordcraft_gnome::t!("Landscape")])));orientation.set_selected(if state.width>state.height{1}else{0});paper.add(&orientation);
+    let width=properties_number(&paper,wordcraft_gnome::t!("Width (mm)"),state.width);let height=properties_number(&paper,wordcraft_gnome::t!("Height (mm)"),state.height);
     let presets=[(210.0,297.0),(148.0,210.0),(297.0,420.0),(215.9,279.4),(215.9,355.6)];
     for(i,(w,h))in presets.iter().enumerate(){let (a,b)=if state.width>state.height{(*h,*w)}else{(*w,*h)};if (width.value()-a).abs()<0.1&&(height.value()-b).abs()<0.1{sizes.set_selected(i as u32+1);}}
-    let margins=adw::PreferencesGroup::new();margins.set_title("Márgenes");page.add(&margins);
-    let top=properties_number(&margins,"Superior (mm)",state.top);let bottom=properties_number(&margins,"Inferior (mm)",state.bottom);let left=properties_number(&margins,"Izquierdo (mm)",state.left);let right=properties_number(&margins,"Derecho (mm)",state.right);
-    let scope=adw::ComboRow::new();scope.set_title("Aplicar a");scope.set_model(Some(&gtk::StringList::new(&["Todo el documento","Sección actual"])));
+    let margins=adw::PreferencesGroup::new();margins.set_title(wordcraft_gnome::t!("Margins"));page.add(&margins);
+    let top=properties_number(&margins,wordcraft_gnome::t!("Top (mm)"),state.top);let bottom=properties_number(&margins,wordcraft_gnome::t!("Bottom (mm)"),state.bottom);let left=properties_number(&margins,wordcraft_gnome::t!("Left (mm)"),state.left);let right=properties_number(&margins,wordcraft_gnome::t!("Right (mm)"),state.right);
+    let scope=adw::ComboRow::new();scope.set_title(wordcraft_gnome::t!("Apply To"));scope.set_model(Some(&gtk::StringList::new(&[wordcraft_gnome::t!("Whole Document"),wordcraft_gnome::t!("Current Section")])));
     let multi=ui.current.borrow().as_ref().is_some_and(|d|d.session.doc.sections().len()>1);scope.set_selected(if multi{1}else{0});scope.set_visible(multi);margins.add(&scope);
     let message=gtk::Label::new(None);message.set_wrap(true);message.add_css_class("error");let errors=adw::PreferencesGroup::new();errors.add(&message);page.add(&errors);message.set_visible(false);
     toolbar.set_content(Some(&page));window.set_content(Some(&toolbar));
@@ -108,7 +108,7 @@ fn show_document_properties(ui:&Rc<Ui>,parent:&ApplicationWindow)->DocumentPrope
     for n in [&width,&height]{let sizes=sizes.downgrade();let orientation=orientation.downgrade();let width=width.downgrade();let height=height.downgrade();let syncing=syncing.clone();n.connect_value_changed(move |_|{if !syncing.get(){let(Some(sizes),Some(orientation),Some(width),Some(height))=(sizes.upgrade(),orientation.upgrade(),width.upgrade(),height.upgrade())else{return;};sizes.set_selected(0);orientation.set_selected(if width.value()>height.value(){1}else{0});}});}
     {let weak=window.downgrade();cancel.connect_clicked(move |_|{if let Some(w)=weak.upgrade(){w.close();}});}
     {let ui=ui.clone();let window=window.downgrade();let fields=[width.clone(),height.clone(),top.clone(),bottom.clone(),left.clone(),right.clone()];apply.connect_clicked(glib::clone!(#[weak] ui, move |_|{
-        if ui.closed.get()||document_identity(&ui)!=identity{message.set_text("El documento ha cambiado. Cierra y vuelve a abrir las propiedades.");message.set_visible(true);return;}
+        if ui.closed.get()||document_identity(&ui)!=identity{message.set_text(wordcraft_gnome::t!("The document has changed. Close and reopen its properties."));message.set_visible(true);return;}
         for n in &fields{n.update();}let values=fields.each_ref().map(|n|n.value()as f32*PT_PER_MM as f32);
         let setup=PageSetup{width:values[0],height:values[1],top:values[2],bottom:values[3],left:values[4],right:values[5]};
         let result={let mut value=ui.current.borrow_mut();document_properties::apply(&mut value.as_mut().unwrap().session,setup,scope.selected()==0)};
@@ -117,18 +117,18 @@ fn show_document_properties(ui:&Rc<Ui>,parent:&ApplicationWindow)->DocumentPrope
     window.present();DocumentProperties{window,width,height,top,bottom,left,right,apply}
 }
 fn export_pdf_dialog(ui:&Rc<Ui>,parent:&ApplicationWindow){
-    let dialog=gtk::FileDialog::new();dialog.set_title("Exportar a PDF");dialog.set_modal(true);
-    let filter=gtk::FileFilter::new();filter.set_name(Some("Documento PDF (.pdf)"));filter.add_pattern("*.pdf");let filters=gio::ListStore::new::<gtk::FileFilter>();filters.append(&filter);dialog.set_filters(Some(&filters));
+    let dialog=gtk::FileDialog::new();dialog.set_title(wordcraft_gnome::t!("Export to PDF"));dialog.set_modal(true);
+    let filter=gtk::FileFilter::new();filter.set_name(Some(wordcraft_gnome::t!("PDF Document (.pdf)")));filter.add_pattern("*.pdf");let filters=gio::ListStore::new::<gtk::FileFilter>();filters.append(&filter);dialog.set_filters(Some(&filters));
     let name=ui.document_name.borrow().clone();let stem=Path::new(&name).file_stem().unwrap_or_default().to_string_lossy();dialog.set_initial_name(Some(&format!("{stem}.pdf")));
     let identity=document_identity(ui);let ui=ui.clone();dialog.save(Some(parent),None::<&gio::Cancellable>,glib::clone!(#[weak] ui, move|result|match result{
         Ok(file)=>{
-            if ui.closed.get()||document_identity(&ui)!=identity{ui.toasts.add_toast(Toast::new("El documento ha cambiado; vuelve a exportarlo"));return;}
-            let Some(path)=file.path()else{ui.toasts.add_toast(Toast::new("Elige un archivo local"));return;};
+            if ui.closed.get()||document_identity(&ui)!=identity{ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("The document has changed; export it again")));return;}
+            let Some(path)=file.path()else{ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("Choose a Local File")));return;};
             let doc=ui.current.borrow().as_ref().unwrap().session.doc.clone();
-            ui.toasts.add_toast(Toast::new("Exportando PDF…"));let weak=Rc::downgrade(&ui);
+            ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("Exporting PDF…")));let weak=Rc::downgrade(&ui);
             glib::MainContext::default().spawn_local(async move{
                 let result=gio::spawn_blocking(move||pdf_export::export(&mut Session::new(doc),&path)).await;
-                if let Some(ui)=weak.upgrade(){if !ui.closed.get(){let text=match result{Ok(Ok(()))=>"PDF exportado".to_string(),Ok(Err(e))=>e,Err(_)=>"No se pudo exportar el PDF".to_string()};ui.toasts.add_toast(Toast::new(&text));}}
+                if let Some(ui)=weak.upgrade(){if !ui.closed.get(){let text=match result{Ok(Ok(()))=>wordcraft_gnome::t!("PDF Exported").to_string(),Ok(Err(e))=>e,Err(_)=>wordcraft_gnome::t!("Could Not Export PDF").to_string()};ui.toasts.add_toast(Toast::new(&text));}}
             });
         },Err(e)if e.matches(gtk::DialogError::Cancelled)||e.matches(gtk::DialogError::Dismissed)=>{},Err(e)=>ui.toasts.add_toast(Toast::new(&e.to_string())),
     }));

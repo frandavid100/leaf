@@ -36,7 +36,7 @@ pub fn edit(session:&mut Session,edit:Edit)->Result<Option<String>,String>{
 /// history and dirty state cannot be affected by a preview.
 pub fn preview(source:&Session,id:&str)->Result<PageImage,String>{
     if !list(source).iter().any(|s|s.id==id){return Err("El estilo ya no existe".into());}
-    let mut doc=Document::from_text("Aa Bb Cc · Texto de ejemplo");doc.styles=source.doc.styles.clone();
+    let mut doc=Document::from_text(wordcraft_gnome::t!("Aa Bb Cc · Sample Text"));doc.styles=source.doc.styles.clone();
     let mut sample=Session::new(doc);sample.view.proofing=false;
     sample.run("select.all",&json!({"whole":true})).map_err(|e|e.to_string())?;
     sample.run("para.style",&json!({"style":id})).map_err(|e|e.to_string())?;

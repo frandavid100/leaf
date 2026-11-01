@@ -57,7 +57,7 @@ impl ParagraphPopover {
         // AdwSplitButton owns native shared hover, separator and half-button states.
         let split=adw::SplitButton::new();split.add_css_class("flat");split.set_hexpand(true);
         let icon=button.child().unwrap();button.set_child(None::<&gtk::Widget>);split.set_child(Some(&icon));split.add_css_class("image-button");
-        split.set_tooltip_text(button.tooltip_text().as_deref());split.set_dropdown_tooltip(&format!("Opciones de {label}"));
+        split.set_tooltip_text(button.tooltip_text().as_deref());split.set_dropdown_tooltip(&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Options for {label}"), &[("label",label.to_string())]));
         // The documented CSS hierarchy exposes the two GTK controls. Route the
         // dropdown's lazy popup callback to our existing stack, not another popup.
         let main=split.first_child().unwrap().downcast::<gtk::Button>().unwrap();
@@ -65,7 +65,7 @@ impl ParagraphPopover {
         if button.is_active(){main.set_state_flags(gtk::StateFlags::CHECKED,false);}
         let action=button.clone();split.connect_clicked(move |_|action.emit_clicked());
         let more=main.next_sibling().unwrap().next_sibling().unwrap().downcast::<gtk::MenuButton>().unwrap();
-        accessible_name(&more,&format!("Opciones de {label}"));more.first_child().unwrap().set_widget_name(&format!("paragraph-more-{page}"));
+        accessible_name(&more,&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Options for {label}"), &[("label",label.to_string())]));more.first_child().unwrap().set_widget_name(&format!("paragraph-more-{page}"));
         let weak=Rc::downgrade(self);more.set_create_popup_func(move|m|{
             m.popdown();if let Some(s)=weak.upgrade(){s.page(page);if std::env::args().any(|a|a=="--split-states-demo"){eprintln!("SPLIT_SUBPAGE_OK");}}
         });
@@ -74,7 +74,7 @@ impl ParagraphPopover {
     fn home(self:&Rc<Self>){self.header.home();
         clear_box(&self.main);let Some(ui)=self.ui.upgrade()else{return;};let state=selection_paragraph(&ui);
         let row=gtk::Box::new(gtk::Orientation::Horizontal,4);
-        for(icon,label,value)in[("format-justify-left-symbolic","Alinear a la izquierda","left"),("format-justify-center-symbolic","Centrar","center"),("format-justify-right-symbolic","Alinear a la derecha","right"),("format-justify-fill-symbolic","Justificar","justify")]{
+        for(icon,label,value)in[("format-justify-left-symbolic",wordcraft_gnome::t!("Align Left"),"left"),("format-justify-center-symbolic",wordcraft_gnome::t!("Center"),"center"),("format-justify-right-symbolic",wordcraft_gnome::t!("Align Right"),"right"),("format-justify-fill-symbolic",wordcraft_gnome::t!("Justify"),"justify")]{
             row.append(&self.icon_action(icon,label,&format!("paragraph-align-{value}"),state["align"].as_str().unwrap_or("left")==value,"para.align",serde_json::json!({"value":value})));
         }self.main.append(&row);self.main.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
         let row=gtk::Box::new(gtk::Orientation::Horizontal,4);
@@ -83,17 +83,17 @@ impl ParagraphPopover {
             d.session.doc.numbering.level(n.num,n.level).map(|l|format!("{:?}",l.format))
         })};
         let bullet=list_kind.as_ref().is_some_and(|s|s.to_lowercase().contains("bullet"));let numbered=list_kind.is_some()&&!bullet;
-        let b=self.icon_action("view-list-bullet-symbolic","Lista con viñetas","paragraph-bullets",bullet,"para.bullets",serde_json::json!({}));self.split(&row,&b,"bullets","viñetas");
-        let b=self.icon_action("view-list-ordered-symbolic","Lista numerada","paragraph-numbering",numbered,"para.numbering",serde_json::json!({}));self.split(&row,&b,"numbering","numeración");
-        row.append(&self.icon_action("format-indent-less-symbolic","Reducir sangría","paragraph-outdent",false,"para.outdent",serde_json::json!({})));
-        let b=self.icon_action("format-indent-more-symbolic","Aumentar sangría","paragraph-indent",false,"para.indent",serde_json::json!({}));self.split(&row,&b,"indents","sangrías");self.main.append(&row);
+        let b=self.icon_action("view-list-bullet-symbolic",wordcraft_gnome::t!("Bulleted List"),"paragraph-bullets",bullet,"para.bullets",serde_json::json!({}));self.split(&row,&b,"bullets",wordcraft_gnome::t!("bullets"));
+        let b=self.icon_action("view-list-ordered-symbolic",wordcraft_gnome::t!("Numbered List"),"paragraph-numbering",numbered,"para.numbering",serde_json::json!({}));self.split(&row,&b,"numbering",wordcraft_gnome::t!("numbering"));
+        row.append(&self.icon_action("format-indent-less-symbolic",wordcraft_gnome::t!("Decrease Indent"),"paragraph-outdent",false,"para.outdent",serde_json::json!({})));
+        let b=self.icon_action("format-indent-more-symbolic",wordcraft_gnome::t!("Increase Indent"),"paragraph-indent",false,"para.indent",serde_json::json!({}));self.split(&row,&b,"indents",wordcraft_gnome::t!("indents"));self.main.append(&row);
         let row=gtk::Box::new(gtk::Orientation::Horizontal,4);
-        let b=self.icon_action("spacing",&format!("Aplicar interlineado {}",self.spacing.get()),"paragraph-spacing",state["lineSpacing"]["rule"].as_str()==Some("multiple") && state["lineSpacing"]["value"].as_f64()==Some(self.spacing.get()),"para.lineSpacing",serde_json::json!({"value":self.spacing.get()}));self.split(&row,&b,"spacing","interlineado");
-        let b=self.icon_action("shading","Aplicar el último sombreado elegido","paragraph-shading",state["shading"].is_array(),"para.shading",serde_json::json!({"color":self.shade.borrow().as_str()}));self.split(&row,&b,"shading","sombreado");
-        let b=self.icon_action("borders","Aplicar el último borde elegido","paragraph-borders",state["borders"].is_object(),"para.borders",self.border.borrow().clone());self.split(&row,&b,"borders","bordes");self.main.append(&row);
+        let b=self.icon_action("spacing",&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Apply Line Spacing {}"), &[("0", format!("{}", self.spacing.get()))]),"paragraph-spacing",state["lineSpacing"]["rule"].as_str()==Some("multiple") && state["lineSpacing"]["value"].as_f64()==Some(self.spacing.get()),"para.lineSpacing",serde_json::json!({"value":self.spacing.get()}));self.split(&row,&b,"spacing","interlineado");
+        let b=self.icon_action("shading",wordcraft_gnome::t!("Apply Last Shading"),"paragraph-shading",state["shading"].is_array(),"para.shading",serde_json::json!({"color":self.shade.borrow().as_str()}));self.split(&row,&b,"shading","sombreado");
+        let b=self.icon_action("borders",wordcraft_gnome::t!("Apply Last Border"),"paragraph-borders",state["borders"].is_object(),"para.borders",self.border.borrow().clone());self.split(&row,&b,"borders","bordes");self.main.append(&row);
         self.main.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-        let columns=style_menu_button("Columnas…");columns.set_widget_name("paragraph-columns");self.main.append(&columns);let weak=Rc::downgrade(self);columns.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){s.page("columns");}});
-        let more=style_menu_button("Más opciones de párrafo…");more.set_widget_name("paragraph-more-options");self.main.append(&more);let weak=Rc::downgrade(self);more.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){s.page("options");}});
+        let columns=style_menu_button(wordcraft_gnome::t!("Columns…"));columns.set_widget_name("paragraph-columns");self.main.append(&columns);let weak=Rc::downgrade(self);columns.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){s.page("columns");}});
+        let more=style_menu_button(wordcraft_gnome::t!("More Paragraph Options…"));more.set_widget_name("paragraph-more-options");self.main.append(&more);let weak=Rc::downgrade(self);more.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){s.page("options");}});
         self.stack.set_visible_child_name("main");
     }
     fn title(&self,label:&str){let l=gtk::Label::new(Some(label));l.set_xalign(0.0);l.add_css_class("heading");l.set_margin_top(8);self.detail.append(&l);}
@@ -102,53 +102,53 @@ impl ParagraphPopover {
         let n=gtk::SpinButton::with_range(min,max,0.5);n.set_digits(1);n.set_width_chars(6);n.set_value(value);accessible_name(&n,label);row.append(&n);self.detail.append(&row);n
     }
     fn button(self:&Rc<Self>,label:&str,name:&str,command:&'static str,args:serde_json::Value){self.detail.append(&self.action(label,name,command,args));}
-    fn page(self:&Rc<Self>,page:&str){let weak=Rc::downgrade(self);self.header.back("Párrafo",move||{if let Some(s)=weak.upgrade(){s.home();}});
+    fn page(self:&Rc<Self>,page:&str){let weak=Rc::downgrade(self);self.header.back(wordcraft_gnome::t!("Paragraph"),move||{if let Some(s)=weak.upgrade(){s.home();}});
         clear_box(&self.detail);self.message.set_visible(false);
         let Some(ui)=self.ui.upgrade()else{return;};let state=selection_paragraph(&ui);
         match page{
             "columns"=>{
-                self.title("Columnas");
+                self.title(wordcraft_gnome::t!("Columns"));
                 let weak=Rc::downgrade(self);
                 let editor=columns_editor(&ui,move||{if let Some(s)=weak.upgrade(){s.home();if let Some(pop)=s.popover.upgrade(){close_format_popover(&pop);}}});
                 self.detail.append(&editor.root);self.detail.append(&editor.apply);
             },
             "bullets"|"numbering"=>{
-                self.title(if page=="bullets"{"Viñetas"}else{"Numeración"});
-                let (command,choices):(&'static str,Vec<(&str,&str)>)=if page=="bullets"{("para.bullets",vec![("• Punto","•"),("○ Círculo","○"),("▪ Cuadrado","▪"),("– Guion","–")])}else{("para.numbering",vec![("1. 2. 3.","numbered"),("1) 2) 3)","numberedParen"),("A. B. C.","upperLetter"),("a. b. c.","lowerLetter"),("i. ii. iii.","lowerRoman")])};
+                self.title(if page=="bullets"{wordcraft_gnome::t!("Bullets")}else{wordcraft_gnome::t!("Numbering")});
+                let (command,choices):(&'static str,Vec<(&str,&str)>)=if page=="bullets"{("para.bullets",vec![(wordcraft_gnome::t!("• Disc"),"•"),(wordcraft_gnome::t!("○ Circle"),"○"),(wordcraft_gnome::t!("▪ Square"),"▪"),(wordcraft_gnome::t!("– Dash"),"–")])}else{("para.numbering",vec![("1. 2. 3.","numbered"),("1) 2) 3)","numberedParen"),("A. B. C.","upperLetter"),("a. b. c.","lowerLetter"),("i. ii. iii.","lowerRoman")])};
                 for(label,kind)in choices{self.button(label,&format!("paragraph-list-{kind}"),command,serde_json::json!({"kind":kind}));}
-                self.button("Quitar lista","paragraph-list-none",command,serde_json::json!({"off":true}));
-                self.title("Lista multinivel");self.button("1 / 1.1 / 1.1.1","paragraph-list-legal","para.multilevel",serde_json::json!({"kind":"legal"}));self.button("Esquema","paragraph-list-outline","para.multilevel",serde_json::json!({"kind":"outline"}));
-                let level=self.number("Nivel (1–9)",state["numbering"]["level"].as_f64().unwrap_or(0.0)+1.0,1.0,9.0);level.set_digits(0);level.set_increments(1.0,1.0);
-                let b=style_menu_button("Aplicar nivel");self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){level.update();s.execute("para.listLevel",serde_json::json!({"level":level.value_as_int()-1}));}});
-                self.button("Reiniciar numeración en 1","paragraph-list-restart","para.restartNumbering",serde_json::json!({}));
+                self.button(wordcraft_gnome::t!("Remove List"),"paragraph-list-none",command,serde_json::json!({"off":true}));
+                self.title(wordcraft_gnome::t!("Multilevel List"));self.button("1 / 1.1 / 1.1.1","paragraph-list-legal","para.multilevel",serde_json::json!({"kind":"legal"}));self.button(wordcraft_gnome::t!("Outline"),"paragraph-list-outline","para.multilevel",serde_json::json!({"kind":"outline"}));
+                let level=self.number(wordcraft_gnome::t!("Level (1–9)"),state["numbering"]["level"].as_f64().unwrap_or(0.0)+1.0,1.0,9.0);level.set_digits(0);level.set_increments(1.0,1.0);
+                let b=style_menu_button(wordcraft_gnome::t!("Apply Level"));self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){level.update();s.execute("para.listLevel",serde_json::json!({"level":level.value_as_int()-1}));}});
+                self.button(wordcraft_gnome::t!("Restart Numbering at 1"),"paragraph-list-restart","para.restartNumbering",serde_json::json!({}));
             },
             "indents"=>{
-                self.title("Sangrías (pt)");let left=self.number("Izquierda",state["indentLeft"].as_f64().unwrap_or(0.0),-1584.0,1584.0);let right=self.number("Derecha",state["indentRight"].as_f64().unwrap_or(0.0),-1584.0,1584.0);let first=self.number("Primera línea (−: francesa)",state["indentFirst"].as_f64().unwrap_or(0.0),-1584.0,1584.0);
-                let b=style_menu_button("Aplicar sangrías");b.set_widget_name("paragraph-apply-indents");self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){left.update();right.update();first.update();s.execute("para.indents",serde_json::json!({"left":left.value(),"right":right.value(),"firstLine":first.value()}));}});
+                self.title(wordcraft_gnome::t!("Indents (pt)"));let left=self.number(wordcraft_gnome::t!("Left"),state["indentLeft"].as_f64().unwrap_or(0.0),-1584.0,1584.0);let right=self.number(wordcraft_gnome::t!("Right"),state["indentRight"].as_f64().unwrap_or(0.0),-1584.0,1584.0);let first=self.number(wordcraft_gnome::t!("First Line (−: Hanging)"),state["indentFirst"].as_f64().unwrap_or(0.0),-1584.0,1584.0);
+                let b=style_menu_button(wordcraft_gnome::t!("Apply Indents"));b.set_widget_name("paragraph-apply-indents");self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){left.update();right.update();first.update();s.execute("para.indents",serde_json::json!({"left":left.value(),"right":right.value(),"firstLine":first.value()}));}});
             },
             "spacing"=>{
-                self.title("Interlineado");for(value,label)in[(1.0,"Sencillo"),(1.15,"1,15 líneas"),(1.5,"1,5 líneas"),(2.0,"Doble")]{let b=style_menu_button(label);b.set_widget_name(&format!("paragraph-line-{value}"));self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){s.spacing.set(value);s.execute("para.lineSpacing",serde_json::json!({"value":value}));}});}
-                let exact=self.number("Exacto (pt)",14.0,1.0,500.0);let b=style_menu_button("Aplicar interlineado exacto");self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){exact.update();s.execute("para.lineSpacing",serde_json::json!({"exactly":exact.value()}));}});
-                self.title("Separación entre párrafos (pt)");let before=self.number("Anterior",state["spaceBefore"].as_f64().unwrap_or(0.0),0.0,1584.0);let after=self.number("Posterior",state["spaceAfter"].as_f64().unwrap_or(0.0),0.0,1584.0);let b=style_menu_button("Aplicar separación");self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){before.update();after.update();s.execute("para.spacing",serde_json::json!({"before":before.value(),"after":after.value()}));}});
+                self.title(wordcraft_gnome::t!("Line Spacing"));for(value,label)in[(1.0,wordcraft_gnome::t!("Single")),(1.15,wordcraft_gnome::t!("1.15 Lines")),(1.5,wordcraft_gnome::t!("1.5 Lines")),(2.0,wordcraft_gnome::t!("Double"))]{let b=style_menu_button(label);b.set_widget_name(&format!("paragraph-line-{value}"));self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){s.spacing.set(value);s.execute("para.lineSpacing",serde_json::json!({"value":value}));}});}
+                let exact=self.number(wordcraft_gnome::t!("Exactly (pt)"),14.0,1.0,500.0);let b=style_menu_button(wordcraft_gnome::t!("Apply Exact Line Spacing"));self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){exact.update();s.execute("para.lineSpacing",serde_json::json!({"exactly":exact.value()}));}});
+                self.title(wordcraft_gnome::t!("Paragraph Spacing (pt)"));let before=self.number(wordcraft_gnome::t!("Before"),state["spaceBefore"].as_f64().unwrap_or(0.0),0.0,1584.0);let after=self.number(wordcraft_gnome::t!("After"),state["spaceAfter"].as_f64().unwrap_or(0.0),0.0,1584.0);let b=style_menu_button(wordcraft_gnome::t!("Apply Spacing"));self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){before.update();after.update();s.execute("para.spacing",serde_json::json!({"before":before.value(),"after":after.value()}));}});
             },
             "shading"=>{
-                self.title("Sombreado");let grid=gtk::Grid::new();grid.set_column_spacing(6);grid.set_row_spacing(6);
-                for(i,(label,color))in[("Amarillo suave","FFF2CC"),("Azul suave","DDEBF7"),("Verde suave","E2F0D9"),("Rosa suave","FCE4D6"),("Gris claro","E7E6E6"),("Gris oscuro","808080"),("Azul","4472C4"),("Negro","000000")].into_iter().enumerate(){let b=gtk::Button::new();let l=gtk::Label::new(None);l.set_markup(&format!("<span background=\"#{color}\">     </span>"));b.set_child(Some(&l));b.set_tooltip_text(Some(label));accessible_name(&b,label);b.set_widget_name(&format!("paragraph-shade-{color}"));grid.attach(&b,(i%4)as i32,(i/4)as i32,1,1);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){s.shade.replace(color.into());s.execute("para.shading",serde_json::json!({"color":color}));}});}
-                self.detail.append(&grid);self.color_entry("Aplicar color RGB",false);self.button("Sin sombreado","paragraph-shade-none","para.shading",serde_json::json!({"color":null}));
+                self.title(wordcraft_gnome::t!("Shading"));let grid=gtk::Grid::new();grid.set_column_spacing(6);grid.set_row_spacing(6);
+                for(i,(label,color))in[(wordcraft_gnome::t!("Light Yellow"),"FFF2CC"),(wordcraft_gnome::t!("Light Blue"),"DDEBF7"),(wordcraft_gnome::t!("Light Green"),"E2F0D9"),(wordcraft_gnome::t!("Light Pink"),"FCE4D6"),(wordcraft_gnome::t!("Light Gray"),"E7E6E6"),(wordcraft_gnome::t!("Dark Gray"),"808080"),(wordcraft_gnome::t!("Blue"),"4472C4"),(wordcraft_gnome::t!("Black"),"000000")].into_iter().enumerate(){let b=gtk::Button::new();let l=gtk::Label::new(None);l.set_markup(&format!("<span background=\"#{color}\">     </span>"));b.set_child(Some(&l));b.set_tooltip_text(Some(label));accessible_name(&b,label);b.set_widget_name(&format!("paragraph-shade-{color}"));grid.attach(&b,(i%4)as i32,(i/4)as i32,1,1);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){s.shade.replace(color.into());s.execute("para.shading",serde_json::json!({"color":color}));}});}
+                self.detail.append(&grid);self.color_entry(wordcraft_gnome::t!("Apply RGB Color"),false);self.button(wordcraft_gnome::t!("No Shading"),"paragraph-shade-none","para.shading",serde_json::json!({"color":null}));
             },
             "borders"=>{
-                self.title("Bordes");let width=self.number("Grosor (pt)",0.5,0.25,12.0);
-                let color=gtk::Entry::new();color.set_placeholder_text(Some("Color RGB, por ejemplo 2266AA"));color.set_text("000000");self.detail.append(&color);
-                for(label,kind)in[("Sin bordes","none"),("Todos","all"),("Exterior","outside"),("Interior","inside"),("Superior","top"),("Inferior","bottom"),("Izquierdo","left"),("Derecho","right"),("Línea horizontal","horizontalLine")]{let b=style_menu_button(label);b.set_widget_name(&format!("paragraph-border-{kind}"));self.detail.append(&b);let weak=Rc::downgrade(self);let width=width.clone();let color=color.clone();b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){width.update();if let Some(hex)=s.valid_color(&color){let args=serde_json::json!({"kind":kind,"width":width.value(),"color":hex});s.border.replace(args.clone());s.execute("para.borders",args);}}});}
+                self.title(wordcraft_gnome::t!("Borders"));let width=self.number(wordcraft_gnome::t!("Width (pt)"),0.5,0.25,12.0);
+                let color=gtk::Entry::new();color.set_placeholder_text(Some(wordcraft_gnome::t!("RGB Color, for Example 2266AA")));color.set_text("000000");self.detail.append(&color);
+                for(label,kind)in[(wordcraft_gnome::t!("No Borders"),"none"),(wordcraft_gnome::t!("All"),"all"),(wordcraft_gnome::t!("Outside"),"outside"),(wordcraft_gnome::t!("Inside"),"inside"),(wordcraft_gnome::t!("Top"),"top"),(wordcraft_gnome::t!("Bottom"),"bottom"),(wordcraft_gnome::t!("Left"),"left"),(wordcraft_gnome::t!("Right"),"right"),(wordcraft_gnome::t!("Horizontal Line"),"horizontalLine")]{let b=style_menu_button(label);b.set_widget_name(&format!("paragraph-border-{kind}"));self.detail.append(&b);let weak=Rc::downgrade(self);let width=width.clone();let color=color.clone();b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){width.update();if let Some(hex)=s.valid_color(&color){let args=serde_json::json!({"kind":kind,"width":width.value(),"color":hex});s.border.replace(args.clone());s.execute("para.borders",args);}}});}
             },
             _=>{
-                self.title("Dirección y formato");self.button("Alineación distribuida","paragraph-distribute","para.align",serde_json::json!({"value":"distribute"}));
-                self.button("De izquierda a derecha","paragraph-ltr","para.ltr",serde_json::json!({"value":true}));self.button("De derecha a izquierda","paragraph-rtl","para.rtl",serde_json::json!({"value":true}));
-                let marks=ui.current.borrow().as_ref().is_some_and(|d|d.session.view.marks);self.toggle("Mostrar marcas de formato (¶)",marks,"view.marks");
-                self.title("Saltos y conservación");for(label,key,cmd)in[("Conservar con el siguiente","keepNext","para.keepNext"),("Conservar líneas juntas","keepLines","para.keepLines"),("Salto de página anterior","pageBreakBefore","para.pageBreakBefore"),("Control de viudas y huérfanas","widowControl","para.widowControl")]{self.toggle(label,state[key].as_bool().unwrap_or(false),cmd);}
-                self.title("Ordenar párrafos seleccionados");self.button("Ascendente (A–Z)","paragraph-sort-asc","para.sort",serde_json::json!({"descending":false}));self.button("Descendente (Z–A)","paragraph-sort-desc","para.sort",serde_json::json!({"descending":true}));
-                self.title("Tabulaciones");let pos=self.number("Posición (pt)",36.0,0.0,1584.0);let b=style_menu_button("Añadir tabulación izquierda");self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){pos.update();s.execute("para.tabs",serde_json::json!({"set":[{"pos":pos.value(),"align":"left"}]}));}});
-                self.button("Borrar tabulaciones","paragraph-tabs-clear","para.tabs",serde_json::json!({"clearAll":true}));self.button("Restablecer formato de párrafo","paragraph-reset","para.reset",serde_json::json!({}));
+                self.title(wordcraft_gnome::t!("Direction and Formatting"));self.button(wordcraft_gnome::t!("Distributed Alignment"),"paragraph-distribute","para.align",serde_json::json!({"value":"distribute"}));
+                self.button(wordcraft_gnome::t!("Left to Right"),"paragraph-ltr","para.ltr",serde_json::json!({"value":true}));self.button(wordcraft_gnome::t!("Right to Left"),"paragraph-rtl","para.rtl",serde_json::json!({"value":true}));
+                let marks=ui.current.borrow().as_ref().is_some_and(|d|d.session.view.marks);self.toggle(wordcraft_gnome::t!("Show Formatting Marks (¶)"),marks,"view.marks");
+                self.title(wordcraft_gnome::t!("Breaks and Pagination"));for(label,key,cmd)in[(wordcraft_gnome::t!("Keep with Next"),"keepNext","para.keepNext"),(wordcraft_gnome::t!("Keep Lines Together"),"keepLines","para.keepLines"),(wordcraft_gnome::t!("Page Break Before"),"pageBreakBefore","para.pageBreakBefore"),(wordcraft_gnome::t!("Widow and Orphan Control"),"widowControl","para.widowControl")]{self.toggle(label,state[key].as_bool().unwrap_or(false),cmd);}
+                self.title(wordcraft_gnome::t!("Sort Selected Paragraphs"));self.button(wordcraft_gnome::t!("Ascending (A–Z)"),"paragraph-sort-asc","para.sort",serde_json::json!({"descending":false}));self.button(wordcraft_gnome::t!("Descending (Z–A)"),"paragraph-sort-desc","para.sort",serde_json::json!({"descending":true}));
+                self.title(wordcraft_gnome::t!("Tab Stops"));let pos=self.number(wordcraft_gnome::t!("Position (pt)"),36.0,0.0,1584.0);let b=style_menu_button(wordcraft_gnome::t!("Add Left Tab Stop"));self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){pos.update();s.execute("para.tabs",serde_json::json!({"set":[{"pos":pos.value(),"align":"left"}]}));}});
+                self.button(wordcraft_gnome::t!("Clear Tab Stops"),"paragraph-tabs-clear","para.tabs",serde_json::json!({"clearAll":true}));self.button(wordcraft_gnome::t!("Reset Paragraph Formatting"),"paragraph-reset","para.reset",serde_json::json!({}));
             }
         }
         self.stack.set_visible_child_name("detail");
@@ -156,14 +156,14 @@ impl ParagraphPopover {
     fn toggle(self:&Rc<Self>,label:&str,active:bool,command:&'static str){
         let b=gtk::CheckButton::with_label(label);b.set_active(active);self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_toggled(move|b|{if let Some(s)=weak.upgrade(){s.execute(command,serde_json::json!({"value":b.is_active()}));}});
     }
-    fn valid_color(&self,e:&gtk::Entry)->Option<String>{let c=e.text().trim().trim_start_matches('#').to_string();if c.len()==6&&c.chars().all(|c|c.is_ascii_hexdigit()){Some(c)}else{self.message.set_text("Escribe seis cifras RGB, por ejemplo 2266AA");self.message.set_visible(true);None}}
+    fn valid_color(&self,e:&gtk::Entry)->Option<String>{let c=e.text().trim().trim_start_matches('#').to_string();if c.len()==6&&c.chars().all(|c|c.is_ascii_hexdigit()){Some(c)}else{self.message.set_text(wordcraft_gnome::t!("Enter Six RGB Digits, for Example 2266AA"));self.message.set_visible(true);None}}
     fn color_entry(self:&Rc<Self>,label:&str,_border:bool){
         let e=gtk::Entry::new();e.set_placeholder_text(Some("RGB hexadecimal: FFF2CC"));self.detail.append(&e);let b=style_menu_button(label);self.detail.append(&b);let weak=Rc::downgrade(self);b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){if let Some(c)=s.valid_color(&e){s.shade.replace(c.clone());s.execute("para.shading",serde_json::json!({"color":c}));}}});
     }
 }
 fn install_paragraph_popover(ui:&Rc<Ui>,menu:&gtk::MenuButton)->Rc<ParagraphPopover>{
     let pop=gtk::Popover::new();pop.add_css_class("format-popover");let root=gtk::Box::new(gtk::Orientation::Vertical,6);root.set_width_request(300);root.set_margin_top(8);root.set_margin_bottom(8);root.set_margin_start(8);root.set_margin_end(8);
-    let header=format_popover_header(&pop,&root,"Párrafo",&ui.format_group);header.button.set_widget_name("paragraph-back");
+    let header=format_popover_header(&pop,&root,wordcraft_gnome::t!("Paragraph"),&ui.format_group);header.button.set_widget_name("paragraph-back");
     let stack=gtk::Stack::new();stack.set_transition_type(gtk::StackTransitionType::SlideLeftRight);stack.set_vhomogeneous(false);stack.set_hhomogeneous(false);stack.set_interpolate_size(true);
     let main=gtk::Box::new(gtk::Orientation::Vertical,6);let detail=gtk::Box::new(gtk::Orientation::Vertical,8);
     let scroll=gtk::ScrolledWindow::new();scroll.set_policy(gtk::PolicyType::Never,gtk::PolicyType::Automatic);scroll.set_max_content_height(420);scroll.set_propagate_natural_height(true);scroll.set_child(Some(&detail));

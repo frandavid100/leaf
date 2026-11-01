@@ -31,7 +31,7 @@ pub fn apply(session: &mut Session, action: Format) -> Result<(), String> {
         Format::Justify => ("para.justify", json!({})),
         Format::FontSize(size) if (6..=96).contains(&size) =>
             ("format.size", json!({"size": size})),
-        Format::FontSize(_) => return Err("Tamaño de fuente fuera del rango permitido (6–96 puntos)".into()),
+        Format::FontSize(_) => return Err(wordcraft_gnome::t!("Font size must be between 6 and 96 points").into()),
     };
     session.run(name, &params).map_err(|err| err.to_string())?;
     Ok(())
@@ -40,7 +40,7 @@ pub fn apply(session: &mut Session, action: Format) -> Result<(), String> {
 /// A point size may include decimals; reject non-finite input before dispatch.
 pub fn size(session: &mut Session, points: f64) -> Result<(), String> {
     if !points.is_finite() || !(1.0..=1638.0).contains(&points) {
-        return Err("El tamaño debe estar entre 1 y 1638 puntos".into());
+        return Err(wordcraft_gnome::t!("Size must be between 1 and 1638 points").into());
     }
     session.run("format.size", &json!({"size":points})).map_err(|e| e.to_string())?;
     Ok(())
@@ -48,7 +48,7 @@ pub fn size(session: &mut Session, points: f64) -> Result<(), String> {
 
 pub fn font(session: &mut Session, name: &str) -> Result<(), String> {
     let name = name.trim();
-    if name.is_empty() { return Err("Elige una familia tipográfica".into()); }
+    if name.is_empty() { return Err(wordcraft_gnome::t!("Choose a font family").into()); }
     session.run("format.font", &json!({"name":name})).map_err(|e| e.to_string())?;
     Ok(())
 }

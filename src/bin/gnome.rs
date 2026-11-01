@@ -11,10 +11,10 @@ use wordcraft_gnome::selection::{self, SelectionGeometry};
 use wordcraft_gnome::editing::{self, Edit};
 use wordcraft_gnome::formatting::{self, Format};
 use wordcraft_engine::Session;
-use wordcraft_gnome::{open_document, render_page_premultiplied as render_page, sample_session};
+use wordcraft_gnome::{open_document, render_page_screen as render_page, sample_session};
 use wordcraft_gnome::viewer_layout::{self, THUMB_SCALE};
 
-const APP_VERSION: &str = "0.1.0-alpha.6";
+const APP_VERSION: &str = "0.1.0-alpha.7";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -79,6 +79,7 @@ struct Ui {
     tab_page: RefCell<Option<adw::TabPage>>,
     closed: Cell<bool>,
     autosave_source:RefCell<Option<glib::SourceId>>,
+    theme_signal:RefCell<Option<glib::SignalHandlerId>>,
     restoring: Cell<bool>,
     autosave_error: RefCell<Option<String>>,
     pending_tab_close: RefCell<Option<(adw::TabView,adw::TabPage)>>,
@@ -327,7 +328,7 @@ fn apply_user_edit(ui: &Rc<Ui>, edit: Edit) {
             after_content_change(ui);
             if first_edit {
                 ui.toasts.add_toast(Toast::new(
-                    "Cambios pendientes. Usa Guardar para conservarlos en una copia.",
+                    wordcraft_gnome::t!("Unsaved changes. Save a copy to keep them."),
                 ));
             }
         }
@@ -359,7 +360,7 @@ fn apply_format_operation(ui: &Rc<Ui>, operation: impl FnOnce(&mut Session) -> R
             after_content_change(ui);
             if first {
                 ui.toasts.add_toast(Toast::new(
-                    "Formato modificado. Usa Guardar para conservar los cambios.",
+                    wordcraft_gnome::t!("Formatting changed. Save to keep your changes."),
                 ));
             }
         },
@@ -372,11 +373,11 @@ fn apply_format_operation(ui: &Rc<Ui>, operation: impl FnOnce(&mut Session) -> R
 
 fn ask_discard(ui: &Rc<Ui>, parent: &ApplicationWindow, action: impl FnOnce() + 'static) {
     if !ui.dirty.get() { action(); return; }
-    let dialog = adw::MessageDialog::new(Some(parent), Some("¿Guardar los cambios?"),
-        Some("Si continúas sin guardar, se perderán los cambios del documento."));
-    dialog.add_response("cancel", "Cancelar");
+    let dialog = adw::MessageDialog::new(Some(parent), Some(wordcraft_gnome::t!("Save Changes?")),
+        Some(wordcraft_gnome::t!("If you continue without saving, your changes will be lost.")));
+    dialog.add_response("cancel", wordcraft_gnome::t!("Cancel"));
     dialog.add_response("discard", "Descartar");
-    dialog.add_response("save", "Guardar");
+    dialog.add_response("save", wordcraft_gnome::t!("Save"));
     dialog.set_response_appearance("discard", adw::ResponseAppearance::Destructive);
     dialog.set_response_appearance("save", adw::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("save"));
@@ -403,7 +404,7 @@ fn save_to(ui: &Rc<Ui>, path: &Path) -> bool {
     let original = ui.source_path.borrow().clone();
     if wordcraft_gnome::preferences::autosave_mode()!=2 && original.as_ref().is_some_and(|p| p == path ||
         p.canonicalize().ok().zip(path.canonicalize().ok()).is_some_and(|(a,b)| a == b)) {
-        ui.toasts.add_toast(Toast::new("Elige otro nombre para proteger el documento original."));
+        ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("Choose another name to protect the original document.")));
         return false;
     }
     let result = {
@@ -418,10 +419,10 @@ fn save_to(ui: &Rc<Ui>, path: &Path) -> bool {
             ui.document_name.replace(path.file_name().unwrap_or_default().to_string_lossy().into_owned());
             if let Some(doc)=ui.current.borrow_mut().as_mut(){doc.session.finish_recovery();}
             sync_tab(ui);
-            ui.toasts.add_toast(Toast::new("Documento guardado"));
+            ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("Document Saved")));
             true
         }
-        Err(e) => { ui.toasts.add_toast(Toast::new(&format!("No se ha guardado: {e}"))); false }
+        Err(e) => { ui.toasts.add_toast(Toast::new(&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Could Not Save: {e}"), &[("e", format!("{}", e))]))); false }
     }
 }
 
@@ -432,16 +433,16 @@ fn save_document(ui: &Rc<Ui>, parent: &ApplicationWindow, save_as: bool, done: B
         if let Some(path) = existing { if save_to(ui, &path) { done(); } else {cancel_tab_close(ui);} return; }
     }
     let dialog = gtk::FileDialog::new();
-    dialog.set_title("Guardar una copia — DOCX u ODT");
+    dialog.set_title(wordcraft_gnome::t!("Save a Copy — DOCX or ODT"));
     dialog.set_modal(true);
     let filter = gtk::FileFilter::new();
-    filter.set_name(Some("Documentos (.docx, .odt)"));
+    filter.set_name(Some(wordcraft_gnome::t!("Documents (.docx, .odt)")));
     filter.add_pattern("*.docx"); filter.add_pattern("*.odt");
     let filters = gio::ListStore::new::<gtk::FileFilter>(); filters.append(&filter);
     dialog.set_filters(Some(&filters));
     let source = existing.or_else(|| ui.source_path.borrow().clone());
     let name = source.as_ref().and_then(|p| p.file_stem()).map(|x| x.to_string_lossy().into_owned())
-        .unwrap_or_else(|| "Documento".into());
+        .unwrap_or_else(|| wordcraft_gnome::t!("Document").into());
     let ext = source.as_ref().and_then(|p| p.extension()).and_then(|x| x.to_str()).unwrap_or("docx");
     dialog.set_initial_name(Some(&format!("{name}-copia.{ext}")));
     if let Some(folder) = source.as_ref().and_then(|p| p.parent()) {
@@ -453,16 +454,16 @@ fn save_document(ui: &Rc<Ui>, parent: &ApplicationWindow, save_as: bool, done: B
         match result {
             Ok(file) => {
                 let Some(path) = file.path() else {
-                    ui.toasts.add_toast(Toast::new("Elige un archivo local")); cancel_tab_close(&ui); return;
+                    ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("Choose a Local File"))); cancel_tab_close(&ui); return;
                 };
                 // Require an extension so GTK's overwrite confirmation covers the actual target.
                 if path.extension().is_none() {
-                    ui.toasts.add_toast(Toast::new("Incluye .docx o .odt en el nombre del archivo")); cancel_tab_close(&ui); return;
+                    ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("Include .docx or .odt in the file name"))); cancel_tab_close(&ui); return;
                 }
                 if save_to(&ui, &path) { done(); } else {cancel_tab_close(&ui);}
             }
             Err(e) if e.matches(gtk::DialogError::Dismissed) || e.matches(gtk::DialogError::Cancelled) => {cancel_tab_close(&ui);},
-            Err(e) => {ui.toasts.add_toast(Toast::new(&format!("No se pudo abrir el guardado: {e}")));cancel_tab_close(&ui);},
+            Err(e) => {ui.toasts.add_toast(Toast::new(&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Could Not Open Save Dialog: {e}"), &[("e", format!("{}", e))])));cancel_tab_close(&ui);},
         }
     }));
 }
@@ -501,6 +502,17 @@ fn update_status(ui: &Rc<Ui>) {
 }
 
 /// Renderizado bajo demanda: solo hojas cercanas al área visible.
+fn refresh_document_appearance(ui:&Rc<Ui>){
+    if adw::StyleManager::default().is_dark(){ui.sidebar.add_css_class("leaf-dark-document");}else{ui.sidebar.remove_css_class("leaf-dark-document");}
+    if let Some(d)=ui.current.borrow_mut().as_mut(){
+        d.painted_pages.clear();
+        for p in &d.pages{p.set_paintable(None::<&gdk::Paintable>);}
+        d.painted_thumbs.clear();
+        for p in &d.thumbs{p.set_paintable(None::<&gdk::Paintable>);}
+    }
+    refresh_pages(ui);refresh_thumbnails(ui);refresh_selection(ui);
+}
+
 fn refresh_pages(ui: &Rc<Ui>) {
     sync_raster_scale(ui);
     let adj = ui.scroll.vadjustment();
@@ -520,7 +532,7 @@ fn refresh_pages(ui: &Rc<Ui>) {
             }
             for index in visible {
                 if !doc.painted_pages.contains(&index) {
-                    match render_page(&mut doc.session, index, doc.zoom * doc.raster_scale as f32) {
+                    match render_page(&mut doc.session, index, doc.zoom * doc.raster_scale as f32, adw::StyleManager::default().is_dark()) {
                         Ok(img) => {
                             doc.pages[index].set_paintable(Some(&page_paintable::new(img, (doc.sizes[index].0*doc.zoom).ceil() as i32, (doc.sizes[index].1*doc.zoom).ceil() as i32)));
                             doc.painted_pages.insert(index);
@@ -551,7 +563,7 @@ fn refresh_thumbnails(ui: &Rc<Ui>) {
                 let (start,end)=doc.thumb_buttons[i].compute_bounds(&ui.thumbnails_box).map(|r|(r.y()as f64,(r.y()+r.height())as f64)).filter(|(_,end)|*end>0.0).unwrap_or((offset,offset+height));
                 let is_visible = start <= bottom + 250.0 && end >= top - 250.0;
                 if is_visible && !doc.painted_thumbs.contains(&i) {
-                    if let Ok(image) = render_page(&mut doc.session, i, THUMB_SCALE * doc.raster_scale as f32) {
+                    if let Ok(image) = render_page(&mut doc.session, i, THUMB_SCALE * doc.raster_scale as f32, adw::StyleManager::default().is_dark()) {
                         doc.thumbs[i].set_paintable(Some(&page_paintable::new(image, (doc.sizes[i].0*THUMB_SCALE).ceil() as i32, (doc.sizes[i].1*THUMB_SCALE).ceil() as i32)));
                         doc.painted_thumbs.insert(i);
                     }
@@ -672,13 +684,13 @@ fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
     if ui.closed.get(){return;}
     if !session.recovery_ready() {
         if let Err(e)=session.enable_recovery(wordcraft_gnome::preferences::recovery_root(),std::sync::Arc::new(||{})) {
-            ui.toasts.add_toast(Toast::new(&format!("Recuperación: {e}")));
+            ui.toasts.add_toast(Toast::new(&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Recovery: {e}"), &[("e", format!("{}", e))])));
         }
     }
     let layout = session.layout();
     let sizes: Vec<(f32,f32)> = layout.pages.iter().map(|p| (p.w, p.h)).collect();
     if sizes.is_empty() {
-        ui.toasts.add_toast(Toast::new("El documento no contiene páginas"));
+        ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("The document contains no pages")));
         return;
     }
     let zoom = 1.0;
@@ -731,7 +743,7 @@ fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
                     let _ = cr.fill();
                 }
                 if let Some(r) = motion.borrow().position().filter(|r| r.page == i) {
-                    cr.set_source_rgba(0.08, 0.30, 0.74, 1.0);
+                    if adw::StyleManager::default().is_dark(){cr.set_source_rgba(0.55,0.75,1.0,1.0);}else{cr.set_source_rgba(0.08,0.30,0.74,1.0);}
                     cr.rectangle(r.x*z, r.y*z, (r.width*z).max(1.5), (r.height*z).max(2.0));
                     let _ = cr.fill();
                 }
@@ -810,6 +822,7 @@ fn install_css() {
     provider.load_from_data("
       .document-scroll { background: @window_bg_color; }
       .document-sheet { background: white; box-shadow: 0 1px 4px alpha(black, 0.15); }
+      .leaf-dark-document .document-sheet, .leaf-dark-document .thumbnail-sheet { background: #333333; }
       .thumbnail-sheet { background: white; border-radius: 6px; border: 1px solid alpha(black, 0.12); background-clip: content-box; }
       .thumbnail-button { padding: 12px; min-width: 0; min-height: 0; }
       .thumbnail-button.selected-thumb { background: alpha(@window_fg_color, 0.09); }
@@ -832,6 +845,7 @@ fn install_css() {
 
 include!("../gnome_host.rs");
 include!("../gnome_lifecycle.rs");
+include!("../gnome_localization.rs");
 include!("../gnome_document_tools.rs");
 include!("../gnome_format_panels.rs");
 include!("../gnome_tables.rs");
@@ -869,37 +883,37 @@ fn build_tab(
     let window = host.window.clone();
     // Composición oficial: panel adaptable y dos páginas de barras nativas.
     let side_header = HeaderBar::new();
-    let side_title = gtk::Label::new(Some("Editor de documentos"));
+    let side_title = gtk::Label::new(Some(wordcraft_gnome::t!("Document Editor")));
     side_title.add_css_class("heading");side_title.set_ellipsize(gtk::pango::EllipsizeMode::End);side_title.set_max_width_chars(16);
     side_header.set_title_widget(Some(&side_title));
-    let search_toggle=gtk::ToggleButton::new();accessible_name(&search_toggle,"Buscar en el documento");search_toggle.set_icon_name("edit-find-symbolic");search_toggle.set_tooltip_text(Some("Buscar en el documento (Ctrl+F)"));side_header.pack_start(&search_toggle);
+    let search_toggle=gtk::ToggleButton::new();accessible_name(&search_toggle,wordcraft_gnome::t!("Search Document"));search_toggle.set_icon_name("edit-find-symbolic");search_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Search Document (Ctrl+F)")));side_header.pack_start(&search_toggle);
 
-    let open_button=gtk::Button::with_label("Abrir…");
-    let app_menu=gtk::MenuButton::new();app_menu.set_icon_name("open-menu-symbolic");app_menu.set_tooltip_text(Some("Menú principal"));side_header.pack_end(&app_menu);
+    let open_button=gtk::Button::with_label(wordcraft_gnome::t!("Open…"));
+    let app_menu=gtk::MenuButton::new();app_menu.set_icon_name("open-menu-symbolic");app_menu.set_tooltip_text(Some(wordcraft_gnome::t!("Main Menu")));side_header.pack_end(&app_menu);
     let header = HeaderBar::new();
     let title = WindowTitle::new("Leaf", "");
     header.set_title_widget(Some(&title));
 
     let sidebar_button = gtk::ToggleButton::new();
     sidebar_button.set_icon_name("sidebar-show-symbolic");
-    sidebar_button.set_tooltip_text(Some("Mostrar u ocultar miniaturas (F9)"));
+    sidebar_button.set_tooltip_text(Some(wordcraft_gnome::t!("Show or Hide Thumbnails (F9)")));
     header.pack_start(&sidebar_button);
-    let compact_search=gtk::Button::from_icon_name("edit-find-symbolic");accessible_name(&compact_search,"Buscar en el documento");compact_search.set_tooltip_text(Some("Buscar (Ctrl+F)"));header.pack_start(&compact_search);
+    let compact_search=gtk::Button::from_icon_name("edit-find-symbolic");accessible_name(&compact_search,wordcraft_gnome::t!("Search Document"));compact_search.set_tooltip_text(Some(wordcraft_gnome::t!("Search (Ctrl+F)")));header.pack_start(&compact_search);
     let zoom_out = gtk::Button::with_label("−");
-    zoom_out.set_tooltip_text(Some("Reducir zoom (Ctrl+-)"));
+    zoom_out.set_tooltip_text(Some(wordcraft_gnome::t!("Zoom Out (Ctrl+-)")));
     let zoom_in = gtk::Button::with_label("+");
-    zoom_in.set_tooltip_text(Some("Ampliar zoom (Ctrl++)"));
+    zoom_in.set_tooltip_text(Some(wordcraft_gnome::t!("Zoom In (Ctrl++)")));
     let zoom_label = gtk::Label::new(Some("100 %"));
     zoom_label.add_css_class("zoom-value");
-    let fit_button = gtk::Button::with_label("Ajustar al ancho");
-    let normal_zoom = gtk::Button::with_label("Tamaño real (100 %)");
+    let fit_button = gtk::Button::with_label(wordcraft_gnome::t!("Fit Width"));
+    let normal_zoom = gtk::Button::with_label(wordcraft_gnome::t!("Actual Size (100%)"));
     // Si el panel lateral está cerrado, su menú de aplicación debe seguir
     // accesible desde la cabecera principal.
-    let compact_app_menu=gtk::MenuButton::new();compact_app_menu.set_icon_name("open-menu-symbolic");compact_app_menu.set_tooltip_text(Some("Menú principal"));header.pack_end(&compact_app_menu);
+    let compact_app_menu=gtk::MenuButton::new();compact_app_menu.set_icon_name("open-menu-symbolic");compact_app_menu.set_tooltip_text(Some(wordcraft_gnome::t!("Main Menu")));header.pack_end(&compact_app_menu);
 
     let menu_button = gtk::MenuButton::new();
     menu_button.set_icon_name("view-more-symbolic");
-    menu_button.set_tooltip_text(Some("Opciones del documento"));accessible_name(&menu_button,"Opciones del documento");
+    menu_button.set_tooltip_text(Some(wordcraft_gnome::t!("Document Options")));accessible_name(&menu_button,wordcraft_gnome::t!("Document Options"));
     install_document_menu(&menu_button);
     header.pack_end(&menu_button);
     let top_history=gtk::Box::new(gtk::Orientation::Horizontal,0);header.pack_start(&top_history);
@@ -942,8 +956,8 @@ fn build_tab(
     let navigation_pages=gtk::Stack::new();navigation_pages.set_vexpand(true);navigation_pages.add_named(&thumbnails_scroll,Some("thumbnails"));
     let navigation=ToolbarView::new();navigation.set_content(Some(&navigation_pages));navigation.set_bottom_bar_style(adw::ToolbarStyle::Flat);
     let selector=gtk::Box::new(gtk::Orientation::Horizontal,6);selector.add_css_class("sidebar-selector");selector.set_margin_start(6);selector.set_margin_end(6);selector.set_margin_top(5);selector.set_margin_bottom(5);
-    let pages_toggle=gtk::ToggleButton::new();accessible_name(&pages_toggle,"Páginas");pages_toggle.set_child(Some(&sidebar_icon("pages")));pages_toggle.set_tooltip_text(Some("Páginas"));pages_toggle.set_hexpand(true);pages_toggle.add_css_class("flat");pages_toggle.set_widget_name("sidebar-pages");
-    let titles_toggle=gtk::ToggleButton::new();accessible_name(&titles_toggle,"Títulos");titles_toggle.set_child(Some(&sidebar_icon("outline")));titles_toggle.set_tooltip_text(Some("Títulos"));titles_toggle.set_hexpand(true);titles_toggle.add_css_class("flat");titles_toggle.set_widget_name("sidebar-outline");titles_toggle.set_group(Some(&pages_toggle));pages_toggle.set_active(true);
+    let pages_toggle=gtk::ToggleButton::new();accessible_name(&pages_toggle,wordcraft_gnome::t!("Pages"));pages_toggle.set_child(Some(&sidebar_icon("pages")));pages_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Pages")));pages_toggle.set_hexpand(true);pages_toggle.add_css_class("flat");pages_toggle.set_widget_name("sidebar-pages");
+    let titles_toggle=gtk::ToggleButton::new();accessible_name(&titles_toggle,wordcraft_gnome::t!("Headings"));titles_toggle.set_child(Some(&sidebar_icon("outline")));titles_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Headings")));titles_toggle.set_hexpand(true);titles_toggle.add_css_class("flat");titles_toggle.set_widget_name("sidebar-outline");titles_toggle.set_group(Some(&pages_toggle));pages_toggle.set_active(true);
     selector.append(&pages_toggle);selector.append(&titles_toggle);
     let selector_bar=gtk::Box::new(gtk::Orientation::Vertical,0);selector_bar.add_css_class("toolbar");selector_bar.append(&selector);navigation.add_bottom_bar(&selector_bar);sidebar_pages.add_named(&navigation,Some("navigation"));sidebar_toolbar.set_content(Some(&sidebar_pages));
 
@@ -968,7 +982,7 @@ fn build_tab(
     zoom_popover.set_child(Some(&zoom_options));
     let zoom_menu = gtk::MenuButton::new();
     zoom_menu.set_icon_name("view-more-symbolic");
-    zoom_menu.set_tooltip_text(Some("Opciones de zoom"));
+    zoom_menu.set_tooltip_text(Some(wordcraft_gnome::t!("Zoom Options")));
     zoom_menu.add_css_class("osd"); zoom_menu.add_css_class("circular");
     zoom_menu.set_popover(Some(&zoom_popover));
     zoom_menu.set_direction(gtk::ArrowType::Up);
@@ -991,21 +1005,21 @@ fn build_tab(
     let undo_button = gtk::Button::from_icon_name("edit-undo-symbolic");
     let redo_button = gtk::Button::from_icon_name("edit-redo-symbolic");
     undo_button.set_child(Some(&history_icon(false)));redo_button.set_child(Some(&history_icon(true)));undo_button.add_css_class("image-button");redo_button.add_css_class("image-button");
-    undo_button.update_property(&[gtk::accessible::Property::Label("Deshacer")]);redo_button.update_property(&[gtk::accessible::Property::Label("Rehacer")]);
-    undo_button.set_tooltip_text(Some("Deshacer (Ctrl+Z)"));
-    redo_button.set_tooltip_text(Some("Rehacer (Ctrl+Shift+Z)"));
+    undo_button.update_property(&[gtk::accessible::Property::Label(wordcraft_gnome::t!("Undo"))]);redo_button.update_property(&[gtk::accessible::Property::Label(wordcraft_gnome::t!("Redo"))]);
+    undo_button.set_tooltip_text(Some(wordcraft_gnome::t!("Undo (Ctrl+Z)")));
+    redo_button.set_tooltip_text(Some(wordcraft_gnome::t!("Redo (Ctrl+Shift+Z)")));
     undo_button.set_sensitive(false); redo_button.set_sensitive(false);
     let history_tools=gtk::Box::new(gtk::Orientation::Horizontal,0);history_tools.append(&undo_button);history_tools.append(&redo_button);format_bar.append(&history_tools);
     let history_separator=gtk::Separator::new(gtk::Orientation::Vertical);format_bar.append(&history_separator);
     let format_tools=gtk::Box::new(gtk::Orientation::Horizontal,0);format_bar.append(&format_tools);
     let bold_button = gtk::ToggleButton::with_label("B");
-    bold_button.set_tooltip_text(Some("Negrita (Ctrl+B)"));
+    bold_button.set_tooltip_text(Some(wordcraft_gnome::t!("Bold (Ctrl+B)")));
     bold_button.add_css_class("flat");
     let italic_button = gtk::ToggleButton::with_label("I");
-    italic_button.set_tooltip_text(Some("Cursiva (Ctrl+I)"));
+    italic_button.set_tooltip_text(Some(wordcraft_gnome::t!("Italic (Ctrl+I)")));
     italic_button.add_css_class("flat");
     let underline_button = gtk::ToggleButton::with_label("U");
-    underline_button.set_tooltip_text(Some("Subrayado (Ctrl+U)"));
+    underline_button.set_tooltip_text(Some(wordcraft_gnome::t!("Underline (Ctrl+U)")));
     underline_button.add_css_class("flat");
     let text_popover = gtk::Popover::new();text_popover.add_css_class("format-popover");
     let text_options = gtk::Box::new(gtk::Orientation::Vertical, 12);
@@ -1014,44 +1028,44 @@ fn build_tab(
     let inline_buttons = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     inline_buttons.append(&bold_button); inline_buttons.append(&italic_button);
     inline_buttons.append(&underline_button);
-    let text_header=format_popover_header(&text_popover,&text_options,"Texto",&format_group);
+    let text_header=format_popover_header(&text_popover,&text_options,wordcraft_gnome::t!("Text"),&format_group);
     text_options.append(&inline_buttons);
-    let font_label = gtk::Label::new(Some("Fuente")); font_label.set_halign(gtk::Align::Start);
+    let font_label = gtk::Label::new(Some(wordcraft_gnome::t!("Font"))); font_label.set_halign(gtk::Align::Start);
     text_options.append(&font_label);
-    let font_dialog = gtk::FontDialog::new(); font_dialog.set_title("Elegir fuente");
-    let font_button = gtk::Button::with_label("Elegir fuente…");
-    font_button.set_tooltip_text(Some("Elegir una familia tipográfica instalada"));
+    let font_dialog = gtk::FontDialog::new(); font_dialog.set_title(wordcraft_gnome::t!("Choose Font"));
+    let font_button = gtk::Button::with_label(wordcraft_gnome::t!("Choose Font…"));
+    font_button.set_tooltip_text(Some(wordcraft_gnome::t!("Choose an Installed Font Family")));
     text_options.append(&font_button);
-    let size_label = gtk::Label::new(Some("Tamaño de letra"));
+    let size_label = gtk::Label::new(Some(wordcraft_gnome::t!("Font Size")));
     size_label.set_halign(gtk::Align::Start);
     text_options.append(&size_label);
     let custom_size_row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     let size_input = gtk::SpinButton::with_range(1.0, 1638.0, 0.5);
     size_input.set_digits(1); size_input.set_value(12.0); size_input.set_hexpand(true);
-    size_input.set_tooltip_text(Some("Tamaño en puntos, también con decimales"));
-    let apply_size = gtk::Button::with_label("Aplicar");apply_size.set_widget_name("text-apply-size");
+    size_input.set_tooltip_text(Some(wordcraft_gnome::t!("Size in Points, Including Decimals")));
+    let apply_size = gtk::Button::with_label(wordcraft_gnome::t!("Apply"));apply_size.set_widget_name("text-apply-size");
     custom_size_row.append(&size_input); custom_size_row.append(&apply_size);
     text_options.append(&custom_size_row);
     let sizes = gtk::Grid::new();
     sizes.set_row_spacing(6); sizes.set_column_spacing(6);
     text_options.append(&sizes);
-    let more_text=gtk::Button::with_label("Más opciones de texto…");
+    let more_text=gtk::Button::with_label(wordcraft_gnome::t!("More Text Options…"));
     text_options.append(&more_text);
     text_popover.set_child(Some(&text_options));
     let text_menu = gtk::MenuButton::new();
-    format_menu_label(&text_menu,"Texto");
-    text_menu.set_tooltip_text(Some("Negrita, cursiva, subrayado y tamaño de letra"));
+    format_menu_label(&text_menu,wordcraft_gnome::t!("Text"));
+    text_menu.set_tooltip_text(Some(wordcraft_gnome::t!("Bold, Italic, Underline and Font Size")));
     text_menu.set_popover(Some(&text_popover));
     text_menu.set_direction(gtk::ArrowType::Up);
 
     let mut format_actions: Vec<(gtk::Button, Format, gtk::Popover)> = Vec::new();
-    let style_menu=gtk::MenuButton::new();format_menu_label(&style_menu,"Estilo");style_menu.set_direction(gtk::ArrowType::Up);style_menu.set_tooltip_text(Some("Aplicar y gestionar estilos"));
+    let style_menu=gtk::MenuButton::new();format_menu_label(&style_menu,wordcraft_gnome::t!("Style"));style_menu.set_direction(gtk::ArrowType::Up);style_menu.set_tooltip_text(Some(wordcraft_gnome::t!("Apply and Manage Styles")));
     for (index, size) in [10u8, 11, 12, 14, 16, 18, 24, 36].iter().enumerate() {
         let button = gtk::Button::with_label(&format!("{size} pt"));
         sizes.attach(&button, (index % 4) as i32, (index / 4) as i32, 1, 1);
         format_actions.push((button, Format::FontSize(*size), text_popover.clone()));
     }
-    let align_menu=gtk::MenuButton::new();format_menu_label(&align_menu,"Párrafo");align_menu.set_direction(gtk::ArrowType::Up);align_menu.set_tooltip_text(Some("Formato de párrafo"));
+    let align_menu=gtk::MenuButton::new();format_menu_label(&align_menu,wordcraft_gnome::t!("Paragraph"));align_menu.set_direction(gtk::ArrowType::Up);align_menu.set_tooltip_text(Some(wordcraft_gnome::t!("Paragraph Formatting")));
     format_tools.append(&style_menu);format_tools.append(&align_menu);format_tools.append(&text_menu);
     let format_toolbar = gtk::ScrolledWindow::new();
     format_toolbar.set_policy(gtk::PolicyType::Automatic, gtk::PolicyType::Never);
@@ -1102,7 +1116,7 @@ fn build_tab(
         drag_anchor: RefCell::new(None),
         dirty: Cell::new(false), thumbnail_refresh_pending: Cell::new(false),
         closing_confirmed: Cell::new(false),
-        tab_page: RefCell::new(Some(tab_page.clone())), closed: Cell::new(false),autosave_source:RefCell::new(None),
+        tab_page: RefCell::new(Some(tab_page.clone())), closed: Cell::new(false),autosave_source:RefCell::new(None),theme_signal:RefCell::new(None),
         restoring: Cell::new(false), autosave_error: RefCell::new(None),
         pending_tab_close: RefCell::new(None),
         save_path: RefCell::new(None),
@@ -1169,7 +1183,7 @@ fn build_tab(
     let style_popover=install_style_popover(&ui,&style_menu);ui.style.replace(Some(style_popover.clone()));
     ui.format_buttons.replace(vec![style_menu.clone(),align_menu.clone(),text_menu.clone()]);
     let adaptive=Rc::new(AdaptiveTools{ui:Rc::downgrade(&ui),history:history_tools,formats:format_tools,top_history,top_formats,bottom:format_bar.clone(),separator:history_separator,narrow:Cell::new(true),generation:Cell::new(0)});
-    for(menu,label,kind)in[(&style_menu,"Estilo","style"),(&align_menu,"Párrafo","paragraph"),(&text_menu,"Texto","text")]{format_icon_button(menu,label,kind);}
+    for(menu,label,kind)in[(&style_menu,wordcraft_gnome::t!("Style"),"style"),(&align_menu,wordcraft_gnome::t!("Paragraph"),"paragraph"),(&text_menu,wordcraft_gnome::t!("Text"),"text")]{format_icon_button(menu,label,kind);}
     ui.adaptive.replace(Some(adaptive.clone()));adaptive.sync_width(if narrow_on_start{420}else{900});
     let table_menu=install_table_controls(&ui,&window,&format_bar);
     let table_pop=table_menu.popover().unwrap();ui.table_popover.replace(Some(table_pop.clone()));
@@ -1179,6 +1193,10 @@ fn build_tab(
     host.docs.borrow_mut().push((tab_page,ui.clone()));
     install_main_menu(&app_menu);install_main_menu(&compact_app_menu);refresh_main_actions(host);
     install_autosave(&ui);
+    {let weak=Rc::downgrade(&ui);let manager=adw::StyleManager::default();
+      let id=manager.connect_dark_notify(move|_|{if let Some(ui)=weak.upgrade(){if !ui.closed.get(){refresh_document_appearance(&ui);}}});
+      ui.theme_signal.replace(Some(id));refresh_document_appearance(&ui);
+    }
     for (button, edit) in [(undo_button, Edit::Undo), (redo_button, Edit::Redo)] {
         let ui = ui.clone();
         button.connect_clicked(glib::clone!(#[weak] ui, move |_| {
@@ -1200,7 +1218,7 @@ fn build_tab(
                             apply_format_operation(&ui, |session| formatting::font(session, &name));
                         }
                         Err(e) if e.matches(gtk::DialogError::Dismissed) || e.matches(gtk::DialogError::Cancelled) => {},
-                        Err(e) => ui.toasts.add_toast(Toast::new(&format!("No se pudo elegir fuente: {e}"))),
+                        Err(e) => ui.toasts.add_toast(Toast::new(&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Could Not Choose Font: {e}"), &[("e", format!("{}", e))]))),
                     }
                 }));
         }));
@@ -1567,9 +1585,9 @@ fn build_tab(
         let host=host.clone();
         open_button.connect_clicked(glib::clone!(#[weak] ui, #[weak] parent, #[weak] app, #[weak] host, move |_| {
             let dialog = gtk::FileDialog::new();
-            dialog.set_title("Abrir documento");
+            dialog.set_title(wordcraft_gnome::t!("Open Document"));
             let filter = gtk::FileFilter::new();
-            filter.set_name(Some("Documentos DOCX y ODT"));
+            filter.set_name(Some(wordcraft_gnome::t!("DOCX and ODT Documents")));
             filter.add_pattern("*.docx");
             filter.add_pattern("*.odt");
             let filters = gio::ListStore::new::<gtk::FileFilter>();
@@ -1582,13 +1600,13 @@ fn build_tab(
                 if ui.closed.get(){return;}
                 let Ok(file) = result else { return };
                 let Some(path) = file.path() else {
-                    ui.toasts.add_toast(Toast::new("Solo se admiten archivos locales"));
+                    ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!("Only local files are supported")));
                     return;
                 };
                 match open_document(Path::new(&path)) {
                     Ok(session) => {
                         let label = path.file_name().map(|n| n.to_string_lossy().into_owned())
-                            .unwrap_or_else(|| "Documento".to_string());
+                            .unwrap_or_else(|| wordcraft_gnome::t!("Document").to_string());
                         if ui.current.borrow().as_ref().is_none_or(|doc|doc.session.is_untouched_blank()) {
                             opened(&ui, session, &label);
                         } else {
@@ -1604,14 +1622,15 @@ fn build_tab(
     if let Some((session, label)) = initial_document {
         opened(&ui, session, &label);
     } else if sample_on_start { opened(&ui, sample_session(), "Prueba de interfaz"); }
-    else {opened(&ui,Session::new(wordcraft_doc::Document::new()),"Documento nuevo");}
+    else {opened(&ui,Session::new(wordcraft_doc::Document::new()),wordcraft_gnome::t!("New Document"));}
     {let weak=Rc::downgrade(&ui);ui.document_box.connect_scale_factor_notify(move |_|{
         let weak=weak.clone();glib::idle_add_local_once(move||{if let Some(ui)=weak.upgrade(){if !ui.closed.get(){refresh_pages(&ui);refresh_thumbnails(&ui);}}});
     });}
     window.present();
+    if std::env::args().any(|a|a=="--localization-ui-test"){let u=ui.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(700),move||localization_ui_test(&u,&a));}
     install_table_context_menu(&ui,&window);
     if std::env::args().any(|a|a=="--adaptive-ui-test"){let u=ui.clone();let w=window.clone();let app=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(1400),move||adaptive_ui_test(&u,&w,&app));}
-    if let Some(label)=std::env::args().find_map(|a|match a.as_str(){"--context-style-demo"=>Some("Estilo"),"--context-paragraph-demo"=>Some("Párrafo"),"--context-text-demo"=>Some("Texto"),_=>None}){let u=ui.clone();let w=window.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(1400),move||{let p=show_document_context(&u,&w,140,160,DocumentContext::Text);context_activate_row(&p,label);});}
+    if let Some(label)=std::env::args().find_map(|a|match a.as_str(){"--context-style-demo"=>Some(wordcraft_gnome::t!("Style")),"--context-paragraph-demo"=>Some(wordcraft_gnome::t!("Paragraph")),"--context-text-demo"=>Some(wordcraft_gnome::t!("Text")),_=>None}){let u=ui.clone();let w=window.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(1400),move||{let p=show_document_context(&u,&w,140,160,DocumentContext::Text);context_activate_row(&p,label);});}
 
     if std::env::args().any(|a|a=="--context-ui-test"){let u=ui.clone();let w=window.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(1200),move||context_ui_test(&u,&w,&a));}
     if std::env::args().any(|a|a=="--table-keyboard-test") {
@@ -1700,7 +1719,7 @@ fn build_tab(
             if ui.closed.get(){return;}
             let records=ui.current.borrow().as_ref().map(|d|d.session.recovery_documents()).unwrap_or_default();
             if !records.is_empty() {
-                let toast=Toast::new("Hay documentos pendientes de recuperar");toast.set_button_label(Some("Recuperar"));
+                let toast=Toast::new(wordcraft_gnome::t!("There Are Documents to Recover"));toast.set_button_label(Some(wordcraft_gnome::t!("Recover")));
                 let next=ui.clone();toast.connect_button_clicked(glib::clone!(#[weak] next, #[weak] parent, #[weak] app, #[weak] host, move |_|show_recovery(&next,&parent,&app,&host)));
                 ui.toasts.add_toast(toast);
             }
@@ -1765,6 +1784,7 @@ fn build_tab(
 }
 
 fn main() {
+    wordcraft_gnome::i18n::init();
     if std::env::args().any(|arg| arg == "--version") {
         println!("Leaf {APP_VERSION}");
         return;
@@ -1798,8 +1818,8 @@ fn main() {
         if !input_files.is_empty() {
             for argument in &input_files {
                 let file=gio::File::for_commandline_arg(argument);
-                let result=file.path().ok_or_else(||"Solo se admiten archivos locales".to_string())
-                    .and_then(|path|open_document(&path).map(|session|(session,path.file_name().map(|s|s.to_string_lossy().into_owned()).unwrap_or_else(||"Documento".into()))));
+                let result=file.path().ok_or_else(||wordcraft_gnome::t!("Only local files are supported").to_string())
+                    .and_then(|path|open_document(&path).map(|session|(session,path.file_name().map(|s|s.to_string_lossy().into_owned()).unwrap_or_else(||wordcraft_gnome::t!("Document").into()))));
                 match result {
                     Ok(initial)=>{
                         if std::env::args().any(|a|a=="--launch-file-test") {
@@ -1818,8 +1838,8 @@ fn main() {
                     Err(error)=>{
                         if std::env::args().any(|a|a=="--launch-file-test"){panic!("external file failed: {error}");}
                         let window=make_window(app,false,true,false,false,false,false,false,None);
-                        let dialog=adw::MessageDialog::new(Some(&window),Some("No se pudo abrir el documento"),Some(&error));
-                        dialog.add_response("close","Cerrar");dialog.present();
+                        let dialog=adw::MessageDialog::new(Some(&window),Some(wordcraft_gnome::t!("Could Not Open Document")),Some(&error));
+                        dialog.add_response("close",wordcraft_gnome::t!("Close"));dialog.present();
                     }
                 }
             }

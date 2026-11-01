@@ -1,6 +1,6 @@
 // Native formatting panels. All document mutations use upstream public commands.
 fn format_execute(ui:&Rc<Ui>, command:&str, args:serde_json::Value)->Result<(),String>{
-    let changed={let mut value=ui.current.borrow_mut();let doc=value.as_mut().ok_or("No hay documento")?;
+    let changed={let mut value=ui.current.borrow_mut();let doc=value.as_mut().ok_or(wordcraft_gnome::t!("No document"))?;
         let rev=doc.session.rev();doc.session.run(command,&args).map_err(|e|e.to_string())?;doc.session.rev()!=rev};
     if changed {after_content_change(ui);} else if command=="view.marks" {
         let dirty=ui.dirty.get();let subtitle=ui.title.subtitle().to_string();
@@ -19,7 +19,7 @@ fn panel_group(p:&adw::PreferencesPage,title:&str)->adw::PreferencesGroup{
     let g=adw::PreferencesGroup::new();g.set_title(title);p.add(&g);g
 }
 fn panel_action(g:&adw::PreferencesGroup,label:&str,ui:&Rc<Ui>,w:&adw::PreferencesWindow,command:&'static str,args:serde_json::Value){
-    let row=adw::ActionRow::new();row.set_title(label);let b=gtk::Button::with_label("Aplicar");b.set_valign(gtk::Align::Center);accessible_name(&b,&format!("Aplicar {label}"));row.add_suffix(&b);g.add(&row);
+    let row=adw::ActionRow::new();row.set_title(label);let b=gtk::Button::with_label(wordcraft_gnome::t!("Apply"));b.set_valign(gtk::Align::Center);accessible_name(&b,&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Apply {label}"), &[("label", format!("{}", label))]));row.add_suffix(&b);g.add(&row);
     let ui=ui.clone();let w=w.clone();b.connect_clicked(glib::clone!(#[weak] ui, #[weak] w, move |_|{if let Err(e)=format_execute(&ui,command,args.clone()){w.add_toast(Toast::new(&e));}}));
 }
 fn panel_toggle(g:&adw::PreferencesGroup,label:&str,active:bool,ui:&Rc<Ui>,w:&adw::PreferencesWindow,command:&'static str){
@@ -36,16 +36,16 @@ fn panel_entry(g:&adw::PreferencesGroup,label:&str,text:&str)->gtk::Entry{
 }
 fn panel_choice(g:&adw::PreferencesGroup,label:&str,options:&[(&str,&str)],ui:&Rc<Ui>,w:&adw::PreferencesWindow,command:&'static str,key:&'static str){
     let row=adw::ComboRow::new();row.set_title(label);
-    let labels:Vec<&str>=std::iter::once("Elegir…").chain(options.iter().map(|o|o.0)).collect();row.set_model(Some(&gtk::StringList::new(&labels)));row.set_selected(0);g.add(&row);
+    let labels:Vec<&str>=std::iter::once(wordcraft_gnome::t!("Choose…")).chain(options.iter().map(|o|o.0)).collect();row.set_model(Some(&gtk::StringList::new(&labels)));row.set_selected(0);g.add(&row);
     let values:Vec<String>=options.iter().map(|x|x.1.to_string()).collect();let ui=ui.clone();let w=w.clone();
     row.connect_selected_notify(glib::clone!(#[weak] ui, #[weak] w, move|r|{if let Some(v)=r.selected().checked_sub(1).and_then(|i|values.get(i as usize)){
         let args=serde_json::json!({key:v});if let Err(e)=format_execute(&ui,command,args){w.add_toast(Toast::new(&e));}
     }}));
 }
 fn panel_color(g:&adw::PreferencesGroup,label:&str,ui:&Rc<Ui>,w:&adw::PreferencesWindow,command:&'static str){
-    let row=adw::ActionRow::new();row.set_title(label);let b=gtk::Button::with_label("Elegir…");b.set_valign(gtk::Align::Center);accessible_name(&b,&format!("Aplicar {label}"));row.add_suffix(&b);g.add(&row);
+    let row=adw::ActionRow::new();row.set_title(label);let b=gtk::Button::with_label(wordcraft_gnome::t!("Choose…"));b.set_valign(gtk::Align::Center);accessible_name(&b,&wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Apply {label}"), &[("label", format!("{}", label))]));row.add_suffix(&b);g.add(&row);
     let ui=ui.clone();let w=w.clone();b.connect_clicked(glib::clone!(#[weak] ui, #[weak] w, move|_|{
-        let dialog=gtk::ColorDialog::new();dialog.set_title("Elegir color");dialog.set_with_alpha(false);
+        let dialog=gtk::ColorDialog::new();dialog.set_title(wordcraft_gnome::t!("Choose Color"));dialog.set_with_alpha(false);
         let ui=ui.clone();let w2=w.clone();
         dialog.choose_rgba(Some(&w),None::<&gdk::RGBA>,None::<&gio::Cancellable>,glib::clone!(#[weak] ui, #[weak] w2, move|result|{
             match result{

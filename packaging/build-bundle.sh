@@ -3,7 +3,7 @@
 set -euo pipefail
 app_id=io.github.frandavid100.leaf
 runtime_version=49
-version=0.1.0-alpha.6
+version=0.1.0-alpha.7
 binary=${1:?Usage: build-bundle.sh TESTED_BINARY}
 work=flatpak-build
 repo=flatpak-repo
@@ -14,6 +14,9 @@ flatpak --user install -y --noninteractive flathub "org.gnome.Platform//$runtime
 # No SDK compilation is performed here; the tested Ubuntu-built executable is staged.
 flatpak build-init "$work" "$app_id" org.gnome.Platform org.gnome.Platform "$runtime_version"
 install -Dm0755 "$binary" "$work/files/bin/leaf"
+python tools/update_translations.py --check --compile
+mkdir -p "$work/files/share/locale"
+cp -R po/locale/. "$work/files/share/locale/"
 install -Dm0644 data/io.github.frandavid100.leaf.desktop "$work/files/share/applications/$app_id.desktop"
 install -Dm0644 data/io.github.frandavid100.leaf.metainfo.xml "$work/files/share/metainfo/$app_id.metainfo.xml"
 install -Dm0644 data/icons/hicolor/scalable/apps/leaf.svg "$work/files/share/icons/hicolor/scalable/apps/$app_id.svg"
@@ -26,14 +29,14 @@ install -Dm0644 vendor/wordcraft-formats/LICENSE-APACHE "$work/files/share/licen
 flatpak build-finish --command=leaf --share=ipc --socket=wayland --socket=fallback-x11 --device=dri "$work"
 flatpak build-export "$repo" "$work" alpha
 flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo "$repo" "$out/Leaf-$version-x86_64.flatpak" "$app_id" alpha
-if test -f prior-release/Leaf-0.1.0-alpha.5-x86_64.flatpak; then
-  flatpak --user install -y --noninteractive prior-release/Leaf-0.1.0-alpha.5-x86_64.flatpak
+if test -f prior-release/Leaf-0.1.0-alpha.6-x86_64.flatpak; then
+  flatpak --user install -y --noninteractive prior-release/Leaf-0.1.0-alpha.6-x86_64.flatpak
   # Seed persistent data without starting a document portal outside the smoke-test bus.
   mkdir -p "$HOME/.var/app/$app_id/data"
   printf retained > "$HOME/.var/app/$app_id/data/upgrade-test"
 fi
 flatpak --user install -y --noninteractive "$out/Leaf-$version-x86_64.flatpak"
-if test -f prior-release/Leaf-0.1.0-alpha.5-x86_64.flatpak; then
+if test -f prior-release/Leaf-0.1.0-alpha.6-x86_64.flatpak; then
   grep -q retained "$HOME/.var/app/$app_id/data/upgrade-test"
   echo FLATPAK_UPGRADE_OK
 fi

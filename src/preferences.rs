@@ -18,7 +18,7 @@ pub fn autosave_mode() -> u32 {
         .and_then(|v| v["autosave"].as_u64()).filter(|v| *v <= 2).unwrap_or(1) as u32
 }
 pub fn set_autosave_mode(mode: u32) -> Result<(), String> {
-    if mode > 2 { return Err("Modo de autoguardado desconocido".into()); }
+    if mode > 2 { return Err(wordcraft_gnome::t!("Unknown Autosave Mode").into()); }
     let dir = config_root(); std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     let temp = dir.join(format!("preferences-{}.tmp", std::process::id()));
     std::fs::write(&temp, serde_json::json!({"autosave":mode}).to_string()).map_err(|e| e.to_string())?;

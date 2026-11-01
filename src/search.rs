@@ -41,7 +41,7 @@ pub fn query(s: &mut Session, text: &str, match_case: bool) -> Result<Vec<Hit>, 
 }
 
 pub fn select(s: &mut Session, hit: &Hit) -> Result<(), String> {
-    if s.document_id()!=hit.document || s.rev()!=hit.revision {return Err("El documento ha cambiado; la búsqueda se ha actualizado".into());}
+    if s.document_id()!=hit.document || s.rev()!=hit.revision {return Err(wordcraft_gnome::t!("The document has changed; search results have been updated").into());}
     selection::select_range(s,&hit.start,&hit.end)
 }
 

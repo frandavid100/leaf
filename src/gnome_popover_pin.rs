@@ -15,7 +15,7 @@ impl FormatHeader {
 #[derive(Default)]
 struct FormatPopoverGroup {pinned:Cell<bool>,entries:RefCell<Vec<(glib::WeakRef<gtk::Popover>,Rc<FormatHeader>)>>,hosts:RefCell<Vec<glib::WeakRef<gtk::Popover>>>}
 impl FormatPopoverGroup {
-    fn pin(&self,on:bool){if self.pinned.replace(on)==on{return;}for(_,h)in self.entries.borrow().iter(){h.pin.set_active(on);h.pin.set_tooltip_text(Some(if on{"Dejar de mantener abierto"}else{"Mantener abierto"}));}}
+    fn pin(&self,on:bool){if self.pinned.replace(on)==on{return;}for(_,h)in self.entries.borrow().iter(){h.pin.set_active(on);h.pin.set_tooltip_text(Some(if on{wordcraft_gnome::t!("Unpin")}else{wordcraft_gnome::t!("Pin")}));}}
     fn show(&self,pop:&gtk::Popover){for weak in self.hosts.borrow().iter(){if let Some(p)=weak.upgrade(){if p!=*pop{p.popdown();}}}for(weak,h)in self.entries.borrow().iter(){if let Some(p)=weak.upgrade(){if p!=*pop{p.popdown();}h.pin.set_active(self.pinned.get());}}}
     fn outside(&self,gesture:&gtk::GestureClick,window:&ApplicationWindow,x:f64,y:f64){
         if self.pinned.get(){return;}let surface=gesture.current_event().and_then(|e|e.surface());
@@ -35,7 +35,7 @@ fn format_popover_header(pop:&gtk::Popover,root:&gtk::Box,title:&str,group:&Rc<F
     let row=gtk::Box::new(gtk::Orientation::Horizontal,6);let button=gtk::Button::new();button.add_css_class("flat");button.set_hexpand(true);
     let content=gtk::Box::new(gtk::Orientation::Horizontal,6);let arrow=gtk::Image::from_icon_name("go-previous-symbolic");content.append(&arrow);
     let label=gtk::Label::new(Some(title));label.set_xalign(0.0);label.set_hexpand(true);label.set_ellipsize(gtk::pango::EllipsizeMode::End);label.add_css_class("heading");content.append(&label);button.set_child(Some(&content));row.append(&button);
-    let pin=gtk::ToggleButton::new();pin.add_css_class("flat");pin.set_widget_name("format-pin");pin.set_tooltip_text(Some("Mantener abierto"));accessible_name(&pin,"Mantener abierto");
+    let pin=gtk::ToggleButton::new();pin.add_css_class("flat");pin.set_widget_name("format-pin");pin.set_tooltip_text(Some(wordcraft_gnome::t!("Pin")));accessible_name(&pin,wordcraft_gnome::t!("Pin"));
     let icon=gtk::DrawingArea::new();icon.set_content_width(18);icon.set_content_height(18);icon.set_halign(gtk::Align::Center);icon.set_valign(gtk::Align::Center);
     icon.set_draw_func(|w,c,_,_|{let f=w.color();c.set_source_rgba(f.red()as f64,f.green()as f64,f.blue()as f64,f.alpha()as f64);c.set_line_width(1.4);c.set_line_join(gtk::cairo::LineJoin::Round);c.move_to(5.0,2.5);c.line_to(13.0,2.5);c.move_to(6.0,2.5);c.line_to(6.0,7.5);c.line_to(3.5,11.0);c.line_to(14.5,11.0);c.line_to(12.0,7.5);c.line_to(12.0,2.5);c.move_to(9.0,11.0);c.line_to(9.0,16.0);let _=c.stroke();});pin.set_child(Some(&icon));row.append(&pin);root.append(&row);root.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     let back:FormatBack=Rc::new(RefCell::new(None));let action=back.clone();button.connect_clicked(move |_|{let f=action.borrow().clone();if let Some(f)=f{f();}});

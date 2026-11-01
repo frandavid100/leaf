@@ -2,6 +2,8 @@
 set -euo pipefail
 app_id=io.github.frandavid100.leaf
 export GSK_RENDERER=cairo
+export LC_ALL=en_US.UTF-8
+export LANGUAGE=es
 export XDG_CURRENT_DESKTOP=GNOME
 export XDG_DATA_DIRS="$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 dbus-update-activation-environment DISPLAY XDG_CURRENT_DESKTOP XDG_DATA_DIRS
@@ -9,7 +11,7 @@ mkdir -p "$HOME/.config/xdg-desktop-portal"
 printf '[preferred]\ndefault=gtk\n' > "$HOME/.config/xdg-desktop-portal/portals.conf"
 flatpak run --command=sh "$app_id" -c 'grep -q retained "$XDG_DATA_HOME/upgrade-test"'
 echo FLATPAK_UPGRADE_SANDBOX_OK
-flatpak run "$app_id" --version | grep -F 'Leaf 0.1.0-alpha.6'
+flatpak run "$app_id" --version | grep -F 'Leaf 0.1.0-alpha.7'
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --columns-ui-test 2>dist/flatpak-columns.log
 grep -q COLUMNS_UI_OK dist/flatpak-columns.log
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --chrome-ui-test 2>dist/flatpak-chrome.log
@@ -21,6 +23,11 @@ grep -q 'HIDPI_UI_OK scale=2' dist/flatpak-hidpi.log
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --lifecycle-ui-test 2>dist/flatpak-lifecycle.log
 grep -q LIFECYCLE_UI_OK dist/flatpak-lifecycle.log
 echo FLATPAK_LIFECYCLE_OK
+for language in en es; do
+  flatpak run --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="$language" --socket=x11 --nosocket=wayland "$app_id" --localization-ui-test 2>"dist/flatpak-localization-$language.log"
+  grep -q "LOCALIZATION_UI_OK language=$language" "dist/flatpak-localization-$language.log"
+done
+echo FLATPAK_LOCALIZATION_OK
 # Show and cancel the real system print dialog; never send to a printer.
 bash tools/print_dialog_test.sh bash tools/flatpak_print_run.sh
 cp print-dialog.log print-dialog.png dist/
@@ -60,7 +67,7 @@ flatpak run --command=sh "$app_id" -c '
 flatpak run --command=sh "$app_id" -c 'unset XDG_STATE_HOME; exec /app/bin/leaf --package-storage-test' | grep PACKAGE_STORAGE_OK
 flatpak --user uninstall -y --noninteractive "$app_id"
 # Intentionally do not pass --delete-data: verify normal reinstall preserves app data.
-flatpak --user install -y --noninteractive dist/Leaf-0.1.0-alpha.6-x86_64.flatpak
+flatpak --user install -y --noninteractive dist/Leaf-0.1.0-alpha.7-x86_64.flatpak
 flatpak run --command=sh "$app_id" -c '
   grep -q "autosave.*0" "$XDG_CONFIG_HOME/wordcraft-gnome/preferences.json"
   leaf_state_root="${XDG_STATE_HOME:-$XDG_DATA_HOME/state}/wordcraft-gnome/recovery"

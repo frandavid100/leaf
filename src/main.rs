@@ -16,11 +16,11 @@ fn run() -> Result<(), String> {
     if let Some(position) = args.iter().position(|s| s == "--png") {
         let output = args.get(position + 1).ok_or("Falta la ruta después de --png")?;
         let layout = session.layout();
-        let first = layout.pages.first().ok_or("El documento está vacío")?;
+        let first = layout.pages.first().ok_or(wordcraft_gnome::t!("The document is empty"))?;
         let image = wordcraft_render::render_page(&session.doc, first, 1.0, &Default::default());
         let png = image.to_png();
         if png.is_empty() {
-            return Err("No se pudo codificar la imagen PNG".into());
+            return Err(wordcraft_gnome::t!("Could Not Encode PNG Image").into());
         }
         std::fs::write(output, png).map_err(|e| e.to_string())?;
         println!("PNG guardado: {output}");
@@ -29,6 +29,7 @@ fn run() -> Result<(), String> {
 }
 
 fn main() {
+    wordcraft_gnome::i18n::init();
     if let Err(err) = run() {
         eprintln!("ERROR: {err}");
         std::process::exit(1);

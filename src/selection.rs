@@ -48,7 +48,7 @@ pub fn move_caret(session: &mut Session, action: &str, extend: bool) -> Result<(
         "home" => "caret.home", "end" => "caret.end",
         "docStart" => "caret.docStart", "docEnd" => "caret.docEnd",
         "wordLeft" => "caret.wordLeft", "wordRight" => "caret.wordRight",
-        _ => return Err(format!("Acción de navegación desconocida: {action}")),
+        _ => return Err(wordcraft_gnome::i18n::interpolate(wordcraft_gnome::t!("Unknown Navigation Action: {action}"), &[("action", format!("{}", action))])),
     };
     session.run(id, &json!({"extend": extend})).map_err(|e| e.to_string())?;
     Ok(())

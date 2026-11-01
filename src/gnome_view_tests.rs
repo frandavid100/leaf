@@ -58,7 +58,7 @@ fn view_pointer_test(ui:&Rc<Ui>,menu:&gtk::MenuButton,window:&ApplicationWindow,
 
 // Start without a fixture: the shipped application must open a clean document.
 fn chrome_ui_test(ui:&Rc<Ui>,menu:&gtk::MenuButton,app:&Application){
-    assert_eq!(&*ui.document_name.borrow(),"Documento nuevo");
+    assert_eq!(&*ui.document_name.borrow(),wordcraft_gnome::t!("New Document"));
     assert!(ui.current.borrow().as_ref().unwrap().session.is_untouched_blank());
     if ui.format_toolbar.is_visible(){assert_eq!(ui.sidebar_selector.height(),ui.format_toolbar.height());}
     assert!(menu.popover().unwrap().is::<gtk::PopoverMenu>());
