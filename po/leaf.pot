@@ -41,7 +41,7 @@ msgstr ""
 msgid "Add Bookmark"
 msgstr ""
 
-#: src/gnome/context.rs:495 src/gnome/diagnostics/annotations.rs:93
+#: src/gnome/context.rs:495 src/gnome/diagnostics/annotations.rs:99
 msgid "Add Bookmark…"
 msgstr ""
 
@@ -49,7 +49,7 @@ msgstr ""
 msgid "Add Comment"
 msgstr ""
 
-#: src/gnome/context.rs:507 src/gnome/diagnostics/annotations.rs:94
+#: src/gnome/context.rs:507 src/gnome/diagnostics/annotations.rs:100
 msgid "Add Comment…"
 msgstr ""
 

@@ -48,9 +48,10 @@ propiedades en DOCX no garantiza que esa disposición se dibuje correctamente.
 
 ## Marcadores y comentarios
 
-Se añaden desde Insertar o el clic derecho. La tercera pestaña lateral muestra
-los marcadores por nombre y los comentarios con sus respuestas. Pulsa un marcador
-o «Ir al comentario» para seleccionar su texto. Los marcadores requieren un nombre
+Se añaden desde Insertar o el clic derecho. Los marcadores aparecen bajo su título
+en Navegación; la tercera pestaña muestra solo comentarios, con una burbuja por
+hilo y separadores entre mensajes. Pulsa un marcador o «Ir al comentario» para
+seleccionar su texto. Los marcadores requieren un nombre
 único de hasta 40 caracteres, empezando por letra, sin espacios.
 
 En cada comentario puedes responder; su menú permite editar, resolver/reabrir o

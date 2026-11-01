@@ -141,7 +141,7 @@ pub(super) fn build_tab(
     titles_toggle.set_group(Some(&pages_toggle));
     let annotations_toggle = gtk::ToggleButton::new();
     accessible_name(&annotations_toggle, wordcraft_gnome::t!("Comments"));
-    annotations_toggle.set_icon_name("chat-bubbles-symbolic");
+    annotations_toggle.set_icon_name("chat-message-new-symbolic");
     annotations_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Comments")));
     annotations_toggle.set_hexpand(true);
     annotations_toggle.add_css_class("flat");

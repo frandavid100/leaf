@@ -23,6 +23,12 @@ fn form(ui: &Rc<Ui>) -> AnnotationDialog {
 }
 
 pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
+    let toggle = find_widget(&ui.sidebar_pages, "sidebar-annotations")
+        .unwrap()
+        .downcast::<gtk::ToggleButton>()
+        .unwrap();
+    let theme = gtk::IconTheme::for_display(&ui.document_box.display());
+    assert!(theme.has_icon(toggle.icon_name().as_deref().unwrap()));
     opened(
         ui,
         Session::new(wordcraft_doc::Document::from_text(
