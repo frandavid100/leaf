@@ -479,12 +479,12 @@ jobs:
           fetch-depth: 0
       - name: Verify reused native build is source-identical
         if: contains(github.event.head_commit.message, '[bundle-only]')
-        run: git diff --exit-code 125b6ab96db54169e9f652517d2e255039a66e36 -- src Cargo.toml Cargo.lock tests vendor po data examples tools/interop_audit.py patches/wordcraft-formats-*.patch
+        run: git diff --exit-code d17d12fe9271eaa682cab62333d7e8d873022074 -- src Cargo.toml Cargo.lock tests vendor po data examples tools/interop_audit.py patches/wordcraft-formats-*.patch
       - uses: actions/download-artifact@v4
         with:
           name: wordcraft-gnome-fase3d-linux
           path: native-artifact
-          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '41299085582' || github.run_id }}
+          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '41303104863' || github.run_id }}
           github-token: ${{ github.token }}
       - name: Install Flatpak and desktop validation tools
         run: |
@@ -515,6 +515,22 @@ jobs:
           chmod +x print-sandbox-runner
           xvfb-run -a dbus-run-session -- bash tools/print_test.sh "$PWD/print-sandbox-runner"
           cp print-ui-*.log print-portal-*.log dist/
+      - name: Installed document text with real AT-SPI and Orca
+        env:
+          GTK_A11Y: atspi
+          NO_AT_BRIDGE: '0'
+          GSK_RENDERER: cairo
+          LANGUAGE: en
+          LANG: C.UTF-8
+          XDG_SESSION_TYPE: x11
+          XDG_CURRENT_DESKTOP: GNOME
+        run: |
+          sudo apt-get install -y --no-install-recommends openbox orca python3-pyatspi at-spi2-core gsettings-desktop-schemas
+          set -o pipefail
+          xvfb-run -a dbus-run-session -- /usr/bin/python3 tools/accessibility_audit.py io.github.frandavid100.leaf --sandbox 2>&1 | tee dist/flatpak-accessibility.log
+          grep -q AT_SPI_DOCUMENT_TEXT_OK dist/flatpak-accessibility.log
+          grep -q ORCA_DOCUMENT_SPEECH_OK dist/flatpak-accessibility.log
+          cp -R a11y-results dist/accessibility-audit
       - name: Checksums
         working-directory: dist
         run: sha256sum Leaf-*.flatpak INSTALL.md source-commit.txt runtime.txt runtime-commit.txt flatpak-metadata.txt flatpak-smoke.log > SHA256SUMS
