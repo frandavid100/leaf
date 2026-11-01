@@ -8,6 +8,8 @@ Leaf is an experimental GTK4/libadwaita document editor for Linux, powered by [W
 
 [Read the current README and see screenshots](https://github.com/frandavid100/leaf/blob/wordcraft-saving/README.md).
 
+For contributors: [code map](https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/ARCHITECTURE.md), [contribution guide](https://github.com/frandavid100/leaf/blob/wordcraft-saving/CONTRIBUTING.md), [current roadmap](https://github.com/frandavid100/leaf/blob/wordcraft-saving/ROADMAP.md), and [continuing in another conversation](https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/CONTINUING.md).
+
 ## Status
 
 Alpha.4 repairs the ODT header/footer and repeating-row defects found in our one-off audit. [Follow-up results and remaining limits](https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/ODT_PRESERVATION_2026-10-31.md). Older alpha releases still have those defects.
