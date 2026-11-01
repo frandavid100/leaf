@@ -293,3 +293,34 @@ The proven native source is d17d12fe9271eaa682cab62333d7e8d873022074 /
 run 41303104863. Packaging-only reuse is pinned explicitly in the workflow and
 requires source identity. The installed sandbox has its own reader check before
 publication. Do not bypass either guard when changing application code.
+
+
+## Host performance audit — alpha.13
+
+The audit changes Leaf only; Cargo.toml/Cargo.lock, the pinned engine/render
+revision, vendor and formats patches remain identical to alpha.12. No speculative
+engine patch or dependency update is part of the performance work. A reproducible
+engine defect must be proposed upstream rather than fixed in this frontend.
+
+`Current.overlay_pages` tracks the previous rendered selection/search/caret
+layers. Redraw their union with the new pages to erase stale highlights; caret
+animation queues only its own layer. Header/footer guide activation/closure
+retains full invalidation. Preserve the deselection/search-close regressions.
+
+Thumbnail visibility uses `viewer_layout::ordered_visible_range` with live
+monotonic GTK allocation bounds and the former approximate geometry before
+allocation. Newly appended widgets can share an origin: do not interpret that
+as all thumbnails visible. A weak coalesced idle callback follows adjustment
+geometry changes. The raster cache still contains only the viewport/prefetch
+range. Reopening thumbnails after search must refill invalidated rasters.
+
+Hidden SearchPanel callbacks do not execute queries or reconstruct rows; opening
+the panel refreshes against the current document revision, so stored queries
+remain usable after edits. Existing stale-hit rejection remains enabled.
+
+`gnome_performance.rs`, the optional baseline workflow and
+`tools/performance_compare.py` use synthetic text only, with opt-in metrics,
+AB/BA order and fresh profiles. Boundary spans include Leaf adapter overhead;
+never call them exclusive WordCraft CPU measurements or sum nested spans.
+See docs/HOST_PERFORMANCE_AUDIT.md for evidence and limitations. The full
+compatibility corpus remains manual, not a per-release requirement.

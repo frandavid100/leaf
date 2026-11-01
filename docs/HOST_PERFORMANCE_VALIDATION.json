@@ -1,0 +1,3976 @@
+{
+  "version": "0.1.0-alpha.13",
+  "scope": "Leaf host only; WordCraft, renderer, formats patches and Cargo dependencies unchanged",
+  "engine_revision": "165d5725dc25b4a7887d8025c3b1fe506ccc3dcc",
+  "baseline_source": "a8d8b408cdaaf627103f5272ee2264065359feec",
+  "baseline": {
+    "run": 41314479212,
+    "job": 124871514928,
+    "artifact_id": 13087155771,
+    "zip_sha256": "88409e47f192691e63c9c277a75b8a13354f9a0e987a59631259e25c0621190c",
+    "independently_downloaded_and_verified": true
+  },
+  "native_source": "e5b3380f014ee0babf2c6d890f5fb15de43bd486",
+  "native": {
+    "run": 41316630254,
+    "job": 124877944835,
+    "root_tests_passed": 99,
+    "status": "passed",
+    "artifact_id": 13088226151,
+    "zip_sha256": "9730bf2b018d80690d9aae4260cc0bf0555704cb40386a96a1a514245a2e1317",
+    "independently_downloaded_and_verified": true
+  },
+  "comparison": {
+    "schema": 1,
+    "order": "AB/BA",
+    "repeats_per_size": 2,
+    "summary": [
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "phase": "import_docx",
+        "before": {
+          "median_ms": 1.7631315,
+          "counts": {},
+          "median_rss_kib": 159320.0
+        },
+        "after": {
+          "median_ms": 1.7225755,
+          "counts": {},
+          "median_rss_kib": 158842.0
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "phase": "import_odt",
+        "before": {
+          "median_ms": 1.203435,
+          "counts": {},
+          "median_rss_kib": 159684.0
+        },
+        "after": {
+          "median_ms": 1.1805075,
+          "counts": {},
+          "median_rss_kib": 159092.0
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "phase": "first_layout",
+        "before": {
+          "median_ms": 31.067282999999996,
+          "counts": {},
+          "median_rss_kib": 164866.0
+        },
+        "after": {
+          "median_ms": 30.42881,
+          "counts": {},
+          "median_rss_kib": 164072.0
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "phase": "open_widgets_and_initial_rasters",
+        "before": {
+          "median_ms": 29.022436499999998,
+          "counts": {
+            "overlay_queue": 11,
+            "page_widgets": 11,
+            "thumbnail_bounds": 11
+          },
+          "median_rss_kib": 172592.0
+        },
+        "after": {
+          "median_ms": 16.678337499999998,
+          "counts": {
+            "overlay_queue": 1,
+            "page_widgets": 11,
+            "thumbnail_bounds": 2
+          },
+          "median_rss_kib": 170692.0
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "phase": "thumbnail_cache_hits_80",
+        "before": {
+          "median_ms": 0.2036675,
+          "counts": {
+            "thumbnail_bounds": 880
+          },
+          "median_rss_kib": 179096.0
+        },
+        "after": {
+          "median_ms": 0.2031465,
+          "counts": {
+            "thumbnail_bounds": 800
+          },
+          "median_rss_kib": 179762.0
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "phase": "cursor_right_80",
+        "before": {
+          "median_ms": 1.1718255,
+          "counts": {
+            "overlay_queue": 880
+          },
+          "median_rss_kib": 179304.0
+        },
+        "after": {
+          "median_ms": 0.967222,
+          "counts": {
+            "overlay_queue": 80
+          },
+          "median_rss_kib": 179960.0
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "phase": "scroll_pages",
+        "before": {
+          "median_ms": 67.2651795,
+          "counts": {
+            "overlay_queue": 11
+          },
+          "median_rss_kib": 178736.0
+        },
+        "after": {
+          "median_ms": 64.476422,
+          "counts": {},
+          "median_rss_kib": 187424.0
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "phase": "scroll_thumbnails",
+        "before": {
+          "median_ms": 79.4378335,
+          "counts": {
+            "thumbnail_bounds": 121
+          },
+          "median_rss_kib": 181152.0
+        },
+        "after": {
+          "median_ms": 75.5199455,
+          "counts": {
+            "thumbnail_bounds": 123
+          },
+          "median_rss_kib": 187432.0
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "phase": "edit_8_and_undo",
+        "before": {
+          "median_ms": 55.037817,
+          "counts": {
+            "overlay_queue": 99
+          },
+          "median_rss_kib": 181508.0
+        },
+        "after": {
+          "median_ms": 54.417782,
+          "counts": {
+            "overlay_queue": 9
+          },
+          "median_rss_kib": 187848.0
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "phase": "active_search",
+        "before": {
+          "median_ms": 2.3270904999999997,
+          "counts": {
+            "overlay_queue": 11,
+            "search_rows": 5
+          },
+          "median_rss_kib": 182120.0
+        },
+        "after": {
+          "median_ms": 2.324657,
+          "counts": {
+            "overlay_queue": 5,
+            "search_rows": 5
+          },
+          "median_rss_kib": 188464.0
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "phase": "inactive_search_refresh_4",
+        "before": {
+          "median_ms": 9.358464000000001,
+          "counts": {
+            "overlay_queue": 44,
+            "search_rows": 20
+          },
+          "median_rss_kib": 184284.0
+        },
+        "after": {
+          "median_ms": 0.0015019999999999999,
+          "counts": {},
+          "median_rss_kib": 179608.0
+        }
+      },
+      {
+        "paragraphs": 600,
+        "pages": 55,
+        "phase": "import_docx",
+        "before": {
+          "median_ms": 4.0568335,
+          "counts": {},
+          "median_rss_kib": 159972.0
+        },
+        "after": {
+          "median_ms": 3.938416,
+          "counts": {},
+          "median_rss_kib": 159142.0
+        }
+      },
+      {
+        "paragraphs": 600,
+        "pages": 55,
+        "phase": "import_odt",
+        "before": {
+          "median_ms": 4.054479,
+          "counts": {},
+          "median_rss_kib": 160234.0
+        },
+        "after": {
+          "median_ms": 4.024077,
+          "counts": {},
+          "median_rss_kib": 159404.0
+        }
+      },
+      {
+        "paragraphs": 600,
+        "pages": 55,
+        "phase": "first_layout",
+        "before": {
+          "median_ms": 83.129384,
+          "counts": {},
+          "median_rss_kib": 176532.0
+        },
+        "after": {
+          "median_ms": 82.9243635,
+          "counts": {},
+          "median_rss_kib": 175696.0
+        }
+      },
+      {
+        "paragraphs": 600,
+        "pages": 55,
+        "phase": "open_widgets_and_initial_rasters",
+        "before": {
+          "median_ms": 111.9456955,
+          "counts": {
+            "overlay_queue": 55,
+            "page_widgets": 55,
+            "thumbnail_bounds": 55
+          },
+          "median_rss_kib": 194524.0
+        },
+        "after": {
+          "median_ms": 20.917686,
+          "counts": {
+            "overlay_queue": 1,
+            "page_widgets": 55,
+            "thumbnail_bounds": 2
+          },
+          "median_rss_kib": 185738.0
+        }
+      },
+      {
+        "paragraphs": 600,
+        "pages": 55,
+        "phase": "thumbnail_cache_hits_80",
+        "before": {
+          "median_ms": 0.9072285,
+          "counts": {
+            "thumbnail_bounds": 4400
+          },
+          "median_rss_kib": 201550.0
+        },
+        "after": {
+          "median_ms": 0.2530405,
+          "counts": {
+            "thumbnail_bounds": 1120
+          },
+          "median_rss_kib": 195280.0
+        }
+      },
+      {
+        "paragraphs": 600,
+        "pages": 55,
+        "phase": "cursor_right_80",
+        "before": {
+          "median_ms": 1.0763509999999998,
+          "counts": {
+            "overlay_queue": 4400
+          },
+          "median_rss_kib": 201758.0
+        },
+        "after": {
+          "median_ms": 1.000133,
+          "counts": {
+            "overlay_queue": 80
+          },
+          "median_rss_kib": 195540.0
+        }
+      },
+      {
+        "paragraphs": 600,
+        "pages": 55,
+        "phase": "scroll_pages",
+        "before": {
+          "median_ms": 73.3025255,
+          "counts": {},
+          "median_rss_kib": 207304.0
+        },
+        "after": {
+          "median_ms": 66.532468,
+          "counts": {},
+          "median_rss_kib": 201148.0
+        }
+      },
+      {
+        "paragraphs": 600,
+        "pages": 55,
+        "phase": "scroll_thumbnails",
+        "before": {
+          "median_ms": 83.1882205,
+          "counts": {
+            "thumbnail_bounds": 550
+          },
+          "median_rss_kib": 207304.0
+        },
+        "after": {
+          "median_ms": 83.563054,
+          "counts": {
+            "thumbnail_bounds": 151
+          },
+          "median_rss_kib": 201154.0
+        }
+      },
+      {
+        "paragraphs": 600,
+        "pages": 55,
+        "phase": "edit_8_and_undo",
+        "before": {
+          "median_ms": 82.4464315,
+          "counts": {
+            "overlay_queue": 495
+          },
+          "median_rss_kib": 207768.0
+        },
+        "after": {
+          "median_ms": 81.95903299999999,
+          "counts": {
+            "overlay_queue": 9
+          },
+          "median_rss_kib": 201768.0
+        }
+      },
+      {
+        "paragraphs": 600,
+        "pages": 55,
+        "phase": "active_search",
+        "before": {
+          "median_ms": 9.474317,
+          "counts": {
+            "overlay_queue": 55,
+            "search_rows": 24
+          },
+          "median_rss_kib": 208472.0
+        },
+        "after": {
+          "median_ms": 10.211139,
+          "counts": {
+            "overlay_queue": 24,
+            "search_rows": 24
+          },
+          "median_rss_kib": 202248.0
+        }
+      },
+      {
+        "paragraphs": 600,
+        "pages": 55,
+        "phase": "inactive_search_refresh_4",
+        "before": {
+          "median_ms": 40.972057,
+          "counts": {
+            "overlay_queue": 220,
+            "search_rows": 96
+          },
+          "median_rss_kib": 208594.0
+        },
+        "after": {
+          "median_ms": 0.001528,
+          "counts": {},
+          "median_rss_kib": 202352.0
+        }
+      },
+      {
+        "paragraphs": 1800,
+        "pages": 164,
+        "phase": "import_docx",
+        "before": {
+          "median_ms": 10.1171775,
+          "counts": {},
+          "median_rss_kib": 165222.0
+        },
+        "after": {
+          "median_ms": 10.3535865,
+          "counts": {},
+          "median_rss_kib": 164570.0
+        }
+      },
+      {
+        "paragraphs": 1800,
+        "pages": 164,
+        "phase": "import_odt",
+        "before": {
+          "median_ms": 12.430932,
+          "counts": {},
+          "median_rss_kib": 168116.0
+        },
+        "after": {
+          "median_ms": 12.6331465,
+          "counts": {},
+          "median_rss_kib": 167384.0
+        }
+      },
+      {
+        "paragraphs": 1800,
+        "pages": 164,
+        "phase": "first_layout",
+        "before": {
+          "median_ms": 215.119782,
+          "counts": {},
+          "median_rss_kib": 211270.0
+        },
+        "after": {
+          "median_ms": 214.07360749999998,
+          "counts": {},
+          "median_rss_kib": 210320.0
+        }
+      },
+      {
+        "paragraphs": 1800,
+        "pages": 164,
+        "phase": "open_widgets_and_initial_rasters",
+        "before": {
+          "median_ms": 315.902597,
+          "counts": {
+            "overlay_queue": 164,
+            "page_widgets": 164,
+            "thumbnail_bounds": 164
+          },
+          "median_rss_kib": 250764.0
+        },
+        "after": {
+          "median_ms": 30.829109000000003,
+          "counts": {
+            "overlay_queue": 1,
+            "page_widgets": 164,
+            "thumbnail_bounds": 2
+          },
+          "median_rss_kib": 225166.0
+        }
+      },
+      {
+        "paragraphs": 1800,
+        "pages": 164,
+        "phase": "thumbnail_cache_hits_80",
+        "before": {
+          "median_ms": 2.581454,
+          "counts": {
+            "thumbnail_bounds": 13120
+          },
+          "median_rss_kib": 258654.0
+        },
+        "after": {
+          "median_ms": 0.32417399999999996,
+          "counts": {
+            "thumbnail_bounds": 1440
+          },
+          "median_rss_kib": 235608.0
+        }
+      },
+      {
+        "paragraphs": 1800,
+        "pages": 164,
+        "phase": "cursor_right_80",
+        "before": {
+          "median_ms": 1.2593185,
+          "counts": {
+            "overlay_queue": 13120
+          },
+          "median_rss_kib": 258918.0
+        },
+        "after": {
+          "median_ms": 0.990525,
+          "counts": {
+            "overlay_queue": 80
+          },
+          "median_rss_kib": 235970.0
+        }
+      },
+      {
+        "paragraphs": 1800,
+        "pages": 164,
+        "phase": "scroll_pages",
+        "before": {
+          "median_ms": 70.534391,
+          "counts": {},
+          "median_rss_kib": 262654.0
+        },
+        "after": {
+          "median_ms": 84.3618685,
+          "counts": {},
+          "median_rss_kib": 240564.0
+        }
+      },
+      {
+        "paragraphs": 1800,
+        "pages": 164,
+        "phase": "scroll_thumbnails",
+        "before": {
+          "median_ms": 87.442864,
+          "counts": {
+            "thumbnail_bounds": 1804
+          },
+          "median_rss_kib": 262658.0
+        },
+        "after": {
+          "median_ms": 89.2311065,
+          "counts": {
+            "thumbnail_bounds": 198
+          },
+          "median_rss_kib": 241144.0
+        }
+      },
+      {
+        "paragraphs": 1800,
+        "pages": 164,
+        "phase": "edit_8_and_undo",
+        "before": {
+          "median_ms": 155.90411849999998,
+          "counts": {
+            "overlay_queue": 1476
+          },
+          "median_rss_kib": 263252.0
+        },
+        "after": {
+          "median_ms": 156.363605,
+          "counts": {
+            "overlay_queue": 9
+          },
+          "median_rss_kib": 243178.0
+        }
+      },
+      {
+        "paragraphs": 1800,
+        "pages": 164,
+        "phase": "active_search",
+        "before": {
+          "median_ms": 30.030583,
+          "counts": {
+            "overlay_queue": 164,
+            "search_rows": 72
+          },
+          "median_rss_kib": 263880.0
+        },
+        "after": {
+          "median_ms": 27.628769499999997,
+          "counts": {
+            "overlay_queue": 72,
+            "search_rows": 72
+          },
+          "median_rss_kib": 243650.0
+        }
+      },
+      {
+        "paragraphs": 1800,
+        "pages": 164,
+        "phase": "inactive_search_refresh_4",
+        "before": {
+          "median_ms": 103.33515349999999,
+          "counts": {
+            "overlay_queue": 656,
+            "search_rows": 288
+          },
+          "median_rss_kib": 263996.0
+        },
+        "after": {
+          "median_ms": 0.002029,
+          "counts": {},
+          "median_rss_kib": 244802.0
+        }
+      }
+    ],
+    "limits": "Synthetic ordinary body text, Xvfb/Cairo, fresh profiles, same runner. Inclusive span timings overlap; boundary calls include adapter overhead. No general speed/memory or cold-disk claims."
+  },
+  "raw_runs": {
+    "120-0-after.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 11,
+      "paragraphs": 120,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 158524,
+          "wall_ms": 1.7477829999999999
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 158752,
+          "wall_ms": 1.177521
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 30.365566
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 163816,
+          "wall_ms": 30.365706
+        },
+        {
+          "counts": {
+            "overlay_queue": 1,
+            "page_widgets": 11,
+            "thumbnail_bounds": 2
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.020589
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000511
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.209502
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.003616
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 4,
+              "ms": 7.011791
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 16.389444
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.038102
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.244669
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.316515
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 7.210113
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 170348,
+          "wall_ms": 16.390306
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 800
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 0.209564
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 179412,
+          "wall_ms": 0.214503
+        },
+        {
+          "counts": {
+            "overlay_queue": 80
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.317469
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.225786
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.028671
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.498415
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.690358
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 179664,
+          "wall_ms": 0.972447
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.page_raster": {
+              "calls": 12,
+              "ms": 30.167924
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 30.406753
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 187176,
+          "wall_ms": 64.44721200000001
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 123
+          },
+          "inclusive_spans": {
+            "boundary.thumbnail_raster": {
+              "calls": 18,
+              "ms": 30.584149
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 14,
+              "ms": 30.909045
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 187180,
+          "wall_ms": 85.994936
+        },
+        {
+          "counts": {
+            "overlay_queue": 9
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 0.529065
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.140072
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 5.960437
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 44.6626
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.02254
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 53.435047
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.358823
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 44.852638
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 1.972004
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 187596,
+          "wall_ms": 54.512531
+        },
+        {
+          "counts": {
+            "overlay_queue": 5,
+            "search_rows": 5
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.011212
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 0.33034
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.001703
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.019266
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.028714
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 2.120944
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 188236,
+          "wall_ms": 2.121245
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 0.000721
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 179348,
+          "wall_ms": 0.0014219999999999999
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    },
+    "120-0-before.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 11,
+      "paragraphs": 120,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 159584,
+          "wall_ms": 1.780043
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 159980,
+          "wall_ms": 1.211125
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 31.194273
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 165192,
+          "wall_ms": 31.194502999999997
+        },
+        {
+          "counts": {
+            "overlay_queue": 11,
+            "page_widgets": 11,
+            "thumbnail_bounds": 11
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.026089
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000641
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.212378
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.004458
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 11,
+              "ms": 19.439584
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 29.208923
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.046978
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.253266
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.3248
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 19.808517
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 172964,
+          "wall_ms": 29.210596
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 880
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 0.199962
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 179460,
+          "wall_ms": 0.203893
+        },
+        {
+          "counts": {
+            "overlay_queue": 880
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.400981
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.316634
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.040164
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.676045
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.947103
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 179740,
+          "wall_ms": 1.3465989999999999
+        },
+        {
+          "counts": {
+            "overlay_queue": 11
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.024686
+            },
+            "boundary.page_raster": {
+              "calls": 12,
+              "ms": 30.776539
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 0.003998
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.00562
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.040797
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 31.086912
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.066925
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 0.076845
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 174756,
+          "wall_ms": 74.14438600000001
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 121
+          },
+          "inclusive_spans": {
+            "boundary.thumbnail_raster": {
+              "calls": 18,
+              "ms": 33.024926
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 11,
+              "ms": 33.431771
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 179548,
+          "wall_ms": 82.329601
+        },
+        {
+          "counts": {
+            "overlay_queue": 99
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 0.543151
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.129955
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 6.009891
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 45.098318
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.025306
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 54.164018
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.385947
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 45.324634
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 2.14652
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 179852,
+          "wall_ms": 55.291515
+        },
+        {
+          "counts": {
+            "overlay_queue": 11,
+            "search_rows": 5
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.011381
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 0.332034
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.001873
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.019476
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.026741
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 2.577331
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 180424,
+          "wall_ms": 2.577702
+        },
+        {
+          "counts": {
+            "overlay_queue": 44,
+            "search_rows": 20
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 4,
+              "ms": 0.052288
+            },
+            "boundary.search_query": {
+              "calls": 4,
+              "ms": 0.736123
+            },
+            "boundary.selection_geometry": {
+              "calls": 4,
+              "ms": 0.007925
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 4,
+              "ms": 0.089549
+            },
+            "leaf.refresh_selection": {
+              "calls": 4,
+              "ms": 0.132199
+            },
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 9.525402
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 184464,
+          "wall_ms": 9.526523000000001
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    },
+    "120-1-after.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 11,
+      "paragraphs": 120,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 159160,
+          "wall_ms": 1.697368
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 159432,
+          "wall_ms": 1.183494
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 30.491623
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 164328,
+          "wall_ms": 30.491913999999998
+        },
+        {
+          "counts": {
+            "overlay_queue": 1,
+            "page_widgets": 11,
+            "thumbnail_bounds": 2
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.023424
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000521
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.641305
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.004128
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 4,
+              "ms": 7.058138
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 16.965277
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.041829
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.674397
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.294362
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 7.257231
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 171036,
+          "wall_ms": 16.966369
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 800
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 0.18677
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 180112,
+          "wall_ms": 0.19179000000000002
+        },
+        {
+          "counts": {
+            "overlay_queue": 80
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.301257
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.229247
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.030541
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.478519
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.673524
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 180256,
+          "wall_ms": 0.961997
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.page_raster": {
+              "calls": 12,
+              "ms": 30.06876
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 30.312017
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 187672,
+          "wall_ms": 64.50563199999999
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 108
+          },
+          "inclusive_spans": {
+            "boundary.thumbnail_raster": {
+              "calls": 18,
+              "ms": 30.372657
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 12,
+              "ms": 30.687901
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 187684,
+          "wall_ms": 65.044955
+        },
+        {
+          "counts": {
+            "overlay_queue": 9
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 0.539584
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.136888
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 5.953695
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 44.577425
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.02195
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 53.282747
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.322425
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 44.785389
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 1.894989
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 188100,
+          "wall_ms": 54.323033
+        },
+        {
+          "counts": {
+            "overlay_queue": 5,
+            "search_rows": 5
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.011021
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 0.285436
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.001794
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.019216
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.029295
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 2.527808
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 188692,
+          "wall_ms": 2.528069
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 0.000932
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 179868,
+          "wall_ms": 0.001582
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    },
+    "120-1-before.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 11,
+      "paragraphs": 120,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 159056,
+          "wall_ms": 1.7462199999999999
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 159388,
+          "wall_ms": 1.195745
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 30.939922
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 164540,
+          "wall_ms": 30.940063
+        },
+        {
+          "counts": {
+            "overlay_queue": 11,
+            "page_widgets": 11,
+            "thumbnail_bounds": 11
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.02172
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000461
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.228466
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.004148
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 11,
+              "ms": 19.266561
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 28.833456
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.039575
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.267689
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.279094
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 19.617179
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 172220,
+          "wall_ms": 28.834277
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 880
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 0.199423
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 178732,
+          "wall_ms": 0.20344199999999998
+        },
+        {
+          "counts": {
+            "overlay_queue": 880
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.287707
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.263868
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.031286
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.476278
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.674195
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 178868,
+          "wall_ms": 0.997052
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.page_raster": {
+              "calls": 12,
+              "ms": 30.795464
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 31.042959
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 182716,
+          "wall_ms": 60.385973
+        },
+        {
+          "counts": {
+            "overlay_queue": 11,
+            "thumbnail_bounds": 121
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.022903
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 0.004548
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.004499
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 18,
+              "ms": 30.919184
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.037811
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.058219
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 11,
+              "ms": 31.308465
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 0.067266
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 182756,
+          "wall_ms": 76.546066
+        },
+        {
+          "counts": {
+            "overlay_queue": 99
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 0.581782
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.13913
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 5.916368
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 44.893077
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.023963
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 53.694954
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.32521
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 45.084576
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 2.080747
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 183164,
+          "wall_ms": 54.784119
+        },
+        {
+          "counts": {
+            "overlay_queue": 11,
+            "search_rows": 5
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.011672
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 0.296036
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.001703
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.019777
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.026901
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 2.076089
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 183816,
+          "wall_ms": 2.076479
+        },
+        {
+          "counts": {
+            "overlay_queue": 44,
+            "search_rows": 20
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 4,
+              "ms": 0.051738
+            },
+            "boundary.search_query": {
+              "calls": 4,
+              "ms": 0.70838
+            },
+            "boundary.selection_geometry": {
+              "calls": 4,
+              "ms": 0.008887
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 4,
+              "ms": 0.09058
+            },
+            "leaf.refresh_selection": {
+              "calls": 4,
+              "ms": 0.132349
+            },
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 9.189073
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 184104,
+          "wall_ms": 9.190405
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    },
+    "1800-0-after.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 164,
+      "paragraphs": 1800,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 164584,
+          "wall_ms": 10.337852
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 167396,
+          "wall_ms": 12.518757
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 212.902924
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 210348,
+          "wall_ms": 212.903305
+        },
+        {
+          "counts": {
+            "overlay_queue": 1,
+            "page_widgets": 164,
+            "thumbnail_bounds": 2
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.020839
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000631
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.172411
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.003757
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 4,
+              "ms": 6.956754
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 30.140947
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.036779
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.228005
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 3.7064
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 7.300719
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 225056,
+          "wall_ms": 30.142199
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 1440
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 0.337544
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 235496,
+          "wall_ms": 0.342624
+        },
+        {
+          "counts": {
+            "overlay_queue": 80
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.283312
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.22875
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.031127
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.463372
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.693746
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 235884,
+          "wall_ms": 0.982204
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.page_raster": {
+              "calls": 11,
+              "ms": 27.64538
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 27.987414
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 240508,
+          "wall_ms": 97.43999600000001
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 198
+          },
+          "inclusive_spans": {
+            "boundary.thumbnail_raster": {
+              "calls": 23,
+              "ms": 39.538172
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 13,
+              "ms": 39.968736
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 240516,
+          "wall_ms": 88.211317
+        },
+        {
+          "counts": {
+            "overlay_queue": 9
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 1.400389
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.192842
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 81.161762
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 47.760554
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.04227
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 155.091561
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.524045
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 48.131506
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 24.587288
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 241796,
+          "wall_ms": 157.573102
+        },
+        {
+          "counts": {
+            "overlay_queue": 72,
+            "search_rows": 72
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.012594
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 1.271727
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.002174
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.023865
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.071113
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 24.157011
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 242164,
+          "wall_ms": 24.157280999999998
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 0.000701
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 243988,
+          "wall_ms": 0.002104
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    },
+    "1800-0-before.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 164,
+      "paragraphs": 1800,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 165384,
+          "wall_ms": 10.032859
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 168360,
+          "wall_ms": 12.495302
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 215.159211
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 211588,
+          "wall_ms": 215.159461
+        },
+        {
+          "counts": {
+            "overlay_queue": 164,
+            "page_widgets": 164,
+            "thumbnail_bounds": 164
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.023374
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000681
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.382004
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.005941
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 164,
+              "ms": 289.222283
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 315.661572
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.045605
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.422569
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 3.982688
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 291.854078
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 251132,
+          "wall_ms": 315.662885
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 13120
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 2.600225
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 259032,
+          "wall_ms": 2.6040289999999997
+        },
+        {
+          "counts": {
+            "overlay_queue": 13120
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.323498
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.237179
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.032165
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.513811
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.970458
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 259288,
+          "wall_ms": 1.2722790000000002
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.page_raster": {
+              "calls": 11,
+              "ms": 27.106618
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 27.37858
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 262904,
+          "wall_ms": 70.516942
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 1804
+          },
+          "inclusive_spans": {
+            "boundary.thumbnail_raster": {
+              "calls": 23,
+              "ms": 38.852435
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 11,
+              "ms": 39.632227
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 262912,
+          "wall_ms": 86.868493
+        },
+        {
+          "counts": {
+            "overlay_queue": 1476
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 1.182911
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.185209
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 78.704316
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 46.530863
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.032272
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 152.161267
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.460596
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 46.797063
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 25.436092
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 263560,
+          "wall_ms": 154.348184
+        },
+        {
+          "counts": {
+            "overlay_queue": 164,
+            "search_rows": 72
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.016151
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 1.24609
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.003447
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.030368
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.04775
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 30.961978
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 264132,
+          "wall_ms": 30.962719
+        },
+        {
+          "counts": {
+            "overlay_queue": 656,
+            "search_rows": 288
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 4,
+              "ms": 0.066264
+            },
+            "boundary.search_query": {
+              "calls": 4,
+              "ms": 5.920255
+            },
+            "boundary.selection_geometry": {
+              "calls": 4,
+              "ms": 0.011812
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 4,
+              "ms": 0.124273
+            },
+            "leaf.refresh_selection": {
+              "calls": 4,
+              "ms": 0.288332
+            },
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 101.343194
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 264192,
+          "wall_ms": 101.344618
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    },
+    "1800-1-after.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 164,
+      "paragraphs": 1800,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 164556,
+          "wall_ms": 10.369321000000001
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 167372,
+          "wall_ms": 12.747536
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 215.243609
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 210292,
+          "wall_ms": 215.24391
+        },
+        {
+          "counts": {
+            "overlay_queue": 1,
+            "page_widgets": 164,
+            "thumbnail_bounds": 2
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.023494
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000511
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.327252
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.004589
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 4,
+              "ms": 7.053374
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 31.514645
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.040296
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.364821
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 3.998208
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 7.373877
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 225276,
+          "wall_ms": 31.516019
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 1440
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 0.300586
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 235720,
+          "wall_ms": 0.305724
+        },
+        {
+          "counts": {
+            "overlay_queue": 80
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.322555
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.231297
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.030832
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.504615
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.709978
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 236056,
+          "wall_ms": 0.998846
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.page_raster": {
+              "calls": 11,
+              "ms": 27.945561
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 28.302454
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 240620,
+          "wall_ms": 71.28374099999999
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 192
+          },
+          "inclusive_spans": {
+            "boundary.thumbnail_raster": {
+              "calls": 23,
+              "ms": 39.367707
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 12,
+              "ms": 39.822089
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 241772,
+          "wall_ms": 90.250896
+        },
+        {
+          "counts": {
+            "overlay_queue": 9
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 1.264937
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.16067
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 79.257784
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 47.452081
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.033815
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 152.836596
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.4316
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 47.741025
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 24.630028
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 244560,
+          "wall_ms": 155.154108
+        },
+        {
+          "counts": {
+            "overlay_queue": 72,
+            "search_rows": 72
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.040647
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 1.340488
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.002114
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.052909
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.099246
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 31.099967
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 245136,
+          "wall_ms": 31.100258
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 0.000934
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 245616,
+          "wall_ms": 0.001954
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    },
+    "1800-1-before.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 164,
+      "paragraphs": 1800,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 165060,
+          "wall_ms": 10.201495999999999
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 167872,
+          "wall_ms": 12.366562
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 215.079842
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 210952,
+          "wall_ms": 215.080103
+        },
+        {
+          "counts": {
+            "overlay_queue": 164,
+            "page_widgets": 164,
+            "thumbnail_bounds": 164
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.023564
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000601
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.286554
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.00566
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 164,
+              "ms": 290.417234
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 316.140977
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.045034
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.324385
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 3.764639
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 293.035892
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 250396,
+          "wall_ms": 316.142309
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 13120
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 2.554373
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 258276,
+          "wall_ms": 2.558879
+        },
+        {
+          "counts": {
+            "overlay_queue": 13120
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.296343
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.235204
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.033445
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.498352
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.947088
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 258548,
+          "wall_ms": 1.2463579999999999
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.page_raster": {
+              "calls": 11,
+              "ms": 27.065175
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 27.328489
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 262404,
+          "wall_ms": 70.55184
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 1804
+          },
+          "inclusive_spans": {
+            "boundary.thumbnail_raster": {
+              "calls": 23,
+              "ms": 38.870508
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 11,
+              "ms": 39.66654
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 262404,
+          "wall_ms": 88.017235
+        },
+        {
+          "counts": {
+            "overlay_queue": 1476
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 1.401328
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.164619
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 80.203751
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 47.211532
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.033332
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 155.077043
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.441368
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 47.515591
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 26.120522
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 262944,
+          "wall_ms": 157.460053
+        },
+        {
+          "counts": {
+            "overlay_queue": 164,
+            "search_rows": 72
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.014848
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 1.307042
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.002795
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.027652
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.043261
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 29.098106
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 263628,
+          "wall_ms": 29.098447
+        },
+        {
+          "counts": {
+            "overlay_queue": 656,
+            "search_rows": 288
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 4,
+              "ms": 0.085311
+            },
+            "boundary.search_query": {
+              "calls": 4,
+              "ms": 6.200017
+            },
+            "boundary.selection_geometry": {
+              "calls": 4,
+              "ms": 0.020418
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 4,
+              "ms": 0.156163
+            },
+            "leaf.refresh_selection": {
+              "calls": 4,
+              "ms": 0.317456
+            },
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 105.323774
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 263800,
+          "wall_ms": 105.325689
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    },
+    "600-0-after.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 55,
+      "paragraphs": 600,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 158940,
+          "wall_ms": 3.92495
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 159164,
+          "wall_ms": 4.012095
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 82.900238
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 175488,
+          "wall_ms": 82.900498
+        },
+        {
+          "counts": {
+            "overlay_queue": 1,
+            "page_widgets": 55,
+            "thumbnail_bounds": 2
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.021039
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000481
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.290403
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.003937
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 4,
+              "ms": 7.007991
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 20.660037
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.03749
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.327171
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 1.256138
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 7.237692
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 185472,
+          "wall_ms": 20.661019
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 1120
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 0.245208
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 195068,
+          "wall_ms": 0.25033
+        },
+        {
+          "counts": {
+            "overlay_queue": 80
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.301702
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.260989
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.032419
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.48941
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.697993
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 195324,
+          "wall_ms": 1.0217889999999998
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.page_raster": {
+              "calls": 12,
+              "ms": 29.407974
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 29.642639
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 200912,
+          "wall_ms": 60.910704
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 151
+          },
+          "inclusive_spans": {
+            "boundary.thumbnail_raster": {
+              "calls": 23,
+              "ms": 38.962919
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 13,
+              "ms": 39.398166
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 200920,
+          "wall_ms": 83.868027
+        },
+        {
+          "counts": {
+            "overlay_queue": 9
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 0.770877
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.141725
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 25.656461
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 45.68247
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.028111
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 80.469997
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.384943
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 45.952516
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 7.972199
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 201504,
+          "wall_ms": 81.91440999999999
+        },
+        {
+          "counts": {
+            "overlay_queue": 24,
+            "search_rows": 24
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.012634
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 0.51662
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.002404
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.021611
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.044965
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 10.586561
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 202032,
+          "wall_ms": 10.586942
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 0.000842
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 202176,
+          "wall_ms": 0.001593
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    },
+    "600-0-before.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 55,
+      "paragraphs": 600,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 160352,
+          "wall_ms": 4.277323
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 160520,
+          "wall_ms": 4.0971139999999995
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 82.515697
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 176812,
+          "wall_ms": 82.515857
+        },
+        {
+          "counts": {
+            "overlay_queue": 55,
+            "page_widgets": 55,
+            "thumbnail_bounds": 55
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.024386
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000541
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.320239
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.00506
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 55,
+              "ms": 98.109602
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 112.831199
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.045806
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.361095
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 1.30447
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 99.157502
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 194900,
+          "wall_ms": 112.832813
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 4400
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 0.907226
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 201924,
+          "wall_ms": 0.911581
+        },
+        {
+          "counts": {
+            "overlay_queue": 4400
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.297137
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.257113
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.029954
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.483891
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.758715
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 202196,
+          "wall_ms": 1.077353
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.page_raster": {
+              "calls": 12,
+              "ms": 29.353364
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 29.633218
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 207748,
+          "wall_ms": 73.502521
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 550
+          },
+          "inclusive_spans": {
+            "boundary.thumbnail_raster": {
+              "calls": 23,
+              "ms": 38.725713
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 10,
+              "ms": 39.293558
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 207748,
+          "wall_ms": 83.617706
+        },
+        {
+          "counts": {
+            "overlay_queue": 495
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 0.796815
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.145525
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 25.613159
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 45.842078
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.032831
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 81.275117
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.396555
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 46.093387
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 8.734875
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 208180,
+          "wall_ms": 82.738906
+        },
+        {
+          "counts": {
+            "overlay_queue": 55,
+            "search_rows": 24
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.011542
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 0.523434
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.001904
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.020919
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.030047
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 8.412909
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 208936,
+          "wall_ms": 8.413179
+        },
+        {
+          "counts": {
+            "overlay_queue": 220,
+            "search_rows": 96
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 4,
+              "ms": 0.051566
+            },
+            "boundary.search_query": {
+              "calls": 4,
+              "ms": 1.753151
+            },
+            "boundary.selection_geometry": {
+              "calls": 4,
+              "ms": 0.008517
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 4,
+              "ms": 0.092402
+            },
+            "leaf.refresh_selection": {
+              "calls": 4,
+              "ms": 0.15356
+            },
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 40.408082
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 209056,
+          "wall_ms": 40.409065
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    },
+    "600-1-after.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 55,
+      "paragraphs": 600,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 159344,
+          "wall_ms": 3.9518820000000003
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 159644,
+          "wall_ms": 4.036059
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 82.948048
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 175904,
+          "wall_ms": 82.948229
+        },
+        {
+          "counts": {
+            "overlay_queue": 1,
+            "page_widgets": 55,
+            "thumbnail_bounds": 2
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.020228
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000771
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.416169
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.003106
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 4,
+              "ms": 7.168722
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 21.173281
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.036138
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.452978
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 1.318095
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 7.44999
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 186004,
+          "wall_ms": 21.174353
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 1120
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 0.250817
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 195492,
+          "wall_ms": 0.255751
+        },
+        {
+          "counts": {
+            "overlay_queue": 80
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.290708
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.225622
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.029393
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.497663
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.692678
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 195756,
+          "wall_ms": 0.9784769999999999
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.page_raster": {
+              "calls": 12,
+              "ms": 29.635606
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 29.895279
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 201384,
+          "wall_ms": 72.154232
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 147
+          },
+          "inclusive_spans": {
+            "boundary.thumbnail_raster": {
+              "calls": 23,
+              "ms": 39.0333
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 12,
+              "ms": 39.453067
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 201388,
+          "wall_ms": 83.258081
+        },
+        {
+          "counts": {
+            "overlay_queue": 9
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 0.806454
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.152647
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 25.696002
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 45.798934
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.025608
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 80.59501
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.39402
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 46.022918
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 7.973273
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 202032,
+          "wall_ms": 82.00365599999999
+        },
+        {
+          "counts": {
+            "overlay_queue": 24,
+            "search_rows": 24
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.011862
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 0.458702
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.001924
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.020618
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.04253
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 9.834946
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 202464,
+          "wall_ms": 9.835336
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 0.00065
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 202528,
+          "wall_ms": 0.001463
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    },
+    "600-1-before.json": {
+      "cached_page_rasters": 2,
+      "cached_thumbnail_rasters": 4,
+      "canonical_document_unchanged": true,
+      "notes": "Inclusive spans overlap. Boundary calls include Leaf adapters and WordCraft; they are not exclusive engine CPU profiles. Synthetic body text only; no general document-performance claim.",
+      "pages": 55,
+      "paragraphs": 600,
+      "phases": [
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_docx",
+          "rss_kib": 159592,
+          "wall_ms": 3.8363440000000004
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {},
+          "phase": "import_odt",
+          "rss_kib": 159948,
+          "wall_ms": 4.011844
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.first_layout": {
+              "calls": 1,
+              "ms": 83.74268
+            }
+          },
+          "phase": "first_layout",
+          "rss_kib": 176252,
+          "wall_ms": 83.742911
+        },
+        {
+          "counts": {
+            "overlay_queue": 55,
+            "page_widgets": 55,
+            "thumbnail_bounds": 55
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.024336
+            },
+            "boundary.layout_opened": {
+              "calls": 1,
+              "ms": 0.000641
+            },
+            "boundary.page_raster": {
+              "calls": 2,
+              "ms": 6.193832
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.004939
+            },
+            "boundary.thumbnail_raster": {
+              "calls": 55,
+              "ms": 96.536127
+            },
+            "leaf.opened": {
+              "calls": 1,
+              "ms": 111.057315
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.046357
+            },
+            "leaf.refresh_pages": {
+              "calls": 2,
+              "ms": 6.232986
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 1.419065
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 1,
+              "ms": 97.568695
+            }
+          },
+          "phase": "open_widgets_and_initial_rasters",
+          "rss_kib": 194148,
+          "wall_ms": 111.05857800000001
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 4400
+          },
+          "inclusive_spans": {
+            "leaf.refresh_thumbnails": {
+              "calls": 80,
+              "ms": 0.899148
+            }
+          },
+          "phase": "thumbnail_cache_hits_80",
+          "rss_kib": 201176,
+          "wall_ms": 0.902876
+        },
+        {
+          "counts": {
+            "overlay_queue": 4400
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 80,
+              "ms": 0.295274
+            },
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 0.230213
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.031518
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 0.488485
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 0.78695
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 201320,
+          "wall_ms": 1.0753489999999999
+        },
+        {
+          "counts": {},
+          "inclusive_spans": {
+            "boundary.page_raster": {
+              "calls": 12,
+              "ms": 29.346458
+            },
+            "leaf.refresh_pages": {
+              "calls": 10,
+              "ms": 29.61783
+            }
+          },
+          "phase": "scroll_pages",
+          "rss_kib": 206860,
+          "wall_ms": 73.10253
+        },
+        {
+          "counts": {
+            "thumbnail_bounds": 550
+          },
+          "inclusive_spans": {
+            "boundary.thumbnail_raster": {
+              "calls": 23,
+              "ms": 38.513848
+            },
+            "leaf.refresh_thumbnails": {
+              "calls": 10,
+              "ms": 39.029035
+            }
+          },
+          "phase": "scroll_thumbnails",
+          "rss_kib": 206860,
+          "wall_ms": 82.758735
+        },
+        {
+          "counts": {
+            "overlay_queue": 495
+          },
+          "inclusive_spans": {
+            "boundary.edit": {
+              "calls": 9,
+              "ms": 0.77196
+            },
+            "boundary.format_state": {
+              "calls": 9,
+              "ms": 0.141277
+            },
+            "boundary.layout_after_edit": {
+              "calls": 9,
+              "ms": 25.50774
+            },
+            "boundary.page_raster": {
+              "calls": 18,
+              "ms": 45.475588
+            },
+            "boundary.selection_geometry": {
+              "calls": 9,
+              "ms": 0.02648
+            },
+            "leaf.after_content_change": {
+              "calls": 9,
+              "ms": 80.753389
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 9,
+              "ms": 0.379502
+            },
+            "leaf.refresh_pages": {
+              "calls": 9,
+              "ms": 45.743813
+            },
+            "leaf.refresh_selection": {
+              "calls": 9,
+              "ms": 8.54748
+            }
+          },
+          "phase": "edit_8_and_undo",
+          "rss_kib": 207356,
+          "wall_ms": 82.153957
+        },
+        {
+          "counts": {
+            "overlay_queue": 55,
+            "search_rows": 24
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 1,
+              "ms": 0.011992
+            },
+            "boundary.search_query": {
+              "calls": 1,
+              "ms": 0.477187
+            },
+            "boundary.selection_geometry": {
+              "calls": 1,
+              "ms": 0.002274
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 1,
+              "ms": 0.020538
+            },
+            "leaf.refresh_selection": {
+              "calls": 1,
+              "ms": 0.029365
+            },
+            "leaf.search_refresh": {
+              "calls": 1,
+              "ms": 10.535144
+            }
+          },
+          "phase": "active_search",
+          "rss_kib": 208008,
+          "wall_ms": 10.535455
+        },
+        {
+          "counts": {
+            "overlay_queue": 220,
+            "search_rows": 96
+          },
+          "inclusive_spans": {
+            "boundary.format_state": {
+              "calls": 4,
+              "ms": 0.050986
+            },
+            "boundary.search_query": {
+              "calls": 4,
+              "ms": 1.65561
+            },
+            "boundary.selection_geometry": {
+              "calls": 4,
+              "ms": 0.008045
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 4,
+              "ms": 0.089087
+            },
+            "leaf.refresh_selection": {
+              "calls": 4,
+              "ms": 0.146535
+            },
+            "leaf.search_refresh": {
+              "calls": 4,
+              "ms": 41.533949
+            }
+          },
+          "phase": "inactive_search_refresh_4",
+          "rss_kib": 208132,
+          "wall_ms": 41.535049
+        }
+      ],
+      "renderer": "cairo",
+      "scale": 1,
+      "schema": 1
+    }
+  },
+  "limits": [
+    "Synthetic ordinary body text only",
+    "Xvfb/Cairo at scale 1",
+    "Two repeats per version/size, AB/BA order",
+    "Inclusive instrumented timings overlap; API boundaries include adapters",
+    "Warm filesystem fixtures; excludes fixture creation",
+    "RSS includes test document clones and history",
+    "No general application speedup or memory reduction claim",
+    "No new full corpus or manual Wayland/GPU/user test"
+  ],
+  "upstream": "No engine modification or dependency update. This sample does not isolate a WordCraft defect warranting an issue; measured engine boundaries remain documented for future upstream reproduction.",
+  "flatpak": {
+    "status": "pending installed checks"
+  }
+}

@@ -12,6 +12,8 @@ printf '[preferred]\ndefault=gtk\n' > "$HOME/.config/xdg-desktop-portal/portals.
 flatpak run --command=sh "$app_id" -c 'grep -q retained "$XDG_DATA_HOME/upgrade-test"'
 echo FLATPAK_UPGRADE_SANDBOX_OK
 flatpak run "$app_id" --version | grep -F 'Leaf 0.1.0-alpha.13'
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --host-cache-ui-test 2>dist/flatpak-host-cache.log
+grep -q LEAF_HOST_CACHE_UI_OK dist/flatpak-host-cache.log
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --page-options-ui-test 2>dist/flatpak-page-options.log
 grep -q PAGE_OPTIONS_UI_OK dist/flatpak-page-options.log
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --proofing-ui-test 2>dist/flatpak-proofing.log
