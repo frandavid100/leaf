@@ -27,7 +27,12 @@ jobs:
         run: /usr/bin/python3 tools/interop_audit.py
       - name: Attach evidence
         if: always()
-        run: cat interop-results/REPORT.md >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          if test -f interop-results/REPORT.md; then
+            cat interop-results/REPORT.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Audit did not reach document comparison; see build logs.' >> "$GITHUB_STEP_SUMMARY"
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:

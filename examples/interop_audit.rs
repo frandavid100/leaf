@@ -68,11 +68,12 @@ fn snapshot(s:&mut Session)->Value {
     let language=s.doc.para_paths(StoryRef::Body).iter().filter_map(|path| {
         let p=s.doc.para(StoryRef::Body,path)?;
         if !p.text.contains("Spanish") {return None;}
-        Some(json!({"text":p.text,"probes":["English","Spanish","UNCHECKED_TOKEN"].map(|needle| {
+        let probes=["English","Spanish","UNCHECKED_TOKEN"].map(|needle| {
             let offset=p.text.find(needle).unwrap();
             let c=s.doc.styles.resolve_char(p.props.style.as_deref(),p.props_of_char(offset));
             json!({"token":needle,"lang":c.lang,"no_proof":c.no_proof})
-        })}))
+        });
+        Some(json!({"text":p.text,"probes":probes}))
     }).collect::<Vec<_>>();
     json!({"body_text":s.doc.plain_text(StoryRef::Body),"sections":s.doc.sections().iter().map(|(_,p)|*p).collect::<Vec<_>>(),
         "even_odd":s.doc.settings.even_odd_headers,"pages":pages,"language":language,
