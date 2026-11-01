@@ -169,6 +169,10 @@ def main():
                     dump_tree()
                 window = wait(lambda: command("xdotool", "search", "--onlyvisible", *( ["--name", "^Leaf$"] if sandbox else ["--pid", app.pid] )).splitlines()[0])
                 command("xdotool", "windowactivate", "--sync", window)
+                # Test the real pane-navigation path and wait until the reader
+                # has acquired the document, not merely until GTK has focus.
+                command("xdotool", "key", "--delay", "250", "--clearmodifiers", "F6", "F6", "F6")
+                wait(lambda: any("Document Content" in line for line in speech_lines()))
                 command("xdotool", "key", "--clearmodifiers", "ctrl+Home")
                 wait(lambda: canvas.getState().contains(pyatspi.STATE_FOCUSED))
                 result = {"baseline": baseline, "orca_version": command("orca", "--version").strip(), "role": canvas.getRoleName(), "interfaces": list(pyatspi.listInterfaces(canvas)), "speech_is_generated_transcript_not_human_listening": True}
