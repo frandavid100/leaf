@@ -3,3 +3,7 @@ Cargo.lock
 *.swp
 
 /po/locale/
+
+# Python contributor checks
+__pycache__/
+*.py[cod]

@@ -1,0 +1,240 @@
+{
+  "baseline_source": "6221ecfcd3e709f22842f5deaf8c34d4e759d18a",
+  "compiled_source": "3d5e6826ec6311b23dcaac638a580cf76be2d04e",
+  "scope": "Private GTK module/diagnostic organization, formatting, translation extraction and contributor/continuity documentation",
+  "engine_dependency_boundary_unchanged": true,
+  "entry_lines": {
+    "before": 1986,
+    "after": 7
+  },
+  "native": {
+    "run": 41320879043,
+    "job": 124890615799,
+    "status": "success",
+    "rust_tests": 99,
+    "python_tests": 4,
+    "gettext_messages": 562,
+    "artifact_id": 13089771888,
+    "artifact_zip_sha256": "5fad9ce579592c106611868164b18a04d10d5037a6132f66df25dbcc75284822",
+    "independently_downloaded_and_verified": true,
+    "internal_document_screenshot_reviewed": true
+  },
+  "orca": {
+    "run": 41321948699,
+    "job": 124893854375,
+    "status": "success",
+    "artifact_id": 13089628134,
+    "artifact_zip_sha256": "022dbf4329802f50c41086c9c28779dc1864c453b8eb8fdbde727ac9e9eb0029",
+    "independently_downloaded_and_verified": true,
+    "result": {
+      "baseline": false,
+      "orca_version": "46.1",
+      "role": "text",
+      "interfaces": [
+        "Accessible",
+        "Action",
+        "Component",
+        "Text"
+      ],
+      "speech_is_generated_transcript_not_human_listening": true,
+      "text_supported": true,
+      "text": "First paragraph for Orca.\nCafé, español y 😀.\nFinal paragraph.",
+      "count": 61,
+      "caret": 0,
+      "sandbox": false,
+      "orca_announcements": {
+        "paragraph": true,
+        "selection": true,
+        "typed_character": true,
+        "restored_paragraph": true
+      },
+      "keyboard_read_edit_select_undo": true,
+      "events": [
+        {
+          "type": "object:children-changed:add",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "[panel | ]"
+        },
+        {
+          "type": "object:text-changed:insert",
+          "detail1": 0,
+          "detail2": 61,
+          "text": "First paragraph for Orca.\nCafé, español y 😀.\nFinal paragraph."
+        },
+        {
+          "type": "object:state-changed:focused",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:state-changed:focused",
+          "detail1": 1,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 26,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 27,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 28,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 29,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 30,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-changed:delete",
+          "detail1": 26,
+          "detail2": 4,
+          "text": "Café"
+        },
+        {
+          "type": "object:text-changed:insert",
+          "detail1": 26,
+          "detail2": 1,
+          "text": "X"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 27,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-changed:delete",
+          "detail1": 26,
+          "detail2": 1,
+          "text": "X"
+        },
+        {
+          "type": "object:text-changed:insert",
+          "detail1": 26,
+          "detail2": 4,
+          "text": "Café"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 30,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 61,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 26,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 45,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 26,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "0"
+        }
+      ]
+    }
+  },
+  "published_binary_changed": false,
+  "published_version": "0.1.0-alpha.13",
+  "manual_GNOME_OS_Orca_braille_printer_testing_claimed": false,
+  "public_screenshots_changed": false,
+  "weblate_setup_changed": false,
+  "remaining_technical_debt": [
+    "Shared private Ui/facade coordination",
+    "Four pre-existing GTK deprecation warnings"
+  ],
+  "default_branch_onboarding_commit": "952df58290667d0afaeb31f3e782af85b52d4c1c"
+}

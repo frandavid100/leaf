@@ -4,11 +4,12 @@ Actualizada: 1 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## Ahora: mantenimiento y facilidad de contribución
+## Completado: mantenimiento y facilidad de contribución
 
 **Autorizado por David:** revisar estructura y claridad, separar responsabilidades,
 facilitar la incorporación de personas y nuevos chats, y actualizar este plan.
-La reorganización se cierra tras validar fuentes, traducciones, tests y GTK.
+La reorganización queda validada: 99 tests Rust, cuatro Python, formato,
+traducciones, enlaces, GTK/HiDPI y Orca automatizada. [Informe](docs/MAINTAINABILITY_REVIEW.md).
 [Mapa de código](docs/ARCHITECTURE.md) · [Continuidad](docs/CONTINUING.md).
 
 ## Orden de prioridad después de esta revisión

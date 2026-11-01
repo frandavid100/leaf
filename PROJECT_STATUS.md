@@ -35,7 +35,15 @@ El ejecutable interno y sus argumentos se conservan. WordCraft, renderizador,
 parches existentes, dependencias y comportamiento de documento no se amplían.
 Se mantiene alpha.13 como versión pública; esta revisión es de mantenimiento.
 
-**Validación de la reorganización:** en curso; se actualizará aquí al cerrar CI.
+**Revisión completada y validada:** fuente `3d5e6826ec6311b23dcaac638a580cf76be2d04e`.
+[CI nativa 41320879043](https://github.com/frandavid100/leaf/actions/runs/41320879043):
+99 tests Rust, cuatro Python, formato, enlaces, catálogos y regresiones GTK/HiDPI.
+[Orca/AT-SPI 41321948699](https://github.com/frandavid100/leaf/actions/runs/41321948699)
+también correcto sobre ese ejecutable. Ambos artefactos descargados/verificados.
+[Revisión y límites](docs/MAINTAINABILITY_REVIEW.md),
+[evidencia](docs/MAINTAINABILITY_VALIDATION.json). La portada, CONTRIBUTING y
+AGENTS de main dirigen a la rama actual. No se ha publicado otro instalable por
+esta reorganización estructural.
 
 ## Qué está implementado
 
