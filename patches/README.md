@@ -25,7 +25,7 @@ Apply wordcraft-formats-properties-language.patch after the existing two patches
 
 Import restores a link only when the exported copy matches its predecessor, and discards only those redundant copies, to avoid accumulating duplicate parts over repeated saves. Changed external content stays independent. Run page_options, proofing, header_footer and odt_preservation root tests after updates, including repeated roundtrips. The common flow model now carries language/no-proof metadata; unsupported foreign formats continue through their existing exporters.
 
-## Standard ODF header/footer geometry — alpha.11 candidate
+## Standard ODF header/footer geometry — alpha.11
 
 Apply `wordcraft-formats-standard-geometry.patch` fourth, after all three earlier
 patches. ODF page margins measure to the outside of the header/footer; WordCraft

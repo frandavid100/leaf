@@ -5,3 +5,5 @@ A focused one-off audit generates four synthetic DOCX/ODT fixtures, edits and sa
 Known independent-editor limitations remain: Writer 24.2.7 drops DOCX w:noProof and materialises linked headers/footers as independent contents in these multi-section fixtures. Visible contents remain; Leaf cannot safely infer original links from identical text. General ODF border/padding/fixed-height/non-dynamic layout fidelity is not claimed. Unusual overlapping nominal margins and inactive header distances still use supplemental Leaf metadata. There is no change to user files until explicitly saved.
 
 Install Leaf-0.1.0-alpha.11-x86_64.flatpak over alpha.10. GNOME 49 runtime; no automatic update feed. Existing localized interface, dark documents, HiDPI, lifetime and printing checks remain. Experimental AI-assisted development; test copies of important files. Weblate and public screenshots remain with the maintainer. No full 24-file corpus rerun.
+
+[Focused interoperability report and known differences](https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/INTEROPERABILITY_AUDIT.md).

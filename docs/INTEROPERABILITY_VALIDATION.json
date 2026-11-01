@@ -1,0 +1,613 @@
+{
+  "source_commit": "125b6ab96db54169e9f652517d2e255039a66e36",
+  "libreoffice": "LibreOffice 24.2.7.2 420(Build:2)",
+  "cases": [
+    {
+      "file": "sections.docx",
+      "checks": [
+        {
+          "check": "Body text after independent edit",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "All header variant contents retained",
+          "passed": true,
+          "detail": "[]"
+        },
+        {
+          "check": "All header variants visible in LibreOffice PDF",
+          "passed": true,
+          "detail": "[]"
+        },
+        {
+          "check": "Language and unchecked ranges retained",
+          "passed": false,
+          "detail": ""
+        },
+        {
+          "check": "English and Spanish recognised independently by LibreOffice",
+          "passed": true,
+          "detail": "[{'token': 'English', 'language': 'en', 'country': 'GB'}, {'token': 'Spanish', 'language': 'es', 'country': 'ES'}]"
+        },
+        {
+          "check": "Unchecked range recognised independently by LibreOffice",
+          "passed": false,
+          "detail": "{'token': 'UNCHECKED_TOKEN', 'language': 'en', 'country': 'GB'}"
+        },
+        {
+          "check": "Header edge distance recognised independently",
+          "passed": true,
+          "detail": "[21.00472440944882, 21.00472440944882, 21.00472440944882]"
+        },
+        {
+          "check": "Footer edge distance recognised independently",
+          "passed": true,
+          "detail": "[27.014173228346458, 27.014173228346458, 27.014173228346458]"
+        },
+        {
+          "check": "Section count retained",
+          "passed": true,
+          "detail": "3 -> 3"
+        },
+        {
+          "check": "Previous-section link semantics: headers",
+          "passed": false,
+          "detail": "[[False, False, False], [False, False, False], [True, True, True]] -> [[False, False, False], [False, False, False], [False, False, False]]"
+        },
+        {
+          "check": "Previous-section link semantics: footers",
+          "passed": false,
+          "detail": "[[False, False, False], [True, True, True], [True, True, True]] -> [[False, False, False], [False, False, False], [False, False, False]]"
+        },
+        {
+          "check": "Displayed header sequence retained",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Section property: header",
+          "passed": true,
+          "detail": "[21.0, 21.0, 21.0] -> [21.0, 21.0, 21.0]"
+        },
+        {
+          "check": "Section property: footer",
+          "passed": true,
+          "detail": "[27.0, 27.0, 27.0] -> [27.0, 27.0, 27.0]"
+        },
+        {
+          "check": "Section property: marginTop",
+          "passed": true,
+          "detail": "[72.0, 72.0, 72.0] -> [72.0, 72.0, 72.0]"
+        },
+        {
+          "check": "Section property: marginBottom",
+          "passed": true,
+          "detail": "[72.0, 72.0, 72.0] -> [72.0, 72.0, 72.0]"
+        },
+        {
+          "check": "Section property: pageNumFormat",
+          "passed": true,
+          "detail": "['decimal', 'upperRoman', 'upperRoman'] -> ['decimal', 'upperRoman', 'upperRoman']"
+        },
+        {
+          "check": "Section property: pageNumStart",
+          "passed": true,
+          "detail": "[1, 7, None] -> [1, 7, None]"
+        },
+        {
+          "check": "Section property: titlePage",
+          "passed": true,
+          "detail": "[True, True, True] -> [True, True, True]"
+        },
+        {
+          "check": "Leaf reopens PAGE and NUMPAGES fields",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "LibreOffice recognises automatic page fields",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Final Leaf save/reopen preserves edited body",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Final Leaf save/reopen preserves language ranges",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Standard ODT reopen: header",
+          "passed": true,
+          "detail": "[21.0, 21.0, 21.0] -> [21.002399444580078, 21.002399444580078, 21.002399444580078]"
+        },
+        {
+          "check": "Standard ODT reopen: footer",
+          "passed": true,
+          "detail": "[27.0, 27.0, 27.0] -> [27.014400482177734, 27.014400482177734, 27.014400482177734]"
+        },
+        {
+          "check": "Standard ODT reopen: marginTop",
+          "passed": true,
+          "detail": "[72.0, 72.0, 72.0] -> [72.0, 72.0, 72.0]"
+        },
+        {
+          "check": "Standard ODT reopen: marginBottom",
+          "passed": true,
+          "detail": "[72.0, 72.0, 72.0] -> [72.02879333496094, 72.02879333496094, 72.02879333496094]"
+        }
+      ]
+    },
+    {
+      "file": "sections.odt",
+      "checks": [
+        {
+          "check": "Body text after independent edit",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "All header variant contents retained",
+          "passed": true,
+          "detail": "[]"
+        },
+        {
+          "check": "All header variants visible in LibreOffice PDF",
+          "passed": true,
+          "detail": "[]"
+        },
+        {
+          "check": "Language and unchecked ranges retained",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "English and Spanish recognised independently by LibreOffice",
+          "passed": true,
+          "detail": "[{'token': 'English', 'language': 'en', 'country': 'GB'}, {'token': 'Spanish', 'language': 'es', 'country': 'ES'}]"
+        },
+        {
+          "check": "Unchecked range recognised independently by LibreOffice",
+          "passed": true,
+          "detail": "{'token': 'UNCHECKED_TOKEN', 'language': 'zxx', 'country': ''}"
+        },
+        {
+          "check": "Header edge distance recognised independently",
+          "passed": true,
+          "detail": "[21.00472440944882, 21.00472440944882, 21.00472440944882]"
+        },
+        {
+          "check": "Footer edge distance recognised independently",
+          "passed": true,
+          "detail": "[27.014173228346458, 27.014173228346458, 27.014173228346458]"
+        },
+        {
+          "check": "Section count retained",
+          "passed": true,
+          "detail": "3 -> 3"
+        },
+        {
+          "check": "Previous-section link semantics: headers",
+          "passed": false,
+          "detail": "[[False, False, False], [False, False, False], [True, True, True]] -> [[False, False, False], [False, False, False], [False, False, False]]"
+        },
+        {
+          "check": "Previous-section link semantics: footers",
+          "passed": false,
+          "detail": "[[False, False, False], [True, True, True], [True, True, True]] -> [[False, False, False], [False, False, False], [False, False, False]]"
+        },
+        {
+          "check": "Displayed header sequence retained",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Section property: header",
+          "passed": true,
+          "detail": "[21.0, 21.0, 21.0] -> [21.002399444580078, 21.002399444580078, 21.002399444580078]"
+        },
+        {
+          "check": "Section property: footer",
+          "passed": true,
+          "detail": "[27.0, 27.0, 27.0] -> [27.014400482177734, 27.014400482177734, 27.014400482177734]"
+        },
+        {
+          "check": "Section property: marginTop",
+          "passed": true,
+          "detail": "[72.0, 72.0, 72.0] -> [72.0, 72.0, 72.0]"
+        },
+        {
+          "check": "Section property: marginBottom",
+          "passed": true,
+          "detail": "[72.0, 72.0, 72.0] -> [72.02879333496094, 72.02879333496094, 72.02879333496094]"
+        },
+        {
+          "check": "Section property: pageNumFormat",
+          "passed": true,
+          "detail": "['decimal', 'upperRoman', 'upperRoman'] -> ['decimal', 'upperRoman', 'upperRoman']"
+        },
+        {
+          "check": "Section property: pageNumStart",
+          "passed": true,
+          "detail": "[1, 7, None] -> [1, 7, None]"
+        },
+        {
+          "check": "Section property: titlePage",
+          "passed": true,
+          "detail": "[True, True, True] -> [True, True, True]"
+        },
+        {
+          "check": "Leaf reopens PAGE and NUMPAGES fields",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "LibreOffice recognises automatic page fields",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Final Leaf save/reopen preserves edited body",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Final Leaf save/reopen preserves language ranges",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Standard ODT reopen: header",
+          "passed": true,
+          "detail": "[21.0, 21.0, 21.0] -> [21.002399444580078, 21.002399444580078, 21.002399444580078]"
+        },
+        {
+          "check": "Standard ODT reopen: footer",
+          "passed": true,
+          "detail": "[27.0, 27.0, 27.0] -> [27.014400482177734, 27.014400482177734, 27.014400482177734]"
+        },
+        {
+          "check": "Standard ODT reopen: marginTop",
+          "passed": true,
+          "detail": "[72.0, 72.0, 72.0] -> [72.0, 72.0, 72.0]"
+        },
+        {
+          "check": "Standard ODT reopen: marginBottom",
+          "passed": true,
+          "detail": "[72.0, 72.0, 72.0] -> [72.02879333496094, 72.02879333496094, 72.02879333496094]"
+        }
+      ]
+    },
+    {
+      "file": "variants.docx",
+      "checks": [
+        {
+          "check": "Body text after independent edit",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "All header variant contents retained",
+          "passed": true,
+          "detail": "[]"
+        },
+        {
+          "check": "All header variants visible in LibreOffice PDF",
+          "passed": true,
+          "detail": "[]"
+        },
+        {
+          "check": "Language and unchecked ranges retained",
+          "passed": false,
+          "detail": ""
+        },
+        {
+          "check": "English and Spanish recognised independently by LibreOffice",
+          "passed": true,
+          "detail": "[{'token': 'English', 'language': 'en', 'country': 'GB'}, {'token': 'Spanish', 'language': 'es', 'country': 'ES'}]"
+        },
+        {
+          "check": "Unchecked range recognised independently by LibreOffice",
+          "passed": false,
+          "detail": "{'token': 'UNCHECKED_TOKEN', 'language': 'en', 'country': 'GB'}"
+        },
+        {
+          "check": "Header edge distance recognised independently",
+          "passed": true,
+          "detail": "[21.00472440944882]"
+        },
+        {
+          "check": "Footer edge distance recognised independently",
+          "passed": true,
+          "detail": "[27.014173228346458]"
+        },
+        {
+          "check": "Section count retained",
+          "passed": true,
+          "detail": "1 -> 1"
+        },
+        {
+          "check": "Previous-section link semantics: headers",
+          "passed": true,
+          "detail": "[[False, False, False]] -> [[False, False, False]]"
+        },
+        {
+          "check": "Previous-section link semantics: footers",
+          "passed": true,
+          "detail": "[[False, False, False]] -> [[False, False, False]]"
+        },
+        {
+          "check": "Displayed header sequence retained",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Section property: header",
+          "passed": true,
+          "detail": "[21.0] -> [21.0]"
+        },
+        {
+          "check": "Section property: footer",
+          "passed": true,
+          "detail": "[27.0] -> [27.0]"
+        },
+        {
+          "check": "Section property: marginTop",
+          "passed": true,
+          "detail": "[72.0] -> [72.0]"
+        },
+        {
+          "check": "Section property: marginBottom",
+          "passed": true,
+          "detail": "[72.0] -> [72.0]"
+        },
+        {
+          "check": "Section property: pageNumFormat",
+          "passed": true,
+          "detail": "['decimal'] -> ['decimal']"
+        },
+        {
+          "check": "Section property: pageNumStart",
+          "passed": true,
+          "detail": "[1] -> [1]"
+        },
+        {
+          "check": "Section property: titlePage",
+          "passed": true,
+          "detail": "[True] -> [True]"
+        },
+        {
+          "check": "Leaf reopens PAGE and NUMPAGES fields",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "LibreOffice recognises automatic page fields",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Final Leaf save/reopen preserves edited body",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Final Leaf save/reopen preserves language ranges",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Standard ODT reopen: header",
+          "passed": true,
+          "detail": "[21.0] -> [21.002399444580078]"
+        },
+        {
+          "check": "Standard ODT reopen: footer",
+          "passed": true,
+          "detail": "[27.0] -> [27.014400482177734]"
+        },
+        {
+          "check": "Standard ODT reopen: marginTop",
+          "passed": true,
+          "detail": "[72.0] -> [72.0]"
+        },
+        {
+          "check": "Standard ODT reopen: marginBottom",
+          "passed": true,
+          "detail": "[72.0] -> [72.02879333496094]"
+        }
+      ]
+    },
+    {
+      "file": "variants.odt",
+      "checks": [
+        {
+          "check": "Body text after independent edit",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "All header variant contents retained",
+          "passed": true,
+          "detail": "[]"
+        },
+        {
+          "check": "All header variants visible in LibreOffice PDF",
+          "passed": true,
+          "detail": "[]"
+        },
+        {
+          "check": "Language and unchecked ranges retained",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "English and Spanish recognised independently by LibreOffice",
+          "passed": true,
+          "detail": "[{'token': 'English', 'language': 'en', 'country': 'GB'}, {'token': 'Spanish', 'language': 'es', 'country': 'ES'}]"
+        },
+        {
+          "check": "Unchecked range recognised independently by LibreOffice",
+          "passed": true,
+          "detail": "{'token': 'UNCHECKED_TOKEN', 'language': 'zxx', 'country': ''}"
+        },
+        {
+          "check": "Header edge distance recognised independently",
+          "passed": true,
+          "detail": "[21.00472440944882]"
+        },
+        {
+          "check": "Footer edge distance recognised independently",
+          "passed": true,
+          "detail": "[27.014173228346458]"
+        },
+        {
+          "check": "Section count retained",
+          "passed": true,
+          "detail": "1 -> 1"
+        },
+        {
+          "check": "Previous-section link semantics: headers",
+          "passed": true,
+          "detail": "[[False, False, False]] -> [[False, False, False]]"
+        },
+        {
+          "check": "Previous-section link semantics: footers",
+          "passed": true,
+          "detail": "[[False, False, False]] -> [[False, False, False]]"
+        },
+        {
+          "check": "Displayed header sequence retained",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Section property: header",
+          "passed": true,
+          "detail": "[21.0] -> [21.002399444580078]"
+        },
+        {
+          "check": "Section property: footer",
+          "passed": true,
+          "detail": "[27.0] -> [27.014400482177734]"
+        },
+        {
+          "check": "Section property: marginTop",
+          "passed": true,
+          "detail": "[72.0] -> [72.0]"
+        },
+        {
+          "check": "Section property: marginBottom",
+          "passed": true,
+          "detail": "[72.0] -> [72.02879333496094]"
+        },
+        {
+          "check": "Section property: pageNumFormat",
+          "passed": true,
+          "detail": "['decimal'] -> ['decimal']"
+        },
+        {
+          "check": "Section property: pageNumStart",
+          "passed": true,
+          "detail": "[1] -> [1]"
+        },
+        {
+          "check": "Section property: titlePage",
+          "passed": true,
+          "detail": "[True] -> [True]"
+        },
+        {
+          "check": "Leaf reopens PAGE and NUMPAGES fields",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "LibreOffice recognises automatic page fields",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Final Leaf save/reopen preserves edited body",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Final Leaf save/reopen preserves language ranges",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Standard ODT reopen: header",
+          "passed": true,
+          "detail": "[21.0] -> [21.002399444580078]"
+        },
+        {
+          "check": "Standard ODT reopen: footer",
+          "passed": true,
+          "detail": "[27.0] -> [27.014400482177734]"
+        },
+        {
+          "check": "Standard ODT reopen: marginTop",
+          "passed": true,
+          "detail": "[72.0] -> [72.0]"
+        },
+        {
+          "check": "Standard ODT reopen: marginBottom",
+          "passed": true,
+          "detail": "[72.0] -> [72.02879333496094]"
+        }
+      ]
+    }
+  ],
+  "audit_run": 41299085581,
+  "audit_job": 124826083285,
+  "artifact": {
+    "id": 13080537464,
+    "sha256": "5578d93f0088e1407dd495d5afc4bf41a338fb3cdd8f440624a2e8c1c385740c",
+    "independently_downloaded": true
+  },
+  "baseline": {
+    "source_commit": "f1da96ba6a5c39f5a54b23aca36fd5a714a6193c",
+    "run": 41298485536,
+    "artifact": 13080586471,
+    "sha256": "6184493bdf54fbd31d7d54a181e777b2e8feed44293b0e40f18ae792d216c85e"
+  },
+  "scope": {
+    "synthetic_files": 4,
+    "independent_editor": "LibreOffice 24.2.7.2 on Ubuntu 24.04",
+    "actual_edits": "One body-marker replacement per section; original-format store; PDF export",
+    "standard_only_odt": "Writer DOCX-to-ODT and resaved ODT with only Leaf namespace attributes removed",
+    "full_24_file_corpus_rerun": false,
+    "manual_gnome_os": false,
+    "microsoft_word": false,
+    "orca": false,
+    "tables_images_in_this_sample": false
+  },
+  "patches_reapplied_to_pinned_upstream_and_src_identical": true,
+  "native": {
+    "source_commit": "125b6ab96db54169e9f652517d2e255039a66e36",
+    "run": 41299085582,
+    "job": 124826083383,
+    "conclusion": "success",
+    "root_tests": 91,
+    "new_regressions": 4,
+    "artifact": 13081250451,
+    "artifact_zip_sha256": "5799e78bada196782d56b1c863c77c81b656f5c8ecb4a6d464079c2264b18436",
+    "artifact_independently_downloaded": true,
+    "checks": [
+      "cargo test --locked",
+      "cargo build --release --locked --features gui --bin wordcraft-gnome",
+      "gettext English/Spanish and dark documents",
+      "header/footer and proofing UI",
+      "GTK lifetimes",
+      "keyboard and printing portal",
+      "menus, tabs, adaptive controls",
+      "HiDPI 100/200%",
+      "reproducible debug/release pixel checksums"
+    ]
+  }
+}
