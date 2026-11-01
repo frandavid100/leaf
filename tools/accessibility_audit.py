@@ -7,10 +7,12 @@ does not claim a human listening test or a physical braille display test.
 """
 import json
 import os
+import pty
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import traceback
 
@@ -103,7 +105,25 @@ def main():
         def speech_lines():
             return [line for line in orca_log.read_text(errors="replace").splitlines() if "SPEECH OUTPUT:" in line]
         orca_out = (OUT / "orca-process.log").open("w")
-        orca = subprocess.Popen(["orca", "--replace", "--enable=speech,echo-by-character", "--disable=braille", "--user-prefs=" + profile + "/orca", "--debug-file=" + str(orca_log)], env=env, stdout=orca_out, stderr=subprocess.STDOUT)
+        # Orca buffers --debug-file on a regular file. A real terminal makes
+        # its unmodified logger line-buffered, so we can await actual utterances
+        # rather than racing a buffered log and interrupting speech with the
+        # next keystroke. No speech generator or AT event is mocked.
+        master, slave = pty.openpty()
+        def capture():
+            with orca_log.open("wb", buffering=0) as output:
+                while True:
+                    try:
+                        chunk = os.read(master, 65536)
+                        if not chunk:
+                            break
+                        output.write(chunk)
+                    except OSError:
+                        break
+        collector = threading.Thread(target=capture, daemon=True)
+        collector.start()
+        orca = subprocess.Popen(["orca", "--replace", "--enable=speech,echo-by-character", "--disable=braille", "--user-prefs=" + profile + "/orca", "--debug-file=/dev/stdout"], env=env, stdout=slave, stderr=orca_out)
+        os.close(slave)
         app = None
         try:
             wait(lambda: orca_log.exists() and "ORCA: Initialized" in orca_log.read_text(errors="replace"), 30)
@@ -216,6 +236,8 @@ def main():
                     except subprocess.TimeoutExpired:
                         process.kill()
             orca_out.close()
+            collector.join(timeout=2)
+            os.close(master)
 
 
 if __name__ == "__main__":
