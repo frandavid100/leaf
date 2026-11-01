@@ -26,12 +26,14 @@ desde alpha.13, portales y Orca automatizada. [Registro](docs/BOOKMARKS_COMMENTS
 La protección general frente a cambios externos sigue aplazada. No iniciar
 nuevas etapas de Orca.
 
-## En curso: revisión de issues y alpha.16
+## Completado: revisión de issues y alpha.16
 
-David ha autorizado revisar los 24 issues, cerrar los verificados y publicar otra
-alpha. [Alcance](docs/ISSUE_SWEEP_ALPHA16.md): 15 correcciones preparadas; columnas,
-tablas avanzadas, pares/impares, el caso de espaciado e herencia de revisión
-permanecen abiertos. No ampliar a otras propuestas durante esta entrega.
+Publicada y verificada tras revisar 32 issues (24 iniciales y ocho nuevos).
+14 cerrados; 18 abiertos. La sincronización #12 mejora los controles principales,
+pero queda abierta por el editor de columnas y la cobertura restante. Columnas,
+tablas avanzadas, pares/impares, el caso de espaciado, herencia de revisión y los
+ocho nuevos informes conservan sus tareas pendientes.
+[Resultado y comprobaciones](docs/ISSUE_SWEEP_ALPHA16.md).
 
 ## Completado: refinamiento de paneles y metadatos para alpha.15
 
@@ -45,7 +47,7 @@ Flatpak instalado, actualización desde alpha.14, portales y regresión Orca/AT-
 ## Orden de prioridad después de esta revisión
 
 Estas son propuestas; requieren un fallo concreto o una petición antes de actuar.
-La revisión de issues es el trabajo elegido. Las demás ampliaciones siguen pendientes de elección.
+La revisión y entrega están completadas. Los issues abiertos conservan sus tareas; no iniciar otra ampliación automáticamente.
 
 | Prioridad | Trabajo | Qué permite darlo por resuelto |
 | --- | --- | --- |

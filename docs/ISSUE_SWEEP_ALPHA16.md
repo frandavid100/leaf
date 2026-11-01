@@ -2,10 +2,23 @@
 
 Requested by David on 2026-11-01: review all open issues, close those resolved and
 publish another alpha. Starting source: `5582a5fff91ebf52ab5461fee2aabb11a20f8bcb`,
-branch `wordcraft-saving`. All 24 open issues reviewed. Publication/closure are
-pending full native and installed validation at this source stage.
+branch `wordcraft-saving`. All 24 original open issues were reviewed, followed by
+eight reports added during the work (#25–#32). **14 closed; 18 remain open**.
 
-## Fixes prepared
+[Alpha.16 published](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.16)
+from `a7e3f349f8a4a2fdb3033acaecbc36d20d5f3cd2` after [successful native and installed validation](https://github.com/frandavid100/leaf/actions/runs/41357492415).
+Public bundle: **10,894,408 bytes**, SHA256 `e1f08d048733bcdc6725066c81785df8bd65775db67e574242947fb157993120`.
+All eight public assets match their advertised sizes/digests; SHA256SUMS and
+source-commit.txt verified from the actual downloads.
+
+Native artifact ZIP SHA256:
+`842a59576d34f5b19235ee7c8dd393edf473cf2dac132390206661ab170e64be`.
+Package artifact ZIP SHA256:
+`ec61112ab4d0dc9b754051f360ce3a77660dd507465cc1180695415cbb6754a1`.
+Both downloaded/extracted and checked; native menu/text/spread and installed dark
+page screenshots inspected as internal QA, not public product screenshots.
+
+## Closed after validation
 
 | Issue | Result | Focused verification |
 | --- | --- | --- |
@@ -14,7 +27,6 @@ pending full native and installed validation at this source stage.
 | #8 | Page numbers at captured selection; no position/alignment. | Body/footer, undo, round trips/protection. |
 | #10 | Immediate valid scalars, complete typing, grouped undo. | Actual paragraph/size controls, invalid/no-op input, pin suite. |
 | #11 | Named presets disable dimensions; Custom enables. | Five presets, orientation, cancel. |
-| #12 | Style/Paragraph/Text follow selection and mixed state. | Model aggregation, actual pinned Style/Paragraph, pin/undo suite. |
 | #13 | Editable Font/Size row, previews, effective-size menus. | Font activation, quarter points, preview attributes, typing; inherited styles/parts/complex scripts. |
 | #17 | Anchor click reveals overlapping root threads. | Model overlap/reply plus GTK click/drag/document replacement. |
 | #18 | Persistent grouped circular theme choices. | Three toggles, StyleManager, restart, live document appearance. |
@@ -33,7 +45,24 @@ pending full native and installed validation at this source stage.
 | #5, #6 | Mouse resize/selection/movement/insertion handles need their own implementation and merged/multipage/zoom tests. Existing keyboard/menu table features remain. |
 | #7 | [Reduced API reproduction](ISSUE7_TRIAGE.md) confirms absent even header/footer slots reuse default story IDs; edits are shared and DOCX preserves that allocation. Original-file/direct-click/PDF/undo and a complete isolation fix remain. |
 | #9 | Ordinary two-paragraph spacing changes measured layout by 24pt and survives DOCX reopen. This does not reproduce the reported file/contextual suppression. Keep open until its cause is isolated; #10 removes the extra Apply step. |
+| #12 | Partially improved: current Style, core Paragraph/Text properties and mixed states pass native synchronization checks. The embedded Columns editor depends on selection/section state beyond the paragraph-property snapshot; keep open until that and broader coverage are complete. |
 | #14–#16 | Coordinated new-document preferences, inheritable document defaults and explicit fragment overrides are not implemented here. Persistence and migration need joint validation. |
+
+## Reports added during this review
+
+All eight were read and received review notes; none is established as fixed by
+alpha.16. They remain open for a subsequent targeted change.
+
+| Issue | Remaining work |
+| --- | --- |
+| #25 | Explicit heading navigation near the viewport top, independent of ordinary caret scrolling. |
+| #26 | Entry-specific spelling/grammar menus with applicable actions and stale-range protection. |
+| #27 | Reproduce Shift+click failure and investigate click/drag anchor coordination; existing static extension code alone is not proof of a fix. |
+| #28 | Double-click drag in whole-word units, reversal and autoscrolling. |
+| #29 | Native header-group spacing, actual geometry/hover/focus and adaptive/HiDPI checks. |
+| #30 | Remove sidebar headings/refresh and complete automatic results under effective review settings. |
+| #31 | Modest reduction of thumbnail row/padding spacing. |
+| #32 | Verify selected word ranges exclude trailing whitespace and coordinate boundaries with #28. |
 
 ## Explicit submission exceptions
 
@@ -50,8 +79,12 @@ These collect an atomic action; cancel must preserve the document.
 Focused model checks: `tests/issue_sweep.rs`. Real native controls:
 `src/gnome/diagnostics/issues.rs`. Full CI also checks pointer input, both locales,
 adaptive menus, selection/undo, headers, annotations, proofing, lifecycle, HiDPI,
-portals and the existing Orca/AT-SPI stage. Publication requires successful native
-and installed Flatpak checks; release builds stay optimized with unwinding.
+portals and the existing Orca/AT-SPI stage. The final native and installed Flatpak
+workflow passed: 113 Rust tests, four
+Python tests and 590 source gettext messages, plus the full GTK regression suite.
+Installed checks include new controls, user/theme restart, upgrade from alpha.15,
+reinstall, real document-portal file save/reopen, print and Orca/AT-SPI. Release
+builds stay optimized with unwinding.
 
 Dependency boundary checked against `f11fbe558c5d7903b4044cfd99399dec948ac8c8`:
 no engine/render, Cargo revisions, vendor or patch change. Public screenshots

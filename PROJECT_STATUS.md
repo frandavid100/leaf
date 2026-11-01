@@ -11,30 +11,27 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## Revisión autorizada en curso: alpha.16
-
-24 issues revisados; 15 correcciones preparadas y nueve mantenidas abiertas.
-[Alcance y comprobaciones](docs/ISSUE_SWEEP_ALPHA16.md). La entrega y el cierre
-se harán tras validar la interfaz nativa y el Flatpak instalado.
-
 ## Última versión publicada
 
-[Alpha.15, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.15).
-ID `io.github.frandavid100.leaf`, runtime GNOME 49, actualización desde alpha.14.
-Tag, paquete y fuente nativa `91f23ecf4644eb3e78b02025378a326fc22beeb5`.
-Bundle: 10.806.760 bytes,
-SHA256 `789e4214437c0f29c1080547723f3cc90ebf8a80e468427499370fd8d9250c5c`.
+[Alpha.16, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.16).
+ID `io.github.frandavid100.leaf`, runtime GNOME 49, actualización desde alpha.15.
+Tag, paquete y fuente nativa `a7e3f349f8a4a2fdb3033acaecbc36d20d5f3cd2`.
+Bundle: 10.894.408 bytes,
+SHA256 `e1f08d048733bcdc6725066c81785df8bd65775db67e574242947fb157993120`.
+Descarga pública, las ocho sumas/digests de assets y fuente verificadas.
 No hay feed automático de actualizaciones ni publicación en Flathub.
 
-108 pruebas Rust, cuatro Python, 600 mensajes gettext y la ronda gráfica nativa
-completa superadas, incluidos inglés/español, ancho/estrecho/oscuro e HiDPI.
-El Flatpak instalado ha pasado metadatos, marcadores/comentarios y revisión,
-actualización desde alpha.14, reinstalación con datos, arranque, portales de
-archivos/impresión y Orca/AT-SPI automatizados.
-[CI nativa y del paquete](https://github.com/frandavid100/leaf/actions/runs/41348755238) ·
-[Registro y límites](docs/SIDEBAR_REFINEMENT_VALIDATION.json).
-La descarga pública y sus sumas se han verificado. No equivale a pruebas humanas
-de todos los documentos, lectores o impresoras.
+**32 issues revisados**: los 24 iniciales y ocho añadidos durante el trabajo.
+**14 cerrados; 18 abiertos**, incluido #12 parcialmente mejorado. El resto conserva
+su trabajo pendiente, con notas de revisión en cada issue.
+[Resultado por issue, evidencia y límites](docs/ISSUE_SWEEP_ALPHA16.md).
+
+113 pruebas Rust, cuatro Python, 590 mensajes fuente gettext y la ronda gráfica
+nativa completa superadas. Flatpak instalado: controles nuevos, actualización
+desde alpha.15, reinstalación con datos, guardado/reapertura real mediante portal,
+impresión y regresión Orca/AT-SPI.
+[CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41357492415).
+No equivale a pruebas humanas de todos los documentos, lectores o impresoras.
 
 ## Entrega acumulada completada
 

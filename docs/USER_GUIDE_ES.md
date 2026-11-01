@@ -40,8 +40,9 @@ de formato quedan contenidas en el menú contextual.
 Estilo muestra los estilos del documento con búsqueda, aplicación y gestión.
 Párrafo reúne alineación, listas, sangría, interlineado, bordes/sombreado y columnas.
 Texto contiene fuente y tamaño editables en una fila, con menús de opciones y
-vistas previas. Los valores válidos de formato se aplican directamente. Los paneles
-fijados siguen la selección y muestran valores mixtos. Texto también contiene formato e idioma. Las opciones avanzadas están
+vistas previas. Los valores válidos de formato se aplican directamente. Los controles principales de los paneles
+fijados siguen la selección y muestran valores mixtos; la sincronización del editor
+de columnas al cambiar de sección sigue pendiente en #12. Texto también contiene formato e idioma. Las opciones avanzadas están
 un nivel dentro de sus paneles. Columnas admite el alcance que ofrece su editor;
 las anchuras desiguales tienen limitaciones de conservación en ODT.
 También hay [fallos visuales comunicados](TEST_RESULTS.md) con anchuras desiguales
@@ -94,7 +95,7 @@ mayúsculas y reemplazar. Cada resultado muestra contexto y página; se puede
 reemplazar uno o todos. La consulta se conserva al cerrar y se actualiza al abrirla.
 
 Las páginas usan desplazamiento continuo y disposición doble cuando caben al
-zoom actual. Los controles +/− y su menú ofrecen zoom, 100 % y ajustar al ancho.
+zoom actual. El menú de documento reúne +/−, porcentaje/restablecer al 100 % y ajustar al ancho.
 La apariencia de páginas y miniaturas sigue el modo claro/oscuro de GNOME.
 
 ## Insertar y configurar
@@ -106,7 +107,10 @@ permanentes Tabla/Imagen en la barra. Tab/Mayús+Tab recorren celdas y Tab al fi
 puede añadir una fila. Las imágenes son en línea, con tamaño/proporción, sustitución
 y eliminación; no se ofrece posicionamiento flotante.
 
-Encabezados y pies se editan directamente en la página; Escape vuelve al cuerpo.
+Encabezados y pies se editan directamente en la página; clicar fuera de su zona o
+pulsar Escape vuelve al cuerpo. El número de página se inserta en la posición
+actual y conserva su alineación; el diálogo permite añadir el total de páginas.
+Ancho y alto del papel solo se editan cuando se elige tamaño Personalizado.
 Propiedades del documento incluye **Información** para editar título, asunto, autor,
 palabras clave y categoría. Aplicar confirma todos los cambios; Cancelar los descarta.
 El autor del documento no cambia la identidad usada en nuevos comentarios. La
