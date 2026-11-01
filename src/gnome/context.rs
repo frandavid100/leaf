@@ -147,11 +147,7 @@ pub(super) fn context_prepare(ui: &Rc<Ui>, x: f64, y: f64) -> Option<DocumentCon
         DocumentContext::Text
     })
 }
-pub(super) fn context_open_format(ui: &Rc<Ui>, name: &str) {
-    if let Some(menu) = format_button(ui, name) {
-        menu.popup();
-    }
-}
+
 pub(super) struct ContextFormatLease {
     pub(super) host: glib::WeakRef<gtk::PopoverMenu>,
     pub(super) entries: RefCell<Vec<(gtk::Popover, gtk::Widget, Rc<FormatHeader>)>>,

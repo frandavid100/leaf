@@ -1,10 +1,7 @@
 use super::*;
 
 // Native document tools; engine adapters own all mutations.
-use wordcraft_gnome::{
-    document_properties::PageSetup,
-    pdf_export, pictures,
-};
+use wordcraft_gnome::{document_properties::PageSetup, pdf_export, pictures};
 pub(super) const PT_PER_MM: f64 = 72.0 / 25.4;
 pub(super) fn mm_input(value: f64, min: f64, max: f64) -> gtk::SpinButton {
     let n = gtk::SpinButton::with_range(min, max, 1.0);
@@ -296,6 +293,8 @@ pub(super) fn install_picture_controls(
             #[weak]
             ui,
             move |_| {
+                // Preserve the weak tab-lifetime guard before touching controls.
+                let _tab_guard = &ui;
                 if let Some(s) = weak.upgrade() {
                     s.width.update();
                     s.height.update();

@@ -4,7 +4,7 @@
 
 Crea y edita documentos. Cliente nativo GTK4/libadwaita basado en WordCraft.
 Nombre anterior de desarrollo: WordCraft GNOME — fase 3D.
-Icono y versión simbólica: [fuentes SVG](../data/icons/README.md). Integración del nombre e icono en el ejecutable y el instalador pendiente.
+Icono y versión simbólica: [fuentes SVG](../data/icons/README.md). Nombre, iconos y lanzador ya están integrados en el Flatpak. [Instalación](../packaging/INSTALL.md).
 
 Para retomar el desarrollo: [estado actual](../PROJECT_STATUS.md),
 [hoja de ruta](../ROADMAP.md) e [instrucciones para agentes](../AGENTS.md).
@@ -48,7 +48,7 @@ Atajos: Ctrl+M / Ctrl+Shift+M para sangría y Ctrl+Shift+L para viñetas.
 Abrir y Nueva ventana pertenecen al menú general encima del panel lateral;
 el mismo menú sigue disponible cuando el panel está oculto.
 El fondo del documento usa el color de ventana de Adwaita, como la cabecera
-plana. Las hojas permanecen blancas.
+plana. Las hojas y miniaturas siguen el modo claro u oscuro de GNOME.
 
 ## Pestañas, autoguardado y búsqueda
 

@@ -82,33 +82,7 @@ pub(super) fn panel_action(
         }
     ));
 }
-pub(super) fn panel_toggle(
-    g: &adw::PreferencesGroup,
-    label: &str,
-    active: bool,
-    ui: &Rc<Ui>,
-    w: &adw::PreferencesWindow,
-    command: &'static str,
-) {
-    let row = adw::SwitchRow::new();
-    row.set_title(label);
-    row.set_active(active);
-    g.add(&row);
-    let ui = ui.clone();
-    let w = w.clone();
-    row.connect_active_notify(glib::clone!(
-        #[weak]
-        ui,
-        #[weak]
-        w,
-        move |r| {
-            if let Err(e) = format_execute(&ui, command, serde_json::json!({"value":r.is_active()}))
-            {
-                w.add_toast(Toast::new(&e));
-            }
-        }
-    ));
-}
+
 pub(super) fn panel_number(
     g: &adw::PreferencesGroup,
     label: &str,

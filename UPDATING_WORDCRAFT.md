@@ -1,326 +1,78 @@
-# Updating the WordCraft dependency
-
-The GNOME client consumes upstream crates at a pinned Git revision. The sole compatibility exception is the vendored wordcraft-formats crate with a narrow ODT preservation patch; see [patches/README.md](patches/README.md). Other engine crates, egui and the renderer are not modified.
-
-## Boundary
-
-- `src/lib.rs`: opening and rasterization adapter.
-- `selection.rs`, `editing.rs`, `formatting.rs`, `saving.rs`, `tables.rs`: command adapters.
-- `preferences.rs`: GNOME host settings; no engine internals.
-- `gnome_host.rs`: tab lifecycle, recovery scheduling and native host dialogs.
-- `gnome_format_panels.rs`: native advanced text/paragraph formatting via public engine commands.
-- `styles.rs`, `gnome_styles.rs`: style command adapter, isolated previews and inline popover pages.
-- `gnome_tables.rs`: native insertion, contextual table controls and properties.
-- `bin/gnome.rs`: GTK/libadwaita document view and input.
-
-The host uses public Session, DocLayout and command APIs. Recovery encoding,
-locking and background I/O remain upstream responsibilities. The GNOME settings
-choose when to tick recovery or save the document; these policies are host code.
-
-## Upgrade procedure
-
-1. Change the WordCraft `rev` values in Cargo.toml together, including the matching wordcraft-doc/geom revisions in vendor/wordcraft-formats/Cargo.toml. Recopy the upstream formats crate and reapply the recorded patch, or remove the override when upstream fixes the same cases. Do not keep a stale vendored crate across an engine update.
-2. Check upstream's Cargo.toml for its required `krilla` patch revision and Rust MSRV.
-3. Regenerate Cargo.lock, inspect its dependency diff and run `cargo test`.
-4. Run the GUI build and CI screenshots, including tabs, independent windows,
-   find/replace, preferences and dark/narrow layouts.
-5. Manually round-trip representative DOCX and ODT documents with formatting,
-   lists, tables and multiple pages. Verify undo, hit testing and clipboard.
-6. Verify recovery after forced process termination and confirm explicit discard
-   does not offer an obsolete copy at the next start.
-
-A source-compatible upstream update should be a revision bump plus validation.
-Command names, public Rust types, file fidelity or layout changes can require
-adapter changes. Avoid unpinned upstream main and changes to engine internals.
-
-## Production performance
-
-Distribute `cargo build --release --locked --features gui --bin wordcraft-gnome`,
-never a stripped development binary. The release profile enables speed
-optimization, ThinLTO, one codegen unit, and symbol stripping. Panic unwinding
-remains enabled because upstream catches panics in command and rendering paths.
-
-The GTK adapter consumes native premultiplied RGBA without an extra full-page
-copy. Straight RGBA remains available for headless callers. Page lookup uses
-binary search over ordered page positions; equivalence is checked against
-the original full scan. Cached thumbnail repainting is coalesced to 120 ms
-while editing. These changes do not modify the upstream engine.
-
-`cargo run --example performance` and `cargo run --release --example performance`
-exercise the same pages at full and thumbnail sizes. The benchmark excludes
-pixel checksum calculation from raster timing. Compare checksums and timings
-on the same runner; results describe the sample workload, not every document.
-
-## Table integration
-
-The pinned engine marks `text.tab` as a mutation even when only its selection
-changes. `tables::navigate` uses pure `caret.set`/`select.range` for existing
-cells, preserving dirty state, redo and typing boundaries. In the last cell it
-uses `text.tab` to let upstream add the row. Literal tabs use `text.insertTab`.
-Recheck this distinction on engine upgrades. The adapter never mutates the
-table structure itself. Cross-cell dragging uses extending caret commands so
-WordCraft owns rectangular cell selections; highlights use public layout boxes.
-
-Table regressions cover structure, undo/redo, selected-column shading, empty
-cell selection, merges/splits, DOCX/ODT common properties and multipage rendering.
-CI also sends real Tab/Shift+Tab and text input under Xvfb with xdotool.
-
-## Style popover
-
-The list reads every paragraph/character style from the current stylesheet.
-The host keeps list, detail and name-entry pages in one GtkPopover/GtkStack.
-Preview renders a fresh sample Session with a cloned stylesheet, with proofing
-disabled; it never runs preview commands on the live document. Its small
-premultiplied raster is cropped for display. CRUD uses public commands, with
-client-side empty/duplicate-name checks and built-in deletion disabled.
-Creation supplies the current paragraph style as basedOn.
-
-CI tests preview immutability and style operations, then exercises real widget
-callbacks for creation, rename, update, deletion, navigation and filtering.
-It asserts that no additional application window is opened.
-
-## Caret motion and initial sidebar
-
-`caret_motion.rs` interpolates only the painted caret, for 100 ms, with retargeting
-from its current visual position. Engine geometry, selection, hit testing and
-scroll-to-caret always use the exact destination. A GTK frame-clock callback is
-registered only during movement; it respects gtk-enable-animations. Selection
-drags, missing carets, new sessions and page changes snap. No upstream patch.
-The sidebar's initial visibility is set before attaching the tab, with no delayed
-show call. Explicit user toggles retain libadwaita's normal transitions.
-
-## Sidebar search and paragraph popover
-
-`search.rs` invokes literal `edit.advancedFind` in the body and consumes all public
-`Session.find.results`, not the JSON response's 200-item sample. It preserves
-selection while collecting context, pages and highlight geometry. Hit actions
-validate document identity and revision before selecting or replacing through
-public engine commands. Empty replacement deletes the range. UI result buttons
-refresh after mutations/undo, and each tab owns its query and options.
-`gnome_search.rs` owns the sidebar stack and weak callbacks; highlights are a
-separate GTK overlay and do not change the document or the raster cache.
-`gnome_paragraph.rs` replaces the old paragraph dialog with icon controls and
-scrollable internal pages with a fixed back row. New paragraph/replace icons
-are drawn as small foreground-colour vectors, so they work without optional
-icon-theme assets and follow light/dark appearance. It retains the public paragraph commands; no engine
-formatting model is copied. The source engine remains unmodified.
-
-## Adaptive page canvas and focus
-
-The GTK host uses a Fixed canvas with geometry from viewer_layout::arrange.
-Two consecutive pages share a row only when they fit at the current zoom. Mixed
-page heights and an odd last page retain document order; visibility lookup is
-indexed by row. Text hit testing still uses the actual GTK page-frame bounds and
-the upstream layout. No engine pagination or document properties are changed.
-An explicit GtkViewport has scroll-to-focus disabled: the focusable canvas spans
-the document and must not be automatically panned into view on popover dismissal.
-Keyboard caret visibility remains an explicit host operation. CI reproduces a
-bottom menu click, its native dismissing click, and a subsequent text click on
-a later page with xdotool. Both dismissal and canvas focus must preserve scroll.
-
-## Outline sidebar and native main menu
-
-`navigation.rs` reads resolved outline levels through the public document/style
-API and advances the engine's public numbering counters. TOC styles are omitted;
-font size and localized style names are never used to guess headings. The host
-only selects the heading position; collapse state belongs to each sidebar.
-Search/navigation share a native GtkStack crossfade. Bulk replacement invokes
-one literal edit.replaceAll command in the body, retaining one undo step.
-`gnome_menus.rs` uses GMenu and window actions rather than styled GtkButtons.
-Menu accelerator attributes display Undo/Redo shortcuts without globally
-intercepting Ctrl+Z in native search/name fields. Other window actions dispatch
-to the selected tab. AdwTabOverview supplies the native all-tabs view.
-
-
-## Native document chrome
-
-The document menu uses the same GMenu/GtkPopoverMenu pipeline as the main menu,
-but owns Undo/Redo and Save/Save As entries. Window actions resolve the selected
-tab at activation time; history accelerator labels do not intercept native text
-field shortcuts. New tab and Save have no header buttons. The example action is
-removed; --test-document is an internal CI fixture, normal startup stays blank.
-Sidebar navigation uses a nested AdwToolbarView bottom bar, not content padding.
-A retained vertical GtkSizeGroup aligns it with the editor toolbar. Both use Flat
-style for native scroll undershoots. Thumbnail buttons enclose image plus label
-with uniform 12px padding. These are host changes only, no engine updates.
-
-
-## Pinned editing popovers
-
-`gnome_popover_pin.rs` supplies a FormatPopoverGroup per tab and shared title,
-back and pin header for Style, Paragraph, Text and Table. Only one panel is
-visible; opening another hides its predecessor and inherits the group's pin.
-Every editing popover is nonmodal from construction. Never change autohide on
-a mapped popup: GTK recreates its surface and visibly blinks even if remapped
-synchronously. Pinning changes only the host's dismissal policy. A non-claiming
-window capture gesture dismisses unpinned panels on outside clicks, excluding
-their popup surfaces and menu-button anchors. GTK still handles explicit menu
-button close and Escape. Applying dismisses only when the shared pin is off.
-The single header owns a replaceable back callback (cloned before invocation to
-avoid RefCell reentrancy); subpages no longer insert another navigation row.
-Paragraph split controls use native flat AdwSplitButton, including shared hover
-background, half-button feedback and native separator/arrow. The documented child
-hierarchy supplies the internal MenuButton; its lazy-popup callback resets the
-button and switches the existing paragraph stack, without a nested popup. Main
-actions retain selected-state feedback. Thumbnail pictures use Papers-style 6px
-radii, a fine border and hidden overflow to clip the raster too. No engine changes
-or added dependencies. Recheck split child hierarchy when upgrading libadwaita.
-Tests wait for GTK frames, assert mapped surfaces, no hide signal/surface
-replacement during pin toggles, and exclusive switching with pin inheritance.
-
-
-
-## Images, page setup and PDF
-
-`pictures.rs` selects exactly one picture through pure select.range, uses insert.picture, picture.change/size and text.delete, and leaves all media/layout handling upstream. New images are inline; preserve the engine's object hit testing and UTF-8 object character length. Selection painting uses its ObjectHit bounds. The fifth editing popover joins the existing exclusive pin group.
-`document_properties.rs` clones each target section, updates only paper/margins, prevalidates all sections, and calls layout.pageSetup for each. The engine checkpoint/join/merge and edit_snapshot/restore APIs provide one undo and rollback on errors; existing headers, footers, columns and other settings stay distinct. Temporary caret commands restore the user's selection. Millimetre display rounding does not dirty unchanged fields.
-`pdf_export.rs` uses pure file.exportPdf with an explicit .pdf destination. The GUI clones the document and creates a separate Session inside a GIO blocking worker, retaining the live session's path, dirty state, selection and history. Native file dialogs confirm the exact output path; never silently append an extension after confirmation.
-`gnome_document_tools.rs` owns native popover, staged modal properties and file selectors. Async chooser callbacks validate document identity/revision before acting. No dependency or engine revision changes.
-
-
-
-## Native context menus and rich clipboard
-
-`gnome_context.rs` supplies a native GtkPopoverMenu/GMenu for text, table cells and pictures; the secondary-button gesture resolves the target with the same layout hit testing as primary clicks. An existing text or cell selection is retained when the pointer falls inside it. Otherwise the host selects only the clicked picture or moves the caret. Menu/Shift+F10 use the current selection. Actions reuse the host's existing adapters and public engine commands, never document mutations. The former table-only custom popover is removed.
-
-Copy publishes the engine's plain-text and HTML representations through a GdkContentProvider union. A single app-wide engine fragment allows rich paste across tabs/windows while GTK owns that exact provider; external clipboard changes invalidate it by provider identity. Native entry fields retain their own clipboard handling. Text fallback captures document identity/revision/selection, so asynchronous reads cannot paste into another tab or a moved selection. Cut deletes only after a successful clipboard write. Context actions and Ctrl+C/X/V share these functions. No new dependencies or engine changes.
-
-
-
-### Native row activation lifetime
-
-GtkModelButton closes its ancestor popover before invoking its action-dispatch handler. Never unparent a context popover synchronously in its closed handler: this detaches the action muxer before native row dispatch. Defer unparenting to an idle callback and retain the popover through it. Tests must exercise the GtkModelButton clicked/activate path (and a real pointer click), not widget.activate_action, which bypasses that ordering. Nautilus context popovers use has-arrow=false and halign=start; shortcut attributes use the native accelerator column.
-
-Normal startup anchors table/picture tool popovers directly to the document canvas instead of exposing toolbar menu buttons. Their pointing rectangle is updated from the context click. The shared outside-click policy exempts an anchor only when it is a MenuButton, never the whole canvas. Public engine operations and dependencies remain unchanged.
-
-Canvas clearing must preserve GtkPopover children: standalone tools belong to the tab and need the same realized ancestor throughout opened/page rebuilds. Removing every Fixed child detaches their native parent before popup, including at normal startup. Deferred transient-menu cleanup also checks that a parent still exists.
-
-
-
-## Adaptive controls and contained context pages
-
-`gnome_adaptive.rs` observes actual viewport adjustment changes, moving existing history/format boxes between header and bottom bar. No permanent frame tick is introduced. Width hysteresis avoids relayout loops. Capture open popovers before hiding their former toolbar; reopening suppresses the usual home-page reset until allocation settles, retaining pin and selection.
-
-Text/Style/Paragraph use GtkStack interpolation and native slide transitions. GtkPopoverMenu custom slots lease the same root widgets for contained contextual submenus, restoring them synchronously on closed while retaining the previous deferred native-menu unparenting. Weak embedded-host routing sends close/pin actions to the current container. Hosts join per-tab exclusive dismissal without changing modality on a mapped surface. The duplicated native submenu back row is hidden after guarded GtkStack page lookup; check this small GTK hierarchy boundary on GTK upgrades. All document operations remain public upstream commands, with no engine or dependency changes.
-
-Viewport size notifications capture open panels synchronously before GTK unmaps a resizing anchor. Do not postpone that capture to idle: visibility can already have been lost. Reopening waits briefly for the new allocation, with a generation guard. Nonmodal context hosts explicitly focus their first native menu row because GtkPopover only does that automatically with autohide enabled. Context hosts inherit the same style-popover/format-popover classes, keeping font weight and active-state styling identical. Pointer regression targets the left of the document so the new header popup does not intercept its dismissing click.
-
-Closing a nonmodal contextual host explicitly restores canvas focus (as Nautilus does), before deferred unparenting. The real-click regression checks both focus acquisition on opening and focus return after Copy, allowing normal keyboard editing to continue. Final validated revision: c744dac3f553b0304e631dd80dde7fbe3669e1cd, CI 41144295677.
-
-
-## GitHub Flatpak alpha
-
-Application ID: `io.github.frandavid100.leaf`. Internal Cargo target remains `wordcraft-gnome`; installed executable is `leaf`. Desktop and AppStream metadata live in data/. packaging/build-bundle.sh stages the tested native release executable into GNOME 49 using Flatpak build-init/export/bundle, with no Flatpak-builder manifest. This is GitHub distribution, not a Flathub source build or submission.
-
-packaging/smoke-test.sh validates the installed application, desktop launcher, document-portal forwarding and persistent application data across reinstall. XDG_STATE_HOME is respected; when absent inside Flatpak, the host uses XDG_DATA_HOME/state for recovery. Existing non-Flatpak settings paths are preserved. Reinstall testing preserves data and does not yet verify updating between two distinct version bundles.
-
-The workflow publishes only push commits on wordcraft-saving explicitly marked [release-alpha]. It never overwrites an existing release. The one-off [bundle-only] path reuses the explicitly configured proven native run (currently 41225574820 / b1b42907f2059353518480899a3d4d56beb2996f) only after git diff proves src/Cargo/tests/vendor/patches identical. Future code changes require full native validation; do not bypass that guard. Bump application/version strings, package filenames and release notes together for the next alpha. Packaging scripts and documentation have used AI assistance; do not present them as human-authored Flathub manifests.
-
-
-## HiDPI raster presentation
-
-src/gnome_hidpi.rs wraps native premultiplied MemoryTexture data in a GdkPaintable whose intrinsic size is the logical page/thumbnail size. The renderer receives zoom times GtkWidget scale-factor; pointer, layout, scrolling and caret calculations remain logical. Observe scale-factor changes and invalidate both raster caches. Keep the adapter pixel-allocation guard; oversized pages need future tiling rather than removing memory protection. Engine code is unchanged. Regression runs at GDK_SCALE=1/2 and document zoom 1/2, plus an installed sandbox run. Real fractional/Wayland monitor transitions remain manual tests.
-
-The alpha.3 HiDPI validation used source 45037abc0ce0e323ea03f8f2c20218eda08c77a2, run 41210344397. The latest full native validation is b1b42907f2059353518480899a3d4d56beb2996f / run 41225574820 (alpha.5). A future packaging-only reuse must explicitly configure that proven revision/run and preserve the git-diff identity guard; the workflow's identity guard must reject changed source.
-
-
-## ODT compatibility exception — alpha.4
-
-`vendor/wordcraft-formats` is a licensed snapshot of the formats crate from the same pinned engine revision. Cargo patches that source once, so explicit saves, autosave and recovery use the same exporter. `patches/wordcraft-formats-odt.patch` records the exporter-only diff. It writes page-part content with the existing Writer (sharing automatic style IDs and embedded media), resolves linked section parts, and retains unused imported page parts in unreferenced master pages. ODT flow conversion respects explicit repeating-row flags instead of inferring them from first-row appearance. Other format converters are unchanged. This exception is for verified file preservation defects, not UI convenience.
-
-Focused tests cover active first/even/default slots, nested tables, header images, inheritance, unused page styles, inactive mode flags, immutability and save state/history. The corpus workflow remains manual; the release workflow only runs the one-off corpus and external LibreOffice checks when explicitly marked [odt-audit]. It is not a mandatory per-release suite. See the follow-up report for results and limits. In alpha.4/9, inactive first/even variants retained their content in unused master pages but lost their disabled-slot association; the alpha.10 patch below additionally preserves those associations. General page-style fidelity is not claimed.
-
-
-## Native printing and keyboard control accessibility — alpha.5
-
-Source GTK minimum is now 4.14 for GtkPrintDialog (GNOME 49 runtime already satisfies it). src/printing.rs prepares a private disposable PDF via the existing engine file.exportPdf command on a new Session from a document clone; it does not save the live Session. src/gnome_printing.rs owns per-tab cancellation/duplicate suppression, worker lifecycle and GTK callback cleanup. Keep the temporary source until the print callback; keep the application hold during worker export so closing the last window still permits cleanup. Cancellation cannot interrupt the synchronous PDF conversion but prevents a later dialog. No new Rust dependency, renderer or engine patch is added.
-
-src/gnome_accessibility.rs supplies F6/Shift+F6 pane navigation and F10 main-menu access, with capture restricted to those keys. Existing entry shortcuts, context keys, tab switching and table Tab behavior remain. Numeric control helpers and custom icon controls have explicit accessible labels. Alpha.12 adds the initial GtkAccessibleText adapter described below; do not describe it as full document accessibility. See docs/KEYBOARD_PRINTING.md for the original control/printing evidence.
-
-The hermetic print portal is test-only, never installed. Run it only on a private D-Bus session. It verifies PDF file-descriptor handoff, text, duplicate suppression, success/dismissal/error and cleanup. The installed sandbox also opens and cancels the real system dialog. Tests do not verify a physical printer.
-
-## GTK ownership boundary
-
-The alpha.6 lifecycle changes are host-only: explicit Workspace owners, weak signal captures, removable timers/controllers, popover teardown and embedded TabBar disconnection. They require no engine changes. Do not change weak callbacks back to strong captures without checking the ownership graph. Stop/unmap the embedded tab bar before detaching its view so animation callbacks finish while their tab records remain valid.
-
-`src/gnome_lifecycle.rs` adds focused diagnostic workloads (`--lifecycle-ui-test`, `--lifecycle-dialog-test`) exercised natively and, for the main workload, inside the installed Flatpak. See [the audit](docs/GTK_LIFECYCLE_AUDIT_2026-10-31.md) and its JSON evidence. These are brief object-lifetime regressions; the full compatibility corpus remains manual.
-
-## Localization and screen appearance
-
-The native host now uses GNU gettext catalogs (`po/`) and generated desktop/AppStream metadata; see docs/TRANSLATING.md. After changing visible strings, regenerate with `python tools/update_translations.py --compile` and update the English/Spanish catalogs. The gettext adapter is GNU/Linux-specific, initializes locale before GUI workers and keeps a bounded immutable message table. Include `po/` in binary-reuse identity checks.
-
-`render_page_screen` sets the public upstream RenderOptions.dark for screen-only page and thumbnail rendering. The existing render_page/render_page_premultiplied paths remain suitable for document-color output. Appearance changes invalidate caches and disconnect on tab closure; preserve those rules during upstream updates. No renderer fork or new engine revision is required.
-
-## Editable page stories — alpha.9
-
-`src/header_footer.rs` adapts public insert.editHeader/editFooter/closeHeader and insert.pageNumber(position=current) commands. Top/bottom insertion appends a paragraph and preserves existing content; do not replace this with upstream top/bottom page-number presets, which replace the entire story. Existing-story navigation touches upstream layout revision but is not a document edit: retain dirty state and undo depth. Page-hinted geometry is essential for repeated page stories. GTK pointer hit testing resolves the story displayed on the actual page; drag selections cannot cross stories.
-
-The isolated formats patch now also retains basic automatic page fields in ODT; see patches/README.md and wordcraft-formats-page-fields.patch. Recheck upstream support before carrying this patch forward. Header/footer text edits, fields and first/even/default variants have focused root roundtrip tests; the full compatibility corpus remains manual.
-
-## Section properties and proofing — alpha.10
-
-The host registers leaf.headerOptions with the public WordCraft command registry. It clones inherited parts through the public document model and commits through layout.pageSetup, under the engine’s undo/rollback/protection boundary. The command targets an explicit body section; an inherited header’s defining section is not necessarily the page being edited. Keep existing links by default, clone shared parts before separation, preserve inactive variants and return to a valid body selection after changing references. Document properties group page/header edits atomically.
-
-Proofing uses the pinned engine’s layout/proof APIs and review commands. Scan a document/prefs clone in a worker, and verify document identity/revision before selecting or replacing results. The per-tab review window owns a removable weak polling source; close it during tab teardown. User dictionaries live under the existing XDG config root. App preference updates merge existing JSON fields. Language changes and no-proof flags are document edits; checking/ignoring/adding words and live-mark preferences are not.
-
-Spanish Hunspell data in data/dictionaries is pinned independently, unmodified, with original credits, GPL text and checksums. Install it under /app/share/hunspell; native builds use the source directory. English tools remain upstream built-ins. Missing dictionaries must be reported rather than claiming text was checked. Include this runtime data when comparing tested sources for binary reuse. Gettext extraction now avoids matching the suffix of format! as a t! macro.
-
-The third isolated formats patch preserves the newly exposed ODT properties and language metadata; review/remove it when upstream catches up. Exact distances, unchecked-text original languages and section links use explicit Leaf extension attributes. Other ODF editors may ignore/strip these extensions; visible content is also exported in ordinary ODF elements. Continuous-section page-style fidelity remains limited upstream.
-
-
-## Document text accessibility — alpha.12
-
-`src/gnome_canvas.rs` subclasses the existing visible GtkFixed and implements
-GtkAccessibleText. `src/accessible_text.rs` is a read-only derived index of the
-active WordCraft story; canonical text, selection and all edits remain in Session.
-The index translates Unicode character offsets to engine UTF-8 byte positions.
-Word/sentence segmentation directly uses the already locked
-unicode-segmentation 1.13.3 crate; no transitive version or engine revision changed.
-
-Preserve weak Ui ownership, revision/document/story caching, and old-delete /
-new-insert notification ordering. Never hold RefCell borrows across GTK update
-notifications. Visual line queries must use DocLayout::line_span, not a guessed
-text wrap. Do not introduce a second editable buffer or hidden GtkTextView.
-
-The minimum GTK remains 4.14. Remote EditableText actions, later GTK caret setters
-and character geometry, rich attributes and table/image/field semantics are not
-implemented by this first-stage adapter. Source text is not yet filtered to match
-every hidden-text/revision view. See docs/ACCESSIBLE_DOCUMENT_TEXT.md and its JSON
-evidence. The optional audit uses actual AT-SPI, real keyboard input and unmodified
-Orca; generated speech logs are not human listening or braille validation.
-
-The proven native source is d17d12fe9271eaa682cab62333d7e8d873022074 /
-run 41303104863. Packaging-only reuse is pinned explicitly in the workflow and
-requires source identity. The installed sandbox has its own reader check before
-publication. Do not bypass either guard when changing application code.
-
-
-## Host performance audit — alpha.13
-
-The audit changes Leaf only; Cargo.toml/Cargo.lock, the pinned engine/render
-revision, vendor and formats patches remain identical to alpha.12. No speculative
-engine patch or dependency update is part of the performance work. A reproducible
-engine defect must be proposed upstream rather than fixed in this frontend.
-
-`Current.overlay_pages` tracks the previous rendered selection/search/caret
-layers. Redraw their union with the new pages to erase stale highlights; caret
-animation queues only its own layer. Header/footer guide activation/closure
-retains full invalidation. Preserve the deselection/search-close regressions.
-
-Thumbnail visibility uses `viewer_layout::ordered_visible_range` with live
-monotonic GTK allocation bounds and the former approximate geometry before
-allocation. Newly appended widgets can share an origin: do not interpret that
-as all thumbnails visible. A weak coalesced idle callback follows adjustment
-geometry changes. The raster cache still contains only the viewport/prefetch
-range. Reopening thumbnails after search must refill invalidated rasters.
-
-Hidden SearchPanel callbacks do not execute queries or reconstruct rows; opening
-the panel refreshes against the current document revision, so stored queries
-remain usable after edits. Existing stale-hit rejection remains enabled.
-
-`gnome_performance.rs`, the optional baseline workflow and
-`tools/performance_compare.py` use synthetic text only, with opt-in metrics,
-AB/BA order and fresh profiles. Boundary spans include Leaf adapter overhead;
-never call them exclusive WordCraft CPU measurements or sum nested spans.
-See docs/HOST_PERFORMANCE_AUDIT.md for evidence and limitations. The full
-compatibility corpus remains manual, not a per-release requirement.
+# Updating the WordCraft base
+
+Leaf consumes public WordCraft crates at a pinned git revision. Frontend changes
+belong in Leaf; proposed engine/render optimizations belong upstream. An engine
+upgrade is a separate, explicitly authorized task, not part of routine cleanup.
+
+## Current boundary
+
+- Engine/doc/render: `165d5725dc25b4a7887d8025c3b1fe506ccc3dcc` in [Cargo.toml](Cargo.toml).
+- PDF backend patch: the craft-libs revision declared in Cargo.toml.
+- Existing compatibility exception: [vendor/wordcraft-formats](vendor/wordcraft-formats),
+  with four isolated ODT preservation/properties patches documented in
+  [patches/README.md](patches/README.md). Other engine crates/render are unmodified.
+- GTK lives in [src/gnome](src/gnome); the top-level [src library](src/lib.rs)
+  contains GTK-independent adapters. [Architecture](docs/ARCHITECTURE.md) maps each feature.
+
+The source of truth is Session/Document. Public commands own mutation, protection,
+dirty state and history; DocLayout owns geometry. Leaf controls native input,
+views, caching, worker/dialog lifecycle and when to request those public APIs.
+Do not introduce a second editable model or patch the engine for UI convenience.
+
+## Authorized upgrade procedure
+
+1. Inspect upstream changes and its MSRV/krilla requirements before choosing a revision.
+2. Update WordCraft revisions together in Cargo.toml and vendor/wordcraft-formats/Cargo.toml.
+3. Recopy the formats crate from that exact revision and reapply the four patches
+   in the recorded order, or remove patches now fixed upstream. Keep licenses and
+   provenance. Never carry an unrelated stale vendored crate across the upgrade.
+4. Regenerate Cargo.lock and inspect the dependency diff. A revision bump is not
+   presumed source-compatible; adapt public API changes on the Leaf side.
+5. Run relevant [tests/build checks](CONTRIBUTING.md), including affected format,
+   selection/history and GTK paths. Use small roundtrip reproductions for altered
+   import/export behavior. The independent corpus/Writer audits are optional
+   when justified, not mandatory for every release.
+6. Check recovery/explicit discard, independent tabs, focus, clipboard and async
+   completion after closing/replacing a tab. Preserve the invariants below.
+7. For an actual release, follow the [release checklist](docs/RELEASE_CHECKLIST.md).
+   Update any explicitly pinned native-artifact reuse guard to the newly validated
+   source/run; never bypass its source-identity comparison.
+
+## Integration contracts to recheck
+
+| Area | Contract | Evidence / affected checks |
+| --- | --- | --- |
+| Tables | Existing-cell navigation uses pure caret/selection commands; upstream text.tab mutates when adding a final row. Preserve dirty/redo boundaries. | tables tests and real keyboard Tab/Shift+Tab. |
+| Styles | Preview on an isolated sample/session, never the live document. CRUD uses public commands. | styles tests and native popover diagnostics. |
+| Headers/fields | Edit the story displayed on the requested page; preserve page hints, body return selection, linked-part semantics and existing footer content when inserting a number. | [Headers](docs/HEADERS_FOOTERS.md), header_footer/page_options/odt_geometry tests. |
+| Formatting/page setup | Preserve selection/pending format and use atomic undo/rollback for multi-section operations. | document_tools/page_options/advanced_formatting tests. |
+| Search/clipboard | Identity/revision checks before applying stale async results; native clipboard provider ownership controls rich fragments. | recovery_search tests, real contextual row activation. |
+| HiDPI | Logical geometry remains separate from raster density; keep the allocation cap and premultiplied buffers. | hidpi tests, native scale 1/2 and installed check. |
+| Screen appearance | Screen-only RenderOptions.dark; file export/printing keep document colors. | [Dark-mode report](docs/LOCALIZATION_DARK_MODE.md). |
+| Accessible text | Derived active-story index; Unicode offsets map to engine bytes. Old-delete/new-insert notifications must not hold RefCell borrows. | accessible_text tests and [AT-SPI/Orca](docs/ACCESSIBLE_DOCUMENT_TEXT.md). |
+| Printing/PDF | Export an isolated document copy; retain temporary resources/application hold until native callbacks finish. | printing tests and portal success/cancel/error harness. |
+| Lifetimes | Workspace owners, weak callbacks/back references, removable/cancellable workers and explicit tab teardown. | [GTK audit](docs/GTK_LIFECYCLE_AUDIT_2026-10-31.md). |
+
+## Frontend details that are not engine work
+
+The context menu's deferred unparenting preserves native action dispatch.
+Popover pinning never changes modality on a mapped surface; contained contextual
+pages restore borrowed controls before the host is detached. Preserve explicit
+focus return and scroll position. AdwSplitButton internals and the GtkPopoverMenu
+stack hierarchy are small GTK/libadwaita integration boundaries to recheck when
+upgrading those libraries.
+
+The [host performance report](docs/HOST_PERFORMANCE_AUDIT.md) explains bounded
+thumbnail rasters, pre-allocation fallback, previous/new overlay invalidation and
+inactive search. Keep those policies in Leaf. Measure matched inputs/conditions;
+API-boundary spans include adapter overhead and are not exclusive engine CPU time.
+
+The release profile uses speed optimization, ThinLTO, one codegen unit and symbol
+stripping. Preserve panic unwinding because upstream uses catch_unwind. Ship
+optimized release binaries. Current package identity/runtime/permissions and
+validation are in [PROJECT_STATUS](PROJECT_STATUS.md), not hardcoded historical
+run IDs in this guide.
+
+[Earlier detailed integration notes](docs/history/UPDATING_WORDCRAFT_BEFORE_REORGANIZATION.md)
+remain archived with their revisions. They can explain a past decision, but
+current locations and policies are those linked above.

@@ -866,5 +866,4 @@ pub(super) fn build_tab(
         glib::idle_add_local_once(move || fit_width(&ui));
     }
     install_content_demos(&ui, formatting_demo, editing_demo, selection_demo);
-
 }

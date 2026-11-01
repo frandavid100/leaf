@@ -11,7 +11,12 @@ pub(super) fn install_menu_demos(text_menu: &gtk::MenuButton, zoom_menu: &gtk::M
     }
 }
 
-pub(super) fn install_content_demos(ui: &Rc<Ui>, formatting_demo: bool, editing_demo: bool, selection_demo: bool) {
+pub(super) fn install_content_demos(
+    ui: &Rc<Ui>,
+    formatting_demo: bool,
+    editing_demo: bool,
+    selection_demo: bool,
+) {
     if formatting_demo {
         let ui = ui.clone();
         glib::timeout_add_local_once(std::time::Duration::from_millis(950), move || {

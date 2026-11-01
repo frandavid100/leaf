@@ -4,8 +4,10 @@ pub(super) fn document_tools_fixture(ui: &Rc<Ui>) {
     let file = std::env::temp_dir().join(format!("wordcraft-picture-{}.png", std::process::id()));
     std::fs::write(
         &file,
-        wordcraft_engine::cmd::insert::base64_decode(include_str!("../../../tests/fixtures/picture.b64"))
-            .unwrap(),
+        wordcraft_engine::cmd::insert::base64_decode(include_str!(
+            "../../../tests/fixtures/picture.b64"
+        ))
+        .unwrap(),
     )
     .unwrap();
     let mut session = Session::new(wordcraft_doc::Document::from_text(

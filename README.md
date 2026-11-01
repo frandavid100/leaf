@@ -68,6 +68,6 @@ For everyday work, keep your original and check saved copies in another editor. 
 
 ## Development and credits
 
-The active branch is **`wordcraft-saving`**. Detailed [Spanish usage notes](docs/USER_GUIDE_ES.md) are also available. See [project status](PROJECT_STATUS.md), [roadmap](ROADMAP.md), [contributing](CONTRIBUTING.md) and [updating WordCraft](UPDATING_WORDCRAFT.md). The repository's default branch still contains an earlier prototype; follow the branch link when browsing the source.
+The active branch is **`wordcraft-saving`**. New contributors can start with the [architecture/code map](docs/ARCHITECTURE.md), [current decisions](docs/DECISIONS.md) and [continuation guide](docs/CONTINUING.md). Detailed [Spanish usage notes](docs/USER_GUIDE_ES.md) are also available. See [project status](PROJECT_STATUS.md), [roadmap](ROADMAP.md), [contributing](CONTRIBUTING.md) and [updating WordCraft](UPDATING_WORDCRAFT.md). The repository's default branch still contains an earlier prototype; follow the branch link when browsing the source.
 
 WordCraft remains pinned; Leaf carries isolated ODT compatibility patches in wordcraft-formats, documented in [patches/](patches/README.md). Other engine crates and the renderer remain unchanged; the native frontend is maintained separately. Leaf is licensed under [GPL-3.0-or-later](LICENSE). Development, tests, documentation and artwork have used AI assistance; [scope and limitations](docs/AI_ASSISTANCE.md).
