@@ -26,10 +26,10 @@ jobs:
         with:
           name: wordcraft-gnome-fase3d-linux
           path: native-artifact
-          run-id: '41303104863'
+          run-id: '41320879043'
           github-token: ${{ github.token }}
       - name: Verify tested implementation is unchanged
-        run: git diff --exit-code d17d12fe9271eaa682cab62333d7e8d873022074 -- src Cargo.toml Cargo.lock tests vendor po data
+        run: git diff --exit-code 3d5e6826ec6311b23dcaac638a580cf76be2d04e -- src Cargo.toml Cargo.lock tests vendor po data
       - name: Install independent assistive technology clients
         run: |
           sudo apt-get update
