@@ -90,8 +90,10 @@ siguen siendo responsabilidad de David.
 
 La revisión alpha.15 añade una regresión de pertenencia de marcadores (títulos
 anidados, prefacio y cambios de nivel/deshacer) y comprueba en GTK el plegado,
-la navegación y una única burbuja con separadores por hilo. Se valida de nuevo
-antes de publicar.
+la navegación y una única burbuja con separadores por hilo. Han pasado la
+[CI nativa y el Flatpak instalado](https://github.com/frandavid100/leaf/actions/runs/41348755238).
+[Alpha.15 publicada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.15);
+[registro acumulado](SIDEBAR_REFINEMENT_VALIDATION.json).
 
 Mapa: [adaptador](../src/annotations.rs), [panel](../src/gnome/annotations.rs),
 [diálogos](../src/gnome/annotation_dialog.rs), [pruebas](../tests/annotations.rs),

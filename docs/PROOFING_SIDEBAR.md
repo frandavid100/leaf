@@ -53,7 +53,10 @@ ha pasado la misma prueba funcional y la regresión Orca/AT-SPI.
 [Alpha.14 está publicada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.14);
 la descarga y sus sumas se han verificado.
 
-La regresión adaptada de alpha.15 se valida de nuevo antes de publicar el paquete.
+La regresión adaptada de alpha.15 ha pasado en [nativo y Flatpak instalado](https://github.com/frandavid100/leaf/actions/runs/41348755238),
+con selección sin edición, ausencia de instrucciones/controles de corrección,
+actualización automática y rechazo de resultados obsoletos.
+[Release publicada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.15).
 
 Código: [panel](../src/gnome/spellcheck.rs), [Preferencias](../src/gnome/workspace.rs),
 [adaptador](../src/proofing.rs), [diagnóstico](../src/gnome/diagnostics/spellcheck.rs).

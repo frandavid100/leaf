@@ -13,51 +13,47 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 
 ## Última versión publicada
 
-[Alpha.14, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.14).
-ID `io.github.frandavid100.leaf`, runtime GNOME 49, actualización desde alpha.13.
-Tag/paquete `0f9d8dab49b4e60c693012ed929345b12ef606fe`; fuente nativa
-`727b3434bc4df2da1ec62c17e04353ac28b87955`. Bundle: 10.629.136 bytes,
-SHA256 `1df0c0144ddd4c6559e49bb9a9ee395c86a078fa88f1f5cfe66e0620ca3b7965`.
+[Alpha.15, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.15).
+ID `io.github.frandavid100.leaf`, runtime GNOME 49, actualización desde alpha.14.
+Tag, paquete y fuente nativa `91f23ecf4644eb3e78b02025378a326fc22beeb5`.
+Bundle: 10.806.760 bytes,
+SHA256 `789e4214437c0f29c1080547723f3cc90ebf8a80e468427499370fd8d9250c5c`.
 No hay feed automático de actualizaciones ni publicación en Flathub.
 
-105 pruebas Rust, cuatro Python y la ronda gráfica nativa completa superadas,
-incluidos inglés/español, ventanas estrechas/oscuras e HiDPI. El Flatpak instalado
-ha pasado los nuevos paneles, actualización desde alpha.13, reinstalación con datos,
-arranque de escritorio, portales de documentos/impresión y Orca/AT-SPI automatizados.
-[CI nativa](https://github.com/frandavid100/leaf/actions/runs/41341927920) ·
-[CI del paquete](https://github.com/frandavid100/leaf/actions/runs/41343316411) ·
-[Registro y límites](docs/BOOKMARKS_COMMENTS_VALIDATION.json).
+108 pruebas Rust, cuatro Python, 600 mensajes gettext y la ronda gráfica nativa
+completa superadas, incluidos inglés/español, ancho/estrecho/oscuro e HiDPI.
+El Flatpak instalado ha pasado metadatos, marcadores/comentarios y revisión,
+actualización desde alpha.14, reinstalación con datos, arranque, portales de
+archivos/impresión y Orca/AT-SPI automatizados.
+[CI nativa y del paquete](https://github.com/frandavid100/leaf/actions/runs/41348755238) ·
+[Registro y límites](docs/SIDEBAR_REFINEMENT_VALIDATION.json).
 La descarga pública y sus sumas se han verificado. No equivale a pruebas humanas
 de todos los documentos, lectores o impresoras.
 
-## Trabajo actual: refinamiento de los paneles para alpha.15
+## Entrega acumulada completada
 
-David pide integrar marcadores bajo los títulos de Navegación, dedicar la tercera
-pestaña a Comentarios con una burbuja por hilo y separadores, y simplificar
-Revisión a navegación sin instrucciones ni bloque de correcciones. Se retira
-Ortografía y gramática del menú de documento. Implementado localmente; validación
-gráfica y publicación aún pendientes. David añade cinco campos editables en
-Propiedades: título, asunto, autor, palabras clave y categoría, ya implementados
-con historial y protección frente a pérdida de categoría en ODT. Se acumulan en
-la misma entrega; validar la fuente completa antes de publicar.
-[Detalle y comprobaciones](docs/SIDEBAR_REFINEMENT_VALIDATION.json).
+**Navegación** integra los marcadores bajo su título, con plegado de la sección;
+los anteriores al primer título aparecen al principio. La tercera pestaña queda
+solo para **Comentarios**: cada hilo comparte una burbuja, con separadores entre
+mensajes y guías para las respuestas. Se conservan todas las acciones e historial.
+[Detalle](docs/BOOKMARKS_COMMENTS.md).
 
-## Base publicada: entrega acumulada alpha.14
+**Ortografía y gramática** conserva la lista lateral, sin instrucciones iniciales
+ni bloque de correcciones. Pulsar una fila solo selecciona y muestra el texto.
+Se retira la entrada del menú de documento; F7 y el selector lateral la abren.
+Las correcciones siguen en el contexto del texto y la revisión al escribir en
+Preferencias. [Detalle](docs/PROOFING_SIDEBAR.md).
 
-Los **marcadores y comentarios** se crean desde Insertar y el menú contextual,
-y comparten la tercera pestaña lateral. Incluye creación, navegación, eliminación,
-edición/respuesta de comentarios y resolución/reapertura de hilos, con historial
-WordCraft y guardas frente a diálogos obsoletos. [Detalle](docs/BOOKMARKS_COMMENTS.md).
+**Propiedades → Información** permite editar título, asunto, autor, palabras clave
+y categoría. Aplicar confirma metadatos, página y encabezados en un solo paso de
+deshacer; Cancelar descarta el formulario. El autor del documento no cambia la
+identidad de nuevos comentarios. [Uso](docs/USER_GUIDE_ES.md).
 
-**Ortografía y gramática** ocupa la cuarta pestaña lateral, con lista de errores,
-navegación por clic y correcciones. F7 permite revisión manual; revisar mientras
-se escribe se configura exclusivamente en Preferencias. Los análisis descartan
-posiciones obsoletas. [Detalle](docs/PROOFING_SIDEBAR.md).
-
-DOCX conserva los hilos. El exportador ODT fijado **omite comentarios y convierte
-intervalos de marcador en posiciones**; Leaf bloquea el guardado ODT con comentarios,
-propone DOCX y conserva recuperación si el autoguardado directo es incompatible.
-Motor, revisiones, dependencias, vendor y parches existentes permanecen intactos.
+DOCX conserva los cinco campos y los hilos. El exportador ODT fijado **omite
+comentarios y categoría, y convierte intervalos de marcador en posiciones**.
+Leaf impide perder comentarios/categoría al guardar ODT, propone DOCX y conserva
+recuperación si el autoguardado directo es incompatible. Los otros cuatro campos
+se conservan en ODT. Motor, dependencias, vendor y parches permanecen intactos.
 La reproducción upstream está documentada; no se ha abierto una issue desde aquí.
 
 La revisión anterior de organización y continuidad está terminada y validada:
@@ -72,7 +68,7 @@ La revisión anterior de organización y continuidad está terminada y validada:
 | Revisión y anotaciones | Lista lateral de errores, revisión al escribir en Preferencias, marcadores e hilos de comentarios. [Revisión](docs/PROOFING_SIDEBAR.md), [anotaciones](docs/BOOKMARKS_COMMENTS.md) |
 | Interfaz | GTK4/libadwaita, pestañas/ventanas, búsqueda/reemplazo, miniaturas/títulos, contexto nativo y controles adaptables. |
 | Salida y recuperación | PDF, impresión por portal y preferencias de autoguardado/recuperación. [Impresión](docs/KEYBOARD_PRINTING.md) |
-| Idiomas y apariencia | 599 mensajes gettext, inglés/español y páginas oscuras. [Traducciones](docs/TRANSLATING.md) |
+| Idiomas y apariencia | 600 mensajes gettext, inglés/español y páginas oscuras. [Traducciones](docs/TRANSLATING.md) |
 | Accesibilidad | Texto normal, cursor y selección mediante GtkAccessibleText; prueba real AT-SPI/Orca automatizada. [Alcance](docs/ACCESSIBLE_DOCUMENT_TEXT.md) |
 | Rendimiento | Miniaturas acotadas, invalidación de capas afectadas y búsqueda cerrada sin trabajo redundante. [Mediciones](docs/HOST_PERFORMANCE_AUDIT.md) |
 

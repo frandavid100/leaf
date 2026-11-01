@@ -16,7 +16,7 @@ Leaf is an experimental document editor for Linux, built with GTK4 and libadwait
 - Text formatting, paragraph settings, section columns, styles, tables and inline images.
 - Direct header/footer editing, automatic page numbers and section-specific page options.
 - Spelling/grammar sidebar with clickable issues, manual review (F7), text languages and bundled Spanish dictionaries. Check-as-you-type is in Preferences.
-- Bookmarks and threaded comments with navigation in a shared sidebar; DOCX preserves comment threads.
+- Bookmarks grouped under navigation headings, comment threads in shared bubbles and editable document metadata.
 - Undo/redo, rich clipboard operations and sidebar search with replacement.
 - Multiple tabs and windows; page thumbnails and heading navigation.
 - Adaptive editing controls, dark document pages and configurable autosave/recovery.
@@ -26,7 +26,9 @@ These are implemented features, not a claim of complete Microsoft Word or LibreO
 
 ## Try Leaf
 
-The current **x86_64 Flatpak alpha** is available on [GitHub Releases](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.14). Download `Leaf-0.1.0-alpha.14-x86_64.flatpak` and open it with GNOME Software, or follow [installation instructions](packaging/INSTALL.md). It uses the GNOME 49 runtime from Flathub, downloaded separately if missing. Leaf itself is not currently on Flathub.
+The current **x86_64 Flatpak alpha** is available on [GitHub Releases](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.15). Download `Leaf-0.1.0-alpha.15-x86_64.flatpak` and open it with GNOME Software, or follow [installation instructions](packaging/INSTALL.md). It uses the GNOME 49 runtime from Flathub, downloaded separately if missing. Leaf itself is not currently on Flathub.
+
+Alpha.15 integrates bookmarks under navigation headings, combines each comment thread into one bubble and makes spelling rows navigate directly to their text. Document Properties adds title, subject, author, keywords and category. DOCX preserves all five fields; ODT cannot retain category, so Leaf proposes DOCX when it is set. [Validation and limits](docs/SIDEBAR_REFINEMENT_VALIDATION.json).
 
 Alpha.14 adds bookmarks and threaded comments through Insert/context menus and a shared sidebar, plus a separate spelling/grammar sidebar with clickable issues. Check-as-you-type is in Preferences. DOCX preserves comment threads; Leaf blocks ODT saves containing comments because the pinned exporter omits them. [Annotations and format limits](docs/BOOKMARKS_COMMENTS.md) · [Proofing sidebar](docs/PROOFING_SIDEBAR.md).
 

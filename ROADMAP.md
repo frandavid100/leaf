@@ -26,19 +26,19 @@ desde alpha.13, portales y Orca automatizada. [Registro](docs/BOOKMARKS_COMMENTS
 La protección general frente a cambios externos sigue aplazada. No iniciar
 nuevas etapas de Orca.
 
-## En curso: refinamiento de paneles para alpha.15
+## Completado: refinamiento de paneles y metadatos para alpha.15
 
 Marcadores integrados bajo títulos de Navegación, una burbuja por hilo de
 comentarios y revisión lateral solo para navegar. Retirar la entrada de revisión
 del menú de documento. Añadir título, asunto, autor, palabras clave y categoría
-editables en Propiedades. Petición de David tras probar alpha.14; implementar y
-validar los paneles nativos y el Flatpak antes de entregar.
+editables en Propiedades. Publicada tras 108 pruebas Rust, validación nativa y
+Flatpak instalado, actualización desde alpha.14, portales y regresión Orca/AT-SPI.
 [Comprobaciones](docs/SIDEBAR_REFINEMENT_VALIDATION.json).
 
 ## Orden de prioridad después de esta revisión
 
 Estas son propuestas; requieren un fallo concreto o una petición antes de actuar.
-El refinamiento de paneles anterior es el trabajo elegido actualmente.
+La entrega anterior está completada; no hay otra ampliación elegida.
 
 | Prioridad | Trabajo | Qué permite darlo por resuelto |
 | --- | --- | --- |
@@ -66,6 +66,7 @@ consultar las incidencias vigentes en GitHub antes de elegir un fallo.
 
 | Entrega | Resultado | Evidencia |
 | --- | --- | --- |
+| Alpha.15 | Navegación con marcadores, burbujas de comentarios, revisión simplificada y metadatos. | [Validación](docs/SIDEBAR_REFINEMENT_VALIDATION.json) |
 | Alpha.14 | Marcadores/comentarios y revisión ortográfica lateral. | [Anotaciones](docs/BOOKMARKS_COMMENTS.md), [revisión](docs/PROOFING_SIDEBAR.md) |
 | Alpha.13 | Diagnóstico y optimización exclusiva del host Leaf. | [Informe](docs/HOST_PERFORMANCE_AUDIT.md) |
 | Alpha.12 | Acceso inicial al texto con Orca. | [Alcance y prueba](docs/ACCESSIBLE_DOCUMENT_TEXT.md) |

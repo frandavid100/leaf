@@ -1,6 +1,6 @@
 {
   "version": "Leaf 0.1.0-alpha.15",
-  "status": "local full tests passed; native GUI/Flatpak validation pending",
+  "status": "published; native and installed Flatpak validation passed",
   "changes": [
     "bookmarks grouped under headings in Navigation, with folding and front matter fallback",
     "comments-only third tab, one bubble per thread with message separators",
@@ -26,5 +26,36 @@
   "python_tests_passed": 4,
   "translations_messages": 600,
   "gtk_check": "passed",
-  "rust_tests_passed": 108
+  "rust_tests_passed": 108,
+  "native_source": "91f23ecf4644eb3e78b02025378a326fc22beeb5",
+  "native_run": 41348755238,
+  "native_run_url": "https://github.com/frandavid100/leaf/actions/runs/41348755238",
+  "native_artifact_id": 13101056273,
+  "native_artifact_sha256": "673d532f5b86ece2a992b9bc3f3f8df104eadca1103d9db6c2e4efad4278731f",
+  "native_binary_sha256": "b0c5a71a85a20650597efac57f3c110762686c10353063efa577e0fc5b6e5df4",
+  "native_ui": "passed: five metadata fields, grouped undo, cancel and stale dialog; bookmarks/folding; shared comment bubbles; navigation-only proofing; English/Spanish, narrow/wide/dark, HiDPI, printing, keyboard and lifecycle",
+  "package_source": "91f23ecf4644eb3e78b02025378a326fc22beeb5",
+  "package_run": 41348755238,
+  "package_run_url": "https://github.com/frandavid100/leaf/actions/runs/41348755238",
+  "package_artifact_id": 13101405636,
+  "package_artifact_sha256": "c344a13107bdb5c3ac6ee44f39535211ae27c3ec8034111801c8d308d3c0d308",
+  "release_url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.15",
+  "bundle": "Leaf-0.1.0-alpha.15-x86_64.flatpak",
+  "bundle_bytes": 10806760,
+  "bundle_sha256": "789e4214437c0f29c1080547723f3cc90ebf8a80e468427499370fd8d9250c5c",
+  "installed_checks_passed": [
+    "five metadata fields, grouped undo, cancel/reopen and stale dialog",
+    "bookmark/navigation and shared comment bubble tests",
+    "navigation-only proofing and live/manual/stale scans",
+    "upgrade from alpha.14 with retained data",
+    "desktop launcher, document portal and reinstall with retained preferences/recovery",
+    "native print dialog and sandbox print portal",
+    "English/Spanish, HiDPI and lifecycle",
+    "real AT-SPI and Orca regression"
+  ],
+  "manual_checks_not_claimed": [
+    "human GNOME OS, Orca/braille or physical printer testing",
+    "arbitrary document fidelity"
+  ],
+  "public_download": "all release asset sizes/digests, SHA256SUMS and source commit verified"
 }
