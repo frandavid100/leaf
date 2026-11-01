@@ -83,6 +83,19 @@ jobs:
           set -o pipefail
           XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --chrome-ui-test 2>&1 | tee document-chrome.log
           grep -q DOCUMENT_CHROME_OK document-chrome.log
+      - name: Verify issue fixes with native controls and pointer input
+        run: |
+          set -o pipefail
+          for language in en es; do
+            leaf_config=$(mktemp -d)
+            XDG_CONFIG_HOME=$leaf_config XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --issue-sweep-ui-test 2>&1 | tee issues-$language.log
+            grep -q ISSUE_SWEEP_UI_OK issues-$language.log
+            XDG_CONFIG_HOME=$leaf_config ./target/release/wordcraft-gnome --issue-preferences-read-test
+          done
+          xvfb-run -a bash tools/comment-pointer-test.sh
+          python tools/create_launch_fixture.py /tmp/launch-test.docx
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --save-current-file-test /tmp/launch-test.docx 2>&1 | tee save-current-file.log
+          grep -q SAVE_CURRENT_FILE_UI_OK save-current-file.log
       - name: Host-only performance regression
         run: |
           set -o pipefail
@@ -176,7 +189,7 @@ jobs:
       - name: Identificar versión de prueba
         run: |
           ./target/release/wordcraft-gnome --version | tee version.txt
-          grep -q "Leaf 0.1.0-alpha.15" version.txt
+          grep -q "Leaf 0.1.0-alpha.16" version.txt
       - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
         run: |
           python -m pip install --disable-pip-version-check pillow==11.3.0
@@ -438,6 +451,9 @@ jobs:
         with:
           name: wordcraft-gnome-fase3d-linux
           path: |
+            issues-*.log
+            comment-pointer.log
+            save-current-file.log
             annotations-*.log
             annotations-*.png
             host-cache-ui.log
@@ -570,7 +586,7 @@ jobs:
       - name: Download previous alpha for upgrade verification
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release download v0.1.0-alpha.14 --pattern 'Leaf-0.1.0-alpha.14-x86_64.flatpak' --dir prior-release
+        run: gh release download v0.1.0-alpha.15 --pattern 'Leaf-0.1.0-alpha.15-x86_64.flatpak' --dir prior-release
       - name: Build and install the bundle
         run: bash packaging/build-bundle.sh native-artifact/wordcraft-gnome
       - name: Exercise the installed sandbox and desktop launcher
@@ -620,7 +636,7 @@ jobs:
             echo 'Source superseded; publication skipped.'
             exit 0
           fi
-          gh release create v0.1.0-alpha.15 dist/Leaf-0.1.0-alpha.15-x86_64.flatpak dist/SHA256SUMS dist/INSTALL.md dist/source-commit.txt dist/runtime.txt dist/runtime-commit.txt dist/flatpak-metadata.txt dist/flatpak-smoke.log --target "$GITHUB_SHA" --title 'Leaf 0.1.0-alpha.15' --prerelease --notes-file packaging/RELEASE_NOTES.md
+          gh release create v0.1.0-alpha.16 dist/Leaf-0.1.0-alpha.16-x86_64.flatpak dist/SHA256SUMS dist/INSTALL.md dist/source-commit.txt dist/runtime.txt dist/runtime-commit.txt dist/flatpak-metadata.txt dist/flatpak-smoke.log --target "$GITHUB_SHA" --title 'Leaf 0.1.0-alpha.16' --prerelease --notes-file packaging/RELEASE_NOTES.md
 
   lifecycle-baseline:
     if: contains(github.event.head_commit.message, '[lifecycle-baseline]')
