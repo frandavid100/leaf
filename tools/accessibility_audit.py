@@ -73,7 +73,8 @@ def dump_tree():
         if depth > 40 or len(nodes) > 500:
             return
         try:
-            obj.set_cache_mask(Atspi.Cache.NONE)
+            if obj.getRole() == pyatspi.ROLE_APPLICATION:
+                obj.set_cache_mask(Atspi.Cache.NONE)
             nodes.append({"depth": depth, "name": obj.name, "role": obj.getRoleName(), "interfaces": list(pyatspi.listInterfaces(obj))})
             for child in obj:
                 visit(child, depth+1)
@@ -116,7 +117,7 @@ def main():
                     canvas = find_canvas()
                     window = wait(lambda: command("xdotool", "search", "--onlyvisible", "--pid", app.pid).splitlines()[0])
                     command("xdotool", "windowfocus", "--sync", window)
-                    menu.queryComponent().grabFocus()
+                    command("xdotool", "key", "--clearmodifiers", "F10", "Escape")
                     time.sleep(.5)
                     spin()
                     result = {"baseline": True, "orca_version": command("orca", "--version").strip(), "native_control_exposed": True, "canvas_exposed": canvas is not None, "text_supported": canvas is not None and "Text" in pyatspi.listInterfaces(canvas), "speech_is_generated_transcript_not_human_listening": True}
@@ -131,7 +132,6 @@ def main():
                     dump_tree()
                 window = wait(lambda: command("xdotool", "search", "--onlyvisible", "--pid", app.pid).splitlines()[0])
                 command("xdotool", "windowfocus", "--sync", window)
-                canvas.queryComponent().grabFocus()
                 command("xdotool", "key", "--clearmodifiers", "ctrl+Home")
                 wait(lambda: canvas.getState().contains(pyatspi.STATE_FOCUSED))
                 result = {"baseline": baseline, "orca_version": command("orca", "--version").strip(), "role": canvas.getRoleName(), "interfaces": list(pyatspi.listInterfaces(canvas)), "speech_is_generated_transcript_not_human_listening": True}
@@ -170,6 +170,7 @@ def main():
                     command("xdotool", "key", "--clearmodifiers", "ctrl+Home", "Down", "Down", "Up")
                     wait(lambda: orca_log.exists() and "Café" in orca_log.read_text(errors="replace"))
                     command("xdotool", "key", "--clearmodifiers", "ctrl+Home")
+                    wait(lambda: text.caretOffset == 0)
                     Path("a11y-finish").touch()
                     wait(lambda: app.poll() is not None)
                     assert app.returncode == 0, app.returncode
