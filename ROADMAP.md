@@ -1,7 +1,15 @@
 # Hoja de ruta
 
-Actualizada: 31 de octubre de 2026. Estado técnico en [PROJECT_STATUS.md](PROJECT_STATUS.md).
+Actualizada: 1 de noviembre de 2026. Estado técnico en [PROJECT_STATUS.md](PROJECT_STATUS.md).
 Las fases siguientes son propuestas; no implican autorización para implementarlas todas.
+
+## Completado: español/inglés y documento oscuro — alpha.8
+
+Publicada alpha.8 con 520 textos gettext, metadatos localizados y catálogos en el Flatpak; documento y miniaturas oscuros mediante API existente de WordCraft, siguiendo GNOME en vivo. Pruebas nativas y del paquete superadas, artefactos verificados. [Informe](docs/LOCALIZATION_DARK_MODE.md).
+
+**Pendiente de participación del usuario:** capturas públicas y acceso/alta de Weblate con autorización GitHub. Guía/configuración preparadas; todavía no existe un portal Leaf de traducciones verificado. Mientras tanto se aceptan catálogos por PR. La aceptación del plan Libre depende de Weblate. Conviene revisión humana de traducciones y prueba real GNOME OS; se mantiene el trabajo pendiente de accesibilidad completa.
+
+Después, propuesta de encabezados, pies y numeración, previa comprobación del soporte upstream. No confundir esa propuesta con una implementación terminada o autorización de todas las fases futuras.
 
 ## Completado: auditoría GTK y alpha.6
 

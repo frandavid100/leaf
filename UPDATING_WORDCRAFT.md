@@ -244,3 +244,9 @@ The hermetic print portal is test-only, never installed. Run it only on a privat
 The alpha.6 lifecycle changes are host-only: explicit Workspace owners, weak signal captures, removable timers/controllers, popover teardown and embedded TabBar disconnection. They require no engine changes. Do not change weak callbacks back to strong captures without checking the ownership graph. Stop/unmap the embedded tab bar before detaching its view so animation callbacks finish while their tab records remain valid.
 
 `src/gnome_lifecycle.rs` adds focused diagnostic workloads (`--lifecycle-ui-test`, `--lifecycle-dialog-test`) exercised natively and, for the main workload, inside the installed Flatpak. See [the audit](docs/GTK_LIFECYCLE_AUDIT_2026-10-31.md) and its JSON evidence. These are brief object-lifetime regressions; the full compatibility corpus remains manual.
+
+## Localization and screen appearance
+
+The native host now uses GNU gettext catalogs (`po/`) and generated desktop/AppStream metadata; see docs/TRANSLATING.md. After changing visible strings, regenerate with `python tools/update_translations.py --compile` and update the English/Spanish catalogs. The gettext adapter is GNU/Linux-specific, initializes locale before GUI workers and keeps a bounded immutable message table. Include `po/` in binary-reuse identity checks.
+
+`render_page_screen` sets the public upstream RenderOptions.dark for screen-only page and thumbnail rendering. The existing render_page/render_page_premultiplied paths remain suitable for document-color output. Appearance changes invalidate caches and disconnect on tab closure; preserve those rules during upstream updates. No renderer fork or new engine revision is required.

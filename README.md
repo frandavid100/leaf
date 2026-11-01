@@ -16,15 +16,16 @@ Leaf is an experimental document editor for Linux, built with GTK4 and libadwait
 - Text formatting, paragraph settings, section columns, styles, tables and inline images.
 - Undo/redo, rich clipboard operations and sidebar search with replacement.
 - Multiple tabs and windows; page thumbnails and heading navigation.
-- Adaptive editing controls, dark appearance and configurable autosave/recovery.
+- Adaptive editing controls, dark document pages and configurable autosave/recovery.
+- English and Spanish interfaces, with gettext catalogs for community translations.
 
 These are implemented features, not a claim of complete Microsoft Word or LibreOffice compatibility. See the [testing guide](docs/TESTING.md) for the areas that need real-document testing.
 
 ## Try Leaf
 
-The current **x86_64 Flatpak alpha** is available on [GitHub Releases](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.6). Download `Leaf-0.1.0-alpha.6-x86_64.flatpak` and open it with GNOME Software, or follow [installation instructions](packaging/INSTALL.md). It uses the GNOME 49 runtime from Flathub, downloaded separately if missing. Leaf itself is not currently on Flathub.
+The current **x86_64 Flatpak alpha** is available on [GitHub Releases](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.8). Download `Leaf-0.1.0-alpha.8-x86_64.flatpak` and open it with GNOME Software, or follow [installation instructions](packaging/INSTALL.md). It uses the GNOME 49 runtime from Flathub, downloaded separately if missing. Leaf itself is not currently on Flathub.
 
-Alpha.6 fixes retained GTK tab/window state and adds focused lifetime checks. [Ownership/memory audit, measured results and limits](docs/GTK_LIFECYCLE_AUDIT_2026-10-31.md).
+Alpha.8 provides English/Spanish localization and dark document pages that follow GNOME appearance. [Help translate Leaf](docs/TRANSLATING.md). Hosted Weblate activation is pending the owner’s account setup; PO contributions through GitHub are available now. The alpha.6 lifetime fixes remain included; [audit and limits](docs/GTK_LIFECYCLE_AUDIT_2026-10-31.md).
 
 The installed package has passed automated launcher, interface, document-portal opening and persistent-data upgrade/reinstall checks on Ubuntu CI. Manual testing on GNOME OS and with your own documents is still needed. This standalone bundle has no automatic Leaf update feed.
 
@@ -53,13 +54,13 @@ Start with the [15-minute testing guide](docs/TESTING.md), then [report a bug or
 
 </details>
 
-Screenshots are actual captures of the last validated development build, using a synthetic test document. They predate Leaf branding integration. [Capture provenance](docs/screenshots/README.md).
+Screenshots are earlier development captures using a synthetic test document. They predate Leaf branding and dark document pages; replacement screenshots will be provided by the maintainer. [Capture provenance](docs/screenshots/README.md).
 
 ## Limits of this alpha
 
 Alpha.4 repairs the ODT header/footer and repeating-table-row defects found in our [one-off audit of 24 fixtures](docs/CORPUS_AUDIT_2026-10-31.md). [Follow-up results and remaining limits](docs/ODT_PRESERVATION_2026-10-31.md). Older releases still have those defects; this focused correction is not a general compatibility guarantee.
 
-Complex document fidelity, fonts, pagination and format preservation need broader testing. Images are inserted inline; floating-image positioning is not exposed. Tables do not yet have mouse resize handles or formulas. Unequal column widths are retained in DOCX but equalized by the current ODT exporter. A complete English interface and full screen-reader access to the custom document canvas remain future work. Control names and keyboard pane navigation have improved; physical printer testing is still needed. Automated checks do not establish fidelity for arbitrary documents.
+Complex document fidelity, fonts, pagination and format preservation need broader testing. Images are inserted inline; floating-image positioning is not exposed. Tables do not yet have mouse resize handles or formulas. Unequal column widths are retained in DOCX but equalized by the current ODT exporter. Full screen-reader access to the custom document canvas remains future work. Control names and keyboard pane navigation have improved; physical printer testing is still needed. Automated checks do not establish fidelity for arbitrary documents.
 
 For everyday work, keep your original and check saved copies in another editor. Autosave to the original file is an explicit preference; use recovery mode while testing.
 

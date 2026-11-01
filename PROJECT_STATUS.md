@@ -1,8 +1,25 @@
 # Estado de Leaf
 
-Actualizado: 31 de octubre de 2026. Punto de entrada para continuar desde otra conversación.
+Actualizado: 1 de noviembre de 2026. Punto de entrada para continuar desde otra conversación.
 
-## Última entrega: alpha.6 — propiedad GTK y memoria (31-10-2026)
+## Última entrega: alpha.8 — idiomas y documento oscuro (01-11-2026)
+
+Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.8
+Tag/paquete: `23207f0be9c352c31cedcd4fa274251007847169`. Código nativo validado: `eaa83c9f6acf88478e8eae9aa3c7aad36fddf6ac`; igualdad de src/Cargo/tests/vendor/patches/po comprobada antes de reutilizar el binario. Flatpak x86_64: **10.207.640 bytes**, SHA256 `1aec3ec70c9e310c1480b5468973b7ca4e206c2612dff652b521b92e7984c264`.
+
+Implementados 520 mensajes gettext, base inglesa y catálogos español/inglés completos para la interfaz nativa, diálogos, ayuda, accesibilidad y errores propios. Metadatos del lanzador y AppStream generados desde los mismos PO; catálogos instalados en el Flatpak. El idioma sigue la configuración regional del sistema al arrancar, con inglés como fallback. Adaptador GNU/Linux sin dependencia Rust nueva; cadenas copiadas una vez a una tabla inmutable independiente de las ventanas. Contenido de documentos y nombres de estilos originales no se traducen.
+
+Documento oscuro mediante RenderOptions.dark ya presente en WordCraft: páginas y miniaturas siguen la apariencia de GNOME en vivo; cursor claro y cachés invalidadas al cambiar, señal desconectada al cerrar. El motor conserva las imágenes y adapta texto/resaltados. No cambia el documento, selección ni historial; guardar, imprimir y exportar conservan los colores originales. Motor y revisiones de dependencias sin cambios.
+
+[Informe y evidencia](docs/LOCALIZATION_DARK_MODE.md), [contribuir traducciones](docs/TRANSLATING.md), [configuración de Weblate preparada](docs/WEBLATE_SETUP.md). **Weblate no está activado**: se llegó al acceso; falta que el propietario inicie sesión/cree cuenta, acepte condiciones y autorice GitHub. No anunciar un portal Leaf de Weblate inexistente. Se admiten ya PO por PR en GitHub. Las capturas públicas nuevas las aportará el usuario; no se han añadido capturas de desarrollo a la portada ni a los assets de la release.
+
+CI nativa 41285353136, job **124785422076**, completa correctamente: cargo test --locked y compilación release GTK, catálogos/metadatos, ambos idiomas, píxeles reales de páginas/miniaturas tras cambio oscuro/claro, PNG con colores preservados, DOCX/ODT guardados con papel claro, regresiones existentes y ciclo de vida. Paquete 41286130576, job **124787688014**, correcto: actualización desde alpha.6, ambos idiomas y cambios en vivo dentro del sandbox, menús, HiDPI, liberación de objetos, impresión, portal de documento, lanzador y datos/reinstalación. No se ha repetido el corpus de 24 archivos.
+
+Artefactos descargados y verificados: nativo **13074788467**, SHA256 ZIP `7c0a3ac7cde3a97c262827c4c9e44f45a60650ebbf9fcbf7091fefc9c93f9c6d`; paquete **13075286512**, SHA256 ZIP `8461b14cfddb08c11708195462263810ac92da1d83d7d47c2084e6bed75c0cb4`. Todos los SHA256SUMS publicados correctos; captura interna del documento oscuro revisada. No equivale a validación manual en GNOME OS, Wayland/monitores, Orca o impresora física. El candidato alpha.7 pasó pruebas pero no se publicó al quedar su commit sin la referencia de rama durante la publicación; el guard evita publicar revisiones superadas.
+
+Siguiente: completar el alta de Weblate con el usuario, recoger sus capturas y revisar traducciones con hablantes. Encabezados/pies/numeración quedan propuestos para después; no están implementados como nueva función en esta entrega.
+
+## Entrega anterior: alpha.6 — propiedad GTK y memoria (31-10-2026)
 
 Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.6
 Tag, fuentes nativas y paquete: `d988fec5e350ab6388e597fe891919f12f3bcda1`.
