@@ -198,6 +198,15 @@ pub(super) fn refresh_thumbnails(ui: &Rc<Ui>) {
 }
 
 pub(super) fn jump_to(ui: &Rc<Ui>, index: usize) {
+    if ui.sidebar.is_collapsed() {
+        ui.sidebar.set_show_sidebar(false);
+    }
+    scroll_to_page(ui, index);
+}
+
+// A viewport refit preserves an open sidebar. Only explicit page navigation
+// dismisses the collapsed overlay; background layout must not close review tools.
+fn scroll_to_page(ui: &Rc<Ui>, index: usize) {
     let target = {
         let borrowed = ui.current.borrow();
         borrowed
@@ -205,9 +214,6 @@ pub(super) fn jump_to(ui: &Rc<Ui>, index: usize) {
             .and_then(|doc| doc.arrangement.pages.get(index).map(|p| p.y))
     };
     if let Some(top) = target {
-        if ui.sidebar.is_collapsed() {
-            ui.sidebar.set_show_sidebar(false);
-        }
         let adj = ui.scroll.vadjustment();
         let max = (adj.upper() - adj.page_size()).max(0.0);
         adj.set_value((top - 10.0).max(0.0).min(max));
@@ -250,7 +256,7 @@ pub(super) fn zoom_to(ui: &Rc<Ui>, zoom: f32) {
     // Wait for allocation without keeping a closed document alive.
     glib::idle_add_local_once(move || {
         if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
-            jump_to(&ui, current_page);
+            scroll_to_page(&ui, current_page);
         }
     });
 }

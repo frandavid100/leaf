@@ -139,6 +139,7 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                 assert!(s.issues.borrow().iter().any(|i| i.text == "qqqfinalzz"));
                 assert!(!s.issues.borrow().iter().any(|i| i.text == "qqqbrandnewzz"));
                 if std::env::args().any(|a| a == "--proofing-demo") {
+                    ui.sidebar_button.set_active(true);
                     let index = s
                         .issues
                         .borrow()
@@ -149,7 +150,18 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                         .row_at_index(index as i32)
                         .unwrap()
                         .emit_by_name::<()>("activate", &[]);
-                    eprintln!("PROOFING_DEMO_READY");
+                    let weak = Rc::downgrade(&ui);
+                    glib::timeout_add_local_once(
+                        std::time::Duration::from_millis(600),
+                        move || {
+                            let ui = weak.upgrade().unwrap();
+                            assert!(
+                                ui.sidebar.shows_sidebar(),
+                                "viewport refits must preserve the proofing panel"
+                            );
+                            eprintln!("PROOFING_DEMO_READY");
+                        },
+                    );
                 } else {
                     s.stop();
                     eprintln!("PROOFING_UI_OK sidebar=true preferences=true live=true stale=true");
