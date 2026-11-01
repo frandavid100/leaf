@@ -1,0 +1,35 @@
+name: Optional Leaf and LibreOffice interoperability audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [wordcraft-saving]
+    paths: ['examples/interop_audit.rs', 'tools/interop_audit.py', '.github/workflows/interop-audit.yml', 'vendor/wordcraft-formats/**']
+permissions:
+  contents: read
+jobs:
+  interop:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[interop-audit]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+      - name: Install independent editor and PDF inspection tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libreoffice-writer python3-uno poppler-utils fonts-liberation
+      - name: Build focused fixture and inspection worker
+        run: cargo build --release --locked --example interop_audit
+      - name: Open, edit and resave in LibreOffice, then reopen in Leaf
+        run: /usr/bin/python3 tools/interop_audit.py
+      - name: Attach evidence
+        if: always()
+        run: cat interop-results/REPORT.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: leaf-libreoffice-interop
+          path: interop-results/
