@@ -1777,3 +1777,6 @@ msgstr "Usa un código de idioma como es-ES o en-GB."
 
 msgid "Use for New Documents"
 msgstr "Usar en documentos nuevos"
+
+msgid "Document protection prevents changing header/footer settings"
+msgstr "La protección del documento impide cambiar las opciones de encabezado y pie de página"

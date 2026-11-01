@@ -69,7 +69,7 @@ pub fn apply(s:&mut Session,o:&Options)->Result<bool,String> {
     if [o.header,o.footer].iter().any(|n|!n.is_finite()||!(0.0..=1584.0).contains(n))||o.start.is_some_and(|n|n>100000){return Err(wordcraft_gnome::t!("Check the header/footer distances and starting page number.").into());}
     let old=Options::current(s,o.section);
     if old.first==o.first&&old.odd_even==o.odd_even&&(old.header-o.header).abs()<0.02&&(old.footer-o.footer).abs()<0.02&&old.format==o.format&&old.start==o.start&&o.headers==Links::Keep&&o.footers==Links::Keep{return Ok(false);}
-    if s.registry.get("leaf.headerOptions").is_none(){let mut specs=s.registry.all().to_vec();specs.push(CommandSpec::new("leaf.headerOptions","Header and Footer Options","Document Properties",command).when(|s|if wordcraft_engine::cmd::protect::enforced(&s.doc){Some("Document protection prevents changing header/footer settings")}else{None}));s.registry=std::sync::Arc::new(Registry::new(specs));}
+    if s.registry.get("leaf.headerOptions").is_none(){let mut specs=s.registry.all().to_vec();specs.push(CommandSpec::new("leaf.headerOptions","Header and Footer Options","Document Properties",command).when(|s|if wordcraft_engine::cmd::protect::enforced(&s.doc){Some(wordcraft_gnome::t!("Document protection prevents changing header/footer settings"))}else{None}));s.registry=std::sync::Arc::new(Registry::new(specs));}
     let link=|l|match l{Links::Keep=>"keep",Links::Previous=>"previous",Links::Independent=>"independent"};
     let before=s.doc.clone();let snap=s.edit_snapshot();let pending=s.pending.clone();let mark=s.undo_mark();
     s.checkpoint(wordcraft_gnome::t!("Header and Footer Options"));s.join_next_undo();

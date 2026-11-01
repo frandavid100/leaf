@@ -673,6 +673,10 @@ msgstr ""
 msgid "Document editor for GNOME powered by WordCraft."
 msgstr ""
 
+#: src/page_options.rs:72
+msgid "Document protection prevents changing header/footer settings"
+msgstr ""
+
 #: src/gnome_menus.rs:73
 msgid "Documents"
 msgstr ""

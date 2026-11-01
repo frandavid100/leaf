@@ -1777,3 +1777,6 @@ msgstr "Use a language tag such as es-ES or en-GB."
 
 msgid "Use for New Documents"
 msgstr "Use for New Documents"
+
+msgid "Document protection prevents changing header/footer settings"
+msgstr "Document protection prevents changing header/footer settings"

@@ -167,6 +167,7 @@ pub const MESSAGES: &[&str] = &[
     "Document Saved",
     "Document Sent to Printer",
     "Document editor for GNOME powered by WordCraft.",
+    "Document protection prevents changing header/footer settings",
     "Documents",
     "Documents (.docx, .odt)",
     "Dot Dash",

@@ -42,7 +42,7 @@ impl SpellReview {
         let suggestions={let mut v=ui.current.borrow_mut();let Some(d)=v.as_mut()else{return;};if let Err(e)=proofing::select(&mut d.session,&issue){self.message.set_text(&e);return;}proofing::suggestions(&mut d.session,&issue)};
         self.word.set_text(&issue.text);self.message.set_text(&issue.message);self.replacement.set_text(suggestions.first().map(String::as_str).unwrap_or(&issue.text));self.actions(true);self.add.set_sensitive(issue.spelling);self.ignore_all.set_sensitive(issue.spelling);
         for text in suggestions {let b=gtk::Button::with_label(&text);let weak=Rc::downgrade(self);b.connect_clicked(move|_|{if let Some(s)=weak.upgrade(){s.replacement.set_text(&text);s.replace();}});self.suggestions.append(&b);}
-        if let Some(h)=ui.host.upgrade(){h.tabs.set_selected_page(ui.tab_page.borrow().as_ref());}refresh_selection(&ui);caret_ensure_visible(&ui);
+        if let Some(h)=ui.host.upgrade(){if let Some(page)=ui.tab_page.borrow().as_ref(){h.tabs.set_selected_page(page);}}refresh_selection(&ui);caret_ensure_visible(&ui);
     }
     fn item(&self)->Option<ProofIssue>{self.issues.borrow().get(self.index.get()).cloned()}
     fn replace(self:&Rc<Self>){let Some(ui)=self.ui.upgrade()else{return;};if document_identity(&ui)!=self.identity.get(){self.scan();return;}if let Some(i)=self.item(){proof_replace(&ui,&i,&self.replacement.text());self.scan();}}
