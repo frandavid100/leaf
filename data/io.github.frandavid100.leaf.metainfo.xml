@@ -24,7 +24,7 @@
   <releases>
     <release version="0.1.0-alpha.15" date="2026-11-01" type="development">
       <description>
-        <p>Group bookmarks under navigation headings, combine comment threads in shared bubbles and simplify the spelling sidebar to navigation only.</p>
+        <p>Group bookmarks under navigation headings, combine comment threads in shared bubbles, simplify the spelling sidebar and edit document title, subject, author, keywords and category.</p>
       </description>
     </release>
     <release version="0.1.0-alpha.14" date="2026-11-01" type="development">

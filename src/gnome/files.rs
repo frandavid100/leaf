@@ -132,7 +132,7 @@ pub(super) fn save_document(
         .current
         .borrow()
         .as_ref()
-        .is_some_and(|d| !d.session.doc.comments.is_empty());
+        .is_some_and(|d| wordcraft_gnome::saving::requires_docx(&d.session));
     let incompatible = needs_docx
         && existing
             .as_ref()

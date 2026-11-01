@@ -18,6 +18,7 @@ flatpak run --socket=x11 --nosocket=wayland "$app_id" --host-cache-ui-test 2>dis
 grep -q LEAF_HOST_CACHE_UI_OK dist/flatpak-host-cache.log
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --page-options-ui-test 2>dist/flatpak-page-options.log
 grep -q PAGE_OPTIONS_UI_OK dist/flatpak-page-options.log
+grep -q DOCUMENT_METADATA_UI_OK dist/flatpak-page-options.log
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --proofing-ui-test 2>dist/flatpak-proofing.log
 grep -q PROOFING_UI_OK dist/flatpak-proofing.log
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --headers-ui-test 2>dist/flatpak-headers.log

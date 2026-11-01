@@ -103,7 +103,11 @@ puede añadir una fila. Las imágenes son en línea, con tamaño/proporción, su
 y eliminación; no se ofrece posicionamiento flotante.
 
 Encabezados y pies se editan directamente en la página; Escape vuelve al cuerpo.
-Propiedades del documento reúne papel, orientación, márgenes y opciones por sección:
+Propiedades del documento incluye **Información** para editar título, asunto, autor,
+palabras clave y categoría. Aplicar confirma todos los cambios; Cancelar los descarta.
+El autor del documento no cambia la identidad usada en nuevos comentarios. La
+categoría requiere DOCX: si se rellena, Leaf propone ese formato para conservarla.
+Las otras pestañas reúnen papel, orientación, márgenes y opciones por sección:
 variantes, distancias, vínculos y numeración. [Uso y límites de encabezados](HEADERS_FOOTERS.md)
 y [opciones de página/idioma](PAGE_OPTIONS_PROOFING.md).
 

@@ -375,7 +375,7 @@ pub(super) fn install_autosave(ui: &Rc<Ui>) {
                     .clone()
                     .or_else(|| doc.session.path.clone());
                 let blocked = path.as_ref().and_then(|p| {
-                    wordcraft_gnome::saving::annotation_format_error(&doc.session, p)
+                    wordcraft_gnome::saving::format_preservation_error(&doc.session, p)
                 });
                 if mode == 1
                     || (mode == 2 && path.is_none())

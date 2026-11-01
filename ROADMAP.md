@@ -30,7 +30,8 @@ nuevas etapas de Orca.
 
 Marcadores integrados bajo títulos de Navegación, una burbuja por hilo de
 comentarios y revisión lateral solo para navegar. Retirar la entrada de revisión
-del menú de documento. Petición de David tras probar alpha.14; implementar y
+del menú de documento. Añadir título, asunto, autor, palabras clave y categoría
+editables en Propiedades. Petición de David tras probar alpha.14; implementar y
 validar los paneles nativos y el Flatpak antes de entregar.
 [Comprobaciones](docs/SIDEBAR_REFINEMENT_VALIDATION.json).
 

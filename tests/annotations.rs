@@ -164,7 +164,7 @@ fn odt_bookmark_locations_survive_but_comments_must_not_be_silently_saved() {
     // The pinned upstream exporter stores a point bookmark, not its original range.
     assert!(back.sel.is_collapsed());
     a::add_comment(&mut s, "Must not disappear").unwrap();
-    assert!(saving::annotation_format_error(&s, &path).is_some());
+    assert!(saving::format_preservation_error(&s, &path).is_some());
     assert!(saving::save(&mut s, &path).unwrap_err().contains("DOCX"));
     assert!(s.dirty);
     assert_eq!(std::fs::read(&path).unwrap(), original);

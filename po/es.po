@@ -1915,3 +1915,30 @@ msgstr "DOCUMENTOS\nPestaña nueva en el menú principal crea un documento vací
 
 msgid "Group bookmarks under navigation headings, combine comment threads in shared bubbles and simplify the spelling sidebar to navigation only."
 msgstr "Agrupa los marcadores bajo los títulos de navegación, reúne cada hilo de comentarios en una burbuja y simplifica la revisión lateral para que solo navegue al texto."
+
+msgid "Information"
+msgstr "Información"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Subject"
+msgstr "Asunto"
+
+msgid "Author"
+msgstr "Autor"
+
+msgid "Keywords"
+msgstr "Palabras clave"
+
+msgid "Category"
+msgstr "Categoría"
+
+msgid "Save as DOCX to preserve the category."
+msgstr "Guarda en DOCX para conservar la categoría."
+
+msgid "Save as DOCX to preserve the document category. The current ODT exporter cannot keep it."
+msgstr "Guarda en DOCX para conservar la categoría del documento. El exportador ODT actual no puede guardarla."
+
+msgid "Group bookmarks under navigation headings, combine comment threads in shared bubbles, simplify the spelling sidebar and edit document title, subject, author, keywords and category."
+msgstr "Agrupa los marcadores bajo los títulos, reúne cada hilo de comentarios en una burbuja, simplifica la revisión lateral y permite editar título, asunto, autor, palabras clave y categoría del documento."

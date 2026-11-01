@@ -3,6 +3,44 @@ use serde_json::json;
 use wordcraft_doc::{Pos, StoryRef, section::SectionProps};
 use wordcraft_engine::{Session, cmd::page};
 
+/// Editable core metadata. Other core/custom properties remain engine-owned.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct DocumentInfo {
+    pub title: String,
+    pub subject: String,
+    pub author: String,
+    pub keywords: String,
+    pub category: String,
+}
+
+impl DocumentInfo {
+    pub fn current(s: &Session) -> Self {
+        let c = &s.doc.core;
+        Self {
+            title: c.title.clone(),
+            subject: c.subject.clone(),
+            author: c.creator.clone(),
+            keywords: c.keywords.clone(),
+            category: c.category.clone(),
+        }
+    }
+
+    pub fn apply(&self, s: &mut Session) -> Result<bool, String> {
+        if *self == Self::current(s) {
+            return Ok(false);
+        }
+        s.run(
+            "file.properties",
+            &json!({
+                "title": self.title, "subject": self.subject, "author": self.author,
+                "keywords": self.keywords, "category": self.category
+            }),
+        )
+        .map_err(|e| e.to_string())?;
+        Ok(true)
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct PageSetup {
     pub width: f32,

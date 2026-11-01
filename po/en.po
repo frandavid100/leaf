@@ -1915,3 +1915,30 @@ msgstr "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/OD
 
 msgid "Group bookmarks under navigation headings, combine comment threads in shared bubbles and simplify the spelling sidebar to navigation only."
 msgstr "Group bookmarks under navigation headings, combine comment threads in shared bubbles and simplify the spelling sidebar to navigation only."
+
+msgid "Information"
+msgstr "Information"
+
+msgid "Title"
+msgstr "Title"
+
+msgid "Subject"
+msgstr "Subject"
+
+msgid "Author"
+msgstr "Author"
+
+msgid "Keywords"
+msgstr "Keywords"
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Save as DOCX to preserve the category."
+msgstr "Save as DOCX to preserve the category."
+
+msgid "Save as DOCX to preserve the document category. The current ODT exporter cannot keep it."
+msgstr "Save as DOCX to preserve the document category. The current ODT exporter cannot keep it."
+
+msgid "Group bookmarks under navigation headings, combine comment threads in shared bubbles, simplify the spelling sidebar and edit document title, subject, author, keywords and category."
+msgstr "Group bookmarks under navigation headings, combine comment threads in shared bubbles, simplify the spelling sidebar and edit document title, subject, author, keywords and category."

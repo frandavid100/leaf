@@ -37,8 +37,9 @@ pestaña a Comentarios con una burbuja por hilo y separadores, y simplificar
 Revisión a navegación sin instrucciones ni bloque de correcciones. Se retira
 Ortografía y gramática del menú de documento. Implementado localmente; validación
 gráfica y publicación aún pendientes. David añade cinco campos editables en
-Propiedades: título, asunto, autor, palabras clave y categoría. Se acumulan en
-la misma entrega; no publicar el paquete anterior mientras se implementan.
+Propiedades: título, asunto, autor, palabras clave y categoría, ya implementados
+con historial y protección frente a pérdida de categoría en ODT. Se acumulan en
+la misma entrega; validar la fuente completa antes de publicar.
 [Detalle y comprobaciones](docs/SIDEBAR_REFINEMENT_VALIDATION.json).
 
 ## Base publicada: entrega acumulada alpha.14

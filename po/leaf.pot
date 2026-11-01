@@ -97,7 +97,7 @@ msgstr ""
 msgid "Appearance"
 msgstr ""
 
-#: src/gnome/columns.rs:108 src/gnome/document_tools.rs:409 src/gnome/format_controls.rs:60 src/gnome/spellcheck.rs:406 src/gnome/tab.rs:287 src/gnome/tables.rs:172
+#: src/gnome/columns.rs:108 src/gnome/document_tools.rs:414 src/gnome/format_controls.rs:60 src/gnome/spellcheck.rs:406 src/gnome/tab.rs:287 src/gnome/tables.rs:172
 msgid "Apply"
 msgstr ""
 
@@ -137,7 +137,7 @@ msgstr ""
 msgid "Apply RGB Color"
 msgstr ""
 
-#: src/gnome/document_tools.rs:227
+#: src/gnome/document_tools.rs:230
 msgid "Apply Size"
 msgstr ""
 
@@ -149,7 +149,7 @@ msgstr ""
 msgid "Apply Style {}"
 msgstr ""
 
-#: src/gnome/columns.rs:205 src/gnome/document_tools.rs:464 src/gnome/spellcheck.rs:444
+#: src/gnome/columns.rs:205 src/gnome/document_tools.rs:469 src/gnome/spellcheck.rs:444
 msgid "Apply To"
 msgstr ""
 
@@ -171,6 +171,10 @@ msgstr ""
 
 #: src/gnome/headers.rs:136
 msgid "At the Cursor"
+msgstr ""
+
+#: src/gnome/document_tools.rs:502
+msgid "Author"
 msgstr ""
 
 #: src/gnome/adaptive.rs:412
@@ -241,7 +245,7 @@ msgstr ""
 msgid "Bottom"
 msgstr ""
 
-#: src/gnome/document_tools.rs:460
+#: src/gnome/document_tools.rs:465
 msgid "Bottom (mm)"
 msgstr ""
 
@@ -273,7 +277,7 @@ msgstr ""
 msgid "Bullets"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:76 src/gnome/annotations.rs:350 src/gnome/columns.rs:413 src/gnome/document_tools.rs:407 src/gnome/files.rs:19 src/gnome/headers.rs:121 src/gnome/spellcheck.rs:404
+#: src/gnome/annotation_dialog.rs:76 src/gnome/annotations.rs:350 src/gnome/columns.rs:413 src/gnome/document_tools.rs:412 src/gnome/files.rs:19 src/gnome/headers.rs:121 src/gnome/spellcheck.rs:404
 msgid "Cancel"
 msgstr ""
 
@@ -287,6 +291,10 @@ msgstr ""
 
 #: src/gnome/search.rs:263
 msgid "Case Sensitive"
+msgstr ""
+
+#: src/gnome/document_tools.rs:504
+msgid "Category"
 msgstr ""
 
 #: src/gnome/context.rs:603
@@ -341,7 +349,7 @@ msgstr ""
 msgid "Check the header/footer distances and starting page number."
 msgstr ""
 
-#: src/document_properties.rs:41
+#: src/document_properties.rs:79
 msgid "Check the page size and margins"
 msgstr ""
 
@@ -369,7 +377,7 @@ msgstr ""
 msgid "Choose Font…"
 msgstr ""
 
-#: src/gnome/document_tools.rs:139 src/gnome/document_tools.rs:688 src/gnome/files.rs:191
+#: src/gnome/document_tools.rs:142 src/gnome/document_tools.rs:735 src/gnome/files.rs:191
 msgid "Choose a Local File"
 msgstr ""
 
@@ -441,7 +449,7 @@ msgstr ""
 msgid "Column to the Right"
 msgstr ""
 
-#: src/document_properties.rs:325 src/gnome/columns.rs:399 src/gnome/paragraph.rs:460 src/gnome/tables.rs:92 src/gnome/tables.rs:345
+#: src/document_properties.rs:363 src/gnome/columns.rs:399 src/gnome/paragraph.rs:460 src/gnome/tables.rs:92 src/gnome/tables.rs:345
 msgid "Columns"
 msgstr ""
 
@@ -489,7 +497,7 @@ msgstr ""
 msgid "Could Not Encode PNG Image"
 msgstr ""
 
-#: src/gnome/document_tools.rs:706
+#: src/gnome/document_tools.rs:753
 msgid "Could Not Export PDF"
 msgstr ""
 
@@ -541,7 +549,7 @@ msgstr ""
 msgid "Current Row Pagination"
 msgstr ""
 
-#: src/gnome/columns.rs:207 src/gnome/document_tools.rs:467
+#: src/gnome/columns.rs:207 src/gnome/document_tools.rs:472
 msgid "Current Section"
 msgstr ""
 
@@ -553,7 +561,7 @@ msgstr ""
 msgid "Current Table"
 msgstr ""
 
-#: src/gnome/columns.rs:125 src/gnome/document_tools.rs:421
+#: src/gnome/columns.rs:125 src/gnome/document_tools.rs:426
 msgid "Custom"
 msgstr ""
 
@@ -629,7 +637,7 @@ msgstr ""
 msgid "Delete Comment…"
 msgstr ""
 
-#: src/gnome/context.rs:573 src/gnome/document_tools.rs:236
+#: src/gnome/context.rs:573 src/gnome/document_tools.rs:239
 msgid "Delete Image"
 msgstr ""
 
@@ -709,7 +717,7 @@ msgstr ""
 msgid "Document Options"
 msgstr ""
 
-#: src/document_properties.rs:110 src/gnome/document_tools.rs:397
+#: src/document_properties.rs:148 src/gnome/document_tools.rs:402
 msgid "Document Properties"
 msgstr ""
 
@@ -841,7 +849,7 @@ msgstr ""
 msgid "Expand Section"
 msgstr ""
 
-#: src/gnome/document_tools.rs:656
+#: src/gnome/document_tools.rs:703
 msgid "Export to PDF"
 msgstr ""
 
@@ -849,7 +857,7 @@ msgstr ""
 msgid "Export to PDF…"
 msgstr ""
 
-#: src/gnome/document_tools.rs:693
+#: src/gnome/document_tools.rs:740
 msgid "Exporting PDF…"
 msgstr ""
 
@@ -953,11 +961,11 @@ msgstr ""
 msgid "Headers"
 msgstr ""
 
-#: src/gnome/document_tools.rs:492 src/gnome/header_options.rs:76
+#: src/gnome/document_tools.rs:525 src/gnome/header_options.rs:76
 msgid "Headers and Footers"
 msgstr ""
 
-#: src/gnome/document_tools.rs:214 src/gnome/document_tools.rs:438
+#: src/gnome/document_tools.rs:217 src/gnome/document_tools.rs:443
 msgid "Height (mm)"
 msgstr ""
 
@@ -1001,7 +1009,7 @@ msgstr ""
 msgid "Ignore All"
 msgstr ""
 
-#: src/gnome/document_tools.rs:181 src/gnome/document_tools.rs:192
+#: src/gnome/document_tools.rs:184 src/gnome/document_tools.rs:195
 msgid "Image"
 msgstr ""
 
@@ -1009,7 +1017,7 @@ msgstr ""
 msgid "Image Size…"
 msgstr ""
 
-#: src/gnome/document_tools.rs:106
+#: src/gnome/document_tools.rs:109
 msgid "Images (PNG, JPEG, GIF, WebP, BMP, TIFF)"
 msgstr ""
 
@@ -1057,15 +1065,19 @@ msgstr ""
 msgid "Independent copies keep the current content. Linking uses the previous section; existing separate content remains available through Undo."
 msgstr ""
 
+#: src/gnome/document_tools.rs:517
+msgid "Information"
+msgstr ""
+
 #: src/gnome/headers.rs:123 src/gnome/menus.rs:327
 msgid "Insert"
 msgstr ""
 
-#: src/gnome/document_tools.rs:103
+#: src/gnome/document_tools.rs:106
 msgid "Insert Image"
 msgstr ""
 
-#: src/gnome/document_tools.rs:193
+#: src/gnome/document_tools.rs:196
 msgid "Insert Image…"
 msgstr ""
 
@@ -1109,7 +1121,7 @@ msgstr ""
 msgid "Justify"
 msgstr ""
 
-#: src/gnome/document_tools.rs:224
+#: src/gnome/document_tools.rs:227
 msgid "Keep Aspect Ratio"
 msgstr ""
 
@@ -1129,7 +1141,11 @@ msgstr ""
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: src/gnome/document_tools.rs:433
+#: src/gnome/document_tools.rs:503
+msgid "Keywords"
+msgstr ""
+
+#: src/gnome/document_tools.rs:438
 msgid "Landscape"
 msgstr ""
 
@@ -1169,7 +1185,7 @@ msgstr ""
 msgid "Left"
 msgstr ""
 
-#: src/gnome/document_tools.rs:461
+#: src/gnome/document_tools.rs:466
 msgid "Left (mm)"
 msgstr ""
 
@@ -1181,7 +1197,7 @@ msgstr ""
 msgid "Left to Right"
 msgstr ""
 
-#: src/gnome/document_tools.rs:425
+#: src/gnome/document_tools.rs:430
 msgid "Letter"
 msgstr ""
 
@@ -1233,7 +1249,7 @@ msgstr ""
 msgid "Make Independent Copies"
 msgstr ""
 
-#: src/gnome/document_tools.rs:457
+#: src/gnome/document_tools.rs:462
 msgid "Margins"
 msgstr ""
 
@@ -1361,7 +1377,7 @@ msgstr ""
 msgid "Numbering"
 msgstr ""
 
-#: src/saving.rs:11
+#: src/saving.rs:20
 msgid "ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."
 msgstr ""
 
@@ -1393,7 +1409,7 @@ msgstr ""
 msgid "Options for {label}"
 msgstr ""
 
-#: src/gnome/document_tools.rs:430
+#: src/gnome/document_tools.rs:435
 msgid "Orientation"
 msgstr ""
 
@@ -1409,15 +1425,15 @@ msgstr ""
 msgid "Outside"
 msgstr ""
 
-#: src/gnome/document_tools.rs:659
+#: src/gnome/document_tools.rs:706
 msgid "PDF Document (.pdf)"
 msgstr ""
 
-#: src/gnome/document_tools.rs:703
+#: src/gnome/document_tools.rs:750
 msgid "PDF Exported"
 msgstr ""
 
-#: src/gnome/document_tools.rs:416 src/gnome/document_tools.rs:486 src/gnome/search.rs:132
+#: src/gnome/document_tools.rs:421 src/gnome/document_tools.rs:519 src/gnome/search.rs:132
 msgid "Page"
 msgstr ""
 
@@ -1449,7 +1465,7 @@ msgstr ""
 msgid "Pages"
 msgstr ""
 
-#: src/gnome/document_tools.rs:419
+#: src/gnome/document_tools.rs:424
 msgid "Paper Size"
 msgstr ""
 
@@ -1489,11 +1505,11 @@ msgstr ""
 msgid "Pink"
 msgstr ""
 
-#: src/document_properties.rs:253
+#: src/document_properties.rs:291
 msgid "Place the cursor in the document body, outside a table."
 msgstr ""
 
-#: src/gnome/document_tools.rs:432
+#: src/gnome/document_tools.rs:437
 msgid "Portrait"
 msgstr ""
 
@@ -1617,11 +1633,11 @@ msgstr ""
 msgid "Replace All Matches"
 msgstr ""
 
-#: src/gnome/document_tools.rs:101
+#: src/gnome/document_tools.rs:104
 msgid "Replace Image"
 msgstr ""
 
-#: src/gnome/context.rs:559 src/gnome/document_tools.rs:233
+#: src/gnome/context.rs:559 src/gnome/document_tools.rs:236
 msgid "Replace Image…"
 msgstr ""
 
@@ -1661,7 +1677,7 @@ msgstr ""
 msgid "Restore Automatic Height for Current Row"
 msgstr ""
 
-#: src/gnome/context.rs:546 src/gnome/document_tools.rs:230
+#: src/gnome/context.rs:546 src/gnome/document_tools.rs:233
 msgid "Restore Original Size"
 msgstr ""
 
@@ -1673,7 +1689,7 @@ msgstr ""
 msgid "Right"
 msgstr ""
 
-#: src/gnome/document_tools.rs:462
+#: src/gnome/document_tools.rs:467
 msgid "Right (mm)"
 msgstr ""
 
@@ -1719,6 +1735,14 @@ msgstr ""
 
 #: src/gnome/files.rs:151
 msgid "Save a Copy — DOCX or ODT"
+msgstr ""
+
+#: src/gnome/document_tools.rs:495
+msgid "Save as DOCX to preserve the category."
+msgstr ""
+
+#: src/saving.rs:24
+msgid "Save as DOCX to preserve the document category. The current ODT exporter cannot keep it."
 msgstr ""
 
 #: src/gnome/annotation_dialog.rs:122
@@ -1789,11 +1813,11 @@ msgstr ""
 msgid "Select an Image"
 msgstr ""
 
-#: src/gnome/document_tools.rs:197
+#: src/gnome/document_tools.rs:200
 msgid "Select an image in the document to edit it."
 msgstr ""
 
-#: src/document_properties.rs:246
+#: src/document_properties.rs:284
 msgid "Select text in the document body, outside tables."
 msgstr ""
 
@@ -1953,6 +1977,10 @@ msgstr ""
 msgid "Styles"
 msgstr ""
 
+#: src/gnome/document_tools.rs:501
+msgid "Subject"
+msgstr ""
+
 #: src/gnome/adaptive.rs:365
 msgid "Subscript"
 msgstr ""
@@ -2029,7 +2057,7 @@ msgstr ""
 msgid "The cell does not contain a paragraph"
 msgstr ""
 
-#: src/document_properties.rs:181
+#: src/document_properties.rs:219
 msgid "The columns do not fit in the text area. Reduce their number, width or spacing."
 msgstr ""
 
@@ -2041,15 +2069,15 @@ msgstr ""
 msgid "The document has changed. Close and reopen Columns."
 msgstr ""
 
-#: src/gnome/document_tools.rs:594
+#: src/gnome/document_tools.rs:631
 msgid "The document has changed. Close and reopen its properties."
 msgstr ""
 
-#: src/gnome/document_tools.rs:132
+#: src/gnome/document_tools.rs:135
 msgid "The document has changed; choose the image again"
 msgstr ""
 
-#: src/gnome/document_tools.rs:681
+#: src/gnome/document_tools.rs:728
 msgid "The document has changed; export it again"
 msgstr ""
 
@@ -2077,7 +2105,7 @@ msgstr ""
 msgid "The file does not exist or is not a regular file"
 msgstr ""
 
-#: src/saving.rs:45
+#: src/saving.rs:58
 msgid "The file name must end in .docx or .odt"
 msgstr ""
 
@@ -2085,7 +2113,7 @@ msgstr ""
 msgid "The file path cannot be represented as UTF-8"
 msgstr ""
 
-#: src/document_properties.rs:48
+#: src/document_properties.rs:86
 msgid "The margins leave insufficient room for text"
 msgstr ""
 
@@ -2093,7 +2121,7 @@ msgstr ""
 msgid "The page exceeds the preview size limit"
 msgstr ""
 
-#: src/pdf_export.rs:12 src/pictures.rs:38 src/pictures.rs:54 src/saving.rs:24
+#: src/pdf_export.rs:12 src/pictures.rs:38 src/pictures.rs:54 src/saving.rs:37
 msgid "The path is not UTF-8"
 msgstr ""
 
@@ -2105,7 +2133,7 @@ msgstr ""
 msgid "The row does not exist"
 msgstr ""
 
-#: src/document_properties.rs:84
+#: src/document_properties.rs:122
 msgid "The section does not contain an editable paragraph"
 msgstr ""
 
@@ -2157,11 +2185,15 @@ msgstr ""
 msgid "This comment has no visible anchor in the document."
 msgstr ""
 
+#: src/gnome/document_tools.rs:500
+msgid "Title"
+msgstr ""
+
 #: src/gnome/paragraph.rs:697 src/gnome/tables.rs:405
 msgid "Top"
 msgstr ""
 
-#: src/gnome/document_tools.rs:459
+#: src/gnome/document_tools.rs:464
 msgid "Top (mm)"
 msgstr ""
 
@@ -2237,11 +2269,11 @@ msgstr ""
 msgid "Update from Selection"
 msgstr ""
 
-#: src/document_properties.rs:190
+#: src/document_properties.rs:228
 msgid "Use 1 to 12 columns with spacing between 0 and 105.83 mm."
 msgstr ""
 
-#: src/saving.rs:20
+#: src/saving.rs:33
 msgid "Use a .docx or .odt extension"
 msgstr ""
 
@@ -2269,7 +2301,7 @@ msgstr ""
 msgid "Wavy"
 msgstr ""
 
-#: src/gnome/columns.rs:208 src/gnome/document_tools.rs:466 src/gnome/spellcheck.rs:447
+#: src/gnome/columns.rs:208 src/gnome/document_tools.rs:471 src/gnome/spellcheck.rs:447
 msgid "Whole Document"
 msgstr ""
 
@@ -2277,7 +2309,7 @@ msgstr ""
 msgid "Widow and Orphan Control"
 msgstr ""
 
-#: src/gnome/columns.rs:182 src/gnome/document_tools.rs:213 src/gnome/document_tools.rs:437
+#: src/gnome/columns.rs:182 src/gnome/document_tools.rs:216 src/gnome/document_tools.rs:442
 msgid "Width (mm)"
 msgstr ""
 
@@ -2297,7 +2329,7 @@ msgstr ""
 msgid "WordCraft Could Not Open the File: {e}"
 msgstr ""
 
-#: src/saving.rs:30
+#: src/saving.rs:43
 msgid "WordCraft did not confirm that the document was saved"
 msgstr ""
 

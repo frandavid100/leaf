@@ -246,6 +246,7 @@ pub(super) fn apply_properties(
     whole: bool,
     section: usize,
     headers: &HeaderOptions,
+    metadata: &document_properties::DocumentInfo,
 ) -> Result<bool, String> {
     let snap = s.edit_snapshot();
     let pending = s.pending.clone();
@@ -253,7 +254,8 @@ pub(super) fn apply_properties(
     let result = (|| {
         let a = document_properties::apply_at(s, setup, whole, section)?;
         let b = page_options::apply(s, headers)?;
-        Ok::<_, String>(a || b)
+        let c = metadata.apply(s)?;
+        Ok::<_, String>(a || b || c)
     })();
     match result {
         Ok(changed) => {

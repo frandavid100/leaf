@@ -115,6 +115,7 @@ jobs:
           set -o pipefail
           GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --page-options-ui-test 2>&1 | tee page-options-ui.log
           grep -q PAGE_OPTIONS_UI_OK page-options-ui.log
+          grep -q DOCUMENT_METADATA_UI_OK page-options-ui.log
           for language in en es; do
             XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --proofing-ui-test 2>&1 | tee proofing-$language.log
             grep -q PROOFING_UI_OK proofing-$language.log

@@ -1,7 +1,10 @@
 use super::*;
 
 // Native document tools; engine adapters own all mutations.
-use wordcraft_gnome::{document_properties::PageSetup, pdf_export, pictures};
+use wordcraft_gnome::{
+    document_properties::{DocumentInfo, PageSetup},
+    pdf_export, pictures,
+};
 pub(super) const PT_PER_MM: f64 = 72.0 / 25.4;
 pub(super) fn mm_input(value: f64, min: f64, max: f64) -> gtk::SpinButton {
     let n = gtk::SpinButton::with_range(min, max, 1.0);
@@ -348,6 +351,7 @@ pub(super) fn install_picture_controls(
 
 pub(super) struct DocumentProperties {
     pub(super) window: adw::Window,
+    pub(super) metadata: [adw::EntryRow; 5],
     pub(super) width: gtk::SpinButton,
     pub(super) height: gtk::SpinButton,
     pub(super) top: gtk::SpinButton,
@@ -375,7 +379,7 @@ pub(super) fn show_document_properties(
     ui: &Rc<Ui>,
     parent: &ApplicationWindow,
 ) -> DocumentProperties {
-    let (state, section) = {
+    let (state, section, info) = {
         let mut value = ui.current.borrow_mut();
         let s = &mut value.as_mut().unwrap().session;
         let i = page_options::current_section(s);
@@ -390,6 +394,7 @@ pub(super) fn show_document_properties(
                 right: p.margin_right,
             },
             i,
+            DocumentInfo::current(s),
         )
     };
     let identity = document_identity(ui);
@@ -477,12 +482,40 @@ pub(super) fn show_document_properties(
     let message = gtk::Label::new(None);
     message.set_wrap(true);
     message.add_css_class("error");
-    let errors = adw::PreferencesGroup::new();
-    errors.add(&message);
-    page.add(&errors);
+    message.set_margin_start(12);
+    message.set_margin_end(12);
+    message.set_margin_bottom(12);
     message.set_visible(false);
     let stack = gtk::Stack::new();
+    stack.set_widget_name("document-properties-pages");
+    stack.set_vexpand(true);
     stack.set_transition_type(gtk::StackTransitionType::Crossfade);
+    let information = adw::PreferencesPage::new();
+    let properties = adw::PreferencesGroup::new();
+    properties.set_description(Some(wordcraft_gnome::t!(
+        "Save as DOCX to preserve the category."
+    )));
+    information.add(&properties);
+    let metadata = [
+        ("title", wordcraft_gnome::t!("Title"), info.title),
+        ("subject", wordcraft_gnome::t!("Subject"), info.subject),
+        ("author", wordcraft_gnome::t!("Author"), info.author),
+        ("keywords", wordcraft_gnome::t!("Keywords"), info.keywords),
+        ("category", wordcraft_gnome::t!("Category"), info.category),
+    ]
+    .map(|(id, title, text)| {
+        let row = adw::EntryRow::new();
+        row.set_widget_name(&format!("document-{id}"));
+        row.set_title(title);
+        row.set_text(&text);
+        properties.add(&row);
+        row
+    });
+    stack.add_titled(
+        &information,
+        Some("information"),
+        wordcraft_gnome::t!("Information"),
+    );
     stack.add_titled(&page, Some("page"), wordcraft_gnome::t!("Page"));
     let header_page = adw::PreferencesPage::new();
     let headers = HeaderControls::new(ui, &header_page, section);
@@ -497,7 +530,10 @@ pub(super) fn show_document_properties(
     switcher.set_margin_top(6);
     switcher.set_margin_bottom(6);
     toolbar.add_top_bar(&switcher);
-    toolbar.set_content(Some(&stack));
+    let content = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    content.append(&stack);
+    content.append(&message);
+    toolbar.set_content(Some(&content));
     window.set_content(Some(&toolbar));
     let syncing = Rc::new(Cell::new(false));
     {
@@ -586,6 +622,7 @@ pub(super) fn show_document_properties(
             right.clone(),
         ];
         let headers = headers.clone();
+        let metadata = metadata.clone();
         apply.connect_clicked(glib::clone!(
             #[weak]
             ui,
@@ -613,12 +650,21 @@ pub(super) fn show_document_properties(
                 };
                 let result = {
                     let mut value = ui.current.borrow_mut();
+                    let [title, subject, author, keywords, category] =
+                        metadata.each_ref().map(|r| r.text().to_string());
                     apply_properties(
                         &mut value.as_mut().unwrap().session,
                         setup,
                         scope.selected() == 0,
                         section,
                         &headers.values(),
+                        &DocumentInfo {
+                            title,
+                            subject,
+                            author,
+                            keywords,
+                            category,
+                        },
                     )
                 };
                 match result {
@@ -641,6 +687,7 @@ pub(super) fn show_document_properties(
     window.present();
     DocumentProperties {
         window,
+        metadata,
         width,
         height,
         top,

@@ -5,14 +5,27 @@ use wordcraft_engine::Session;
 
 /// Prevent silent loss through the pinned upstream ODT exporter. The recovery
 /// copy is engine-native; this guard applies to document files and autosave.
-pub fn annotation_format_error(session: &Session, path: &Path) -> Option<&'static str> {
-    (path.extension().is_some_and(|e| e.eq_ignore_ascii_case("odt"))
-        && !session.doc.comments.is_empty())
-        .then(|| wordcraft_gnome::t!("ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."))
+pub fn requires_docx(session: &Session) -> bool {
+    !session.doc.comments.is_empty() || !session.doc.core.category.is_empty()
+}
+
+pub fn format_preservation_error(session: &Session, path: &Path) -> Option<&'static str> {
+    if !path
+        .extension()
+        .is_some_and(|e| e.eq_ignore_ascii_case("odt"))
+    {
+        return None;
+    }
+    if !session.doc.comments.is_empty() {
+        return Some(wordcraft_gnome::t!(
+            "ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."
+        ));
+    }
+    (!session.doc.core.category.is_empty()).then(|| wordcraft_gnome::t!("Save as DOCX to preserve the document category. The current ODT exporter cannot keep it."))
 }
 
 pub fn save(session: &mut Session, path: &Path) -> Result<(), String> {
-    if let Some(error) = annotation_format_error(session, path) {
+    if let Some(error) = format_preservation_error(session, path) {
         return Err(error.into());
     }
     let ext = path.extension().and_then(|x| x.to_str()).unwrap_or("");
