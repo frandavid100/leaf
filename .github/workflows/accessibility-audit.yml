@@ -1,0 +1,42 @@
+name: Optional real AT-SPI and Orca document audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [wordcraft-saving]
+    paths: ['tools/accessibility_audit.py', '.github/workflows/accessibility-audit.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  a11y:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[a11y-audit]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: wordcraft-gnome-fase3d-linux
+          path: native-artifact
+          run-id: '41299085582'
+          github-token: ${{ github.token }}
+      - name: Install independent assistive technology clients
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libgtk-4-1 libadwaita-1-0 xvfb xauth xdotool orca python3-pyatspi dbus-x11 at-spi2-core gsettings-desktop-schemas
+          chmod +x native-artifact/wordcraft-gnome
+      - name: Probe original canvas through AT-SPI and Orca
+        env:
+          GTK_A11Y: atspi
+          NO_AT_BRIDGE: '0'
+          GSK_RENDERER: cairo
+          LANGUAGE: en
+          LANG: C.UTF-8
+          XDG_SESSION_TYPE: x11
+          XDG_CURRENT_DESKTOP: GNOME
+        run: xvfb-run -a dbus-run-session -- /usr/bin/python3 tools/accessibility_audit.py native-artifact/wordcraft-gnome --baseline
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: leaf-accessibility-audit
+          path: a11y-results/
