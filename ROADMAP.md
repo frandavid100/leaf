@@ -12,26 +12,24 @@ La reorganización queda validada: 99 tests Rust, cuatro Python, formato,
 traducciones, enlaces, GTK/HiDPI y Orca automatizada. [Informe](docs/MAINTAINABILITY_REVIEW.md).
 [Mapa de código](docs/ARCHITECTURE.md) · [Continuidad](docs/CONTINUING.md).
 
-## En curso: alpha.14 acumulada — anotaciones y revisión lateral
+## Completado: alpha.14 acumulada — anotaciones y revisión lateral
 
-**Autorizado por David:** añadirlos desde Insertar y el menú contextual; compartir
-una tercera pestaña del panel lateral. Conectar creación, navegación, gestión de
-hilos e historial a WordCraft. Validar los controles GTK y la conservación DOCX.
-El ODT actual pierde comentarios: impedir esa pérdida en Leaf, documentar la
-reproducción para upstream y conservar recuperación. [Detalle](docs/BOOKMARKS_COMMENTS.md).
+Publicada con marcadores/comentarios desde Insertar y contexto en la tercera
+pestaña lateral, e hilos conservados en DOCX. Leaf protege el guardado ODT con
+comentarios frente a la omisión del exportador. [Detalle](docs/BOOKMARKS_COMMENTS.md).
 
-David ha autorizado además trasladar Ortografía y gramática a una cuarta pestaña
-lateral con lista de errores navegable y mover la revisión al escribir a
-Preferencias. Subir y publicar una única release tras la validación.
-[Alcance de la revisión lateral](docs/PROOFING_SIDEBAR.md).
+Ortografía y gramática ocupa la cuarta pestaña lateral con lista navegable;
+la revisión al escribir está en Preferencias. [Detalle](docs/PROOFING_SIDEBAR.md).
+Han pasado 105 tests Rust, CI nativa completa y Flatpak instalado, actualización
+desde alpha.13, portales y Orca automatizada. [Registro](docs/BOOKMARKS_COMMENTS_VALIDATION.json).
 
-La protección general frente a cambios externos se ha aplazado para priorizar
-esta función visible. No iniciar nuevas etapas de Orca.
+La protección general frente a cambios externos sigue aplazada. No iniciar
+nuevas etapas de Orca.
 
 ## Orden de prioridad después de esta revisión
 
 Estas son propuestas; requieren un fallo concreto o una petición antes de actuar.
-Los marcadores y comentarios anteriores son la ampliación elegida actualmente.
+La entrega acumulada anterior está completada; no hay otra ampliación elegida.
 
 | Prioridad | Trabajo | Qué permite darlo por resuelto |
 | --- | --- | --- |
@@ -59,6 +57,7 @@ consultar las incidencias vigentes en GitHub antes de elegir un fallo.
 
 | Entrega | Resultado | Evidencia |
 | --- | --- | --- |
+| Alpha.14 | Marcadores/comentarios y revisión ortográfica lateral. | [Anotaciones](docs/BOOKMARKS_COMMENTS.md), [revisión](docs/PROOFING_SIDEBAR.md) |
 | Alpha.13 | Diagnóstico y optimización exclusiva del host Leaf. | [Informe](docs/HOST_PERFORMANCE_AUDIT.md) |
 | Alpha.12 | Acceso inicial al texto con Orca. | [Alcance y prueba](docs/ACCESSIBLE_DOCUMENT_TEXT.md) |
 | Alpha.11 | Comprobación independiente con Writer y geometría ODT. | [Interoperabilidad](docs/INTEROPERABILITY_AUDIT.md) |

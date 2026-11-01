@@ -1,6 +1,6 @@
 {
   "version": "Leaf 0.1.0-alpha.14",
-  "status": "native validation passed; installed Flatpak validation pending",
+  "status": "published; native and installed Flatpak validation passed",
   "native_source": "727b3434bc4df2da1ec62c17e04353ac28b87955",
   "native_run": 41341927920,
   "rust_tests_passed": 105,
@@ -12,14 +12,35 @@
     "WordCraft ODT exporter omits comments",
     "ODT bookmarks retain name/location, not their original range"
   ],
-  "not_yet_verified": [
-    "installed Flatpak",
-    "upgrade from alpha.13",
-    "installed Orca regression"
-  ],
   "native_run_url": "https://github.com/frandavid100/leaf/actions/runs/41341927920",
   "native_artifact_id": 13098575240,
   "native_artifact_sha256": "7342c5caa22965075eb64a371cd6c915526c6feebcf237d437c0ee1897e6120b",
   "native_binary_sha256": "3a28d981450f55242a0f1fc9234b7dfcea89b2a7be57e66238da0f46a76763a7",
-  "native_ui": "passed: English/Spanish annotations and proofing, dark/narrow/wide, HiDPI, context/menus, keyboard, printing and lifecycle"
+  "native_ui": "passed: English/Spanish annotations and proofing, dark/narrow/wide, HiDPI, context/menus, keyboard, printing and lifecycle",
+  "package_source": "0f9d8dab49b4e60c693012ed929345b12ef606fe",
+  "package_run": 41343316411,
+  "package_run_url": "https://github.com/frandavid100/leaf/actions/runs/41343316411",
+  "package_artifact_id": 13098017494,
+  "package_artifact_sha256": "029554154b2d6a8039fe2cd105ad62dec7264d1061fe06bb863212fc1e4af503",
+  "release_url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.14",
+  "bundle": "Leaf-0.1.0-alpha.14-x86_64.flatpak",
+  "bundle_bytes": 10629136,
+  "bundle_sha256": "1df0c0144ddd4c6559e49bb9a9ee395c86a078fa88f1f5cfe66e0620ca3b7965",
+  "installed_checks_passed": [
+    "annotations and proofing real-widget tests",
+    "upgrade from alpha.13 with persistent data",
+    "desktop launcher and document portal",
+    "reinstall with preferences/recovery data",
+    "system print dialog and print portal",
+    "HiDPI and lifecycle",
+    "English/Spanish localization",
+    "real AT-SPI and Orca regression"
+  ],
+  "public_download": "bytes, GitHub asset digests and SHA256SUMS verified",
+  "manual_checks_not_claimed": [
+    "GNOME OS testing",
+    "human Orca/braille testing",
+    "physical printer testing",
+    "arbitrary DOCX/ODT fidelity"
+  ]
 }

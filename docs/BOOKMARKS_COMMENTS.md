@@ -61,7 +61,11 @@ Python, formato, catálogos, enlaces, compilación optimizada y toda la ronda GT
 incluidos inglés/español, claro/oscuro, ventanas estrechas y HiDPI.
 [CI de la fuente final](https://github.com/frandavid100/leaf/actions/runs/41341927920).
 El entorno local no permite sockets para Xvfb; las comprobaciones gráficas se
-han ejecutado en CI. El Flatpak instalado y la publicación siguen pendientes.
+han ejecutado en CI. El [Flatpak instalado](https://github.com/frandavid100/leaf/actions/runs/41343316411)
+ha pasado las anotaciones, revisión, actualización desde alpha.13, reinstalación
+con datos, portales y regresión Orca/AT-SPI.
+[Alpha.14 está publicada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.14);
+se han verificado descarga pública y sumas.
 [Registro](BOOKMARKS_COMMENTS_VALIDATION.json).
 
 ```sh

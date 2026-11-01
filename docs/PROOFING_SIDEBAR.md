@@ -46,8 +46,10 @@ La validación gráfica nativa ha pasado en la
 [CI de la fuente final](https://github.com/frandavid100/leaf/actions/runs/41341927920),
 incluidas las capturas anchas/estrechas/oscuras y el descarte de resultados obsoletos.
 El ajuste automático del zoom conserva el panel abierto; solo la navegación explícita
-por página cierra la superposición estrecha. El Flatpak instalado y la publicación
-están pendientes.
+por página cierra la superposición estrecha. El [Flatpak instalado](https://github.com/frandavid100/leaf/actions/runs/41343316411)
+ha pasado la misma prueba funcional y la regresión Orca/AT-SPI.
+[Alpha.14 está publicada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.14);
+la descarga y sus sumas se han verificado.
 
 Código: [panel](../src/gnome/spellcheck.rs), [Preferencias](../src/gnome/workspace.rs),
 [adaptador](../src/proofing.rs), [diagnóstico](../src/gnome/diagnostics/spellcheck.rs).

@@ -13,43 +13,40 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 
 ## Última versión publicada
 
-[Alpha.13, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.13).
-ID `io.github.frandavid100.leaf`, runtime GNOME 49, actualización desde alpha.12.
-Tag/paquete `dc37ec8d0a9aef9c9635fe40ca43f7947bb01193`; fuente nativa
-`e5b3380f014ee0babf2c6d890f5fb15de43bd486`. Bundle: 10.773.920 bytes,
-SHA256 `7914c4b85c6b93e770799b4ba40b8ba8358f9aa728e169e2b2c06046265f5c43`.
+[Alpha.14, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.14).
+ID `io.github.frandavid100.leaf`, runtime GNOME 49, actualización desde alpha.13.
+Tag/paquete `0f9d8dab49b4e60c693012ed929345b12ef606fe`; fuente nativa
+`727b3434bc4df2da1ec62c17e04353ac28b87955`. Bundle: 10.629.136 bytes,
+SHA256 `1df0c0144ddd4c6559e49bb9a9ee395c86a078fa88f1f5cfe66e0620ca3b7965`.
 No hay feed automático de actualizaciones ni publicación en Flathub.
 
-99 pruebas Rust y regresiones GTK/Flatpak superadas, incluida Orca automatizada.
-[Validación y límites de alpha.13](docs/HOST_PERFORMANCE_VALIDATION.json).
-No equivale a pruebas humanas de todos los documentos, lectores o impresoras.
+105 pruebas Rust, cuatro Python y la ronda gráfica nativa completa superadas,
+incluidos inglés/español, ventanas estrechas/oscuras e HiDPI. El Flatpak instalado
+ha pasado los nuevos paneles, actualización desde alpha.13, reinstalación con datos,
+arranque de escritorio, portales de documentos/impresión y Orca/AT-SPI automatizados.
+[CI nativa](https://github.com/frandavid100/leaf/actions/runs/41341927920) ·
+[CI del paquete](https://github.com/frandavid100/leaf/actions/runs/41343316411) ·
+[Registro y límites](docs/BOOKMARKS_COMMENTS_VALIDATION.json).
+La descarga pública y sus sumas se han verificado. No equivale a pruebas humanas
+de todos los documentos, lectores o impresoras.
 
-## Trabajo autorizado en curso
+## Entrega acumulada completada
 
-David ha autorizado subir los cambios acumulados y publicar alpha.14 tras la
-validación, incluyendo **revisión en el panel lateral** y **marcadores y comentarios**: creación desde Insertar y el menú
-contextual, y una tercera pestaña compartida del panel lateral. Se usa el modelo,
-los comandos y el historial de WordCraft, sin modificar motor ni formatos.
+Los **marcadores y comentarios** se crean desde Insertar y el menú contextual,
+y comparten la tercera pestaña lateral. Incluye creación, navegación, eliminación,
+edición/respuesta de comentarios y resolución/reapertura de hilos, con historial
+WordCraft y guardas frente a diálogos obsoletos. [Detalle](docs/BOOKMARKS_COMMENTS.md).
 
-La implementación incluye una cuarta pestaña con la lista de errores, navegación
-por clic, correcciones y revisión manual con F7. La revisión mientras se escribe
-se configura exclusivamente en Preferencias. [Detalle](docs/PROOFING_SIDEBAR.md).
+**Ortografía y gramática** ocupa la cuarta pestaña lateral, con lista de errores,
+navegación por clic y correcciones. F7 permite revisión manual; revisar mientras
+se escribe se configura exclusivamente en Preferencias. Los análisis descartan
+posiciones obsoletas. [Detalle](docs/PROOFING_SIDEBAR.md).
 
-La validación nativa ha pasado. Se incluyen marcadores (crear, navegar y eliminar),
-comentarios y respuestas (crear, editar, resolver/reabrir y eliminar), navegación
-al texto anotado, nombres únicos y guardas de identidad/revisión en diálogos.
-DOCX debe conservar los hilos. El exportador ODT fijado **omite comentarios y
-convierte intervalos de marcador en posiciones**; Leaf bloquea guardado ODT con
-comentarios y mantiene recuperación si el autoguardado directo resulta incompatible.
-[Alcance, pruebas y reproducción para upstream](docs/BOOKMARKS_COMMENTS.md).
-Han pasado 105 pruebas Rust, cuatro Python, formato, traducciones, enlaces,
-comprobación de tipos GTK y compilación optimizada.
-[La CI nativa completa](https://github.com/frandavid100/leaf/actions/runs/41341927920)
-ha pasado, con fuente `727b3434bc4df2da1ec62c17e04353ac28b87955`. Las pruebas
-gráficas se ejecutan en CI porque el entorno local no permite sockets para Xvfb.
-El Flatpak y la actualización desde alpha.13 quedan pendientes. No hay una nueva versión
-publicada; alpha.13 sigue siendo la pública. La subida y publicación acumulada
-ya están autorizadas; no se requiere otra confirmación para esta entrega.
+DOCX conserva los hilos. El exportador ODT fijado **omite comentarios y convierte
+intervalos de marcador en posiciones**; Leaf bloquea el guardado ODT con comentarios,
+propone DOCX y conserva recuperación si el autoguardado directo es incompatible.
+Motor, revisiones, dependencias, vendor y parches existentes permanecen intactos.
+La reproducción upstream está documentada; no se ha abierto una issue desde aquí.
 
 La revisión anterior de organización y continuidad está terminada y validada:
 [revisión](docs/MAINTAINABILITY_REVIEW.md), [evidencia](docs/MAINTAINABILITY_VALIDATION.json).
@@ -60,6 +57,7 @@ La revisión anterior de organización y continuidad está terminada y validada:
 | --- | --- |
 | Documentos | DOCX/ODT, edición, formato, estilos, tablas, imágenes en línea, deshacer/rehacer y guardado. [Guía](docs/USER_GUIDE_ES.md) |
 | Página | Columnas, propiedades, encabezados/pies, campos de página y opciones por sección. [Encabezados](docs/HEADERS_FOOTERS.md), [opciones e idioma](docs/PAGE_OPTIONS_PROOFING.md) |
+| Revisión y anotaciones | Lista lateral de errores, revisión al escribir en Preferencias, marcadores e hilos de comentarios. [Revisión](docs/PROOFING_SIDEBAR.md), [anotaciones](docs/BOOKMARKS_COMMENTS.md) |
 | Interfaz | GTK4/libadwaita, pestañas/ventanas, búsqueda/reemplazo, miniaturas/títulos, contexto nativo y controles adaptables. |
 | Salida y recuperación | PDF, impresión por portal y preferencias de autoguardado/recuperación. [Impresión](docs/KEYBOARD_PRINTING.md) |
 | Idiomas y apariencia | 599 mensajes gettext, inglés/español y páginas oscuras. [Traducciones](docs/TRANSLATING.md) |

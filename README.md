@@ -15,7 +15,8 @@ Leaf is an experimental document editor for Linux, built with GTK4 and libadwait
 - Open, edit and save DOCX and ODT documents; export to PDF and print through the system dialog.
 - Text formatting, paragraph settings, section columns, styles, tables and inline images.
 - Direct header/footer editing, automatic page numbers and section-specific page options.
-- Local spelling review (F7/context menu), text languages and bundled Spanish dictionaries.
+- Spelling/grammar sidebar with clickable issues, manual review (F7), text languages and bundled Spanish dictionaries. Check-as-you-type is in Preferences.
+- Bookmarks and threaded comments with navigation in a shared sidebar; DOCX preserves comment threads.
 - Undo/redo, rich clipboard operations and sidebar search with replacement.
 - Multiple tabs and windows; page thumbnails and heading navigation.
 - Adaptive editing controls, dark document pages and configurable autosave/recovery.
@@ -25,7 +26,9 @@ These are implemented features, not a claim of complete Microsoft Word or LibreO
 
 ## Try Leaf
 
-The current **x86_64 Flatpak alpha** is available on [GitHub Releases](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.13). Download `Leaf-0.1.0-alpha.13-x86_64.flatpak` and open it with GNOME Software, or follow [installation instructions](packaging/INSTALL.md). It uses the GNOME 49 runtime from Flathub, downloaded separately if missing. Leaf itself is not currently on Flathub.
+The current **x86_64 Flatpak alpha** is available on [GitHub Releases](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.14). Download `Leaf-0.1.0-alpha.14-x86_64.flatpak` and open it with GNOME Software, or follow [installation instructions](packaging/INSTALL.md). It uses the GNOME 49 runtime from Flathub, downloaded separately if missing. Leaf itself is not currently on Flathub.
+
+Alpha.14 adds bookmarks and threaded comments through Insert/context menus and a shared sidebar, plus a separate spelling/grammar sidebar with clickable issues. Check-as-you-type is in Preferences. DOCX preserves comment threads; Leaf blocks ODT saves containing comments because the pinned exporter omits them. [Annotations and format limits](docs/BOOKMARKS_COMMENTS.md) · [Proofing sidebar](docs/PROOFING_SIDEBAR.md).
 
 Alpha.13 reduces unnecessary frontend work when opening longer documents, moving the caret, updating thumbnails and editing with search closed. WordCraft and dependencies are unchanged. [Measured results and limitations](docs/HOST_PERFORMANCE_AUDIT.md). Alpha.12 adds initial Orca access to ordinary document text, cursor and selection on the visible canvas. Native and installed Flatpak tests confirm reading, selection announcements, typing and undo with real AT-SPI and Orca 46.1. [Scope, evidence and remaining accessibility limits](docs/ACCESSIBLE_DOCUMENT_TEXT.md). Alpha.11 fixes standard ODF header/footer geometry after independent Writer edits. [Focused audit and confirmed limits](docs/INTEROPERABILITY_AUDIT.md). Alpha.10 adds section-aware headers/footers, numbering controls, local spelling review and text languages. [Usage, validation and ODT interoperability limits](docs/PAGE_OPTIONS_PROOFING.md). Alpha.9 adds direct header/footer editing and automatic numbering in the document menu’s Insert submenu. [Usage, validation and limits](docs/HEADERS_FOOTERS.md). Alpha.8 provides English/Spanish localization and dark document pages that follow GNOME appearance. [Help translate Leaf](docs/TRANSLATING.md). Hosted Weblate activation is pending the owner’s account setup; PO contributions through GitHub are available now. The alpha.6 lifetime fixes remain included; [audit and limits](docs/GTK_LIFECYCLE_AUDIT_2026-10-31.md).
 
