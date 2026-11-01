@@ -74,12 +74,24 @@ pub(super) fn immediate_format(
     Ok(())
 }
 
+pub(super) fn numeric_value(n: &gtk::SpinButton) -> Option<f64> {
+    let text = n.text().trim().replace(',', ".");
+    (!text.ends_with('.'))
+        .then(|| text.parse::<f64>().ok())
+        .flatten()
+        .filter(|v| v.is_finite() && *v >= n.adjustment().lower() && *v <= n.adjustment().upper())
+}
+pub(super) fn validate_numeric_input(n: &gtk::SpinButton) {
+    n.set_update_policy(gtk::SpinButtonUpdatePolicy::IfValid);
+    n.connect_input(|n| Some(numeric_value(n).ok_or(())));
+}
+
 pub(super) fn bind_numeric(
     ui: &Rc<Ui>,
     n: &gtk::SpinButton,
     action: impl Fn(f64) -> Result<(), String> + 'static,
 ) {
-    n.set_update_policy(gtk::SpinButtonUpdatePolicy::IfValid);
+    validate_numeric_input(n);
     let last = Rc::new(Cell::new(
         n.text().trim().replace(',', ".").parse::<f64>().ok(),
     ));
@@ -388,6 +400,7 @@ pub(super) fn install_text_controls(
         font_source: RefCell::new(None),
         size_source: RefCell::new(None),
     });
+    validate_numeric_input(&s.size);
     let weak = Rc::downgrade(&s);
     s.font.connect_changed(move |_| {
         if let Some(s) = weak.upgrade() {

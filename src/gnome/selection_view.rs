@@ -149,20 +149,32 @@ pub(super) fn refresh_format_controls(ui: &Rc<Ui>) {
             button.remove_css_class("mixed");
         }
     }
-    if let Some(font) = state["font"].as_str() {
-        if ui.font_input.text() != font {
-            ui.font_input.set_text(font);
+    let focus = ui
+        .host
+        .upgrade()
+        .and_then(|h| gtk::prelude::GtkWindowExt::focus(&h.window));
+    if !focus.as_ref().is_some_and(|w| {
+        w == ui.font_input.upcast_ref::<gtk::Widget>() || w.is_ancestor(&ui.font_input)
+    }) {
+        if let Some(font) = state["font"].as_str() {
+            if ui.font_input.text() != font {
+                ui.font_input.set_text(font);
+            }
+            ui.font_input.remove_css_class("error");
+        } else {
+            ui.font_input.set_text("");
+            ui.font_input
+                .set_placeholder_text(Some(wordcraft_gnome::t!("Mixed")));
         }
-        ui.font_input.remove_css_class("error");
-    } else {
-        ui.font_input.set_text("");
-        ui.font_input
-            .set_placeholder_text(Some(wordcraft_gnome::t!("Mixed")));
     }
-    if let Some(size) = state["size"].as_f64() {
-        ui.size_input.set_value(size);
-    } else {
-        ui.size_input.set_text("");
+    if !focus.as_ref().is_some_and(|w| {
+        w == ui.size_input.upcast_ref::<gtk::Widget>() || w.is_ancestor(&ui.size_input)
+    }) {
+        if let Some(size) = state["size"].as_f64() {
+            ui.size_input.set_value(size);
+        } else {
+            ui.size_input.set_text("");
+        }
     }
     ui.format_syncing.set(false);
 }

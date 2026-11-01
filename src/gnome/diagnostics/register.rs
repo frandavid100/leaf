@@ -41,7 +41,7 @@ pub(super) fn install_diagnostics(
         titles_toggle,
         search_panel,
     } = controls;
-    if std::env::args().any(|a| a == "--issue-sweep-ui-test") {
+    if host.tabs.n_pages() == 1 && std::env::args().any(|a| a == "--issue-sweep-ui-test") {
         let (u, w, h, a, m, main, pm, tm) = (
             ui.clone(),
             window.clone(),

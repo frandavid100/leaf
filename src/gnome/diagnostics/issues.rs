@@ -204,10 +204,9 @@ pub(super) fn issue_sweep_ui_test(
     }
     let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     show_preferences(window);
-    let prefs = app
-        .windows()
+    let prefs = gtk::Window::list_toplevels()
         .into_iter()
-        .find(|w| w.is::<adw::PreferencesWindow>())
+        .find_map(|w| w.downcast::<adw::PreferencesWindow>().ok())
         .unwrap();
     let name = find_widget(&prefs, "preferences-user-name")
         .unwrap()

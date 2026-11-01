@@ -179,6 +179,7 @@ impl ParagraphPopover {
         key: &'static str,
         property: &'static str,
     ) {
+        validate_numeric_input(n);
         let apply = {
             let weak = Rc::downgrade(self);
             move |n: &gtk::SpinButton| {
