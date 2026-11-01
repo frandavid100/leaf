@@ -41,6 +41,12 @@ pub(super) fn install_diagnostics(
         titles_toggle,
         search_panel,
     } = controls;
+    if std::env::args().any(|a| a == "--heading-top-test") {
+        let (u, s, a) = (ui.clone(), outline_panel.clone(), app.clone());
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+            heading_top_ui_test(&u, &s, &a)
+        });
+    }
     if std::env::args().any(|a| a == "--uri-launch-test") {
         let u = ui.clone();
         glib::timeout_add_local_once(std::time::Duration::from_millis(1000), move || {

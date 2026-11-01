@@ -529,6 +529,22 @@ pub(super) fn show_document_properties(
         Some("headers"),
         wordcraft_gnome::t!("Headers and Footers"),
     );
+    for (child, icon) in [
+        (
+            information.upcast_ref::<gtk::Widget>(),
+            "dialog-information-symbolic",
+        ),
+        (
+            page.upcast_ref::<gtk::Widget>(),
+            "document-properties-symbolic",
+        ),
+        (
+            header_page.upcast_ref::<gtk::Widget>(),
+            "view-paged-symbolic",
+        ),
+    ] {
+        stack.page(child).set_icon_name(Some(icon));
+    }
     let switcher = adw::ViewSwitcher::new();
     switcher.set_stack(Some(&stack));
     switcher.set_policy(adw::ViewSwitcherPolicy::Narrow);

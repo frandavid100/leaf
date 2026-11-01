@@ -93,6 +93,8 @@ jobs:
             XDG_CONFIG_HOME=$leaf_config ./target/release/wordcraft-gnome --issue-preferences-read-test
           done
           xvfb-run -a bash tools/comment-pointer-test.sh
+          GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --heading-top-test 2>&1 | tee heading-top.log
+          grep -q HEADING_TOP_UI_OK heading-top.log
           xvfb-run -a bash tools/interaction-pointer-test.sh
           xvfb-run -a dbus-run-session -- bash tools/uri-launch-test.sh
           python tools/create_launch_fixture.py /tmp/launch-test.docx
@@ -456,6 +458,7 @@ jobs:
             issues-*.log
             uri-launch.log
             interactions-pointer.log
+            heading-top.log
             comment-pointer.log
             save-current-file.log
             annotations-*.log

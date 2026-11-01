@@ -81,6 +81,29 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                         "qqqgtkwordzz"
                     );
                 }
+                let menu = find_widget(&ui.navigation_pages, &format!("proofing-menu-{index}"))
+                    .unwrap()
+                    .downcast::<gtk::MenuButton>()
+                    .unwrap();
+                menu.popup();
+                let pop = menu
+                    .popover()
+                    .unwrap()
+                    .downcast::<gtk::PopoverMenu>()
+                    .unwrap();
+                assert!(
+                    context_model_row(&pop, wordcraft_gnome::t!("Add to Dictionary")).is_some()
+                );
+                for label in [
+                    wordcraft_gnome::t!("Cut"),
+                    wordcraft_gnome::t!("Copy"),
+                    wordcraft_gnome::t!("Text"),
+                ] {
+                    assert!(context_model_row(&pop, label).is_none());
+                }
+                assert_eq!(ui.current.borrow().as_ref().unwrap().session.rev(), rev);
+                pop.popdown();
+                eprintln!("PROOFING_ENTRY_MENU_OK");
                 let context = show_document_context(&ui, &parent, 120, 180, DocumentContext::Text);
                 assert!(
                     context_model_row(&context, wordcraft_gnome::t!("Add to Dictionary")).is_some()
@@ -116,7 +139,10 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                 let old = s.item().unwrap();
                 apply_user_edit(&ui, Edit::Insert("otro".into()));
                 assert!(s.issues.borrow().is_empty());
-                assert!(s.debounce.borrow().is_none(), "live checking is disabled");
+                assert!(
+                    s.debounce.borrow().is_some(),
+                    "the visible list refreshes with live marks disabled"
+                );
                 {
                     let mut v = ui.current.borrow_mut();
                     let session = &mut v.as_mut().unwrap().session;

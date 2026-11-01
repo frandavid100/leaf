@@ -75,3 +75,60 @@ pub(super) fn navigation_ui_test(
     eprintln!("SIDEBAR_NAVIGATION_OK");
     app.quit();
 }
+
+/// Check the deferred scroll using allocated native geometry, including two-page rows.
+pub(super) fn heading_top_ui_test(ui: &Rc<Ui>, panel: &Rc<OutlinePanel>, app: &Application) {
+    let text = (0..100).map(|n| format!("Heading {n}. Following section content fills the page. More text for this section. Further text remains visible after navigation.")).collect::<Vec<_>>().join("\n");
+    opened(
+        ui,
+        Session::new(wordcraft_doc::Document::from_text(&text)),
+        "Heading alignment",
+    );
+    heading_top_case(ui.clone(), panel.clone(), app.clone(), 0);
+}
+fn heading_top_case(ui: Rc<Ui>, panel: Rc<OutlinePanel>, app: Application, case: usize) {
+    if case == 8 {
+        eprintln!(
+            "HEADING_TOP_UI_OK downward=true upward=true visible=true clamped=true zoom=true"
+        );
+        app.quit();
+        return;
+    }
+    zoom_to(&ui, if case < 4 { 1.0 } else { 0.5 });
+    let pos = Pos::body([50, 2, 50, 99][case % 4], 0);
+    let next_ui = ui.clone();
+    glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
+        panel.goto(&pos);
+        glib::timeout_add_local_once(std::time::Duration::from_millis(550), move || {
+            let mut v = next_ui.current.borrow_mut();
+            let d = v.as_mut().unwrap();
+            assert_eq!(d.session.sel.focus, pos);
+            let caret = d
+                .session
+                .layout()
+                .caret_on(&pos, d.session.page_hint)
+                .unwrap();
+            let frame = d.page_frames[caret.page]
+                .compute_bounds(&next_ui.scroll)
+                .unwrap();
+            let top = frame.y() as f64 + caret.top as f64 * d.zoom as f64;
+            let adj = next_ui.scroll.vadjustment();
+            let max = (adj.upper() - adj.page_size()).max(adj.lower());
+            if adj.value() > adj.lower() + 1.0 && adj.value() < max - 1.0 {
+                assert!(
+                    (top - 12.0).abs() < 3.0,
+                    "heading should align at top, got {top}"
+                );
+            } else {
+                assert!(
+                    top >= 10.0 && top < adj.page_size(),
+                    "clamped heading remains visible: {top}"
+                );
+            }
+            assert_eq!(d.session.undo_depth(), 0);
+            assert!(!d.session.dirty);
+            drop(v);
+            heading_top_case(next_ui, panel, app, case + 1);
+        });
+    });
+}

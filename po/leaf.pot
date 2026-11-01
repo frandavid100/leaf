@@ -57,7 +57,7 @@ msgstr ""
 msgid "Add Left Tab Stop"
 msgstr ""
 
-#: src/gnome/context.rs:805 src/gnome/diagnostics/spellcheck.rs:86
+#: src/gnome/context.rs:805 src/gnome/diagnostics/spellcheck.rs:95 src/gnome/diagnostics/spellcheck.rs:109
 msgid "Add to Dictionary"
 msgstr ""
 
@@ -341,7 +341,7 @@ msgstr ""
 msgid "Choose Columns × Rows"
 msgstr ""
 
-#: src/gnome/document_tools.rs:142 src/gnome/document_tools.rs:745 src/gnome/files.rs:179
+#: src/gnome/document_tools.rs:142 src/gnome/document_tools.rs:761 src/gnome/files.rs:179
 msgid "Choose a Local File"
 msgstr ""
 
@@ -441,7 +441,7 @@ msgstr ""
 msgid "Continue from Previous Section"
 msgstr ""
 
-#: src/gnome/context.rs:404 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:252
+#: src/gnome/context.rs:404 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:252 src/gnome/diagnostics/spellcheck.rs:99
 msgid "Copy"
 msgstr ""
 
@@ -449,7 +449,7 @@ msgstr ""
 msgid "Could Not Encode PNG Image"
 msgstr ""
 
-#: src/gnome/document_tools.rs:763
+#: src/gnome/document_tools.rs:779
 msgid "Could Not Export PDF"
 msgstr ""
 
@@ -529,7 +529,7 @@ msgstr ""
 msgid "Custom Widths"
 msgstr ""
 
-#: src/gnome/context.rs:390 src/gnome/diagnostics/context.rs:119
+#: src/gnome/context.rs:390 src/gnome/diagnostics/context.rs:119 src/gnome/diagnostics/spellcheck.rs:98
 msgid "Cut"
 msgstr ""
 
@@ -805,7 +805,7 @@ msgstr ""
 msgid "Expand Section"
 msgstr ""
 
-#: src/gnome/document_tools.rs:713
+#: src/gnome/document_tools.rs:729
 msgid "Export to PDF"
 msgstr ""
 
@@ -813,7 +813,7 @@ msgstr ""
 msgid "Export to PDF…"
 msgstr ""
 
-#: src/gnome/document_tools.rs:750
+#: src/gnome/document_tools.rs:766
 msgid "Exporting PDF…"
 msgstr ""
 
@@ -1389,11 +1389,11 @@ msgstr ""
 msgid "Outside"
 msgstr ""
 
-#: src/gnome/document_tools.rs:716
+#: src/gnome/document_tools.rs:732
 msgid "PDF Document (.pdf)"
 msgstr ""
 
-#: src/gnome/document_tools.rs:760
+#: src/gnome/document_tools.rs:776
 msgid "PDF Exported"
 msgstr ""
 
@@ -1433,7 +1433,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:216 src/gnome/context.rs:478 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/register.rs:113 src/gnome/paragraph.rs:584 src/gnome/paragraph.rs:1008 src/gnome/tab.rs:280 src/gnome/tab.rs:507
+#: src/gnome/context.rs:216 src/gnome/context.rs:478 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/register.rs:119 src/gnome/paragraph.rs:584 src/gnome/paragraph.rs:1008 src/gnome/tab.rs:280 src/gnome/tab.rs:507
 msgid "Paragraph"
 msgstr ""
 
@@ -1917,7 +1917,7 @@ msgstr ""
 msgid "Strikethrough"
 msgstr ""
 
-#: src/gnome/context.rs:213 src/gnome/context.rs:477 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/register.rs:112 src/gnome/styles.rs:391 src/gnome/tab.rs:276 src/gnome/tab.rs:506
+#: src/gnome/context.rs:213 src/gnome/context.rs:477 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/register.rs:118 src/gnome/styles.rs:391 src/gnome/tab.rs:276 src/gnome/tab.rs:506
 msgid "Style"
 msgstr ""
 
@@ -1985,7 +1985,7 @@ msgstr ""
 msgid "Teal"
 msgstr ""
 
-#: src/gnome/adaptive.rs:352 src/gnome/context.rs:219 src/gnome/context.rs:479 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:114 src/gnome/tab.rs:235 src/gnome/tab.rs:267 src/gnome/tab.rs:508
+#: src/gnome/adaptive.rs:352 src/gnome/context.rs:219 src/gnome/context.rs:479 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:120 src/gnome/diagnostics/spellcheck.rs:100 src/gnome/tab.rs:235 src/gnome/tab.rs:267 src/gnome/tab.rs:508
 msgid "Text"
 msgstr ""
 
@@ -2033,7 +2033,7 @@ msgstr ""
 msgid "The document has changed. Close and reopen Columns."
 msgstr ""
 
-#: src/gnome/document_tools.rs:641
+#: src/gnome/document_tools.rs:657
 msgid "The document has changed. Close and reopen its properties."
 msgstr ""
 
@@ -2041,7 +2041,7 @@ msgstr ""
 msgid "The document has changed; choose the image again"
 msgstr ""
 
-#: src/gnome/document_tools.rs:738
+#: src/gnome/document_tools.rs:754
 msgid "The document has changed; export it again"
 msgstr ""
 
