@@ -31,7 +31,7 @@ pending full native and installed validation at this source stage.
 | --- | --- |
 | #1, #2 | Known unequal-column wrapping and separator defects remain in the pinned upstream (#2382/#5178). No engine change or duplicate report. |
 | #5, #6 | Mouse resize/selection/movement/insertion handles need their own implementation and merged/multipage/zoom tests. Existing keyboard/menu table features remain. |
-| #7 | Absent even slot can fall back to default; the public edit command then edits that shared story. This source evidence remains a candidate explanation for the supplied file. Independent allocation and round-trip/undo verification remain. |
+| #7 | [Reduced API reproduction](ISSUE7_TRIAGE.md) confirms absent even header/footer slots reuse default story IDs; edits are shared and DOCX preserves that allocation. Original-file/direct-click/PDF/undo and a complete isolation fix remain. |
 | #9 | Ordinary two-paragraph spacing changes measured layout by 24pt and survives DOCX reopen. This does not reproduce the reported file/contextual suppression. Keep open until its cause is isolated; #10 removes the extra Apply step. |
 | #14–#16 | Coordinated new-document preferences, inheritable document defaults and explicit fragment overrides are not implemented here. Persistence and migration need joint validation. |
 

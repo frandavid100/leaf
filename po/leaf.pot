@@ -849,7 +849,7 @@ msgstr ""
 msgid "Following Spacing (mm)"
 msgstr ""
 
-#: src/gnome/tab.rs:241 src/gnome/tab.rs:244 src/gnome/text_controls.rs:366
+#: src/gnome/tab.rs:241 src/gnome/tab.rs:244 src/gnome/text_controls.rs:385
 msgid "Font"
 msgstr ""
 
@@ -857,7 +857,7 @@ msgstr ""
 msgid "Font Family"
 msgstr ""
 
-#: src/gnome/tab.rs:254 src/gnome/text_controls.rs:368
+#: src/gnome/tab.rs:254 src/gnome/text_controls.rs:387
 msgid "Font Size"
 msgstr ""
 
@@ -1309,7 +1309,7 @@ msgstr ""
 msgid "No dictionary is installed for this language. Its spelling cannot be checked."
 msgstr ""
 
-#: src/gnome/format_controls.rs:11 src/gnome/styles.rs:58 src/gnome/text_controls.rs:23
+#: src/gnome/format_controls.rs:11 src/gnome/styles.rs:58 src/gnome/text_controls.rs:28
 msgid "No document"
 msgstr ""
 

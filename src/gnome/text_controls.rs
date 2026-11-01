@@ -14,6 +14,11 @@ pub(super) fn immediate_format(
     command: &str,
     args: serde_json::Value,
 ) -> Result<(), String> {
+    let focus = ui
+        .host
+        .upgrade()
+        .and_then(|h| gtk::prelude::GtkWindowExt::focus(&h.window))
+        .map(|w| w.downgrade());
     let scroll = (
         ui.scroll.hadjustment().value(),
         ui.scroll.vadjustment().value(),
@@ -64,11 +69,25 @@ pub(super) fn immediate_format(
     } else {
         refresh_selection(ui);
     }
+    let identity = document_identity(ui);
     let weak = Rc::downgrade(ui);
     glib::idle_add_local_once(move || {
         if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
+            if document_identity(&ui) != identity {
+                return;
+            }
             ui.scroll.hadjustment().set_value(scroll.0);
             ui.scroll.vadjustment().set_value(scroll.1);
+            if ui
+                .host
+                .upgrade()
+                .and_then(|h| selected_ui(&h))
+                .is_some_and(|u| Rc::ptr_eq(&ui, &u))
+            {
+                if let Some(w) = focus.and_then(|w| w.upgrade()).filter(|w| w.is_mapped()) {
+                    w.grab_focus();
+                }
+            }
         }
     });
     Ok(())
