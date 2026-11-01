@@ -91,6 +91,7 @@ def command(*args):
 def main():
     OUT.mkdir(exist_ok=True)
     baseline = "--baseline" in sys.argv
+    sandbox = "--sandbox" in sys.argv
     binary = Path(sys.argv[1]).resolve()
     for kind in ["object:children-changed", "object:text-changed", "object:text-caret-moved", "object:text-selection-changed", "object:state-changed:focused"]:
         pyatspi.Registry.registerEventListener(record, kind)
@@ -105,7 +106,16 @@ def main():
         try:
             wait(lambda: orca_log.exists() and "ORCA: Initialized" in orca_log.read_text(errors="replace"), 30)
             with (OUT / "leaf.log").open("w") as log:
-                app = subprocess.Popen([str(binary), "--test-document" if baseline else "--a11y-ui-test"], env=env, stdout=log, stderr=subprocess.STDOUT)
+                finish = Path("a11y-finish")
+                launch = [str(binary), "--test-document" if baseline else "--a11y-ui-test"]
+                if sandbox:
+                    app_id = "io.github.frandavid100.leaf"
+                    data = Path(command("flatpak", "run", "--command=sh", app_id, "-c", 'printf %s "$XDG_DATA_HOME"'))
+                    assert data.is_relative_to(Path.home() / ".var/app" / app_id), data
+                    finish = data / "a11y-finish"
+                    launch = ["flatpak", "run", "--socket=x11", "--nosocket=wayland", "--env=GTK_A11Y=atspi", "--env=LANGUAGE=en", "--command=sh", app_id, "-c", 'mkdir -p "$XDG_DATA_HOME"; cd "$XDG_DATA_HOME"; exec /app/bin/leaf --a11y-ui-test']
+                finish.unlink(missing_ok=True)
+                app = subprocess.Popen(launch, env=env, stdout=log, stderr=subprocess.STDOUT)
                 if not baseline:
                     wait(lambda: "ACCESSIBLE_DOCUMENT_READY" in (OUT / "leaf.log").read_text(), 25)
                 else:
@@ -130,7 +140,7 @@ def main():
                     canvas = wait(find_canvas, 25)
                 finally:
                     dump_tree()
-                window = wait(lambda: command("xdotool", "search", "--onlyvisible", "--pid", app.pid).splitlines()[0])
+                window = wait(lambda: command("xdotool", "search", "--onlyvisible", *( ["--name", "^Leaf$"] if sandbox else ["--pid", app.pid] )).splitlines()[0])
                 command("xdotool", "windowfocus", "--sync", window)
                 command("xdotool", "key", "--clearmodifiers", "ctrl+Home")
                 wait(lambda: canvas.getState().contains(pyatspi.STATE_FOCUSED))
@@ -140,6 +150,8 @@ def main():
                     result.update(text_supported=True, text=text.getText(0, -1), count=text.characterCount, caret=text.caretOffset)
                 except NotImplementedError:
                     result["text_supported"] = False
+                result["sandbox"] = sandbox
+                (OUT / "initial.json").write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
                 if baseline:
                     assert not result["text_supported"], "Baseline unexpectedly exposes Text; inspect before adapting the test"
                     command("xdotool", "key", "--clearmodifiers", "Down", "Right")
@@ -171,7 +183,7 @@ def main():
                     wait(lambda: orca_log.exists() and "Café" in orca_log.read_text(errors="replace"))
                     command("xdotool", "key", "--clearmodifiers", "ctrl+Home")
                     wait(lambda: text.caretOffset == 0)
-                    Path("a11y-finish").touch()
+                    finish.touch()
                     wait(lambda: app.poll() is not None)
                     assert app.returncode == 0, app.returncode
                     assert any("text-changed:insert" in e["type"] for e in events), events
@@ -188,6 +200,7 @@ def main():
                     assert any("Café" in line for line in speech), "Orca did not generate paragraph speech; inspect debug log"
                     print("ORCA_DOCUMENT_SPEECH_OK", flush=True)
         finally:
+            (OUT / "events.json").write_text(json.dumps(events, indent=2, ensure_ascii=False) + "\n")
             for process in [app, orca]:
                 if process is not None and process.poll() is None:
                     process.terminate()
