@@ -1,0 +1,141 @@
+diff --git a/crates/formats/src/model/from_doc.rs b/crates/formats/src/model/from_doc.rs
+index 120cf9d..0543301 100644
+--- a/crates/formats/src/model/from_doc.rs
++++ b/crates/formats/src/model/from_doc.rs
+@@ -50,6 +50,7 @@ fn fmt_of(doc: &Document, cp: &CharProps, in_code: bool) -> Fmt {
+     let e = effective(doc, cp);
+     let code = !in_code && e.font.as_deref().is_some_and(is_mono);
+     Fmt {
++        page_field: None,
+         bold: e.bold.unwrap_or(false),
+         italic: e.italic.unwrap_or(false),
+         underline: e.underline.is_some_and(|u| u != Underline::None) && e.link.is_none(),
+@@ -245,6 +246,14 @@ fn flow_paras_in(doc: &Document, p: &Paragraph, tracked: bool) -> Vec<Para> {
+                     // attributes (alignment, size, raise) stay in the document model.
+                     out.inlines.push(Inline::Ruby { base: base.clone(), ruby: ruby.clone(), fmt: f.clone() });
+                 }
++                Some(InlineObject::Field { instr, result, locked: false, code: false, .. })
++                    if matches!(instr.trim().to_ascii_uppercase().as_str(), "PAGE" | "NUMPAGES") => {
++                    if !buf.is_empty() { out.push_text(&std::mem::take(&mut buf), &f); }
++                    let mut field_fmt = f.clone();
++                    field_fmt.page_field = Some(if instr.trim().eq_ignore_ascii_case("PAGE") { "PAGE" } else { "NUMPAGES" });
++                    // Keep adjacent fields separate even when they share their formatting.
++                    out.inlines.push(Inline::Text(result.clone(), field_fmt));
++                }
+                 Some(InlineObject::BookmarkStart { name }) if name != "_GoBack" => {
+                     if !buf.is_empty() {
+                         out.push_text(&std::mem::take(&mut buf), &f);
+diff --git a/crates/formats/src/model/to_doc.rs b/crates/formats/src/model/to_doc.rs
+index 2f4fa13..da0b54e 100644
+--- a/crates/formats/src/model/to_doc.rs
++++ b/crates/formats/src/model/to_doc.rs
+@@ -205,7 +205,9 @@ impl<'a> Builder<'a> {
+                             c.old.font = None;
+                         }
+                     }
+-                    append(&mut out, &t, &cp, None);
++                    if let Some(instr) = f.page_field {
++                        append(&mut out, "", &cp, Some(InlineObject::Field { instr: instr.into(), result: t, locked: false, dirty: false, code: false, form: String::new() }));
++                    } else { append(&mut out, &t, &cp, None); }
+                 }
+                 Inline::Image(img) => {
+                     let key = self.doc.add_media(img.data.to_vec(), &img.ext);
+diff --git a/crates/formats/src/model/types.rs b/crates/formats/src/model/types.rs
+index 1b52b2e..7503498 100644
+--- a/crates/formats/src/model/types.rs
++++ b/crates/formats/src/model/types.rs
+@@ -86,6 +86,8 @@ pub(crate) fn begin_import() {
+ /// Character formatting the text formats can express.
+ #[derive(Clone, Debug, Default, PartialEq)]
+ pub struct Fmt {
++    /// PAGE/NUMPAGES field carried through ODT; the text is its cached result.
++    pub page_field: Option<&'static str>,
+     pub bold: bool,
+     pub italic: bool,
+     pub underline: bool,
+diff --git a/crates/formats/src/odt/body.rs b/crates/formats/src/odt/body.rs
+index 628c725..6b5dbfa 100644
+--- a/crates/formats/src/odt/body.rs
++++ b/crates/formats/src/odt/body.rs
+@@ -157,6 +157,7 @@ pub(super) struct Body<'a> {
+     del: Option<DelState>,
+     /// Insertions open in the body: (region id, revision).
+     active_ins: Vec<(String, RevMark)>,
++    page_field: Option<(usize, String, Fmt)>,
+ }
+ 
+ impl<'a> Body<'a> {
+@@ -195,6 +196,7 @@ impl<'a> Body<'a> {
+             info_field: None,
+             del: None,
+             active_ins: Vec::new(),
++            page_field: None,
+         }
+     }
+ 
+@@ -420,6 +422,11 @@ impl Body<'_> {
+     }
+ 
+     fn text(&mut self, t: &str) {
++        if let Some((_, result, _)) = &mut self.page_field {
++            let room = MAX_INFO_CHARS.saturating_sub(result.chars().count());
++            result.extend(t.chars().take(room));
++            return;
++        }
+         if self.skip > 0 || !self.in_text {
+             return;
+         }
+@@ -469,6 +476,7 @@ impl Body<'_> {
+ 
+     fn start(&mut self, q: &str, a: &Attrs) {
+         self.depth += 1;
++        if self.page_field.is_some() { return; }
+         if q == "office:text" {
+             self.in_text = true;
+             return;
+@@ -806,6 +814,12 @@ impl Body<'_> {
+ 
+     fn start_inline(&mut self, q: &str, a: &Attrs) -> bool {
+         match local(q) {
++            "page-number" | "page-count" if q.starts_with("text:") => {
++                if self.para.is_none() { self.start_para(None, None); }
++                let mut f = self.cur_fmt(); f.ins = self.open_insertion();
++                f.page_field = Some(if local(q) == "page-number" { "PAGE" } else { "NUMPAGES" });
++                self.page_field = Some((self.depth, String::new(), f));
++            }
+             "span" => {
+                 let base = self.cur_fmt();
+                 let fmt = get(a, "text:style-name").map_or_else(|| base.clone(), |s| self.styles.text_fmt(s, &base));
+@@ -844,6 +858,14 @@ impl Body<'_> {
+ 
+     fn end(&mut self, q: &str) {
+         self.depth = self.depth.saturating_sub(1);
++        if let Some((depth, _, _)) = &self.page_field {
++            if self.depth < *depth {
++                let (_, result, f) = self.page_field.take().unwrap();
++                if let Some(p) = &mut self.para { p.inlines.push(Inline::Text(result, f)); }
++                self.xml_space_end = false;
++            }
++            return;
++        }
+         if q == "office:text" {
+             if self.del.is_some() {
+                 // Unclosed deleted content (hostile): drop it.
+diff --git a/crates/formats/src/odt/writer.rs b/crates/formats/src/odt/writer.rs
+index 2b93920..c551b57 100644
+--- a/crates/formats/src/odt/writer.rs
++++ b/crates/formats/src/odt/writer.rs
+@@ -363,7 +363,12 @@ impl Writer {
+                     if let Some(l) = link {
+                         out.push_str(&format!("<text:a xlink:type=\"simple\" xlink:href=\"{}\">", x(l)));
+                     }
+-                    let fs = Fmt { link: None, ..f.clone() };
++                    if let Some(instr) = f.page_field {
++                        let tag = if instr == "PAGE" { "page-number" } else { "page-count" };
++                        let attrs = if instr == "PAGE" { " text:select-page=\"current\"" } else { "" };
++                        body = format!("<text:{tag}{attrs}>{body}</text:{tag}>");
++                    }
++                    let fs = Fmt { link: None, page_field: None, ..f.clone() };
+                     match self.text_style(&fs) {
+                         Some(n) => out.push_str(&format!("<text:span text:style-name=\"{n}\">{body}</text:span>")),
+                         None => out.push_str(&body),

@@ -1,0 +1,9 @@
+# Editable headers, footers and page numbers
+
+The document menu’s Insert submenu contains Header, Footer and Page Number. Header/footer text is edited directly in the document canvas with the existing keyboard, clipboard and formatting tools. Click existing text, or double-click an empty top/bottom margin to create a page story. Return to Document / Escape restores the previous body selection. Editing outlines mark the body boundary without modifying the document.
+
+The page-number dialog offers cursor/header/footer position, alignment for a new paragraph, and optional total pages (PAGE / NUMPAGES). Top/bottom insertion appends to existing content, never replaces it, and groups the operation into one undo step. Cursor insertion uses the existing paragraph alignment. Formatting, deleting or moving these fields uses ordinary document editing.
+
+Existing first/even/default variants and inherited stories are resolved from the actual displayed page. Creating/managing those variants through new controls, unlinking sections, general field-code editing and full ODF page-style fidelity are outside this increment. Inactive variant association has the previously documented upstream ODT importer limitation. PAGE/NUMPAGES ODT preservation required the isolated formats patch; arbitrary field instructions are not claimed.
+
+Validation is pending the native and installed Flatpak CI for alpha.9. Focused tests cover direct editing, Unicode, later-page hit/caret geometry, navigation without dirtying, previous body selection, empty-story cleanup, protected documents, automatic fields, atomic undo and DOCX/ODT roundtrips. GTK tests exercise the insertion dialog, editing state and a real pointer click into a repeated header on page two followed by Escape. Manual GNOME OS testing is still required.

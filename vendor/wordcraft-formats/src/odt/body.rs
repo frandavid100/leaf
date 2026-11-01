@@ -157,6 +157,7 @@ pub(super) struct Body<'a> {
     del: Option<DelState>,
     /// Insertions open in the body: (region id, revision).
     active_ins: Vec<(String, RevMark)>,
+    page_field: Option<(usize, String, Fmt)>,
 }
 
 impl<'a> Body<'a> {
@@ -195,6 +196,7 @@ impl<'a> Body<'a> {
             info_field: None,
             del: None,
             active_ins: Vec::new(),
+            page_field: None,
         }
     }
 
@@ -420,6 +422,11 @@ impl Body<'_> {
     }
 
     fn text(&mut self, t: &str) {
+        if let Some((_, result, _)) = &mut self.page_field {
+            let room = MAX_INFO_CHARS.saturating_sub(result.chars().count());
+            result.extend(t.chars().take(room));
+            return;
+        }
         if self.skip > 0 || !self.in_text {
             return;
         }
@@ -469,6 +476,7 @@ impl Body<'_> {
 
     fn start(&mut self, q: &str, a: &Attrs) {
         self.depth += 1;
+        if self.page_field.is_some() { return; }
         if q == "office:text" {
             self.in_text = true;
             return;
@@ -806,6 +814,12 @@ impl Body<'_> {
 
     fn start_inline(&mut self, q: &str, a: &Attrs) -> bool {
         match local(q) {
+            "page-number" | "page-count" if q.starts_with("text:") => {
+                if self.para.is_none() { self.start_para(None, None); }
+                let mut f = self.cur_fmt(); f.ins = self.open_insertion();
+                f.page_field = Some(if local(q) == "page-number" { "PAGE" } else { "NUMPAGES" });
+                self.page_field = Some((self.depth, String::new(), f));
+            }
             "span" => {
                 let base = self.cur_fmt();
                 let fmt = get(a, "text:style-name").map_or_else(|| base.clone(), |s| self.styles.text_fmt(s, &base));
@@ -844,6 +858,14 @@ impl Body<'_> {
 
     fn end(&mut self, q: &str) {
         self.depth = self.depth.saturating_sub(1);
+        if let Some((depth, _, _)) = &self.page_field {
+            if self.depth < *depth {
+                let (_, result, f) = self.page_field.take().unwrap();
+                if let Some(p) = &mut self.para { p.inlines.push(Inline::Text(result, f)); }
+                self.xml_space_end = false;
+            }
+            return;
+        }
         if q == "office:text" {
             if self.del.is_some() {
                 // Unclosed deleted content (hostile): drop it.

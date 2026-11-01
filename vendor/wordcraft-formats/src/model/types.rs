@@ -86,6 +86,8 @@ pub(crate) fn begin_import() {
 /// Character formatting the text formats can express.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Fmt {
+    /// PAGE/NUMPAGES field carried through ODT; the text is its cached result.
+    pub page_field: Option<&'static str>,
     pub bold: bool,
     pub italic: bool,
     pub underline: bool,

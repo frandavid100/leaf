@@ -363,7 +363,12 @@ impl Writer {
                     if let Some(l) = link {
                         out.push_str(&format!("<text:a xlink:type=\"simple\" xlink:href=\"{}\">", x(l)));
                     }
-                    let fs = Fmt { link: None, ..f.clone() };
+                    if let Some(instr) = f.page_field {
+                        let tag = if instr == "PAGE" { "page-number" } else { "page-count" };
+                        let attrs = if instr == "PAGE" { " text:select-page=\"current\"" } else { "" };
+                        body = format!("<text:{tag}{attrs}>{body}</text:{tag}>");
+                    }
+                    let fs = Fmt { link: None, page_field: None, ..f.clone() };
                     match self.text_style(&fs) {
                         Some(n) => out.push_str(&format!("<text:span text:style-name=\"{n}\">{body}</text:span>")),
                         None => out.push_str(&body),

@@ -50,6 +50,7 @@ fn fmt_of(doc: &Document, cp: &CharProps, in_code: bool) -> Fmt {
     let e = effective(doc, cp);
     let code = !in_code && e.font.as_deref().is_some_and(is_mono);
     Fmt {
+        page_field: None,
         bold: e.bold.unwrap_or(false),
         italic: e.italic.unwrap_or(false),
         underline: e.underline.is_some_and(|u| u != Underline::None) && e.link.is_none(),
@@ -244,6 +245,14 @@ fn flow_paras_in(doc: &Document, p: &Paragraph, tracked: bool) -> Vec<Para> {
                     // The base text and reading, in the run's formatting; the guide's own
                     // attributes (alignment, size, raise) stay in the document model.
                     out.inlines.push(Inline::Ruby { base: base.clone(), ruby: ruby.clone(), fmt: f.clone() });
+                }
+                Some(InlineObject::Field { instr, result, locked: false, code: false, .. })
+                    if matches!(instr.trim().to_ascii_uppercase().as_str(), "PAGE" | "NUMPAGES") => {
+                    if !buf.is_empty() { out.push_text(&std::mem::take(&mut buf), &f); }
+                    let mut field_fmt = f.clone();
+                    field_fmt.page_field = Some(if instr.trim().eq_ignore_ascii_case("PAGE") { "PAGE" } else { "NUMPAGES" });
+                    // Keep adjacent fields separate even when they share their formatting.
+                    out.inlines.push(Inline::Text(result.clone(), field_fmt));
                 }
                 Some(InlineObject::BookmarkStart { name }) if name != "_GoBack" => {
                     if !buf.is_empty() {

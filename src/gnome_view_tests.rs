@@ -68,7 +68,7 @@ fn chrome_ui_test(ui:&Rc<Ui>,menu:&gtk::MenuButton,app:&Application){
         for(i,action)in actions.iter().enumerate(){assert_eq!(part.item_attribute_value(i as i32,"action",None).unwrap().get::<String>().unwrap(),*action);}
     }
     assert!(style_widget(&ui.format_toolbar,"table-menu").is_none());assert!(style_widget(&ui.format_toolbar,"picture-menu").is_none());
-    let add=model.item_link(2,"submenu").unwrap();assert_eq!(add.n_items(),2);
+    let add=model.item_link(2,"submenu").unwrap();assert_eq!(add.n_items(),5);
     assert_eq!(add.item_attribute_value(0,"action",None).unwrap().get::<String>().unwrap(),"win.insert-table");
     assert_eq!(add.item_attribute_value(1,"action",None).unwrap().get::<String>().unwrap(),"win.insert-picture");
     let extra=model.item_link(3,"section").unwrap();assert_eq!(extra.n_items(),3);

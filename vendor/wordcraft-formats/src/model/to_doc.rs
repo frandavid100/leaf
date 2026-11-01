@@ -205,7 +205,9 @@ impl<'a> Builder<'a> {
                             c.old.font = None;
                         }
                     }
-                    append(&mut out, &t, &cp, None);
+                    if let Some(instr) = f.page_field {
+                        append(&mut out, "", &cp, Some(InlineObject::Field { instr: instr.into(), result: t, locked: false, dirty: false, code: false, form: String::new() }));
+                    } else { append(&mut out, &t, &cp, None); }
                 }
                 Inline::Image(img) => {
                     let key = self.doc.add_media(img.data.to_vec(), &img.ext);

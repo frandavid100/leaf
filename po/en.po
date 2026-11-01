@@ -1570,3 +1570,54 @@ msgstr "Enter a Style Name"
 msgid "The style no longer exists"
 msgstr "The style no longer exists"
 
+
+msgid "Alignment"
+msgstr "Alignment"
+
+msgid "At the Cursor"
+msgstr "At the Cursor"
+
+msgid "Editing Footer"
+msgstr "Editing Footer"
+
+msgid "Editing Header"
+msgstr "Editing Header"
+
+msgid "Footer"
+msgstr "Footer"
+
+msgid "Header"
+msgstr "Header"
+
+msgid "In the Footer"
+msgstr "In the Footer"
+
+msgid "In the Header"
+msgstr "In the Header"
+
+msgid "Include Total Pages"
+msgstr "Include Total Pages"
+
+msgid "Insert"
+msgstr "Insert"
+
+msgid "Page Number"
+msgstr "Page Number"
+
+msgid "Page Number…"
+msgstr "Page Number…"
+
+msgid "Page numbers update automatically. Existing header and footer content is kept."
+msgstr "Page numbers update automatically. Existing header and footer content is kept."
+
+msgid "Paragraph {i}: test body text.\n"
+msgstr "Paragraph {i}: test body text.\n"
+
+msgid "Position"
+msgstr "Position"
+
+msgid "Return to Document"
+msgstr "Return to Document"
+
+msgid "The document has changed; open this dialog again."
+msgstr "The document has changed; open this dialog again."

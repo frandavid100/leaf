@@ -14,7 +14,7 @@ use wordcraft_engine::Session;
 use wordcraft_gnome::{open_document, render_page_screen as render_page, sample_session};
 use wordcraft_gnome::viewer_layout::{self, THUMB_SCALE};
 
-const APP_VERSION: &str = "0.1.0-alpha.8";
+const APP_VERSION: &str = "0.1.0-alpha.9";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -38,6 +38,8 @@ struct Current {
 
 struct Ui {
     current: RefCell<Option<Current>>,
+    header_context: gtk::Box,
+    header_label: gtk::Label,
     printing: PrintState,
     document_box: gtk::Fixed,
     thumbnails_box: gtk::Box,
@@ -150,6 +152,7 @@ fn refresh_selection(ui: &Rc<Ui>) {
         }
     }
     refresh_format_controls(ui);
+    refresh_header_context(ui);
     if let Some(p)=ui.picture.borrow().as_ref(){p.refresh();}
 }
 
@@ -206,7 +209,7 @@ fn pos_at_canvas(ui: &Rc<Ui>, x: f64, y: f64) -> Option<Pos> {
     let (w, h) = doc.sizes[page];
     let px = ((x - f64::from(rect.x())) / z).clamp(0.0, f64::from(w)) as f32;
     let py = ((y - f64::from(rect.y())) / z).clamp(0.0, f64::from(h)) as f32;
-    selection::hit(&mut doc.session, page, px, py)
+    header_footer::hit(&mut doc.session, page, px, py)
 }
 
 fn select_picture_at_canvas(ui:&Rc<Ui>,x:f64,y:f64)->bool{
@@ -215,7 +218,10 @@ fn select_picture_at_canvas(ui:&Rc<Ui>,x:f64,y:f64)->bool{
         let Some(r)=frame.compute_bounds(&ui.document_box)else{continue;};
         if x<r.x()as f64||y<r.y()as f64||x>(r.x()+r.width())as f64||y>(r.y()+r.height())as f64{continue;}
         let z=doc.zoom as f64;let px=((x-r.x()as f64)/z)as f32;let py=((y-r.y()as f64)/z)as f32;
-        let Some(hit)=doc.session.layout().object_at(i,px,py,0.0)else{return false;};
+        let layout=doc.session.layout();
+        let story=layout.header_footer_at(i,py).map(|(story,_)|story).unwrap_or(wordcraft_doc::StoryRef::Body);
+        let Some(hit)=layout.object_at_in(i,px,py,0.0,story)else{return false;};
+        doc.session.page_hint=i;
         return pictures::select(&mut doc.session,&hit.pos()).is_ok();
     }false
 }
@@ -730,9 +736,19 @@ fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
             let scale = ui.selection_zoom.clone();
             let motion = ui.caret_motion.clone();
             let search = ui.search_highlights.clone();
+            let weak=Rc::downgrade(ui);
             area.set_draw_func(move |_, cr, _, _| {
                 let selection = data.borrow();
                 let z = f64::from(scale.get());
+                if let Some(ui)=weak.upgrade(){if let Ok(mut value)=ui.current.try_borrow_mut(){if let Some(d)=value.as_mut(){
+                    if let Some(region)=header_footer::active(&d.session){
+                        let layout=d.session.layout();if let Some(page)=layout.pages.get(i){
+                            let y=if region==Region::Header{page.body.y}else{page.body.bottom()};
+                            cr.set_source_rgba(0.4,0.5,0.7,0.7);cr.set_line_width(1.0);cr.set_dash(&[4.0,4.0],0.0);
+                            cr.move_to(0.0,y as f64*z);cr.line_to(page.w as f64*z,y as f64*z);let _=cr.stroke();cr.set_dash(&[],0.0);
+                        }
+                    }
+                }}}
                 for r in search.borrow().iter().filter(|r| r.page == i) {
                     cr.set_source_rgba(0.94, 0.57, 0.12, 0.35);
                     cr.rectangle(r.x*z, r.y*z, r.width*z, r.height*z);let _=cr.fill();
@@ -847,6 +863,7 @@ include!("../gnome_host.rs");
 include!("../gnome_lifecycle.rs");
 include!("../gnome_localization.rs");
 include!("../gnome_document_tools.rs");
+include!("../gnome_headers.rs");
 include!("../gnome_format_panels.rs");
 include!("../gnome_tables.rs");
 include!("../gnome_context.rs");
@@ -1079,6 +1096,8 @@ fn build_tab(
     document_toolbar.add_top_bar(&header);
     let tab_bar = adw::TabBar::new(); tab_bar.set_view(Some(&host.tabs));
     tab_bar.set_autohide(true); document_toolbar.add_top_bar(&tab_bar);
+    let (header_context,header_label,close_header)=header_context_bar();
+    document_toolbar.add_top_bar(&header_context);
     document_toolbar.add_bottom_bar(&format_toolbar);
     document_toolbar.set_content(Some(&toasts));
 
@@ -1121,6 +1140,7 @@ fn build_tab(
         pending_tab_close: RefCell::new(None),
         save_path: RefCell::new(None),
         source_path: RefCell::new(None),
+        header_context,header_label,
         format_toolbar,adaptive:RefCell::new(None),format_buttons:RefCell::new(Vec::new()),style:RefCell::new(None),text_tools:RefCell::new(None),format_reflowing:Cell::new(false),sidebar_selector:selector_bar.clone(),_bottom_heights:bottom_heights,
         format_bold: bold_button.clone(),
         format_italic: italic_button.clone(),
@@ -1137,6 +1157,7 @@ fn build_tab(
     });
 
 
+    {let weak=Rc::downgrade(&ui);close_header.connect_clicked(move|_|{if let Some(ui)=weak.upgrade(){header_change(&ui,header_footer::close);}});}
     install_accessibility(&ui,&app_menu,&compact_app_menu);
     let text_tools=install_text_pages(&ui,&text_popover,&text_options,&inline_buttons,&text_header,&more_text);ui.text_tools.replace(Some(text_tools));
     let paragraph_popover=install_paragraph_popover(&ui,&align_menu);ui.paragraph.replace(Some(paragraph_popover.clone()));
@@ -1264,6 +1285,7 @@ fn build_tab(
         let document_box = ui.document_box.clone();
         let ui = ui.clone();
         click.connect_pressed(glib::clone!(#[weak] ui, move |gesture, count, x, y| {
+            if count==2&&enter_empty_header_at(&ui,x,y){return;}
             if count==1&&!gesture.current_event_state().contains(gdk::ModifierType::SHIFT_MASK)&&select_picture_at_canvas(&ui,x,y){
                 ui.document_box.grab_focus();refresh_selection(&ui);return;
             }
@@ -1273,7 +1295,8 @@ fn build_tab(
             let result = {
                 let mut value = ui.current.borrow_mut();
                 let Some(doc) = value.as_mut() else { return };
-                selection::set_caret(&mut doc.session, &pos, shift)
+                let extend=shift && doc.session.sel.focus.story==pos.story;
+                selection::set_caret(&mut doc.session, &pos, extend)
                     .and_then(|_| {
                         let cmd = if count == 2 { Some("select.word") }
                             else if count >= 3 { Some("select.paragraph") }
@@ -1307,6 +1330,7 @@ fn build_tab(
                 let Some((sx, sy)) = gesture.start_point() else { return };
                 let Some(anchor) = ui.drag_anchor.borrow().clone() else { return };
                 let Some(focus) = pos_at_canvas(&ui, sx + dx, sy + dy) else { return };
+                if anchor.story!=focus.story{return;}
                 let result = {
                     let mut value = ui.current.borrow_mut();
                     value.as_mut().map(|doc| selection::select_range(
@@ -1421,6 +1445,9 @@ fn build_tab(
             let shift = modifiers.contains(gdk::ModifierType::SHIFT_MASK);
             let control = modifiers.contains(gdk::ModifierType::CONTROL_MASK);
             if ui.document_box.has_focus() {
+                if key==gdk::Key::Escape && ui.current.borrow().as_ref().is_some_and(|d|d.session.in_header_footer()){
+                    header_change(&ui,header_footer::close);return glib::Propagation::Stop;
+                }
                 if key==gdk::Key::Menu || (shift && key==gdk::Key::F10) {
                     let y=ui.scroll.vadjustment().value() as i32+40;
                     show_table_context_at(&ui,&save_parent,60,y);
@@ -1675,6 +1702,9 @@ fn build_tab(
                 eprintln!("SPLIT_POINTER_READY {} {} {} {}",(x+body.x()as f64+body.width()as f64/2.0)as i32,(y+body.y()as f64+body.height()as f64/2.0)as i32,(x+arrow.x()as f64+arrow.width()as f64/2.0)as i32,(y+arrow.y()as f64+arrow.height()as f64/2.0)as i32);
             });
         });
+    }
+    if std::env::args().any(|a|a=="--headers-ui-test"||a=="--headers-pointer-test") {
+        let u=ui.clone();let w=window.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||header_footer_ui_test(&u,&w,&a,std::env::args().any(|x|x=="--headers-pointer-test")));
     }
     if std::env::args().any(|a|a=="--picture-demo"||a=="--document-properties-demo"||a=="--document-tools-test") {
         let u=ui.clone();let p=picture_panel.clone();let m=picture_menu.clone();let w=window.clone();let app=app.clone();

@@ -26,6 +26,9 @@ fn setup_main_actions(host:&Rc<Workspace>,app:&Application){
     window_action(host,"save-as",|h|{if let Some(ui)=selected_ui(h){save_document(&ui,&h.window,true,Box::new(||{}));}});
     window_action(host,"insert-table",|h|{if let Some(ui)=selected_ui(h){show_insert_table(&ui,&h.window);}});
     window_action(host,"insert-picture",|h|{if let Some(ui)=selected_ui(h){choose_picture(&ui,&h.window,false);}});
+    window_action(host,"insert-header",|h|{if let Some(ui)=selected_ui(h){enter_header(&ui,Region::Header);}});
+    window_action(host,"insert-footer",|h|{if let Some(ui)=selected_ui(h){enter_header(&ui,Region::Footer);}});
+    window_action(host,"insert-page-number",|h|{if let Some(ui)=selected_ui(h){show_page_number(&ui,&h.window);}});
     window_action(host,"columns",|h|{if let Some(ui)=selected_ui(h){show_columns(&ui,&h.window);}});
     window_action(host,"document-properties",|h|{if let Some(ui)=selected_ui(h){show_document_properties(&ui,&h.window);}});
     window_action(host,"print",|h|{if let Some(ui)=selected_ui(h){print_document(&ui,&h.window);}});
@@ -55,7 +58,7 @@ fn install_document_menu(button:&gtk::MenuButton){
     let root=gio::Menu::new();
     let history=gio::Menu::new();menu_item(&history,wordcraft_gnome::t!("Undo"),"undo",Some("<Control>z"));menu_item(&history,wordcraft_gnome::t!("Redo"),"redo",Some("<Control><Shift>z"));root.append_section(None,&history);
     let save=gio::Menu::new();menu_item(&save,wordcraft_gnome::t!("Save"),"save",Some("<Control>s"));menu_item(&save,wordcraft_gnome::t!("Save As…"),"save-as",Some("<Control><Shift>s"));root.append_section(None,&save);
-    let add=gio::Menu::new();menu_item(&add,wordcraft_gnome::t!("Table…"),"insert-table",None);menu_item(&add,wordcraft_gnome::t!("Image…"),"insert-picture",None);root.append_submenu(Some(wordcraft_gnome::t!("Add")),&add);
+    let add=gio::Menu::new();menu_item(&add,wordcraft_gnome::t!("Table…"),"insert-table",None);menu_item(&add,wordcraft_gnome::t!("Image…"),"insert-picture",None);menu_item(&add,wordcraft_gnome::t!("Header"),"insert-header",None);menu_item(&add,wordcraft_gnome::t!("Footer"),"insert-footer",None);menu_item(&add,wordcraft_gnome::t!("Page Number…"),"insert-page-number",None);root.append_submenu(Some(wordcraft_gnome::t!("Insert")),&add);
     let properties=gio::Menu::new();menu_item(&properties,wordcraft_gnome::t!("Document Properties…"),"document-properties",None);menu_item(&properties,wordcraft_gnome::t!("Export to PDF…"),"export-pdf",None);menu_item(&properties,wordcraft_gnome::t!("Print…"),"print",Some("<Control>p"));root.append_section(None,&properties);button.set_menu_model(Some(&root));
 }
 fn show_editor_help(parent:&ApplicationWindow){

@@ -75,7 +75,7 @@ pub fn geometry(session: &mut Session) -> SelectionGeometry {
     if let Some(range)=session.cell_range() {
         let cells=session.doc.table(range.story,&range.table).map(|t|range.cells(t)).unwrap_or_default();
         for (page, p) in lay.pages.iter().enumerate() {
-            for item in &p.items {
+            for item in p.items.iter().chain(&p.header).chain(&p.footer) {
                 if let wordcraft_engine::layout::Placed::Cell {rect,table,row,cell,story,covered,..}=item {
                     if !covered && *story==range.story && *table==range.table && cells.contains(&(*row,*cell)) {
                         out.highlights.push(Rect {page,x:rect.x as f64,y:rect.y as f64,width:rect.w as f64,height:rect.h as f64});
