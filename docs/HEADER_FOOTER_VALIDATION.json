@@ -1,0 +1,38 @@
+{
+  "release": "v0.1.0-alpha.9",
+  "source_commit": "42f5fd39fa4c11c076202b98289285e1c5739eb0",
+  "workflow_run": 41288461088,
+  "native_job": 124794512945,
+  "package_job": 124796904197,
+  "native_tests_passed": 78,
+  "header_footer_tests_passed": 5,
+  "native_artifact": {
+    "id": 13076243407,
+    "zip_sha256": "8696cb0322fedcfa19677efb8d76884876660371a43c048139200025de1de7d5"
+  },
+  "package_artifact": {
+    "id": 13076970385,
+    "zip_sha256": "d48710548cc1125d66b879db11f6ad2e92b9798e47d8aa825f989c30201a1442"
+  },
+  "bundle": {
+    "name": "Leaf-0.1.0-alpha.9-x86_64.flatpak",
+    "bytes": 10239224,
+    "sha256": "60e91b5105a5d33a97be8720efca377fa698c3d0d98f92037b08590d881d13aa"
+  },
+  "verification": [
+    "native and package ZIP digests independently checked after download",
+    "all seven SHA256SUMS entries verified",
+    "source-commit.txt matches the compiled/released commit",
+    "native GTK header/footer dialog and real pointer/Escape tests passed",
+    "installed Flatpak header/footer UI test passed",
+    "upgrade from alpha.8 and reinstall data retention passed",
+    "native existing GUI, HiDPI, lifetime, localization and printing checks passed"
+  ],
+  "not_claimed": [
+    "manual GNOME OS verification",
+    "full document fidelity",
+    "full screen-reader document access",
+    "general ODF fields or disabled variant associations",
+    "a repeated full compatibility corpus audit"
+  ]
+}

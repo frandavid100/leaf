@@ -19,6 +19,10 @@ Copy a short DOCX or ODT document to a test folder. In Preferences, keep autosav
 
 A successful test is useful too: add your environment, file origin/format and the checks you performed to a compatibility report. A successful round-trip of one file does not establish support for all files from that application.
 
+## Headers, footers and page numbers
+
+From the document menu’s Insert submenu, add a header/footer and type directly on the page. Return to the body with Escape, then click the header on a later page and confirm that editing/caret stays on that page. Insert a page number in a footer containing existing text and check that the text remains. Add a page in the body, check numbering/total pages, then save and reopen both DOCX and ODT copies. Compare with another editor. [Automated validation and current limits](HEADERS_FOOTERS.md).
+
 ## Keyboard and printing
 
 Use F6 / Shift+F6 to move between document, sidebar and formatting controls; F10 opens the main menu. Check Escape, Enter, table Tab / Shift+Tab and native search-field shortcuts in wide and narrow windows. See [scope and remaining accessibility limits](KEYBOARD_PRINTING.md): the custom canvas still lacks complete screen-reader text access.

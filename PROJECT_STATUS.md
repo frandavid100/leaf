@@ -2,7 +2,20 @@
 
 Actualizado: 1 de noviembre de 2026. Punto de entrada para continuar desde otra conversación.
 
-## Última entrega: alpha.8 — idiomas y documento oscuro (01-11-2026)
+## Última entrega: alpha.9 — encabezados, pies y numeración (01-11-2026)
+
+Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.9
+Fuente nativa, tag y paquete: `42f5fd39fa4c11c076202b98289285e1c5739eb0`. Flatpak x86_64: **10.239.224 bytes**, SHA256 `60e91b5105a5d33a97be8720efca377fa698c3d0d98f92037b08590d881d13aa`. [CI verificada](https://github.com/frandavid100/leaf/actions/runs/41288461088); [uso y límites](docs/HEADERS_FOOTERS.md); [evidencia](docs/HEADER_FOOTER_VALIDATION.json).
+
+Encabezado, pie y número en «Insertar», dentro del menú del documento. Edición directa sobre el lienzo con las herramientas habituales; clic en contenido existente, doble clic en margen vacío para crear, Esc / «Volver al documento» para recuperar la selección del cuerpo. Se respeta la historia mostrada en esa página, incluidas variantes activas e historias heredadas. No se han añadido controles para crear variantes o desvincular secciones.
+
+Numeración automática PAGE y total opcional NUMPAGES: en el cursor o en un nuevo párrafo al final del encabezado/pie, conservando el contenido existente y agrupando deshacer. Corrección aislada de wordcraft-formats para conservar esos campos básicos en ODT; README de patches y parche reproducible actualizados. Sin cambiar la revisión del motor ni su renderizador. 537 mensajes gettext con catálogos inglés/español completos.
+
+78 tests sin interfaz superados, incluidos 5 nuevos; compilación optimizada; pruebas GTK del diálogo, clic real en encabezado repetido de página 2 y Esc; regresiones previas de interfaz, escalado, ciclos de vida, idiomas, modo oscuro e impresión. Flatpak instalado: nuevas funciones, actualización desde alpha.8 y conservación de datos al reinstalar comprobadas. Artefactos nativo/paquete descargados y hashes verificados. No se ha repetido el corpus completo. Sigue pendiente la comprobación manual en GNOME OS.
+
+Weblate queda a cargo del usuario cuando vuelva a casa; no reintentar el alta desde el navegador remoto. Capturas públicas también las aporta el usuario. Las futuras fases de la hoja de ruta siguen siendo propuestas, no autorización general.
+
+## Entrega anterior: alpha.8 — idiomas y documento oscuro (01-11-2026)
 
 Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.8
 Tag/paquete: `23207f0be9c352c31cedcd4fa274251007847169`. Código nativo validado: `eaa83c9f6acf88478e8eae9aa3c7aad36fddf6ac`; igualdad de src/Cargo/tests/vendor/patches/po comprobada antes de reutilizar el binario. Flatpak x86_64: **10.207.640 bytes**, SHA256 `1aec3ec70c9e310c1480b5468973b7ca4e206c2612dff652b521b92e7984c264`.

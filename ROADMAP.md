@@ -3,13 +3,19 @@
 Actualizada: 1 de noviembre de 2026. Estado técnico en [PROJECT_STATUS.md](PROJECT_STATUS.md).
 Las fases siguientes son propuestas; no implican autorización para implementarlas todas.
 
+## Completado: encabezados, pies y numeración — alpha.9
+
+Opciones dentro de «Insertar», edición directa sobre la página, salida al cuerpo con Esc, numeración automática sin reemplazar el contenido previo y conservación de PAGE/NUMPAGES en ODT mediante parche aislado. Tests nativos y del Flatpak, actualización desde alpha.8 y artefactos verificados. [Uso, evidencia y límites](docs/HEADERS_FOOTERS.md).
+
+Propuestas pendientes: controles para primera página/paridad y vinculación entre secciones; seguir priorizando fiabilidad con documentos reales y accesibilidad del lienzo. No implican autorización para implementarlas ahora. Weblate y capturas públicas quedan para el usuario.
+
 ## Completado: español/inglés y documento oscuro — alpha.8
 
 Publicada alpha.8 con 520 textos gettext, metadatos localizados y catálogos en el Flatpak; documento y miniaturas oscuros mediante API existente de WordCraft, siguiendo GNOME en vivo. Pruebas nativas y del paquete superadas, artefactos verificados. [Informe](docs/LOCALIZATION_DARK_MODE.md).
 
 **Pendiente de participación del usuario:** capturas públicas y acceso/alta de Weblate con autorización GitHub. Guía/configuración preparadas; todavía no existe un portal Leaf de traducciones verificado. Mientras tanto se aceptan catálogos por PR. La aceptación del plan Libre depende de Weblate. Conviene revisión humana de traducciones y prueba real GNOME OS; se mantiene el trabajo pendiente de accesibilidad completa.
 
-Después, propuesta de encabezados, pies y numeración, previa comprobación del soporte upstream. No confundir esa propuesta con una implementación terminada o autorización de todas las fases futuras.
+Encabezados, pies y numeración básica ya están implementados en alpha.9; los detalles se recogen en la sección anterior.
 
 ## Completado: auditoría GTK y alpha.6
 

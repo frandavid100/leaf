@@ -367,6 +367,7 @@ jobs:
           name: wordcraft-gnome-fase3d-linux
           path: |
             localization-*.log
+            headers-*.log
             lifecycle-*.log
             keyboard-ui.log
             print-*.log
