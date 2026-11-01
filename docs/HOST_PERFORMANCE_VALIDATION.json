@@ -3971,6 +3971,232 @@
   ],
   "upstream": "No engine modification or dependency update. This sample does not isolate a WordCraft defect warranting an issue; measured engine boundaries remain documented for future upstream reproduction.",
   "flatpak": {
-    "status": "pending installed checks"
+    "status": "passed and prerelease published",
+    "run": 41317807710,
+    "job": 124881470679,
+    "source_commit": "dc37ec8d0a9aef9c9635fe40ca43f7947bb01193",
+    "artifact_id": 13087408904,
+    "artifact_zip_sha256": "0e52825e07e1d8095645e70955efb573a2c6a87928bddc46330f415a7dd8222c",
+    "independently_downloaded_and_verified": true,
+    "all_7_sha256sums_verified": true,
+    "all_8_published_asset_sizes_and_digests_verified": true,
+    "tag_verified": true,
+    "bundle_size_bytes": 10773920,
+    "bundle_sha256": "7914c4b85c6b93e770799b4ba40b8ba8358f9aa728e169e2b2c06046265f5c43",
+    "release_url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.13",
+    "host_cache_regression_log": "MESA-EGL: warning: DRI3 error: Could not get DRI3 device\nMESA-EGL: warning: Ensure your X server supports DRI3 to get accelerated rendering\n\n(wordcraft-gnome:2): Gtk-WARNING **: 14:47:29.219: Unable to acquire the address of the accessibility bus: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: org.freedesktop.DBus.Error.ServiceUnknown. If you are attempting to run GTK without a11y support, GTK_A11Y should be set to 'none'.\nLEAF_HOST_CACHE_UI_OK pages=16\n",
+    "orca_result": {
+      "baseline": false,
+      "orca_version": "46.1",
+      "role": "text",
+      "interfaces": [
+        "Accessible",
+        "Action",
+        "Component",
+        "Text"
+      ],
+      "speech_is_generated_transcript_not_human_listening": true,
+      "text_supported": true,
+      "text": "First paragraph for Orca.\nCafé, español y 😀.\nFinal paragraph.",
+      "count": 61,
+      "caret": 0,
+      "sandbox": true,
+      "orca_announcements": {
+        "paragraph": true,
+        "selection": true,
+        "typed_character": true,
+        "restored_paragraph": true
+      },
+      "keyboard_read_edit_select_undo": true,
+      "events": [
+        {
+          "type": "object:children-changed:add",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "[panel | ]"
+        },
+        {
+          "type": "object:text-changed:insert",
+          "detail1": 0,
+          "detail2": 61,
+          "text": "First paragraph for Orca.\nCafé, español y 😀.\nFinal paragraph."
+        },
+        {
+          "type": "object:state-changed:focused",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:state-changed:focused",
+          "detail1": 1,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 26,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 27,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 28,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 29,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 30,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-changed:delete",
+          "detail1": 26,
+          "detail2": 4,
+          "text": "Café"
+        },
+        {
+          "type": "object:text-changed:insert",
+          "detail1": 26,
+          "detail2": 1,
+          "text": "X"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 27,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-changed:delete",
+          "detail1": 26,
+          "detail2": 1,
+          "text": "X"
+        },
+        {
+          "type": "object:text-changed:insert",
+          "detail1": 26,
+          "detail2": 4,
+          "text": "Café"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 30,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 61,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-selection-changed",
+          "detail1": 0,
+          "detail2": 0,
+          "text": ""
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 26,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 45,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 26,
+          "detail2": 0,
+          "text": "0"
+        },
+        {
+          "type": "object:text-caret-moved",
+          "detail1": 0,
+          "detail2": 0,
+          "text": "0"
+        }
+      ]
+    },
+    "checks": [
+      "Upgrade from alpha.12",
+      "Host-cache GTK regressions in installed runtime",
+      "Real AT-SPI and Orca reading/editing/undo",
+      "Headers/page options/proofing",
+      "English/Spanish and dark mode",
+      "HiDPI",
+      "Lifecycle",
+      "Launcher/document portal",
+      "Data through reinstall",
+      "Print dialog/portal handoff"
+    ],
+    "internal_launcher_screenshot_reviewed": true
   }
 }

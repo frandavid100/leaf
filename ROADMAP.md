@@ -3,6 +3,14 @@
 Actualizada: 1 de noviembre de 2026. Estado técnico en [PROJECT_STATUS.md](PROJECT_STATUS.md).
 Las fases siguientes son propuestas; no implican autorización para implementarlas todas.
 
+## Completado: diagnóstico y optimización del host — alpha.13
+
+Por petición del usuario, cambios limitados a Leaf y frontera WordCraft comprobada. Se evita generar todas las miniaturas antes de la asignación GTK; búsqueda binaria de visibilidad, repintado solo de capas afectadas y búsqueda cerrada sin trabajo redundante. 99 tests, comparación AB/BA en documentos sintéticos de 11/55/164 páginas y regresiones gráficas/instaladas completas. Alpha.13 publicada y artefactos/assets verificados. [Resultados y límites](docs/HOST_PERFORMANCE_AUDIT.md).
+
+Primera maquetación y escritura sin mejora consistente; los ahorros observados son de trabajo del host, sin promesa universal de velocidad/memoria. Motor, renderizador, parches y dependencias intactos. No se ha aislado un defecto del motor que amerite una propuesta upstream; cualquier futura optimización allí se propondrá en WordCraft.
+
+El usuario aplaza nuevas tareas de Orca y la validación humana hasta que haya usuarios; conservar soporte y test automático actuales. Weblate/capturas públicas a su cargo. Corpus completo manual, sin repetir. Siguiente propuesta: atender fallos concretos de uso y mantener las regresiones pequeñas; nuevas funciones requieren autorización.
+
 ## Completado: texto accesible del documento — alpha.12
 
 GtkAccessibleText en el lienzo visible: texto Unicode, líneas reales, cursor, selección y notificaciones de edición. WordCraft sigue siendo el modelo y motor de edición. 97 tests y regresiones GTK correctos. Auditoría independiente con AT-SPI y Orca 46.1, seguida de la misma prueba dentro del Flatpak: lectura, selección, carácter escrito y restauración al deshacer. Alpha.12 publicada, artefactos y ocho assets verificados. [Diseño, evidencia y alcance](docs/ACCESSIBLE_DOCUMENT_TEXT.md).

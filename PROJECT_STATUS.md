@@ -2,7 +2,24 @@
 
 Actualizado: 1 de noviembre de 2026. Punto de entrada para continuar desde otra conversación.
 
-## Última entrega: alpha.12 — accesibilidad inicial del texto con Orca (01-11-2026)
+## Última entrega: alpha.13 — diagnóstico y optimización exclusiva de Leaf (01-11-2026)
+
+Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.13
+Tag/paquete `dc37ec8d0a9aef9c9635fe40ca43f7947bb01193`; código nativo `e5b3380f014ee0babf2c6d890f5fb15de43bd486`, igualdad funcional comprobada al reutilizarlo. Flatpak x86_64 **10,773,920 bytes**, SHA256 `7914c4b85c6b93e770799b4ba40b8ba8358f9aa728e169e2b2c06046265f5c43`.
+
+Petición completada: investigar y optimizar solo Leaf. Cargo.toml/Cargo.lock, motor/renderizador, vendor y parches permanecen idénticos a alpha.12; la CI comprueba la frontera. No se ha aislado un defecto del motor que justifique una incidencia especulativa. Sus tiempos de API quedan registrados para futuras reproducciones/propuestas upstream.
+
+Corregida rasterización de todas las miniaturas antes de su asignación GTK; ahora se usan límites monotónicos reales o fallback previo, y actualización débil agrupada tras cambios de asignación. Búsqueda binaria para miniaturas visibles y expulsión de la caché fuera del área. Solo se repintan las páginas con selección/búsqueda/cursor anterior o actual; animación del cursor en una página, guías de encabezado/pie con invalidación completa. Búsqueda cerrada sin reconstrucción de resultados, reapertura con revisión actual, y recarga de miniaturas invalidadas al salir de búsqueda.
+
+Referencia instrumentada alpha.12 `a8d8b408cdaaf627103f5272ee2264065359feec`: run 41314479212, job 124871514928, ZIP 13087155771 descargado/verificado, SHA256 `88409e47f192691e63c9c277a75b8a13354f9a0e987a59631259e25c0621190c`. Comparación real AB/BA en el mismo runner, 120/600/1800 párrafos (11/55/164 páginas), dos procesos por versión/tamaño, documentos sintéticos y perfiles temporales. En 164 páginas: miniaturas iniciales 164→4; fase de widgets/rasteres iniciales 315,90→30,83 ms, excluyendo importación/primera maquetación; 80 movimientos pasan de 13.120 solicitudes de repintado a 80. Primera maquetación y escritura/deshacer sin mejora consistente; no afirmar aceleración global ni ahorro general de memoria.
+
+Validación nativa final 41316630254, job 124877944835: **99 tests**, release GTK, comparación completa y regresiones específicas del host; también idiomas/oscuro, encabezados/ortografía, ciclos de vida, teclado/impresión, menús/pestañas/adaptación, capturas e HiDPI. No se repite el benchmark debug/release del renderizador porque no cambia. ZIP 13088226151 descargado/verificado, SHA256 `9730bf2b018d80690d9aae4260cc0bf0555704cb40386a96a1a514245a2e1317`; captura interna de selección revisada. [Método, datos y límites](docs/HOST_PERFORMANCE_AUDIT.md), [evidencia durable](docs/HOST_PERFORMANCE_VALIDATION.json).
+
+Paquete 41317807710, job 124881470679: actualización desde alpha.12, nueva regresión GTK de caché dentro del Flatpak, Orca/AT-SPI real, resto de funciones, lanzador/portal, datos al reinstalar e impresión correctos. ZIP 13087408904 descargado/verificado, SHA256 `0e52825e07e1d8095645e70955efb573a2c6a87928bddc46330f415a7dd8222c`; siete SHA256SUMS y ocho tamaños/digests publicados coinciden. Tag comprobado y captura interna del lanzador revisada.
+
+Decisión del usuario: aplazar nuevas ampliaciones de Orca y la validación humana hasta disponer de usuarios; la prueba automática existente se conserva. Capturas públicas y Weblate siguen a su cargo, sin cambios. Corpus completo sin repetir. Propuesta siguiente: atender reproducciones reales y conservar esta batería pequeña; no es autorización general para nuevas funciones ni para modificar WordCraft.
+
+## Entrega anterior: alpha.12 — accesibilidad inicial del texto con Orca (01-11-2026)
 
 Publicada: https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.12
 Tag y paquete: `7d90cd69d1c7234d6e5627918a735024b110b14e`. Fuente nativa: `d17d12fe9271eaa682cab62333d7e8d873022074`, igualdad funcional comprobada antes de reutilizar el ejecutable. Flatpak x86_64 **10.546.536 bytes**, SHA256 `462bf10d26031c991551d3f5631a49d802e9e4174deafed870be7561185d8564`.
