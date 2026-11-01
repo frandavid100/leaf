@@ -22,6 +22,7 @@ impl SearchPanel {
         self.query.grab_focus();self.query.select_region(0,-1);
     }
     fn schedule(self:&Rc<Self>) {
+        if !self.toggle.is_active(){return;}
         if self.pending.replace(true){return;}
         let weak=Rc::downgrade(self);
         glib::timeout_add_local_once(std::time::Duration::from_millis(160),move||{
@@ -31,6 +32,9 @@ impl SearchPanel {
     fn refresh(self:&Rc<Self>) {
         let _perf=perf_scope("leaf.search_refresh");
         let Some(ui)=self.ui.upgrade().filter(|u|!u.closed.get())else{return;};
+        // Retain the query, but rebuild its results only when they are used.
+        // Toggling search back on always refreshes against the current revision.
+        if !self.toggle.is_active(){return;}
         let result={let mut state=ui.current.borrow_mut();state.as_mut().map(|d|{let _p=perf_scope("boundary.search_query");wordcraft_gnome::search::query(&mut d.session,&self.query.text(),self.match_case.is_active())})};
         let (hits,error)=match result {Some(Ok(h))=>(h,None),Some(Err(e))=>(Vec::new(),Some(e)),None=>(Vec::new(),None)};
         while let Some(child)=self.list.first_child(){self.list.remove(&child);}

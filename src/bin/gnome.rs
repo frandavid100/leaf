@@ -14,7 +14,7 @@ use wordcraft_engine::Session;
 use wordcraft_gnome::{open_document, render_page_screen as render_page, sample_session};
 use wordcraft_gnome::viewer_layout::{self, THUMB_SCALE};
 
-const APP_VERSION: &str = "0.1.0-alpha.12";
+const APP_VERSION: &str = "0.1.0-alpha.13";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -32,6 +32,9 @@ struct Current {
     raster_scale: i32,
     painted_pages: HashSet<usize>,
     painted_thumbs: HashSet<usize>,
+    overlay_pages: HashSet<usize>,
+    overlay_header: Option<Region>,
+    thumbnail_fallback: Vec<(f64,f64)>,
     active: usize,
     status_active: Option<usize>,
 }
@@ -107,6 +110,7 @@ struct Ui {
 }
 
 include!("../gnome_performance.rs");
+include!("../gnome_performance_checks.rs");
 
 fn texture(img: wordcraft_gnome::PageImage) -> gdk::MemoryTexture {
     let bytes = glib::Bytes::from_owned(img.rgba);
@@ -141,8 +145,10 @@ fn refresh_selection(ui: &Rc<Ui>) {
                 motion.advance(clock.frame_time());
                 motion.is_moving()
             };
-            if let Some(doc) = ui.current.borrow().as_ref() {
-                for area in &doc.selection_areas { perf_count("overlay_queue",1); area.queue_draw(); }
+            if let Some(page)=ui.caret_motion.borrow().position().map(|r|r.page) {
+                if let Some(area)=ui.current.borrow().as_ref().and_then(|d|d.selection_areas.get(page)) {
+                    perf_count("overlay_queue",1);area.queue_draw();
+                }
             }
             if moving { glib::ControlFlow::Continue } else {
                 ui.caret_tick_active.set(false);
@@ -150,15 +156,26 @@ fn refresh_selection(ui: &Rc<Ui>) {
             }
         });
     }
-    if let Ok(value) = ui.current.try_borrow() {
-        if let Some(doc) = value.as_ref() {
-            for area in &doc.selection_areas { perf_count("overlay_queue",1); area.queue_draw(); }
-        }
-    }
+    refresh_overlay_layers(ui);
     refresh_format_controls(ui);
     refresh_header_context(ui);
     if let Some(p)=ui.picture.borrow().as_ref(){p.refresh();}
     ui.document_box.sync(ui);
+}
+
+// Repaint both old and new overlay pages so deselection, closed search and
+// cross-page caret moves erase stale marks. Header editing draws guides on all
+// pages, so entering/leaving it keeps a deliberate full invalidation.
+fn refresh_overlay_layers(ui:&Rc<Ui>){
+    let selection=ui.selection_data.borrow();let search=ui.search_highlights.borrow();let motion=ui.caret_motion.borrow();
+    let next:HashSet<usize>=selection.highlights.iter().chain(search.iter()).map(|r|r.page)
+        .chain(selection.caret.iter().map(|r|r.page)).chain(motion.position().map(|r|r.page)).collect();
+    let Ok(mut current)=ui.current.try_borrow_mut()else{return;};let Some(doc)=current.as_mut()else{return;};
+    let header=header_footer::active(&doc.session);
+    let mut damaged=std::mem::replace(&mut doc.overlay_pages,next);damaged.extend(doc.overlay_pages.iter().copied());
+    if header.is_some()||doc.overlay_header!=header{damaged.extend(0..doc.selection_areas.len());}
+    doc.overlay_header=header;
+    for page in damaged{if let Some(area)=doc.selection_areas.get(page){perf_count("overlay_queue",1);area.queue_draw();}}
 }
 
 /// Reflect the actual WordCraft formatting state, rather than leaving B/I/U
@@ -565,28 +582,28 @@ fn refresh_pages(ui: &Rc<Ui>) {
 fn refresh_thumbnails(ui: &Rc<Ui>) {
     let _perf=perf_scope("leaf.refresh_thumbnails");
     sync_raster_scale(ui);
-    if !ui.sidebar.shows_sidebar() { return; }
+    if !ui.sidebar.shows_sidebar() || ui.sidebar_pages.visible_child_name().as_deref()!=Some("navigation")
+        || ui.navigation_pages.visible_child_name().as_deref()!=Some("thumbnails") { return; }
     let adj = ui.thumbnails_scroll.vadjustment();
     let top = adj.value();
     let bottom = top + adj.page_size().max(600.0);
     if let Ok(mut borrowed) = ui.current.try_borrow_mut() {
         if let Some(doc) = borrowed.as_mut() {
-            let mut offset = 12.0;
-            for i in 0..doc.sizes.len() {
-                let (_, h) = doc.sizes[i];
-                let height = (f64::from(h) * f64::from(THUMB_SCALE)).ceil() + 59.0;
+            let visible=viewer_layout::ordered_visible_range(doc.sizes.len(),top-250.0,bottom+250.0,|i|{
                 perf_count("thumbnail_bounds",1);
-                let (start,end)=doc.thumb_buttons[i].compute_bounds(&ui.thumbnails_box).map(|r|(r.y()as f64,(r.y()+r.height())as f64)).filter(|(_,end)|*end>0.0).unwrap_or((offset,offset+height));
-                let is_visible = start <= bottom + 250.0 && end >= top - 250.0;
-                if is_visible && !doc.painted_thumbs.contains(&i) {
+                doc.thumb_buttons[i].compute_bounds(&ui.thumbnails_box)
+                    .map(|r|(r.y()as f64,(r.y()+r.height())as f64))
+                    .filter(|(start,end)|end>start&&*end>0.0).unwrap_or(doc.thumbnail_fallback[i])
+            });
+            let old:Vec<usize>=doc.painted_thumbs.iter().copied().filter(|i|!visible.contains(i)).collect();
+            for i in old{doc.painted_thumbs.remove(&i);doc.thumbs[i].set_paintable(None::<&gdk::Paintable>);}
+            for i in visible {
+                if !doc.painted_thumbs.contains(&i) {
                     if let Ok(image) = {let _p=perf_scope("boundary.thumbnail_raster");render_page(&mut doc.session, i, THUMB_SCALE * doc.raster_scale as f32, adw::StyleManager::default().is_dark())} {
                         doc.thumbs[i].set_paintable(Some(&page_paintable::new(image, (doc.sizes[i].0*THUMB_SCALE).ceil() as i32, (doc.sizes[i].1*THUMB_SCALE).ceil() as i32)));
                         doc.painted_thumbs.insert(i);
                     }
-                } else if !is_visible && doc.painted_thumbs.remove(&i) {
-                    doc.thumbs[i].set_paintable(None::<&gdk::Paintable>);
                 }
-                offset += height;
             }
         }
     }
@@ -811,12 +828,15 @@ fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
         thumb_buttons.push(button);
     }
 
+    let mut offset=12.0;
+    let thumbnail_fallback=sizes.iter().map(|&(_,h)|{let height=(f64::from(h)*f64::from(THUMB_SCALE)).ceil()+59.0;let bounds=(offset,offset+height);offset+=height;bounds}).collect();
     ui.current.replace(Some(Current {
         session, sizes, arrangement, zoom, fit_to_width: true,
         pages, page_frames, selection_areas, thumbs, thumb_buttons,
         raster_scale: 0,
         painted_pages: HashSet::new(),
         painted_thumbs: HashSet::new(),
+        overlay_pages:HashSet::new(),overlay_header:None,thumbnail_fallback,
         active: 0, status_active: None,
     }));
     *ui.drag_anchor.borrow_mut() = None;
@@ -1741,6 +1761,7 @@ fn build_tab(
     }
     if std::env::args().any(|a|a=="--columns-demo"){let u=ui.clone();let m=align_menu.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(1100),move||{m.popup();if let Some(s)=u.paragraph.borrow().as_ref(){s.page("columns");}});}
     if std::env::args().any(|a|a=="--print-ui-test"){let u=ui.clone();let w=window.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||print_ui_test(&u,&w,&a));}
+    if std::env::args().any(|a|a=="--host-cache-ui-test"){let u=ui.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||host_cache_ui_test(&u,&a));}
     if std::env::args().any(|a|a=="--performance-ui-test"){let u=ui.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||performance_ui_test(&u,&a));}
     if std::env::args().any(|a|a=="--a11y-ui-test"){let u=ui.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||accessible_document_ui_test(&u,&a));}
     if std::env::args().any(|a|a=="--keyboard-ui-test"){let u=ui.clone();let w=window.clone();let m=app_menu.clone();let a=app.clone();glib::timeout_add_local_once(std::time::Duration::from_millis(900),move||keyboard_ui_test(&u,&w,&m,&a));}

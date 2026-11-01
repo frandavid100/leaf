@@ -3,7 +3,7 @@
 #[derive(Default)]
 struct PerfMetrics { spans:std::collections::BTreeMap<&'static str,(u64,u128)>, counts:std::collections::BTreeMap<&'static str,u64> }
 thread_local! {static PERF_METRICS:RefCell<PerfMetrics>=RefCell::new(PerfMetrics::default());}
-fn perf_enabled()->bool{static ENABLED:std::sync::OnceLock<bool>=std::sync::OnceLock::new();*ENABLED.get_or_init(||std::env::args().any(|a|a=="--performance-ui-test"))}
+fn perf_enabled()->bool{static ENABLED:std::sync::OnceLock<bool>=std::sync::OnceLock::new();*ENABLED.get_or_init(||std::env::args().any(|a|a=="--performance-ui-test"||a=="--host-cache-ui-test"))}
 struct PerfSpan(Option<(&'static str,std::time::Instant)>);
 fn perf_scope(name:&'static str)->PerfSpan{PerfSpan(perf_enabled().then(||(name,std::time::Instant::now())))}
 impl Drop for PerfSpan {fn drop(&mut self){if let Some((name,start))=self.0{let ns=start.elapsed().as_nanos();PERF_METRICS.with(|m|{let mut m=m.borrow_mut();let entry=m.spans.entry(name).or_default();entry.0+=1;entry.1+=ns;});}}}

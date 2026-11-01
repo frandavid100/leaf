@@ -170,3 +170,33 @@ mod lookup_regression {
         }
     }
 }
+
+/// Visible interval in a monotonic vertical widget list. Query current GTK
+/// allocations lazily: no cached CSS heights to become stale after resizing.
+/// The caller supplies its fallback bounds before allocation and any prefetch margin.
+pub fn ordered_visible_range(count:usize,first:f64,last:f64,mut bounds:impl FnMut(usize)->(f64,f64))->std::ops::Range<usize>{
+    let(mut lo,mut hi)=(0,count);
+    while lo<hi{let mid=lo+(hi-lo)/2;if bounds(mid).1<first{lo=mid+1;}else{hi=mid;}}
+    let start=lo;hi=count;
+    while lo<hi{let mid=lo+(hi-lo)/2;if bounds(mid).0<=last{lo=mid+1;}else{hi=mid;}}
+    start..lo
+}
+#[cfg(test)]
+mod ordered_widgets {
+    use super::*;
+    #[test]
+    fn mixed_heights_gaps_and_exact_edges_match_the_original_full_scan(){
+        let mut y=12.0;let widgets:Vec<_>=(0..1001).map(|i|{let h=100.0+(i%7)as f64*37.0;let p=(y,y+h);y+=h+21.0;p}).collect();
+        for &(a,b) in widgets.iter().step_by(13){for top in [a-250.0,a,b,b+1.0]{let bottom=top+850.0;
+            let expected:Vec<_>=widgets.iter().enumerate().filter(|(_,p)|p.0<=bottom&&p.1>=top).map(|(i,_)|i).collect();
+            assert_eq!(ordered_visible_range(widgets.len(),top,bottom,|i|widgets[i]).collect::<Vec<_>>(),expected);
+        }}
+        assert_eq!(ordered_visible_range(0,0.0,800.0,|_|unreachable!()),0..0);
+        assert_eq!(ordered_visible_range(widgets.len(),y+1.0,y+800.0,|i|widgets[i]),widgets.len()..widgets.len());
+    }
+    #[test]
+    fn large_sidebar_does_not_query_every_widget(){
+        let mut calls=0;let range=ordered_visible_range(10_000,500_000.0,500_800.0,|i|{calls+=1;((i*300)as f64,(i*300+280)as f64)});
+        assert_eq!(range,1666..1670);assert!(calls<30,"{calls} allocation queries");
+    }
+}
