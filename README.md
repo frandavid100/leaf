@@ -33,6 +33,8 @@ Download the x86_64 `.flatpak` from [Releases](https://github.com/frandavid100/l
 
 **Leaf is in alpha.** Test with copies of important files: complex document compatibility is still being tested, and comments and category metadata require DOCX.
 
+Community translations are managed with [Weblate](https://weblate.org/). Approval for free Libre hosting is pending.
+
 [Known limitations](PROJECT_STATUS.md) · [Testing guide](docs/TESTING.md) · [Report a problem](https://github.com/frandavid100/leaf/issues/new/choose) · [Help translate](docs/TRANSLATING.md)
 
 ## Development with AI
