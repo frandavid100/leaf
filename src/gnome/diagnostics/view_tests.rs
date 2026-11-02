@@ -57,7 +57,7 @@ pub(super) fn view_pointer_test(
             let right = button.x() + button.width() - image.x() - image.width();
             let top = image.y() - button.y();
             let bottom = button.y() + button.height() - image.y() - image.height();
-            assert!(left >= 11.0 && top >= 11.0);
+            assert!(left >= 11.0 && (7.0..=10.0).contains(&top));
             assert!(
                 (left - right).abs() < 1.1 && (top - bottom).abs() < 1.1,
                 "thumbnail inset must be symmetric"
