@@ -124,14 +124,14 @@ fn stage(t: Rc<Sweep>, n: u8) {
             // Alignment and visibility survive viewport scrolling and zoom, without edits.
             let s = u.current.borrow().as_ref().unwrap().session.doc.clone();
             zoom_to(u, 0.65);
-            let a = u.scroll.vadjustment();
-            a.set_value((a.upper() - a.page_size()) / 2.);
             update_status(u);
             assert_eq!(u.current.borrow().as_ref().unwrap().session.doc, s);
             ("hover", vec![(10, 20)])
         }
         13 => {
-            u.scroll.vadjustment().set_value(0.);
+            // Zoom's caret-restoration idle has settled before scrolling away.
+            let a = u.scroll.vadjustment();
+            a.set_value((a.upper() - a.page_size()) / 2.);
             ("hover", vec![(10, 20)])
         }
         14 => {
@@ -145,6 +145,10 @@ fn stage(t: Rc<Sweep>, n: u8) {
         16 => ("ruler-keyboard", vec![]),
         17 => ("cancel", vec![]),
         18 | 21 => {
+            if n == 18 {
+                zoom_to(u, 1.0);
+                u.scroll.vadjustment().set_value(0.);
+            }
             let w = find_widget(&t.window, "ruler-activation-strip").unwrap();
             (
                 "hover",
@@ -299,7 +303,7 @@ fn check(t: &Sweep, n: u8) {
         assert_eq!(s.sel, t.selection);
         assert_eq!(s.undo_depth(), t.depth.get() + usize::from(n == 22));
     }
-    if n == 12 {
+    if n == 13 {
         let r = u.ruler.borrow().as_ref().unwrap().clone();
         let c = u.current.borrow();
         let d = c.as_ref().unwrap();

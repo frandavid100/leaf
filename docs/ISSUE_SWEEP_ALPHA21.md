@@ -70,3 +70,15 @@ scroller's bounded minimum before its previous maximum triggered a GTK critical.
 The fix bounds the inner preview and updates the width range in a valid order.
 The checks retain exact selector-width comparisons rather than weakening the
 expectation after the failure.
+
+The local pointer checks pass for native history, horizontal/vertical hover,
+independent hiding, indent drag, keyboard adjustment, Undo, Escape cancellation
+and a drag released outside the thin strip. A separate scroll probe waits for
+zoom's deferred caret restoration before scrolling to a different visible page;
+its assertion still requires that page to differ from the caret page.
+
+The WordCraft 0.14.0 synthetic compatibility audit also completes: a 13-page TOC
+remains updatable after DOCX reopening, structured fraction/script/root math,
+one footnote story and floating-image wrapping survive DOCX. ODT still drops the
+TOC field, note story and equation, and flattens floating wrapping. The existing
+Leaf guards are therefore retained; #53–#56 remain open.
