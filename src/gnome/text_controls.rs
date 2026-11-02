@@ -361,6 +361,7 @@ impl TextControls {
             preview.set_widget_name("font-preview");
             preview.set_xalign(0.0);
             preview.set_ellipsize(gtk::pango::EllipsizeMode::End);
+            preview.set_width_chars(1);
             preview.set_max_width_chars(28);
             preview.set_tooltip_text(Some(&family));
             let mut description = gtk::pango::FontDescription::new();
@@ -370,7 +371,8 @@ impl TextControls {
             attrs.insert(gtk::pango::AttrFontDesc::new(&description));
             preview.set_attributes(Some(&attrs));
             let clip = gtk::ScrolledWindow::new();
-            clip.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Never);
+            // Let the allocated row bound even the minimum of a large preview.
+            clip.set_policy(gtk::PolicyType::External, gtk::PolicyType::Never);
             clip.set_max_content_height(80);
             clip.set_propagate_natural_height(true);
             clip.set_propagate_natural_width(false);
@@ -472,8 +474,11 @@ pub(super) fn text_selector(
             };
             let target = (width - chrome).max(1);
             if scroll.width_request() != target {
-                scroll.set_min_content_width(target);
+                // Clear the old minimum before changing a bounded range in
+                // either direction; GTK rejects min > old max (and vice versa).
+                scroll.set_min_content_width(-1);
                 scroll.set_max_content_width(target);
+                scroll.set_min_content_width(target);
                 scroll.set_size_request(target, -1);
             }
             pop.set_pointing_to(Some(&gdk::Rectangle::new(

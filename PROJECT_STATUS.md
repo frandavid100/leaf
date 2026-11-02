@@ -12,6 +12,17 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## En validación: alpha.21 y WordCraft 0.14.0
+
+La [PR #62](https://github.com/frandavid100/leaf/pull/62) actualiza el motor a
+WordCraft 0.14.0, con los cuatro parches ODT reaplicados sobre una copia nueva.
+141 pruebas Rust y la compilación optimizada de GitHub pasan. La ronda gráfica
+ha detectado un mínimo de anchura heredado de fuentes grandes; se corrige antes
+de repetir la CI. #48, #51 y #61 siguen abiertos hasta validar la entrega instalada.
+#18 ya está cerrado: se ha completado la comparación visual de las ocho variantes
+instaladas de alpha.20 que quedó pendiente. [Alcance](docs/ISSUE_SWEEP_ALPHA21.md).
+La última release publicada continúa siendo alpha.20.
+
 ## Última versión publicada: alpha.20
 
 [Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.20),

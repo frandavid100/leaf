@@ -34,8 +34,11 @@ tests, current documentation links and 678 English/Spanish messages also pass.
   engine commands and one-undo gestures; Ctrl+Alt+R provides transient keyboard
   focus and Escape returns to the document. Vertical displays page coordinates;
   no unsupported vertical mutation is exposed.
-- #18: retain the actual GNOME Text Editor theme selector and its real pointer /
-  keyboard checks. Final installed visual comparison remains to be reviewed.
+- #18: closed after completing the pending visual review of the actual alpha.20
+  installed capture artifact 13156181480: all eight theme/scale variants, selected,
+  hover and keyboard focus/choice states. Its actual GNOME Text Editor grouped
+  checkbuttons and attributed stylesheet are retained. Existing real keyboard /
+  persistence checks passed; this is not a new human GNOME OS/device test.
 
 ## Older issues
 
@@ -51,3 +54,19 @@ place. Do not infer that an engine update implements those interfaces.
 
 Weblate PR #57, Flathub, new Orca stages and public screenshot replacement are
 outside this sweep. Existing tags/releases and archive/saving branches are kept.
+
+## Validation progress
+
+The initial candidate `f302822c177e1c2c881a2d3e6cd418b752dd8bf3`
+builds in the standard optimized release profile in
+[PR CI 41483944577](https://github.com/frandavid100/leaf/actions/runs/41483944577).
+The independent local toolchain hit a PDF-writer ThinLTO link failure; no engine
+patch or project-profile workaround was accepted on that basis. The shipped
+profile remains opt-level 3, ThinLTO, codegen-units 1 with unwinding.
+
+The first graphical PR run caught a large-font sizing failure (#61): a preview's
+minimum width could force the popup wider than its selector, and changing the
+scroller's bounded minimum before its previous maximum triggered a GTK critical.
+The fix bounds the inner preview and updates the width range in a valid order.
+The checks retain exact selector-width comparisons rather than weakening the
+expectation after the failure.

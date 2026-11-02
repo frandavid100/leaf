@@ -925,7 +925,7 @@ msgstr ""
 msgid "First Section"
 msgstr ""
 
-#: src/gnome/ruler.rs:223
+#: src/gnome/ruler.rs:229
 msgid "First line indent"
 msgstr ""
 
@@ -957,7 +957,7 @@ msgstr ""
 msgid "Following Spacing (mm)"
 msgstr ""
 
-#: src/gnome/tab.rs:237 src/gnome/tab.rs:240 src/gnome/text_controls.rs:438
+#: src/gnome/tab.rs:237 src/gnome/tab.rs:240 src/gnome/text_controls.rs:440
 msgid "Font"
 msgstr ""
 
@@ -969,7 +969,7 @@ msgstr ""
 msgid "Font Family"
 msgstr ""
 
-#: src/gnome/tab.rs:251 src/gnome/text_controls.rs:440
+#: src/gnome/tab.rs:251 src/gnome/text_controls.rs:442
 msgid "Font Size"
 msgstr ""
 
@@ -1265,7 +1265,7 @@ msgstr ""
 msgid "Layout"
 msgstr ""
 
-#: src/gnome/ruler.rs:222
+#: src/gnome/ruler.rs:228
 msgid "Leading indent"
 msgstr ""
 
@@ -1613,7 +1613,7 @@ msgstr ""
 msgid "Pages"
 msgstr ""
 
-#: src/gnome/diagnostics/sweep20.rs:285 src/gnome/view.rs:40
+#: src/gnome/diagnostics/sweep20.rs:345 src/gnome/view.rs:40
 msgid "Pages: {current} of {total}"
 msgstr ""
 
@@ -1913,15 +1913,15 @@ msgstr ""
 msgid "Rows"
 msgstr ""
 
-#: src/gnome/ruler.rs:355
+#: src/gnome/ruler.rs:366 src/gnome/ruler.rs:367
 msgid "Ruler"
 msgstr ""
 
-#: src/gnome/ruler.rs:356
+#: src/gnome/ruler.rs:368
 msgid "Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it."
 msgstr ""
 
-#: src/gnome/ruler.rs:228
+#: src/gnome/ruler.rs:234
 msgid "Ruler: {marker}, {value} pt, page {page}"
 msgstr ""
 
@@ -2249,7 +2249,7 @@ msgstr ""
 msgid "Tab Stops"
 msgstr ""
 
-#: src/gnome/ruler.rs:225
+#: src/gnome/ruler.rs:231
 msgid "Tab stop"
 msgstr ""
 
@@ -2361,7 +2361,7 @@ msgstr ""
 msgid "The document has changed; search results have been updated"
 msgstr ""
 
-#: src/ruler.rs:160
+#: src/ruler.rs:158
 msgid "The document has changed; start the ruler gesture again."
 msgstr ""
 
@@ -2493,7 +2493,7 @@ msgstr ""
 msgid "Track Changes"
 msgstr ""
 
-#: src/gnome/ruler.rs:224
+#: src/gnome/ruler.rs:230
 msgid "Trailing indent"
 msgstr ""
 
@@ -2597,7 +2597,7 @@ msgstr ""
 msgid "Vertical Upwards"
 msgstr ""
 
-#: src/gnome/ruler.rs:364
+#: src/gnome/ruler.rs:376
 msgid "Vertical ruler (cm)"
 msgstr ""
 

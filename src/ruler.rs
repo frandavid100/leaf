@@ -6,7 +6,6 @@ use wordcraft_engine::{Selection, Session, layout::Placed};
 pub struct State {
     pub page: usize,
     pub page_width: f32,
-    pub page_height: f32,
     pub origin: f32,
     pub width: f32,
     pub rtl: bool,
@@ -138,7 +137,6 @@ pub fn state(s: &mut Session) -> Option<State> {
     Some(State {
         page: caret.page,
         page_width: page.w,
-        page_height: page.h,
         origin: x,
         width,
         rtl: props.bidi,

@@ -144,6 +144,39 @@ fn stage(t: Rc<Sweep>, n: u8) {
         15 => ("hover", vec![(10, 20)]),
         16 => ("ruler-keyboard", vec![]),
         17 => ("cancel", vec![]),
+        18 | 21 => {
+            let w = find_widget(&t.window, "ruler-activation-strip").unwrap();
+            (
+                "hover",
+                vec![point(&w, &t.window, w.width() as f32 / 2., 2.)],
+            )
+        }
+        19 | 22 => {
+            let r = u.ruler.borrow().as_ref().unwrap().clone();
+            let (x, z) = {
+                let mut c = u.current.borrow_mut();
+                let d = c.as_mut().unwrap();
+                let state = wordcraft_gnome::ruler::state(&mut d.session).unwrap();
+                let b = d.page_frames[state.page].compute_bounds(&r.area).unwrap();
+                (b.x() + state.x(state.left) * d.zoom, d.zoom)
+            };
+            t.depth
+                .set(u.current.borrow().as_ref().unwrap().session.undo_depth());
+            (
+                if n == 19 { "cancel-drag" } else { "drag" },
+                vec![
+                    point(&r.area, &t.window, x, 19.),
+                    point(
+                        &r.area,
+                        &t.window,
+                        x + 36. * z,
+                        if n == 19 { 19. } else { 110. },
+                    ),
+                ],
+            )
+        }
+        20 => ("hover", vec![(10, 20)]),
+        23 => ("undo", vec![]),
         _ => {
             let before = u.current.borrow().as_ref().unwrap().session.doc.clone();
             let settings = u.document_box.settings();
@@ -245,13 +278,40 @@ fn check(t: &Sweep, n: u8) {
             area.height()
         );
     }
-    if matches!(n, 12 | 13 | 15 | 17) {
+    if matches!(n, 12 | 13 | 15 | 17 | 20 | 22) {
         let r = u.ruler.borrow().as_ref().unwrap().clone();
         assert!(
             !r.reveal.reveals_child(),
             "horizontal must hide after leaving/cancel"
         );
         assert!(!r.vertical_reveal.reveals_child());
+    }
+    if matches!(n, 19 | 22 | 23) {
+        let mut c = u.current.borrow_mut();
+        let s = &mut c.as_mut().unwrap().session;
+        let state = wordcraft_gnome::ruler::state(s).unwrap();
+        let expected = if n == 22 { 72. } else { 36. };
+        assert!(
+            (state.left - expected).abs() < 0.6,
+            "cancel/outside drag: indent={} expected={expected}",
+            state.left
+        );
+        assert_eq!(s.sel, t.selection);
+        assert_eq!(s.undo_depth(), t.depth.get() + usize::from(n == 22));
+    }
+    if n == 12 {
+        let r = u.ruler.borrow().as_ref().unwrap().clone();
+        let c = u.current.borrow();
+        let d = c.as_ref().unwrap();
+        assert!(d.active > 0, "the scroll probe must reach another page");
+        let strip = find_widget(&t.window, "vertical-ruler-activation-strip").unwrap();
+        assert!(
+            strip.is_visible() && strip.height() > 0,
+            "vertical scale follows the visible page, not the offscreen caret"
+        );
+        let frame = d.page_frames[d.active].compute_bounds(&t.window).unwrap();
+        let area = r.reveal.compute_bounds(&t.window).unwrap();
+        assert!((area.width() - frame.width()).abs() < 2.);
     }
     if n == 14 {
         let r = u.ruler.borrow().as_ref().unwrap().clone();

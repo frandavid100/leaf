@@ -14,6 +14,9 @@ struct View {
     state: State,
     lease: Lease,
     page_x: f64,
+    page: usize,
+    page_width: f32,
+    editable: bool,
     zoom: f64,
 }
 impl View {
@@ -48,8 +51,14 @@ impl Ruler {
         let d = value.as_mut()?;
         let state = ruler::state(&mut d.session)?;
         let lease = Lease::capture(&d.session);
-        let rect = d.page_frames.get(state.page)?.compute_bounds(&self.area)?;
+        let page = d.active;
+        let rect = d.page_frames.get(page)?.compute_bounds(&self.area)?;
+        let page_width = d.sizes.get(page)?.0;
+        let editable = state.page == page;
         Some(View {
+            page,
+            page_width,
+            editable,
             state,
             lease,
             page_x: rect.x() as f64,
@@ -60,18 +69,15 @@ impl Ruler {
         let (Some(ui), Some(overlay)) = (self.ui.upgrade(), self.overlay.upgrade()) else {
             return;
         };
-        let Ok(mut c) = ui.current.try_borrow_mut() else {
+        let Ok(c) = ui.current.try_borrow() else {
             return;
         };
-        let Some(d) = c.as_mut() else {
-            return;
-        };
-        let Some(state) = ruler::state(&mut d.session) else {
+        let Some(d) = c.as_ref() else {
             return;
         };
         let Some(rect) = d
             .page_frames
-            .get(state.page)
+            .get(d.active)
             .and_then(|p| p.compute_bounds(&overlay))
         else {
             return;
@@ -229,7 +235,7 @@ impl Ruler {
             &[
                 ("marker", name.into()),
                 ("value", format!("{:.1}", state.distance(marker))),
-                ("page", (state.page + 1).to_string()),
+                ("page", (v.page + 1).to_string()),
             ],
         );
         if *self.announced.borrow() != announcement {
@@ -242,14 +248,16 @@ impl Ruler {
         let _ = cr.fill();
         let (a, b) = (v.x(0.0), v.x(state.width));
         cr.set_source_rgba(fg.red() as f64, fg.green() as f64, fg.blue() as f64, 0.07);
-        cr.rectangle(a.min(b), 2.0, (b - a).abs(), height as f64 - 4.0);
+        if v.editable {
+            cr.rectangle(a.min(b), 2.0, (b - a).abs(), height as f64 - 4.0);
+        }
         let _ = cr.fill();
         cr.set_source_rgba(fg.red() as f64, fg.green() as f64, fg.blue() as f64, 1.0);
         cr.set_line_width(1.0);
         cr.set_font_size(8.0);
         // Centimetres are converted from document points, never device pixels.
         let unit = 72.0 / 2.54_f32;
-        let max = (state.page_width / unit * 10.0).ceil() as i32;
+        let max = (v.page_width / unit * 10.0).ceil() as i32;
         for n in 0..=max {
             let x = v.page_x + (n as f32 * unit / 10.0) as f64 * v.zoom;
             if x < 0.0 || x > width as f64 {
@@ -270,6 +278,9 @@ impl Ruler {
                 cr.move_to(x + 3.0, 9.0);
                 let _ = cr.show_text(&(n / 10).to_string());
             }
+        }
+        if !v.editable {
+            return;
         }
         let drag = self.drag.borrow();
         let markers = Self::markers(state);
@@ -353,7 +364,8 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     area.set_focusable(true);
     area.set_widget_name("document-ruler");
     accessible_name(&area, wordcraft_gnome::t!("Ruler"));
-    area.set_tooltip_text(Some(wordcraft_gnome::t!("Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it.")));
+    area.set_tooltip_text(Some(wordcraft_gnome::t!("Ruler")));
+    area.update_property(&[gtk::accessible::Property::Description(wordcraft_gnome::t!("Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it."))]);
     reveal.set_child(Some(&area));
     let strip = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     strip.set_widget_name("ruler-activation-strip");
@@ -462,18 +474,18 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         let Some(ui) = r.ui.upgrade() else {
             return;
         };
-        let Ok(mut c) = ui.current.try_borrow_mut() else {
+        let Ok(c) = ui.current.try_borrow() else {
             return;
         };
-        let Some(d) = c.as_mut() else {
+        let Some(d) = c.as_ref() else {
             return;
         };
-        let Some(state) = ruler::state(&mut d.session) else {
+        let Some((_, page_height)) = d.sizes.get(d.active).copied() else {
             return;
         };
         let Some(rect) = d
             .page_frames
-            .get(state.page)
+            .get(d.active)
             .and_then(|p| p.compute_bounds(w))
         else {
             return;
@@ -482,7 +494,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         cr.set_line_width(1.);
         cr.set_font_size(8.);
         let unit = 72. / 2.54_f32;
-        for n in 0..=(state.page_height / unit * 10.).ceil() as i32 {
+        for n in 0..=(page_height / unit * 10.).ceil() as i32 {
             let y = rect.y() as f64 + (n as f32 * unit / 10. * d.zoom) as f64;
             if y < 0. || y > height as f64 {
                 continue;
@@ -498,7 +510,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             cr.line_to(23. - length, y.round() + 0.5);
             let _ = cr.stroke();
             if n % 10 == 0 {
-                cr.move_to(2., y + 3.);
+                cr.move_to(2., (y + 3.).clamp(8., height as f64 - 2.));
                 let _ = cr.show_text(&(n / 10).to_string());
             }
         }
@@ -595,6 +607,10 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         let Some(v) = r.view() else {
             return;
         };
+        if !v.editable {
+            g.set_state(gtk::EventSequenceState::Denied);
+            return;
+        }
         let marker = Ruler::hit(&v, x, y);
         if marker == Marker::NewTab && !(0.0..=v.state.width).contains(&v.distance(x)) {
             g.set_state(gtk::EventSequenceState::Denied);
@@ -690,6 +706,9 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             }
             r.hide_later();
             return glib::Propagation::Stop;
+        }
+        if !v.editable {
+            return glib::Propagation::Proceed;
         }
         if matches!(key, gdk::Key::Up | gdk::Key::Down) {
             r.selected.set(if key == gdk::Key::Down {
