@@ -1,7 +1,11 @@
 use super::*;
 
 fn document_pointer_surface(ui: &Ui, controller: &impl IsA<gtk::EventController>) -> bool {
-    let Some(surface) = controller.as_ref().current_event().and_then(|e| e.surface()) else {
+    let Some(surface) = controller
+        .as_ref()
+        .current_event()
+        .and_then(|e| e.surface())
+    else {
         return false;
     };
     ui.document_box.native().and_then(|n| n.surface()).as_ref() == Some(&surface)
