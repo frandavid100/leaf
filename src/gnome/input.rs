@@ -74,6 +74,7 @@ pub(super) fn install_pointer_and_view_input(
             ui,
             move |gesture, count, x, y| {
                 if !document_pointer_surface(&ui, gesture) {
+                    gesture.set_state(gtk::EventSequenceState::Denied);
                     return;
                 }
                 ui.pointer_moved.set(false);
@@ -190,6 +191,7 @@ pub(super) fn install_pointer_and_view_input(
                 ui,
                 move |gesture, x, y| {
                     if !document_pointer_surface(&ui, gesture) {
+                        gesture.set_state(gtk::EventSequenceState::Denied);
                         return;
                     }
                     *ui.drag_anchor.borrow_mut() = if gesture
@@ -213,6 +215,10 @@ pub(super) fn install_pointer_and_view_input(
                 #[weak]
                 ui,
                 move |gesture, dx, dy| {
+                    if !document_pointer_surface(&ui, gesture) || ui.drag_anchor.borrow().is_none()
+                    {
+                        return;
+                    }
                     if dx.abs() <= 4.0 && dy.abs() <= 4.0 {
                         return;
                     }
@@ -234,9 +240,13 @@ pub(super) fn install_pointer_and_view_input(
             drag.connect_drag_end(glib::clone!(
                 #[weak]
                 ui,
-                move |_, _, _| {
+                move |gesture, _, _| {
+                    let document_drag =
+                        document_pointer_surface(&ui, gesture) && ui.drag_anchor.borrow().is_some();
                     stop_document_drag(&ui);
-                    refresh_selection(&ui);
+                    if document_drag {
+                        refresh_selection(&ui);
+                    }
                 }
             ));
         }

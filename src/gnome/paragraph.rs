@@ -387,7 +387,16 @@ impl ParagraphPopover {
             if let Some(s) = weak.upgrade() {
                 s.page(page);
                 if std::env::args().any(|a| a == "--split-states-demo") {
-                    eprintln!("SPLIT_SUBPAGE_OK");
+                    let weak = Rc::downgrade(&s);
+                    glib::timeout_add_local_once(
+                        std::time::Duration::from_millis(200),
+                        move || {
+                            if let Some(s) = weak.upgrade() {
+                                assert_eq!(s.stack.visible_child_name().as_deref(), Some("detail"));
+                                eprintln!("SPLIT_SUBPAGE_OK");
+                            }
+                        },
+                    );
                 }
             }
         });
@@ -401,6 +410,7 @@ impl ParagraphPopover {
             return;
         };
         let state = selection_paragraph(&ui);
+        self.displayed.replace(state.clone());
         let row = gtk::Box::new(gtk::Orientation::Horizontal, 4);
         for (icon, label, value) in [
             (
