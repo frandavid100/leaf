@@ -1,117 +1,112 @@
-# Sixth issue sweep and WordCraft 0.14.0
+# Sixth issue sweep — alpha.21 and WordCraft 0.14.0
 
-Candidate alpha.21, 2 November 2026. Publication and installed visual validation
-are pending; the last published release remains alpha.20 until verified.
+Published and verified on 2 November 2026. Development remains on `main`.
+
+- [Release v0.1.0-alpha.21](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.21)
+- Exact source/tag: `3849d2973670ba05093f178108bab182778579f1`.
+- Source tree: `b845e6c9aff03f73c34a829ac965e140491b049b`.
+- [Full native and installed CI](https://github.com/frandavid100/leaf/actions/runs/41496070439).
+- [Machine-readable evidence](ISSUE_SWEEP_ALPHA21_VALIDATION.json).
+
+## Result
+
+Four reports closed: #18, #48, #51 and #61. Fifty reports are closed and ten
+remain open at the end of this sweep; PRs are excluded from those counts.
+The separate translation PR #57 is preserved.
+
+| Report | Final behavior and evidence |
+| --- | --- |
+| #18, theme selector | Completed the outstanding actual alpha.20 installed visual review: eight light/dark/high-contrast/high-contrast-dark × 1×/2× variants, including selected, hover, focus and keyboard choice. Retained GNOME Text Editor's attributed grouped GtkCheckButton/CSS pattern and its previous real keyboard/persistence checks. |
+| #48, rulers | Two separate white 24px overlays aligned to the visible sheet and clipped at viewport edges; horizontal has an 8px header gap. Independent hover, 175ms fade honoring disabled animations, no pin/menu entry. Horizontal public indent/tab commands keep selection targets, one Undo, Escape cancellation and drags released outside the strip. Ctrl+Alt+R gives transient keyboard focus. Vertical displays page coordinates without unsupported edits. Hidden revealers no longer intercept clicks. |
+| #51, history controls | Actual AdwSplitButton and Paragraph's flat/image-button style, centered 18px glyphs, native arrows and normal spacing. Independent body/menu sensitivity preserves Repeat with an empty Redo stack; actual engine history, cumulative traversal, shortcuts and stale-target protection are retained. |
+| #61, Font/Size | Size expands to Font's row width. Both popup widths follow actual selector allocation and measured native chrome. Preview layout cannot force excessive width; callback only runs while mapped and is removed on unmap. Names retain full tooltips; previews, scrolling, selection, typing and immediate application remain. Large-font/narrow/2× geometry verifies 260/260 logical pixels. |
+
+Installed capture review covers normal/hover/focused/open/disabled/Repeat history
+states, Font and Size independently at normal/large sizes, and page rulers in
+multi-page views, dark/wide, light/narrow and dark/narrow at 2× with offscreen
+clipping. Internal CI evidence does not replace David's public screenshots.
 
 ## Engine update
 
-The latest stable upstream release is v0.14.0, commit
-`5cd53f184aab11def13b7fced18727159b9bc96a`. Engine/doc/render and the standalone
-formats manifest use this exact commit. The formats crate was recopied before
-reapplying the four compatibility patches, in their recorded order, without
-conflicts. They remain needed for ODT preservation. Rust minimum 1.95 and the
-craft-libs PDF backend are unchanged. Cargo.lock changes only WordCraft packages
-from 0.12.0 to 0.14.0; the formats crate now uses upstream's metafile dependency.
+The latest stable official upstream release checked for this sweep is
+[WordCraft v0.14.0](https://github.com/storytold/wordcraft/releases/tag/v0.14.0),
+commit `5cd53f184aab11def13b7fced18727159b9bc96a` (published 1 November 2026).
+Engine/doc/render and the standalone formats manifest use that exact commit.
+Formats was recopied from it before reapplying all four recorded ODT patches,
+in order, without conflicts. Comparison with a freshly patched upstream copy
+confirms all vendored source files match; licenses/provenance remain included.
 
-141 Rust tests pass, including headers, fields, standard ODF geometry, languages,
-saving/recovery, history, protection, tables and DOCX/ODT preservation. Four Python
-tests, current documentation links and 678 English/Spanish messages also pass.
+The isolated engine update is commit
+`4707d77882afb6432d2ba521ad551985324d11cb`; frontend changes are separate.
+Cargo.lock changes the WordCraft family from 0.12.0 to 0.14.0. Formats now uses
+upstream's metafile dependency. Rust minimum 1.95 and the existing craft-libs PDF
+backend revision are unchanged. No engine/render fork was introduced for controls.
 
-## Current issue changes
+The synthetic `examples/issue20_capabilities.rs` audit was rerun against 0.14.0:
+DOCX retains an updatable 13-page TOC, structured fraction/script/root math, one
+footnote story and floating-image wrapping. ODT still loses the TOC field, note
+story and equation and flattens floating wrapping. Existing loss guards remain;
+this does not provide native advanced authoring or universal format fidelity.
 
-- #51: native AdwSplitButton, matching Paragraph's flat style and native arrow;
-  centered 18px history glyphs, independent body/dropdown sensitivity and normal
-  spacing. Existing history models, cumulative navigation and stale-target guards
-  remain intact.
-- #61: Size expands to the same row width as Font. Both choice popups derive their
-  width from the actual selector allocation and measured native popup chrome.
-  A mapped-only, explicitly removed callback follows adaptive resizing. Preview
-  text cannot expand the popup; long names retain their complete tooltip.
-- #48: separate 24px white horizontal/vertical overlays, measured from the real
-  sheet, clipped at the viewport and following zoom/scroll. Horizontal has an 8px
-  titlebar gap. Separate edge hover fades each axis in 175ms, honoring reduced
-  motion. No Pin or document-menu entry. Horizontal indents/tabs retain public
-  engine commands and one-undo gestures; Ctrl+Alt+R provides transient keyboard
-  focus and Escape returns to the document. Vertical displays page coordinates;
-  no unsupported vertical mutation is exposed.
-- #18: closed after completing the pending visual review of the actual alpha.20
-  installed capture artifact 13156181480: all eight theme/scale variants, selected,
-  hover and keyboard focus/choice states. Its actual GNOME Text Editor grouped
-  checkbuttons and attributed stylesheet are retained. Existing real keyboard /
-  persistence checks passed; this is not a new human GNOME OS/device test.
+## Validation
 
-## Older issues
+141 Rust tests, four Python tests, 678 complete English/Spanish messages, Leaf
+formatting and current project links pass. GitHub builds the unchanged standard
+optimized profile: opt-level 3, ThinLTO, codegen-units 1, stripping and unwinding.
+The final source's full native and installed stages pass, including:
 
-#1, #2, #7, #9, #37 and #52 retain their specific scope. Upstream closure alone
-is insufficient to close Leaf's actual selected-text column cases. Existing
-header inheritance, ODT geometry and paragraph-spacing tests remain required.
-AdwInlineViewSwitcher still needs a deliberate native baseline upgrade; the
-reported Files previews still need affected-file/provider evidence.
+- Existing real pointer/keyboard font, history, ruler, selection, table and link
+  gestures; English/Spanish at 1×/2×; current-value/focus behavior.
+- Page/header/footer/field/options/proofing and annotation checks; independent
+  tab/window ownership and memory regressions; rendering and HiDPI geometry.
+- Flatpak upgrade from alpha.20, reinstall/persistent data, launcher, portal open
+  and save, print-portal handoff and the existing real AT-SPI/Orca regression.
+- Additional installed history/ruler captures in dark/wide, light/narrow and
+  dark/narrow 2× views. These use the first seven existing history stages for
+  presentation evidence; the complete wide-window gesture checks still run.
 
-Floating images, TOC, footnotes and equations (#53–#56) still lack complete native
-authoring. The existing DOCX preservation tests and ODT loss guards remain in
-place. Do not infer that an engine update implements those interfaces.
+Eight public assets were independently downloaded after publication, compared
+with SHA256SUMS and GitHub's digests. The bundled source marker matches the tag
+and CI source; runtime and installed permissions are recorded in the JSON report.
+The native-artifact reuse guard is advanced only after complete validation to
+this exact source/run; its source-identity comparison remains intact.
 
-Weblate PR #57, Flathub, new Orca stages and public screenshot replacement are
-outside this sweep. Existing tags/releases and archive/saving branches are kept.
+## Regressions caught during this sweep
 
-## Validation progress
+The first graphical run reproduced a large-font preview forcing the popup wider
+than its selector, plus an invalid old-minimum/new-maximum GTK constraint update.
+The fix bounds preview layout and updates constraints in valid order; exact
+width assertions were retained.
 
-The initial candidate `f302822c177e1c2c881a2d3e6cd418b752dd8bf3`
-builds in the standard optimized release profile in
-[PR CI 41483944577](https://github.com/frandavid100/leaf/actions/runs/41483944577).
-The independent local toolchain hit a PDF-writer ThinLTO link failure; no engine
-patch or project-profile workaround was accepted on that basis. The shipped
-profile remains opt-level 3, ThinLTO, codegen-units 1 with unwinding.
+An unconditional annotation boundary still compared against the pre-upgrade
+engine snapshot. It now retains that comparison against the isolated authorized
+engine-update commit. This corrects the CI boundary without relaxing frontend
+engine isolation. All annotation and lifetime checks then pass.
 
-The first graphical PR run caught a large-font sizing failure (#61): a preview's
-minimum width could force the popup wider than its selector, and changing the
-scroller's bounded minimum before its previous maximum triggered a GTK critical.
-The fix bounds the inner preview and updates the width range in a valid order.
-The checks retain exact selector-width comparisons rather than weakening the
-expectation after the failure.
+An actual GTK pick probe reproduced hidden GtkRevealers intercepting clicks in
+their allocated rectangle outside the activation zone. Both axes disable picking
+while hidden; the real picked widget must belong to document/viewport. The final
+source supersedes the previous full green integration before publication.
 
-The local pointer checks pass for native history, horizontal/vertical hover,
-independent hiding, indent drag, keyboard adjustment, Undo, Escape cancellation
-and a drag released outside the thin strip. A separate scroll probe waits for
-zoom's deferred page restoration before scrolling to a different visible page;
-its assertion still requires that page to differ from the caret page.
+The independent local toolchain encountered a PDF-writer ThinLTO link failure.
+No engine patch or shipping-profile workaround was accepted. GitHub's standard
+optimized build and installed package pass; the nonshipping local diagnostic
+binary is not the released artifact.
 
-The WordCraft 0.14.0 synthetic compatibility audit also completes: a 13-page TOC
-remains updatable after DOCX reopening, structured fraction/script/root math,
-one footnote story and floating-image wrapping survive DOCX. ODT still drops the
-TOC field, note story and equation, and flattens floating wrapping. The existing
-Leaf guards are therefore retained; #53–#56 remain open.
+## Open work and limits
 
-The final local ruler pass succeeds in English at 1× and Spanish at 2×,
-including leaving/re-entering, cancellation and release outside the ruler.
-The offscreen edit guard remains enabled: zoom deliberately preserves the
-visible page; the test scrolls back after that restoration before editing the
-selected paragraph. Large-font/narrow-window Font and Size geometry is 260/260
-logical pixels, with no GTK width-range critical.
+| Reports | What remains |
+| --- | --- |
+| #1, #2 | Unequal-width automatic paragraph continuation and selected-text separator geometry still require the actual two/three/custom-column cases. Stored properties and upstream issue closure do not demonstrate visible correctness in Leaf. |
+| #7 | Creating absent even header/footer variants still needs a complete public-API solution with page/section inheritance, direct clicks, independent content, Undo/Redo and PDF verification. Existing inheritance tests passing is insufficient. |
+| #9 | The ordinary two-paragraph spacing regression works; the original DOCX/contextual/automatic-spacing case remains unisolated. |
+| #37 | AdwInlineViewSwitcher needs a deliberate newer native baseline and complete dialog conversion. The existing supported GTK/libadwaita baseline is retained. |
+| #52 | GNOME Files blank previews need the affected originals, actual thumbnail provider and cache evidence to establish responsibility. No cache was cleared. |
+| #53–#56 | Floating images, TOC, footnotes and structured equations lack complete native insertion/editing interfaces. DOCX preservation and ODT guards do not close them. |
 
-## Native integration boundary
-
-[Run 41488643140](https://github.com/frandavid100/leaf/actions/runs/41488643140)
-compiles the final optimized source and passes Rust/Python/gettext, Font/Size,
-history/ruler gestures, document menu, cursor, selection, headers, fields,
-section options, languages and proofing. It stopped before the annotation test
-because an unconditional historical `git diff` still required the pre-upgrade
-WordCraft snapshot. The engine/doc/render and rebased formats were intentionally
-authorized to change. The comparison is retained against the isolated approved
-engine-update commit `4707d77882afb6432d2ba521ad551985324d11cb`.
-Independent local annotation and lifetime tests pass. The normal full main CI
-reruns all native checks with the corrected boundary, then installed validation
-gates publication. Additional installed captures exercise history states and
-both clipped ruler edges in dark/wide, light/narrow and dark/narrow at 2×, using
-the first seven existing history stages without weakening the full wide-window
-gesture checks.
-
-## Hidden overlay input regression
-
-A final real GTK pick probe reproduced hidden GtkRevealer containers intercepting
-pointer input in their allocated rectangle outside the five-pixel activation
-zone. Both ruler revealers now disable picking while hidden and enable it on
-reveal. The native regression checks the actual GTK picked widget for both axes;
-it must belong to the underlying document/viewport, not the hidden ruler.
-This correction supersedes the earlier integration source before publication.
+No human GNOME OS/Wayland/IME/fractional-scale/multimonitor, physical printer,
+braille or arbitrary-document validation is claimed. Existing automated Orca
+coverage is maintained without starting a new accessibility phase. Weblate
+activation, Flathub and public screenshot replacement remain outside this sweep.
+The 19 existing release/tag objects, ApexDesk archive and wordcraft-saving are
+preserved. Neither branch history is discarded.

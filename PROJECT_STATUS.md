@@ -12,18 +12,38 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En validación: alpha.21 y WordCraft 0.14.0
+## Última versión publicada: alpha.21 — WordCraft 0.14.0
 
-La [PR #62](https://github.com/frandavid100/leaf/pull/62) actualiza el motor a
-WordCraft 0.14.0, con los cuatro parches ODT reaplicados sobre una copia nueva.
-141 pruebas Rust y la compilación optimizada de GitHub pasan. La ronda gráfica
-detectó un mínimo de anchura heredado de fuentes grandes: ya está corregido y
-validado localmente; se repite la CI completa. #48, #51 y #61 siguen abiertos hasta validar la entrega instalada.
-#18 ya está cerrado: se ha completado la comparación visual de las ocho variantes
-instaladas de alpha.20 que quedó pendiente. [Alcance](docs/ISSUE_SWEEP_ALPHA21.md).
-La última release publicada continúa siendo alpha.20.
+[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.21), publicado y verificado el 2 de noviembre de 2026.
+Fuente/tag: `3849d2973670ba05093f178108bab182778579f1`. GNOME 49; actualización desde alpha.20.
+Descarga independiente de los ocho assets públicos, sumas y fuente comprobadas.
+Bundle: 11028040 bytes; SHA256 `6b332768aeb50d26c8db44f769a5e014fa71fb546fffc413591bcf2ad2290f40`.
 
-## Última versión publicada: alpha.20
+Motor actualizado a WordCraft **0.14.0**, commit
+`5cd53f184aab11def13b7fced18727159b9bc96a`, con copia nueva de formatos y los
+cuatro parches ODT reaplicados. Perfil optimizado habitual conservado.
+
+**Cuatro cierres:** #18, #48, #51 y #61. Selector de tema revisado en las ocho
+variantes instaladas anteriores; reglas blancas finas por hoja y solo transitorias;
+Deshacer/Rehacer con el mismo AdwSplitButton que Párrafo; Fuente/Tamaño con
+anchuras acotadas y Tamaño a fila completa. Las reglas ocultas dejan pasar clics.
+
+141 pruebas Rust, cuatro Python, 678 mensajes gettext, formato y enlaces correctos.
+[CI completa nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41496070439) superada, incluidas las pruebas de interacción,
+HiDPI, actualización/reinstalación, portales, impresión y regresión Orca existente.
+Capturas finales instaladas revisadas en claro/oscuro y ventanas estrechas a 1×/2×.
+[Resultado y límites](docs/ISSUE_SWEEP_ALPHA21.md) ·
+[evidencia](docs/ISSUE_SWEEP_ALPHA21_VALIDATION.json).
+
+Estado: **50 cerrados y 10 abiertos**: #1, #2, #7, #9, #37 y #52–#56.
+La auditoría sintética del motor actualizado conserva en DOCX índice automático,
+notas, ecuaciones e imágenes flotantes; ODT sigue perdiendo esas estructuras y
+se mantienen las guardas. Sus interfaces completas no están implementadas.
+No se afirma validación humana de Wayland, IME, dispositivos o documentos arbitrarios.
+La PR #57 de Weblate permanece separada; archivo, rama de referencia y etiquetas
+anteriores se conservan.
+
+## Entrega anterior: alpha.20 (estado histórico)
 
 [Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.20),
 publicado el 2 de noviembre de 2026. Fuente/tag: `e5d65dde0c788ef563b5263dbcf3e4e823df92ba`.
@@ -45,14 +65,14 @@ completos, con equivalencia de fuentes comprobada antes de reutilizar el ejecuta
 Incluye gestos, actualización/reinstalación, portales, impresión y la regresión
 Orca existente; las ocho capturas de tema verifican también el cambio real por teclado.
 
-El entorno de ejecución se desconectó al terminar la publicación. Quedan pendientes
-la revisión visual completa de las capturas instaladas y repetir la descarga
-independiente de los assets; publicación, fuente/tag y digests sí están confirmados
+Al cerrar alpha.20, el entorno de ejecución se desconectó. Quedaron pendientes
+la revisión visual completa de sus capturas instaladas y la descarga
+independiente de sus assets; publicación, fuente/tag y digests sí están confirmados
 por GitHub. No se afirma validación humana de Wayland, IME o dispositivos.
 [Alcance y pendientes](docs/ISSUE_SWEEP_ALPHA20.md) ·
 [evidencia](docs/ISSUE_SWEEP_ALPHA20_VALIDATION.json).
 
-Estado: **47 cerrados y 12 abiertos**. Se preservan releases, etiquetas, archivo de
+Estado histórico de aquella entrega: **47 cerrados y 12 abiertos**. Se preservan releases, etiquetas, archivo de
 ApexDesk, wordcraft-saving y la PR de Weblate separada.
 
 ## Entrega anterior: alpha.19

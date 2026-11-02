@@ -4,21 +4,29 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## Sexta revisión en curso: WordCraft 0.14.0 y alpha.21
+## Completado: sexta revisión y alpha.21 — WordCraft 0.14.0
 
-Autorizada la actualización del motor. Copia nueva de formatos 0.14.0 con los
-cuatro parches ODT reaplicados; 141 pruebas Rust y release optimizada de GitHub
-correctos. #18 cerrado tras completar su revisión visual instalada. #48, #51 y
-#61 están implementados, con validación gráfica/instalada pendiente y una
-regresión de anchura a tamaño grande detectada por CI ya corregida localmente.
+Publicada y verificada. Motor 0.14.0 con formatos recopiado y los cuatro parches
+ODT reaplicados. Cuatro cierres (#18, #48, #51, #61): selector de tema revisado,
+reglas blancas finas transitorias, historial con AdwSplitButton nativo y listas
+Fuente/Tamaño acotadas. Corregidos también mínimos de fuentes grandes y captura
+de clics por reglas ocultas, con regresiones reales.
+
+141 pruebas Rust, cuatro Python, 678 mensajes gettext y [CI nativa/instalada](https://github.com/frandavid100/leaf/actions/runs/41496070439)
+completa. Assets públicos, fuente, sumas y capturas instaladas comprobados.
+Estado final: **50 cerrados / 10 abiertos**. #1, #2, #7, #9, #37 y #52–#56
+conservan sus requisitos; actualización del motor no equivale a autoría avanzada.
 [PR #62](https://github.com/frandavid100/leaf/pull/62) ·
-[Alcance y límites](docs/ISSUE_SWEEP_ALPHA21.md).
+[Alcance](docs/ISSUE_SWEEP_ALPHA21.md) · [Evidencia](docs/ISSUE_SWEEP_ALPHA21_VALIDATION.json).
+Weblate #57 permanece separada; sin Flathub, nuevas etapas de Orca ni cambio de
+capturas públicas. Historiales y etiquetas anteriores conservados.
 
-## Quinta revisión: alpha.20 publicada
+## Quinta revisión: alpha.20 (histórico)
 
 Seis cierres verificados (#49–#51, #58–#60): cursor, historial/Repetir y presentación
 lateral. Regla (#48) y selector GNOME (#18) implementados y probados automáticamente;
-la comparación visual instalada sigue pendiente tras desconectarse el entorno.
+la comparación visual instalada quedó pendiente al desconectarse el entorno y se
+completó durante alpha.21.
 141 pruebas Rust, cuatro Python, 678 mensajes y CI nativa/instalada correctos.
 ODT queda protegido ante cuatro pérdidas estructurales adicionales; #53–#56 no
 se consideran completos. Estado: 47 cerrados / 12 abiertos.

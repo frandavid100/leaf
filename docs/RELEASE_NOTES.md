@@ -4,6 +4,28 @@ These notes were moved from the README on 2 November 2026. They describe the
 releases and checks recorded at that point; consult [GitHub Releases](https://github.com/frandavid100/leaf/releases)
 and [project status](../PROJECT_STATUS.md) for the current release and work in progress.
 
+## Alpha.21 — published and verified
+
+WordCraft updated to stable 0.14.0 with the existing four ODT compatibility patches
+reapplied to fresh formats sources. Thin white horizontal/vertical page rulers
+appear transiently at their edges; hidden overlays do not intercept document
+input. Undo/Redo use the same native AdwSplitButton as Paragraph. Font/Size lists
+follow their controls, including narrow windows and large fonts; Size fills its row.
+Four reports closed (#18, #48, #51, #61); ten remain open. 141 Rust tests, four
+Python tests, 678 messages and complete native/installed CI pass. Public assets,
+checksums and actual installed appearance are verified.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.21) ·
+[Scope and validation](ISSUE_SWEEP_ALPHA21.md).
+
+## Alpha.20 — previous delivery
+
+Cursor fade, Repeat, cumulative Undo/Redo histories and sidebar/icon refinements.
+Existing save guards protect four additional structures that ODT loses; advanced
+native authoring remains incomplete. The outstanding theme/ruler visual review
+and revised ruler/history/font presentation were completed in alpha.21.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.20) ·
+[Recorded scope](ISSUE_SWEEP_ALPHA20.md).
+
 ## Alpha.19 — published and verified
 
 Readable bounded font lists, Ctrl+K and whole-link editing/insertion, destination
