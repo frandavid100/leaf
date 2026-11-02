@@ -6,6 +6,12 @@ fn pointer_pos(ui: &Rc<Ui>, w: &ApplicationWindow, off: usize) -> (i32, i32) {
     let c = d.session.layout().caret_on(&Pos::body(0, off), 0).unwrap();
     let r = d.page_frames[0].compute_bounds(w).unwrap();
     let (tx, ty) = w.surface_transform();
+    eprintln!(
+        "POINTER_TARGET off={off} caret={} frame={} zoom={} transform={tx},{ty}",
+        c.x,
+        r.x(),
+        d.zoom
+    );
     (
         (r.x() as f64 + (c.x as f64 + 0.2) * d.zoom as f64 - tx).round() as i32,
         (r.y() as f64 + (c.top + c.height / 2.0) as f64 * d.zoom as f64 - ty).round() as i32,
@@ -17,6 +23,20 @@ pub(super) fn interaction_pointer_test(
     app: &Application,
     text: &gtk::MenuButton,
 ) {
+    let trace = gtk::GestureClick::new();
+    trace.set_button(gdk::BUTTON_PRIMARY);
+    trace.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let weak = Rc::downgrade(ui);
+    trace.connect_pressed(move |gesture, count, x, y| {
+        if let Some(ui) = weak.upgrade() {
+            eprintln!(
+                "POINTER_HIT count={count} x={x} y={y} modifiers={:?} pos={:?}",
+                gesture.current_event_state(),
+                pos_at_canvas(&ui, x, y)
+            );
+        }
+    });
+    ui.document_box.add_controller(trace);
     opened(
         ui,
         Session::new(wordcraft_doc::Document::from_text("alpha beta gamma delta")),
