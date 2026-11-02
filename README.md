@@ -23,7 +23,7 @@ English and Spanish interfaces, with light and dark appearance.
 
 ## The power behind the interface
 
-[WordCraft](https://github.com/storytold/wordcraft) provides Leaf's document engine. Its [documented capabilities](https://github.com/storytold/wordcraft/blob/165d5725dc25b4a7887d8025c3b1fe506ccc3dcc/README.md#what-works-today) include advanced tools familiar from Microsoft Word, such as footnotes, bibliographies, tracked changes and mail merge.
+[WordCraft](https://github.com/storytold/wordcraft) provides Leaf's document engine. Its [documented capabilities](https://github.com/storytold/wordcraft/blob/5cd53f184aab11def13b7fced18727159b9bc96a/README.md#what-works-today) include advanced tools familiar from Microsoft Word, such as footnotes, bibliographies, tracked changes and mail merge.
 
 The aim is to bring more of that power into GNOME while keeping the interface simple. Leaf currently exposes part of the engine's functionality; additional features need integration and testing.
 

@@ -4,6 +4,16 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## Sexta revisión en curso: WordCraft 0.14.0 y alpha.21
+
+Autorizada la actualización del motor. Copia nueva de formatos 0.14.0 con los
+cuatro parches ODT reaplicados; 141 pruebas Rust y release optimizada de GitHub
+correctos. #18 cerrado tras completar su revisión visual instalada. #48, #51 y
+#61 están implementados, con validación gráfica/instalada pendiente y una
+regresión de anchura a tamaño grande detectada por CI ya corregida localmente.
+[PR #62](https://github.com/frandavid100/leaf/pull/62) ·
+[Alcance y límites](docs/ISSUE_SWEEP_ALPHA21.md).
+
 ## Quinta revisión: alpha.20 publicada
 
 Seis cierres verificados (#49–#51, #58–#60): cursor, historial/Repetir y presentación

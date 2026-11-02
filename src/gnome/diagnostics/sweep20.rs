@@ -92,8 +92,12 @@ fn stage(t: Rc<Sweep>, n: u8) {
             )
         }
         8 => {
-            let pin = find_widget(&t.window, "ruler-pin").unwrap();
-            ("pin", vec![centre(&pin, &t.window)])
+            assert!(find_widget(&t.window, "ruler-pin").is_none());
+            let r = u.ruler.borrow().as_ref().unwrap().clone();
+            (
+                "hover",
+                vec![point(&r.area, &t.window, r.area.width() as f32 / 2., 12.)],
+            )
         }
         9 => {
             let r = u.ruler.borrow().as_ref().unwrap().clone();
@@ -109,8 +113,8 @@ fn stage(t: Rc<Sweep>, n: u8) {
             (
                 "drag",
                 vec![
-                    point(&r.area, &t.window, x, 35.),
-                    point(&r.area, &t.window, x + 36. * z, 35.),
+                    point(&r.area, &t.window, x, 19.),
+                    point(&r.area, &t.window, x + 36. * z, 19.),
                 ],
             )
         }
@@ -120,12 +124,62 @@ fn stage(t: Rc<Sweep>, n: u8) {
             // Alignment and visibility survive viewport scrolling and zoom, without edits.
             let s = u.current.borrow().as_ref().unwrap().session.doc.clone();
             zoom_to(u, 0.65);
-            let a = u.scroll.vadjustment();
-            a.set_value((a.upper() - a.page_size()) / 2.);
             update_status(u);
             assert_eq!(u.current.borrow().as_ref().unwrap().session.doc, s);
             ("hover", vec![(10, 20)])
         }
+        13 => {
+            // Zoom's page-restoration idle has settled before scrolling away.
+            let a = u.scroll.vadjustment();
+            a.set_value((a.upper() - a.page_size()) / 2.);
+            ("hover", vec![(10, 20)])
+        }
+        14 => {
+            let w = find_widget(&t.window, "vertical-ruler-activation-strip").unwrap();
+            (
+                "hover",
+                vec![point(&w, &t.window, 2., w.height() as f32 / 2.)],
+            )
+        }
+        15 => ("hover", vec![(10, 20)]),
+        16 => ("ruler-keyboard", vec![]),
+        17 => ("cancel", vec![]),
+        18 | 21 => {
+            if n == 18 {
+                u.scroll.vadjustment().set_value(0.);
+            }
+            let w = find_widget(&t.window, "ruler-activation-strip").unwrap();
+            (
+                "hover",
+                vec![point(&w, &t.window, w.width() as f32 / 2., 2.)],
+            )
+        }
+        19 | 22 => {
+            let r = u.ruler.borrow().as_ref().unwrap().clone();
+            let (x, z) = {
+                let mut c = u.current.borrow_mut();
+                let d = c.as_mut().unwrap();
+                let state = wordcraft_gnome::ruler::state(&mut d.session).unwrap();
+                let b = d.page_frames[state.page].compute_bounds(&r.area).unwrap();
+                (b.x() + state.x(state.left) * d.zoom, d.zoom)
+            };
+            t.depth
+                .set(u.current.borrow().as_ref().unwrap().session.undo_depth());
+            (
+                if n == 19 { "cancel-drag" } else { "drag" },
+                vec![
+                    point(&r.area, &t.window, x, 19.),
+                    point(
+                        &r.area,
+                        &t.window,
+                        x + 36. * z,
+                        if n == 19 { 19. } else { 110. },
+                    ),
+                ],
+            )
+        }
+        20 => ("hover", vec![(10, 20)]),
+        23 => ("undo", vec![]),
         _ => {
             let before = u.current.borrow().as_ref().unwrap().session.doc.clone();
             let settings = u.document_box.settings();
@@ -173,6 +227,15 @@ fn stage(t: Rc<Sweep>, n: u8) {
 }
 fn check(t: &Sweep, n: u8) {
     let u = &t.ui;
+    if n == 0 {
+        for body in [&u.undo_button, &u.redo_button] {
+            let parent = body.parent().unwrap();
+            assert!(parent.is::<adw::SplitButton>());
+            let icon = body.child().unwrap().compute_bounds(body).unwrap();
+            assert!((icon.x() + icon.width() / 2. - body.width() as f32 / 2.).abs() < 1.);
+            assert!((icon.y() + icon.height() / 2. - body.height() as f32 / 2.).abs() < 1.);
+        }
+    }
     if matches!(n, 0 | 2) {
         assert_eq!(selection_character(u)["size"], json!(14.));
     }
@@ -198,8 +261,71 @@ fn check(t: &Sweep, n: u8) {
         let p = w.popover().unwrap().downcast::<gtk::PopoverMenu>().unwrap();
         assert_eq!(p.menu_model().unwrap().n_items(), 2);
     }
-    if (7..=12).contains(&n) {
+    if (7..=11).contains(&n) || n == 16 {
         assert!(u.ruler.borrow().as_ref().unwrap().reveal.reveals_child());
+    }
+    if matches!(n, 7 | 8) {
+        let r = u.ruler.borrow().as_ref().unwrap().clone();
+        assert!(r.area.height() <= 24);
+        let mut c = u.current.borrow_mut();
+        let d = c.as_mut().unwrap();
+        let state = wordcraft_gnome::ruler::state(&mut d.session).unwrap();
+        let frame = d.page_frames[state.page].compute_bounds(&t.window).unwrap();
+        let area = r.area.compute_bounds(&t.window).unwrap();
+        assert!((area.x() - frame.x().max(area.x())).abs() < 2.);
+        assert!((area.width() - frame.width()).abs() < 2.);
+        eprintln!(
+            "RULER_HORIZONTAL_GEOMETRY x={} width={} height={}",
+            area.x(),
+            area.width(),
+            area.height()
+        );
+    }
+    if matches!(n, 12 | 13 | 15 | 17 | 20 | 22) {
+        let r = u.ruler.borrow().as_ref().unwrap().clone();
+        assert!(
+            !r.reveal.reveals_child(),
+            "horizontal must hide after leaving/cancel"
+        );
+        assert!(!r.vertical_reveal.reveals_child());
+    }
+    if matches!(n, 19 | 22 | 23) {
+        let mut c = u.current.borrow_mut();
+        let s = &mut c.as_mut().unwrap().session;
+        let state = wordcraft_gnome::ruler::state(s).unwrap();
+        let expected = if n == 22 { 72. } else { 36. };
+        assert!(
+            (state.left - expected).abs() < 0.6,
+            "cancel/outside drag: indent={} expected={expected}",
+            state.left
+        );
+        assert_eq!(s.sel, t.selection);
+        assert_eq!(s.undo_depth(), t.depth.get() + usize::from(n == 22));
+    }
+    if n == 13 {
+        let r = u.ruler.borrow().as_ref().unwrap().clone();
+        let c = u.current.borrow();
+        let d = c.as_ref().unwrap();
+        assert!(d.active > 0, "the scroll probe must reach another page");
+        let strip = find_widget(&t.window, "vertical-ruler-activation-strip").unwrap();
+        assert!(
+            strip.is_visible() && strip.height() > 0,
+            "vertical scale follows the visible page, not the offscreen caret"
+        );
+        let frame = d.page_frames[d.active].compute_bounds(&t.window).unwrap();
+        let area = r.reveal.compute_bounds(&t.window).unwrap();
+        assert!((area.width() - frame.width()).abs() < 2.);
+    }
+    if n == 14 {
+        let r = u.ruler.borrow().as_ref().unwrap().clone();
+        assert!(r.vertical_reveal.reveals_child());
+        assert!(r.vertical.width() <= 24);
+        assert!(!r.reveal.reveals_child(), "axes reveal independently");
+        eprintln!(
+            "RULER_VERTICAL_GEOMETRY width={} height={}",
+            r.vertical.width(),
+            r.vertical.height()
+        );
     }
     if (9..=11).contains(&n) {
         let mut c = u.current.borrow_mut();

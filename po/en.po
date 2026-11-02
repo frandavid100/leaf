@@ -2278,3 +2278,9 @@ msgstr "Update Style to Match Selection"
 
 msgid "Widow/Orphan Control"
 msgstr "Widow/Orphan Control"
+
+msgid "Focus ruler"
+msgstr "Focus ruler"
+
+msgid "Vertical ruler (cm)"
+msgstr "Vertical ruler (cm)"

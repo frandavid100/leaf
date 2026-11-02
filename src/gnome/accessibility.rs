@@ -115,6 +115,16 @@ pub(super) fn install_accessibility(
     let main = main.downgrade();
     let compact = compact.downgrade();
     keys.connect_key_pressed(move |_, key, _, mods| {
+        if matches!(key, gdk::Key::r | gdk::Key::R)
+            && mods.contains(gdk::ModifierType::CONTROL_MASK | gdk::ModifierType::ALT_MASK)
+        {
+            if let Some(ui) = weak.upgrade() {
+                if let Some(r) = ui.ruler.borrow().as_ref() {
+                    r.show_and_focus();
+                }
+            }
+            return glib::Propagation::Stop;
+        }
         if mods.intersects(
             gdk::ModifierType::CONTROL_MASK
                 | gdk::ModifierType::ALT_MASK

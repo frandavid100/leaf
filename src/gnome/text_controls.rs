@@ -361,6 +361,7 @@ impl TextControls {
             preview.set_widget_name("font-preview");
             preview.set_xalign(0.0);
             preview.set_ellipsize(gtk::pango::EllipsizeMode::End);
+            preview.set_width_chars(1);
             preview.set_max_width_chars(28);
             preview.set_tooltip_text(Some(&family));
             let mut description = gtk::pango::FontDescription::new();
@@ -370,11 +371,11 @@ impl TextControls {
             attrs.insert(gtk::pango::AttrFontDesc::new(&description));
             preview.set_attributes(Some(&attrs));
             let clip = gtk::ScrolledWindow::new();
-            clip.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Never);
+            // Let the allocated row bound even the minimum of a large preview.
+            clip.set_policy(gtk::PolicyType::External, gtk::PolicyType::Never);
             clip.set_max_content_height(80);
             clip.set_propagate_natural_height(true);
-            clip.set_propagate_natural_width(true);
-            clip.set_max_content_width(420);
+            clip.set_propagate_natural_width(false);
             clip.set_child(Some(&preview));
             body.append(&clip);
             button.set_child(Some(&body));
@@ -448,25 +449,62 @@ pub(super) fn text_selector(
     scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
     scroll.set_max_content_height(320);
     scroll.set_propagate_natural_height(true);
-    scroll.set_min_content_width(280);
-    scroll.set_max_content_width(440);
-    scroll.set_propagate_natural_width(true);
+    // The selector allocation owns the width; preview text must never inflate it.
+    scroll.set_propagate_natural_width(false);
     scroll.set_child(Some(&content));
     let popover = gtk::Popover::new();
     popover.set_child(Some(&scroll));
     let sizing = scroll.downgrade();
-    let anchor = menu.downgrade();
-    popover.connect_show(move |_| {
-        if let (Some(scroll), Some(menu)) = (sizing.upgrade(), anchor.upgrade()) {
-            let available = menu
-                .root()
-                .and_then(|r| r.downcast::<gtk::Window>().ok())
-                .map(|w| w.width())
-                .unwrap_or(640);
-            let width = (available - 80).clamp(180, 440);
-            scroll.set_min_content_width(width.min(280));
-            scroll.set_max_content_width(width);
-            scroll.set_size_request(width, -1);
+    let anchor = linked.downgrade();
+    let button = menu.downgrade();
+    let resize = Rc::new(move |pop: &gtk::Popover| {
+        if let (Some(scroll), Some(anchor), Some(button)) =
+            (sizing.upgrade(), anchor.upgrade(), button.upgrade())
+        {
+            let width = anchor.width();
+            if width <= 0 {
+                return;
+            }
+            // Measure native popover chrome after allocation, with a first-map
+            // fallback. Keep the whole popup approximately as wide as the row.
+            let chrome = if pop.width() > 0 && scroll.width() > 0 {
+                (pop.width() - scroll.width()).max(0)
+            } else {
+                24
+            };
+            let target = (width - chrome).max(1);
+            if scroll.width_request() != target {
+                // Clear the old minimum before changing a bounded range in
+                // either direction; GTK rejects min > old max (and vice versa).
+                scroll.set_min_content_width(-1);
+                scroll.set_max_content_width(target);
+                scroll.set_min_content_width(target);
+                scroll.set_size_request(target, -1);
+            }
+            pop.set_pointing_to(Some(&gdk::Rectangle::new(
+                button.width() - width,
+                0,
+                width,
+                button.height(),
+            )));
+        }
+    });
+    let size_popup = resize.clone();
+    popover.connect_show(move |pop| size_popup(pop));
+    // Allocation changes have no notify signal. A mapped-only frame callback
+    // follows adaptive resizing and is explicitly removed when the popup closes.
+    let tick = Rc::new(RefCell::new(None::<gtk::TickCallbackId>));
+    let slot = tick.clone();
+    popover.connect_map(move |pop| {
+        let resize = resize.clone();
+        *slot.borrow_mut() = Some(pop.add_tick_callback(move |pop, _| {
+            resize(pop);
+            glib::ControlFlow::Continue
+        }));
+    });
+    popover.connect_unmap(move |_| {
+        if let Some(id) = tick.borrow_mut().take() {
+            id.remove();
         }
     });
     menu.set_popover(Some(&popover));

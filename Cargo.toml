@@ -23,9 +23,9 @@ path = "src/main.rs"
 
 [dependencies]
 # Anclado a una revisión concreta para reproducir cada compilación.
-wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "165d5725dc25b4a7887d8025c3b1fe506ccc3dcc" }
-wordcraft-engine = { git = "https://github.com/storytold/wordcraft", rev = "165d5725dc25b4a7887d8025c3b1fe506ccc3dcc" }
-wordcraft-render = { git = "https://github.com/storytold/wordcraft", rev = "165d5725dc25b4a7887d8025c3b1fe506ccc3dcc" }
+wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a" }
+wordcraft-engine = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a" }
+wordcraft-render = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a" }
 serde_json = "1"
 # Already used and locked by WordCraft; reuse UAX #29 boundaries for AT-SPI.
 unicode-segmentation = "1.13"

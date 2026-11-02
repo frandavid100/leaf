@@ -217,6 +217,15 @@ fn followup_stage(t: Rc<Followup>, stage: u8) {
                 followup_emit(stage, "return", &[followup_caret(&t, Pos::body(0, 22))]);
             }
             9 => {
+                t.menu.popup();
+                let menu = find_widget(&t.menu.popover().unwrap(), "text-size-choices").unwrap();
+                followup_emit(stage, "hover", &[followup_point(&menu, &t.window)]);
+            }
+            10 => {
+                let menu = find_widget(&t.menu.popover().unwrap(), "text-size-choices").unwrap();
+                followup_emit(stage, "choices", &[followup_point(&menu, &t.window)]);
+            }
+            11 => {
                 eprintln!(
                     "ISSUE19_FONT_OK real_open=true installed_family=true slow_size=true paste=true comma=true pinned=true width=true canvas=true"
                 );
@@ -415,11 +424,47 @@ fn followup_check(t: &Followup, stage: u8) {
                     preview.width(),
                     preview.layout().is_ellipsized()
                 );
-                assert!(pop.width() >= 260, "font popup must have useful width");
+                let selector = menu.parent().unwrap();
                 assert!(
-                    preview.width() >= 200,
+                    (pop.width() - selector.width()).abs() <= 4,
+                    "font popup={} selector={}",
+                    pop.width(),
+                    selector.width()
+                );
+                assert!(
+                    preview.width() * 10 >= selector.width() * 6,
                     "font labels may not collapse into ellipses"
                 );
+            }
+            if stage == 0 || stage == 10 {
+                let font = find_widget(&t.menu.popover().unwrap(), "text-font-choices")
+                    .unwrap()
+                    .parent()
+                    .unwrap();
+                let menu = find_widget(&t.menu.popover().unwrap(), "text-size-choices")
+                    .unwrap()
+                    .downcast::<gtk::MenuButton>()
+                    .unwrap();
+                let selector = menu.parent().unwrap();
+                assert!(
+                    (selector.width() - font.width()).abs() <= 1,
+                    "size must fill the same row as font"
+                );
+                if stage == 10 {
+                    let pop = menu.popover().unwrap();
+                    assert!(pop.is_visible());
+                    assert!(
+                        (pop.width() - selector.width()).abs() <= 4,
+                        "size popup={} selector={}",
+                        pop.width(),
+                        selector.width()
+                    );
+                    eprintln!(
+                        "ISSUE21_SIZE_GEOMETRY popup={} selector={}",
+                        pop.width(),
+                        selector.width()
+                    );
+                }
             }
             if stage == 4 {
                 assert!(popover_pin(&t.menu.popover().unwrap()).is_active());

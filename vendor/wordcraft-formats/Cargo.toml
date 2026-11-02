@@ -1,13 +1,14 @@
 [package]
 name = "wordcraft-formats"
-version = "0.12.0"
+version = "0.14.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Pinned WordCraft formats with Leaf ODT preservation patch"
 
 [dependencies]
-wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "165d5725dc25b4a7887d8025c3b1fe506ccc3dcc" }
-wordcraft-geom = { git = "https://github.com/storytold/wordcraft", rev = "165d5725dc25b4a7887d8025c3b1fe506ccc3dcc", features = ["image"] }
+wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a" }
+wordcraft-geom = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a", features = ["image"] }
+wordcraft-metafile = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a" }
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp", "gif", "bmp", "tiff"] }
 quick-xml = "0.41"
 zip = { version = "3", default-features = false, features = ["deflate"] }
@@ -19,5 +20,5 @@ chrono = { version = "0.4.45", default-features = false, features = ["std"] }
 [target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
 js-sys = "0.3"
 [dev-dependencies]
-wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "165d5725dc25b4a7887d8025c3b1fe506ccc3dcc", features = ["test-support"] }
+wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a", features = ["test-support"] }
 proptest = "1"

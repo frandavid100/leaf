@@ -86,6 +86,8 @@ pub(super) fn history_icon(redo: bool) -> gtk::DrawingArea {
     let a = gtk::DrawingArea::new();
     a.set_content_width(18);
     a.set_content_height(18);
+    a.set_halign(gtk::Align::Center);
+    a.set_valign(gtk::Align::Center);
     a.set_draw_func(move |w, c, _, _| {
         let f = w.color();
         c.set_source_rgba(

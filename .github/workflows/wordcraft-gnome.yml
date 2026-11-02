@@ -173,7 +173,7 @@ jobs:
       - name: Native bookmarks and comment threads
         run: |
           set -o pipefail
-          git diff --exit-code f11fbe558c5d7903b4044cfd99399dec948ac8c8 -- Cargo.toml Cargo.lock vendor patches
+          git diff --exit-code 4707d77882afb6432d2ba521ad551985324d11cb -- Cargo.toml Cargo.lock vendor patches
           for language in en es; do
             XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --annotations-ui-test 2>&1 | tee annotations-$language.log
             grep -q ANNOTATIONS_UI_OK annotations-$language.log
@@ -226,7 +226,7 @@ jobs:
       - name: Identificar versión de prueba
         run: |
           ./target/release/wordcraft-gnome --version | tee version.txt
-          grep -q "Leaf 0.1.0-alpha.20" version.txt
+          grep -q "Leaf 0.1.0-alpha.21" version.txt
       - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
         run: |
           python -m pip install --disable-pip-version-check pillow==11.3.0
@@ -611,13 +611,109 @@ jobs:
       - name: Download previous alpha for upgrade verification
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release download v0.1.0-alpha.19 --pattern 'Leaf-0.1.0-alpha.19-x86_64.flatpak' --dir prior-release
+        run: gh release download v0.1.0-alpha.20 --pattern 'Leaf-0.1.0-alpha.20-x86_64.flatpak' --dir prior-release
       - name: Build and install the bundle
         run: bash packaging/build-bundle.sh native-artifact/wordcraft-gnome
       - name: Exercise the installed sandbox and desktop launcher
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/smoke-test.sh 2>&1 | tee dist/flatpak-smoke.log
+      - name: Inspect installed history states and clipped rulers in dark and narrow views
+        # The first seven existing sweep stages exercise history; capture both
+        # ruler edges before the wide-window-only geometry stage is acknowledged.
+        run: |
+          cat > "$RUNNER_TEMP/leaf21-history-prefix.sh" <<'HISTORY_PREFIX'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          runner=${1:-./target/release/wordcraft-gnome}
+          cmd=("$runner"); [[ "$runner" != *.sh ]] || cmd=(bash "$runner")
+          export LEAF20_ACK_DIR
+          LEAF20_ACK_DIR=$(mktemp -d "${LEAF20_ACK_PARENT:-/tmp}/leaf20-ack.XXXXXX")
+          log=sweep20-pointer-${LANGUAGE:-en}-${GDK_SCALE:-1}.log
+          "${cmd[@]}" --sweep20-pointer-test >"$log" 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true; rm -rf "$LEAF20_ACK_DIR"' EXIT
+          last=0
+          while kill -0 "$pid" 2>/dev/null; do
+            count=$(grep -c '^SWEEP20_READY ' "$log" || true)
+            if (( count <= last )); then sleep 0.05; continue; fi
+            line=$(grep '^SWEEP20_READY ' "$log" | sed -n "$((last+1))p")
+            read -r _ stage role ax ay bx by <<< "$line"
+            window=$(xdotool search --onlyvisible --name '^Leaf Sweep20 Regression$' | head -n1)
+            xdotool windowfocus --sync "$window"
+            case "$role" in
+              click) xdotool mousemove --window "$window" "$ax" "$ay" click 1 ;;
+              second) xdotool key Home Down Return ;;
+              cancel) xdotool key Escape ;;
+              hover) xdotool mousemove --window "$window" "$ax" "$ay" ;;
+              ruler-keyboard) xdotool key ctrl+alt+r ;;
+              drag) xdotool mousemove --window "$window" "$ax" "$ay" mousedown 1 mousemove --sync --window "$window" "$bx" "$by"; sleep 0.3; xdotool mouseup 1 ;;
+              cancel-drag) xdotool mousemove --window "$window" "$ax" "$ay" mousedown 1 mousemove --sync --window "$window" "$bx" "$by"; sleep 0.2; xdotool key Escape; xdotool mouseup 1 ;;
+              right) xdotool key Right ;;
+              undo) xdotool key ctrl+z ;;
+              *) exit 1 ;;
+            esac
+            sleep 0.55
+            scrot "${log%.log}-${stage}.png"
+            touch "$LEAF20_ACK_DIR/$stage"
+            last=$((last+1))
+            if (( stage == 6 )); then
+              for attempt in $(seq 1 100); do
+                grep -q '^SWEEP20_READY 7 ' "$log" && break
+                kill -0 "$pid"
+                sleep 0.05
+              done
+              grep -q '^SWEEP20_READY 7 ' "$log"
+              read -r _ _ _ hx hy < <(grep '^SWEEP20_READY 7 ' "$log")
+              if [[ "${LEAF21_CLIP:-}" == 1 ]]; then
+                xdotool key ctrl+plus ctrl+plus
+                sleep 0.5
+              fi
+              xdotool mousemove --window "$window" "$hx" "$hy"
+              sleep 0.6
+              scrot history-prefix-horizontal.png
+              scale=${GDK_SCALE:-1}
+              xdotool mousemove --window "$window" "$((6*scale))" "$((200*scale))"
+              sleep 0.6
+              scrot history-prefix-vertical.png
+              kill "$pid"
+              wait "$pid" || true
+              echo HISTORY_PREFIX_OK
+              exit 0
+            fi
+          done
+          wait "$pid"
+          grep -q SWEEP20_POINTER_OK "$log"
+          cat "$log"
+          HISTORY_PREFIX
+          cat > "$RUNNER_TEMP/leaf21-history-flatpak.sh" <<'FLATPAK_RUNNER'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          flags=()
+          [[ "$LEAF21_VARIANT" != dark-* ]] || flags+=(--dark)
+          [[ "$LEAF21_VARIANT" != *-narrow-* ]] || flags+=(--narrow)
+          exec flatpak run --socket=x11 --nosocket=wayland --command=sh   --env="LANGUAGE=$LANGUAGE" --env="GDK_SCALE=$GDK_SCALE"   --env="LEAF20_ACK_DIR=$LEAF20_ACK_DIR"   --env="LEAF21_CONFIG=$LEAF21_CONFIG" --env="LEAF21_STATE=$LEAF21_STATE"   io.github.frandavid100.leaf -c   'export XDG_CONFIG_HOME="$LEAF21_CONFIG" XDG_STATE_HOME="$LEAF21_STATE"; exec leaf "$@"' sh "${flags[@]}" "$@"
+          FLATPAK_RUNNER
+          export LEAF20_ACK_PARENT="$HOME/.var/app/io.github.frandavid100.leaf/cache"
+          mkdir -p "$LEAF20_ACK_PARENT"
+          for variant in dark-wide-1 light-narrow-1 dark-narrow-2; do
+            export LEAF21_VARIANT="$variant" LANGUAGE=en GDK_SCALE="${variant##*-}"
+            export LEAF21_CONFIG LEAF21_STATE LEAF21_CLIP=1
+            isolated=$(mktemp -d "$LEAF20_ACK_PARENT/history.XXXXXX")
+            LEAF21_CONFIG="$isolated/config"
+            LEAF21_STATE="$isolated/state"
+            mkdir -p "$LEAF21_CONFIG/wordcraft-gnome" "$LEAF21_STATE"
+            # Explicit Light is isolated from earlier smoke-test preferences.
+            printf '{"theme":1}\n' > "$LEAF21_CONFIG/wordcraft-gnome/preferences.json"
+            evidence="$GITHUB_WORKSPACE/dist/history-$variant"
+            mkdir -p "$evidence"
+            (
+              cd "$evidence"
+              xvfb-run -a -s '-screen 0 2560x1800x24' dbus-run-session --       timeout 55s bash "$RUNNER_TEMP/leaf21-history-prefix.sh"       "$RUNNER_TEMP/leaf21-history-flatpak.sh" > history-prefix-driver.log 2>&1
+              grep -q HISTORY_PREFIX_OK history-prefix-driver.log
+            )
+            flatpak kill io.github.frandavid100.leaf || true
+          done
       - name: Retain installed interaction evidence
         if: always()
         run: |
@@ -669,7 +765,7 @@ jobs:
             echo 'Source superseded; publication skipped.'
             exit 0
           fi
-          gh release create v0.1.0-alpha.20 dist/Leaf-0.1.0-alpha.20-x86_64.flatpak dist/SHA256SUMS dist/INSTALL.md dist/source-commit.txt dist/runtime.txt dist/runtime-commit.txt dist/flatpak-metadata.txt dist/flatpak-smoke.log --target "$GITHUB_SHA" --title 'Leaf 0.1.0-alpha.20' --prerelease --notes-file packaging/RELEASE_NOTES.md
+          gh release create v0.1.0-alpha.21 dist/Leaf-0.1.0-alpha.21-x86_64.flatpak dist/SHA256SUMS dist/INSTALL.md dist/source-commit.txt dist/runtime.txt dist/runtime-commit.txt dist/flatpak-metadata.txt dist/flatpak-smoke.log --target "$GITHUB_SHA" --title 'Leaf 0.1.0-alpha.21' --prerelease --notes-file packaging/RELEASE_NOTES.md
 
   lifecycle-baseline:
     if: contains(github.event.head_commit.message, '[lifecycle-baseline]')

@@ -1,10 +1,10 @@
 # Isolated WordCraft formats compatibility patch
 
-Upstream: https://github.com/storytold/wordcraft at 165d5725dc25b4a7887d8025c3b1fe506ccc3dcc, crate wordcraft-formats 0.12.0 (MIT OR Apache-2.0).
+Upstream: https://github.com/storytold/wordcraft at 5cd53f184aab11def13b7fced18727159b9bc96a, crate wordcraft-formats 0.14.0 (MIT OR Apache-2.0).
 
 Cargo overrides only this crate with vendor/wordcraft-formats. The snapshot retains upstream source and license notices; the ODT exporter/importer, the common flow adapter for page fields and the standalone Cargo manifest differ. All other engine crates stay on the existing Git revision. This is an explicit exception to the earlier unmodified-engine state, justified by confirmed ODT data loss. It fixes all engine save paths, including autosave, without replacing the engine's atomic save or session bookkeeping.
 
-wordcraft-formats-odt.patch records the exporter change. Cargo.toml expands inherited workspace version, license and dependencies into a standalone manifest with the same pinned doc/geom sources and dependency ranges. No new runtime libraries are introduced.
+wordcraft-formats-odt.patch records the exporter change. Cargo.toml expands inherited workspace version, license and dependencies into a standalone manifest with the same pinned doc/geom sources and dependency ranges. The standalone manifest follows upstream dependencies, including wordcraft-metafile in 0.14.0.
 
 On an engine update: compare the upstream ODT implementation first. If fixed upstream, remove the Cargo patch and vendor snapshot, regenerate Cargo.lock, and run tests/odt_preservation.rs plus the affected corpus cases. Otherwise recopy this crate at the new fixed revision, reapply/review the four compatibility patches, regenerate the standalone manifest/lock and validate. Never silently keep a vendor snapshot from a different engine revision.
 
@@ -46,3 +46,13 @@ Run `cargo test --locked --test odt_geometry --test page_options --test proofing
 include standard-only geometry, inactive parts and stale extension values.
 The optional `interop-audit.yml` workflow performs independent Writer edits and
 standard-only reopens; it is not required on every release.
+
+## WordCraft 0.14.0 upgrade — alpha.21
+
+The formats source was recopied from v0.14.0, commit
+`5cd53f184aab11def13b7fced18727159b9bc96a`. All four patches above apply cleanly,
+in the documented order; their ODT changes are still absent upstream. The
+standalone manifest now includes upstream's wordcraft-metafile dependency.
+The lock diff changes only WordCraft packages (0.12.0 to 0.14.0), with the same
+Rust 1.95 minimum and craft-libs PDF revision. The 141 Leaf Rust tests pass,
+including ODT properties/geometry, fields, DOCX preservation and history.

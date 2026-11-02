@@ -6,7 +6,7 @@ upgrade is a separate, explicitly authorized task, not part of routine cleanup.
 
 ## Current boundary
 
-- Engine/doc/render: `165d5725dc25b4a7887d8025c3b1fe506ccc3dcc` in [Cargo.toml](Cargo.toml).
+- Engine/doc/render: `5cd53f184aab11def13b7fced18727159b9bc96a` in [Cargo.toml](Cargo.toml).
 - PDF backend patch: the craft-libs revision declared in Cargo.toml.
 - Existing compatibility exception: [vendor/wordcraft-formats](vendor/wordcraft-formats),
   with four isolated ODT preservation/properties patches documented in
@@ -36,7 +36,9 @@ Do not introduce a second editable model or patch the engine for UI convenience.
    completion after closing/replacing a tab. Preserve the invariants below.
 7. For an actual release, follow the [release checklist](docs/RELEASE_CHECKLIST.md).
    Update any explicitly pinned native-artifact reuse guard to the newly validated
-   source/run; never bypass its source-identity comparison.
+   source/run; never bypass its source-identity comparison. The annotation CI
+   boundary also compares Cargo/vendor/patches with the approved engine-update
+   commit; advance that baseline for an authorized update, retaining the check.
 
 ## Integration contracts to recheck
 
