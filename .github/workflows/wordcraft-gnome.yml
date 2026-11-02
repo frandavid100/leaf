@@ -583,12 +583,12 @@ jobs:
           fetch-depth: 0
       - name: Verify reused native build is source-identical
         if: contains(github.event.head_commit.message, '[bundle-only]')
-        run: git diff --exit-code 727b3434bc4df2da1ec62c17e04353ac28b87955 -- src Cargo.toml Cargo.lock tests vendor po data examples tools/interop_audit.py patches/wordcraft-formats-*.patch
+        run: git diff --exit-code 2fd69ff222d2f3f0b5ba9c64289af5d8cd7da2e4 -- src Cargo.toml Cargo.lock tests vendor po data examples tools patches
       - uses: actions/download-artifact@v4
         with:
           name: wordcraft-gnome-fase3d-linux
           path: native-artifact
-          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '41341927920' || github.run_id }}
+          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '41439845294' || github.run_id }}
           github-token: ${{ github.token }}
       - name: Install Flatpak and desktop validation tools
         run: |
@@ -610,6 +610,12 @@ jobs:
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/smoke-test.sh 2>&1 | tee dist/flatpak-smoke.log
+      - name: Retain installed interaction evidence
+        if: always()
+        run: |
+          shopt -s nullglob
+          evidence=(followup19-*.log followup19-*.png)
+          if (( ${#evidence[@]} )); then cp "${evidence[@]}" dist/; fi
       - name: Verify installed Flatpak print portal handoff
         run: |
           cat > print-sandbox-runner <<'SH'
