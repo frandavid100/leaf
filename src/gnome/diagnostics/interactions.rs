@@ -13,8 +13,8 @@ fn pointer_pos(ui: &Rc<Ui>, w: &ApplicationWindow, off: usize) -> (i32, i32) {
         d.zoom
     );
     (
-        (r.x() as f64 + (c.x as f64 + 0.2) * d.zoom as f64 - tx).round() as i32,
-        (r.y() as f64 + (c.top + c.height / 2.0) as f64 * d.zoom as f64 - ty).round() as i32,
+        (r.x() as f64 + (c.x as f64 + 0.2) * d.zoom as f64 + tx).round() as i32,
+        (r.y() as f64 + (c.top + c.height / 2.0) as f64 * d.zoom as f64 + ty).round() as i32,
     )
 }
 pub(super) fn interaction_pointer_test(
