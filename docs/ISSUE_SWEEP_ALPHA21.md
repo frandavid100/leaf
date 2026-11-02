@@ -106,3 +106,12 @@ gates publication. Additional installed captures exercise history states and
 both clipped ruler edges in dark/wide, light/narrow and dark/narrow at 2×, using
 the first seven existing history stages without weakening the full wide-window
 gesture checks.
+
+## Hidden overlay input regression
+
+A final real GTK pick probe reproduced hidden GtkRevealer containers intercepting
+pointer input in their allocated rectangle outside the five-pixel activation
+zone. Both ruler revealers now disable picking while hidden and enable it on
+reveal. The native regression checks the actual GTK picked widget for both axes;
+it must belong to the underlying document/viewport, not the hidden ruler.
+This correction supersedes the earlier integration source before publication.

@@ -1613,7 +1613,7 @@ msgstr ""
 msgid "Pages"
 msgstr ""
 
-#: src/gnome/diagnostics/sweep20.rs:348 src/gnome/view.rs:40
+#: src/gnome/diagnostics/sweep20.rs:370 src/gnome/view.rs:40
 msgid "Pages: {current} of {total}"
 msgstr ""
 
@@ -1913,11 +1913,11 @@ msgstr ""
 msgid "Rows"
 msgstr ""
 
-#: src/gnome/ruler.rs:366 src/gnome/ruler.rs:367
+#: src/gnome/ruler.rs:367 src/gnome/ruler.rs:368
 msgid "Ruler"
 msgstr ""
 
-#: src/gnome/ruler.rs:368
+#: src/gnome/ruler.rs:369
 msgid "Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it."
 msgstr ""
 
@@ -2597,7 +2597,7 @@ msgstr ""
 msgid "Vertical Upwards"
 msgstr ""
 
-#: src/gnome/ruler.rs:376
+#: src/gnome/ruler.rs:377
 msgid "Vertical ruler (cm)"
 msgstr ""
 

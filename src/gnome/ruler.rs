@@ -353,6 +353,7 @@ impl Ruler {
 }
 pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     let reveal = gtk::Revealer::new();
+    reveal.set_can_target(false);
     reveal.set_transition_type(gtk::RevealerTransitionType::Crossfade);
     reveal.set_transition_duration(175);
     reveal.set_halign(gtk::Align::Start);
@@ -376,6 +377,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     accessible_name(&vertical, wordcraft_gnome::t!("Vertical ruler (cm)"));
     let vertical_reveal = gtk::Revealer::new();
 
+    vertical_reveal.set_can_target(false);
     vertical_reveal.set_transition_type(gtk::RevealerTransitionType::Crossfade);
     vertical_reveal.set_transition_duration(175);
     vertical_reveal.set_child(Some(&vertical));
@@ -411,6 +413,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     });
     let weak_strip = strip.downgrade();
     r.reveal.connect_reveal_child_notify(move |reveal| {
+        reveal.set_can_target(reveal.reveals_child());
         if let Some(strip) = weak_strip.upgrade() {
             strip.set_can_target(!reveal.reveals_child());
         }
@@ -518,6 +521,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     let weak_strip = r.vertical_strip.downgrade();
     r.vertical_reveal
         .connect_reveal_child_notify(move |reveal| {
+            reveal.set_can_target(reveal.reveals_child());
             if let Some(strip) = weak_strip.upgrade() {
                 strip.set_can_target(!reveal.reveals_child());
             }

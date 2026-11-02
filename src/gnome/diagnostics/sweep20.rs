@@ -302,6 +302,28 @@ fn check(t: &Sweep, n: u8) {
         assert_eq!(s.sel, t.selection);
         assert_eq!(s.undo_depth(), t.depth.get() + usize::from(n == 22));
     }
+    if n == 12 {
+        let r = u.ruler.borrow().as_ref().unwrap().clone();
+        for w in [
+            r.reveal.upcast_ref::<gtk::Widget>(),
+            r.vertical_reveal.upcast_ref(),
+        ] {
+            let b = w.compute_bounds(&t.window).unwrap();
+            let hit = t.window.pick(
+                (b.x() + b.width() / 2.) as f64,
+                (b.y() + b.height() / 2.) as f64,
+                gtk::PickFlags::DEFAULT,
+            );
+            eprintln!(
+                "HIDDEN_RULER_PICK {:?}",
+                hit.as_ref().map(|p| (p.type_().name(), p.widget_name()))
+            );
+            assert!(
+                !hit.as_ref().is_some_and(|p| p == w || p.is_ancestor(w)),
+                "hidden rulers must pass pointer input through"
+            );
+        }
+    }
     if n == 13 {
         let r = u.ruler.borrow().as_ref().unwrap().clone();
         let c = u.current.borrow();
