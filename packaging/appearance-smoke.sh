@@ -50,6 +50,10 @@ for variant in light dark high-contrast high-contrast-dark; do
       scrot "$out/theme-$mode-$variant-$scale-keyboard-$step.png"
     fi
   done
+  # Native grouped-checkbutton arrow selection, independent of pointer activation.
+  xdotool key Left
+  sleep 0.2
+  scrot "$out/theme-$mode-$variant-$scale-keyboard-choice.png"
   if grep -E 'Invalid value for ADW_DEBUG|panicked at|Gtk-CRITICAL' "$log"; then exit 1; fi
   if [[ "$mode" = flatpak ]]; then flatpak kill "$app_id"; else kill "$pid"; fi
   wait "$pid" || true
