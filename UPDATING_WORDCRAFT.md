@@ -6,7 +6,7 @@ upgrade is a separate, explicitly authorized task, not part of routine cleanup.
 
 ## Current boundary
 
-- Engine/doc/render: `165d5725dc25b4a7887d8025c3b1fe506ccc3dcc` in [Cargo.toml](Cargo.toml).
+- Engine/doc/render: `5cd53f184aab11def13b7fced18727159b9bc96a` in [Cargo.toml](Cargo.toml).
 - PDF backend patch: the craft-libs revision declared in Cargo.toml.
 - Existing compatibility exception: [vendor/wordcraft-formats](vendor/wordcraft-formats),
   with four isolated ODT preservation/properties patches documented in
