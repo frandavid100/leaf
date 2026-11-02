@@ -1,0 +1,668 @@
+name: "Leaf — build, test and package"
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    env:
+      LC_ALL: en_US.UTF-8
+      LANGUAGE: es
+    if: ${{ !contains(github.event.head_commit.message, '[bundle-only]') && !contains(github.event.head_commit.message, '[lifecycle-baseline]') && !contains(github.event.head_commit.message, '[interop-audit-only]') && !contains(github.event.head_commit.message, '[perf-baseline]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar bibliotecas GNOME y pantalla virtual
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xdotool adwaita-icon-theme poppler-utils gettext locales dbus-x11
+          sudo locale-gen en_US.UTF-8
+      - name: Check Leaf formatting and contributor entry points
+        run: |
+          cargo fmt --package wordcraft-gnome -- --check
+          python -m unittest discover -s tools -p 'test_*.py'
+          python tools/check_project_docs.py
+      - name: Validate and compile gettext catalogs
+        run: python tools/update_translations.py --check --compile
+      - name: Tests sin interfaz
+        run: cargo test --locked
+      - name: Recheck ODT corpus for this preservation fix only
+        if: contains(github.event.head_commit.message, '[odt-audit]')
+        run: |
+          python -m pip install pillow==11.3.0
+          cargo build --release --locked --example corpus_audit
+          AUDIT_KEEP_SAVED=1 python tools/corpus_audit.py
+      - name: Check repaired ODT files in LibreOffice for this fix only
+        if: contains(github.event.head_commit.message, '[odt-audit]')
+        run: |
+          sudo apt-get install -y --no-install-recommends libreoffice-writer
+          for case in 16-table_styles_1 18-nestedTableInFooter 22-tdf135338_firstLeftPageFooter 24-tdf104254_noHeaderWrapping; do
+            folder="audit-results/$case"
+            mkdir -p "$folder/libreoffice"
+            timeout 40s libreoffice -env:UserInstallation=file:///tmp/leaf-odt-check --headless --convert-to pdf --outdir "$folder/libreoffice" "$folder/saved.odt"
+            test -s "$folder/libreoffice/saved.pdf"
+            pdftoppm -f 1 -singlefile -scale-to 1100 -png "$folder/libreoffice/saved.pdf" "$folder/libreoffice/page-1"
+            pdftotext "$folder/libreoffice/saved.pdf" "$folder/libreoffice/text.txt"
+          done
+          grep -q 'Some text, all on one line' audit-results/24-tdf104254_noHeaderWrapping/libreoffice/text.txt
+          grep -q 'First (Left page only)' audit-results/22-tdf135338_firstLeftPageFooter/libreoffice/text.txt
+          grep -q 'EVEN/LEFT (Left page only)' audit-results/22-tdf135338_firstLeftPageFooter/libreoffice/text.txt
+          grep -q 'odd/right (Left page only)' audit-results/22-tdf135338_firstLeftPageFooter/libreoffice/text.txt
+          echo LIBREOFFICE_ODT_READ_OK
+      - name: Validar árbol sin egui/eframe
+        run: |
+          cargo tree --features gui --edges normal --prefix none --format '{p}' | tee dependencies.txt
+          if grep -E '^(egui|eframe|egui-[a-z0-9_-]+|epaint) v' dependencies.txt; then
+            echo 'ERROR: dependencia egui encontrada'
+            exit 1
+          fi
+      - name: Compilar lector GNOME
+        run: cargo build --release --locked --features gui --bin wordcraft-gnome
+      - uses: actions/upload-artifact@v4
+        with:
+          name: leaf-native-unvalidated
+          path: target/release/wordcraft-gnome
+          retention-days: 3
+      - name: Verify WordCraft boundary for this performance audit
+        if: contains(github.event.head_commit.message, '[perf-candidate]')
+        run: git diff --exit-code a1670541e9500fa329c16a42c8e908122db1ecaa -- Cargo.toml Cargo.lock vendor patches
+      - name: Verify alpha18 text, theme, navigation and table pointer controls
+        run: |
+          set -o pipefail
+          for language in en es; do
+            XDG_CONFIG_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a timeout 60s ./target/release/wordcraft-gnome --sweep18-ui-test 2>&1 | tee sweep18-$language.log
+            grep -q SWEEP18_UI_OK sweep18-$language.log
+          done
+          xvfb-run -a bash tools/table-pointer-test.sh
+          xvfb-run -a bash tools/text-pointer-test.sh
+      - name: Native document menu actions
+        run: |
+          set -o pipefail
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --chrome-ui-test 2>&1 | tee document-chrome.log
+          grep -q DOCUMENT_CHROME_OK document-chrome.log
+      - name: Verify issue fixes with native controls and pointer input
+        run: |
+          set -o pipefail
+          for language in en es; do
+            leaf_config=$(mktemp -d)
+            XDG_CONFIG_HOME=$leaf_config XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --issue-sweep-ui-test 2>&1 | tee issues-$language.log
+            grep -q ISSUE_SWEEP_UI_OK issues-$language.log
+            XDG_CONFIG_HOME=$leaf_config ./target/release/wordcraft-gnome --issue-preferences-read-test
+          done
+          xvfb-run -a bash tools/comment-pointer-test.sh
+          GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --heading-top-test 2>&1 | tee heading-top.log
+          grep -q HEADING_TOP_UI_OK heading-top.log
+          xvfb-run -a bash tools/interaction-pointer-test.sh
+          xvfb-run -a bash tools/split-pointer-test.sh
+          xvfb-run -a dbus-run-session -- bash tools/uri-launch-test.sh
+          python tools/create_launch_fixture.py /tmp/launch-test.docx
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --save-current-file-test /tmp/launch-test.docx 2>&1 | tee save-current-file.log
+          grep -q SAVE_CURRENT_FILE_UI_OK save-current-file.log
+      - name: Host-only performance regression
+        run: |
+          set -o pipefail
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) GSK_RENDERER=cairo xvfb-run -a timeout 120s ./target/release/wordcraft-gnome --host-cache-ui-test 2>&1 | tee host-cache-ui.log
+          grep -q LEAF_HOST_CACHE_UI_OK host-cache-ui.log
+      - uses: actions/download-artifact@v4
+        if: contains(github.event.head_commit.message, '[perf-candidate]')
+        with:
+          name: leaf-perf-baseline
+          path: baseline-artifact
+          run-id: '41314479212'
+          github-token: ${{ github.token }}
+      - name: Compare baseline and optimized host on the same runner
+        if: contains(github.event.head_commit.message, '[perf-candidate]')
+        run: python tools/performance_compare.py baseline-artifact/wordcraft-gnome ./target/release/wordcraft-gnome
+      - name: Verify English, Spanish and live dark documents
+        run: |
+          LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --localization-ui-test 2>&1 | tee localization-en.log
+          grep -q 'LOCALIZATION_UI_OK language=en' localization-en.log
+          LANGUAGE=es GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --localization-ui-test 2>&1 | tee localization-es.log
+          grep -q 'LOCALIZATION_UI_OK language=es' localization-es.log
+      - name: Editable headers, footers and automatic page fields
+        run: |
+          set -o pipefail
+          GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --headers-ui-test 2>&1 | tee headers-ui.log
+          grep -q 'HEADER_FOOTER_UI_OK pointer=false' headers-ui.log
+          xvfb-run -a bash tools/header-pointer-test.sh
+      - name: Section options and native spelling review
+        run: |
+          set -o pipefail
+          GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --page-options-ui-test 2>&1 | tee page-options-ui.log
+          grep -q PAGE_OPTIONS_UI_OK page-options-ui.log
+          grep -q DOCUMENT_METADATA_UI_OK page-options-ui.log
+          for language in en es; do
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --proofing-ui-test 2>&1 | tee proofing-$language.log
+            grep -q PROOFING_UI_OK proofing-$language.log
+          done
+      - name: Native bookmarks and comment threads
+        run: |
+          set -o pipefail
+          git diff --exit-code f11fbe558c5d7903b4044cfd99399dec948ac8c8 -- Cargo.toml Cargo.lock vendor patches
+          for language in en es; do
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --annotations-ui-test 2>&1 | tee annotations-$language.log
+            grep -q ANNOTATIONS_UI_OK annotations-$language.log
+          done
+          xvfb-run -a -s '-screen 0 1280x900x24' bash -c '
+            set -e
+            for panel in annotations proofing; do
+            for variant in wide narrow dark; do
+              args=()
+              if test "$variant" = narrow; then args+=(--narrow); fi
+              if test "$variant" = dark; then args+=(--dark); fi
+              LANGUAGE=es GSK_RENDERER=cairo ./target/release/wordcraft-gnome --$panel-demo "${args[@]}" > "$panel-$variant.log" 2>&1 &
+              pid=$!
+              for attempt in $(seq 1 200); do
+                grep -q DEMO_READY "$panel-$variant.log" && break
+                kill -0 "$pid"
+                sleep 0.1
+              done
+              grep -q DEMO_READY "$panel-$variant.log"
+              sleep 0.3
+              scrot "$panel-$variant.png"
+              kill "$pid"
+              wait "$pid" || true
+            done
+            done
+          '
+      - name: GTK ownership and memory regression
+        run: |
+          set -o pipefail
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) GSK_RENDERER=cairo xvfb-run -a timeout 150s ./target/release/wordcraft-gnome --lifecycle-ui-test 2>&1 | tee lifecycle-fixed.log
+          grep -q LIFECYCLE_UI_OK lifecycle-fixed.log
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) GSK_RENDERER=cairo xvfb-run -a timeout 150s ./target/release/wordcraft-gnome --lifecycle-dialog-test 2>&1 | tee lifecycle-dialogs.log
+          grep -q LIFECYCLE_UI_OK lifecycle-dialogs.log
+      - name: Keyboard navigation and native print portal handoff
+        run: |
+          sudo apt-get install -y --no-install-recommends python3-gi dbus-x11
+          xvfb-run -a bash tools/keyboard_test.sh ./target/release/wordcraft-gnome
+          xvfb-run -a dbus-run-session -- bash tools/print_test.sh ./target/release/wordcraft-gnome
+      - name: Vista del motor sin interfaz
+        run: |
+          cargo run -- --png muestra-wordcraft.png
+          test -s muestra-wordcraft.png
+      - name: Comparar rendimiento reproducible
+        if: ${{ !contains(github.event.head_commit.message, '[release-alpha]') && !contains(github.event.head_commit.message, '[a11y-candidate]') && !contains(github.event.head_commit.message, '[perf-candidate]') && !contains(github.event.head_commit.message, '[refactor-candidate]') }}
+        run: |
+          cargo run --locked --example performance > performance-debug.txt
+          cargo run --release --locked --example performance > performance-release.txt
+          cat performance-debug.txt performance-release.txt
+          diff <(grep '^CHECK' performance-debug.txt) <(grep '^CHECK' performance-release.txt)
+      - name: Identificar versión de prueba
+        run: |
+          ./target/release/wordcraft-gnome --version | tee version.txt
+          grep -q "Leaf 0.1.0-alpha.18" version.txt
+      - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
+        run: |
+          python -m pip install --disable-pip-version-check pillow==11.3.0
+          xvfb-run -a -s "-screen 0 1280x900x24" bash -c '
+            set -e
+            run_case () {
+              output="$1"
+              shift
+              GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document "$@" \
+                > "out-${output}.log" 2> "err-${output}.log" &
+              pid=$!
+              sleep 7
+              if ! kill -0 "$pid" 2>/dev/null; then
+                cat "err-${output}.log"
+                exit 1
+              fi
+              scrot "$output"
+              kill "$pid"
+              wait "$pid" || true
+            }
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --adaptive-ui-test 2> adaptive-tools.log || { cat adaptive-tools.log; exit 1; }
+            grep -q ADAPTIVE_UI_OK adaptive-tools.log
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --context-ui-test 2> context-menu.log &
+            context_pid=$!
+            for attempt in $(seq 1 300); do
+              if grep -q CONTEXT_POINTER_READY context-menu.log; then break; fi
+              kill -0 "$context_pid"
+              sleep 0.1
+            done
+            grep -q CONTEXT_POINTER_READY context-menu.log
+            read marker cx cy < <(grep CONTEXT_POINTER_READY context-menu.log | tail -n1)
+            context_window=$(xdotool search --onlyvisible --pid "$context_pid" | head -n1)
+            xdotool windowfocus --sync "$context_window"
+            xdotool mousemove --window "$context_window" "$cx" "$cy" click 3
+            sleep 0.3
+            scrot vista-contexto-texto.png
+            for attempt in $(seq 1 100); do
+              if grep -q CONTEXT_ACTION_READY context-menu.log; then break; fi
+              kill -0 "$context_pid"
+              sleep 0.1
+            done
+            grep -q CONTEXT_ACTION_READY context-menu.log
+            read marker ax ay < <(grep CONTEXT_ACTION_READY context-menu.log | tail -n1)
+            xdotool mousemove --window "$context_window" "$ax" "$ay" click 1
+            wait "$context_pid" || { cat context-menu.log; exit 1; }
+            grep -q CONTEXT_UI_OK context-menu.log
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --view-pointer-test 2> view-pointer.log &
+            view_pid=$!
+            for attempt in $(seq 1 300); do
+              if grep -q VIEW_POINTER_READY view-pointer.log; then break; fi
+              kill -0 "$view_pid"
+              sleep 0.1
+            done
+            grep -q VIEW_POINTER_READY view-pointer.log
+            read marker mx my tx ty < <(grep VIEW_POINTER_READY view-pointer.log | tail -n1)
+            view_window=$(xdotool search --onlyvisible --pid "$view_pid" | head -n1)
+            xdotool windowfocus --sync "$view_window"
+            xdotool mousemove --window "$view_window" "$mx" "$my" click 1
+            sleep 0.3
+            xdotool mousemove --window "$view_window" "$tx" "$ty" click 1
+            for attempt in $(seq 1 100); do
+              if grep -q VIEW_POINTER_DISMISSED view-pointer.log; then break; fi
+              kill -0 "$view_pid"
+              sleep 0.1
+            done
+            grep -q VIEW_POINTER_DISMISSED view-pointer.log
+            xdotool mousemove --window "$view_window" "$tx" "$ty" click 1
+            wait "$view_pid" || { scrot view-pointer-failure.png; cat view-pointer.log; exit 1; }
+            grep -q VIEW_POINTER_OK view-pointer.log
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --table-keyboard-test 2> table-keyboard.log &
+            table_pid=$!
+            for attempt in $(seq 1 300); do
+              if grep -q TABLE_KEYBOARD_READY table-keyboard.log; then break; fi
+              kill -0 "$table_pid"
+              sleep 0.1
+            done
+            grep -q TABLE_KEYBOARD_READY table-keyboard.log
+            table_window=$(xdotool search --onlyvisible --pid "$table_pid" | head -n1)
+            xdotool windowfocus --sync "$table_window"
+            xdotool key Tab Tab
+            xdotool type --clearmodifiers --delay 40 GNOME
+            xdotool key shift+Tab
+            wait "$table_pid"
+            grep -q TABLE_KEYBOARD_OK table-keyboard.log
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --motion-ui-test 2> motion-ui.log
+            grep -q MOTION_UI_OK motion-ui.log
+            run_case vista-insertar-tabla.png --table-insert-demo
+            run_case vista-menu-tabla.png --table-menu-demo
+            run_case vista-propiedades-tabla.png --table-properties-demo
+            run_case vista-texto-avanzado.png --advanced-text-demo
+            run_case vista-parrafo-avanzado.png --advanced-paragraph-demo
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --styles-ui-test 2> styles-popover.log
+            grep -q STYLES_POPOVER_OK styles-popover.log
+            run_case vista-estilos.png --styles-demo
+            run_case vista-estilos-fijado.png --styles-demo --pin-demo
+            run_case vista-estilo-detalle.png --style-details-demo
+            run_case vista-estilo-nuevo.png --style-new-demo
+            run_case vista-estilos-estrecha.png --styles-demo --narrow
+            run_case vista-preferencias.png --preferences-demo
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --search-ui-test 2> search-sidebar.log
+            grep -q SEARCH_SIDEBAR_OK search-sidebar.log
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --paragraph-ui-test 2> paragraph-popover.log
+            grep -q PARAGRAPH_POPOVER_OK paragraph-popover.log
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --document-tools-test 2> document-tools.log &
+            tools_pid=$!
+            for attempt in $(seq 1 300); do
+              if grep -q IMAGE_POINTER_READY document-tools.log; then break; fi
+              kill -0 "$tools_pid"
+              sleep 0.1
+            done
+            read marker ix iy < <(grep IMAGE_POINTER_READY document-tools.log | tail -n1)
+            tools_window=$(xdotool search --onlyvisible --pid "$tools_pid" | head -n1)
+            xdotool windowfocus --sync "$tools_window"
+            xdotool mousemove --window "$tools_window" "$ix" "$iy" click 1
+            wait "$tools_pid" || { cat document-tools.log; exit 1; }
+            grep -q DOCUMENT_TOOLS_OK document-tools.log
+            pdftoppm -scale-to 1200 -png -singlefile document-tools-test.pdf vista-pdf-exportado
+            pdfinfo document-tools-test.pdf
+            run_case vista-imagen.png --picture-demo
+            run_case vista-imagen-estrecha.png --picture-demo --narrow
+            run_case vista-propiedades-documento.png --document-properties-demo
+            run_case vista-columnas.png --columns-demo
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --columns-ui-test 2> columns-ui.log
+            grep -q COLUMNS_UI_OK columns-ui.log
+            run_case vista-parrafo.png --paragraph-demo
+            run_case vista-interlineado.png --paragraph-spacing-demo
+            run_case vista-parrafo-estrecha.png --paragraph-demo --narrow
+            run_case vista-parrafo-oscura.png --paragraph-demo --dark
+            run_case vista-buscar-estrecha.png --search-demo --narrow
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --nav-ui-test 2> sidebar-navigation.log
+            grep -q SIDEBAR_NAVIGATION_OK sidebar-navigation.log
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --pin-ui-test 2> popover-pin.log
+            grep -q POPOVER_PIN_OK popover-pin.log
+            run_case vista-titulos.png --outline-demo
+            run_case vista-marcadores.png --bookmarks-demo
+            run_case vista-marcadores-estrecha.png --bookmarks-demo --narrow
+            run_case vista-menu-principal.png --main-menu-demo
+            run_case vista-menu-documento.png --document-menu-demo
+            run_case vista-contexto-estilo.png --context-style-demo
+            run_case vista-contexto-parrafo.png --context-paragraph-demo
+            run_case vista-contexto-texto-panel.png --context-text-demo
+            run_case vista-todas-pestanas.png --overview-demo
+            run_case vista-buscar.png --search-demo
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --tabs-test 2> tabs.log
+            grep -q TABS_OK tabs.log
+            run_case vista-texto.png --text-menu-demo
+            run_case vista-zoom.png --zoom-menu-demo
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --multiwindow-test 2> multiwindow.log
+            grep -q MULTIWINDOW_OK multiwindow.log
+            run_case vista-gnome.png --sidebar
+            run_case vista-seleccion.png --sidebar --select-demo
+            run_case vista-edicion.png --sidebar --edit-demo
+            run_case vista-formato.png --sidebar --format-demo
+            run_case vista-sin-panel.png
+            run_case vista-estrecha-panel.png --narrow --sidebar
+            run_case vista-estrecha.png --narrow
+            run_case vista-oscura.png --dark --sidebar
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document >gui-out.log 2>gui-err.log &
+            pid=$!
+            sleep 2
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document >gui2-out.log 2>gui2-err.log &
+            pid2=$!
+            sleep 2
+            kill -0 "$pid"
+            kill -0 "$pid2"
+            kill "$pid2" "$pid"
+            wait "$pid2" || true
+            wait "$pid" || true
+          '
+          python - <<'PY'
+          from PIL import Image
+          images = ["vista-gnome.png", "vista-seleccion.png", "vista-edicion.png", "vista-formato.png", "vista-sin-panel.png",
+                    "vista-estrecha-panel.png", "vista-estrecha.png",
+                    "vista-oscura.png"]
+          images += ["vista-texto.png", "vista-zoom.png"]
+          for name in images:
+              image = Image.open(name).convert("RGB")
+              region = image.crop((0, 0, 300, 85))
+              if all(pixel == (0, 0, 0) for pixel in region.getdata()):
+                  raise SystemExit(f"CAPTURA VACÍA: {name}")
+              print(f"OK: {name}, ventana renderizada")
+          PY
+      - name: Capturar vista doble al 100 por ciento
+        run: |
+          xvfb-run -a -s "-screen 0 1920x1080x24" bash -c '
+            set -e
+            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --spreads-demo > spread-out.log 2> spread-err.log &
+            pid=$!
+            sleep 7
+            kill -0 "$pid"
+            scrot vista-paginas-dobles.png
+            kill "$pid"
+            wait "$pid" || true
+          '
+      - name: Validate logical geometry and raster density at 100 and 200 percent
+        run: |
+          xvfb-run -a -s "-screen 0 2560x1800x24" bash -c '
+            set -e
+            for density in 1 2; do
+              GDK_SCALE=$density GSK_RENDERER=cairo ./target/release/wordcraft-gnome --hidpi-ui-test 2> hidpi-$density.log
+              grep -q "HIDPI_UI_OK scale=$density" hidpi-$density.log
+              GDK_SCALE=$density GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --sidebar > /dev/null 2> hidpi-capture-$density.log &
+              pid=$!
+              sleep 5
+              kill -0 "$pid"
+              scrot "vista-hidpi-$density.png"
+              kill "$pid"
+              wait "$pid" || true
+            done
+          '
+      - name: Preparar ejecutable ligero sin símbolos de depuración
+        run: |
+          cp target/release/wordcraft-gnome wordcraft-gnome
+          echo "Antes de strip:"
+          ls -lh wordcraft-gnome
+          strip --strip-unneeded wordcraft-gnome
+          echo "Después de strip:"
+          ls -lh wordcraft-gnome
+          test -s wordcraft-gnome
+      - name: Backtrace a failed ownership check
+        if: failure()
+        run: |
+          if test -x target/release/wordcraft-gnome && test -f lifecycle-fixed.log; then
+            sudo apt-get install -y --no-install-recommends gdb
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) GSK_RENDERER=cairo xvfb-run -a timeout 150s gdb --batch -ex run -ex 'thread apply all bt' --args ./target/release/wordcraft-gnome --lifecycle-ui-test 2>&1 | tee lifecycle-backtrace.log
+          fi
+      - name: Show GTK failure details
+        if: failure()
+        run: |
+          for file in keyboard-ui.log document-chrome.log adaptive-tools.log styles-popover.log paragraph-popover.log popover-pin.log; do
+            if test -f "$file"; then tail -n 60 "$file"; fi
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wordcraft-gnome-fase3d-linux
+          path: |
+            sweep18-*.log
+            table18-*.log
+            text18-*.log
+            issues-*.log
+            uri-launch.log
+            interactions-pointer.log
+            heading-top.log
+            comment-pointer.log
+            save-current-file.log
+            annotations-*.log
+            annotations-*.png
+            host-cache-ui.log
+            performance-results/
+            localization-*.log
+            headers-*.log
+            page-options-ui.log
+            proofing-*.log
+            proofing-*.png
+            lifecycle-*.log
+            keyboard-ui.log
+            print-*.log
+            print-*.pdf
+            print-*.txt
+            audit-results/
+            wordcraft-gnome
+            muestra-wordcraft.png
+            vista-gnome.png
+            vista-texto.png
+            vista-zoom.png
+            multiwindow.log
+            tabs.log
+            table-keyboard.log
+            vista-preferencias.png
+            vista-insertar-tabla.png
+            vista-menu-tabla.png
+            vista-propiedades-tabla.png
+            vista-texto-avanzado.png
+            vista-parrafo-avanzado.png
+            vista-estilos.png
+            vista-estilos-fijado.png
+            vista-estilo-detalle.png
+            vista-estilo-nuevo.png
+            vista-estilos-estrecha.png
+            styles-popover.log
+            motion-ui.log
+            vista-buscar.png
+            vista-buscar-estrecha.png
+            vista-parrafo.png
+            vista-interlineado.png
+            vista-parrafo-estrecha.png
+            vista-parrafo-oscura.png
+            search-sidebar.log
+            paragraph-popover.log
+            document-tools.log
+            document-tools-test.pdf
+            vista-pdf-exportado.png
+            adaptive-tools.log
+            vista-contexto-estilo.png
+            vista-contexto-parrafo.png
+            vista-contexto-texto-panel.png
+            context-menu.log
+            vista-contexto-texto.png
+            vista-imagen.png
+            vista-imagen-estrecha.png
+            vista-propiedades-documento.png
+            vista-columnas.png
+            columns-ui.log
+            hidpi-*.log
+            vista-hidpi-*.png
+            split-states.log
+            split-pointer-window.log
+            vista-dividido-reposo.png
+            vista-dividido-cuerpo.png
+            vista-dividido-flecha.png
+            vista-dividido-subpagina.png
+            vista-dividido-fallo.png
+            view-pointer.log
+            sidebar-navigation.log
+            document-chrome.log
+            popover-pin.log
+            vista-titulos.png
+            vista-marcadores*.png
+            vista-menu-principal.png
+            vista-menu-documento.png
+            vista-todas-pestanas.png
+            view-pointer-failure.png
+            vista-paginas-dobles.png
+            vista-seleccion.png
+            vista-edicion.png
+            vista-formato.png
+            vista-sin-panel.png
+            vista-estrecha-panel.png
+            vista-estrecha.png
+            vista-oscura.png
+            gui-err.log
+            dependencies.txt
+            Cargo.lock
+            version.txt
+            performance-debug.txt
+            performance-release.txt
+          if-no-files-found: warn
+
+
+
+
+
+
+
+  flatpak-alpha:
+    name: Package and publish GitHub Flatpak alpha
+    needs: test
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[release-alpha]') && (needs.test.result == 'success' || (needs.test.result == 'skipped' && contains(github.event.head_commit.message, '[bundle-only]')))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify reused native build is source-identical
+        if: contains(github.event.head_commit.message, '[bundle-only]')
+        run: git diff --exit-code 727b3434bc4df2da1ec62c17e04353ac28b87955 -- src Cargo.toml Cargo.lock tests vendor po data examples tools/interop_audit.py patches/wordcraft-formats-*.patch
+      - uses: actions/download-artifact@v4
+        with:
+          name: wordcraft-gnome-fase3d-linux
+          path: native-artifact
+          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '41341927920' || github.run_id }}
+          github-token: ${{ github.token }}
+      - name: Install Flatpak and desktop validation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
+          # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Validate desktop metadata
+        run: |
+          desktop-file-validate data/io.github.frandavid100.leaf.desktop
+          appstreamcli validate --no-net data/io.github.frandavid100.leaf.metainfo.xml
+      - name: Download previous alpha for upgrade verification
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download v0.1.0-alpha.17 --pattern 'Leaf-0.1.0-alpha.17-x86_64.flatpak' --dir prior-release
+      - name: Build and install the bundle
+        run: bash packaging/build-bundle.sh native-artifact/wordcraft-gnome
+      - name: Exercise the installed sandbox and desktop launcher
+        run: |
+          set -o pipefail
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/smoke-test.sh 2>&1 | tee dist/flatpak-smoke.log
+      - name: Verify installed Flatpak print portal handoff
+        run: |
+          cat > print-sandbox-runner <<'SH'
+          #!/usr/bin/env bash
+          exec bash tools/flatpak_print_run.sh "$@"
+          SH
+          chmod +x print-sandbox-runner
+          xvfb-run -a dbus-run-session -- bash tools/print_test.sh "$PWD/print-sandbox-runner"
+          cp print-ui-*.log print-portal-*.log dist/
+          xvfb-run -a dbus-run-session -- bash tools/uri-launch-test.sh tools/flatpak_print_run.sh
+          cp uri-launch.log dist/flatpak-uri-launch.log
+      - name: Installed document text with real AT-SPI and Orca
+        env:
+          GTK_A11Y: atspi
+          NO_AT_BRIDGE: '0'
+          GSK_RENDERER: cairo
+          LANGUAGE: en
+          LANG: C.UTF-8
+          XDG_SESSION_TYPE: x11
+          XDG_CURRENT_DESKTOP: GNOME
+        run: |
+          sudo apt-get install -y --no-install-recommends openbox orca python3-pyatspi at-spi2-core gsettings-desktop-schemas
+          set -o pipefail
+          xvfb-run -a dbus-run-session -- /usr/bin/python3 tools/accessibility_audit.py io.github.frandavid100.leaf --sandbox 2>&1 | tee dist/flatpak-accessibility.log
+          grep -q AT_SPI_DOCUMENT_TEXT_OK dist/flatpak-accessibility.log
+          grep -q ORCA_DOCUMENT_SPEECH_OK dist/flatpak-accessibility.log
+          cp -R a11y-results dist/accessibility-audit
+      - name: Checksums
+        working-directory: dist
+        run: sha256sum Leaf-*.flatpak INSTALL.md source-commit.txt runtime.txt runtime-commit.txt flatpak-metadata.txt flatpak-smoke.log > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: leaf-flatpak-alpha
+          path: dist/
+          if-no-files-found: warn
+      - name: Publish prerelease only after validation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current_head=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          if test "$current_head" != "$GITHUB_SHA"; then
+            echo 'Source superseded; publication skipped.'
+            exit 0
+          fi
+          gh release create v0.1.0-alpha.18 dist/Leaf-0.1.0-alpha.18-x86_64.flatpak dist/SHA256SUMS dist/INSTALL.md dist/source-commit.txt dist/runtime.txt dist/runtime-commit.txt dist/flatpak-metadata.txt dist/flatpak-smoke.log --target "$GITHUB_SHA" --title 'Leaf 0.1.0-alpha.18' --prerelease --notes-file packaging/RELEASE_NOTES.md
+
+  lifecycle-baseline:
+    if: contains(github.event.head_commit.message, '[lifecycle-baseline]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth
+      - run: cargo build --release --locked --features gui --bin wordcraft-gnome
+      - name: Measure original ownership and RSS without publishing
+        run: |
+          set -o pipefail
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) GSK_RENDERER=cairo xvfb-run -a timeout 150s ./target/release/wordcraft-gnome --lifecycle-audit 2>&1 | tee lifecycle-baseline.log
+          grep -q LIFECYCLE_BASELINE_OK lifecycle-baseline.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lifecycle-baseline
+          path: lifecycle-baseline.log

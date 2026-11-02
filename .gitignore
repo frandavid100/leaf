@@ -1,3 +1,19 @@
 /target/
 Cargo.lock
 *.swp
+
+/po/locale/
+
+# Python contributor checks
+__pycache__/
+*.py[cod]
+
+# Native alpha18 regression output
+sweep18-*.log
+table18-*.log
+text18-*.log
+
+/split-states.log
+/vista-dividido-*.png
+
+/split-pointer-window.log
