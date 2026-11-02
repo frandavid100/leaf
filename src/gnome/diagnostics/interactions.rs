@@ -148,6 +148,17 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
                 );
             });
         }
+        7 => {
+            popover_pin(&t.text.popover().unwrap()).set_active(false);
+            t.text.popdown();
+            {
+                let mut v = u.current.borrow_mut();
+                selection::set_caret(&mut v.as_mut().unwrap().session, &Pos::body(0, 22), false)
+                    .unwrap();
+            }
+            u.document_box.grab_focus();
+            eprintln!("CANVAS_INPUT_READY 0 0");
+        }
         _ => unreachable!(),
     }
     glib::timeout_add_local_once(std::time::Duration::from_secs(2), move || {
@@ -181,6 +192,11 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
                         );
                     }
                 }
+                7 => assert_eq!(
+                    s.doc.plain_text(wordcraft_doc::StoryRef::Body),
+                    "alpha beta gamma deltaGNOME",
+                    "canvas input survives focus returning from font and size entries"
+                ),
                 _ => unreachable!(),
             }
             if stage < 3 {
@@ -188,9 +204,9 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
                 assert!(!s.dirty);
             }
         }
-        if stage == 6 {
+        if stage == 7 {
             eprintln!(
-                "INTERACTION_POINTER_OK shift=true words=true link=true font_keyboard=true pinned=true"
+                "INTERACTION_POINTER_OK shift=true words=true link=true font_keyboard=true pinned=true canvas_keyboard=true"
             );
             t.app.quit();
         } else {

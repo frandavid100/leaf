@@ -382,7 +382,9 @@ pub(super) fn install_keyboard_input(
         // GTK supplies dead-key composition, accents and input methods.
         // Committed text enters WordCraft; ordinary shortcuts remain in
         // the key controller instead of being converted into characters.
-        let input = gtk::IMMulticontext::new();
+        // The tab owns the context even while it is detached from the controller.
+        // Weak focus callbacks must not be its only owner between focus changes.
+        let input = ui.input_context.clone();
         input.set_client_widget(Some(&ui.document_box));
         // Attach the canvas IM only while the canvas owns keyboard focus.
         {

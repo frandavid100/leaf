@@ -327,6 +327,7 @@ pub(super) fn build_tab(
 
     let ui = Rc::new(Ui {
         current: RefCell::new(None),
+        input_context: gtk::IMMulticontext::new(),
         printing: PrintState::default(),
         selection_data: Rc::new(RefCell::new(SelectionGeometry::default())),
         selection_zoom: Rc::new(Cell::new(1.0)),

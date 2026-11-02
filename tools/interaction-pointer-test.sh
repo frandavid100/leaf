@@ -6,7 +6,7 @@ if [[ "$leaf_runner" = *.sh ]]; then leaf_cmd=(bash "$leaf_runner"); fi
 "${leaf_cmd[@]}" --interaction-pointer-test 2>interactions-pointer.log &
 leaf_pid=$!
 trap 'kill "$leaf_pid" 2>/dev/null || true' EXIT
-for marker in SHIFT_POINTER_READY WORD_POINTER_READY WORD_DRAG_READY LINK_POINTER_READY FONT_INPUT_READY_4 FONT_INPUT_READY_5 FONT_INPUT_READY_6; do
+for marker in SHIFT_POINTER_READY WORD_POINTER_READY WORD_DRAG_READY LINK_POINTER_READY FONT_INPUT_READY_4 FONT_INPUT_READY_5 FONT_INPUT_READY_6 CANVAS_INPUT_READY; do
   for attempt in $(seq 1 300); do
     grep -q "$marker" interactions-pointer.log && break
     kill -0 "$leaf_pid" || { cat interactions-pointer.log; exit 1; }
@@ -23,6 +23,7 @@ for marker in SHIFT_POINTER_READY WORD_POINTER_READY WORD_DRAG_READY LINK_POINTE
   read -r _ ax ay bx by < <(grep "$marker" interactions-pointer.log | tail -n1)
   xdotool mousemove --window "$leaf_window" "$ax" "$ay"
   case "$marker" in
+    CANVAS_INPUT_READY) xdotool type --clearmodifiers --delay 40 GNOME ;;
     SHIFT_POINTER_READY)
       xdotool click 1 keydown Shift mousemove --window "$leaf_window" "$bx" "$by" click 1 keyup Shift ;;
     WORD_POINTER_READY) xdotool click --repeat 2 --delay 80 1 ;;

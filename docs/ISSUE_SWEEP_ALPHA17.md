@@ -53,6 +53,18 @@ programmatic entry updates. URI dispatch uses a temporary fake browser in isolat
 CI sessions; it records the real launcher/portal URL without contacting a website.
 The installed Flatpak repeats the interaction test and URI dispatch.
 
+## Publication recovery
+
+The first publication attempts stopped in the native regression suite; alpha.16
+remained the latest published release. Run 41367988401 reached the table keyboard
+test, where Tab navigation worked but typing `GNOME` did not insert text. The
+focus-scoped IM context had only weak references while detached, so it could be
+destroyed before the canvas gained focus. The tab now owns that context and
+clears its client widget during teardown. The real-keyboard interaction test
+also returns from the Font/Size entries to the canvas and inserts `GNOME`; this
+runs both natively and in the installed Flatpak. Full validation and publication
+are still pending; the candidate issues remain open until those checks pass.
+
 Native/installed screenshots are internal QA only. Keep the existing Orca stage
 as regression, without new accessibility scope. No claim of human GNOME OS,
 physical-printer, braille or every-document testing. Dependency boundary unchanged.

@@ -23,6 +23,8 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
         text.stop();
     }
     stop_document_drag(ui);
+    ui.input_context.focus_out();
+    ui.input_context.set_client_widget(None::<&gtk::Widget>);
     ui.document_box.reset();
     let link = ui.link_dialog.borrow_mut().take();
     if let Some(window) = link {
