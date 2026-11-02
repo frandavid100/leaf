@@ -11,45 +11,42 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En curso: nueva pasada autorizada
-
-Implementación alpha.18 en validación; [alcance y límites](docs/ISSUE_SWEEP_ALPHA18.md).
-Incluye idioma/revisión heredados, Texto compacto, iconos, selección nativa,
-navegación según caret y gestos de tabla. No se han cerrado informes por cambios
-sin validar ni se ha publicado esta fuente todavía.
-
 ## Última versión publicada
 
-[Alpha.17, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.17),
-publicada y verificada el 2 de noviembre de 2026. Fuente nativa y tag:
-`d1bbc41fdcd79de3b88c974e3f3549f37e58a00a`.
-ID `io.github.frandavid100.leaf`, runtime GNOME 49, actualización desde alpha.16.
-Bundle: 10.924.704 bytes; SHA256
-`d4337d435395c7b8480d1563c05e0cce28a459c98ff064defeb0bb3904255ff0`.
-Descarga pública, las ocho sumas/digests de assets y fuente comprobadas.
-No hay feed automático de actualizaciones ni publicación en Flathub.
+[Alpha.18, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.18),
+publicada y verificada el 2 de noviembre de 2026. Fuente y tag:
+`a8207cbdb5b11f050373287a44aecd835aefd50c`.
+ID `io.github.frandavid100.leaf`, runtime GNOME 49; actualización desde alpha.17.
+Bundle: 10.956.624 bytes; SHA256
+`2c3aeff8a530f7ba644825a099922f53c30a93b743487e79146fde9974c783e5`.
+Descarga pública de los ocho assets, sumas y fuente comprobadas.
+No hay feed automático ni publicación en Flathub.
 
-**18 issues cerrados en esta entrega:** #12, #18, #19, #22, #25–#29 y #31–#39.
-Estado consultado tras el cierre: **29 cerrados y 14 abiertos** de 43 informes.
-Siguen abiertos #1, #2, #5, #6, #7, #9, #14, #15, #16 y #30; los pedidos nuevos
-#40–#43 no forman parte de esta entrega. Consultar GitHub para cambios posteriores.
-[Resultado por issue](docs/ISSUE_SWEEP_ALPHA17.md) y
-[evidencia verificable](docs/ISSUE_SWEEP_ALPHA17_VALIDATION.json).
+**Diez informes cerrados:** #5, #6, #14–#16, #30 y #40–#43. Incluye gestos de
+ratón de tablas, idioma/revisión heredados, Texto compacto, iconos GNOME exactos,
+selección nativa y título activo según caret. [Alcance](docs/ISSUE_SWEEP_ALPHA18.md)
+y [evidencia](docs/ISSUE_SWEEP_ALPHA18_VALIDATION.json).
 
-117 pruebas Rust, cuatro Python, 590 mensajes fuente gettext y la ronda gráfica
-nativa completa superadas, incluyendo ratón/teclado, memoria, tablas y HiDPI.
-Flatpak instalado: actualización desde alpha.16, escritura al volver desde
-Fuente/Tamaño, reinstalación con datos, guardado/reapertura por portal, impresión,
-apertura nativa de enlaces y regresión Orca/AT-SPI.
-[CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41373872997).
-No equivale a pruebas humanas de todos los documentos, lectores o impresoras.
+123 pruebas Rust, cuatro Python, 587 mensajes gettext y la ronda gráfica nativa
+completa superadas. Flatpak instalado: actualización/reinstalación, portales,
+entrada de texto, impresión, enlaces y regresión Orca/AT-SPI automatizada.
+[CI completa](https://github.com/frandavid100/leaf/actions/runs/41402369921).
+No equivale a pruebas humanas de todos los documentos o dispositivos.
 
-La interrupción anterior no perdió el trabajo. Se corrigió la propiedad del
-contexto de entrada para conservar la escritura del documento al cambiar de
-foco. La prueba Xvfb del chevrón se aisló y la ejecución final verifica que la
-subpágina permanece abierta tras soltar el ratón; las trazas conservan el alcance
-y las limitaciones del diagnóstico. La alpha.16 anterior queda documentada en
-[su revisión](docs/ISSUE_SWEEP_ALPHA16.md).
+DOCX conserva la herencia y las excepciones de revisión. ODT aplana la herencia
+de idioma; Leaf exige DOCX para revisión predeterminada desactivada o excepciones
+explícitas de revisión activada que ODT perdería. No se alteró WordCraft.
+
+**Estado tras la entrega: 32 cerrados y 20 abiertos, de 52 informes.** Quedan
+#1, #2, #7 y #9 de la pasada inicial. Durante el trabajo aparecieron #44–#52 y
+se reabrieron #18, #25, #26, #28, #34, #35 y #37. Sus nuevos requisitos siguen
+pendientes y están identificados en el informe; alpha.18 no los da por resueltos.
+En particular, Fuente/Tamaño y su lista vuelven a tener informes abiertos, aunque
+los recorridos de entrada ensayados en las regresiones pasen.
+
+La [alpha.17 anterior](docs/ISSUE_SWEEP_ALPHA17.md) y sus resultados se conservan
+como historial. La prueba de flecha de Párrafo se simplificó y ahora envía movimiento
+y clic de forma coherente, sin añadir controladores de captura al caso ensayado.
 
 ## Entrega acumulada completada
 

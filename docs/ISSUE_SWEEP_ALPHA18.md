@@ -1,8 +1,17 @@
-# Tercera revisión de issues — alpha.18
+# Tercera revisión de issues — alpha.18 publicada
 
-Petición de David: otra pasada para resolver y cerrar todo lo verificable. Rama
-wordcraft-saving; base publicada alpha.17. Esta fuente está en validación: no
-supone una versión publicada ni un issue cerrado.
+Publicada y verificada el 2 de noviembre de 2026:
+[alpha.18](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.18).
+Fuente y tag: `a8207cbdb5b11f050373287a44aecd835aefd50c`.
+Árbol: `f64eb01f30914e42e252ccc4c7d2a59733dc44ed`.
+[Validación verificable](ISSUE_SWEEP_ALPHA18_VALIDATION.json).
+
+La pasada inicial revisó 14 informes y cerró diez: **#5, #6, #14, #15, #16,
+#30 y #40–#43**. Permanecen #1, #2, #7 y #9. Durante el trabajo entraron nueve
+informes nuevos (#44–#52) y se reabrieron siete (#18, #25, #26, #28, #34, #35,
+#37). El estado consultado tras estos cierres es **32 cerrados y 20 abiertos,
+de 52 informes**. Los dieciséis posteriores se revisaron para continuidad y
+siguen abiertos; no se presentan como implementados en alpha.18.
 
 ## Implementación
 
@@ -36,50 +45,64 @@ supone una versión publicada ni un issue cerrado.
 ## Formatos y límites
 
 DOCX conserva valores heredados y excepciones (incluido noProof=false).
-El exportador ODT fijado aplana idiomas resueltos y no conserva valores de
-revisión false explícitos. Se mantiene el ODT ordinario; se bloquea guardar como
-ODT cuando el documento desactiva revisión por defecto o necesita una excepción
-explícita de revisión activada. El mensaje ofrece DOCX. La herencia de idioma
-por sí sola sigue siendo una limitación del ODT; no prometer equivalencia DOCX.
+El exportador ODT fijado aplana idiomas resueltos y no conserva ciertos valores
+false explícitos. Leaf mantiene el ODT ordinario; requiere DOCX cuando el documento
+desactiva revisión por defecto o necesita una excepción explícita que la active.
+La herencia de idioma por sí sola sigue siendo una limitación del ODT. No se
+modificaron motor, renderizador, dependencias ni parches de WordCraft.
 
-#1/#2 dependen de defectos del motor fijado (columnas desiguales y separador).
-#7 sigue la investigación de herencia de una historia par ausente; #9 necesita
-el documento/reproductor original del espaciado. No cambiar dependencias ni
-parches para cerrar informes sin evidencia.
+La selección arrastrada de tabla utiliza la página inicial, como el cliente
+público de referencia. No se afirma arrastre continuo de selección entre páginas.
+La tinta de selección mantiene coordenadas lógicas al reducir densidad para
+páginas grandes; menos de 12 millones de píxeles por superficie y dos en caché.
 
-La selección arrastrada de tabla utiliza la geometría de la página inicial,
-como el cliente público de referencia. No afirmar selección continua a través
-de páginas distintas. La interacción con tablas combina gestos y regiones
-complejas; registrar aquí lo que realmente supere las pruebas antes de cerrar.
+## Validación completada
 
-## Validación
+- 123 pruebas Rust, cuatro Python, 587 mensajes gettext completos, formato y
+  enlaces actuales; build GUI release optimizada con panic unwinding.
+- [CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41402369921):
+  controles nuevos en inglés/español, trece casos de ratón de tablas, cuerpos y
+  chevrones de Texto, revisión automática, navegación por caret y regresiones
+  anteriores. Ventanas ancha/estrecha, claro/oscuro, HiDPI, cierre y memoria.
+- Flatpak instalado GNOME 49: actualización desde alpha.17, datos conservados al
+  reinstalar, apertura/guardado mediante portal, impresión, enlaces y regresión
+  existente AT-SPI/Orca. No se afirma validación humana de GNOME OS o impresoras.
+- Descarga pública de los ocho assets, digests SHA256 y SHA256SUMS comprobados.
+  Bundle: **10.956.624 bytes**, SHA256
+  `2c3aeff8a530f7ba644825a099922f53c30a93b743487e79146fde9974c783e5`.
+  El tag y source-commit.txt coinciden con la fuente ensayada.
 
-Validación local: 123 pruebas Rust, cuatro Python, 587 mensajes gettext completos,
-formato y enlaces. GTK real bajo Xvfb/TCP: controles nuevos, colores nativos,
-navegación por caret, revisión automática, Propiedades y regresión de issues.
-Ratón con xdotool: bordes, esquina, cancelación, filas, columnas, rectángulos de
-celdas, tabla completa, inserciones, movimiento, combinadas y página posterior
-con cabecera repetida. Texto comprueba chevrón, opción, reaplicación y toggle
-mediante clics reales. Las coordenadas incluyen la transformación de superficie
-nativa y las paletas esperan su asignación estable.
+## Intentos previos y diagnóstico de ratón
 
-La tinta seleccionada conserva coordenadas lógicas incluso al reducir densidad
-para páginas grandes: menos de 12 millones de píxeles, dos superficies en caché.
-Restaurar Predeterminado borra también idioma directo complejo y de Asia oriental.
+Las dos primeras ejecuciones se detuvieron por aserciones con representaciones
+JSON incorrectas de color/resaltado. La tercera pasó los controles nuevos y las
+tablas, pero falló el script antiguo de la flecha de sangría. Ninguna compilación
+fallida se distribuyó como release.
 
-Pendiente antes de publicar/cerrar: build release de esta fuente, CI completa y
-Flatpak instalado. Dos ejecuciones iniciales se detuvieron por representaciones
-JSON incorrectas en las aserciones de color/resaltado (RGB objeto/array, no nombres).
-Se corrigieron las pruebas; ninguna de esas compilaciones se distribuyó como release. No se presenta
-el éxito de un test de comandos como prueba de interacción de ratón.
+Se simplificó ese diagnóstico para aportar solo coordenadas, sin controladores
+extra de captura. El script vuelve a entrar en la flecha y pulsa en una misma
+invocación de xdotool; sus metadatos X11 van a otro log para no sobrescribir stderr.
+Pasó tres veces en debug y tres en release, y después en la CI completa. Los
+cambios experimentales de controladores y menús se descartaron. No se atribuye
+el fallo a un único mecanismo interno de GTK sin prueba adicional.
 
+## Trabajo que continúa abierto
 
-La siguiente ejecución superó los controles nuevos y los trece casos de tabla,
-pero falló el script antiguo de sangría de Párrafo. La prueba añadía controladores
-de captura y enviaba movimiento/clic en clientes separados. Se simplificó el
-diagnóstico a coordenadas (sin controladores adicionales) y el script vuelve a
-entrar en la flecha y pulsa en una misma invocación. Los metadatos X11 van a otro
-log para no sobrescribir el stderr del proceso. Tres ejecuciones locales seguidas
-superaron la navegación real a la subpágina con el código de producción.
-Los cambios experimentales de controladores y menús se descartaron; no se alteró
-la implementación de Párrafo para hacer pasar el test. Falta la CI final completa.
+| Informes | Estado concreto |
+| --- | --- |
+| #1, #2 | Defectos de columnas en la base fijada; requieren solución del motor, sin parches del cliente. |
+| #7 | Historia par ausente hereda la predeterminada; reproducción reducida en ISSUE7_TRIAGE.md. |
+| #9 | El caso ordinario cambia la geometría; falta aislar el DOCX original con su espaciado contextual/automático. |
+| #18 | Se pide un selector de tema establecido (libpanel o patrón oficial), sustituyendo el dibujo actual. |
+| #25 | El salto debe dejar dos o tres líneas de contexto, además de la alineación implementada anteriormente. |
+| #26 | Centrado vertical y separación del menú de cada entrada de revisión. |
+| #28 | El doble clic funciona; falta arrastre con granularidad de párrafo tras triple clic. |
+| #34, #35 | Nuevos informes de lista de fuentes ilegible y escritura en Fuente/Tamaño. Las pruebas de recorridos concretos no cierran automáticamente estos informes; requieren su reproducción ampliada. |
+| #37 | Se pide AdwInlineViewSwitcher real, con API y mínimo libadwaita 1.7; alpha.18 conserva ViewSwitcher y el mínimo anterior. |
+| #44–#46 | Ctrl+K, edición del enlace completo desde cualquier punto y destino visible al pasar el ratón. |
+| #47 | Peso regular de nombres de marcadores. |
+| #48 | Prototipo de regla interactiva superpuesta, con hover, fade y fijación. |
+| #49 | Caret negro con fade basado en la referencia y preferencias del sistema. |
+| #50 | Repetir última acción, separado de la pila de Rehacer. |
+| #51 | Historiales en controles y menús: se confirmó undo_history/undoTo y redo_label; falta resolver la enumeración completa de Rehacer sin inventar otra pila. |
+| #52 | Miniaturas DOCX de GNOME Files: falta identificar miniaturizador, caché y paquete afectado; no hay causa atribuida ni se borró la caché del usuario. |

@@ -4,11 +4,19 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En curso: tercera revisión solicitada por David
+## Completado: tercera revisión y alpha.18
 
-Resolver los informes que permitan las API públicas de la base fijada y cerrar
-solo los verificados. [Trabajo y límites de alpha.18](docs/ISSUE_SWEEP_ALPHA18.md).
-Ninguna actualización del motor, Weblate, Flathub o fusión con main autorizada.
+Publicada y verificada. Diez informes cerrados de los catorce iniciales: #5, #6,
+#14–#16, #30 y #40–#43. 123 pruebas Rust, cuatro Python y CI nativa/Flatpak
+instalado completas. [Alcance y pendientes](docs/ISSUE_SWEEP_ALPHA18.md) ·
+[evidencia](docs/ISSUE_SWEEP_ALPHA18_VALIDATION.json).
+
+Estado posterior: 32 cerrados y 20 abiertos, de 52. Los cuatro pendientes de la
+pasada inicial son #1, #2, #7 y #9. Los nueve nuevos (#44–#52) y siete reabiertos
+(#18, #25, #26, #28, #34, #35, #37) conservan sus requisitos y siguen pendientes.
+No se incorporaron esas ampliaciones a alpha.18 ni se cerraron por pruebas de
+requisitos anteriores. No se actualizaron motor/dependencias de WordCraft,
+Weblate, Flathub ni main.
 
 ## Completado: mantenimiento y facilidad de contribución
 
@@ -41,9 +49,9 @@ enlaces utilizables, menús de revisión, navegación y refinamientos nativos.
 portales y Orca automatizada. [Resultado](docs/ISSUE_SWEEP_ALPHA17.md) y
 [evidencia](docs/ISSUE_SWEEP_ALPHA17_VALIDATION.json).
 
-Quedan 14 issues abiertos: los diez pendientes conservados y #40–#43, creados
-posteriormente. La tercera revisión está en curso; no se inicia Weblate, Flathub ni la fusión
-con main. La rama activa sigue siendo wordcraft-saving.
+Al terminar aquella entrega quedaban 14 issues abiertos, incluidos #40–#43.
+La tercera revisión y el estado actual están descritos arriba. La rama activa
+sigue siendo wordcraft-saving.
 
 ## Completado: revisión de issues y alpha.16
 

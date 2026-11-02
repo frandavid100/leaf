@@ -1,0 +1,185 @@
+{
+  "release": "v0.1.0-alpha.18",
+  "date": "2026-11-02",
+  "source_commit": "a8207cbdb5b11f050373287a44aecd835aefd50c",
+  "source_tree": "f64eb01f30914e42e252ccc4c7d2a59733dc44ed",
+  "base_commit": "f3978d815e9b5fd4e44f0f1351ddfe271b5fa5bb",
+  "branch": "wordcraft-saving",
+  "checks": {
+    "rust": 123,
+    "python": 4,
+    "gettext_source_messages": 587,
+    "fmt": true,
+    "docs_links": true,
+    "release_build": true,
+    "engine_dependencies_patches_unchanged": true
+  },
+  "local_native": {
+    "environment": "Xvfb via TCP; GTK accessibility bridge disabled locally",
+    "new_controls_theme_outline": true,
+    "proofing_properties_prior_issues": true,
+    "table_pointer_cases": 13,
+    "text_chevron_body_pointer": true,
+    "paragraph_pointer_release_repetitions": 3,
+    "light_dark_narrow_wide_visual_review": true
+  },
+  "ci": {
+    "run": 41402369921,
+    "url": "https://github.com/frandavid100/leaf/actions/runs/41402369921",
+    "native": {
+      "job": 125136775054,
+      "result": "success"
+    },
+    "installed": {
+      "job": 125142027211,
+      "result": "success",
+      "upgrade_from": "v0.1.0-alpha.17",
+      "portal_open_save": true,
+      "print_uri_portals": true,
+      "reinstall_retains_data": true,
+      "atspi_orca_regression": true
+    }
+  },
+  "remaining": [
+    1,
+    2,
+    7,
+    9
+  ],
+  "limits": [
+    "ODT flattens language inheritance; disabled document review and explicit enabled-review overrides require DOCX.",
+    "Table selection dragging uses the starting page, matching the public reference client.",
+    "Automated validation is not human GNOME OS/Orca/printing validation."
+  ],
+  "earlier_attempts": [
+    {
+      "run": 41394976481,
+      "source": "4c7f85a03d0a461982e4a2ff27ceb70d85d434e8",
+      "result": "diagnostic color JSON assertion"
+    },
+    {
+      "run": 41395612668,
+      "source": "6a2b5867c63a665ee734686f6ea6813864698532",
+      "result": "diagnostic highlight JSON assertion"
+    },
+    {
+      "run": 41397363992,
+      "source": "27443aaba7b3bb9d8ab7e54267a926607944d791",
+      "result": "legacy paragraph pointer test input delivery; new native checks passed"
+    }
+  ],
+  "public_release": {
+    "url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.18",
+    "published_at": "2026-11-02T07:10:33Z",
+    "source": "a8207cbdb5b11f050373287a44aecd835aefd50c",
+    "assets": [
+      {
+        "name": "flatpak-metadata.txt",
+        "bytes": 200,
+        "sha256": "a7fdfdaba74ae6e2e1a65ef15051642e1b18808be444370aa3b4bad71b3b2345",
+        "verified": true
+      },
+      {
+        "name": "flatpak-smoke.log",
+        "bytes": 4260,
+        "sha256": "00005142121e437a6399d2dea6707193892ea8e636ebc01fb4403dd0ff842287",
+        "verified": true
+      },
+      {
+        "name": "INSTALL.md",
+        "bytes": 2138,
+        "sha256": "1838f762929dec10060127886297adeac522cb6f3ac968a3d1cef9444426ec7b",
+        "verified": true
+      },
+      {
+        "name": "Leaf-0.1.0-alpha.18-x86_64.flatpak",
+        "bytes": 10956624,
+        "sha256": "2c3aeff8a530f7ba644825a099922f53c30a93b743487e79146fde9974c783e5",
+        "verified": true
+      },
+      {
+        "name": "runtime-commit.txt",
+        "bytes": 65,
+        "sha256": "588c80c4d5d01ba6871ca2336d2c615e16c8d0fdbdcc8c6707bdbe1ce3173499",
+        "verified": true
+      },
+      {
+        "name": "runtime.txt",
+        "bytes": 29,
+        "sha256": "cc98943bf0d0696d69c2e647f51ef070a92528714cd03342e77b1d45a92efa3c",
+        "verified": true
+      },
+      {
+        "name": "SHA256SUMS",
+        "bytes": 596,
+        "sha256": "878e4ff0a5b55a6c529248d84cad5b7ab87027b67c8e00472ede3532016c7c4e",
+        "verified": true
+      },
+      {
+        "name": "source-commit.txt",
+        "bytes": 41,
+        "sha256": "ccb191afb2da7af1fd6292e044276a18d45e1d58371947225ff5c995328f4070",
+        "verified": true
+      }
+    ],
+    "all_published_digests_and_sums_verified": true
+  },
+  "closed_issues": [
+    5,
+    6,
+    14,
+    15,
+    16,
+    30,
+    40,
+    41,
+    42,
+    43
+  ],
+  "open_issues_at_completion": [
+    1,
+    2,
+    7,
+    9,
+    18,
+    25,
+    26,
+    28,
+    34,
+    35,
+    37,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52
+  ],
+  "new_or_reopened_during_pass": {
+    "new": [
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52
+    ],
+    "reopened": [
+      18,
+      25,
+      26,
+      28,
+      34,
+      35,
+      37
+    ],
+    "reviewed_for_followup": true,
+    "implemented_in_this_release": false
+  }
+}
