@@ -35,7 +35,12 @@ impl PrintFile {
             )
         })?;
         let file = Self { directory };
-        crate::pdf_export::export(&mut Session::new(document), &file.path())?;
+        // WordCraft 0.14 separates printer jobs from exported PDFs: links stay
+        // clickable in exports, but their annotations can break printer fitting.
+        let (bytes, _) = Session::new(document)
+            .print_job_pdf(&serde_json::json!({"markup": false}))
+            .map_err(|e| e.to_string())?;
+        std::fs::write(file.path(), bytes).map_err(|e| e.to_string())?;
         Ok(file)
     }
     pub fn path(&self) -> PathBuf {
