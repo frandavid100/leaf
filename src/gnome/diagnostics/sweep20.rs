@@ -129,7 +129,7 @@ fn stage(t: Rc<Sweep>, n: u8) {
             ("hover", vec![(10, 20)])
         }
         13 => {
-            // Zoom's caret-restoration idle has settled before scrolling away.
+            // Zoom's page-restoration idle has settled before scrolling away.
             let a = u.scroll.vadjustment();
             a.set_value((a.upper() - a.page_size()) / 2.);
             ("hover", vec![(10, 20)])
@@ -146,7 +146,6 @@ fn stage(t: Rc<Sweep>, n: u8) {
         17 => ("cancel", vec![]),
         18 | 21 => {
             if n == 18 {
-                zoom_to(u, 1.0);
                 u.scroll.vadjustment().set_value(0.);
             }
             let w = find_widget(&t.window, "ruler-activation-strip").unwrap();

@@ -510,7 +510,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             cr.line_to(23. - length, y.round() + 0.5);
             let _ = cr.stroke();
             if n % 10 == 0 {
-                cr.move_to(2., (y + 3.).clamp(8., height as f64 - 2.));
+                cr.move_to(2., (y + 3.).clamp(8., (height as f64 - 2.).max(8.)));
                 let _ = cr.show_text(&(n / 10).to_string());
             }
         }

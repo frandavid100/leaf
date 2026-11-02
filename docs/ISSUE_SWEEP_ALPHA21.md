@@ -74,7 +74,7 @@ expectation after the failure.
 The local pointer checks pass for native history, horizontal/vertical hover,
 independent hiding, indent drag, keyboard adjustment, Undo, Escape cancellation
 and a drag released outside the thin strip. A separate scroll probe waits for
-zoom's deferred caret restoration before scrolling to a different visible page;
+zoom's deferred page restoration before scrolling to a different visible page;
 its assertion still requires that page to differ from the caret page.
 
 The WordCraft 0.14.0 synthetic compatibility audit also completes: a 13-page TOC
@@ -82,3 +82,10 @@ remains updatable after DOCX reopening, structured fraction/script/root math,
 one footnote story and floating-image wrapping survive DOCX. ODT still drops the
 TOC field, note story and equation, and flattens floating wrapping. The existing
 Leaf guards are therefore retained; #53–#56 remain open.
+
+The final local ruler pass succeeds in English at 1× and Spanish at 2×,
+including leaving/re-entering, cancellation and release outside the ruler.
+The offscreen edit guard remains enabled: zoom deliberately preserves the
+visible page; the test scrolls back after that restoration before editing the
+selected paragraph. Large-font/narrow-window Font and Size geometry is 260/260
+logical pixels, with no GTK width-range critical.
