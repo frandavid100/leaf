@@ -18,6 +18,8 @@ flatpak run --socket=x11 --nosocket=wayland "$app_id" --sweep18-ui-test 2>dist/f
 grep -q SWEEP18_UI_OK dist/flatpak-sweep18.log
 bash tools/table-pointer-test.sh tools/flatpak_print_run.sh
 cp table18-*.log dist/
+bash tools/text-pointer-test.sh tools/flatpak_print_run.sh
+cp text18-pointer.log dist/
 bash tools/interaction-pointer-test.sh tools/flatpak_print_run.sh
 cp interactions-pointer.log dist/flatpak-interactions.log
 flatpak run "$app_id" --issue-preferences-read-test | tee dist/flatpak-issue-preferences.log

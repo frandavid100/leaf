@@ -62,7 +62,10 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
     for n in [1, 2] {
         select_paragraph(ui, n);
         palette.ink.emit_by_name::<()>("clicked", &[]);
-        assert_eq!(selection_character(ui)["color"], "1C71D8");
+        assert_eq!(
+            selection_character(ui)["color"],
+            json!({"Rgb":[28,113,216]})
+        );
         assert!(!palette.ink.popover().unwrap().is_visible());
     }
     button(
@@ -279,6 +282,23 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
                 let r = g.handle();
                 (r.x + 3.0, r.y + 3.0, 30.0, 25.0)
             }
+            "column-select" => (
+                (g.cols[0] + g.cols[1]) / 2.0,
+                g.top() - 4.0,
+                g.cols[1] - g.cols[0],
+                0.0,
+            ),
+            "cells" => (
+                g.left() + 5.0,
+                (g.rows[0].top + g.rows[0].bottom) / 2.0,
+                g.cols[1] - g.left() + 6.0,
+                g.rows[1].bottom - g.rows[0].bottom,
+            ),
+            "table-select" => {
+                let r = m::handle(&g);
+                (r.x + 4.0, r.y + 4.0, 0.0, 0.0)
+            }
+            "insert-row" => (g.left() - 8.0, g.rows[0].bottom, 0.0, 0.0),
             "select" => (
                 g.left() - 18.0,
                 (g.rows[0].top + g.rows[0].bottom) / 2.0,
@@ -315,9 +335,18 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
                     assert_eq!(s.doc, original);
                     assert_eq!(s.undo_depth(), depth);
                 }
-                "select" => {
+                "select" | "column-select" | "cells" | "table-select" => {
                     assert!(s.cell_range().is_some());
-                    assert_eq!(wordcraft_engine::cmd::table::selected_cells(s).len(), 6);
+                    assert_eq!(
+                        wordcraft_engine::cmd::table::selected_cells(s).len(),
+                        if case == "cells" {
+                            4
+                        } else if case == "table-select" {
+                            9
+                        } else {
+                            6
+                        }
+                    );
                     assert_eq!(s.doc, original);
                     assert_eq!(s.rev(), rev);
                     assert_eq!(s.undo_depth(), depth);
@@ -335,5 +364,136 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
             eprintln!("TABLE18_OK case={case}");
             a.quit();
         });
+    });
+}
+
+fn menu_descendant(widget: &gtk::Widget) -> Option<gtk::MenuButton> {
+    if let Ok(m) = widget.clone().downcast::<gtk::MenuButton>() {
+        return Some(m);
+    }
+    let mut child = widget.first_child();
+    while let Some(w) = child {
+        if let Some(m) = menu_descendant(&w) {
+            return Some(m);
+        }
+        child = w.next_sibling();
+    }
+    None
+}
+fn text_pointer_target(marker: &str, pop: &gtk::Popover, widget: &impl IsA<gtk::Widget>) {
+    use gdk::prelude::PopupExt;
+    let r = widget.as_ref().compute_bounds(pop).unwrap();
+    let (tx, ty) = pop.surface_transform();
+    let (mut x, mut y) = (-tx, -ty);
+    let mut surface = pop.surface();
+    while let Some(s) = surface {
+        let Ok(p) = s.downcast::<gdk::Popup>() else {
+            break;
+        };
+        x += p.position_x() as f64;
+        y += p.position_y() as f64;
+        surface = gdk::prelude::PopupExt::parent(&p);
+    }
+    eprintln!(
+        "{marker} {} {}",
+        (x + r.x() as f64 + r.width() as f64 / 2.0).round() as i32,
+        (y + r.y() as f64 + r.height() as f64 / 2.0).round() as i32
+    );
+}
+pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
+    ui.host
+        .upgrade()
+        .unwrap()
+        .window
+        .set_title(Some("Leaf Text Pointer Regression"));
+    opened(
+        ui,
+        Session::new(wordcraft_doc::Document::from_text(
+            "First target\nSecond target",
+        )),
+        "Text pointer",
+    );
+    select_paragraph(ui, 0);
+    let menu = format_button(ui, "text-menu").unwrap();
+    menu.popup();
+    let pop = menu.popover().unwrap();
+    let tools = ui.text_tools.borrow().as_ref().unwrap().clone();
+    let palette = tools.palette.borrow().as_ref().unwrap().clone();
+    let (u, a) = (ui.clone(), app.clone());
+    let phase = Cell::new(0);
+    let ticks = Cell::new(0);
+    glib::timeout_add_local(std::time::Duration::from_millis(100), move || {
+        ticks.set(ticks.get() + 1);
+        assert!(
+            ticks.get() < 300,
+            "text pointer phase {} timed out",
+            phase.get()
+        );
+        match phase.get() {
+            0 if pop.is_mapped() => {
+                let arrow = menu_descendant(palette.ink.upcast_ref()).unwrap();
+                text_pointer_target("TEXT18_INK_ARROW", &pop, &arrow);
+                phase.set(1);
+            }
+            1 if palette.ink.popover().unwrap().is_mapped() => {
+                let child = palette.ink.popover().unwrap();
+                let blue = find_widget(&child, "ink-choice-1C71D8").unwrap();
+                text_pointer_target("TEXT18_BLUE", &child, &blue);
+                phase.set(2);
+            }
+            2 if palette.last_ink.borrow().as_str() == "1C71D8" => {
+                assert_eq!(
+                    selection_character(&u)["color"],
+                    json!({"Rgb":[28,113,216]})
+                );
+                select_paragraph(&u, 1);
+                let body = palette.ink.first_child().unwrap();
+                let body = body.first_child().unwrap();
+                text_pointer_target("TEXT18_INK_BODY", &pop, &body);
+                phase.set(3);
+            }
+            3 if selection_character(&u)["color"] == json!({"Rgb":[28,113,216]}) => {
+                assert!(!palette.ink.popover().unwrap().is_visible());
+                let arrow = menu_descendant(palette.underline.upcast_ref()).unwrap();
+                text_pointer_target("TEXT18_UNDERLINE_ARROW", &pop, &arrow);
+                phase.set(4);
+            }
+            4 if palette.underline.popover().unwrap().is_mapped() => {
+                let child = palette.underline.popover().unwrap();
+                let double = find_widget(&child, "underline-choice-double").unwrap();
+                text_pointer_target("TEXT18_DOUBLE", &child, &double);
+                phase.set(5);
+            }
+            5 if palette.last_underline.borrow().as_str() == "double" => {
+                assert_eq!(selection_character(&u)["underline"], "double");
+                let body = palette
+                    .underline
+                    .first_child()
+                    .unwrap()
+                    .first_child()
+                    .unwrap();
+                text_pointer_target("TEXT18_UNDERLINE_OFF", &pop, &body);
+                phase.set(6);
+            }
+            6 if selection_character(&u)["underline"] == "none" => {
+                let body = palette
+                    .underline
+                    .first_child()
+                    .unwrap()
+                    .first_child()
+                    .unwrap();
+                text_pointer_target("TEXT18_UNDERLINE_ON", &pop, &body);
+                phase.set(7);
+            }
+            7 if selection_character(&u)["underline"] == "double" => {
+                assert!(!palette.underline.popover().unwrap().is_visible());
+                assert_eq!(*palette.last_ink.borrow(), "1C71D8");
+                eprintln!("TEXT18_POINTER_OK chevron=true choice=true reapply=true toggle=true");
+                a.quit();
+                return glib::ControlFlow::Break;
+            }
+            _ => {}
+        }
+        glib::ControlFlow::Continue
     });
 }

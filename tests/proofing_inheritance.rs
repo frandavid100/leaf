@@ -67,6 +67,8 @@ fn changing_defaults_is_protected_and_caret_default_uses_inheritance() {
     d::text(&mut s, "en-US").unwrap();
     d::text(&mut s, "default").unwrap();
     assert!(s.pending.as_ref().unwrap().lang.is_none());
+    assert!(s.pending.as_ref().unwrap().lang_bidi.is_none());
+    assert!(s.pending.as_ref().unwrap().lang_ea.is_none());
     assert!(s.pending.as_ref().unwrap().no_proof.is_none());
     s.doc.settings.protection = Some("readOnly".into());
     let before = s.doc.clone();

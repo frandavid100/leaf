@@ -91,6 +91,7 @@ jobs:
             grep -q SWEEP18_UI_OK sweep18-$language.log
           done
           xvfb-run -a bash tools/table-pointer-test.sh
+          xvfb-run -a bash tools/text-pointer-test.sh
       - name: Native document menu actions
         run: |
           set -o pipefail
@@ -447,6 +448,7 @@ jobs:
           path: |
             sweep18-*.log
             table18-*.log
+            text18-*.log
             issues-*.log
             uri-launch.log
             interactions-pointer.log

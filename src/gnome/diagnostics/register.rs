@@ -41,6 +41,12 @@ pub(super) fn install_diagnostics(
         titles_toggle,
         search_panel,
     } = controls;
+    if std::env::args().any(|a| a == "--text18-pointer-test") {
+        let (u, a) = (ui.clone(), app.clone());
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+            text18_pointer_test(&u, &a)
+        });
+    }
     if std::env::args().any(|a| a == "--sweep18-ui-test") {
         let (u, a) = (ui.clone(), app.clone());
         glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {

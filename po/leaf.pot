@@ -1425,7 +1425,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:216 src/gnome/context.rs:478 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/register.rs:133 src/gnome/paragraph.rs:594 src/gnome/paragraph.rs:1018 src/gnome/tab.rs:281 src/gnome/tab.rs:502
+#: src/gnome/context.rs:216 src/gnome/context.rs:478 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/register.rs:139 src/gnome/paragraph.rs:594 src/gnome/paragraph.rs:1018 src/gnome/tab.rs:281 src/gnome/tab.rs:502
 msgid "Paragraph"
 msgstr ""
 
@@ -1909,7 +1909,7 @@ msgstr ""
 msgid "Strikethrough"
 msgstr ""
 
-#: src/gnome/context.rs:213 src/gnome/context.rs:477 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/register.rs:132 src/gnome/styles.rs:391 src/gnome/tab.rs:277 src/gnome/tab.rs:501
+#: src/gnome/context.rs:213 src/gnome/context.rs:477 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/register.rs:138 src/gnome/styles.rs:391 src/gnome/tab.rs:277 src/gnome/tab.rs:501
 msgid "Style"
 msgstr ""
 
@@ -1977,7 +1977,7 @@ msgstr ""
 msgid "Teal"
 msgstr ""
 
-#: src/gnome/adaptive.rs:290 src/gnome/context.rs:219 src/gnome/context.rs:479 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:134 src/gnome/diagnostics/spellcheck.rs:113 src/gnome/tab.rs:235 src/gnome/tab.rs:268 src/gnome/tab.rs:503
+#: src/gnome/adaptive.rs:290 src/gnome/context.rs:219 src/gnome/context.rs:479 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:140 src/gnome/diagnostics/spellcheck.rs:113 src/gnome/tab.rs:235 src/gnome/tab.rs:268 src/gnome/tab.rs:503
 msgid "Text"
 msgstr ""
 

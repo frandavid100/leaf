@@ -19,7 +19,11 @@ fn defaults_command(s: &mut Session, v: &Value) -> CmdResult {
         return Ok(json!({"changed":false}));
     }
     if let Some(lang) = lang {
-        s.doc.styles.default_chr.lang = Some(lang);
+        if s.doc.styles.default_chr.lang.as_ref() != Some(&lang) {
+            s.doc.styles.default_chr.lang_bidi = Some(lang.clone());
+            s.doc.styles.default_chr.lang_ea = Some(lang.clone());
+            s.doc.styles.default_chr.lang = Some(lang);
+        }
     }
     if let Some(on) = review {
         s.doc.styles.default_chr.no_proof = Some(!on);
@@ -39,11 +43,15 @@ fn text_command(s: &mut Session, v: &Value) -> CmdResult {
     wordcraft_engine::cmd::format::apply(s, &|c| match choice {
         "default" => {
             c.lang = None;
+            c.lang_bidi = None;
+            c.lang_ea = None;
             c.no_proof = None;
         }
         "off" => c.no_proof = Some(true),
         _ => {
             c.lang = lang.clone();
+            c.lang_bidi = lang.clone();
+            c.lang_ea = lang.clone();
             c.no_proof = Some(false);
         }
     })
@@ -157,9 +165,9 @@ pub fn direct(s: &Session) -> Vec<CharProps> {
 pub fn choice(s: &Session) -> String {
     let direct = direct(s);
     if !direct.is_empty()
-        && direct
-            .iter()
-            .all(|p| p.lang.is_none() && p.no_proof.is_none())
+        && direct.iter().all(|p| {
+            p.lang.is_none() && p.lang_bidi.is_none() && p.lang_ea.is_none() && p.no_proof.is_none()
+        })
     {
         return "default".into();
     }
