@@ -25,6 +25,9 @@ pub(super) fn document_page_picture() -> gtk::Picture {
 }
 
 pub(super) fn update_status(ui: &Rc<Ui>) {
+    if let Some(ruler) = ui.ruler.borrow().as_ref() {
+        ruler.refresh();
+    }
     // Un cambio de tamaño puede emitir una señal de scroll de forma reentrante.
     let Ok(mut current) = ui.current.try_borrow_mut() else {
         return;
@@ -42,9 +45,6 @@ pub(super) fn update_status(ui: &Rc<Ui>) {
             )
         })
         .unwrap_or_else(|| wordcraft_gnome::t!("Pages").into());
-    if ui.pages_button.tooltip_text().as_deref() != Some(pages_tip.as_str()) {
-        ui.pages_button.set_tooltip_text(Some(&pages_tip));
-    }
     if let Some(doc) = current.as_mut() {
         ui.zoom_label
             .set_text(&format!("{:.0} %", doc.zoom * 100.0));
@@ -60,6 +60,11 @@ pub(super) fn update_status(ui: &Rc<Ui>) {
         }
     } else {
         ui.zoom_label.set_text("100 %");
+    }
+    // Updating tooltip text can synchronously query the canvas tooltip.
+    drop(current);
+    if ui.pages_button.tooltip_text().as_deref() != Some(pages_tip.as_str()) {
+        ui.pages_button.set_tooltip_text(Some(&pages_tip));
     }
 }
 

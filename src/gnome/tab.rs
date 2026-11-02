@@ -368,6 +368,7 @@ pub(super) fn build_tab(
         format_italic: italic_button.clone(),
         format_underline: underline_button.clone(),
         format_syncing: Cell::new(false),
+        ruler: RefCell::new(None),
         history_controls: RefCell::new(None),
         repeat_action: RefCell::new(None),
         document_menu_open: Cell::new(false),
@@ -413,6 +414,7 @@ pub(super) fn build_tab(
     });
     ui.history_controls
         .replace(Some(install_history_controls(&ui, &history_tools)));
+    ui.ruler.replace(Some(install_ruler(&ui, &canvas_overlay)));
     install_document_menu(&menu_button, &ui);
 
     {

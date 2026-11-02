@@ -2017,3 +2017,72 @@ msgstr "Review New Documents"
 
 msgid "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
 msgstr "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
+
+msgid "First line indent"
+msgstr "First line indent"
+
+msgid "Keep the ruler visible"
+msgstr "Keep the ruler visible"
+
+msgid "Leading indent"
+msgstr "Leading indent"
+
+msgid "New Paragraph"
+msgstr "New Paragraph"
+
+msgid "Page {page}"
+msgstr "Page {page}"
+
+msgid "Pages: {current} of {total}"
+msgstr "Pages: {current} of {total}"
+
+msgid "Paragraph Spacing"
+msgstr "Paragraph Spacing"
+
+msgid "Redo History"
+msgstr "Redo History"
+
+msgid "Repeat Last Action"
+msgstr "Repeat Last Action"
+
+msgid "Ruler"
+msgstr "Ruler"
+
+msgid "Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it."
+msgstr "Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it."
+
+msgid "Ruler: {marker}, {value} pt, page {page}"
+msgstr "Ruler: {marker}, {value} pt, page {page}"
+
+msgid "Save as DOCX to preserve editable equations. The current ODT exporter cannot keep their structure."
+msgstr "Save as DOCX to preserve editable equations. The current ODT exporter cannot keep their structure."
+
+msgid "Save as DOCX to preserve floating image placement and text wrapping. The current ODT exporter makes these images inline."
+msgstr "Save as DOCX to preserve floating image placement and text wrapping. The current ODT exporter makes these images inline."
+
+msgid "Save as DOCX to preserve footnotes. The current ODT exporter cannot keep their structure."
+msgstr "Save as DOCX to preserve footnotes. The current ODT exporter cannot keep their structure."
+
+msgid "Save as DOCX to preserve the automatic table of contents. The current ODT exporter only keeps static entries."
+msgstr "Save as DOCX to preserve the automatic table of contents. The current ODT exporter only keeps static entries."
+
+msgid "Tab stop"
+msgstr "Tab stop"
+
+msgid "Text Formatting"
+msgstr "Text Formatting"
+
+msgid "The document has changed; start the ruler gesture again."
+msgstr "The document has changed; start the ruler gesture again."
+
+msgid "Trailing indent"
+msgstr "Trailing indent"
+
+msgid "Typing"
+msgstr "Typing"
+
+msgid "Undo History"
+msgstr "Undo History"
+
+msgid "{action} ({count} steps)"
+msgstr "{action} ({count} steps)"

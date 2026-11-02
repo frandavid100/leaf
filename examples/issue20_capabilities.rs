@@ -108,8 +108,11 @@ fn main() {
     let mut s = Session::new(Document::from_text(
         &"Words flowing beside an image. ".repeat(80),
     ));
-    wordcraft_gnome::pictures::insert(&mut s, Path::new("/tmp/leaf20-capabilities/image.png"))
-        .unwrap();
+    s.run(
+        "insert.picture",
+        &json!({"data":include_str!("../tests/fixtures/picture.b64").trim()}),
+    )
+    .unwrap();
     s.run("arrange.wrap", &json!({"wrap":"square"})).unwrap();
     s.run("arrange.position", &json!({"preset":"topLeft"}))
         .unwrap();

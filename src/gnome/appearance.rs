@@ -74,6 +74,7 @@ pub(super) fn install_css() {
     let provider = gtk::CssProvider::new();
     // Adwaita suministra color, espaciados y estados; CSS mínimo para papel.
     provider.load_from_data("
+      .leaf-ruler { background: @view_bg_color; border-bottom: 1px solid @borders; }
       .document-scroll { background: @window_bg_color; }
       .document-sheet { background: white; border-radius: 6px; box-shadow: 0 1px 4px alpha(black, 0.15); }
       .leaf-dark-document .document-sheet, .leaf-dark-document .thumbnail-sheet { background: #333333; }

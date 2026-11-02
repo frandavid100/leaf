@@ -21,3 +21,7 @@ text18-*.log
 # Native issue-followup evidence (uploaded by CI, never source assets)
 /followup19-*.log
 /followup19-*.png
+
+# Native alpha20 interaction evidence
+/sweep20-pointer-*.log
+/sweep20-pointer-*.png

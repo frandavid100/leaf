@@ -25,6 +25,12 @@ pub(super) fn install_diagnostics(
     app: &Application,
     controls: DiagnosticControls<'_>,
 ) {
+    if std::env::args().any(|a| a == "--sweep20-pointer-test") {
+        let (u, w, a) = (ui.clone(), window.clone(), app.clone());
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+            sweep20_pointer_test(&u, &w, &a)
+        });
+    }
     let DiagnosticControls {
         app_menu,
         style_menu,

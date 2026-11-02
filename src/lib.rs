@@ -164,3 +164,5 @@ pub mod text_properties;
 pub mod selection_ink;
 
 pub mod history;
+
+pub mod ruler;

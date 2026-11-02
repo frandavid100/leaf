@@ -22,6 +22,9 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
     if let Some(text) = ui.text_controls.borrow().as_ref() {
         text.stop();
     }
+    if let Some(ruler) = ui.ruler.borrow_mut().take() {
+        ruler.stop();
+    }
     stop_document_drag(ui);
     ui.input_context.focus_out();
     ui.input_context.set_client_widget(None::<&gtk::Widget>);

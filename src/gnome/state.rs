@@ -106,6 +106,7 @@ pub(super) struct Ui {
     pub(super) format_italic: gtk::ToggleButton,
     pub(super) format_underline: gtk::ToggleButton,
     pub(super) format_syncing: Cell<bool>,
+    pub(super) ruler: RefCell<Option<Rc<Ruler>>>,
     pub(super) history_controls: RefCell<Option<Rc<HistoryControls>>>,
     pub(super) repeat_action: RefCell<Option<wordcraft_gnome::history::RepeatAction>>,
     pub(super) document_menu_open: Cell<bool>,

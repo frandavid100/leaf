@@ -430,15 +430,23 @@ pub(super) fn install_keyboard_input(
         let weak = Rc::downgrade(&ui);
         ui.document_box.connect_has_focus_notify(move |_| {
             if let Some(ui) = weak.upgrade() {
-                refresh_selection(&ui);
                 restart_caret(&ui);
+                if let Some(d) = ui.current.borrow().as_ref() {
+                    for area in &d.selection_areas {
+                        area.queue_draw();
+                    }
+                }
             }
         });
         let weak = Rc::downgrade(&ui);
         window.connect_is_active_notify(move |_| {
             if let Some(ui) = weak.upgrade() {
-                refresh_selection(&ui);
                 restart_caret(&ui);
+                if let Some(d) = ui.current.borrow().as_ref() {
+                    for area in &d.selection_areas {
+                        area.queue_draw();
+                    }
+                }
             }
         });
         let input = ui.input_context.clone();

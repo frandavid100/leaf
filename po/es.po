@@ -2017,3 +2017,72 @@ msgstr "Revisar documentos nuevos"
 
 msgid "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
 msgstr "Guarda como DOCX para conservar la herencia de idioma y revisión. El exportador ODT actual pierde esa herencia."
+
+msgid "First line indent"
+msgstr "Sangría de primera línea"
+
+msgid "Keep the ruler visible"
+msgstr "Mantener visible la regla"
+
+msgid "Leading indent"
+msgstr "Sangría inicial"
+
+msgid "New Paragraph"
+msgstr "Nuevo párrafo"
+
+msgid "Page {page}"
+msgstr "Página {page}"
+
+msgid "Pages: {current} of {total}"
+msgstr "Páginas: {current} de {total}"
+
+msgid "Paragraph Spacing"
+msgstr "Espaciado de párrafo"
+
+msgid "Redo History"
+msgstr "Historial de rehacer"
+
+msgid "Repeat Last Action"
+msgstr "Repetir última acción"
+
+msgid "Ruler"
+msgstr "Regla"
+
+msgid "Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it."
+msgstr "Regla (cm). Arrastra sangrías o tabulaciones; pulsa para añadir una tabulación izquierda. Las flechas ajustan el marcador seleccionado, Arriba/Abajo eligen otro, Insertar añade una tabulación y Suprimir la elimina."
+
+msgid "Ruler: {marker}, {value} pt, page {page}"
+msgstr "Regla: {marker}, {value} pt, página {page}"
+
+msgid "Save as DOCX to preserve editable equations. The current ODT exporter cannot keep their structure."
+msgstr "Guarda como DOCX para conservar las ecuaciones editables. El exportador ODT actual no conserva su estructura."
+
+msgid "Save as DOCX to preserve floating image placement and text wrapping. The current ODT exporter makes these images inline."
+msgstr "Guarda como DOCX para conservar la posición de las imágenes flotantes y el ajuste del texto. El exportador ODT actual convierte estas imágenes en imágenes en línea."
+
+msgid "Save as DOCX to preserve footnotes. The current ODT exporter cannot keep their structure."
+msgstr "Guarda como DOCX para conservar las notas al pie. El exportador ODT actual no conserva su estructura."
+
+msgid "Save as DOCX to preserve the automatic table of contents. The current ODT exporter only keeps static entries."
+msgstr "Guarda como DOCX para conservar el índice automático. El exportador ODT actual solo conserva entradas estáticas."
+
+msgid "Tab stop"
+msgstr "Tabulación"
+
+msgid "Text Formatting"
+msgstr "Formato del texto"
+
+msgid "The document has changed; start the ruler gesture again."
+msgstr "El documento ha cambiado; inicia de nuevo el gesto en la regla."
+
+msgid "Trailing indent"
+msgstr "Sangría final"
+
+msgid "Typing"
+msgstr "Escritura"
+
+msgid "Undo History"
+msgstr "Historial de deshacer"
+
+msgid "{action} ({count} steps)"
+msgstr "{action} ({count} pasos)"

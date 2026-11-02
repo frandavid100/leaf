@@ -159,6 +159,13 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
             ui.document_box.grab_focus();
         }
     });
+    window_action(host, "ruler", |h| {
+        if let Some(ui) = selected_ui(h) {
+            if let Some(r) = ui.ruler.borrow().as_ref() {
+                r.show_and_focus();
+            }
+        }
+    });
     window_action(host, "repeat", |h| {
         if let Some(ui) = selected_ui(h) {
             repeat_last(&ui);
@@ -356,6 +363,9 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
     let root = gio::Menu::new();
     let controls = ui.history_controls.borrow().as_ref().unwrap().clone();
     root.append_section(None, &controls.document_model);
+    let view = gio::Menu::new();
+    menu_item(&view, wordcraft_gnome::t!("Ruler"), "ruler", None);
+    root.append_section(None, &view);
     let save = gio::Menu::new();
     menu_item(
         &save,

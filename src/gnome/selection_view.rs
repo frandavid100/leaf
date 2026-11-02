@@ -46,6 +46,9 @@ pub(super) fn refresh_selection(ui: &Rc<Ui>) {
     if let Some(p) = ui.picture.borrow().as_ref() {
         p.refresh();
     }
+    if let Some(ruler) = ui.ruler.borrow().as_ref() {
+        ruler.refresh();
+    }
     ui.document_box.sync(ui);
 }
 

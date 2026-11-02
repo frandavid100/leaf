@@ -8,6 +8,9 @@ pub fn labels(s: &Session, redo: bool) -> Vec<String> {
     if !redo {
         return s.undo_labels();
     }
+    if !s.can_redo() {
+        return Vec::new();
+    }
     let mut copy = Session::new(wordcraft_doc::Document::new());
     copy.restore(s.edit_snapshot());
     let mut result = Vec::new();
@@ -73,6 +76,7 @@ impl RepeatAction {
                 "format.size" => vec!["size"],
                 "format.color" | "format.highlight" => vec!["color"],
                 "para.spacing" => vec!["before", "after"],
+                "para.indents" => vec!["left", "right", "firstLine"],
                 "para.lineSpacing" => vec!["rule", "value"],
                 "para.alignLeft" | "para.alignCenter" | "para.alignRight" | "para.justify"
                 | "para.indent" | "para.outdent" => vec![],
