@@ -36,6 +36,9 @@ pub(super) fn host_cache_ui_test(ui: &Rc<Ui>, app: &Application) {
         let pages = ui.current.borrow().as_ref().unwrap().sizes.len();
         assert!(pages > 5);
         let original = ui.current.borrow().as_ref().unwrap().session.doc.clone();
+        let styles = ui.style.borrow().as_ref().unwrap().clone();
+        styles.main();
+        assert!(!styles.list.is_mapped());
         let result = perf_phase("cursor_regression", || {
             for _ in 0..40 {
                 selected_command(ui, "right", false);
@@ -45,6 +48,31 @@ pub(super) fn host_cache_ui_test(ui: &Rc<Ui>, app: &Application) {
             result["counts"]["overlay_queue"].as_u64().unwrap() < 120,
             "only old/new caret layers need repainting"
         );
+        assert_eq!(
+            result["counts"]["style_rows_visited"].as_u64().unwrap_or(0),
+            0,
+            "a populated hidden style list must not be traversed on caret moves"
+        );
+        let style_menu = format_button(ui, "style-menu").unwrap();
+        style_menu.popup();
+        perf_pump();
+        assert!(styles.list.is_mapped());
+        let shown = perf_phase("visible_styles", || styles.sync_selection());
+        assert!(shown["counts"]["style_rows_visited"].as_u64().unwrap() > 0);
+        let apply = find_widget(&styles.list, "style-apply-Normal").unwrap();
+        assert!(apply.parent().unwrap().has_css_class("current-style"));
+        style_menu.popover().unwrap().popdown();
+        perf_pump();
+        let window = ui.host.upgrade().unwrap().window.clone();
+        let context = show_document_context(ui, &window, 60, 80, DocumentContext::Text);
+        context.set_visible_submenu(Some(wordcraft_gnome::t!("Style")));
+        perf_pump();
+        assert!(styles.list.is_mapped());
+        assert!(!style_menu.popover().unwrap().is_mapped());
+        let embedded = perf_phase("contextual_styles", || styles.sync_selection());
+        assert!(embedded["counts"]["style_rows_visited"].as_u64().unwrap() > 0);
+        context.popdown();
+        perf_pump();
         selected_command(ui, "select-all", false);
         let marked = ui.current.borrow().as_ref().unwrap().overlay_pages.len();
         assert!(marked > 5);

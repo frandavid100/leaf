@@ -127,7 +127,17 @@ impl TextPalette {
             }
         });
         let weak = Rc::downgrade(&s);
-        s.strike.connect_clicked(move |_|if let Some(s)=weak.upgrade(){let state=s.state();let on=state["strike"]==true||state["doubleStrike"]==true;s.apply("format.set",json!({"props":{"strike":!on&&!s.last_strike.get(),"doubleStrike":!on&&s.last_strike.get()}}));});
+        s.strike.connect_clicked(move |_| {
+            if let Some(palette) = weak.upgrade() {
+                let state = palette.state();
+                let active = state["strike"] == true || state["doubleStrike"] == true;
+                let double = palette.last_strike.get();
+                palette.apply(
+                    "format.set",
+                    json!({"props": {"strike": !active && !double, "doubleStrike": !active && double}}),
+                );
+            }
+        });
         let weak = Rc::downgrade(&s);
         s.ink.connect_clicked(move |_| {
             if let Some(s) = weak.upgrade() {

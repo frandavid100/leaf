@@ -11,12 +11,6 @@ pub(super) fn texture(img: wordcraft_gnome::PageImage) -> gdk::MemoryTexture {
     )
 }
 
-pub(super) fn clear_box(parent: &gtk::Box) {
-    while let Some(child) = parent.first_child() {
-        parent.remove(&child);
-    }
-}
-
 pub(super) fn document_page_picture() -> gtk::Picture {
     let image = gtk::Picture::new();
     image.set_can_shrink(false);
@@ -317,16 +311,16 @@ pub(super) fn refit_if_needed(ui: &Rc<Ui>) {
 }
 
 pub(super) fn viewport_width(ui: &Ui) -> f64 {
-    let split = ui.sidebar.allocated_width() as f64;
+    let split = ui.sidebar.width() as f64;
     let side = if ui.sidebar.shows_sidebar() && !ui.sidebar.is_collapsed() {
         ui.sidebar
             .sidebar()
-            .map(|w| w.allocated_width() as f64)
+            .map(|w| w.width() as f64)
             .unwrap_or(0.0)
     } else {
         0.0
     };
-    (ui.scroll.allocated_width() as f64)
+    (ui.scroll.width() as f64)
         .min((split - side).max(0.0))
         .max(250.0)
 }

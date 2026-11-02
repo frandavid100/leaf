@@ -22,6 +22,12 @@ pub(super) struct StylePopover {
 }
 impl StylePopover {
     pub(super) fn sync_selection(&self) {
+        // Reopening rebuilds the list from the current selection. The actual
+        // list also covers its borrowed home inside a contextual menu: checking
+        // only the original popover would miss that visible presentation.
+        if !self.list.is_mapped() {
+            return;
+        }
         let Some(ui) = self.ui.upgrade() else { return };
         let current = ui
             .current
@@ -30,6 +36,7 @@ impl StylePopover {
             .and_then(|d| wordcraft_gnome::styles::current(&d.session));
         let mut row = self.list.first_child();
         while let Some(w) = row {
+            perf_count("style_rows_visited", 1);
             row = w.next_sibling();
             let active = current
                 .as_ref()
@@ -461,20 +468,4 @@ pub(super) fn install_style_popover(ui: &Rc<Ui>, menu: &gtk::MenuButton) -> Rc<S
     ));
     menu.set_popover(Some(&pop));
     state
-}
-
-// Exercise actual widget callbacks on every subpage without opening a dialog.
-pub(super) fn find_widget(root: &impl IsA<gtk::Widget>, name: &str) -> Option<gtk::Widget> {
-    let root = root.as_ref();
-    if root.widget_name() == name {
-        return Some(root.clone());
-    }
-    let mut child = root.first_child();
-    while let Some(w) = child {
-        if let Some(found) = find_widget(&w, name) {
-            return Some(found);
-        }
-        child = w.next_sibling();
-    }
-    None
 }

@@ -135,14 +135,14 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
     let css = gtk::CssProvider::new();
     let w = &ui.document_box;
     gtk::style_context_add_provider_for_display(&display, &css, gtk::STYLE_PROVIDER_PRIORITY_USER);
-    css.load_from_data("@define-color theme_selected_bg_color #123456; @define-color theme_selected_fg_color #fedcba; @define-color theme_unfocused_selected_bg_color #654321; @define-color theme_unfocused_selected_fg_color #abcdef;");
+    css.load_from_string("@define-color theme_selected_bg_color #123456; @define-color theme_selected_fg_color #fedcba; @define-color theme_unfocused_selected_bg_color #654321; @define-color theme_unfocused_selected_fg_color #abcdef;");
     let (bg, fg) = selection_colors(w, true);
     assert!((bg.red() - 0x12 as f32 / 255.0).abs() < 0.01);
     assert!((fg.red() - 0xfe as f32 / 255.0).abs() < 0.01);
     let (bg, fg) = selection_colors(w, false);
     assert!((bg.red() - 0x65 as f32 / 255.0).abs() < 0.01);
     assert!((fg.red() - 0xab as f32 / 255.0).abs() < 0.01);
-    css.load_from_data("@define-color theme_selected_bg_color #abcdef; @define-color theme_selected_fg_color #012345;");
+    css.load_from_string("@define-color theme_selected_bg_color #abcdef; @define-color theme_selected_fg_color #012345;");
     let (bg, fg) = selection_colors(w, true);
     assert!((bg.red() - 0xab as f32 / 255.0).abs() < 0.01);
     assert!((fg.red() - 1.0 / 255.0).abs() < 0.01);

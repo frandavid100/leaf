@@ -468,7 +468,21 @@ impl TextTools {
                 let b = style_menu_button(wordcraft_gnome::t!("Apply Phonetic Guide"));
                 self.detail.append(&b);
                 let weak = Rc::downgrade(self);
-                b.connect_clicked(move |_|{if let Some(s)=weak.upgrade(){size.update();offset.update();s.execute("format.phonetic",serde_json::json!({"ruby":ruby.text().as_str(),"size":size.value(),"offset":offset.value(),"align":"center"}));}});
+                b.connect_clicked(move |_| {
+                    if let Some(panel) = weak.upgrade() {
+                        size.update();
+                        offset.update();
+                        panel.execute(
+                            "format.phonetic",
+                            serde_json::json!({
+                                "ruby": ruby.text().as_str(),
+                                "size": size.value(),
+                                "offset": offset.value(),
+                                "align": "center",
+                            }),
+                        );
+                    }
+                });
                 self.action(
                     wordcraft_gnome::t!("Remove Phonetic Guide"),
                     "format.phonetic",
