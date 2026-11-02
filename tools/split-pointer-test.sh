@@ -13,15 +13,20 @@ grep -q SPLIT_POINTER_READY split-states.log
 read -r _ bx by ax ay < <(grep SPLIT_POINTER_READY split-states.log | tail -n1)
 split_window=$(xdotool search --onlyvisible --name '^Leaf Split Button Regression$' | head -n1)
 xdotool windowfocus --sync "$split_window"
-xdotool mousemove --window "$split_window" 600 150
+xdotool getwindowgeometry --shell "$split_window" >>split-states.log
+# This isolated Xvfb session has no window manager: the toplevel starts at 0,0.
+# Popup positions are already in that root coordinate space. Do not translate
+# them a second time through an arbitrary X window returned by a title search.
+xdotool mousemove --sync 600 150
 sleep 0.4
 scrot vista-dividido-reposo.png
-xdotool mousemove --window "$split_window" "$bx" "$by"
+xdotool mousemove --sync "$bx" "$by"
 sleep 0.4
 scrot vista-dividido-cuerpo.png
-xdotool mousemove --window "$split_window" "$ax" "$ay"
+xdotool mousemove --sync "$ax" "$ay"
+xdotool getmouselocation --shell >>split-states.log
 sleep 0.4
-scrot vista-dividido-flecha.png
+scrot --pointer vista-dividido-flecha.png
 xdotool click 1
 for attempt in $(seq 1 50); do
   grep -q SPLIT_SUBPAGE_OK split-states.log && break
