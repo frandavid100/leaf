@@ -103,6 +103,12 @@ pub(super) fn table_pointer_press(
     let Some((page, px, py)) = page_point(ui, x, y, None) else {
         return false;
     };
+    if std::env::args().any(|a| a.starts_with("--table18-")) {
+        eprintln!(
+            "TABLE18_PRESS count={count} canvas={x},{y} page={page} point={px},{py} hit={}",
+            hit(ui, page, px, py).is_some()
+        );
+    }
     let Some(target) = hit(ui, page, px, py) else {
         return false;
     };
@@ -212,6 +218,9 @@ pub(super) fn table_pointer_update(ui: &Rc<Ui>, x: f64, y: f64, mods: gdk::Modif
     let Some((_, px, py)) = page_point(ui, x, y, Some(drag.page)) else {
         return true;
     };
+    if std::env::args().any(|a| a.starts_with("--table18-")) {
+        eprintln!("TABLE18_DRAG {px},{py}");
+    }
     drag.end = (px, py);
     drag.moved |= (px - drag.start.0).abs() > 3.0 || (py - drag.start.1).abs() > 3.0;
     drag.shift = mods.contains(gdk::ModifierType::SHIFT_MASK);
@@ -235,10 +244,14 @@ pub(super) fn table_pointer_finish(ui: &Rc<Ui>) -> bool {
     let mut state = ui.table_pointer.borrow_mut();
     let cancelled = std::mem::take(&mut state.cancelled);
     let drag = state.drag.take();
+    state.hover = None;
     drop(state);
     let Some(d) = drag else {
         return cancelled;
     };
+    if std::env::args().any(|a| a.starts_with("--table18-")) {
+        eprintln!("TABLE18_FINISH moved={} inserted={}", d.moved, d.inserted);
+    }
     if d.moved
         && !d.inserted
         && ui
@@ -356,24 +369,37 @@ pub(super) fn paint_table_pointer(
             });
         }
     }
-    let Some(g) = geom else {
-        return;
-    };
     let (bg, _) = selection_colors(widget, true);
     let _ = cr.save();
     cr.scale(z, z);
     cr.set_line_width(1.0 / z);
     cr.set_source_rgba(bg.red() as f64, bg.green() as f64, bg.blue() as f64, 1.0);
-
-    // The engine decides the actual first/last page, including repeated header rows.
+    // Caret ownership keeps handles visible after a resize, using fresh geometry.
     if let Some(c) = ui.current.borrow_mut().as_mut() {
-        let l = c.session.layout();
-        let (a, b) = mouse::caret_handles(&l, &c.session.doc, g.story, &g.table, page);
-        for r in [a, b].into_iter().flatten() {
-            cr.rectangle(r.x as f64, r.y as f64, r.w as f64, r.h as f64);
-            let _ = cr.stroke();
+        let owner = geom
+            .as_ref()
+            .map(|g| (g.story, g.table.clone()))
+            .or_else(|| {
+                c.session
+                    .sel
+                    .focus
+                    .path
+                    .cell()
+                    .map(|(t, _, _)| (c.session.sel.focus.story, t))
+            });
+        if let Some((story, table)) = owner {
+            let l = c.session.layout();
+            let (a, b) = mouse::caret_handles(&l, &c.session.doc, story, &table, page);
+            for r in [a, b].into_iter().flatten() {
+                cr.rectangle(r.x as f64, r.y as f64, r.w as f64, r.h as f64);
+                let _ = cr.stroke();
+            }
         }
     }
+    let Some(g) = geom else {
+        let _ = cr.restore();
+        return;
+    };
     if let Some(t) = target {
         if let Some(m) = mouse::insert_mark(&t) {
             cr.move_to(m.from.0 as f64, m.from.1 as f64);

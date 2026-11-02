@@ -65,6 +65,11 @@ pub(super) fn paint_selection(
             return;
         };
         let density = d.raster_scale.max(1);
+        let ink_scale = wordcraft_gnome::selection_ink::raster_scale(
+            d.sizes[page].0,
+            d.sizes[page].1,
+            (z * density as f64) as f32,
+        );
         let key = format!(
             "{}:{}:{page}:{}:{density}:{fg:?}",
             d.session.document_id(),
@@ -78,7 +83,7 @@ pub(super) fn paint_selection(
             .find(|(k, _)| *k == key)
             .map(|(_, v)| v.clone());
         if let Some(surface) = cached {
-            Some((surface, density))
+            Some((surface, ink_scale))
         } else {
             let ink = wordcraft_doc::props::Rgb(
                 (fg.red() * 255.0).round() as u8,
@@ -112,12 +117,12 @@ pub(super) fn paint_selection(
                     cache.remove(0);
                 }
                 cache.push((key, surface.clone()));
-                Some((surface, density))
+                Some((surface, ink_scale))
             })
         }
     };
-    if let Some((surface, density)) = raster {
-        cr.scale(1.0 / density as f64, 1.0 / density as f64);
+    if let Some((surface, ink_scale)) = raster {
+        cr.scale(z / ink_scale as f64, z / ink_scale as f64);
         if cr.set_source_surface(&surface, 0.0, 0.0).is_ok() {
             let _ = cr.paint_with_alpha(fg.alpha() as f64);
         }

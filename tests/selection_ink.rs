@@ -17,9 +17,10 @@ fn native_selection_ink_recolors_colored_highlighted_text_without_editing() {
         s.rev(),
         s.dirty,
     );
-    for scale in [0.5, 1.0, 2.0] {
+    for scale in [0.5, 1.0, 2.0, 8.0] {
         let image =
             wordcraft_gnome::selection_ink::render(&mut s, 0, scale, Rgb(17, 201, 93)).unwrap();
+        assert!((image.width as u64) * (image.height as u64) < 12_000_000);
         let visible = image
             .rgba
             .chunks_exact(4)

@@ -3,7 +3,7 @@ set -euo pipefail
 leaf_runner=${1:-./target/release/wordcraft-gnome}
 leaf_cmd=("$leaf_runner")
 if [[ "$leaf_runner" = *.sh ]]; then leaf_cmd=(bash "$leaf_runner"); fi
-for leaf_case in column row corner cancel select column-select cells table-select insert insert-row move merged later; do
+for leaf_case in ${LEAF_TABLE_CASES:-column row corner cancel select column-select cells table-select insert insert-row move merged later}; do
   leaf_log="table18-$leaf_case.log"
   "${leaf_cmd[@]}" "--table18-$leaf_case" 2>"$leaf_log" &
   leaf_pid=$!

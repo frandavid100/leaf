@@ -12,6 +12,7 @@ for marker in TEXT18_INK_ARROW TEXT18_BLUE TEXT18_INK_BODY TEXT18_UNDERLINE_ARRO
     kill -0 "$leaf_pid" || { cat text18-pointer.log; exit 1; }
     sleep 0.1
   done
+  grep -q "$marker " text18-pointer.log || { tail -35 text18-pointer.log | cut -c1-240; exit 1; }
   read -r _ x y < <(grep "$marker " text18-pointer.log | tail -n1)
   leaf_window=$(xdotool search --onlyvisible --name '^Leaf Text Pointer Regression$' | head -n1)
   xdotool windowfocus --sync "$leaf_window"

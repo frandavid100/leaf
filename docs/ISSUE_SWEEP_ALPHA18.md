@@ -54,6 +54,21 @@ complejas; registrar aquí lo que realmente supere las pruebas antes de cerrar.
 
 ## Validación
 
-Pendiente: formato Leaf, pruebas Rust/Python/gettext, enlaces, build release,
-regresiones GTK con ratón real y Flatpak instalado. No se presenta el éxito de
-un test de comandos como prueba de interacción de ratón.
+Validación local: 123 pruebas Rust, cuatro Python, 587 mensajes gettext completos,
+formato y enlaces. GTK real bajo Xvfb/TCP: controles nuevos, colores nativos,
+navegación por caret, revisión automática, Propiedades y regresión de issues.
+Ratón con xdotool: bordes, esquina, cancelación, filas, columnas, rectángulos de
+celdas, tabla completa, inserciones, movimiento, combinadas y página posterior
+con cabecera repetida. Texto comprueba chevrón, opción, reaplicación y toggle
+mediante clics reales. Las coordenadas incluyen la transformación de superficie
+nativa y las paletas esperan su asignación estable.
+
+La tinta seleccionada conserva coordenadas lógicas incluso al reducir densidad
+para páginas grandes: menos de 12 millones de píxeles, dos superficies en caché.
+Restaurar Predeterminado borra también idioma directo complejo y de Asia oriental.
+
+Pendiente antes de publicar/cerrar: build release de esta fuente, CI completa y
+Flatpak instalado. Dos ejecuciones iniciales se detuvieron por representaciones
+JSON incorrectas en las aserciones de color/resaltado (RGB objeto/array, no nombres).
+Se corrigieron las pruebas; no se publicó ninguna de esas fuentes. No se presenta
+el éxito de un test de comandos como prueba de interacción de ratón.

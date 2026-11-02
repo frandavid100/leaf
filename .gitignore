@@ -7,3 +7,8 @@ Cargo.lock
 # Python contributor checks
 __pycache__/
 *.py[cod]
+
+# Native alpha18 regression output
+sweep18-*.log
+table18-*.log
+text18-*.log

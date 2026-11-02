@@ -34,12 +34,21 @@ fn text_only(items: &mut Vec<Draw>, ink: Rgb) {
         _ => false,
     });
 }
+/// Keep the disposable overlay bounded, preserving its logical page coordinates.
+pub fn raster_scale(w: f32, h: f32, requested: f32) -> f32 {
+    let requested = if requested.is_finite() && requested > 0.0 {
+        requested
+    } else {
+        1.0
+    };
+    requested
+        .min((11_000_000.0 / (w * h).max(1.0)).sqrt())
+        .min(8191.0 / w.max(h).max(1.0))
+}
 pub fn render(s: &mut Session, page: usize, scale: f32, ink: Rgb) -> Option<crate::PageImage> {
     let layout = s.layout();
     let p = layout.pages.get(page)?;
-    if p.w * scale * p.h * scale > 12_000_000.0 {
-        return None;
-    }
+    let scale = raster_scale(p.w, p.h, scale);
     let opts = wordcraft_render::RenderOptions::default();
     let mut items = page_display(&s.doc, p, &opts.display);
     text_only(&mut items, ink);

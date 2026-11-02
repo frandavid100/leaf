@@ -74,7 +74,7 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
     );
     select_paragraph(ui, 0);
     palette.highlight.emit_by_name::<()>("clicked", &[]);
-    assert_eq!(selection_character(ui)["highlight"], "yellow");
+    assert_eq!(selection_character(ui)["highlight"], json!([255, 255, 0]));
     assert_eq!(*palette.last_ink.borrow(), "1C71D8");
     button(
         &palette.underline.popover().unwrap(),
@@ -246,6 +246,7 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
             .window
             .set_default_size(1800, 900);
     }
+    ui.current.borrow_mut().as_mut().unwrap().fit_to_width = false;
     zoom_to(ui, if case == "later" { 0.6 } else { 0.8 });
     caret_ensure_visible(ui);
     ui.document_box.grab_focus();
@@ -319,11 +320,13 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
                 .compute_bounds(&u.host.upgrade().unwrap().window)
                 .unwrap();
             let z = d.zoom;
+            let (tx, ty) = u.host.upgrade().unwrap().window.surface_transform();
+            eprintln!("TABLE18_TRANSFORM {tx} {ty} frame={f:?}");
             (
-                (f.x() + x * z).round() as i32,
-                (f.y() + y * z).round() as i32,
-                (f.x() + (x + dx) * z).round() as i32,
-                (f.y() + (y + dy) * z).round() as i32,
+                (f.x() as f64 + x as f64 * z as f64 + tx).round() as i32,
+                (f.y() as f64 + y as f64 * z as f64 + ty).round() as i32,
+                (f.x() as f64 + (x + dx) as f64 * z as f64 + tx).round() as i32,
+                (f.y() as f64 + (y + dy) as f64 * z as f64 + ty).round() as i32,
             )
         };
         eprintln!("TABLE18_READY {sx} {sy} {ex} {ey}");
@@ -332,7 +335,7 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
             let s = &mut c.as_mut().unwrap().session;
             match case.as_str() {
                 "cancel" => {
-                    assert_eq!(s.doc, original);
+                    assert!(s.doc == original, "document unchanged");
                     assert_eq!(s.undo_depth(), depth);
                 }
                 "select" | "column-select" | "cells" | "table-select" => {
@@ -347,18 +350,18 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
                             6
                         }
                     );
-                    assert_eq!(s.doc, original);
+                    assert!(s.doc == original, "document unchanged");
                     assert_eq!(s.rev(), rev);
                     assert_eq!(s.undo_depth(), depth);
                 }
                 _ => {
-                    assert_ne!(
-                        s.doc, original,
+                    assert!(
+                        s.doc != original,
                         "pointer operation changed document: {case}"
                     );
                     assert_eq!(s.undo_depth(), depth + 1, "one edit per drag");
                     s.run("edit.undo", &json!({})).unwrap();
-                    assert_eq!(s.doc, original, "undo restores table");
+                    assert!(s.doc == original, "undo restores table");
                 }
             }
             eprintln!("TABLE18_OK case={case}");
@@ -422,6 +425,7 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
     let (u, a) = (ui.clone(), app.clone());
     let phase = Cell::new(0);
     let ticks = Cell::new(0);
+    let settled = Cell::new(0);
     glib::timeout_add_local(std::time::Duration::from_millis(100), move || {
         ticks.set(ticks.get() + 1);
         assert!(
@@ -436,6 +440,11 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 phase.set(1);
             }
             1 if palette.ink.popover().unwrap().is_mapped() => {
+                settled.set(settled.get() + 1);
+                if settled.get() < 4 {
+                    return glib::ControlFlow::Continue;
+                }
+                settled.set(0);
                 let child = palette.ink.popover().unwrap();
                 let blue = find_widget(&child, "ink-choice-1C71D8").unwrap();
                 text_pointer_target("TEXT18_BLUE", &child, &blue);
@@ -459,6 +468,11 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 phase.set(4);
             }
             4 if palette.underline.popover().unwrap().is_mapped() => {
+                settled.set(settled.get() + 1);
+                if settled.get() < 4 {
+                    return glib::ControlFlow::Continue;
+                }
+                settled.set(0);
                 let child = palette.underline.popover().unwrap();
                 let double = find_widget(&child, "underline-choice-double").unwrap();
                 text_pointer_target("TEXT18_DOUBLE", &child, &double);
