@@ -2,6 +2,8 @@ use super::*;
 
 pub(super) fn after_content_change(ui: &Rc<Ui>) {
     let _perf = perf_scope("leaf.after_content_change");
+    // A formatting entry owns its edit even when pagination rebuilds the canvas.
+    let was_canvas_focused = ui.document_box.has_focus();
     let (rebuild, old_zoom, fit_width_mode, old_scroll) = {
         let mut state = ui.current.borrow_mut();
         let Some(doc) = state.as_mut() else { return };
@@ -51,8 +53,10 @@ pub(super) fn after_content_change(ui: &Rc<Ui>) {
                 refresh_pages(&ui);
                 refresh_thumbnails(&ui);
                 refresh_selection(&ui);
-                caret_ensure_visible(&ui);
-                ui.document_box.grab_focus();
+                if was_canvas_focused {
+                    caret_ensure_visible(&ui);
+                    ui.document_box.grab_focus();
+                }
             });
         }
     } else {
@@ -62,7 +66,9 @@ pub(super) fn after_content_change(ui: &Rc<Ui>) {
         let weak = Rc::downgrade(ui);
         glib::idle_add_local_once(move || {
             if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
-                caret_ensure_visible(&ui);
+                if was_canvas_focused {
+                    caret_ensure_visible(&ui);
+                }
             }
         });
     }

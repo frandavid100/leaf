@@ -5,7 +5,7 @@ Leaf 0.1.0-alpha.19 improves font-list readability, hyperlink editing, paragraph
 - Triple-click dragging extends by complete paragraphs in both directions, including autoscrolling across page boundaries. Existing character and word selection remain.
 - Heading jumps leave preceding line context. Proofing menus are centered within their complete rows. Bookmark names use regular weight.
 
-The reopened Font/Size typing report (#35) remains open: expanded real-keyboard tests cover selected text/caret, pinned/unpinned popovers, slow typing, paste, decimal separators, narrow/HiDPI windows and return to the canvas, but do not reproduce the maintainer's unresolved path. This is not a claim that every typing path is fixed.
+Font/Size input now preserves the editable delegate's text/cursor and focus during live formatting and page-set rebuilds. Leaf's validated parser receives both decimal separators instead of relying on GTK's numeric filter. Installed GNOME 49 testing reproduced slow `18,75` becoming `75` before this correction; native and installed regressions gate publication, including a long-document reflow case. This does not establish human Wayland/IME coverage.
 
 WordCraft, dependency pins and compatibility patches are unchanged. Existing format limitations remain, including unequal columns, column separators, absent independent even headers/footers and ODT preservation limits. New ruler, history and document-authoring features are outside this delivery.
 

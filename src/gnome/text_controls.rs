@@ -8,17 +8,50 @@ pub(super) struct FormatSequence {
     time: std::time::Instant,
 }
 
+/// Native composite controls can own focus through their editable delegate,
+/// including popover surfaces with different GTK versions.
+pub(super) fn control_has_focus(widget: &impl IsA<gtk::Widget>) -> bool {
+    let widget = widget.as_ref();
+    if widget.has_focus() || widget.is_focus() {
+        return true;
+    }
+    let mut child = widget.first_child();
+    while let Some(w) = child {
+        if control_has_focus(&w) {
+            return true;
+        }
+        child = w.next_sibling();
+    }
+    false
+}
+
 /// Apply a validated control without closing/rebuilding its popover or moving focus.
 pub(super) fn immediate_format(
     ui: &Rc<Ui>,
     command: &str,
     args: serde_json::Value,
 ) -> Result<(), String> {
-    let focus = ui
-        .host
-        .upgrade()
-        .and_then(|h| gtk::prelude::GtkWindowExt::focus(&h.window))
-        .map(|w| w.downgrade());
+    let focus = if control_has_focus(&ui.font_input) {
+        Some(ui.font_input.clone().upcast::<gtk::Widget>())
+    } else if control_has_focus(&ui.size_input) {
+        Some(ui.size_input.clone().upcast::<gtk::Widget>())
+    } else {
+        ui.host
+            .upgrade()
+            .and_then(|h| gtk::prelude::GtkWindowExt::focus(&h.window))
+    };
+    let edit = focus
+        .as_ref()
+        .and_then(|w| w.clone().dynamic_cast::<gtk::Editable>().ok())
+        .map(|e| {
+            (
+                e.downgrade(),
+                e.text().to_string(),
+                e.position(),
+                e.selection_bounds(),
+            )
+        });
+    let focus = focus.map(|w| w.downgrade());
     let scroll = (
         ui.scroll.hadjustment().value(),
         ui.scroll.vadjustment().value(),
@@ -64,12 +97,12 @@ pub(super) fn immediate_format(
         }));
         d.session.doc != before
     };
+    let identity = document_identity(ui);
     if changed {
         after_content_change(ui);
     } else {
         refresh_selection(ui);
     }
-    let identity = document_identity(ui);
     let weak = Rc::downgrade(ui);
     glib::idle_add_local_once(move || {
         if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
@@ -85,7 +118,20 @@ pub(super) fn immediate_format(
                 .is_some_and(|u| Rc::ptr_eq(&ui, &u))
             {
                 if let Some(w) = focus.and_then(|w| w.upgrade()).filter(|w| w.is_mapped()) {
-                    w.grab_focus();
+                    if !control_has_focus(&w) {
+                        w.grab_focus();
+                        // Re-focusing a native Entry/SpinButton can select all
+                        // text. Keep an in-progress edit's cursor/selection.
+                        if let Some((editable, text, position, selection)) = edit {
+                            if let Some(e) = editable.upgrade().filter(|e| e.text() == text) {
+                                if let Some((a, b)) = selection {
+                                    e.select_region(a, b);
+                                } else {
+                                    e.set_position(position);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -101,6 +147,9 @@ pub(super) fn numeric_value(n: &gtk::SpinButton) -> Option<f64> {
         .filter(|v| v.is_finite() && *v >= n.adjustment().lower() && *v <= n.adjustment().upper())
 }
 pub(super) fn validate_numeric_input(n: &gtk::SpinButton) {
+    // Our parser accepts both decimal separators and intermediate input. The
+    // native numeric filter can discard punctuation before that parser sees it.
+    n.set_numeric(false);
     n.set_update_policy(gtk::SpinButtonUpdatePolicy::IfValid);
     n.connect_input(|n| Some(numeric_value(n).ok_or(())));
 }

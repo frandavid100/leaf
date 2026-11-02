@@ -27,6 +27,7 @@ export LEAF19_ACK_PARENT="$HOME/.var/app/$app_id/cache"
 for target in range caret; do
   LANGUAGE=en LEAF19_RANGE=$target timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh font
 done
+LANGUAGE=en LEAF19_REFLOW=1 timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh font
 LANGUAGE=en LEAF19_NARROW=1 LEAF19_LARGE=1 timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh font
 LANGUAGE=en GDK_SCALE=2 LEAF19_RANGE=caret LEAF19_NARROW=1 LEAF19_LARGE=1 xvfb-run -a -s '-screen 0 2560x1800x24' timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh font
 for mode in link paragraph; do

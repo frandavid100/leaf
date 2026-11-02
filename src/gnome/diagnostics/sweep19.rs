@@ -7,6 +7,8 @@ struct Followup {
     menu: gtk::MenuButton,
     mode: String,
     family: String,
+    body: String,
+    initial_pages: usize,
 }
 fn followup_point(w: &impl IsA<gtk::Widget>, root: &impl IsA<gtk::Window>) -> (i32, i32) {
     followup_point_at(w, root, 0.5)
@@ -81,10 +83,14 @@ fn followup_wait(t: Rc<Followup>, stage: u8) {
         {
             return glib::ControlFlow::Continue;
         }
-        followup_check(&t, stage);
-        let next = t.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
-            followup_stage(next, stage + 1)
+        // Drain native input/layout sources before checking the driver's ACK.
+        // A busy repagination can leave X events queued behind this timeout.
+        let t = t.clone();
+        glib::idle_add_local_once(move || {
+            followup_check(&t, stage);
+            glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
+                followup_stage(t, stage + 1)
+            });
         });
         glib::ControlFlow::Break
     });
@@ -96,12 +102,26 @@ pub(super) fn followup_pointer_test(
     menu: &gtk::MenuButton,
     mode: String,
 ) {
+    if mode == "font" {
+        let weak = Rc::downgrade(ui);
+        ui.size_input.connect_changed(move |field| {
+            if let Some(ui)=weak.upgrade() {
+                let focus=ui.host.upgrade().and_then(|h|gtk::prelude::GtkWindowExt::focus(&h.window));
+                eprintln!("ISSUE19_SIZE_INPUT text={:?} cursor={} selected={:?} focused={} syncing={} numeric={} root_focus={:?}",field.text(),field.position(),field.selection_bounds(),control_has_focus(field),ui.format_syncing.get(),field.is_numeric(),focus.map(|w|(w.type_().name().to_string(),w.widget_name().to_string())));
+            }
+        });
+    }
     let text = if mode == "paragraph" {
         (0..150).map(|n|format!("Paragraph {n}. Words to select as a complete paragraph, including its final boundary.")).collect::<Vec<_>>().join("\n")
     } else if mode == "link" {
         "before linked words spanning a visual line in the document with a second portion of the link continuing here after the wrap, followed by plain text".into()
     } else {
         "alpha beta gamma delta".into()
+    };
+    let text = if mode == "font" && std::env::var("LEAF19_REFLOW").is_ok() {
+        format!("alpha beta gamma delta\n{}",(0..80).map(|n|format!("Reflow paragraph {n}: ordinary body text that grows and shrinks while a font field is edited.")).collect::<Vec<_>>().join("\n"))
+    } else {
+        text
     };
     opened(
         ui,
@@ -119,7 +139,9 @@ pub(super) fn followup_pointer_test(
     if mode == "font" {
         let mut v = ui.current.borrow_mut();
         let s = &mut v.as_mut().unwrap().session;
-        if std::env::var("LEAF19_RANGE").as_deref() != Ok("caret") {
+        if std::env::var("LEAF19_REFLOW").is_ok() {
+            selection::select_all(s).unwrap();
+        } else if std::env::var("LEAF19_RANGE").as_deref() != Ok("caret") {
             selection::select_range(s, &Pos::body(0, 6), &Pos::body(0, 10)).unwrap();
         } else {
             selection::set_caret(s, &Pos::body(0, 6), false).unwrap();
@@ -140,6 +162,8 @@ pub(super) fn followup_pointer_test(
         window: w.clone(),
         app: app.clone(),
         menu: menu.clone(),
+        initial_pages: ui.current.borrow().as_ref().unwrap().sizes.len(),
+        body: text,
         mode,
         family,
     });
@@ -348,6 +372,17 @@ fn followup_check(t: &Followup, stage: u8) {
             }
             if stage == 2 {
                 assert_eq!(selection_character(u)["size"], 17.5);
+                if std::env::var("LEAF19_REFLOW").is_ok() {
+                    assert_ne!(
+                        u.current.borrow().as_ref().unwrap().sizes.len(),
+                        t.initial_pages,
+                        "test must actually rebuild the page set while typing"
+                    );
+                    assert!(
+                        control_has_focus(&u.size_input),
+                        "typed size keeps focus across a page-set rebuild"
+                    );
+                }
             }
             if stage == 6 {
                 assert_eq!(
@@ -398,9 +433,13 @@ fn followup_check(t: &Followup, stage: u8) {
                 .doc
                 .plain_text(wordcraft_doc::StoryRef::Body);
             if stage < 8 {
-                assert_eq!(text, "alpha beta gamma delta");
+                assert_eq!(text, t.body);
             } else {
-                assert_eq!(text, "alpha beta gamma deltaQ");
+                assert_eq!(
+                    text,
+                    t.body
+                        .replacen("alpha beta gamma delta", "alpha beta gamma deltaQ", 1)
+                );
             }
         }
         "paragraph" => {

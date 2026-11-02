@@ -849,7 +849,7 @@ msgstr ""
 msgid "Following Spacing (mm)"
 msgstr ""
 
-#: src/gnome/tab.rs:242 src/gnome/tab.rs:245 src/gnome/text_controls.rs:389
+#: src/gnome/tab.rs:242 src/gnome/tab.rs:245 src/gnome/text_controls.rs:438
 msgid "Font"
 msgstr ""
 
@@ -857,7 +857,7 @@ msgstr ""
 msgid "Font Family"
 msgstr ""
 
-#: src/gnome/tab.rs:255 src/gnome/text_controls.rs:391
+#: src/gnome/tab.rs:255 src/gnome/text_controls.rs:440
 msgid "Font Size"
 msgstr ""
 
@@ -885,7 +885,7 @@ msgstr ""
 msgid "Footers"
 msgstr ""
 
-#: src/gnome/commands.rs:123
+#: src/gnome/commands.rs:129
 msgid "Formatting changed. Save to keep your changes."
 msgstr ""
 
@@ -1225,7 +1225,7 @@ msgstr ""
 msgid "Minimum Row Height"
 msgstr ""
 
-#: src/gnome/adaptive.rs:156 src/gnome/selection_view.rs:170
+#: src/gnome/adaptive.rs:156 src/gnome/selection_view.rs:164
 msgid "Mixed"
 msgstr ""
 
@@ -1313,7 +1313,7 @@ msgstr ""
 msgid "No Styles Found"
 msgstr ""
 
-#: src/gnome/format_controls.rs:11 src/gnome/styles.rs:58 src/gnome/text_controls.rs:28
+#: src/gnome/format_controls.rs:11 src/gnome/styles.rs:58 src/gnome/text_controls.rs:61
 msgid "No document"
 msgstr ""
 

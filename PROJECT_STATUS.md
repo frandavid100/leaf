@@ -14,8 +14,9 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 
 ## En validación: alpha.19
 
-Pasada autorizada de nueve informes: ocho candidatos (#25, #26, #28, #34 y
-#44–#47) y #35 aún abierto porque su fallo de escritura no se ha reproducido.
+Pasada autorizada de nueve informes: #25, #26, #28, #34, #35 y #44–#47.
+La primera prueba instalada reprodujo #35 (`18,75` terminaba en `75`) y bloqueó
+la publicación. Se valida su corrección de entrada/foco antes de cerrar informes.
 128 pruebas Rust y eventos reales de teclado/ratón superados localmente.
 [Alcance, pruebas y límites](docs/ISSUE_SWEEP_ALPHA19.md). La última release
 publicada sigue siendo alpha.18 hasta terminar y comprobar CI/empaquetado.

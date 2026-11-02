@@ -6,7 +6,7 @@ leaf_cmd=("$leaf_runner")
 if [[ "$leaf_runner" = *.sh ]]; then leaf_cmd=(bash "$leaf_runner"); fi
 export LEAF19_ACK_DIR
 LEAF19_ACK_DIR=$(mktemp -d "${LEAF19_ACK_PARENT:-/tmp}/leaf19-ack.XXXXXX")
-log="followup19-${mode}-${LEAF19_RANGE:-range}-${LEAF19_NARROW:-wide}-${GDK_SCALE:-1}.log"
+log="followup19-${mode}-${LEAF19_RANGE:-range}-${LEAF19_NARROW:-wide}-${GDK_SCALE:-1}-${LEAF19_REFLOW:-normal}.log"
 "${leaf_cmd[@]}" "--followup19-$mode" >"${log%.log}-out.log" 2>"$log" &
 pid=$!
 trap 'kill "$pid" 2>/dev/null || true; rm -rf "$LEAF19_ACK_DIR"' EXIT
@@ -20,13 +20,21 @@ while kill -0 "$pid" 2>/dev/null; do
   if [[ "$role" = edit || "$role" = cancel || "$role" = insert ]]; then
     window=$(xdotool search --onlyvisible --name '^Link$' | head -n1)
   fi
-  xdotool windowfocus --sync "$window"
+  if (( last == 0 )) || [[ "$role" = edit || "$role" = cancel || "$role" = insert ]]; then
+    xdotool windowfocus --sync "$window"
+  fi
   case "$role" in
     open|choices) xdotool mousemove --window "$window" "$ax" "$ay" click 1 ;;
-    pin) xdotool key Escape mousemove --window "$window" "$ax" "$ay" click 1 ;;
+    pin)
+      xdotool key Escape
+      sleep 0.25
+      xdotool mousemove --sync --window "$window" "$ax" "$ay"
+      sleep 0.2
+      xdotool click 1 ;;
     font)
       family=$(sed -n 's/^ISSUE19_FAMILY //p' "$log" | head -n1)
       xdotool mousemove --window "$window" "$ax" "$ay" click 1 key ctrl+a
+      xdotool key Delete
       xdotool type --clearmodifiers --delay 80 "$family"
       xdotool key ctrl+k ;;
     paste)
@@ -38,7 +46,10 @@ while kill -0 "$pid" 2>/dev/null; do
       if [[ "$role" = size ]]; then value=17.5; elif [[ -n "${LEAF19_LARGE:-}" ]]; then value=64,5; else value=18,75; fi
       xdotool type --clearmodifiers --delay 450 "$value" ;;
     return)
-      xdotool key Escape mousemove --window "$window" "$ax" "$ay" click 1
+      xdotool key Escape
+      sleep 0.25
+      xdotool mousemove --sync --window "$window" "$ax" "$ay" click 1
+      sleep 0.15
       xdotool type --clearmodifiers Q ;;
     triple|autoscroll)
       xdotool mousemove --window "$window" "$ax" "$ay" click --repeat 2 --delay 80 1
