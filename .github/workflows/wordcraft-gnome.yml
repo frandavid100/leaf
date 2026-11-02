@@ -75,6 +75,11 @@ jobs:
           fi
       - name: Compilar lector GNOME
         run: cargo build --release --locked --features gui --bin wordcraft-gnome
+      - uses: actions/upload-artifact@v4
+        with:
+          name: leaf-native-unvalidated
+          path: target/release/wordcraft-gnome
+          retention-days: 3
       - name: Verify WordCraft boundary for this performance audit
         if: contains(github.event.head_commit.message, '[perf-candidate]')
         run: git diff --exit-code a1670541e9500fa329c16a42c8e908122db1ecaa -- Cargo.toml Cargo.lock vendor patches

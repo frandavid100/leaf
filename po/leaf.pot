@@ -1461,7 +1461,7 @@ msgstr ""
 msgid "Phonetic Guide"
 msgstr ""
 
-#: src/gnome/popovers.rs:78 src/gnome/popovers.rs:188 src/gnome/popovers.rs:189
+#: src/gnome/popovers.rs:78 src/gnome/popovers.rs:195 src/gnome/popovers.rs:196
 msgid "Pin"
 msgstr ""
 

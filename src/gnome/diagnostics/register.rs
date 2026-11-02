@@ -240,6 +240,19 @@ pub(super) fn install_diagnostics(
                     .unwrap();
                 let arrow_widget = find_widget(&s.main, "paragraph-more-indents").unwrap();
                 let arrow = arrow_widget.compute_bounds(&pop).unwrap();
+                let events = gtk::EventControllerLegacy::new();
+                events.set_propagation_phase(gtk::PropagationPhase::Capture);
+                events.set_propagation_limit(gtk::PropagationLimit::None);
+                events.connect_event(|_, event| {
+                    if matches!(
+                        event.event_type(),
+                        gdk::EventType::ButtonPress | gdk::EventType::ButtonRelease
+                    ) {
+                        eprintln!("SPLIT_BUTTON_EVENT {:?}", event.event_type());
+                    }
+                    glib::Propagation::Proceed
+                });
+                arrow_widget.add_controller(events);
                 eprintln!(
                     "SPLIT_TARGET sensitive={} mapped={} target={} picked={:?}",
                     arrow_widget.is_sensitive(),
