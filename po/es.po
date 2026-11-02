@@ -1,2016 +1,2932 @@
 msgid ""
-msgstr "Project-Id-Version: Leaf\nReport-Msgid-Bugs-To: https://github.com/frandavid100/leaf/issues\nPOT-Creation-Date: 2026-11-01 00:00+0000\nPO-Revision-Date: 2026-11-01 00:00+0000\nLast-Translator: Leaf contributors\nLanguage-Team: es\nLanguage: es\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+msgstr ""
+"Project-Id-Version: Leaf\n"
+"Report-Msgid-Bugs-To: https://github.com/frandavid100/leaf/issues\n"
+"POT-Creation-Date: 2026-11-01 00:00+0000\n"
+"PO-Revision-Date: 2026-11-01 00:00+0000\n"
+"Last-Translator: Leaf contributors\n"
+"Language-Team: es\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: src/gnome/paragraph.rs:727
 msgid "1.15 Lines"
 msgstr "1,15 líneas"
 
+#: src/gnome/paragraph.rs:728
 msgid "1.5 Lines"
 msgstr "1,5 líneas"
 
+#: src/gnome/text_palette.rs:329
 msgid "25% Gray"
 msgstr "Gris 25 %"
 
+#: src/gnome/text_palette.rs:328
 msgid "50% Gray"
 msgstr "Gris 50 %"
 
-msgid "Aa Bb Cc · Sample Text"
-msgstr "Aa Bb Cc · Texto de ejemplo"
-
-msgid "About Leaf"
-msgstr "Acerca de Leaf"
-
-msgid "Actual Size (100%)"
-msgstr "Tamaño real (100 %)"
-
-msgid "Add"
-msgstr "Añadir"
-
-msgid "Add Left Tab Stop"
-msgstr "Añadir tabulación izquierda"
-
-msgid "After"
-msgstr "Posterior"
-
-msgid "Align Left"
-msgstr "Alinear a la izquierda"
-
-msgid "Align Right"
-msgstr "Alinear a la derecha"
-
-msgid "All"
-msgstr "Todos"
-
-msgid "Allow Row to Split Across Pages"
-msgstr "Permitir dividir entre páginas"
-
-msgid "Annotation"
-msgstr "Anotación"
-
-msgid "Annotations"
-msgstr "Anotaciones"
-
-msgid "Appearance"
-msgstr "Aspecto"
-
-msgid "Apply"
-msgstr "Aplicar"
-
-msgid "Apply Color"
-msgstr "Aplicar color"
-
-msgid "Apply Exact Line Spacing"
-msgstr "Aplicar interlineado exacto"
-
-msgid "Apply Indents"
-msgstr "Aplicar sangrías"
-
-msgid "Apply Last Border"
-msgstr "Aplicar el último borde elegido"
-
-msgid "Apply Last Shading"
-msgstr "Aplicar el último sombreado elegido"
-
-msgid "Apply Level"
-msgstr "Aplicar nivel"
-
-msgid "Apply Line Spacing {}"
-msgstr "Aplicar interlineado {}"
-
-msgid "Apply Phonetic Guide"
-msgstr "Aplicar guía fonética"
-
-msgid "Apply RGB Color"
-msgstr "Aplicar color RGB"
-
-msgid "Apply Size"
-msgstr "Aplicar tamaño"
-
-msgid "Apply Spacing"
-msgstr "Aplicar separación"
-
-msgid "Apply Style {}"
-msgstr "Aplicar estilo {}"
-
-msgid "Apply To"
-msgstr "Aplicar a"
-
-msgid "Apply and Manage Styles"
-msgstr "Aplicar y gestionar estilos"
-
-msgid "Apply to All Borders"
-msgstr "Aplicar a todos los bordes"
-
-msgid "Apply {label}"
-msgstr "Aplicar {label}"
-
-msgid "Ascending (A–Z)"
-msgstr "Ascendente (A–Z)"
-
-msgid "Automatic Color"
-msgstr "Color automático"
-
-msgid "Automatic Underline Color"
-msgstr "Color automático del subrayado"
-
-msgid "Autosave"
-msgstr "Guardar automáticamente"
-
-msgid "Background Color"
-msgstr "Color de fondo"
-
-msgid "Before"
-msgstr "Anterior"
-
-msgid "Black"
-msgstr "Negro"
-
-msgid "Blue"
-msgstr "Azul"
-
-msgid "Bold"
-msgstr "Negrita"
-
-msgid "Bold (Ctrl+B)"
-msgstr "Negrita (Ctrl+B)"
-
-msgid "Bold, Italic, Underline and Font Size"
-msgstr "Negrita, cursiva, subrayado y tamaño de letra"
-
-msgid "Border Color (RRGGBB)"
-msgstr "Color de bordes (RRGGBB)"
-
-msgid "Border Width (pt)"
-msgstr "Grosor de bordes (pt)"
-
-msgid "Borders"
-msgstr "Bordes"
-
-msgid "Bottom"
-msgstr "Inferior"
-
-msgid "Bottom (mm)"
-msgstr "Inferior (mm)"
-
-msgid "Bottom · Center"
-msgstr "Abajo · centro"
-
-msgid "Bottom · Left"
-msgstr "Abajo · izquierda"
-
-msgid "Bottom · Right"
-msgstr "Abajo · derecha"
-
-msgid "Breaks and Pagination"
-msgstr "Saltos y conservación"
-
-msgid "Built-in styles cannot be deleted"
-msgstr "Los estilos integrados no se pueden eliminar"
-
-msgid "Bulleted List"
-msgstr "Lista con viñetas"
-
-msgid "Bullets"
-msgstr "Viñetas"
-
-msgid "Cancel"
-msgstr "Cancelar"
-
-msgid "Capitalization"
-msgstr "Mayúsculas tipográficas"
-
-msgid "Capitalize Each Word"
-msgstr "Cada Palabra"
-
-msgid "Case Sensitive"
-msgstr "Distinguir mayúsculas"
-
-msgid "Cell"
-msgstr "Celda"
-
-msgid "Cells"
-msgstr "Celdas"
-
-msgid "Center"
-msgstr "Centrar"
-
-msgid "Center · Left"
-msgstr "Centro · izquierda"
-
-msgid "Center · Right"
-msgstr "Centro · derecha"
-
-msgid "Centered"
-msgstr "Centrada"
-
-msgid "Change Case"
-msgstr "Mayúsculas/minúsculas"
-
-msgid "Character Formatting"
-msgstr "Formato de caracteres"
-
-msgid "Character Spacing"
-msgstr "Espaciado de caracteres"
-
-msgid "Character Style"
-msgstr "Estilo de carácter"
-
-msgid "Check the page size and margins"
-msgstr "Revisa el tamaño de página y los márgenes"
-
-msgid "Choose Color"
-msgstr "Elegir color"
-
-msgid "Choose Color…"
-msgstr "Elegir color…"
-
-msgid "Choose Columns × Rows"
-msgstr "Elige columnas × filas"
-
-msgid "Choose a Local File"
-msgstr "Elige un archivo local"
-
-msgid "Choose a font family"
-msgstr "Elige una familia tipográfica"
-
-msgid "Choose an Image"
-msgstr "Se debe elegir una imagen"
-
-msgid "Choose an Installed Font Family"
-msgstr "Elegir una familia tipográfica instalada"
-
-msgid "Choose…"
-msgstr "Elegir…"
-
-msgid "Circle"
-msgstr "Círculo"
-
-msgid "Clear Tab Stops"
-msgstr "Borrar tabulaciones"
-
-msgid "Clear Text Formatting"
-msgstr "Borrar formato de texto"
-
-msgid "Close"
-msgstr "Cerrar"
-
-msgid "Close Tab"
-msgstr "Cerrar pestaña"
-
-msgid "Collapse"
-msgstr "Contraer"
-
-msgid "Collapse Section"
-msgstr "Contraer sección"
-
-msgid "Color and Effects"
-msgstr "Color y efectos"
-
-msgid "Column"
-msgstr "Columna"
-
-msgid "Column Width"
-msgstr "Ancho de columna"
-
-msgid "Column to the Left"
-msgstr "Columna a la izquierda"
-
-msgid "Column to the Right"
-msgstr "Columna a la derecha"
-
-msgid "Columns"
-msgstr "Columnas"
-
-msgid "Columns…"
-msgstr "Columnas…"
-
-msgid "Content Alignment"
-msgstr "Alineación del contenido"
-
-msgid "Contexts"
-msgstr "Contextos"
-
-msgid "Copy"
-msgstr "Copiar"
-
-msgid "Could Not Choose Font: {e}"
-msgstr "No se pudo elegir fuente: {e}"
-
-msgid "Could Not Encode PNG Image"
-msgstr "No se pudo codificar la imagen PNG"
-
-msgid "Could Not Export PDF"
-msgstr "No se pudo exportar el PDF"
-
-msgid "Could Not Load Recovery List"
-msgstr "No se pudo cargar la lista de recuperación"
-
-msgid "Could Not Open Document"
-msgstr "No se pudo abrir el documento"
-
-msgid "Could Not Open Save Dialog: {e}"
-msgstr "No se pudo abrir el guardado: {e}"
-
-msgid "Could Not Prepare Print PDF"
-msgstr "No se pudo preparar el PDF de impresión"
-
-msgid "Could Not Prepare Printing: {e}"
-msgstr "No se pudo preparar la impresión: {e}"
-
-msgid "Could Not Print: {e}"
-msgstr "No se pudo imprimir: {e}"
-
-msgid "Could Not Save Preferences: {e}"
-msgstr "No se guardaron las preferencias: {e}"
-
-msgid "Could Not Save: {e}"
-msgstr "No se ha guardado: {e}"
-
-msgid "Create Style"
-msgstr "Crear estilo"
-
-msgid "Creates continuous sections around the selected text, leaving the rest of the document unchanged."
-msgstr "Crea secciones continuas alrededor del texto, sin cambiar el resto del documento."
-
-msgid "Current Row Pagination"
-msgstr "Paginación de la fila actual"
-
-msgid "Current Section"
-msgstr "Sección actual"
-
-msgid "Current Style"
-msgstr "Estilo actual"
-
-msgid "Current Table"
-msgstr "Tabla actual"
-
-msgid "Custom"
-msgstr "Personalizadas"
-
-msgid "Custom Size"
-msgstr "Tamaño personalizado"
-
-msgid "Custom Widths"
-msgstr "Anchuras personalizadas"
-
-msgid "Cut"
-msgstr "Cortar"
-
-msgid "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages and Headings. Select a thumbnail or heading to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Add in the document menu inserts tables and images; right-click edits them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
-msgstr "DOCUMENTOS\nPestaña nueva en el menú principal crea un documento vacío. El menú principal permite abrir documentos DOCX/ODT, ventanas nuevas y mostrar todas las pestañas. Guardar: Ctrl+S; Guardar como: Ctrl+Mayús+S.\n\nNAVEGACIÓN\nLos botones inferiores del panel izquierdo alternan Páginas y Títulos. Pulsa una miniatura o un título para ir a esa parte del documento. La lupa abre la búsqueda; Escape vuelve a la vista anterior.\n\nBUSCAR Y REEMPLAZAR\nCtrl+F abre la búsqueda. Sus tres puntos permiten distinguir mayúsculas y activar Reemplazar. El botón junto al segundo campo reemplaza todas las coincidencias en un solo paso de deshacer; cada resultado conserva su reemplazo individual.\n\nEDICIÓN\nEstilo, Párrafo y Texto están como iconos a la derecha de la cabecera, con Deshacer/Rehacer a la izquierda. En ventanas estrechas los cinco pasan a la barra inferior. El clic derecho ofrece sus propias páginas de formato dentro del mismo menú. Añadir en el menú del documento permite insertar tablas e imágenes; el clic derecho permite editarlas. Las flechas abren subopciones. Ctrl+Z deshace y Ctrl+Mayús+Z rehace.\n\nAUTOGUARDADO\nPreferencias permite desactivar el autoguardado, usar un archivo de recuperación o guardar en el propio archivo. Recuperar documentos está en el menú principal."
-
-msgid "Dark Blue"
-msgstr "Azul oscuro"
-
-msgid "Dark Gray"
-msgstr "Gris oscuro"
-
-msgid "Dark Green"
-msgstr "Verde oscuro"
-
-msgid "Dark Red"
-msgstr "Rojo oscuro"
-
-msgid "Dark Yellow"
-msgstr "Amarillo oscuro"
-
-msgid "Dashed"
-msgstr "Discontinuo"
-
-msgid "Decrease Indent"
-msgstr "Reducir sangría"
-
-msgid "Decrease Size"
-msgstr "Reducir tamaño"
-
-msgid "Delete"
-msgstr "Eliminar"
-
-msgid "Delete Column"
-msgstr "Eliminar columna"
-
-msgid "Delete Image"
-msgstr "Eliminar imagen"
-
-msgid "Delete Row"
-msgstr "Eliminar fila"
-
-msgid "Delete Style"
-msgstr "Eliminar estilo"
-
-msgid "Delete Table"
-msgstr "Eliminar tabla"
-
-msgid "Descending (Z–A)"
-msgstr "Descendente (Z–A)"
-
-msgid "Destination"
-msgstr "Destino"
-
-msgid "Diamond"
-msgstr "Rombo"
-
-msgid "Direction and Formatting"
-msgstr "Dirección y formato"
-
-msgid "Disabled"
-msgstr "Desactivado"
-
-msgid "Distribute Columns Evenly"
-msgstr "Distribuir columnas uniformemente"
-
-msgid "Distribute Rows Evenly"
-msgstr "Distribuir filas uniformemente"
-
-msgid "Distributed Alignment"
-msgstr "Alineación distribuida"
-
-msgid "Document"
-msgstr "Documento"
-
-msgid "Document Content"
-msgstr "Contenido del documento"
-
-msgid "Document File"
-msgstr "En el propio archivo"
-
-msgid "Document Properties"
-msgstr "Propiedades del documento"
-
-msgid "Document Properties…"
-msgstr "Propiedades del documento…"
-
-msgid "Document Saved"
-msgstr "Documento guardado"
-
-msgid "Document Sent to Printer"
-msgstr "Documento enviado a impresión"
-
-msgid "Document editor for GNOME powered by WordCraft."
-msgstr "Editor de documentos para GNOME basado en el motor WordCraft."
-
-msgid "Documents"
-msgstr "Documentos"
-
-msgid "Dot Dash"
-msgstr "Punto y raya"
-
-msgid "Dot Dot Dash"
-msgstr "Dos puntos y raya"
-
-msgid "Dotted"
-msgstr "Punteado"
-
-msgid "Double"
-msgstr "Doble"
-
-msgid "Double Strikethrough"
-msgstr "Tachado doble"
-
-msgid "Editing and Search"
-msgstr "Edición y búsqueda"
-
-msgid "Effects"
-msgstr "Efectos"
-
-msgid "Embossed"
-msgstr "Relieve"
-
-msgid "Enclosed Characters"
-msgstr "Caracteres encerrados"
-
-msgid "Engraved"
-msgstr "Grabado"
-
-msgid "Enter Six Hexadecimal Characters, for Example 808080"
-msgstr "Introduce seis caracteres hexadecimales, por ejemplo 808080"
-
-msgid "Enter Six Hexadecimal Digits"
-msgstr "Introduce seis cifras hexadecimales"
-
-msgid "Enter Six RGB Digits, for Example 2266AA"
-msgstr "Escribe seis cifras RGB, por ejemplo 2266AA"
-
-msgid "Equal"
-msgstr "Iguales"
-
-msgid "Exactly (pt)"
-msgstr "Exacto (pt)"
-
-msgid "Expand"
-msgstr "Expandir"
-
-msgid "Expand Section"
-msgstr "Expandir sección"
-
-msgid "Export to PDF"
-msgstr "Exportar a PDF"
-
-msgid "Export to PDF…"
-msgstr "Exportar a PDF…"
-
-msgid "Exporting PDF…"
-msgstr "Exportando PDF…"
-
-msgid "F6 switches between the document, sidebar and formatting controls. Tab moves between table cells. Shift+F10 opens the context menu."
-msgstr "F6 cambia entre documento, panel lateral y formato. Tab navega entre celdas de una tabla. Mayús+F10 abre el menú contextual."
-
-msgid "First Line (−: Hanging)"
-msgstr "Primera línea (−: francesa)"
-
-msgid "Fit Contents"
-msgstr "Al contenido"
-
-msgid "Fit Width"
-msgstr "Ajustar ancho"
-
-msgid "Fixed Width"
-msgstr "Ancho fijo"
-
-msgid "Following Spacing (mm)"
-msgstr "Separación posterior (mm)"
-
-msgid "Font"
-msgstr "Fuente"
-
-msgid "Font Family"
-msgstr "Familia tipográfica"
-
-msgid "Font Size"
-msgstr "Tamaño de letra"
-
-msgid "Font Size in Points"
-msgstr "Tamaño de letra en puntos"
-
-msgid "Font and Characters"
-msgstr "Fuente y caracteres"
-
-msgid "Font size must be between 6 and 96 points"
-msgstr "Tamaño de fuente fuera del rango permitido (6–96 puntos)"
-
-msgid "Formatting changed. Save to keep your changes."
-msgstr "Formato modificado. Usa Guardar para conservar los cambios."
-
-msgid "From This Point Onwards"
-msgstr "Desde aquí en adelante"
-
-msgid "Green"
-msgstr "Verde"
-
-msgid "Headings"
-msgstr "Títulos"
-
-msgid "Height (mm)"
-msgstr "Altura (mm)"
-
-msgid "Help"
-msgstr "Ayuda"
-
-msgid "Hexadecimal RGB Color"
-msgstr "Color RGB hexadecimal"
-
-msgid "Hidden Text"
-msgstr "Texto oculto"
-
-msgid "Highlight"
-msgstr "Resaltado"
-
-msgid "Horizontal Line"
-msgstr "Línea horizontal"
-
-msgid "Horizontal and Vertical Alignment"
-msgstr "Alineación horizontal y vertical"
-
-msgid "If you continue without saving, your changes will be lost."
-msgstr "Si continúas sin guardar, se perderán los cambios del documento."
-
-msgid "Image"
-msgstr "Imagen"
-
-msgid "Image Size…"
-msgstr "Tamaño de la imagen…"
-
-msgid "Images (PNG, JPEG, GIF, WebP, BMP, TIFF)"
-msgstr "Imágenes (PNG, JPEG, GIF, WebP, BMP, TIFF)"
-
-msgid "Images cannot be inserted inside a drawing canvas"
-msgstr "No se admite insertar una imagen dentro de un lienzo de dibujo"
-
-msgid "Image…"
-msgstr "Imagen…"
-
-msgid "Increase Indent"
-msgstr "Aumentar sangría"
-
-msgid "Increase Size"
-msgstr "Aumentar tamaño"
-
-msgid "Indents (pt)"
-msgstr "Sangrías (pt)"
-
-msgid "Inline"
-msgstr "En línea"
-
-msgid "Insert Image"
-msgstr "Insertar imagen"
-
-msgid "Insert Image…"
-msgstr "Insertar imagen…"
-
-msgid "Insert Table"
-msgstr "Insertar tabla"
-
-msgid "Insert Table…"
-msgstr "Insertar tabla…"
-
-msgid "Insert a table with {col} columns and {row} rows"
-msgstr "Insertar tabla de {col} columnas y {row} filas"
-
-msgid "Insert and Edit Tables"
-msgstr "Insertar y editar tablas"
-
-msgid "Inside"
-msgstr "Interior"
-
-msgid "Interface"
-msgstr "Interfaz"
-
-msgid "Invert"
-msgstr "Invertir"
-
-msgid "Italic"
-msgstr "Cursiva"
-
-msgid "Italic (Ctrl+I)"
-msgstr "Cursiva (Ctrl+I)"
-
-msgid "Justify"
-msgstr "Justificar"
-
-msgid "Keep Aspect Ratio"
-msgstr "Mantener proporción"
-
-msgid "Keep Lines Together"
-msgstr "Conservar líneas juntas"
-
-msgid "Keep with Next"
-msgstr "Conservar con el siguiente"
-
-msgid "Keyboard Shortcuts"
-msgstr "Atajos del teclado"
-
-msgid "Landscape"
-msgstr "Horizontal"
-
-msgid "Layout"
-msgstr "Distribución"
-
-msgid "Leaf Help"
-msgstr "Ayuda de Leaf"
-
-msgid "Leaf Project"
-msgstr "Proyecto Leaf"
-
-msgid "Left"
-msgstr "Izquierda"
-
-msgid "Left (mm)"
-msgstr "Izquierdo (mm)"
-
-msgid "Left Column"
-msgstr "Columna izquierda"
-
-msgid "Left to Right"
-msgstr "De izquierda a derecha"
-
-msgid "Letter"
-msgstr "Carta"
-
-msgid "Level (1–9)"
-msgstr "Nivel (1–9)"
-
-msgid "Light Blue"
-msgstr "Azul suave"
-
-msgid "Light Gray"
-msgstr "Gris claro"
-
-msgid "Light Green"
-msgstr "Verde suave"
-
-msgid "Light Pink"
-msgstr "Rosa suave"
-
-msgid "Light Yellow"
-msgstr "Amarillo suave"
-
-msgid "Line Between Columns"
-msgstr "Línea entre columnas"
-
-msgid "Line Spacing"
-msgstr "Interlineado"
-
-msgid "Main Menu"
-msgstr "Menú principal"
-
-msgid "Margins"
-msgstr "Márgenes"
-
-msgid "Merge Cells"
-msgstr "Combinar celdas"
-
-msgid "Minimum Row Height"
-msgstr "Altura mínima de fila"
-
-msgid "More Paragraph Options…"
-msgstr "Más opciones de párrafo…"
-
-msgid "More Table Options…"
-msgstr "Más opciones de tabla…"
-
-msgid "More Text Options…"
-msgstr "Más opciones de texto…"
-
-msgid "Multilevel List"
-msgstr "Lista multinivel"
-
-msgid "Multiple selected cells are merged before splitting."
-msgstr "Varias celdas seleccionadas se combinan antes de dividirse."
-
-msgid "Narrow Left Column"
-msgstr "Izquierda más estrecha"
-
-msgid "Narrow Right Column"
-msgstr "Derecha más estrecha"
-
-msgid "New Document"
-msgstr "Documento nuevo"
-
-msgid "New Style"
-msgstr "Nuevo estilo"
-
-msgid "New Style…"
-msgstr "Nuevo estilo…"
-
-msgid "New Tab"
-msgstr "Pestaña nueva"
-
-msgid "New Window"
-msgstr "Ventana nueva"
-
-msgid "No Background Color"
-msgstr "Sin color de fondo"
-
-msgid "No Borders"
-msgstr "Sin bordes"
-
-msgid "No Headings in This Document"
-msgstr "No hay títulos en este documento"
-
-msgid "No Highlight"
-msgstr "Sin resaltado"
-
-msgid "No Matches"
-msgstr "No hay coincidencias"
-
-msgid "No Shading"
-msgstr "Sin sombreado"
-
-msgid "No Styles Found"
-msgstr "No se encontraron estilos"
-
-msgid "No document"
-msgstr "No hay documento"
-
-msgid "None"
-msgstr "Ninguno"
-
-msgid "Number of Columns"
-msgstr "Número de columnas"
-
-msgid "Numbered List"
-msgstr "Lista numerada"
-
-msgid "Numbering"
-msgstr "Numeración"
-
-msgid "Offset (pt)"
-msgstr "Desplazamiento (pt)"
-
-msgid "Only DOCX and ODT files are supported"
-msgstr "Este prototipo admite únicamente DOCX y ODT"
-
-msgid "Open"
-msgstr "Abrir"
-
-msgid "Open Document"
-msgstr "Abrir documento"
-
-msgid "Open…"
-msgstr "Abrir…"
-
-msgid "Orientation"
-msgstr "Orientación"
-
-msgid "Outline"
-msgstr "Contorno"
-
-msgid "Outside"
-msgstr "Exterior"
-
-msgid "PDF Document (.pdf)"
-msgstr "Documento PDF (.pdf)"
-
-msgid "PDF Exported"
-msgstr "PDF exportado"
-
-msgid "Page"
-msgstr "Página"
-
-msgid "Page Break Before"
-msgstr "Salto de página anterior"
-
-msgid "Page Width"
-msgstr "Al ancho de página"
-
-msgid "Pages"
-msgstr "Páginas"
-
-msgid "Paper Size"
-msgstr "Tamaño de papel"
-
-msgid "Paragraph"
-msgstr "Párrafo"
-
-msgid "Paragraph Formatting"
-msgstr "Formato de párrafo"
-
-msgid "Paragraph Spacing (pt)"
-msgstr "Separación entre párrafos (pt)"
-
-msgid "Paragraph Style"
-msgstr "Estilo de párrafo"
-
-msgid "Paste"
-msgstr "Pegar"
-
-msgid "Phonetic Annotation"
-msgstr "Anotación fonética"
-
-msgid "Phonetic Guide"
-msgstr "Guía fonética"
-
-msgid "Pin"
-msgstr "Mantener abierto"
-
-msgid "Pink"
-msgstr "Rosa"
-
-msgid "Place the cursor in the document body, outside a table."
-msgstr "Sitúa el cursor en el cuerpo del documento, fuera de una tabla."
-
-msgid "Portrait"
-msgstr "Vertical"
-
-msgid "Position (pt)"
-msgstr "Posición (pt)"
-
-msgid "Preferences"
-msgstr "Preferencias"
-
-msgid "Preparing to Print…"
-msgstr "Preparando impresión…"
-
-msgid "Print"
-msgstr "Imprimir"
-
-msgid "Print…"
-msgstr "Imprimir…"
-
-msgid "Properties and Split Cells…"
-msgstr "Propiedades y dividir celdas…"
-
-msgid "Purple"
-msgstr "Violeta"
-
-msgid "RGB Color, for Example 2266AA"
-msgstr "Color RGB, por ejemplo 2266AA"
-
-msgid "Recover Documents"
-msgstr "Recuperar documentos"
-
-msgid "Recover Documents…"
-msgstr "Recuperar documentos…"
-
-msgid "Recovered Document"
-msgstr "Documento recuperado"
-
-msgid "Recovery File"
-msgstr "Archivo de recuperación"
-
-msgid "Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved."
-msgstr "Recuperación: copia separada cada 10 segundos. Archivo: guarda cada 30 segundos; sin nombre usa recuperación hasta el primer guardado."
-
-msgid "Recovery: {e}"
-msgstr "Recuperación: {e}"
-
-msgid "Red"
-msgstr "Rojo"
-
-msgid "Redo"
-msgstr "Rehacer"
-
-msgid "Redo (Ctrl+Shift+Z)"
-msgstr "Rehacer (Ctrl+Shift+Z)"
-
-msgid "Remove List"
-msgstr "Quitar lista"
-
-msgid "Remove Phonetic Guide"
-msgstr "Quitar guía fonética"
-
-msgid "Remove Shape"
-msgstr "Quitar forma"
-
-msgid "Remove Underline"
-msgstr "Quitar subrayado"
-
-msgid "Rename"
-msgstr "Renombrar"
-
-msgid "Rename Style"
-msgstr "Renombrar estilo"
-
-msgid "Rename…"
-msgstr "Renombrar…"
-
-msgid "Repeat as Header"
-msgstr "Repetir como cabecera"
-
-msgid "Replace"
-msgstr "Reemplazar"
-
-msgid "Replace All Matches"
-msgstr "Reemplazar todos los resultados"
-
-msgid "Replace Image"
-msgstr "Sustituir imagen"
-
-msgid "Replace Image…"
-msgstr "Sustituir imagen…"
-
-msgid "Replace This Match"
-msgstr "Reemplazar esta coincidencia"
-
-msgid "Replace With"
-msgstr "Reemplazar por"
-
-msgid "Reset Paragraph Formatting"
-msgstr "Restablecer formato de párrafo"
-
-msgid "Restart Numbering at 1"
-msgstr "Reiniciar numeración en 1"
-
-msgid "Restore Automatic Height for Current Row"
-msgstr "Restaurar altura automática de la fila actual"
-
-msgid "Restore Original Size"
-msgstr "Restaurar tamaño original"
-
-msgid "Right"
-msgstr "Derecha"
-
-msgid "Right (mm)"
-msgstr "Derecho (mm)"
-
-msgid "Right Column"
-msgstr "Columna derecha"
-
-msgid "Right to Left"
-msgstr "De derecha a izquierda"
-
-msgid "Row"
-msgstr "Fila"
-
-msgid "Row Above"
-msgstr "Fila encima"
-
-msgid "Row Below"
-msgstr "Fila debajo"
-
-msgid "Rows"
-msgstr "Filas"
-
-msgid "Save"
-msgstr "Guardar"
-
-msgid "Save As"
-msgstr "Guardar como"
-
-msgid "Save As…"
-msgstr "Guardar como…"
-
-msgid "Save Changes?"
-msgstr "¿Guardar los cambios?"
-
-msgid "Save a Copy — DOCX or ODT"
-msgstr "Guardar una copia — DOCX u ODT"
-
-msgid "Scale (%)"
-msgstr "Escala (%)"
-
-msgid "Search"
-msgstr "Buscar"
-
-msgid "Search (Ctrl+F)"
-msgstr "Buscar (Ctrl+F)"
-
-msgid "Search Document"
-msgstr "Buscar en el documento"
-
-msgid "Search Document (Ctrl+F)"
-msgstr "Buscar en el documento (Ctrl+F)"
-
-msgid "Search Options"
-msgstr "Opciones de búsqueda"
-
-msgid "Search Styles"
-msgstr "Buscar estilos"
-
-msgid "Select"
-msgstr "Seleccionar"
-
-msgid "Select All"
-msgstr "Seleccionar todo"
-
-msgid "Select Cell"
-msgstr "Seleccionar celda"
-
-msgid "Select Column"
-msgstr "Seleccionar columna"
-
-msgid "Select Row"
-msgstr "Seleccionar fila"
-
-msgid "Select Table"
-msgstr "Seleccionar tabla"
-
-msgid "Select an image in the document to edit it."
-msgstr "Selecciona una imagen en el documento para modificarla."
-
-msgid "Selected Column and Row (Points)"
-msgstr "Columna y fila seleccionadas (puntos)"
-
-msgid "Selected Text"
-msgstr "Texto seleccionado"
-
-msgid "Selection Borders and Shading"
-msgstr "Bordes y sombreado de la selección"
-
-msgid "Sentence case"
-msgstr "Tipo oración"
-
-msgid "Shading"
-msgstr "Sombreado"
-
-msgid "Shadow"
-msgstr "Sombra"
-
-msgid "Show All Tabs"
-msgstr "Mostrar todas las pestañas"
-
-msgid "Show Formatting Marks (¶)"
-msgstr "Mostrar marcas de formato (¶)"
-
-msgid "Show or Hide Sidebar"
-msgstr "Mostrar u ocultar el panel lateral"
-
-msgid "Single"
-msgstr "Sencillo"
-
-msgid "Size"
-msgstr "Tamaño"
-
-msgid "Size (pt)"
-msgstr "Tamaño (pt)"
-
-msgid "Size in Points, Including Decimals"
-msgstr "Tamaño en puntos, también con decimales"
-
-msgid "Size must be between 1 and 1638 points"
-msgstr "El tamaño debe estar entre 1 y 1638 puntos"
-
-msgid "Size must be between 1 and 4000 points"
-msgstr "El tamaño debe estar entre 1 y 4000 puntos"
-
-msgid "Small Caps"
-msgstr "Versalitas"
-
-msgid "Sort Selected Paragraphs"
-msgstr "Ordenar párrafos seleccionados"
-
-msgid "Spacing (mm)"
-msgstr "Separación (mm)"
-
-msgid "Spacing (pt)"
-msgstr "Espaciado (pt)"
-
-msgid "Spacing After Column {} (mm)"
-msgstr "Separación tras columna {} (mm)"
-
-msgid "Split Cells"
-msgstr "Dividir celdas"
-
-msgid "Split Selected Cells"
-msgstr "Dividir celdas seleccionadas"
-
-msgid "Split Table"
-msgstr "Dividir tabla"
-
-msgid "Square"
-msgstr "Cuadrado"
-
-msgid "Strikethrough"
-msgstr "Tachado"
-
-msgid "Style"
-msgstr "Estilo"
-
-msgid "Style Deleted"
-msgstr "Estilo eliminado"
-
-msgid "Style Name"
-msgstr "Nombre del estilo"
-
-msgid "Style Saved"
-msgstr "Estilo guardado"
-
-msgid "Style Updated"
-msgstr "Estilo actualizado"
-
-msgid "Styles"
-msgstr "Estilos"
-
-msgid "Subscript"
-msgstr "Subíndice"
-
-msgid "Superscript"
-msgstr "Superíndice"
-
-msgid "Switch Pane"
-msgstr "Cambiar de zona"
-
-msgid "Tab Stops"
-msgstr "Tabulaciones"
-
-msgid "Table"
-msgstr "Tabla"
-
-msgid "Table Alignment"
-msgstr "Alineación de tabla"
-
-msgid "Table Properties"
-msgstr "Propiedades de la tabla"
-
-msgid "Table Size"
-msgstr "Tamaño de la tabla"
-
-msgid "Table…"
-msgstr "Tabla…"
-
-msgid "Teal"
-msgstr "Verde azulado"
-
-msgid "Text"
-msgstr "Texto"
-
-msgid "Text Border"
-msgstr "Borde del texto"
-
-msgid "Text Color"
-msgstr "Color del texto"
-
-msgid "Text Direction"
-msgstr "Dirección del texto"
-
-msgid "Text Options"
-msgstr "Opciones de texto"
-
-msgid "Text Style"
-msgstr "Estilo de texto"
-
-msgid "The cell does not contain a paragraph"
-msgstr "La celda no contiene un párrafo"
-
-msgid "The columns do not fit in the text area. Reduce their number, width or spacing."
-msgstr "Las columnas no caben en el espacio de texto. Reduce su número, anchura o separación."
-
-msgid "The document contains no pages"
-msgstr "El documento no contiene páginas"
-
-msgid "The document has changed. Close and reopen Columns."
-msgstr "El documento ha cambiado. Cierra y vuelve a abrir Columnas."
-
-msgid "The document has changed. Close and reopen its properties."
-msgstr "El documento ha cambiado. Cierra y vuelve a abrir las propiedades."
-
-msgid "The document has changed; choose the image again"
-msgstr "El documento ha cambiado; vuelve a elegir la imagen"
-
-msgid "The document has changed; export it again"
-msgstr "El documento ha cambiado; vuelve a exportarlo"
-
-msgid "The document has changed; search results have been updated"
-msgstr "El documento ha cambiado; la búsqueda se ha actualizado"
-
-msgid "The document is closed"
-msgstr "El documento está cerrado"
-
-msgid "The document is empty"
-msgstr "El documento está vacío"
-
-msgid "The file does not exist or is not a regular file"
-msgstr "El archivo no existe o no es un fichero normal"
-
-msgid "The file path cannot be represented as UTF-8"
-msgstr "La ruta del archivo no se puede representar como UTF-8"
-
-msgid "The margins leave insufficient room for text"
-msgstr "Los márgenes no dejan espacio suficiente para el texto"
-
-msgid "The page exceeds the preview size limit"
-msgstr "La página excede el límite de tamaño de esta vista preliminar"
-
-msgid "The requested page does not exist"
-msgstr "La página solicitada no existe"
-
-msgid "The row does not exist"
-msgstr "No existe la fila"
-
-msgid "The section does not contain an editable paragraph"
-msgstr "La sección no contiene un párrafo editable"
-
-msgid "The style will use the formatting of the current selection."
-msgstr "Se creará con el formato de la selección actual."
-
-msgid "There are no documents to recover."
-msgstr "No hay documentos pendientes de recuperar."
-
-msgid "There is no table at this position"
-msgstr "No hay tabla en esa posición"
-
-msgid "Thick"
-msgstr "Grueso"
-
-msgid "Top"
-msgstr "Superior"
-
-msgid "Top (mm)"
-msgstr "Superior (mm)"
-
-msgid "Top · Center"
-msgstr "Arriba · centro"
-
-msgid "Top · Left"
-msgstr "Arriba · izquierda"
-
-msgid "Top · Right"
-msgstr "Arriba · derecha"
-
-msgid "Triangle"
-msgstr "Triángulo"
-
-msgid "Turquoise"
-msgstr "Turquesa"
-
-msgid "Type to Search"
-msgstr "Escribe para buscar"
-
-msgid "UPPERCASE"
-msgstr "MAYÚSCULAS"
-
-msgid "Underline"
-msgstr "Subrayado"
-
-msgid "Underline (Ctrl+U)"
-msgstr "Subrayado (Ctrl+U)"
-
-msgid "Underline Color"
-msgstr "Color del subrayado"
-
-msgid "Undo"
-msgstr "Deshacer"
-
-msgid "Undo (Ctrl+Z)"
-msgstr "Deshacer (Ctrl+Z)"
-
-msgid "Unequal widths are preserved in DOCX. In ODT, the engine saves them as equal-width columns."
-msgstr "Las anchuras desiguales se conservan en DOCX. En ODT, el motor las guarda como columnas iguales."
-
-msgid "Unknown Autosave Mode"
-msgstr "Modo de autoguardado desconocido"
-
-msgid "Unknown Navigation Action: {action}"
-msgstr "Acción de navegación desconocida: {action}"
-
-msgid "Unpin"
-msgstr "Dejar de mantener abierto"
-
-msgid "Unsaved changes. Save a copy to keep them."
-msgstr "Cambios pendientes. Usa Guardar para conservarlos en una copia."
-
-msgid "Update from Selection"
-msgstr "Actualizar según la selección"
-
-msgid "Use 1 to 12 columns with spacing between 0 and 105.83 mm."
-msgstr "Usa entre 1 y 12 columnas y una separación de 0 a 105,83 mm."
-
-msgid "Use a .docx or .odt extension"
-msgstr "Usa una extensión .docx o .odt"
-
-msgid "Vertical Downwards"
-msgstr "Vertical hacia abajo"
-
-msgid "Vertical Upwards"
-msgstr "Vertical hacia arriba"
-
-msgid "Wavy"
-msgstr "Ondulado"
-
-msgid "Whole Document"
-msgstr "Todo el documento"
-
-msgid "Widow and Orphan Control"
-msgstr "Control de viudas y huérfanas"
-
-msgid "Width (mm)"
-msgstr "Anchura (mm)"
-
-msgid "Width (pt)"
-msgstr "Grosor (pt)"
-
-msgid "Width and following spacing in millimeters. The last column has no following spacing."
-msgstr "Anchura y separación posterior, en milímetros. La última columna no tiene separación posterior."
-
-msgid "Widths"
-msgstr "Anchuras"
-
-msgid "WordCraft Could Not Open the File: {e}"
-msgstr "WordCraft no pudo abrir el archivo: {e}"
-
-msgid "WordCraft did not confirm that the document was saved"
-msgstr "WordCraft no confirmó el guardado"
-
-msgid "WordCraft returned an incomplete image"
-msgstr "WordCraft devolvió una imagen incompleta"
-
-msgid "Words Only"
-msgstr "Solo palabras"
-
-msgid "Yellow"
-msgstr "Amarillo"
-
-msgid "Zoom In"
-msgstr "Ampliar zoom"
-
-msgid "Zoom Out"
-msgstr "Reducir zoom"
-
-msgid "Zoom Out (Ctrl+-)"
-msgstr "Reducir zoom (Ctrl+-)"
-
-msgid "bullets"
-msgstr "viñetas"
-
-msgid "indents"
-msgstr "sangrías"
-
-msgid "lowercase"
-msgstr "minúsculas"
-
-msgid "numbering"
-msgstr "numeración"
-
-msgid "– Dash"
-msgstr "– Guion"
-
-msgid "• Disc"
-msgstr "• Punto"
-
-msgid "○ Circle"
-msgstr "○ Círculo"
-
-msgid "Choose another name to protect the original document."
-msgstr "Elige otro nombre para proteger el documento original."
-
-msgid "Documents (.docx, .odt)"
-msgstr "Documentos (.docx, .odt)"
-
-msgid "Include .docx or .odt in the file name"
-msgstr "Incluye .docx o .odt en el nombre del archivo"
-
-msgid "Document Editor"
-msgstr "Editor de documentos"
-
-msgid "Show or Hide Thumbnails (F9)"
-msgstr "Mostrar u ocultar miniaturas (F9)"
-
-msgid "Zoom In (Ctrl++)"
-msgstr "Ampliar zoom (Ctrl++)"
-
-msgid "Document Options"
-msgstr "Opciones del documento"
-
-msgid "Zoom Options"
-msgstr "Opciones de zoom"
-
-msgid "Choose Font"
-msgstr "Elegir fuente"
-
-msgid "Choose Font…"
-msgstr "Elegir fuente…"
-
-msgid "DOCX and ODT Documents"
-msgstr "Documentos DOCX y ODT"
-
-msgid "Only local files are supported"
-msgstr "Solo se admiten archivos locales"
-
-msgid "There Are Documents to Recover"
-msgstr "Hay documentos pendientes de recuperar"
-
-msgid "Recover"
-msgstr "Recuperar"
-
-msgid "Options for {label}"
-msgstr "Opciones de {label}"
-
-msgid "No Changes Applied"
-msgstr "No se ha aplicado ningún cambio"
-
-msgid "▪ Square"
-msgstr "▪ Cuadrado"
-
-msgid "Help Translate Leaf"
-msgstr "Ayuda a traducir Leaf"
-
-msgid "{col} columnas × {row} filas"
-msgstr "{col} columnas × {row} filas"
-
-msgid "table-action-{command}"
-msgstr "table-action-{command}"
-
-msgid "style-manage-{id}"
-msgstr "style-manage-{id}"
-
-msgid "Lifecycle {n}"
-msgstr "Lifecycle {n}"
-
-msgid "context.{name}"
-msgstr "context.{name}"
-
-msgid "{prefix}-{i}"
-msgstr "{prefix}-{i}"
-
-msgid "outline-heading-{i}"
-msgstr "outline-heading-{i}"
-
-msgid "paragraph-more-{page}"
-msgstr "paragraph-more-{page}"
-
-msgid "paragraph-align-{value}"
-msgstr "paragraph-align-{value}"
-
-msgid "paragraph-list-{kind}"
-msgstr "paragraph-list-{kind}"
-
-msgid "paragraph-line-{value}"
-msgstr "paragraph-line-{value}"
-
-msgid "<span background=\"#{color}\">     </span>"
-msgstr "<span background=\"#{color}\">     </span>"
-
-msgid "paragraph-shade-{color}"
-msgstr "paragraph-shade-{color}"
-
-msgid "paragraph-border-{kind}"
-msgstr "paragraph-border-{kind}"
-
-msgid "Párrafo {i}: texto de prueba para comprobar el cursor al cerrar un menú y volver al documento.\n"
-msgstr "Párrafo {i}: texto de prueba para comprobar el cursor al cerrar un menú y volver al documento.\n"
-
-msgid "Autoguardado: {e}"
-msgstr "Autoguardado: {e}"
-
-msgid "Coincidencia número {i}\n"
-msgstr "Coincidencia número {i}\n"
-
-msgid "{stem}.pdf"
-msgstr "{stem}.pdf"
-
-msgid "{label}{text}"
-msgstr "{label}{text}"
-
-msgid "{label} {text}"
-msgstr "{label} {text}"
-
-msgid "search-hit-{index}"
-msgstr "search-hit-{index}"
-
-msgid "…{before}"
-msgstr "…{before}"
-
-msgid "search-replace-{index}"
-msgstr "search-replace-{index}"
-
-msgid "win.{name}"
-msgstr "win.{name}"
-
-msgid "win.{action}"
-msgstr "win.{action}"
-
-msgid "{name}-copia.{ext}"
-msgstr "{name}-copia.{ext}"
-
-msgid "{size} pt"
-msgstr "{size} pt"
-
-msgid "Create and edit documents"
-msgstr "Crea y edita documentos"
-
-msgid "document;word;docx;odt;write;"
-msgstr "documento;texto;docx;odt;escribir;"
-
-msgid "Leaf is an experimental GTK4 and libadwaita document editor powered by WordCraft."
-msgstr "Leaf es un editor de documentos experimental para GTK4 y libadwaita basado en WordCraft."
-
-msgid "Edit DOCX and ODT files, use text and paragraph styles, work with tables and inline images, and export PDFs. Browse page thumbnails or headings, search and replace text, and open multiple documents."
-msgstr "Edita archivos DOCX y ODT, aplica estilos de texto y párrafo, trabaja con tablas e imágenes en línea y exporta archivos PDF. Navega por miniaturas o títulos, busca y reemplaza texto y abre varios documentos."
-
-msgid "Leaf follows your system language in English and Spanish. Other languages can be contributed using gettext catalogs. Development, documentation and artwork have used substantial AI assistance."
-msgstr "Leaf utiliza el idioma del sistema en español e inglés. Se pueden aportar otros idiomas mediante catálogos gettext. El desarrollo, la documentación y las ilustraciones han utilizado asistencia considerable de IA."
-
-msgid "Horizontal"
-msgstr "Horizontal"
-
-msgid "The path is not UTF-8"
-msgstr "La ruta no es UTF-8"
-
-msgid "The file name must end in .docx or .odt"
-msgstr "El nombre debe terminar en .docx o .odt"
-
-msgid "Select an Image"
-msgstr "Selecciona una imagen"
-
-msgid "Select text in the document body, outside tables."
-msgstr "Selecciona texto del cuerpo del documento, fuera de las tablas."
-
-msgid "Enter a Style Name"
-msgstr "Escribe un nombre para el estilo"
-
-msgid "The style no longer exists"
-msgstr "El estilo ya no existe"
-
-
-msgid "Alignment"
-msgstr "Alineación"
-
-msgid "At the Cursor"
-msgstr "En el cursor"
-
-msgid "Editing Footer"
-msgstr "Editando pie de página"
-
-msgid "Editing Header"
-msgstr "Editando encabezado"
-
-msgid "Footer"
-msgstr "Pie de página"
-
-msgid "Header"
-msgstr "Encabezado"
-
-msgid "In the Footer"
-msgstr "En el pie de página"
-
-msgid "In the Header"
-msgstr "En el encabezado"
-
-msgid "Include Total Pages"
-msgstr "Incluir el total de páginas"
-
-msgid "Insert"
-msgstr "Insertar"
-
-msgid "Page Number"
-msgstr "Número de página"
-
-msgid "Page Number…"
-msgstr "Número de página…"
-
-msgid "Page numbers update automatically. Existing header and footer content is kept."
-msgstr "Los números de página se actualizan automáticamente. Se conserva el contenido del encabezado y del pie de página."
-
-msgid "Paragraph {i}: test body text.\n"
-msgstr "Párrafo {i}: texto de prueba.\n"
-
-msgid "Position"
-msgstr "Posición"
-
-msgid "Return to Document"
-msgstr "Volver al documento"
-
-msgid "The document has changed; open this dialog again."
-msgstr "El documento ha cambiado; vuelve a abrir este diálogo."
-
-msgid "Add to Dictionary"
-msgstr "Añadir al diccionario"
-
-msgid "Change"
-msgstr "Cambiar"
-
-msgid "Check Complete"
-msgstr "Revisión terminada"
-
-msgid "Check Spelling as You Type"
-msgstr "Revisar la ortografía mientras se escribe"
-
-msgid "Check the header/footer distances and starting page number."
-msgstr "Comprueba las distancias del encabezado y el pie y el número de página inicial."
-
-msgid "Checking…"
-msgstr "Revisando…"
-
-msgid "Choose a valid section."
-msgstr "Elige una sección válida."
-
-msgid "Continue from Previous Section"
-msgstr "Continuar desde la sección anterior"
-
-msgid "Different First Page"
-msgstr "Primera página diferente"
-
-msgid "Different Odd and Even Pages"
-msgstr "Páginas pares e impares diferentes"
-
-msgid "Do Not Check Spelling or Grammar"
-msgstr "No revisar la ortografía ni la gramática"
-
-msgid "Existing Format"
-msgstr "Formato existente"
-
-msgid "First Section"
-msgstr "Primera sección"
-
-msgid "First-page settings, numbering and distances apply to the selected section. Odd/even headers apply to the whole document."
-msgstr "Las opciones de primera página, numeración y distancias se aplican a la sección seleccionada. Los encabezados pares e impares se aplican a todo el documento."
-
-msgid "Footer from Bottom (mm)"
-msgstr "Pie desde el borde inferior (mm)"
-
-msgid "Footers"
-msgstr "Pies de página"
-
-msgid "Header and Footer Options"
-msgstr "Opciones de encabezado y pie de página"
-
-msgid "Header from Top (mm)"
-msgstr "Encabezado desde el borde superior (mm)"
-
-msgid "Headers"
-msgstr "Encabezados"
-
-msgid "Headers and Footers"
-msgstr "Encabezados y pies de página"
-
-msgid "Ignore All"
-msgstr "Ignorar todas"
-
-msgid "Independent"
-msgstr "Independiente"
-
-msgid "Independent copies keep the current content. Linking uses the previous section; existing separate content remains available through Undo."
-msgstr "Las copias independientes conservan el contenido actual. Al vincular se usa la sección anterior; puedes recuperar el contenido independiente con Deshacer."
-
-msgid "Keep Existing Links"
-msgstr "Conservar los vínculos existentes"
-
-msgid "Language"
-msgstr "Idioma"
-
-msgid "Language Tag"
-msgstr "Código de idioma"
-
-msgid "Languages without installed dictionaries are skipped."
-msgstr "Se omiten los idiomas sin diccionario instalado."
-
-msgid "Link to Previous Section"
-msgstr "Vincular a la sección anterior"
-
-msgid "Linked to Previous Section"
-msgstr "Vinculado a la sección anterior"
-
-msgid "Make Independent Copies"
-msgstr "Crear copias independientes"
-
-msgid "No dictionary is installed for this language. Its spelling cannot be checked."
-msgstr "No hay ningún diccionario instalado para este idioma. No se puede revisar su ortografía."
-
-msgid "No issues found in text with available proofing tools."
-msgstr "No se han encontrado errores en el texto que dispone de herramientas de revisión."
-
-msgid "Number Format"
-msgstr "Formato de número"
-
-msgid "Other Language"
-msgstr "Otro idioma"
-
-msgid "Page Numbering"
-msgstr "Numeración de páginas"
-
-msgid "Replacement"
-msgstr "Sustitución"
-
-msgid "Section"
-msgstr "Sección"
-
-msgid "Section Links"
-msgstr "Vínculos entre secciones"
-
-msgid "Selection or Typing Position"
-msgstr "Selección o posición de escritura"
-
-msgid "Skip"
-msgstr "Omitir"
-
-msgid "Some Variants Are Linked"
-msgstr "Algunas variantes están vinculadas"
-
-msgid "Spelling and Grammar"
-msgstr "Ortografía y gramática"
-
-msgid "Spelling and Grammar…"
-msgstr "Ortografía y gramática…"
-
-msgid "Spelling tools are available for this language."
-msgstr "Hay herramientas de revisión ortográfica para este idioma."
-
-msgid "Start At"
-msgstr "Empezar en"
-
-msgid "Starting Page Number"
-msgstr "Número de página inicial"
-
-msgid "Text Language"
-msgstr "Idioma del texto"
-
-msgid "Text Language…"
-msgstr "Idioma del texto…"
-
-msgid "The spelling check could not finish."
-msgstr "La revisión ortográfica no ha podido terminar."
-
-msgid "The text has changed. Check it again."
-msgstr "El texto ha cambiado. Vuelve a revisarlo."
-
-msgid "Use a language tag such as es-ES or en-GB."
-msgstr "Usa un código de idioma como es-ES o en-GB."
-
-msgid "Use for New Documents"
-msgstr "Usar en documentos nuevos"
-
-msgid "Document protection prevents changing header/footer settings"
-msgstr "La protección del documento impide cambiar las opciones de encabezado y pie de página"
-
+#: src/annotations.rs:64
 msgid "A bookmark with this name already exists."
 msgstr "Ya existe un marcador con este nombre."
 
+#: src/styles.rs:119
+msgid "Aa Bb Cc · Sample Text"
+msgstr "Aa Bb Cc · Texto de ejemplo"
+
+#: src/gnome/menus.rs:336
+msgid "About Leaf"
+msgstr "Acerca de Leaf"
+
+#: src/gnome/tab.rs:59 src/gnome/tab.rs:427 src/gnome/tab.rs:428
+msgid "Actual Size (100%)"
+msgstr "Tamaño real (100 %)"
+
+#: src/gnome/annotation_dialog.rs:80 src/gnome/context.rs:542
+#: src/gnome/diagnostics/context.rs:207
+msgid "Add"
+msgstr "Añadir"
+
+#: src/gnome/annotation_dialog.rs:55
 msgid "Add Bookmark"
 msgstr "Añadir marcador"
 
+#: src/gnome/context.rs:453 src/gnome/diagnostics/annotations.rs:99
 msgid "Add Bookmark…"
 msgstr "Añadir marcador…"
 
+#: src/gnome/annotation_dialog.rs:56
 msgid "Add Comment"
 msgstr "Añadir comentario"
 
+#: src/gnome/context.rs:465 src/gnome/diagnostics/annotations.rs:100
 msgid "Add Comment…"
 msgstr "Añadir comentario…"
 
-msgid "Bookmark Name"
-msgstr "Nombre del marcador"
+#: src/gnome/paragraph.rs:919
+msgid "Add Left Tab Stop"
+msgstr "Añadir tabulación izquierda"
 
-msgid "Bookmarks"
-msgstr "Marcadores"
+#: src/gnome/context.rs:805 src/gnome/diagnostics/spellcheck.rs:108
+#: src/gnome/diagnostics/spellcheck.rs:122
+msgid "Add to Dictionary"
+msgstr "Añadir al diccionario"
 
-msgid "Bookmarks and Comments"
-msgstr "Marcadores y comentarios"
+#: src/gnome/paragraph.rs:761
+msgid "After"
+msgstr "Posterior"
 
-msgid "Bookmarks can only be added to the editable document body."
-msgstr "Los marcadores solo se pueden añadir al cuerpo editable del documento."
+#: src/gnome/paragraph.rs:418
+msgid "Align Left"
+msgstr "Alinear a la izquierda"
 
-msgid "Bookmark…"
-msgstr "Marcador…"
+#: src/gnome/paragraph.rs:428
+msgid "Align Right"
+msgstr "Alinear a la derecha"
 
-msgid "Comment Options"
-msgstr "Opciones del comentario"
+#: src/gnome/paragraph.rs:831 src/gnome/tables.rs:389
+msgid "All"
+msgstr "Todos"
 
-msgid "Comment Text"
-msgstr "Texto del comentario"
+#: src/gnome/tables.rs:292
+msgid "Allow Row to Split Across Pages"
+msgstr "Permitir dividir entre páginas"
 
-msgid "Comments"
-msgstr "Comentarios"
+#: src/gnome/adaptive.rs:461
+msgid "Annotation"
+msgstr "Anotación"
 
-msgid "Comment…"
-msgstr "Comentario…"
+#: src/gnome/adaptive.rs:347
+msgid "Annotations"
+msgstr "Anotaciones"
 
-msgid "Delete Bookmark"
-msgstr "Eliminar marcador"
+#: src/gnome/tables.rs:368
+msgid "Appearance"
+msgstr "Aspecto"
 
-msgid "Delete Comment?"
-msgstr "¿Eliminar comentario?"
+#: src/gnome/columns.rs:108 src/gnome/document_tools.rs:414
+#: src/gnome/links.rs:41
+msgid "Apply"
+msgstr "Aplicar"
 
-msgid "Delete Comment…"
-msgstr "Eliminar comentario…"
+#: src/gnome/paragraph.rs:528
+msgid "Apply Last Border"
+msgstr "Aplicar el último borde elegido"
 
-msgid "Edit Comment"
-msgstr "Editar comentario"
+#: src/gnome/paragraph.rs:519
+msgid "Apply Last Shading"
+msgstr "Aplicar el último sombreado elegido"
 
-msgid "Edit Comment…"
-msgstr "Editar comentario…"
+#: src/gnome/paragraph.rs:507
+msgid "Apply Line Spacing {}"
+msgstr "Aplicar interlineado {}"
 
-msgid "Enter some comment text."
-msgstr "Escribe el texto del comentario."
+#: src/gnome/adaptive.rs:466
+msgid "Apply Phonetic Guide"
+msgstr "Aplicar guía fonética"
 
-msgid "Go to Comment"
-msgstr "Ir al comentario"
+#: src/gnome/paragraph.rs:812
+msgid "Apply RGB Color"
+msgstr "Aplicar color RGB"
 
-msgid "No Bookmarks"
-msgstr "No hay marcadores"
+#: src/gnome/document_tools.rs:230
+msgid "Apply Size"
+msgstr "Aplicar tamaño"
 
-msgid "No Comments"
-msgstr "No hay comentarios"
+#: src/gnome/styles.rs:129
+msgid "Apply Style {}"
+msgstr "Aplicar estilo {}"
 
-msgid "ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."
-msgstr "El exportador actual de WordCraft no conserva los comentarios en ODT. Guarda como DOCX para conservarlos."
+#: src/gnome/columns.rs:205 src/gnome/document_tools.rs:475
+msgid "Apply To"
+msgstr "Aplicar a"
 
-msgid "Reopen Comment"
-msgstr "Reabrir comentario"
+#: src/gnome/tab.rs:279
+msgid "Apply and Manage Styles"
+msgstr "Aplicar y gestionar estilos"
 
-msgid "Reply"
-msgstr "Responder"
+#: src/gnome/tables.rs:411
+msgid "Apply to All Borders"
+msgstr "Aplicar a todos los bordes"
 
-msgid "Reply to Comment"
-msgstr "Responder al comentario"
+#: src/gnome/format_controls.rs:161
+msgid "Apply {label}"
+msgstr "Aplicar {label}"
 
-msgid "Resolve Comment"
-msgstr "Resolver comentario"
+#: src/gnome/paragraph.rs:906
+msgid "Ascending (A–Z)"
+msgstr "Ascendente (A–Z)"
 
-msgid "Resolved"
-msgstr "Resuelto"
-
-msgid "Save comments as DOCX. ODT does not preserve them."
-msgstr "Guarda los comentarios como DOCX. ODT no los conserva."
-
-msgid "Start with a letter. Use letters, numbers or underscores; no spaces."
-msgstr "Empieza por una letra. Usa letras, números o guiones bajos, sin espacios."
-
-msgid "The document has changed; try again."
-msgstr "El documento ha cambiado; vuelve a intentarlo."
-
-msgid "The selection has changed; open this dialog again."
-msgstr "La selección ha cambiado; vuelve a abrir este diálogo."
-
-msgid "This also deletes its replies. You can undo this change."
-msgstr "También se eliminarán sus respuestas. Puedes deshacer este cambio."
-
-msgid "This annotation cannot be added or changed here."
-msgstr "No se puede añadir ni modificar esta anotación aquí."
-
-msgid "This comment has no visible anchor in the document."
-msgstr "Este comentario no tiene un anclaje visible en el documento."
-
-msgid "Use a name beginning with a letter, with letters, numbers or underscores, and at most 40 characters."
-msgstr "Usa un nombre que empiece por una letra, con letras, números o guiones bajos, y un máximo de 40 caracteres."
-
-msgid "Add native bookmarks and comment threads with a shared sidebar and protect comments from unsupported ODT saves."
-msgstr "Añade marcadores e hilos de comentarios nativos con un panel lateral compartido y protege los comentarios frente al guardado ODT no compatible."
-
-msgid "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Headings, and Bookmarks and Comments. Select a thumbnail or heading to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks and comment threads are managed in the third sidebar tab. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
-msgstr "DOCUMENTOS\nPestaña nueva en el menú principal crea un documento vacío. El menú principal permite abrir documentos DOCX/ODT, ventanas nuevas y mostrar todas las pestañas. Guardar: Ctrl+S; Guardar como: Ctrl+Mayús+S.\n\nNAVEGACIÓN\nLos botones inferiores del panel izquierdo alternan Páginas, Títulos y Marcadores y comentarios. Pulsa una miniatura o un título para ir a esa parte del documento. La lupa abre la búsqueda; Escape vuelve a la vista anterior.\n\nBUSCAR Y REEMPLAZAR\nCtrl+F abre la búsqueda. Sus tres puntos permiten distinguir mayúsculas y activar Reemplazar. El botón junto al segundo campo reemplaza todas las coincidencias en un solo paso de deshacer; cada resultado conserva su reemplazo individual.\n\nEDICIÓN\nEstilo, Párrafo y Texto están como iconos a la derecha de la cabecera, con Deshacer/Rehacer a la izquierda. En ventanas estrechas los cinco pasan a la barra inferior. El clic derecho ofrece sus propias páginas de formato dentro del mismo menú. Insertar en el menú del documento permite añadir tablas, imágenes, marcadores y comentarios. Los marcadores y los hilos de comentarios se gestionan en la tercera pestaña del panel lateral. Guarda los comentarios en DOCX; ODT no los conserva. Las flechas abren subopciones. Ctrl+Z deshace y Ctrl+Mayús+Z rehace.\n\nAUTOGUARDADO\nPreferencias permite desactivar el autoguardado, usar un archivo de recuperación o guardar en el propio archivo. Recuperar documentos está en el menú principal."
-
-msgid "Check Again"
-msgstr "Volver a revisar"
-
-msgid "Check Spelling and Grammar as You Type"
-msgstr "Revisar la ortografía y gramática mientras se escribe"
-
-msgid "Select an issue to review it."
-msgstr "Selecciona un error para revisarlo."
-
-msgid "Navigation"
-msgstr "Navegación"
-
-msgid "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Navigation, Comments, and Spelling and Grammar. Navigation groups bookmarks under their headings. Select a thumbnail, heading or bookmark to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks appear in Navigation; each comment thread shares one bubble in Comments. Spelling issues only select their text; corrections remain in the document context menu. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
-msgstr "DOCUMENTOS\nPestaña nueva en el menú principal crea un documento vacío. El menú principal permite abrir documentos DOCX/ODT, ventanas nuevas y mostrar todas las pestañas. Guardar: Ctrl+S; Guardar como: Ctrl+Mayús+S.\n\nNAVEGACIÓN\nLos botones inferiores del panel izquierdo alternan Páginas, Navegación, Comentarios y Ortografía y gramática. Navegación agrupa los marcadores bajo sus títulos. Pulsa una miniatura, un título o un marcador para ir a esa parte del documento. La lupa abre la búsqueda; Escape vuelve a la vista anterior.\n\nBUSCAR Y REEMPLAZAR\nCtrl+F abre la búsqueda. Sus tres puntos permiten distinguir mayúsculas y activar Reemplazar. El botón junto al segundo campo reemplaza todas las coincidencias en un solo paso de deshacer; cada resultado conserva su reemplazo individual.\n\nEDICIÓN\nEstilo, Párrafo y Texto están como iconos a la derecha de la cabecera, con Deshacer/Rehacer a la izquierda. En ventanas estrechas los cinco pasan a la barra inferior. El clic derecho ofrece sus propias páginas de formato dentro del mismo menú. Insertar en el menú del documento permite añadir tablas, imágenes, marcadores y comentarios. Los marcadores aparecen en Navegación; cada hilo comparte una burbuja en Comentarios. Los errores de revisión solo seleccionan su texto; las correcciones siguen en el menú contextual del documento. Guarda los comentarios en DOCX; ODT no los conserva. Las flechas abren subopciones. Ctrl+Z deshace y Ctrl+Mayús+Z rehace.\n\nAUTOGUARDADO\nPreferencias permite desactivar el autoguardado, usar un archivo de recuperación o guardar en el propio archivo. Recuperar documentos está en el menú principal."
-
-msgid "Group bookmarks under navigation headings, combine comment threads in shared bubbles and simplify the spelling sidebar to navigation only."
-msgstr "Agrupa los marcadores bajo los títulos de navegación, reúne cada hilo de comentarios en una burbuja y simplifica la revisión lateral para que solo navegue al texto."
-
-msgid "Information"
-msgstr "Información"
-
-msgid "Title"
-msgstr "Título"
-
-msgid "Subject"
-msgstr "Asunto"
-
+#: src/gnome/document_tools.rs:507
 msgid "Author"
 msgstr "Autor"
 
-msgid "Keywords"
-msgstr "Palabras clave"
-
-msgid "Category"
-msgstr "Categoría"
-
-msgid "Save as DOCX to preserve the category."
-msgstr "Guarda en DOCX para conservar la categoría."
-
-msgid "Save as DOCX to preserve the document category. The current ODT exporter cannot keep it."
-msgstr "Guarda en DOCX para conservar la categoría del documento. El exportador ODT actual no puede guardarla."
-
-msgid "Group bookmarks under navigation headings, combine comment threads in shared bubbles, simplify the spelling sidebar and edit document title, subject, author, keywords and category."
-msgstr "Agrupa los marcadores bajo los títulos, reúne cada hilo de comentarios en una burbuja, simplifica la revisión lateral y permite editar título, asunto, autor, palabras clave y categoría del documento."
-
-msgid "Follow System"
-msgstr "Seguir el sistema"
-
-msgid "Light"
-msgstr "Claro"
-
-msgid "Dark"
-msgstr "Oscuro"
-
-msgid "Link"
-msgstr "Vínculo"
-
-msgid "This selection contains different links. Enter a destination to replace them all."
-msgstr "La selección contiene vínculos diferentes. Introduce un destino para reemplazarlos todos."
-
-msgid "Editing"
-msgstr "Edición"
-
-msgid "Reviewing"
-msgstr "Revisión"
-
-msgid "Mixed"
-msgstr "Mixto"
-
-msgid "User Name"
-msgstr "Nombre de usuario"
-
-msgid "Select the text to link."
-msgstr "Selecciona el texto del vínculo."
-
-msgid "Enter your name."
-msgstr "Introduce tu nombre."
-
-msgid "Spelling actions"
-msgstr "Acciones de revisión"
-
-msgid "Ctrl+click to open a link"
-msgstr "Ctrl+clic para abrir un vínculo"
-
+#: src/gnome/workspace.rs:317
 msgid "Author Name"
 msgstr "Nombre del autor"
 
+#: src/gnome/text_palette.rs:229 src/gnome/text_palette.rs:267
+msgid "Automatic Color"
+msgstr "Color automático"
+
+#: src/gnome/workspace.rs:349 src/gnome/workspace.rs:352
+msgid "Autosave"
+msgstr "Guardar automáticamente"
+
+#: src/gnome/tables.rs:372
+msgid "Background Color"
+msgstr "Color de fondo"
+
+#: src/gnome/paragraph.rs:755
+msgid "Before"
+msgstr "Anterior"
+
+#: src/gnome/paragraph.rs:790 src/gnome/text_palette.rs:268
+#: src/gnome/text_palette.rs:330
+msgid "Black"
+msgstr "Negro"
+
+#: src/gnome/paragraph.rs:789 src/gnome/text_palette.rs:270
+#: src/gnome/text_palette.rs:320
+msgid "Blue"
+msgstr "Azul"
+
+#: src/gnome/accessibility.rs:106 src/gnome/menus.rs:488
+msgid "Bold"
+msgstr "Negrita"
+
+#: src/gnome/tab.rs:213
+msgid "Bold (Ctrl+B)"
+msgstr "Negrita (Ctrl+B)"
+
+#: src/gnome/tab.rs:269
+msgid "Bold, Italic, Underline and Font Size"
+msgstr "Negrita, cursiva, subrayado y tamaño de letra"
+
+#: src/gnome/annotation_dialog.rs:96 src/gnome/annotation_dialog.rs:107
+msgid "Bookmark Name"
+msgstr "Nombre del marcador"
+
+#: src/annotations.rs:43
+msgid "Bookmarks can only be added to the editable document body."
+msgstr "Los marcadores solo se pueden añadir al cuerpo editable del documento."
+
+#: src/gnome/menus.rs:384
+msgid "Bookmark…"
+msgstr "Marcador…"
+
+#: src/gnome/tables.rs:410
+msgid "Border Color (RRGGBB)"
+msgstr "Color de bordes (RRGGBB)"
+
+#: src/gnome/tables.rs:405
+msgid "Border Width (pt)"
+msgstr "Grosor de bordes (pt)"
+
+#: src/gnome/paragraph.rs:821 src/gnome/tables.rs:387
+msgid "Borders"
+msgstr "Bordes"
+
+#: src/gnome/paragraph.rs:835 src/gnome/tables.rs:394
+msgid "Bottom"
+msgstr "Inferior"
+
+#: src/gnome/document_tools.rs:471
+msgid "Bottom (mm)"
+msgstr "Inferior (mm)"
+
+#: src/gnome/tables.rs:311
+msgid "Bottom · Center"
+msgstr "Abajo · centro"
+
+#: src/gnome/tables.rs:310
+msgid "Bottom · Left"
+msgstr "Abajo · izquierda"
+
+#: src/gnome/tables.rs:312
+msgid "Bottom · Right"
+msgstr "Abajo · derecha"
+
+#: src/gnome/paragraph.rs:879
+msgid "Breaks and Pagination"
+msgstr "Saltos y conservación"
+
+#: src/gnome/styles.rs:299
+msgid "Built-in styles cannot be deleted"
+msgstr "Los estilos integrados no se pueden eliminar"
+
+#: src/gnome/paragraph.rs:469
+msgid "Bulleted List"
+msgstr "Lista con viñetas"
+
+#: src/gnome/paragraph.rs:622
+msgid "Bullets"
+msgstr "Viñetas"
+
+#: src/gnome/annotation_dialog.rs:76 src/gnome/annotations.rs:392
+#: src/gnome/columns.rs:413 src/gnome/document_tools.rs:412
+#: src/gnome/files.rs:19 src/gnome/headers.rs:126 src/gnome/links.rs:39
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: src/gnome/adaptive.rs:368
+msgid "Capitalization"
+msgstr "Mayúsculas tipográficas"
+
+#: src/gnome/adaptive.rs:337
+msgid "Capitalize Each Word"
+msgstr "Cada Palabra"
+
+#: src/gnome/search.rs:263
+msgid "Case Sensitive"
+msgstr "Distinguir mayúsculas"
+
+#: src/gnome/document_tools.rs:509
+msgid "Category"
+msgstr "Categoría"
+
+#: src/gnome/context.rs:561
+msgid "Cell"
+msgstr "Celda"
+
+#: src/gnome/tables.rs:298
+msgid "Cells"
+msgstr "Celdas"
+
+#: src/gnome/paragraph.rs:423 src/gnome/tables.rs:308
+msgid "Center"
+msgstr "Centrar"
+
+#: src/gnome/tables.rs:307
+msgid "Center · Left"
+msgstr "Centro · izquierda"
+
+#: src/gnome/tables.rs:309
+msgid "Center · Right"
+msgstr "Centro · derecha"
+
+#: src/gnome/tables.rs:213
+msgid "Centered"
+msgstr "Centrada"
+
+#: src/gnome/adaptive.rs:332 src/gnome/adaptive.rs:532
+msgid "Change Case"
+msgstr "Mayúsculas/minúsculas"
+
+#: src/gnome/adaptive.rs:360
+msgid "Character Formatting"
+msgstr "Formato de caracteres"
+
+#: src/gnome/adaptive.rs:387
+msgid "Character Spacing"
+msgstr "Espaciado de caracteres"
+
+#: src/gnome/styles.rs:119
+msgid "Character Style"
+msgstr "Estilo de carácter"
+
+#: src/page_options.rs:187
+msgid "Check the header/footer distances and starting page number."
+msgstr ""
+"Comprueba las distancias del encabezado y el pie y el número de página "
+"inicial."
+
+#: src/document_properties.rs:79
+msgid "Check the page size and margins"
+msgstr "Revisa el tamaño de página y los márgenes"
+
+#: src/gnome/spellcheck.rs:87 src/gnome/spellcheck.rs:132
+msgid "Checking…"
+msgstr "Revisando…"
+
+#: src/gnome/format_controls.rs:176 src/gnome/text_palette.rs:356
+msgid "Choose Color"
+msgstr "Elegir color"
+
+#: src/gnome/text_palette.rs:288
+msgid "Choose Color…"
+msgstr "Elegir color…"
+
+#: src/gnome/tables.rs:44
+msgid "Choose Columns × Rows"
+msgstr "Elige columnas × filas"
+
+#: src/gnome/document_tools.rs:142 src/gnome/document_tools.rs:809
+#: src/gnome/files.rs:179
+msgid "Choose a Local File"
+msgstr "Elige un archivo local"
+
+#: src/formatting.rs:69
+msgid "Choose a font family"
+msgstr "Elige una familia tipográfica"
+
+#: src/page_options.rs:180
+msgid "Choose a valid section."
+msgstr "Elige una sección válida."
+
+#: src/gnome/format_controls.rs:119 src/gnome/format_controls.rs:156
+msgid "Choose…"
+msgstr "Elegir…"
+
+#: src/gnome/adaptive.rs:446
+msgid "Circle"
+msgstr "Círculo"
+
+#: src/gnome/paragraph.rs:932
+msgid "Clear Tab Stops"
+msgstr "Borrar tabulaciones"
+
+#: src/gnome/adaptive.rs:540
+msgid "Clear Text Formatting"
+msgstr "Borrar formato de texto"
+
+#: src/gnome/application.rs:127
+msgid "Close"
+msgstr "Cerrar"
+
+#: src/gnome/menus.rs:477
+msgid "Close Tab"
+msgstr "Cerrar pestaña"
+
+#: src/gnome/navigation.rs:146
+msgid "Collapse"
+msgstr "Contraer"
+
+#: src/gnome/navigation.rs:137
+msgid "Collapse Section"
+msgstr "Contraer sección"
+
+#: src/gnome/adaptive.rs:346
+msgid "Color and Effects"
+msgstr "Color y efectos"
+
+#: src/gnome/context.rs:563 src/gnome/context.rs:572
+#: src/gnome/diagnostics/context.rs:210
+msgid "Column"
+msgstr "Columna"
+
+#: src/gnome/tables.rs:253
+msgid "Column Width"
+msgstr "Ancho de columna"
+
+#: src/gnome/context.rs:548
+msgid "Column to the Left"
+msgstr "Columna a la izquierda"
+
+#: src/gnome/context.rs:552
+msgid "Column to the Right"
+msgstr "Columna a la derecha"
+
+#: src/document_properties.rs:363 src/gnome/columns.rs:399
+#: src/gnome/paragraph.rs:607 src/gnome/tables.rs:92 src/gnome/tables.rs:333
+msgid "Columns"
+msgstr "Columnas"
+
+#: src/gnome/paragraph.rs:538
+msgid "Columns…"
+msgstr "Columnas…"
+
+#: src/gnome/annotations.rs:300
+msgid "Comment Options"
+msgstr "Opciones del comentario"
+
+#: src/gnome/annotation_dialog.rs:104
+msgid "Comment Text"
+msgstr "Texto del comentario"
+
+#: src/gnome/annotations.rs:94 src/gnome/tab.rs:144 src/gnome/tab.rs:146
+msgid "Comments"
+msgstr "Comentarios"
+
+#: src/gnome/menus.rs:390
+msgid "Comment…"
+msgstr "Comentario…"
+
+#: src/gnome/tables.rs:299
+msgid "Content Alignment"
+msgstr "Alineación del contenido"
+
+#: src/gnome/diagnostics/context.rs:24
+msgid "Contexts"
+msgstr "Contextos"
+
+#: src/gnome/header_options.rs:113
+msgid "Continue from Previous Section"
+msgstr "Continuar desde la sección anterior"
+
+#: src/gnome/context.rs:404 src/gnome/diagnostics/context.rs:74
+#: src/gnome/diagnostics/context.rs:252 src/gnome/diagnostics/spellcheck.rs:112
+msgid "Copy"
+msgstr "Copiar"
+
+#: src/main.rs:32
+msgid "Could Not Encode PNG Image"
+msgstr "No se pudo codificar la imagen PNG"
+
+#: src/gnome/document_tools.rs:827
+msgid "Could Not Export PDF"
+msgstr "No se pudo exportar el PDF"
+
+#: src/gnome/workspace.rs:577
+msgid "Could Not Load Recovery List"
+msgstr "No se pudo cargar la lista de recuperación"
+
+#: src/gnome/application.rs:124
+msgid "Could Not Open Document"
+msgstr "No se pudo abrir el documento"
+
+#: src/gnome/files.rs:206
+msgid "Could Not Open Save Dialog: {e}"
+msgstr "No se pudo abrir el guardado: {e}"
+
+#: src/gnome/printing.rs:71
+msgid "Could Not Prepare Print PDF"
+msgstr "No se pudo preparar el PDF de impresión"
+
+#: src/printing.rs:33
+msgid "Could Not Prepare Printing: {e}"
+msgstr "No se pudo preparar la impresión: {e}"
+
+#: src/gnome/printing.rs:108
+msgid "Could Not Print: {e}"
+msgstr "No se pudo imprimir: {e}"
+
+#: src/gnome/workspace.rs:366
+msgid "Could Not Save Preferences: {e}"
+msgstr "No se guardaron las preferencias: {e}"
+
+#: src/gnome/files.rs:96
+msgid "Could Not Save: {e}"
+msgstr "No se ha guardado: {e}"
+
+#: src/gnome/styles.rs:347
+msgid "Create Style"
+msgstr "Crear estilo"
+
+#: data/*.in
+msgid "Create and edit documents"
+msgstr "Crea y edita documentos"
+
+#: src/gnome/columns.rs:226
+msgid ""
+"Creates continuous sections around the selected text, leaving the rest of "
+"the document unchanged."
+msgstr ""
+"Crea secciones continuas alrededor del texto, sin cambiar el resto del "
+"documento."
+
+#: src/gnome/tab.rs:91
+msgid "Ctrl+click to open a link"
+msgstr "Ctrl+clic para abrir un vínculo"
+
+#: src/gnome/tables.rs:281
+msgid "Current Row Pagination"
+msgstr "Paginación de la fila actual"
+
+#: src/gnome/columns.rs:207 src/gnome/document_tools.rs:478
+msgid "Current Section"
+msgstr "Sección actual"
+
+#: src/gnome/styles.rs:124
+msgid "Current Style"
+msgstr "Estilo actual"
+
+#: src/gnome/tables.rs:490
+msgid "Current Table"
+msgstr "Tabla actual"
+
+#: src/gnome/columns.rs:125 src/gnome/document_tools.rs:426
+msgid "Custom"
+msgstr "Personalizadas"
+
+#: src/gnome/tables.rs:88
+msgid "Custom Size"
+msgstr "Tamaño personalizado"
+
+#: src/gnome/columns.rs:165
+msgid "Custom Widths"
+msgstr "Anchuras personalizadas"
+
+#: src/gnome/context.rs:390 src/gnome/diagnostics/context.rs:119
+#: src/gnome/diagnostics/spellcheck.rs:111
+msgid "Cut"
+msgstr "Cortar"
+
+#: src/gnome/menus.rs:449
+msgid ""
+"DOCUMENTS\n"
+"New Tab creates a blank document. The main menu opens DOCX/ODT documents, "
+"creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n"
+"\n"
+"NAVIGATION\n"
+"The sidebar switches between Pages, Navigation, Comments, and Spelling and "
+"Grammar. Navigation groups bookmarks under their headings. Select a "
+"thumbnail, heading or bookmark to navigate. The magnifying glass opens "
+"search; Escape returns to the previous view.\n"
+"\n"
+"SEARCH AND REPLACE\n"
+"Ctrl+F opens search. Its options menu offers case-sensitive search and "
+"replacement. The button beside the replacement field replaces all matches in "
+"one undo step. Each result also has its own replacement button.\n"
+"\n"
+"EDITING\n"
+"Style, Paragraph and Text appear as icons on the right of the header, with "
+"Undo/Redo on the left. In narrow windows these controls move to the bottom "
+"toolbar. Right-click opens formatting pages inside the context menu. Insert "
+"in the document menu adds tables, images, bookmarks and comments. Bookmarks "
+"appear in Navigation; each comment thread shares one bubble in Comments. "
+"Spelling issues only select their text; corrections remain in the document "
+"context menu. Save comments as DOCX; ODT does not preserve them. Arrows open "
+"suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n"
+"\n"
+"AUTOSAVE\n"
+"Preferences can disable autosave, use a recovery file or save directly to "
+"the document. Recover Documents is in the main menu."
+msgstr ""
+"DOCUMENTOS\n"
+"Pestaña nueva en el menú principal crea un documento vacío. El menú "
+"principal permite abrir documentos DOCX/ODT, ventanas nuevas y mostrar todas "
+"las pestañas. Guardar: Ctrl+S; Guardar como: Ctrl+Mayús+S.\n"
+"\n"
+"NAVEGACIÓN\n"
+"Los botones inferiores del panel izquierdo alternan Páginas, Navegación, "
+"Comentarios y Ortografía y gramática. Navegación agrupa los marcadores bajo "
+"sus títulos. Pulsa una miniatura, un título o un marcador para ir a esa "
+"parte del documento. La lupa abre la búsqueda; Escape vuelve a la vista "
+"anterior.\n"
+"\n"
+"BUSCAR Y REEMPLAZAR\n"
+"Ctrl+F abre la búsqueda. Sus tres puntos permiten distinguir mayúsculas y "
+"activar Reemplazar. El botón junto al segundo campo reemplaza todas las "
+"coincidencias en un solo paso de deshacer; cada resultado conserva su "
+"reemplazo individual.\n"
+"\n"
+"EDICIÓN\n"
+"Estilo, Párrafo y Texto están como iconos a la derecha de la cabecera, con "
+"Deshacer/Rehacer a la izquierda. En ventanas estrechas los cinco pasan a la "
+"barra inferior. El clic derecho ofrece sus propias páginas de formato dentro "
+"del mismo menú. Insertar en el menú del documento permite añadir tablas, "
+"imágenes, marcadores y comentarios. Los marcadores aparecen en Navegación; "
+"cada hilo comparte una burbuja en Comentarios. Los errores de revisión solo "
+"seleccionan su texto; las correcciones siguen en el menú contextual del "
+"documento. Guarda los comentarios en DOCX; ODT no los conserva. Las flechas "
+"abren subopciones. Ctrl+Z deshace y Ctrl+Mayús+Z rehace.\n"
+"\n"
+"AUTOGUARDADO\n"
+"Preferencias permite desactivar el autoguardado, usar un archivo de "
+"recuperación o guardar en el propio archivo. Recuperar documentos está en el "
+"menú principal."
+
+#: src/gnome/tab.rs:640
+msgid "DOCX and ODT Documents"
+msgstr "Documentos DOCX y ODT"
+
+#: src/gnome/appearance.rs:22
+msgid "Dark"
+msgstr "Oscuro"
+
+#: src/gnome/text_palette.rs:322
+msgid "Dark Blue"
+msgstr "Azul oscuro"
+
+#: src/gnome/paragraph.rs:788
+msgid "Dark Gray"
+msgstr "Gris oscuro"
+
+#: src/gnome/text_palette.rs:324
+msgid "Dark Green"
+msgstr "Verde oscuro"
+
+#: src/gnome/text_palette.rs:326
+msgid "Dark Red"
+msgstr "Rojo oscuro"
+
+#: src/gnome/text_palette.rs:327
+msgid "Dark Yellow"
+msgstr "Amarillo oscuro"
+
+#: src/gnome/text_palette.rs:199
+msgid "Dashed"
+msgstr "Discontinuo"
+
+#: src/gnome/paragraph.rs:487
+msgid "Decrease Indent"
+msgstr "Reducir sangría"
+
+#: src/gnome/adaptive.rs:383
+msgid "Decrease Size"
+msgstr "Reducir tamaño"
+
+#: src/gnome/adaptive.rs:154 src/gnome/adaptive.rs:308
 msgid "Default"
 msgstr "Predeterminado"
 
-msgid "Do Not Check"
-msgstr "No revisar"
-
-msgid "Languages without an installed dictionary cannot be spell-checked."
-msgstr "Los idiomas sin un diccionario instalado no se pueden revisar."
-
-msgid "Language and Review"
-msgstr "Idioma y revisión"
-
-msgid "Review"
-msgstr "Revisar"
-
-msgid "Underline Color…"
-msgstr "Color del subrayado…"
-
-msgid "White"
-msgstr "Blanco"
-
+#: src/gnome/workspace.rs:377
 msgid "Default Language for New Documents"
 msgstr "Idioma predeterminado de los documentos nuevos"
 
+#: src/gnome/annotations.rs:393 src/gnome/context.rs:568
+msgid "Delete"
+msgstr "Eliminar"
+
+#: src/gnome/annotations.rs:215
+msgid "Delete Bookmark"
+msgstr "Eliminar marcador"
+
+#: src/gnome/tables.rs:519
+msgid "Delete Column"
+msgstr "Eliminar columna"
+
+#: src/gnome/annotations.rs:387
+msgid "Delete Comment?"
+msgstr "¿Eliminar comentario?"
+
+#: src/gnome/annotations.rs:315
+msgid "Delete Comment…"
+msgstr "Eliminar comentario…"
+
+#: src/gnome/context.rs:531 src/gnome/document_tools.rs:239
+msgid "Delete Image"
+msgstr "Eliminar imagen"
+
+#: src/gnome/tables.rs:518
+msgid "Delete Row"
+msgstr "Eliminar fila"
+
+#: src/gnome/styles.rs:292
+msgid "Delete Style"
+msgstr "Eliminar estilo"
+
+#: src/gnome/tables.rs:567
+msgid "Delete Table"
+msgstr "Eliminar tabla"
+
+#: src/gnome/paragraph.rs:912
+msgid "Descending (Z–A)"
+msgstr "Descendente (Z–A)"
+
+#: src/gnome/diagnostics/context.rs:257 src/gnome/links.rs:66
+#: src/gnome/links.rs:67
+msgid "Destination"
+msgstr "Destino"
+
+#: src/gnome/adaptive.rs:449
+msgid "Diamond"
+msgstr "Rombo"
+
+#: src/gnome/header_options.rs:78
+msgid "Different First Page"
+msgstr "Primera página diferente"
+
+#: src/gnome/header_options.rs:81
+msgid "Different Odd and Even Pages"
+msgstr "Páginas pares e impares diferentes"
+
+#: src/gnome/paragraph.rs:850
+msgid "Direction and Formatting"
+msgstr "Dirección y formato"
+
+#: src/gnome/workspace.rs:354
+msgid "Disabled"
+msgstr "Desactivado"
+
+#: src/gnome/tables.rs:236
+msgid "Distribute Columns Evenly"
+msgstr "Distribuir columnas uniformemente"
+
+#: src/gnome/tables.rs:244
+msgid "Distribute Rows Evenly"
+msgstr "Distribuir filas uniformemente"
+
+#: src/gnome/paragraph.rs:852
+msgid "Distributed Alignment"
+msgstr "Alineación distribuida"
+
+#: src/gnome/adaptive.rs:155 src/gnome/adaptive.rs:307
+msgid "Do Not Check"
+msgstr "No revisar"
+
+#: src/gnome/application.rs:74 src/gnome/files.rs:153 src/gnome/tab.rs:676
+msgid "Document"
+msgstr "Documento"
+
+#: src/gnome/accessibility.rs:76
+msgid "Document Content"
+msgstr "Contenido del documento"
+
+#: src/gnome/tab.rs:24 data/*.in
+msgid "Document Editor"
+msgstr "Editor de documentos"
+
+#: src/gnome/workspace.rs:356
+msgid "Document File"
+msgstr "En el propio archivo"
+
+#: src/gnome/tab.rs:69 src/gnome/tab.rs:70
+msgid "Document Options"
+msgstr "Opciones del documento"
+
+#: src/document_properties.rs:148 src/gnome/document_tools.rs:402
+msgid "Document Properties"
+msgstr "Propiedades del documento"
+
+#: src/gnome/menus.rs:406
+msgid "Document Properties…"
+msgstr "Propiedades del documento…"
+
+#: src/gnome/files.rs:90
+msgid "Document Saved"
+msgstr "Documento guardado"
+
+#: src/gnome/printing.rs:91
+msgid "Document Sent to Printer"
+msgstr "Documento enviado a impresión"
+
+#: src/gnome/menus.rs:251
+msgid "Document editor for GNOME powered by WordCraft."
+msgstr "Editor de documentos para GNOME basado en el motor WordCraft."
+
+#: src/page_options.rs:215
+msgid "Document protection prevents changing header/footer settings"
+msgstr ""
+"La protección del documento impide cambiar las opciones de encabezado y pie "
+"de página"
+
+#: src/gnome/menus.rs:469
+msgid "Documents"
+msgstr "Documentos"
+
+#: src/gnome/files.rs:142
+msgid "Documents (.docx, .odt)"
+msgstr "Documentos (.docx, .odt)"
+
+#: src/gnome/text_palette.rs:201
+msgid "Dot Dash"
+msgstr "Punto y raya"
+
+#: src/gnome/text_palette.rs:202
+msgid "Dot Dot Dash"
+msgstr "Dos puntos y raya"
+
+#: src/gnome/text_palette.rs:198
+msgid "Dotted"
+msgstr "Punteado"
+
+#: src/gnome/paragraph.rs:729 src/gnome/text_palette.rs:196
+#: src/gnome/text_palette.rs:240
+msgid "Double"
+msgstr "Doble"
+
+#: src/gnome/annotation_dialog.rs:57
+msgid "Edit Comment"
+msgstr "Editar comentario"
+
+#: src/gnome/annotations.rs:306
+msgid "Edit Comment…"
+msgstr "Editar comentario…"
+
+#: data/*.in
+msgid ""
+"Edit DOCX and ODT files, use text and paragraph styles, work with tables and "
+"inline images, and export PDFs. Browse page thumbnails or headings, search "
+"and replace text, and open multiple documents."
+msgstr ""
+"Edita archivos DOCX y ODT, aplica estilos de texto y párrafo, trabaja con "
+"tablas e imágenes en línea y exporta archivos PDF. Navega por miniaturas o "
+"títulos, busca y reemplaza texto y abre varios documentos."
+
+#: src/gnome/menus.rs:430
+msgid "Editing"
+msgstr "Edición"
+
+#: src/gnome/menus.rs:482
+msgid "Editing and Search"
+msgstr "Edición y búsqueda"
+
+#: src/gnome/adaptive.rs:427
+msgid "Effects"
+msgstr "Efectos"
+
+#: src/gnome/adaptive.rs:431
+msgid "Embossed"
+msgstr "Relieve"
+
+#: src/gnome/adaptive.rs:444
+msgid "Enclosed Characters"
+msgstr "Caracteres encerrados"
+
+#: src/gnome/adaptive.rs:432
+msgid "Engraved"
+msgstr "Grabado"
+
+#: src/gnome/tables.rs:425
+msgid "Enter Six Hexadecimal Characters, for Example 808080"
+msgstr "Introduce seis caracteres hexadecimales, por ejemplo 808080"
+
+#: src/gnome/paragraph.rs:969
+msgid "Enter Six RGB Digits, for Example 2266AA"
+msgstr "Escribe seis cifras RGB, por ejemplo 2266AA"
+
+#: src/styles.rs:78
+msgid "Enter a Style Name"
+msgstr "Escribe un nombre para el estilo"
+
+#: src/annotations.rs:202
+msgid "Enter some comment text."
+msgstr "Escribe el texto del comentario."
+
+#: src/preferences.rs:124
+msgid "Enter your name."
+msgstr "Introduce tu nombre."
+
+#: src/gnome/columns.rs:122
+msgid "Equal"
+msgstr "Iguales"
+
+#: src/gnome/paragraph.rs:743
+msgid "Exactly (pt)"
+msgstr "Exacto (pt)"
+
+#: src/gnome/header_options.rs:106
+msgid "Existing Format"
+msgstr "Formato existente"
+
+#: src/gnome/navigation.rs:144
+msgid "Expand"
+msgstr "Expandir"
+
+#: src/gnome/navigation.rs:135
+msgid "Expand Section"
+msgstr "Expandir sección"
+
+#: src/gnome/document_tools.rs:777
+msgid "Export to PDF"
+msgstr "Exportar a PDF"
+
+#: src/gnome/menus.rs:412
+msgid "Export to PDF…"
+msgstr "Exportar a PDF…"
+
+#: src/gnome/document_tools.rs:814
+msgid "Exporting PDF…"
+msgstr "Exportando PDF…"
+
+#: src/gnome/accessibility.rs:81
+msgid ""
+"F6 switches between the document, sidebar and formatting controls. Tab moves "
+"between table cells. Shift+F10 opens the context menu."
+msgstr ""
+"F6 cambia entre documento, panel lateral y formato. Tab navega entre celdas "
+"de una tabla. Mayús+F10 abre el menú contextual."
+
+#: src/gnome/paragraph.rs:706
+msgid "First Line (−: Hanging)"
+msgstr "Primera línea (−: francesa)"
+
+#: src/gnome/header_options.rs:178 src/gnome/header_options.rs:183
+msgid "First Section"
+msgstr "Primera sección"
+
+#: src/gnome/header_options.rs:64
+msgid ""
+"First-page settings, numbering and distances apply to the selected section. "
+"Odd/even headers apply to the whole document."
+msgstr ""
+"Las opciones de primera página, numeración y distancias se aplican a la "
+"sección seleccionada. Los encabezados pares e impares se aplican a todo el "
+"documento."
+
+#: src/gnome/tables.rs:225
+msgid "Fit Contents"
+msgstr "Al contenido"
+
+#: src/gnome/tab.rs:58 src/gnome/tab.rs:431 src/gnome/tab.rs:432
+#: src/gnome/tables.rs:223
+msgid "Fit Width"
+msgstr "Ajustar ancho"
+
+#: src/gnome/tables.rs:227
+msgid "Fixed Width"
+msgstr "Ancho fijo"
+
+#: src/gnome/appearance.rs:20
+msgid "Follow System"
+msgstr "Seguir el sistema"
+
+#: src/gnome/columns.rs:189
+msgid "Following Spacing (mm)"
+msgstr "Separación posterior (mm)"
+
+#: src/gnome/tab.rs:242 src/gnome/tab.rs:245 src/gnome/text_controls.rs:386
+msgid "Font"
+msgstr "Fuente"
+
+#: src/gnome/accessibility.rs:94
+msgid "Font Family"
+msgstr "Familia tipográfica"
+
+#: src/gnome/tab.rs:255 src/gnome/text_controls.rs:388
+msgid "Font Size"
+msgstr "Tamaño de letra"
+
+#: src/gnome/accessibility.rs:98
+msgid "Font Size in Points"
+msgstr "Tamaño de letra en puntos"
+
+#: src/gnome/adaptive.rs:345
+msgid "Font and Characters"
+msgstr "Fuente y caracteres"
+
+#: src/formatting.rs:48
+msgid "Font size must be between 6 and 96 points"
+msgstr "Tamaño de fuente fuera del rango permitido (6–96 puntos)"
+
+#: src/gnome/menus.rs:395
+msgid "Footer"
+msgstr "Pie de página"
+
+#: src/gnome/header_options.rs:91
+msgid "Footer from Bottom (mm)"
+msgstr "Pie desde el borde inferior (mm)"
+
+#: src/gnome/header_options.rs:134
+msgid "Footers"
+msgstr "Pies de página"
+
+#: src/gnome/commands.rs:123
+msgid "Formatting changed. Save to keep your changes."
+msgstr "Formato modificado. Usa Guardar para conservar los cambios."
+
+#: src/gnome/columns.rs:216
+msgid "From This Point Onwards"
+msgstr "Desde aquí en adelante"
+
+#: src/gnome/annotations.rs:284
+msgid "Go to Comment"
+msgstr "Ir al comentario"
+
+#: src/gnome/text_palette.rs:271 src/gnome/text_palette.rs:317
+msgid "Green"
+msgstr "Verde"
+
+#: src/gnome/menus.rs:394
+msgid "Header"
+msgstr "Encabezado"
+
+#: src/page_options.rs:234
+msgid "Header and Footer Options"
+msgstr "Opciones de encabezado y pie de página"
+
+#: src/gnome/header_options.rs:86
+msgid "Header from Top (mm)"
+msgstr "Encabezado desde el borde superior (mm)"
+
+#: src/gnome/header_options.rs:133
+msgid "Headers"
+msgstr "Encabezados"
+
+#: src/gnome/document_tools.rs:545 src/gnome/header_options.rs:76
+msgid "Headers and Footers"
+msgstr "Encabezados y pies de página"
+
+#: src/gnome/document_tools.rs:217 src/gnome/document_tools.rs:443
+msgid "Height (mm)"
+msgstr "Altura (mm)"
+
+#: src/gnome/menus.rs:335 src/gnome/menus.rs:500
+msgid "Help"
+msgstr "Ayuda"
+
+#: src/gnome/menus.rs:255
+msgid "Help Translate Leaf"
+msgstr "Ayuda a traducir Leaf"
+
+#: src/gnome/text_palette.rs:298
+msgid "Hexadecimal RGB Color"
+msgstr "Color RGB hexadecimal"
+
+#: src/gnome/adaptive.rs:373
+msgid "Hidden Text"
+msgstr "Texto oculto"
+
+#: src/gnome/text_palette.rs:84
+msgid "Highlight"
+msgstr "Resaltado"
+
+#: src/gnome/tables.rs:323
+msgid "Horizontal"
+msgstr "Horizontal"
+
+#: src/gnome/paragraph.rs:838
+msgid "Horizontal Line"
+msgstr "Línea horizontal"
+
+#: src/gnome/tables.rs:302
+msgid "Horizontal and Vertical Alignment"
+msgstr "Alineación horizontal y vertical"
+
+#: src/gnome/files.rs:15
+msgid "If you continue without saving, your changes will be lost."
+msgstr "Si continúas sin guardar, se perderán los cambios del documento."
+
+#: src/gnome/context.rs:804
+msgid "Ignore All"
+msgstr "Ignorar todas"
+
+#: src/gnome/document_tools.rs:184 src/gnome/document_tools.rs:195
+msgid "Image"
+msgstr "Imagen"
+
+#: src/gnome/context.rs:494 src/gnome/diagnostics/context.rs:247
+msgid "Image Size…"
+msgstr "Tamaño de la imagen…"
+
+#: src/gnome/document_tools.rs:109
+msgid "Images (PNG, JPEG, GIF, WebP, BMP, TIFF)"
+msgstr "Imágenes (PNG, JPEG, GIF, WebP, BMP, TIFF)"
+
+#: src/pictures.rs:45
+msgid "Images cannot be inserted inside a drawing canvas"
+msgstr "No se admite insertar una imagen dentro de un lienzo de dibujo"
+
+#: src/gnome/menus.rs:381
+msgid "Image…"
+msgstr "Imagen…"
+
+#: src/gnome/files.rs:185
+msgid "Include .docx or .odt in the file name"
+msgstr "Incluye .docx o .odt en el nombre del archivo"
+
+#: src/gnome/headers.rs:139
+msgid "Include Total Pages"
+msgstr "Incluir el total de páginas"
+
+#: src/gnome/paragraph.rs:495
+msgid "Increase Indent"
+msgstr "Aumentar sangría"
+
+#: src/gnome/adaptive.rs:382
+msgid "Increase Size"
+msgstr "Aumentar tamaño"
+
+#: src/gnome/paragraph.rs:692
+msgid "Indents (pt)"
+msgstr "Sangrías (pt)"
+
+#: src/gnome/header_options.rs:174
+msgid "Independent"
+msgstr "Independiente"
+
+#: src/gnome/header_options.rs:126
+msgid ""
+"Independent copies keep the current content. Linking uses the previous "
+"section; existing separate content remains available through Undo."
+msgstr ""
+"Las copias independientes conservan el contenido actual. Al vincular se usa "
+"la sección anterior; puedes recuperar el contenido independiente con "
+"Deshacer."
+
+#: src/gnome/document_tools.rs:537
+msgid "Information"
+msgstr "Información"
+
+#: src/gnome/headers.rs:128 src/gnome/menus.rs:402
+msgid "Insert"
+msgstr "Insertar"
+
+#: src/gnome/document_tools.rs:106
+msgid "Insert Image"
+msgstr "Insertar imagen"
+
+#: src/gnome/document_tools.rs:196
+msgid "Insert Image…"
+msgstr "Insertar imagen…"
+
+#: src/gnome/tables.rs:35 src/gnome/tables.rs:95
+msgid "Insert Table"
+msgstr "Insertar tabla"
+
+#: src/gnome/tables.rs:466
+msgid "Insert Table…"
+msgstr "Insertar tabla…"
+
+#: src/gnome/tables.rs:53
+msgid "Insert a table with {col} columns and {row} rows"
+msgstr "Insertar tabla de {col} columnas y {row} filas"
+
+#: src/gnome/tables.rs:452
+msgid "Insert and Edit Tables"
+msgstr "Insertar y editar tablas"
+
+#: src/gnome/paragraph.rs:833 src/gnome/tables.rs:391
+msgid "Inside"
+msgstr "Interior"
+
+#: src/gnome/menus.rs:494
+msgid "Interface"
+msgstr "Interfaz"
+
+#: src/gnome/adaptive.rs:338
+msgid "Invert"
+msgstr "Invertir"
+
+#: src/gnome/accessibility.rs:107 src/gnome/menus.rs:489
+msgid "Italic"
+msgstr "Cursiva"
+
+#: src/gnome/tab.rs:216
+msgid "Italic (Ctrl+I)"
+msgstr "Cursiva (Ctrl+I)"
+
+#: src/gnome/paragraph.rs:433
+msgid "Justify"
+msgstr "Justificar"
+
+#: src/gnome/document_tools.rs:227
+msgid "Keep Aspect Ratio"
+msgstr "Mantener proporción"
+
+#: src/gnome/header_options.rs:129
+msgid "Keep Existing Links"
+msgstr "Conservar los vínculos existentes"
+
+#: src/gnome/paragraph.rs:887
+msgid "Keep Lines Together"
+msgstr "Conservar líneas juntas"
+
+#: src/gnome/paragraph.rs:882
+msgid "Keep with Next"
+msgstr "Conservar con el siguiente"
+
+#: src/gnome/menus.rs:331
+msgid "Keyboard Shortcuts"
+msgstr "Atajos del teclado"
+
+#: src/gnome/document_tools.rs:508
+msgid "Keywords"
+msgstr "Palabras clave"
+
+#: src/gnome/document_tools.rs:438
+msgid "Landscape"
+msgstr "Horizontal"
+
+#: src/gnome/adaptive.rs:518 src/gnome/document_tools.rs:522
+#: src/gnome/tab.rs:262
+msgid "Language"
+msgstr "Idioma"
+
+#: src/gnome/document_tools.rs:520
+msgid "Language and Review"
+msgstr "Idioma y revisión"
+
+#: src/gnome/adaptive.rs:323
+msgid "Languages without an installed dictionary cannot be spell-checked."
+msgstr "Los idiomas sin un diccionario instalado no se pueden revisar."
+
+#: src/gnome/spellcheck.rs:181
+msgid "Languages without installed dictionaries are skipped."
+msgstr "Se omiten los idiomas sin diccionario instalado."
+
+#: src/gnome/columns.rs:112
+msgid "Layout"
+msgstr "Distribución"
+
+#: src/gnome/menus.rs:443
+msgid "Leaf Help"
+msgstr "Ayuda de Leaf"
+
+#: src/gnome/menus.rs:247
+msgid "Leaf Project"
+msgstr "Proyecto Leaf"
+
+#: data/*.in
+msgid ""
+"Leaf follows your system language in English and Spanish. Other languages "
+"can be contributed using gettext catalogs. Development, documentation and "
+"artwork have used substantial AI assistance."
+msgstr ""
+"Leaf utiliza el idioma del sistema en español e inglés. Se pueden aportar "
+"otros idiomas mediante catálogos gettext. El desarrollo, la documentación y "
+"las ilustraciones han utilizado asistencia considerable de IA."
+
+#: data/*.in
+msgid ""
+"Leaf is an experimental GTK4 and libadwaita document editor powered by "
+"WordCraft."
+msgstr ""
+"Leaf es un editor de documentos experimental para GTK4 y libadwaita basado "
+"en WordCraft."
+
+#: src/gnome/paragraph.rs:694 src/gnome/paragraph.rs:836
+#: src/gnome/tables.rs:212 src/gnome/tables.rs:395
+msgid "Left"
+msgstr "Izquierda"
+
+#: src/gnome/document_tools.rs:472
+msgid "Left (mm)"
+msgstr "Izquierdo (mm)"
+
+#: src/gnome/tables.rs:507
+msgid "Left Column"
+msgstr "Columna izquierda"
+
+#: src/gnome/paragraph.rs:858
+msgid "Left to Right"
+msgstr "De izquierda a derecha"
+
+#: src/gnome/document_tools.rs:430
+msgid "Letter"
+msgstr "Carta"
+
+#: src/gnome/paragraph.rs:676
+msgid "Level (1–9)"
+msgstr "Nivel (1–9)"
+
+#: src/gnome/appearance.rs:21
+msgid "Light"
+msgstr "Claro"
+
+#: src/gnome/paragraph.rs:784
+msgid "Light Blue"
+msgstr "Azul suave"
+
+#: src/gnome/paragraph.rs:787
+msgid "Light Gray"
+msgstr "Gris claro"
+
+#: src/gnome/paragraph.rs:785
+msgid "Light Green"
+msgstr "Verde suave"
+
+#: src/gnome/paragraph.rs:786
+msgid "Light Pink"
+msgstr "Rosa suave"
+
+#: src/gnome/paragraph.rs:783
+msgid "Light Yellow"
+msgstr "Amarillo suave"
+
+#: src/gnome/columns.rs:151
+msgid "Line Between Columns"
+msgstr "Línea entre columnas"
+
+#: src/gnome/paragraph.rs:724
+msgid "Line Spacing"
+msgstr "Interlineado"
+
+#: src/gnome/context.rs:378 src/gnome/diagnostics/issues.rs:72
+#: src/gnome/links.rs:29
+msgid "Link"
+msgstr "Vínculo"
+
+#: src/gnome/header_options.rs:130
+msgid "Link to Previous Section"
+msgstr "Vincular a la sección anterior"
+
+#: src/gnome/header_options.rs:173
+msgid "Linked to Previous Section"
+msgstr "Vinculado a la sección anterior"
+
+#: src/gnome/accessibility.rs:100 src/gnome/accessibility.rs:101
+#: src/gnome/menus.rs:499 src/gnome/tab.rs:38 src/gnome/tab.rs:64
+msgid "Main Menu"
+msgstr "Menú principal"
+
+#: src/gnome/header_options.rs:131
+msgid "Make Independent Copies"
+msgstr "Crear copias independientes"
+
+#: src/gnome/document_tools.rs:468
+msgid "Margins"
+msgstr "Márgenes"
+
+#: src/gnome/context.rs:607 src/gnome/tables.rs:514
+msgid "Merge Cells"
+msgstr "Combinar celdas"
+
+#: src/gnome/tables.rs:264
+msgid "Minimum Row Height"
+msgstr "Altura mínima de fila"
+
+#: src/gnome/adaptive.rs:156 src/gnome/selection_view.rs:170
+msgid "Mixed"
+msgstr "Mixto"
+
+#: src/gnome/paragraph.rs:547
+msgid "More Paragraph Options…"
+msgstr "Más opciones de párrafo…"
+
+#: src/gnome/context.rs:597 src/gnome/diagnostics/context.rs:217
+msgid "More Table Options…"
+msgstr "Más opciones de tabla…"
+
+#: src/gnome/tab.rs:261
+msgid "More Text Options…"
+msgstr "Más opciones de texto…"
+
+#: src/gnome/paragraph.rs:662
+msgid "Multilevel List"
+msgstr "Lista multinivel"
+
+#: src/gnome/tables.rs:339
+msgid "Multiple selected cells are merged before splitting."
+msgstr "Varias celdas seleccionadas se combinan antes de dividirse."
+
+#: src/gnome/columns.rs:123
+msgid "Narrow Left Column"
+msgstr "Izquierda más estrecha"
+
+#: src/gnome/columns.rs:124
+msgid "Narrow Right Column"
+msgstr "Derecha más estrecha"
+
+#: src/gnome/tab.rs:136 src/gnome/tab.rs:138
+msgid "Navigation"
+msgstr "Navegación"
+
+#: src/gnome/diagnostics/localization.rs:8
+#: src/gnome/diagnostics/localization.rs:17
+#: src/gnome/diagnostics/view_tests.rs:141 src/gnome/tab.rs:717
+#: src/gnome/workspace.rs:304
+msgid "New Document"
+msgstr "Documento nuevo"
+
+#: src/gnome/styles.rs:321
+msgid "New Style"
+msgstr "Nuevo estilo"
+
+#: src/gnome/styles.rs:412
+msgid "New Style…"
+msgstr "Nuevo estilo…"
+
+#: src/gnome/menus.rs:299 src/gnome/menus.rs:471
+msgid "New Tab"
+msgstr "Pestaña nueva"
+
+#: src/gnome/menus.rs:293 src/gnome/menus.rs:472
+msgid "New Window"
+msgstr "Ventana nueva"
+
+#: src/gnome/tables.rs:379
+msgid "No Background Color"
+msgstr "Sin color de fondo"
+
+#: src/gnome/paragraph.rs:830
+msgid "No Borders"
+msgstr "Sin bordes"
+
+#: src/gnome/annotations.rs:97
+msgid "No Comments"
+msgstr "No hay comentarios"
+
+#: src/gnome/navigation.rs:350
+msgid "No Headings in This Document"
+msgstr "No hay títulos en este documento"
+
+#: src/gnome/text_palette.rs:315
+msgid "No Highlight"
+msgstr "Sin resaltado"
+
+#: src/gnome/search.rs:86
+msgid "No Matches"
+msgstr "No hay coincidencias"
+
+#: src/gnome/paragraph.rs:814
+msgid "No Shading"
+msgstr "Sin sombreado"
+
+#: src/gnome/styles.rs:169
+msgid "No Styles Found"
+msgstr "No se encontraron estilos"
+
+#: src/gnome/format_controls.rs:11 src/gnome/styles.rs:58
+#: src/gnome/text_controls.rs:28
+msgid "No document"
+msgstr "No hay documento"
+
+#: src/gnome/spellcheck.rs:178
+msgid "No issues found in text with available proofing tools."
+msgstr ""
+"No se han encontrado errores en el texto que dispone de herramientas de "
+"revisión."
+
+#: src/gnome/tables.rs:392
+msgid "None"
+msgstr "Ninguno"
+
+#: src/gnome/header_options.rs:99
+msgid "Number Format"
+msgstr "Formato de número"
+
+#: src/gnome/columns.rs:139 src/gnome/columns.rs:142
+msgid "Number of Columns"
+msgstr "Número de columnas"
+
+#: src/gnome/paragraph.rs:478
+msgid "Numbered List"
+msgstr "Lista numerada"
+
+#: src/gnome/header_options.rs:111 src/gnome/paragraph.rs:624
+msgid "Numbering"
+msgstr "Numeración"
+
+#: src/saving.rs:22
+msgid ""
+"ODT cannot preserve comments with the current WordCraft exporter. Save as "
+"DOCX to keep them."
+msgstr ""
+"El exportador actual de WordCraft no conserva los comentarios en ODT. Guarda "
+"como DOCX para conservarlos."
+
+#: src/gnome/adaptive.rs:401
+msgid "Offset (pt)"
+msgstr "Desplazamiento (pt)"
+
+#: src/lib.rs:34
+msgid "Only DOCX and ODT files are supported"
+msgstr "Este prototipo admite únicamente DOCX y ODT"
+
+#: src/gnome/application.rs:66 src/gnome/tab.rs:665
+msgid "Only local files are supported"
+msgstr "Solo se admiten archivos locales"
+
+#: src/gnome/menus.rs:474
+msgid "Open"
+msgstr "Abrir"
+
+#: src/gnome/tab.rs:638
+msgid "Open Document"
+msgstr "Abrir documento"
+
+#: src/gnome/menus.rs:311 src/gnome/tab.rs:35
+msgid "Open…"
+msgstr "Abrir…"
+
+#: src/gnome/paragraph.rs:349 src/gnome/paragraph.rs:377
+msgid "Options for {label}"
+msgstr "Opciones de {label}"
+
+#: src/gnome/document_tools.rs:435
+msgid "Orientation"
+msgstr "Orientación"
+
+#: src/gnome/adaptive.rs:429 src/gnome/paragraph.rs:670
+msgid "Outline"
+msgstr "Contorno"
+
+#: src/gnome/paragraph.rs:832 src/gnome/tables.rs:390
+msgid "Outside"
+msgstr "Exterior"
+
+#: src/gnome/document_tools.rs:780
+msgid "PDF Document (.pdf)"
+msgstr "Documento PDF (.pdf)"
+
+#: src/gnome/document_tools.rs:824
+msgid "PDF Exported"
+msgstr "PDF exportado"
+
+#: src/gnome/document_tools.rs:421 src/gnome/document_tools.rs:539
+#: src/gnome/search.rs:132
+msgid "Page"
+msgstr "Página"
+
+#: src/gnome/paragraph.rs:892
+msgid "Page Break Before"
+msgstr "Salto de página anterior"
+
+#: src/gnome/headers.rs:116 src/header_footer.rs:101
+msgid "Page Number"
+msgstr "Número de página"
+
+#: src/gnome/header_options.rs:95
+msgid "Page Numbering"
+msgstr "Numeración de páginas"
+
+#: src/gnome/menus.rs:398
+msgid "Page Number…"
+msgstr "Número de página…"
+
+#: src/gnome/tables.rs:226
+msgid "Page Width"
+msgstr "Al ancho de página"
+
+#: src/gnome/headers.rs:134
+msgid ""
+"Page numbers update automatically. Existing header and footer content is "
+"kept."
+msgstr ""
+"Los números de página se actualizan automáticamente. Se conserva el "
+"contenido del encabezado y del pie de página."
+
+#: src/gnome/tab.rs:129 src/gnome/tab.rs:131
+msgid "Pages"
+msgstr "Páginas"
+
+#: src/gnome/document_tools.rs:424
+msgid "Paper Size"
+msgstr "Tamaño de papel"
+
+#: src/gnome/context.rs:216 src/gnome/context.rs:478
+#: src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/register.rs:139
+#: src/gnome/paragraph.rs:594 src/gnome/paragraph.rs:1018 src/gnome/tab.rs:281
+#: src/gnome/tab.rs:502
+msgid "Paragraph"
+msgstr "Párrafo"
+
+#: src/gnome/tab.rs:283
+msgid "Paragraph Formatting"
+msgstr "Formato de párrafo"
+
+#: src/gnome/paragraph.rs:753
+msgid "Paragraph Spacing (pt)"
+msgstr "Separación entre párrafos (pt)"
+
+#: src/gnome/styles.rs:117 src/gnome/styles.rs:246
+msgid "Paragraph Style"
+msgstr "Estilo de párrafo"
+
+#: src/gnome/context.rs:420 src/gnome/diagnostics/context.rs:103
+msgid "Paste"
+msgstr "Pegar"
+
+#: src/gnome/adaptive.rs:462
+msgid "Phonetic Annotation"
+msgstr "Anotación fonética"
+
+#: src/gnome/adaptive.rs:459
+msgid "Phonetic Guide"
+msgstr "Guía fonética"
+
+#: src/gnome/popovers.rs:78 src/gnome/popovers.rs:207 src/gnome/popovers.rs:208
+msgid "Pin"
+msgstr "Mantener abierto"
+
+#: src/gnome/text_palette.rs:319
+msgid "Pink"
+msgstr "Rosa"
+
+#: src/document_properties.rs:291
+msgid "Place the cursor in the document body, outside a table."
+msgstr "Sitúa el cursor en el cuerpo del documento, fuera de una tabla."
+
+#: src/gnome/document_tools.rs:437
+msgid "Portrait"
+msgstr "Vertical"
+
+#: src/gnome/paragraph.rs:918
+msgid "Position (pt)"
+msgstr "Posición (pt)"
+
+#: src/gnome/menus.rs:325 src/gnome/menus.rs:497 src/gnome/workspace.rs:313
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: src/gnome/printing.rs:43
+msgid "Preparing to Print…"
+msgstr "Preparando impresión…"
+
+#: src/gnome/menus.rs:478
+msgid "Print"
+msgstr "Imprimir"
+
+#: src/gnome/menus.rs:418
+msgid "Print…"
+msgstr "Imprimir…"
+
+#: src/gnome/context.rs:618 src/gnome/tables.rs:547
+msgid "Properties and Split Cells…"
+msgstr "Propiedades y dividir celdas…"
+
+#: src/gnome/text_palette.rs:272 src/gnome/text_palette.rs:325
+msgid "Purple"
+msgstr "Violeta"
+
+#: src/gnome/paragraph.rs:824
+msgid "RGB Color, for Example 2266AA"
+msgstr "Color RGB, por ejemplo 2266AA"
+
+#: src/gnome/tab.rs:787
+msgid "Recover"
+msgstr "Recuperar"
+
+#: src/gnome/workspace.rs:522
+msgid "Recover Documents"
+msgstr "Recuperar documentos"
+
+#: src/gnome/menus.rs:317
+msgid "Recover Documents…"
+msgstr "Recuperar documentos…"
+
+#: src/gnome/workspace.rs:470
+msgid "Recovered Document"
+msgstr "Documento recuperado"
+
+#: src/gnome/workspace.rs:355
+msgid "Recovery File"
+msgstr "Archivo de recuperación"
+
+#: src/gnome/workspace.rs:350
+msgid ""
+"Recovery: a separate copy every 10 seconds. Document file: save every 30 "
+"seconds; unnamed documents use recovery until first saved."
+msgstr ""
+"Recuperación: copia separada cada 10 segundos. Archivo: guarda cada 30 "
+"segundos; sin nombre usa recuperación hasta el primer guardado."
+
+#: src/gnome/view.rs:397
+msgid "Recovery: {e}"
+msgstr "Recuperación: {e}"
+
+#: src/gnome/text_palette.rs:269 src/gnome/text_palette.rs:321
+msgid "Red"
+msgstr "Rojo"
+
+#: src/gnome/menus.rs:360 src/gnome/menus.rs:485 src/gnome/tab.rs:197
+msgid "Redo"
+msgstr "Rehacer"
+
+#: src/gnome/tab.rs:201
+msgid "Redo (Ctrl+Shift+Z)"
+msgstr "Rehacer (Ctrl+Shift+Z)"
+
+#: src/gnome/paragraph.rs:657
+msgid "Remove List"
+msgstr "Quitar lista"
+
+#: src/gnome/adaptive.rs:471
+msgid "Remove Phonetic Guide"
+msgstr "Quitar guía fonética"
+
+#: src/gnome/adaptive.rs:455
+msgid "Remove Shape"
+msgstr "Quitar forma"
+
+#: src/gnome/styles.rs:345
+msgid "Rename"
+msgstr "Renombrar"
+
+#: src/gnome/styles.rs:319
+msgid "Rename Style"
+msgstr "Renombrar estilo"
+
+#: src/gnome/styles.rs:281
+msgid "Rename…"
+msgstr "Renombrar…"
+
+#: src/gnome/annotations.rs:310
+msgid "Reopen Comment"
+msgstr "Reabrir comentario"
+
+#: src/gnome/tables.rs:284
+msgid "Repeat as Header"
+msgstr "Repetir como cabecera"
+
+#: src/gnome/menus.rs:487 src/gnome/search.rs:264
+msgid "Replace"
+msgstr "Reemplazar"
+
+#: src/gnome/search.rs:279 src/gnome/search.rs:282
+msgid "Replace All Matches"
+msgstr "Reemplazar todos los resultados"
+
+#: src/gnome/document_tools.rs:104
+msgid "Replace Image"
+msgstr "Sustituir imagen"
+
+#: src/gnome/context.rs:517 src/gnome/document_tools.rs:236
+msgid "Replace Image…"
+msgstr "Sustituir imagen…"
+
+#: src/gnome/search.rs:139 src/gnome/search.rs:141
+msgid "Replace This Match"
+msgstr "Reemplazar esta coincidencia"
+
+#: src/gnome/search.rs:270 src/gnome/search.rs:273
+msgid "Replace With"
+msgstr "Reemplazar por"
+
+#: src/gnome/annotations.rs:288
+msgid "Reply"
+msgstr "Responder"
+
+#: src/gnome/annotation_dialog.rs:58
+msgid "Reply to Comment"
+msgstr "Responder al comentario"
+
+#: src/gnome/paragraph.rs:938
+msgid "Reset Paragraph Formatting"
+msgstr "Restablecer formato de párrafo"
+
+#: src/gnome/annotations.rs:312
+msgid "Resolve Comment"
+msgstr "Resolver comentario"
+
+#: src/gnome/annotations.rs:280
+msgid "Resolved"
+msgstr "Resuelto"
+
+#: src/gnome/paragraph.rs:685
+msgid "Restart Numbering at 1"
+msgstr "Reiniciar numeración en 1"
+
+#: src/gnome/tables.rs:275
+msgid "Restore Automatic Height for Current Row"
+msgstr "Restaurar altura automática de la fila actual"
+
+#: src/gnome/context.rs:504 src/gnome/document_tools.rs:233
+msgid "Restore Original Size"
+msgstr "Restaurar tamaño original"
+
+#: src/gnome/document_tools.rs:524
+msgid "Review"
+msgstr "Revisar"
+
+#: src/gnome/workspace.rs:387 src/gnome/workspace.rs:389
 msgid "Review New Documents"
 msgstr "Revisar documentos nuevos"
 
-msgid "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
-msgstr "Guarda como DOCX para conservar la herencia de idioma y revisión. El exportador ODT actual pierde esa herencia."
+#: src/gnome/menus.rs:431
+msgid "Reviewing"
+msgstr "Revisión"
+
+#: src/gnome/paragraph.rs:700 src/gnome/paragraph.rs:837
+#: src/gnome/tables.rs:214 src/gnome/tables.rs:396
+msgid "Right"
+msgstr "Derecha"
+
+#: src/gnome/document_tools.rs:473
+msgid "Right (mm)"
+msgstr "Derecho (mm)"
+
+#: src/gnome/tables.rs:509
+msgid "Right Column"
+msgstr "Columna derecha"
+
+#: src/gnome/paragraph.rs:864
+msgid "Right to Left"
+msgstr "De derecha a izquierda"
+
+#: src/gnome/context.rs:562 src/gnome/context.rs:571
+msgid "Row"
+msgstr "Fila"
+
+#: src/gnome/context.rs:545 src/gnome/tables.rs:503
+msgid "Row Above"
+msgstr "Fila encima"
+
+#: src/gnome/context.rs:546 src/gnome/tables.rs:504
+msgid "Row Below"
+msgstr "Fila debajo"
+
+#: src/gnome/tables.rs:89 src/gnome/tables.rs:336
+msgid "Rows"
+msgstr "Filas"
+
+#: src/gnome/annotation_dialog.rs:78 src/gnome/diagnostics/localization.rs:20
+#: src/gnome/files.rs:21 src/gnome/menus.rs:368 src/gnome/menus.rs:475
+msgid "Save"
+msgstr "Guardar"
+
+#: src/gnome/menus.rs:476
+msgid "Save As"
+msgstr "Guardar como"
+
+#: src/gnome/menus.rs:374
+msgid "Save As…"
+msgstr "Guardar como…"
+
+#: src/gnome/files.rs:14
+msgid "Save Changes?"
+msgstr "¿Guardar los cambios?"
+
+#: src/gnome/files.rs:139
+msgid "Save a Copy — DOCX or ODT"
+msgstr "Guardar una copia — DOCX u ODT"
+
+#: src/saving.rs:27
+msgid ""
+"Save as DOCX to preserve inherited language and review settings. The current "
+"ODT exporter flattens them."
+msgstr ""
+"Guarda como DOCX para conservar la herencia de idioma y revisión. El "
+"exportador ODT actual pierde esa herencia."
+
+#: src/gnome/document_tools.rs:500
+msgid "Save as DOCX to preserve the category."
+msgstr "Guarda en DOCX para conservar la categoría."
+
+#: src/saving.rs:31
+msgid ""
+"Save as DOCX to preserve the document category. The current ODT exporter "
+"cannot keep it."
+msgstr ""
+"Guarda en DOCX para conservar la categoría del documento. El exportador ODT "
+"actual no puede guardarla."
+
+#: src/gnome/annotation_dialog.rs:122
+msgid "Save comments as DOCX. ODT does not preserve them."
+msgstr "Guarda los comentarios como DOCX. ODT no los conserva."
+
+#: src/gnome/adaptive.rs:395
+msgid "Scale (%)"
+msgstr "Escala (%)"
+
+#: src/gnome/menus.rs:486
+msgid "Search"
+msgstr "Buscar"
+
+#: src/gnome/tab.rs:50
+msgid "Search (Ctrl+F)"
+msgstr "Buscar (Ctrl+F)"
+
+#: src/gnome/search.rs:240 src/gnome/search.rs:244 src/gnome/tab.rs:30
+#: src/gnome/tab.rs:49
+msgid "Search Document"
+msgstr "Buscar en el documento"
+
+#: src/gnome/tab.rs:32
+msgid "Search Document (Ctrl+F)"
+msgstr "Buscar en el documento (Ctrl+F)"
+
+#: src/gnome/search.rs:251 src/gnome/search.rs:254
+msgid "Search Options"
+msgstr "Opciones de búsqueda"
+
+#: src/gnome/styles.rs:400
+msgid "Search Styles"
+msgstr "Buscar estilos"
+
+#: src/gnome/header_options.rs:67 src/gnome/header_options.rs:71
+msgid "Section"
+msgstr "Sección"
+
+#: src/gnome/header_options.rs:125
+msgid "Section Links"
+msgstr "Vínculos entre secciones"
+
+#: src/gnome/context.rs:558 src/gnome/diagnostics/context.rs:209
+msgid "Select"
+msgstr "Seleccionar"
+
+#: src/gnome/context.rs:430 src/gnome/diagnostics/context.rs:134
+msgid "Select All"
+msgstr "Seleccionar todo"
+
+#: src/gnome/tables.rs:499
+msgid "Select Cell"
+msgstr "Seleccionar celda"
+
+#: src/gnome/tables.rs:496
+msgid "Select Column"
+msgstr "Seleccionar columna"
+
+#: src/gnome/tables.rs:495
+msgid "Select Row"
+msgstr "Seleccionar fila"
+
+#: src/gnome/tables.rs:500
+msgid "Select Table"
+msgstr "Seleccionar tabla"
+
+#: src/pictures.rs:24 src/pictures.rs:51 src/pictures.rs:66 src/pictures.rs:86
+#: src/pictures.rs:92
+msgid "Select an Image"
+msgstr "Selecciona una imagen"
+
+#: src/gnome/document_tools.rs:200
+msgid "Select an image in the document to edit it."
+msgstr "Selecciona una imagen en el documento para modificarla."
+
+#: src/document_properties.rs:284
+msgid "Select text in the document body, outside tables."
+msgstr "Selecciona texto del cuerpo del documento, fuera de las tablas."
+
+#: src/links.rs:67
+msgid "Select the text to link."
+msgstr "Selecciona el texto del vínculo."
+
+#: src/gnome/tables.rs:250
+msgid "Selected Column and Row (Points)"
+msgstr "Columna y fila seleccionadas (puntos)"
+
+#: src/gnome/columns.rs:212 src/gnome/columns.rs:225
+msgid "Selected Text"
+msgstr "Texto seleccionado"
+
+#: src/gnome/tables.rs:369
+msgid "Selection Borders and Shading"
+msgstr "Bordes y sombreado de la selección"
+
+#: src/gnome/adaptive.rs:334
+msgid "Sentence case"
+msgstr "Tipo oración"
+
+#: src/gnome/paragraph.rs:778
+msgid "Shading"
+msgstr "Sombreado"
+
+#: src/gnome/adaptive.rs:430
+msgid "Shadow"
+msgstr "Sombra"
+
+#: src/gnome/menus.rs:305 src/gnome/menus.rs:473
+msgid "Show All Tabs"
+msgstr "Mostrar todas las pestañas"
+
+#: src/gnome/paragraph.rs:875
+msgid "Show Formatting Marks (¶)"
+msgstr "Mostrar marcas de formato (¶)"
+
+#: src/gnome/accessibility.rs:85 src/gnome/menus.rs:496
+msgid "Show or Hide Sidebar"
+msgstr "Mostrar u ocultar el panel lateral"
+
+#: src/gnome/tab.rs:46
+msgid "Show or Hide Thumbnails (F9)"
+msgstr "Mostrar u ocultar miniaturas (F9)"
+
+#: src/gnome/paragraph.rs:726 src/gnome/text_palette.rs:195
+#: src/gnome/text_palette.rs:239
+msgid "Single"
+msgstr "Sencillo"
+
+#: src/gnome/tables.rs:206
+msgid "Size"
+msgstr "Tamaño"
+
+#: src/gnome/adaptive.rs:464
+msgid "Size (pt)"
+msgstr "Tamaño (pt)"
+
+#: src/formatting.rs:58
+msgid "Size must be between 1 and 1638 points"
+msgstr "El tamaño debe estar entre 1 y 1638 puntos"
+
+#: src/pictures.rs:72
+msgid "Size must be between 1 and 4000 points"
+msgstr "El tamaño debe estar entre 1 y 4000 puntos"
+
+#: src/gnome/adaptive.rs:363
+msgid "Small Caps"
+msgstr "Versalitas"
+
+#: src/gnome/header_options.rs:175
+msgid "Some Variants Are Linked"
+msgstr "Algunas variantes están vinculadas"
+
+#: src/gnome/paragraph.rs:904
+msgid "Sort Selected Paragraphs"
+msgstr "Ordenar párrafos seleccionados"
+
+#: src/gnome/columns.rs:144
+msgid "Spacing (mm)"
+msgstr "Separación (mm)"
+
+#: src/gnome/adaptive.rs:389 src/gnome/adaptive.rs:465
+msgid "Spacing (pt)"
+msgstr "Espaciado (pt)"
+
+#: src/gnome/columns.rs:192
+msgid "Spacing After Column {} (mm)"
+msgstr "Separación tras columna {} (mm)"
+
+#: src/gnome/spellcheck.rs:214
+msgid "Spelling actions"
+msgstr "Acciones de revisión"
+
+#: src/gnome/spellcheck.rs:291 src/gnome/tab.rs:154 src/gnome/tab.rs:157
+#: src/gnome/workspace.rs:375
+msgid "Spelling and Grammar"
+msgstr "Ortografía y gramática"
+
+#: src/gnome/tables.rs:332
+msgid "Split Cells"
+msgstr "Dividir celdas"
+
+#: src/gnome/tables.rs:345
+msgid "Split Selected Cells"
+msgstr "Dividir celdas seleccionadas"
+
+#: src/gnome/tables.rs:515
+msgid "Split Table"
+msgstr "Dividir tabla"
+
+#: src/gnome/adaptive.rs:447
+msgid "Square"
+msgstr "Cuadrado"
+
+#: src/gnome/header_options.rs:114
+msgid "Start At"
+msgstr "Empezar en"
+
+#: src/gnome/annotation_dialog.rs:109
+msgid "Start with a letter. Use letters, numbers or underscores; no spaces."
+msgstr ""
+"Empieza por una letra. Usa letras, números o guiones bajos, sin espacios."
+
+#: src/gnome/header_options.rs:118 src/gnome/header_options.rs:123
+msgid "Starting Page Number"
+msgstr "Número de página inicial"
+
+#: src/gnome/text_palette.rs:81
+msgid "Strikethrough"
+msgstr "Tachado"
+
+#: src/gnome/context.rs:213 src/gnome/context.rs:477
+#: src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50
+#: src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/register.rs:138
+#: src/gnome/styles.rs:391 src/gnome/tab.rs:277 src/gnome/tab.rs:501
+msgid "Style"
+msgstr "Estilo"
+
+#: src/gnome/styles.rs:220
+msgid "Style Deleted"
+msgstr "Estilo eliminado"
+
+#: src/gnome/styles.rs:328
+msgid "Style Name"
+msgstr "Nombre del estilo"
+
+#: src/gnome/styles.rs:365
+msgid "Style Saved"
+msgstr "Estilo guardado"
+
+#: src/gnome/styles.rs:217
+msgid "Style Updated"
+msgstr "Estilo actualizado"
+
+#: src/gnome/styles.rs:236 src/gnome/styles.rs:315
+msgid "Styles"
+msgstr "Estilos"
+
+#: src/gnome/document_tools.rs:506
+msgid "Subject"
+msgstr "Asunto"
+
+#: src/gnome/adaptive.rs:381
+msgid "Subscript"
+msgstr "Subíndice"
+
+#: src/gnome/text_palette.rs:69 src/gnome/text_palette.rs:70
+msgid "Superscript"
+msgstr "Superíndice"
+
+#: src/gnome/menus.rs:498
+msgid "Switch Pane"
+msgstr "Cambiar de zona"
+
+#: src/gnome/paragraph.rs:917
+msgid "Tab Stops"
+msgstr "Tabulaciones"
+
+#: src/gnome/context.rs:564 src/gnome/context.rs:573 src/gnome/tables.rs:38
+#: src/gnome/tables.rs:207 src/gnome/tables.rs:450 src/gnome/tables.rs:463
+msgid "Table"
+msgstr "Tabla"
+
+#: src/gnome/tables.rs:210
+msgid "Table Alignment"
+msgstr "Alineación de tabla"
+
+#: src/gnome/tables.rs:204
+msgid "Table Properties"
+msgstr "Propiedades de la tabla"
+
+#: src/gnome/tables.rs:39
+msgid "Table Size"
+msgstr "Tamaño de la tabla"
+
+#: src/gnome/menus.rs:380
+msgid "Table…"
+msgstr "Tabla…"
+
+#: src/gnome/text_palette.rs:323
+msgid "Teal"
+msgstr "Verde azulado"
+
+#: src/gnome/adaptive.rs:290 src/gnome/context.rs:219 src/gnome/context.rs:479
+#: src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147
+#: src/gnome/diagnostics/register.rs:140
+#: src/gnome/diagnostics/spellcheck.rs:113 src/gnome/tab.rs:235
+#: src/gnome/tab.rs:268 src/gnome/tab.rs:503
+msgid "Text"
+msgstr "Texto"
+
+#: src/gnome/adaptive.rs:434
+msgid "Text Border"
+msgstr "Borde del texto"
+
+#: src/gnome/text_palette.rs:83
+msgid "Text Color"
+msgstr "Color del texto"
+
+#: src/gnome/tables.rs:321
+msgid "Text Direction"
+msgstr "Dirección del texto"
+
+#: src/proofing.rs:120
+msgid "Text Language"
+msgstr "Idioma del texto"
+
+#: src/gnome/adaptive.rs:292
+msgid "Text Options"
+msgstr "Opciones de texto"
+
+#: src/gnome/styles.rs:248
+msgid "Text Style"
+msgstr "Estilo de texto"
+
+#: src/tables.rs:50
+msgid "The cell does not contain a paragraph"
+msgstr "La celda no contiene un párrafo"
+
+#: src/document_properties.rs:219
+msgid ""
+"The columns do not fit in the text area. Reduce their number, width or "
+"spacing."
+msgstr ""
+"Las columnas no caben en el espacio de texto. Reduce su número, anchura o "
+"separación."
+
+#: src/gnome/view.rs:408
+msgid "The document contains no pages"
+msgstr "El documento no contiene páginas"
+
+#: src/gnome/columns.rs:358
+msgid "The document has changed. Close and reopen Columns."
+msgstr "El documento ha cambiado. Cierra y vuelve a abrir Columnas."
+
+#: src/gnome/document_tools.rs:676
+msgid "The document has changed. Close and reopen its properties."
+msgstr "El documento ha cambiado. Cierra y vuelve a abrir las propiedades."
+
+#: src/gnome/document_tools.rs:135
+msgid "The document has changed; choose the image again"
+msgstr "El documento ha cambiado; vuelve a elegir la imagen"
+
+#: src/gnome/document_tools.rs:802
+msgid "The document has changed; export it again"
+msgstr "El documento ha cambiado; vuelve a exportarlo"
+
+#: src/gnome/annotation_dialog.rs:172 src/gnome/headers.rs:172
+#: src/gnome/links.rs:103
+msgid "The document has changed; open this dialog again."
+msgstr "El documento ha cambiado; vuelve a abrir este diálogo."
+
+#: src/search.rs:92
+msgid "The document has changed; search results have been updated"
+msgstr "El documento ha cambiado; la búsqueda se ha actualizado"
+
+#: src/gnome/annotations.rs:367
+msgid "The document has changed; try again."
+msgstr "El documento ha cambiado; vuelve a intentarlo."
+
+#: src/gnome/styles.rs:55
+msgid "The document is closed"
+msgstr "El documento está cerrado"
+
+#: src/main.rs:28
+msgid "The document is empty"
+msgstr "El documento está vacío"
+
+#: src/lib.rs:27
+msgid "The file does not exist or is not a regular file"
+msgstr "El archivo no existe o no es un fichero normal"
+
+#: src/saving.rs:65
+msgid "The file name must end in .docx or .odt"
+msgstr "El nombre debe terminar en .docx o .odt"
+
+#: src/lib.rs:36
+msgid "The file path cannot be represented as UTF-8"
+msgstr "La ruta del archivo no se puede representar como UTF-8"
+
+#: src/document_properties.rs:86
+msgid "The margins leave insufficient room for text"
+msgstr "Los márgenes no dejan espacio suficiente para el texto"
+
+#: src/lib.rs:106
+msgid "The page exceeds the preview size limit"
+msgstr "La página excede el límite de tamaño de esta vista preliminar"
+
+#: src/pdf_export.rs:12 src/pictures.rs:38 src/pictures.rs:54 src/saving.rs:44
+msgid "The path is not UTF-8"
+msgstr "La ruta no es UTF-8"
+
+#: src/lib.rs:101
+msgid "The requested page does not exist"
+msgstr "La página solicitada no existe"
+
+#: src/tables.rs:23
+msgid "The row does not exist"
+msgstr "No existe la fila"
+
+#: src/document_properties.rs:122
+msgid "The section does not contain an editable paragraph"
+msgstr "La sección no contiene un párrafo editable"
+
+#: src/gnome/annotation_dialog.rs:185 src/gnome/headers.rs:183
+msgid "The selection has changed; open this dialog again."
+msgstr "La selección ha cambiado; vuelve a abrir este diálogo."
+
+#: src/gnome/spellcheck.rs:165
+msgid "The spelling check could not finish."
+msgstr "La revisión ortográfica no ha podido terminar."
+
+#: src/styles.rs:117
+msgid "The style no longer exists"
+msgstr "El estilo ya no existe"
+
+#: src/gnome/styles.rs:336
+msgid "The style will use the formatting of the current selection."
+msgstr "Se creará con el formato de la selección actual."
+
+#: src/gnome/context.rs:795 src/proofing.rs:80 src/proofing.rs:90
+#: src/proofing.rs:98
+msgid "The text has changed. Check it again."
+msgstr "El texto ha cambiado. Vuelve a revisarlo."
+
+#: src/gnome/tab.rs:786
+msgid "There Are Documents to Recover"
+msgstr "Hay documentos pendientes de recuperar"
+
+#: src/gnome/workspace.rs:534
+msgid "There are no documents to recover."
+msgstr "No hay documentos pendientes de recuperar."
+
+#: src/tables.rs:19
+msgid "There is no table at this position"
+msgstr "No hay tabla en esa posición"
+
+#: src/gnome/text_palette.rs:197
+msgid "Thick"
+msgstr "Grueso"
+
+#: src/gnome/annotations.rs:388
+msgid "This also deletes its replies. You can undo this change."
+msgstr "También se eliminarán sus respuestas. Puedes deshacer este cambio."
+
+#: src/gnome/annotation_dialog.rs:34
+msgid "This annotation cannot be added or changed here."
+msgstr "No se puede añadir ni modificar esta anotación aquí."
+
+#: src/annotations.rs:169
+msgid "This comment has no visible anchor in the document."
+msgstr "Este comentario no tiene un anclaje visible en el documento."
+
+#: src/gnome/links.rs:57
+msgid ""
+"This selection contains different links. Enter a destination to replace them "
+"all."
+msgstr ""
+"La selección contiene vínculos diferentes. Introduce un destino para "
+"reemplazarlos todos."
+
+#: src/gnome/document_tools.rs:505
+msgid "Title"
+msgstr "Título"
+
+#: src/gnome/paragraph.rs:834 src/gnome/tables.rs:393
+msgid "Top"
+msgstr "Superior"
+
+#: src/gnome/document_tools.rs:470
+msgid "Top (mm)"
+msgstr "Superior (mm)"
+
+#: src/gnome/tables.rs:305
+msgid "Top · Center"
+msgstr "Arriba · centro"
+
+#: src/gnome/tables.rs:304
+msgid "Top · Left"
+msgstr "Arriba · izquierda"
+
+#: src/gnome/tables.rs:306
+msgid "Top · Right"
+msgstr "Arriba · derecha"
+
+#: src/gnome/adaptive.rs:448
+msgid "Triangle"
+msgstr "Triángulo"
+
+#: src/gnome/text_palette.rs:318
+msgid "Turquoise"
+msgstr "Turquesa"
+
+#: src/gnome/search.rs:84 src/gnome/search.rs:290
+msgid "Type to Search"
+msgstr "Escribe para buscar"
+
+#: src/gnome/adaptive.rs:336
+msgid "UPPERCASE"
+msgstr "MAYÚSCULAS"
+
+#: src/gnome/accessibility.rs:108 src/gnome/menus.rs:490
+#: src/gnome/text_palette.rs:76
+msgid "Underline"
+msgstr "Subrayado"
+
+#: src/gnome/tab.rs:219
+msgid "Underline (Ctrl+U)"
+msgstr "Subrayado (Ctrl+U)"
+
+#: src/gnome/text_palette.rs:221
+msgid "Underline Color…"
+msgstr "Color del subrayado…"
+
+#: src/gnome/menus.rs:354 src/gnome/menus.rs:484 src/gnome/tab.rs:194
+msgid "Undo"
+msgstr "Deshacer"
+
+#: src/gnome/tab.rs:200
+msgid "Undo (Ctrl+Z)"
+msgstr "Deshacer (Ctrl+Z)"
+
+#: src/gnome/columns.rs:155
+msgid ""
+"Unequal widths are preserved in DOCX. In ODT, the engine saves them as equal-"
+"width columns."
+msgstr ""
+"Las anchuras desiguales se conservan en DOCX. En ODT, el motor las guarda "
+"como columnas iguales."
+
+#: src/preferences.rs:35
+msgid "Unknown Autosave Mode"
+msgstr "Modo de autoguardado desconocido"
+
+#: src/selection.rs:90
+msgid "Unknown Navigation Action: {action}"
+msgstr "Acción de navegación desconocida: {action}"
+
+#: src/gnome/popovers.rs:76
+msgid "Unpin"
+msgstr "Dejar de mantener abierto"
+
+#: src/gnome/styles.rs:275
+msgid "Update from Selection"
+msgstr "Actualizar según la selección"
+
+#: src/document_properties.rs:228
+msgid "Use 1 to 12 columns with spacing between 0 and 105.83 mm."
+msgstr "Usa entre 1 y 12 columnas y una separación de 0 a 105,83 mm."
+
+#: src/saving.rs:40
+msgid "Use a .docx or .odt extension"
+msgstr "Usa una extensión .docx o .odt"
+
+#: src/preferences.rs:59 src/proofing.rs:106
+msgid "Use a language tag such as es-ES or en-GB."
+msgstr "Usa un código de idioma como es-ES o en-GB."
+
+#: src/annotations.rs:49
+msgid ""
+"Use a name beginning with a letter, with letters, numbers or underscores, "
+"and at most 40 characters."
+msgstr ""
+"Usa un nombre que empiece por una letra, con letras, números o guiones "
+"bajos, y un máximo de 40 caracteres."
+
+#: src/gnome/tables.rs:324
+msgid "Vertical Downwards"
+msgstr "Vertical hacia abajo"
+
+#: src/gnome/tables.rs:325
+msgid "Vertical Upwards"
+msgstr "Vertical hacia arriba"
+
+#: src/gnome/text_palette.rs:200
+msgid "Wavy"
+msgstr "Ondulado"
+
+#: src/gnome/text_palette.rs:331
+msgid "White"
+msgstr "Blanco"
+
+#: src/gnome/columns.rs:208 src/gnome/document_tools.rs:477
+msgid "Whole Document"
+msgstr "Todo el documento"
+
+#: src/gnome/paragraph.rs:897
+msgid "Widow and Orphan Control"
+msgstr "Control de viudas y huérfanas"
+
+#: src/gnome/columns.rs:182 src/gnome/document_tools.rs:216
+#: src/gnome/document_tools.rs:442
+msgid "Width (mm)"
+msgstr "Anchura (mm)"
+
+#: src/gnome/paragraph.rs:822
+msgid "Width (pt)"
+msgstr "Grosor (pt)"
+
+#: src/gnome/columns.rs:166
+msgid ""
+"Width and following spacing in millimeters. The last column has no following "
+"spacing."
+msgstr ""
+"Anchura y separación posterior, en milímetros. La última columna no tiene "
+"separación posterior."
+
+#: src/gnome/columns.rs:120
+msgid "Widths"
+msgstr "Anchuras"
+
+#: src/lib.rs:44
+msgid "WordCraft Could Not Open the File: {e}"
+msgstr "WordCraft no pudo abrir el archivo: {e}"
+
+#: src/saving.rs:50
+msgid "WordCraft did not confirm that the document was saved"
+msgstr "WordCraft no confirmó el guardado"
+
+#: src/lib.rs:118
+msgid "WordCraft returned an incomplete image"
+msgstr "WordCraft devolvió una imagen incompleta"
+
+#: src/gnome/text_palette.rs:203
+msgid "Words Only"
+msgstr "Solo palabras"
+
+#: src/gnome/text_palette.rs:316
+msgid "Yellow"
+msgstr "Amarillo"
+
+#: src/gnome/accessibility.rs:87
+msgid "Zoom In"
+msgstr "Ampliar zoom"
+
+#: src/gnome/tab.rs:55
+msgid "Zoom In (Ctrl++)"
+msgstr "Ampliar zoom (Ctrl++)"
+
+#: src/gnome/accessibility.rs:90
+msgid "Zoom Out"
+msgstr "Reducir zoom"
+
+#: src/gnome/tab.rs:53
+msgid "Zoom Out (Ctrl+-)"
+msgstr "Reducir zoom (Ctrl+-)"
+
+#: src/gnome/paragraph.rs:475
+msgid "bullets"
+msgstr "viñetas"
+
+#: data/*.in
+msgid "document;word;docx;odt;write;"
+msgstr "documento;texto;docx;odt;escribir;"
+
+#: src/gnome/paragraph.rs:501
+msgid "indents"
+msgstr "sangrías"
+
+#: src/gnome/adaptive.rs:335
+msgid "lowercase"
+msgstr "minúsculas"
+
+#: src/gnome/paragraph.rs:484
+msgid "numbering"
+msgstr "numeración"
+
+#: src/gnome/paragraph.rs:633
+msgid "– Dash"
+msgstr "– Guion"
+
+#: src/gnome/paragraph.rs:630
+msgid "• Disc"
+msgstr "• Punto"
+
+#: src/gnome/paragraph.rs:632
+msgid "▪ Square"
+msgstr "▪ Cuadrado"
+
+#: src/gnome/paragraph.rs:631
+msgid "○ Circle"
+msgstr "○ Círculo"
+
+#~ msgid "Apply Color"
+#~ msgstr "Aplicar color"
+
+#~ msgid "Apply Exact Line Spacing"
+#~ msgstr "Aplicar interlineado exacto"
+
+#~ msgid "Apply Indents"
+#~ msgstr "Aplicar sangrías"
+
+#~ msgid "Apply Level"
+#~ msgstr "Aplicar nivel"
+
+#~ msgid "Apply Spacing"
+#~ msgstr "Aplicar separación"
+
+#~ msgid "Automatic Underline Color"
+#~ msgstr "Color automático del subrayado"
+
+#~ msgid "Choose an Image"
+#~ msgstr "Se debe elegir una imagen"
+
+#~ msgid "Choose an Installed Font Family"
+#~ msgstr "Elegir una familia tipográfica instalada"
+
+#~ msgid "Could Not Choose Font: {e}"
+#~ msgstr "No se pudo elegir fuente: {e}"
+
+#~ msgid ""
+#~ "DOCUMENTS\n"
+#~ "New Tab creates a blank document. The main menu opens DOCX/ODT documents, "
+#~ "creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n"
+#~ "\n"
+#~ "NAVIGATION\n"
+#~ "The sidebar switches between Pages and Headings. Select a thumbnail or "
+#~ "heading to navigate. The magnifying glass opens search; Escape returns to "
+#~ "the previous view.\n"
+#~ "\n"
+#~ "SEARCH AND REPLACE\n"
+#~ "Ctrl+F opens search. Its options menu offers case-sensitive search and "
+#~ "replacement. The button beside the replacement field replaces all matches "
+#~ "in one undo step. Each result also has its own replacement button.\n"
+#~ "\n"
+#~ "EDITING\n"
+#~ "Style, Paragraph and Text appear as icons on the right of the header, "
+#~ "with Undo/Redo on the left. In narrow windows these controls move to the "
+#~ "bottom toolbar. Right-click opens formatting pages inside the context "
+#~ "menu. Add in the document menu inserts tables and images; right-click "
+#~ "edits them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n"
+#~ "\n"
+#~ "AUTOSAVE\n"
+#~ "Preferences can disable autosave, use a recovery file or save directly to "
+#~ "the document. Recover Documents is in the main menu."
+#~ msgstr ""
+#~ "DOCUMENTOS\n"
+#~ "Pestaña nueva en el menú principal crea un documento vacío. El menú "
+#~ "principal permite abrir documentos DOCX/ODT, ventanas nuevas y mostrar "
+#~ "todas las pestañas. Guardar: Ctrl+S; Guardar como: Ctrl+Mayús+S.\n"
+#~ "\n"
+#~ "NAVEGACIÓN\n"
+#~ "Los botones inferiores del panel izquierdo alternan Páginas y Títulos. "
+#~ "Pulsa una miniatura o un título para ir a esa parte del documento. La "
+#~ "lupa abre la búsqueda; Escape vuelve a la vista anterior.\n"
+#~ "\n"
+#~ "BUSCAR Y REEMPLAZAR\n"
+#~ "Ctrl+F abre la búsqueda. Sus tres puntos permiten distinguir mayúsculas y "
+#~ "activar Reemplazar. El botón junto al segundo campo reemplaza todas las "
+#~ "coincidencias en un solo paso de deshacer; cada resultado conserva su "
+#~ "reemplazo individual.\n"
+#~ "\n"
+#~ "EDICIÓN\n"
+#~ "Estilo, Párrafo y Texto están como iconos a la derecha de la cabecera, "
+#~ "con Deshacer/Rehacer a la izquierda. En ventanas estrechas los cinco "
+#~ "pasan a la barra inferior. El clic derecho ofrece sus propias páginas de "
+#~ "formato dentro del mismo menú. Añadir en el menú del documento permite "
+#~ "insertar tablas e imágenes; el clic derecho permite editarlas. Las "
+#~ "flechas abren subopciones. Ctrl+Z deshace y Ctrl+Mayús+Z rehace.\n"
+#~ "\n"
+#~ "AUTOGUARDADO\n"
+#~ "Preferencias permite desactivar el autoguardado, usar un archivo de "
+#~ "recuperación o guardar en el propio archivo. Recuperar documentos está en "
+#~ "el menú principal."
+
+#~ msgid "Double Strikethrough"
+#~ msgstr "Tachado doble"
+
+#~ msgid "Enter Six Hexadecimal Digits"
+#~ msgstr "Introduce seis cifras hexadecimales"
+
+#~ msgid "Headings"
+#~ msgstr "Títulos"
+
+#~ msgid "Inline"
+#~ msgstr "En línea"
+
+#~ msgid "Remove Underline"
+#~ msgstr "Quitar subrayado"
+
+#~ msgid "Size in Points, Including Decimals"
+#~ msgstr "Tamaño en puntos, también con decimales"
+
+#~ msgid "Underline Color"
+#~ msgstr "Color del subrayado"
+
+#~ msgid "Unsaved changes. Save a copy to keep them."
+#~ msgstr "Cambios pendientes. Usa Guardar para conservarlos en una copia."
+
+#~ msgid "Choose another name to protect the original document."
+#~ msgstr "Elige otro nombre para proteger el documento original."
+
+#~ msgid "Zoom Options"
+#~ msgstr "Opciones de zoom"
+
+#~ msgid "Choose Font"
+#~ msgstr "Elegir fuente"
+
+#~ msgid "Choose Font…"
+#~ msgstr "Elegir fuente…"
+
+#~ msgid "No Changes Applied"
+#~ msgstr "No se ha aplicado ningún cambio"
+
+#~ msgid "{col} columnas × {row} filas"
+#~ msgstr "{col} columnas × {row} filas"
+
+#~ msgid "table-action-{command}"
+#~ msgstr "table-action-{command}"
+
+#~ msgid "style-manage-{id}"
+#~ msgstr "style-manage-{id}"
+
+#~ msgid "Lifecycle {n}"
+#~ msgstr "Lifecycle {n}"
+
+#~ msgid "context.{name}"
+#~ msgstr "context.{name}"
+
+#~ msgid "{prefix}-{i}"
+#~ msgstr "{prefix}-{i}"
+
+#~ msgid "outline-heading-{i}"
+#~ msgstr "outline-heading-{i}"
+
+#~ msgid "paragraph-more-{page}"
+#~ msgstr "paragraph-more-{page}"
+
+#~ msgid "paragraph-align-{value}"
+#~ msgstr "paragraph-align-{value}"
+
+#~ msgid "paragraph-list-{kind}"
+#~ msgstr "paragraph-list-{kind}"
+
+#~ msgid "paragraph-line-{value}"
+#~ msgstr "paragraph-line-{value}"
+
+#~ msgid "<span background=\"#{color}\">     </span>"
+#~ msgstr "<span background=\"#{color}\">     </span>"
+
+#~ msgid "paragraph-shade-{color}"
+#~ msgstr "paragraph-shade-{color}"
+
+#~ msgid "paragraph-border-{kind}"
+#~ msgstr "paragraph-border-{kind}"
+
+#~ msgid ""
+#~ "Párrafo {i}: texto de prueba para comprobar el cursor al cerrar un menú y "
+#~ "volver al documento.\n"
+#~ msgstr ""
+#~ "Párrafo {i}: texto de prueba para comprobar el cursor al cerrar un menú y "
+#~ "volver al documento.\n"
+
+#~ msgid "Autoguardado: {e}"
+#~ msgstr "Autoguardado: {e}"
+
+#~ msgid "Coincidencia número {i}\n"
+#~ msgstr "Coincidencia número {i}\n"
+
+#~ msgid "{stem}.pdf"
+#~ msgstr "{stem}.pdf"
+
+#~ msgid "{label}{text}"
+#~ msgstr "{label}{text}"
+
+#~ msgid "{label} {text}"
+#~ msgstr "{label} {text}"
+
+#~ msgid "search-hit-{index}"
+#~ msgstr "search-hit-{index}"
+
+#~ msgid "…{before}"
+#~ msgstr "…{before}"
+
+#~ msgid "search-replace-{index}"
+#~ msgstr "search-replace-{index}"
+
+#~ msgid "win.{name}"
+#~ msgstr "win.{name}"
+
+#~ msgid "win.{action}"
+#~ msgstr "win.{action}"
+
+#~ msgid "{name}-copia.{ext}"
+#~ msgstr "{name}-copia.{ext}"
+
+#~ msgid "{size} pt"
+#~ msgstr "{size} pt"
+
+#~ msgid "Alignment"
+#~ msgstr "Alineación"
+
+#~ msgid "At the Cursor"
+#~ msgstr "En el cursor"
+
+#~ msgid "Editing Footer"
+#~ msgstr "Editando pie de página"
+
+#~ msgid "Editing Header"
+#~ msgstr "Editando encabezado"
+
+#~ msgid "In the Footer"
+#~ msgstr "En el pie de página"
+
+#~ msgid "In the Header"
+#~ msgstr "En el encabezado"
+
+#~ msgid "Paragraph {i}: test body text.\n"
+#~ msgstr "Párrafo {i}: texto de prueba.\n"
+
+#~ msgid "Position"
+#~ msgstr "Posición"
+
+#~ msgid "Return to Document"
+#~ msgstr "Volver al documento"
+
+#~ msgid "Change"
+#~ msgstr "Cambiar"
+
+#~ msgid "Check Complete"
+#~ msgstr "Revisión terminada"
+
+#~ msgid "Check Spelling as You Type"
+#~ msgstr "Revisar la ortografía mientras se escribe"
+
+#~ msgid "Do Not Check Spelling or Grammar"
+#~ msgstr "No revisar la ortografía ni la gramática"
+
+#~ msgid "Language Tag"
+#~ msgstr "Código de idioma"
+
+#~ msgid ""
+#~ "No dictionary is installed for this language. Its spelling cannot be "
+#~ "checked."
+#~ msgstr ""
+#~ "No hay ningún diccionario instalado para este idioma. No se puede revisar "
+#~ "su ortografía."
+
+#~ msgid "Other Language"
+#~ msgstr "Otro idioma"
+
+#~ msgid "Replacement"
+#~ msgstr "Sustitución"
+
+#~ msgid "Selection or Typing Position"
+#~ msgstr "Selección o posición de escritura"
+
+#~ msgid "Skip"
+#~ msgstr "Omitir"
+
+#~ msgid "Spelling and Grammar…"
+#~ msgstr "Ortografía y gramática…"
+
+#~ msgid "Spelling tools are available for this language."
+#~ msgstr "Hay herramientas de revisión ortográfica para este idioma."
+
+#~ msgid "Text Language…"
+#~ msgstr "Idioma del texto…"
+
+#~ msgid "Use for New Documents"
+#~ msgstr "Usar en documentos nuevos"
+
+#~ msgid "Bookmarks"
+#~ msgstr "Marcadores"
+
+#~ msgid "Bookmarks and Comments"
+#~ msgstr "Marcadores y comentarios"
+
+#~ msgid "No Bookmarks"
+#~ msgstr "No hay marcadores"
+
+#~ msgid ""
+#~ "Add native bookmarks and comment threads with a shared sidebar and "
+#~ "protect comments from unsupported ODT saves."
+#~ msgstr ""
+#~ "Añade marcadores e hilos de comentarios nativos con un panel lateral "
+#~ "compartido y protege los comentarios frente al guardado ODT no compatible."
+
+#~ msgid ""
+#~ "DOCUMENTS\n"
+#~ "New Tab creates a blank document. The main menu opens DOCX/ODT documents, "
+#~ "creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n"
+#~ "\n"
+#~ "NAVIGATION\n"
+#~ "The sidebar switches between Pages, Headings, and Bookmarks and Comments. "
+#~ "Select a thumbnail or heading to navigate. The magnifying glass opens "
+#~ "search; Escape returns to the previous view.\n"
+#~ "\n"
+#~ "SEARCH AND REPLACE\n"
+#~ "Ctrl+F opens search. Its options menu offers case-sensitive search and "
+#~ "replacement. The button beside the replacement field replaces all matches "
+#~ "in one undo step. Each result also has its own replacement button.\n"
+#~ "\n"
+#~ "EDITING\n"
+#~ "Style, Paragraph and Text appear as icons on the right of the header, "
+#~ "with Undo/Redo on the left. In narrow windows these controls move to the "
+#~ "bottom toolbar. Right-click opens formatting pages inside the context "
+#~ "menu. Insert in the document menu adds tables, images, bookmarks and "
+#~ "comments. Bookmarks and comment threads are managed in the third sidebar "
+#~ "tab. Save comments as DOCX; ODT does not preserve them. Arrows open "
+#~ "suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n"
+#~ "\n"
+#~ "AUTOSAVE\n"
+#~ "Preferences can disable autosave, use a recovery file or save directly to "
+#~ "the document. Recover Documents is in the main menu."
+#~ msgstr ""
+#~ "DOCUMENTOS\n"
+#~ "Pestaña nueva en el menú principal crea un documento vacío. El menú "
+#~ "principal permite abrir documentos DOCX/ODT, ventanas nuevas y mostrar "
+#~ "todas las pestañas. Guardar: Ctrl+S; Guardar como: Ctrl+Mayús+S.\n"
+#~ "\n"
+#~ "NAVEGACIÓN\n"
+#~ "Los botones inferiores del panel izquierdo alternan Páginas, Títulos y "
+#~ "Marcadores y comentarios. Pulsa una miniatura o un título para ir a esa "
+#~ "parte del documento. La lupa abre la búsqueda; Escape vuelve a la vista "
+#~ "anterior.\n"
+#~ "\n"
+#~ "BUSCAR Y REEMPLAZAR\n"
+#~ "Ctrl+F abre la búsqueda. Sus tres puntos permiten distinguir mayúsculas y "
+#~ "activar Reemplazar. El botón junto al segundo campo reemplaza todas las "
+#~ "coincidencias en un solo paso de deshacer; cada resultado conserva su "
+#~ "reemplazo individual.\n"
+#~ "\n"
+#~ "EDICIÓN\n"
+#~ "Estilo, Párrafo y Texto están como iconos a la derecha de la cabecera, "
+#~ "con Deshacer/Rehacer a la izquierda. En ventanas estrechas los cinco "
+#~ "pasan a la barra inferior. El clic derecho ofrece sus propias páginas de "
+#~ "formato dentro del mismo menú. Insertar en el menú del documento permite "
+#~ "añadir tablas, imágenes, marcadores y comentarios. Los marcadores y los "
+#~ "hilos de comentarios se gestionan en la tercera pestaña del panel "
+#~ "lateral. Guarda los comentarios en DOCX; ODT no los conserva. Las flechas "
+#~ "abren subopciones. Ctrl+Z deshace y Ctrl+Mayús+Z rehace.\n"
+#~ "\n"
+#~ "AUTOGUARDADO\n"
+#~ "Preferencias permite desactivar el autoguardado, usar un archivo de "
+#~ "recuperación o guardar en el propio archivo. Recuperar documentos está en "
+#~ "el menú principal."
+
+#~ msgid "Check Again"
+#~ msgstr "Volver a revisar"
+
+#~ msgid "Check Spelling and Grammar as You Type"
+#~ msgstr "Revisar la ortografía y gramática mientras se escribe"
+
+#~ msgid "Select an issue to review it."
+#~ msgstr "Selecciona un error para revisarlo."
+
+#~ msgid ""
+#~ "Group bookmarks under navigation headings, combine comment threads in "
+#~ "shared bubbles and simplify the spelling sidebar to navigation only."
+#~ msgstr ""
+#~ "Agrupa los marcadores bajo los títulos de navegación, reúne cada hilo de "
+#~ "comentarios en una burbuja y simplifica la revisión lateral para que solo "
+#~ "navegue al texto."
+
+#~ msgid ""
+#~ "Group bookmarks under navigation headings, combine comment threads in "
+#~ "shared bubbles, simplify the spelling sidebar and edit document title, "
+#~ "subject, author, keywords and category."
+#~ msgstr ""
+#~ "Agrupa los marcadores bajo los títulos, reúne cada hilo de comentarios en "
+#~ "una burbuja, simplifica la revisión lateral y permite editar título, "
+#~ "asunto, autor, palabras clave y categoría del documento."
+
+#~ msgid "User Name"
+#~ msgstr "Nombre de usuario"
