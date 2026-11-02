@@ -12,6 +12,7 @@
 - Checkout previo limpio. Sus 12 commits locales y los 12 remotos divergentes
   tenían el mismo árbol final; se mantiene el checkout original y la rama local
   `archive/local-wordcraft-saving-2026-11-02`. Trabajo aislado en otro worktree.
+- No había pull requests abiertas que redirigir.
 - Última release: [v0.1.0-alpha.18](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.18),
   fuente/tag `a8207cbdb5b11f050373287a44aecd835aefd50c`. No se crea otra release
   ni se mueven etiquetas por esta migración.
@@ -64,9 +65,23 @@ línea, sin alterar mensajes gettext ni su localización en el código.
 Comprobaciones locales: formato del paquete correcto, cuatro pruebas Python,
 587 mensajes gettext con catálogos completos y compilados, enlaces de 14
 documentos y YAML de cinco workflows correctos. 123 pruebas Rust superadas.
-Compilación GUI optimizada y CI en main: en curso; resultado por registrar.
-La CI principal ejecutará su trabajo nativo completo; la publicación Flatpak
-seguirá requiriendo `[release-alpha]` y no se activa con esta migración.
+Compilación GUI release optimizada superada (3 min 26 s); `--version` conserva
+alpha.18. Diez advertencias de compilación preexistentes; sin errores.
+Commit de integración publicado: `770a43cfa094db05308cef9980c5f0273e68a3e5`.
+[CI de la integración en main](https://github.com/frandavid100/leaf/actions/runs/41410124180):
+**superada**, concluida a las 08:25:56 UTC del 2 de noviembre de 2026.
+Trabajo nativo `125161018239`: compilación y regresiones gráficas completas,
+controles/ratón, idiomas/tema oscuro, encabezados, secciones, comentarios,
+memoria GTK, teclado/impresión, comparación debug/release y escalado 100/200 %.
+La publicación Flatpak y la auditoría de base opcional se omitieron según sus
+condiciones. No se publicó otra versión.
+
+Se verificaron los dos padres y la identidad
+del árbol local/remoto. Las 17 etiquetas y las 17 releases (incluidos sus assets)
+conservan sus identificadores y contenido.
+La publicación Flatpak sigue requiriendo `[release-alpha]`. El commit posterior
+solo registra esta evidencia en este informe (`[skip ci]`); no modifica código,
+configuración, workflows ni catálogos respecto al commit validado.
 Las auditorías opcionales conservan sus hashes, fuentes y condiciones históricas.
 
 [Configuración y pasos pendientes de Weblate](WEBLATE_SETUP.md).
