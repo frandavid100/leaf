@@ -27,7 +27,8 @@ while kill -0 "$pid" 2>/dev/null; do
     font)
       family=$(sed -n 's/^ISSUE19_FAMILY //p' "$log" | head -n1)
       xdotool mousemove --window "$window" "$ax" "$ay" click 1 key ctrl+a
-      xdotool type --clearmodifiers --delay 80 "$family" ;;
+      xdotool type --clearmodifiers --delay 80 "$family"
+      xdotool key ctrl+k ;;
     paste)
       xdotool mousemove --window "$window" "$ax" "$ay" click 1 key ctrl+a ctrl+v
       sleep 0.15

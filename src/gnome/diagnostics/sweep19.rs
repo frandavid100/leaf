@@ -339,6 +339,10 @@ fn followup_check(t: &Followup, stage: u8) {
     match t.mode.as_str() {
         "font" => {
             if stage == 1 || stage == 5 {
+                assert!(
+                    u.link_dialog.borrow().is_none(),
+                    "Ctrl+K inside a native field must stay in that field"
+                );
                 assert_eq!(u.font_input.text(), t.family);
                 assert_eq!(selection_character(u)["font"], t.family);
             }

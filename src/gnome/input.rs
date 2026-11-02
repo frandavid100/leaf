@@ -504,7 +504,11 @@ pub(super) fn install_keyboard_input(
                     return glib::Propagation::Stop;
                 }
                 if ui.document_box.has_focus() {
-                    if control && !shift && matches!(key, gdk::Key::k | gdk::Key::K) {
+                    if control
+                        && !shift
+                        && !modifiers.contains(gdk::ModifierType::ALT_MASK)
+                        && matches!(key, gdk::Key::k | gdk::Key::K)
+                    {
                         show_link(&ui);
                         return glib::Propagation::Stop;
                     }
