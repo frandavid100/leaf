@@ -1293,7 +1293,7 @@ msgstr ""
 msgid "No Comments"
 msgstr ""
 
-#: src/gnome/navigation.rs:349
+#: src/gnome/navigation.rs:353
 msgid "No Headings in This Document"
 msgstr ""
 

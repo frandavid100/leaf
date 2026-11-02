@@ -131,24 +131,39 @@ fn paragraph_drag_reverses_on_document_boundaries_without_editing() {
 }
 
 #[test]
-fn heading_context_uses_body_line_heights_instead_of_heading_size() {
+fn heading_context_uses_actual_lines_with_large_heading_and_paragraph_spacing() {
     let mut s = Session::new(Document::from_text("first\nsecond\nthird\nHeading"));
-    selection::set_caret(&mut s, &Pos::body(3, 0), false).unwrap();
+    selection::select_range(&mut s, &Pos::body(3, 0), &Pos::body(3, 7)).unwrap();
     formatting::apply(&mut s, Format::FontSize(32)).unwrap();
+    s.run("para.spacing", &json!({"before":24.,"after":0.}))
+        .unwrap();
+    selection::set_caret(&mut s, &Pos::body(3, 0), false).unwrap();
     let layout = s.layout();
     let caret = layout.caret_on(&Pos::body(3, 0), 0).unwrap();
-    let mut expected = 0.;
+    let mut lines = Vec::new();
     for item in &layout.pages[0].items {
         if let wordcraft_engine::layout::Placed::Lines {
-            path, para, l0, l1, ..
+            path,
+            para,
+            l0,
+            l1,
+            y,
+            ..
         } = item
         {
             if path < &Pos::body(3, 0).path {
-                expected += para.lines[*l0..*l1].iter().map(|l| l.height).sum::<f32>();
+                for line in &para.lines[*l0..*l1] {
+                    lines.push(*y + line.top - para.lines[*l0].top);
+                }
             }
         }
     }
     let (page, y) = navigation::heading_view_target(&mut s, &Pos::body(3, 0)).unwrap();
     assert_eq!(page, 0);
-    assert!((caret.top - y - expected).abs() < 0.01);
+    assert_eq!(lines.len(), 3);
+    assert!(
+        (y - lines[0]).abs() < 0.01,
+        "all three real preceding lines remain visible"
+    );
+    assert!(caret.top - y > 40.);
 }

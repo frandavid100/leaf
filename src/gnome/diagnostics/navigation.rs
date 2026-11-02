@@ -87,14 +87,28 @@ pub(super) fn heading_top_ui_test(ui: &Rc<Ui>, panel: &Rc<OutlinePanel>, app: &A
     heading_top_case(ui.clone(), panel.clone(), app.clone(), 0);
 }
 fn heading_top_case(ui: Rc<Ui>, panel: Rc<OutlinePanel>, app: Application, case: usize) {
-    if case == 8 {
+    if case == 12 {
         eprintln!(
             "HEADING_TOP_UI_OK downward=true upward=true visible=true clamped=true zoom=true context_lines=3"
         );
         app.quit();
         return;
     }
-    zoom_to(&ui, if case < 4 { 1.0 } else { 0.5 });
+    if case == 8 {
+        if let Some(host) = ui.host.upgrade() {
+            host.window.set_default_size(900, 520);
+        }
+    }
+    zoom_to(
+        &ui,
+        if case < 4 {
+            1.0
+        } else if case < 8 {
+            0.5
+        } else {
+            3.0
+        },
+    );
     let pos = Pos::body([50, 2, 50, 99][case % 4], 0);
     let next_ui = ui.clone();
     glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
@@ -116,32 +130,43 @@ fn heading_top_case(ui: Rc<Ui>, panel: Rc<OutlinePanel>, app: Application, case:
             let max = (adj.upper() - adj.page_size()).max(adj.lower());
             if adj.value() > adj.lower() + 1.0 && adj.value() < max - 1.0 {
                 assert!(
-                    (top - 3.0
-                        * d.session
-                            .layout()
-                            .pages
-                            .iter()
-                            .flat_map(|p| p.items.iter())
-                            .find_map(|item| {
-                                if let wordcraft_engine::layout::Placed::Lines {
-                                    para, l0, ..
-                                } = item
-                                {
-                                    Some(para.lines[*l0].height as f64)
-                                } else {
-                                    None
-                                }
-                            })
-                            .unwrap()
-                        * d.zoom as f64)
-                        .abs()
-                        < 3.0,
-                    "heading should retain three body lines above it, got {top}"
+                    top >= -2.0 && top <= adj.page_size() * 0.25 + 3.0,
+                    "heading remains near top with following section visible: {top}"
                 );
+                let layout = d.session.layout();
+                let mut preceding = Vec::new();
+                for item in &layout.pages[caret.page].items {
+                    if let wordcraft_engine::layout::Placed::Lines {
+                        path,
+                        para,
+                        l0,
+                        l1,
+                        y,
+                        ..
+                    } = item
+                    {
+                        if path < &pos.path {
+                            for line in &para.lines[*l0..*l1] {
+                                let rendered = frame.y() as f64
+                                    + (*y + line.top - para.lines[*l0].top) as f64 * d.zoom as f64;
+                                if rendered < top {
+                                    preceding.push(rendered);
+                                }
+                            }
+                        }
+                    }
+                }
+                if let Some(first) = preceding.iter().rev().take(3).last() {
+                    assert!(
+                        (*first >= -3.0 && *first < 3.0)
+                            || (top - adj.page_size() * 0.25).abs() < 3.0,
+                        "real preceding text is visible, except when large blank space caps context: {first}"
+                    );
+                }
             } else {
                 assert!(
-                    top >= 10.0 && top < adj.page_size(),
-                    "clamped heading remains visible: {top}"
+                    top >= 0.0 && top < adj.page_size(),
+                    "clamped heading visible: {top}"
                 );
             }
             assert_eq!(d.session.undo_depth(), 0);

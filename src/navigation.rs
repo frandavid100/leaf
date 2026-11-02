@@ -1,8 +1,9 @@
 //! Read the resolved heading levels; never infer headings from font size or names.
 use wordcraft_doc::{Document, Pos, StoryRef};
 
-/// Position a heading with three preceding line heights of context. Read the
-/// actual layout, so large heading fonts do not determine the body-text margin.
+/// Use the actual preceding line tops, including paragraph spacing. Near a
+/// page boundary, use the available context on that page rather than jumping
+/// into another page/column and losing the heading's section.
 pub fn heading_view_target(
     session: &mut wordcraft_engine::Session,
     target: &Pos,
@@ -10,34 +11,37 @@ pub fn heading_view_target(
     let layout = session.layout();
     let caret = layout.caret_on(target, session.page_hint)?;
     let mut preceding = std::collections::VecDeque::with_capacity(3);
-    for page in layout.pages.iter().take(caret.page + 1) {
-        for item in &page.items {
-            if let wordcraft_engine::layout::Placed::Lines {
-                story,
-                path,
-                para,
-                l0,
-                l1,
-                ..
-            } = item
-            {
-                if *story == target.story && path < &target.path {
-                    for line in &para.lines[*l0..*l1] {
+    for item in &layout.pages.get(caret.page)?.items {
+        if let wordcraft_engine::layout::Placed::Lines {
+            story,
+            path,
+            para,
+            l0,
+            l1,
+            y,
+            ..
+        } = item
+        {
+            if *story == target.story && path < &target.path {
+                for line in &para.lines[*l0..*l1] {
+                    let top = *y + line.top - para.lines[*l0].top;
+                    if top < caret.top {
                         if preceding.len() == 3 {
                             preceding.pop_front();
                         }
-                        preceding.push_back(line.height);
+                        preceding.push_back(top);
                     }
                 }
             }
         }
     }
-    let context = if preceding.is_empty() {
-        caret.height * 2.5
-    } else {
-        preceding.iter().rev().take(3).sum()
-    };
-    Some((caret.page, caret.top - context))
+    Some((
+        caret.page,
+        preceding
+            .front()
+            .copied()
+            .unwrap_or(caret.top - caret.height * 2.5),
+    ))
 }
 #[derive(Clone, Debug)]
 pub struct Heading {
