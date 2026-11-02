@@ -1,6 +1,28 @@
 use super::*;
 use wordcraft_gnome::history as engine_history;
 
+// Use the same native component and documented child hierarchy as Paragraph.
+// Keep body references for independent Repeat / empty-history sensitivity.
+pub(super) fn history_button(redo: bool) -> (adw::SplitButton, gtk::Button, gtk::MenuButton) {
+    let split = adw::SplitButton::new();
+    split.add_css_class("flat");
+    split.add_css_class("image-button");
+    split.set_valign(gtk::Align::Center);
+    split.set_child(Some(&history_icon(redo)));
+    let body = split
+        .first_child()
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap();
+    let more = body
+        .next_sibling()
+        .unwrap()
+        .next_sibling()
+        .unwrap()
+        .downcast::<gtk::MenuButton>()
+        .unwrap();
+    (split, body, more)
+}
 pub(super) struct HistoryControls {
     undo: gtk::MenuButton,
     redo: gtk::MenuButton,
@@ -146,8 +168,28 @@ impl HistoryControls {
     }
 }
 pub(super) fn install_history_controls(ui: &Rc<Ui>, toolbar: &gtk::Box) -> Rc<HistoryControls> {
-    let undo = gtk::MenuButton::new();
-    let redo = gtk::MenuButton::new();
+    let undo_split = ui
+        .undo_button
+        .parent()
+        .unwrap()
+        .downcast::<adw::SplitButton>()
+        .unwrap();
+    let redo_split = ui
+        .redo_button
+        .parent()
+        .unwrap()
+        .downcast::<adw::SplitButton>()
+        .unwrap();
+    let undo = undo_split
+        .last_child()
+        .unwrap()
+        .downcast::<gtk::MenuButton>()
+        .unwrap();
+    let redo = redo_split
+        .last_child()
+        .unwrap()
+        .downcast::<gtk::MenuButton>()
+        .unwrap();
     let undo_model = gio::Menu::new();
     let redo_model = gio::Menu::new();
     let actions = gio::SimpleActionGroup::new();
@@ -195,13 +237,10 @@ pub(super) fn install_history_controls(ui: &Rc<Ui>, toolbar: &gtk::Box) -> Rc<Hi
     });
     actions.add_action(&travel);
     clear_box(toolbar);
-    for (body, chevron, model, is_redo) in [
-        (&ui.undo_button, &undo, &undo_model, false),
-        (&ui.redo_button, &redo, &redo_model, true),
+    for (split, chevron, model, is_redo) in [
+        (&undo_split, &undo, &undo_model, false),
+        (&redo_split, &redo, &redo_model, true),
     ] {
-        let linked = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-        linked.add_css_class("linked");
-        chevron.set_child(Some(&format_chevron()));
         chevron.set_widget_name(if is_redo {
             "redo-history"
         } else {
@@ -222,10 +261,8 @@ pub(super) fn install_history_controls(ui: &Rc<Ui>, toolbar: &gtk::Box) -> Rc<Hi
                 refresh_history_controls(&ui);
             }
         });
-        chevron.set_popover(Some(&pop));
-        linked.append(body);
-        linked.append(chevron);
-        toolbar.append(&linked);
+        split.set_popover(Some(&pop));
+        toolbar.append(split);
     }
     Rc::new(HistoryControls {
         undo,

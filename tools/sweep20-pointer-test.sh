@@ -21,7 +21,7 @@ while kill -0 "$pid" 2>/dev/null; do
     second) xdotool key Home Down Return ;;
     cancel) xdotool key Escape ;;
     hover) xdotool mousemove --window "$window" "$ax" "$ay" ;;
-    pin) xdotool mousemove --window "$window" "$ax" "$ay" click 1 mousemove --window "$window" 12 20 ;;
+    ruler-keyboard) xdotool key ctrl+alt+r ;;
     drag) xdotool mousemove --window "$window" "$ax" "$ay" mousedown 1 mousemove --sync --window "$window" "$bx" "$by"; sleep 0.3; xdotool mouseup 1 ;;
     right) xdotool key Right ;;
     undo) xdotool key ctrl+z ;;

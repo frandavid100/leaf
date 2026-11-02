@@ -92,8 +92,12 @@ fn stage(t: Rc<Sweep>, n: u8) {
             )
         }
         8 => {
-            let pin = find_widget(&t.window, "ruler-pin").unwrap();
-            ("pin", vec![centre(&pin, &t.window)])
+            assert!(find_widget(&t.window, "ruler-pin").is_none());
+            let r = u.ruler.borrow().as_ref().unwrap().clone();
+            (
+                "hover",
+                vec![point(&r.area, &t.window, r.area.width() as f32 / 2., 12.)],
+            )
         }
         9 => {
             let r = u.ruler.borrow().as_ref().unwrap().clone();
@@ -109,8 +113,8 @@ fn stage(t: Rc<Sweep>, n: u8) {
             (
                 "drag",
                 vec![
-                    point(&r.area, &t.window, x, 35.),
-                    point(&r.area, &t.window, x + 36. * z, 35.),
+                    point(&r.area, &t.window, x, 19.),
+                    point(&r.area, &t.window, x + 36. * z, 19.),
                 ],
             )
         }
@@ -126,6 +130,20 @@ fn stage(t: Rc<Sweep>, n: u8) {
             assert_eq!(u.current.borrow().as_ref().unwrap().session.doc, s);
             ("hover", vec![(10, 20)])
         }
+        13 => {
+            u.scroll.vadjustment().set_value(0.);
+            ("hover", vec![(10, 20)])
+        }
+        14 => {
+            let w = find_widget(&t.window, "vertical-ruler-activation-strip").unwrap();
+            (
+                "hover",
+                vec![point(&w, &t.window, 2., w.height() as f32 / 2.)],
+            )
+        }
+        15 => ("hover", vec![(10, 20)]),
+        16 => ("ruler-keyboard", vec![]),
+        17 => ("cancel", vec![]),
         _ => {
             let before = u.current.borrow().as_ref().unwrap().session.doc.clone();
             let settings = u.document_box.settings();
@@ -173,6 +191,15 @@ fn stage(t: Rc<Sweep>, n: u8) {
 }
 fn check(t: &Sweep, n: u8) {
     let u = &t.ui;
+    if n == 0 {
+        for body in [&u.undo_button, &u.redo_button] {
+            let parent = body.parent().unwrap();
+            assert!(parent.is::<adw::SplitButton>());
+            let icon = body.child().unwrap().compute_bounds(body).unwrap();
+            assert!((icon.x() + icon.width() / 2. - body.width() as f32 / 2.).abs() < 1.);
+            assert!((icon.y() + icon.height() / 2. - body.height() as f32 / 2.).abs() < 1.);
+        }
+    }
     if matches!(n, 0 | 2) {
         assert_eq!(selection_character(u)["size"], json!(14.));
     }
@@ -198,8 +225,44 @@ fn check(t: &Sweep, n: u8) {
         let p = w.popover().unwrap().downcast::<gtk::PopoverMenu>().unwrap();
         assert_eq!(p.menu_model().unwrap().n_items(), 2);
     }
-    if (7..=12).contains(&n) {
+    if (7..=11).contains(&n) || n == 16 {
         assert!(u.ruler.borrow().as_ref().unwrap().reveal.reveals_child());
+    }
+    if matches!(n, 7 | 8) {
+        let r = u.ruler.borrow().as_ref().unwrap().clone();
+        assert!(r.area.height() <= 24);
+        let mut c = u.current.borrow_mut();
+        let d = c.as_mut().unwrap();
+        let state = wordcraft_gnome::ruler::state(&mut d.session).unwrap();
+        let frame = d.page_frames[state.page].compute_bounds(&t.window).unwrap();
+        let area = r.area.compute_bounds(&t.window).unwrap();
+        assert!((area.x() - frame.x().max(area.x())).abs() < 2.);
+        assert!((area.width() - frame.width()).abs() < 2.);
+        eprintln!(
+            "RULER_HORIZONTAL_GEOMETRY x={} width={} height={}",
+            area.x(),
+            area.width(),
+            area.height()
+        );
+    }
+    if matches!(n, 12 | 13 | 15 | 17) {
+        let r = u.ruler.borrow().as_ref().unwrap().clone();
+        assert!(
+            !r.reveal.reveals_child(),
+            "horizontal must hide after leaving/cancel"
+        );
+        assert!(!r.vertical_reveal.reveals_child());
+    }
+    if n == 14 {
+        let r = u.ruler.borrow().as_ref().unwrap().clone();
+        assert!(r.vertical_reveal.reveals_child());
+        assert!(r.vertical.width() <= 24);
+        assert!(!r.reveal.reveals_child(), "axes reveal independently");
+        eprintln!(
+            "RULER_VERTICAL_GEOMETRY width={} height={}",
+            r.vertical.width(),
+            r.vertical.height()
+        );
     }
     if (9..=11).contains(&n) {
         let mut c = u.current.borrow_mut();

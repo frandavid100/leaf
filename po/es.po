@@ -2278,3 +2278,9 @@ msgstr "Actualizar estilo a partir de la selección"
 
 msgid "Widow/Orphan Control"
 msgstr "Control de viudas y huérfanas"
+
+msgid "Focus ruler"
+msgstr "Enfocar la regla"
+
+msgid "Vertical ruler (cm)"
+msgstr "Regla vertical (cm)"

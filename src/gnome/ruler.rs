@@ -29,7 +29,11 @@ pub(super) struct Ruler {
     ui: std::rc::Weak<Ui>,
     pub(super) area: gtk::DrawingArea,
     pub(super) reveal: gtk::Revealer,
-    pin: gtk::ToggleButton,
+    overlay: glib::WeakRef<gtk::Overlay>,
+    strip: gtk::Box,
+    pub(super) vertical: gtk::DrawingArea,
+    pub(super) vertical_reveal: gtk::Revealer,
+    vertical_strip: gtk::Box,
     hovered: Cell<bool>,
     focused: Cell<bool>,
     drag: RefCell<Option<Drag>>,
@@ -53,9 +57,70 @@ impl Ruler {
         })
     }
     pub(super) fn refresh(&self) {
-        if self.reveal.reveals_child() {
-            self.area.queue_draw();
+        let (Some(ui), Some(overlay)) = (self.ui.upgrade(), self.overlay.upgrade()) else {
+            return;
+        };
+        let Ok(mut c) = ui.current.try_borrow_mut() else {
+            return;
+        };
+        let Some(d) = c.as_mut() else {
+            return;
+        };
+        let Some(state) = ruler::state(&mut d.session) else {
+            return;
+        };
+        let Some(rect) = d
+            .page_frames
+            .get(state.page)
+            .and_then(|p| p.compute_bounds(&overlay))
+        else {
+            return;
+        };
+        let width = overlay.width() as f32;
+        let height = overlay.height() as f32;
+        if width <= 0. || height <= 0. {
+            return;
         }
+        // The horizontal ruler stays below the titlebar, with a small gap.
+        // Both axes use the real sheet bounds and are clipped by the viewport.
+        let x = rect.x().max(0.).min(width);
+        let right = (rect.x() + rect.width()).max(x).min(width);
+        let y = rect.y().max(8.).min(height);
+        let bottom = (rect.y() + rect.height()).max(y).min(height);
+        for w in [
+            self.reveal.upcast_ref::<gtk::Widget>(),
+            self.strip.upcast_ref(),
+        ] {
+            w.set_margin_start(x.round() as i32);
+            w.set_margin_top(8);
+            w.set_size_request(
+                (right - x).round().max(1.) as i32,
+                if w == self.strip.upcast_ref::<gtk::Widget>() {
+                    5
+                } else {
+                    24
+                },
+            );
+            w.set_visible(right > x);
+        }
+        for w in [
+            self.vertical_reveal.upcast_ref::<gtk::Widget>(),
+            self.vertical_strip.upcast_ref(),
+        ] {
+            w.set_margin_start((rect.x() - 28.).max(0.).min((width - 24.).max(0.)).round() as i32);
+            w.set_margin_top(y.round() as i32);
+            w.set_size_request(
+                if w == self.vertical_strip.upcast_ref::<gtk::Widget>() {
+                    5
+                } else {
+                    24
+                },
+                (bottom - y).round().max(1.) as i32,
+            );
+            w.set_visible(bottom > y);
+        }
+        self.area.queue_draw();
+        self.vertical.queue_draw();
     }
     pub(super) fn stop(&self) {
         if let Some(id) = self.hide.borrow_mut().take() {
@@ -63,11 +128,19 @@ impl Ruler {
         }
         self.drag.borrow_mut().take();
         self.reveal.set_reveal_child(false);
+        self.vertical_reveal.set_reveal_child(false);
     }
     fn show(&self) {
         if let Some(id) = self.hide.borrow_mut().take() {
             id.remove();
         }
+        self.refresh();
+        self.reveal
+            .set_transition_duration(if self.area.settings().is_gtk_enable_animations() {
+                175
+            } else {
+                0
+            });
         self.reveal.set_reveal_child(true);
         self.area.queue_draw();
     }
@@ -76,11 +149,7 @@ impl Ruler {
         self.area.grab_focus();
     }
     fn hide_later(self: &Rc<Self>) {
-        if self.pin.is_active()
-            || self.hovered.get()
-            || self.focused.get()
-            || self.drag.borrow().is_some()
-        {
+        if self.hovered.get() || self.focused.get() || self.drag.borrow().is_some() {
             return;
         }
         if let Some(id) = self.hide.borrow_mut().take() {
@@ -90,11 +159,7 @@ impl Ruler {
         let id = glib::timeout_add_local_once(std::time::Duration::from_millis(180), move || {
             if let Some(r) = weak.upgrade() {
                 r.hide.borrow_mut().take();
-                if !r.pin.is_active()
-                    && !r.hovered.get()
-                    && !r.focused.get()
-                    && r.drag.borrow().is_none()
-                {
+                if !r.hovered.get() && !r.focused.get() && r.drag.borrow().is_none() {
                     r.reveal.set_reveal_child(false);
                 }
             }
@@ -107,11 +172,7 @@ impl Ruler {
         out
     }
     fn hit(v: &View, x: f64, y: f64) -> Marker {
-        let preferred = if y < 17.0 {
-            Marker::First
-        } else {
-            Marker::Left
-        };
+        let preferred = if y < 9.0 { Marker::First } else { Marker::Left };
         let mut candidates = Self::markers(&v.state);
         candidates.sort_by_key(|m| if *m == preferred { 0 } else { 1 });
         candidates
@@ -119,8 +180,8 @@ impl Ruler {
             .find(|m| {
                 (v.x(v.state.distance(*m)) - x).abs() < 9.0
                     && match m {
-                        Marker::First => y < 19.0,
-                        Marker::Left | Marker::Right => y >= 19.0,
+                        Marker::First => y < 9.0,
+                        Marker::Left | Marker::Right => y >= 9.0,
                         _ => true,
                     }
             })
@@ -175,8 +236,8 @@ impl Ruler {
             self.announced.replace(announcement.clone());
             accessible_name(widget, &announcement);
         }
-        let fg = widget.color();
-        cr.set_source_rgba(fg.red() as f64, fg.green() as f64, fg.blue() as f64, 0.06);
+        let fg = gdk::RGBA::new(0.16, 0.16, 0.16, 1.0);
+        cr.set_source_rgba(fg.red() as f64, fg.green() as f64, fg.blue() as f64, 0.0);
         cr.rectangle(0.0, 0.0, width as f64, height as f64);
         let _ = cr.fill();
         let (a, b) = (v.x(0.0), v.x(state.width));
@@ -185,37 +246,31 @@ impl Ruler {
         let _ = cr.fill();
         cr.set_source_rgba(fg.red() as f64, fg.green() as f64, fg.blue() as f64, 1.0);
         cr.set_line_width(1.0);
-        cr.set_font_size(9.0);
+        cr.set_font_size(8.0);
         // Centimetres are converted from document points, never device pixels.
         let unit = 72.0 / 2.54_f32;
-        let max = (state.width / unit * 10.0).ceil() as i32;
+        let max = (state.page_width / unit * 10.0).ceil() as i32;
         for n in 0..=max {
-            let x = v.x(n as f32 * unit / 10.0);
+            let x = v.page_x + (n as f32 * unit / 10.0) as f64 * v.zoom;
             if x < 0.0 || x > width as f64 {
                 continue;
             }
             let major = n % 10 == 0;
             let length = if major {
-                9.0
+                4.0
             } else if n % 5 == 0 {
-                6.0
+                4.0
             } else {
                 3.0
             };
-            cr.move_to(x.round() + 0.5, 25.0);
-            cr.line_to(x.round() + 0.5, 25.0 - length);
+            cr.move_to(x.round() + 0.5, 15.0);
+            cr.line_to(x.round() + 0.5, 15.0 - length);
             let _ = cr.stroke();
             if major {
-                cr.move_to(x + 3.0, 13.0);
+                cr.move_to(x + 3.0, 9.0);
                 let _ = cr.show_text(&(n / 10).to_string());
             }
         }
-        let caption = wordcraft_gnome::i18n::interpolate(
-            wordcraft_gnome::t!("Page {page}"),
-            &[("page", (state.page + 1).to_string())],
-        );
-        cr.move_to(4.0, 10.0);
-        let _ = cr.show_text(&caption);
         let drag = self.drag.borrow();
         let markers = Self::markers(state);
         for (index, m) in markers.iter().enumerate() {
@@ -230,9 +285,9 @@ impl Ruler {
             if self.area.has_focus() && self.selected.get() == index {
                 cr.rectangle(
                     x - 7.0,
-                    if *m == Marker::First { 2.0 } else { 27.0 },
+                    if *m == Marker::First { 0.0 } else { 11.0 },
                     14.0,
-                    14.0,
+                    12.0,
                 );
                 let _ = cr.stroke();
             }
@@ -240,33 +295,33 @@ impl Ruler {
                 Marker::First => {
                     cr.move_to(x - 5.0, 3.0);
                     cr.line_to(x + 5.0, 3.0);
-                    cr.line_to(x, 10.0);
+                    cr.line_to(x, 7.0);
                     cr.close_path();
                     let _ = cr.fill();
                 }
                 Marker::Left | Marker::Right => {
-                    cr.move_to(x - 5.0, 39.0);
-                    cr.line_to(x + 5.0, 39.0);
-                    cr.line_to(x, 31.0);
+                    cr.move_to(x - 5.0, 22.0);
+                    cr.line_to(x + 5.0, 22.0);
+                    cr.line_to(x, 16.0);
                     cr.close_path();
                     let _ = cr.fill();
                 }
                 Marker::Tab(n) => {
                     use wordcraft_doc::props::TabAlign;
-                    cr.move_to(x, 30.0);
-                    cr.line_to(x, 37.0);
+                    cr.move_to(x, 15.0);
+                    cr.line_to(x, 21.0);
                     match state.tabs[*n].align {
-                        TabAlign::Left => cr.line_to(x + 5.0, 37.0),
-                        TabAlign::Right => cr.line_to(x - 5.0, 37.0),
+                        TabAlign::Left => cr.line_to(x + 5.0, 21.0),
+                        TabAlign::Right => cr.line_to(x - 5.0, 21.0),
                         TabAlign::Bar | TabAlign::Clear => {}
                         TabAlign::Center | TabAlign::Decimal => {
-                            cr.move_to(x - 5.0, 37.0);
-                            cr.line_to(x + 5.0, 37.0);
+                            cr.move_to(x - 5.0, 21.0);
+                            cr.line_to(x + 5.0, 21.0);
                         }
                     }
                     let _ = cr.stroke();
                     if state.tabs[*n].align == TabAlign::Decimal {
-                        cr.arc(x + 3.0, 40.0, 1.0, 0.0, std::f64::consts::TAU);
+                        cr.arc(x + 3.0, 22.0, 1.0, 0.0, std::f64::consts::TAU);
                         let _ = cr.fill();
                     }
                 }
@@ -278,9 +333,9 @@ impl Ruler {
             .filter(|d| d.marker == Marker::NewTab && !d.drop)
         {
             let x = v.x(d.distance);
-            cr.move_to(x, 29.0);
-            cr.line_to(x, 39.0);
-            cr.line_to(x + 5.0, 39.0);
+            cr.move_to(x, 15.0);
+            cr.line_to(x, 22.0);
+            cr.line_to(x + 5.0, 22.0);
             let _ = cr.stroke();
         }
     }
@@ -289,37 +344,51 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     let reveal = gtk::Revealer::new();
     reveal.set_transition_type(gtk::RevealerTransitionType::Crossfade);
     reveal.set_transition_duration(175);
-    reveal.set_halign(gtk::Align::Fill);
+    reveal.set_halign(gtk::Align::Start);
     reveal.set_valign(gtk::Align::Start);
-    let row = gtk::Box::new(gtk::Orientation::Horizontal, 4);
-    row.add_css_class("leaf-ruler");
+
     let area = gtk::DrawingArea::new();
-    area.set_content_height(44);
-    area.set_hexpand(true);
+    area.add_css_class("leaf-ruler");
+    area.set_content_height(24);
     area.set_focusable(true);
     area.set_widget_name("document-ruler");
     accessible_name(&area, wordcraft_gnome::t!("Ruler"));
     area.set_tooltip_text(Some(wordcraft_gnome::t!("Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it.")));
-    let pin = gtk::ToggleButton::with_label(wordcraft_gnome::t!("Pin"));
-    pin.set_widget_name("ruler-pin");
-    pin.set_valign(gtk::Align::Center);
-    pin.set_tooltip_text(Some(wordcraft_gnome::t!("Keep the ruler visible")));
-    row.append(&area);
-    row.append(&pin);
-    reveal.set_child(Some(&row));
-    overlay.add_overlay(&reveal);
-    overlay.set_measure_overlay(&reveal, false);
+    reveal.set_child(Some(&area));
     let strip = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    strip.set_size_request(-1, 5);
-    strip.set_halign(gtk::Align::Fill);
-    strip.set_valign(gtk::Align::Start);
     strip.set_widget_name("ruler-activation-strip");
-    overlay.add_overlay(&strip);
-    overlay.set_measure_overlay(&strip, false);
+    let vertical = gtk::DrawingArea::new();
+    vertical.add_css_class("leaf-ruler");
+    vertical.set_content_width(24);
+    vertical.set_widget_name("vertical-document-ruler");
+    accessible_name(&vertical, wordcraft_gnome::t!("Vertical ruler (cm)"));
+    let vertical_reveal = gtk::Revealer::new();
+
+    vertical_reveal.set_transition_type(gtk::RevealerTransitionType::Crossfade);
+    vertical_reveal.set_transition_duration(175);
+    vertical_reveal.set_child(Some(&vertical));
+    let vertical_strip = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    vertical_strip.set_widget_name("vertical-ruler-activation-strip");
+    for w in [
+        reveal.upcast_ref::<gtk::Widget>(),
+        strip.upcast_ref(),
+        vertical_reveal.upcast_ref(),
+        vertical_strip.upcast_ref(),
+    ] {
+        w.set_halign(gtk::Align::Start);
+        w.set_valign(gtk::Align::Start);
+        overlay.add_overlay(w);
+        overlay.set_measure_overlay(w, false);
+        overlay.set_clip_overlay(w, true);
+    }
     let r = Rc::new(Ruler {
         ui: Rc::downgrade(ui),
         area,
-        pin,
+        overlay: overlay.downgrade(),
+        strip: strip.clone(),
+        vertical,
+        vertical_reveal,
+        vertical_strip,
         reveal,
         hovered: Cell::new(false),
         focused: Cell::new(false),
@@ -368,7 +437,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             r.hide_later();
         }
     });
-    row.add_controller(hover);
+    r.area.add_controller(hover);
     let focus = gtk::EventControllerFocus::new();
     let weak = Rc::downgrade(&r);
     focus.connect_enter(move |_| {
@@ -384,17 +453,138 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             r.hide_later();
         }
     });
-    row.add_controller(focus);
+    r.area.add_controller(focus);
     let weak = Rc::downgrade(&r);
-    r.pin.connect_toggled(move |b| {
-        if let Some(r) = weak.upgrade() {
-            if b.is_active() {
-                r.show();
+    r.vertical.set_draw_func(move |w, cr, _, height| {
+        let Some(r) = weak.upgrade() else {
+            return;
+        };
+        let Some(ui) = r.ui.upgrade() else {
+            return;
+        };
+        let Ok(mut c) = ui.current.try_borrow_mut() else {
+            return;
+        };
+        let Some(d) = c.as_mut() else {
+            return;
+        };
+        let Some(state) = ruler::state(&mut d.session) else {
+            return;
+        };
+        let Some(rect) = d
+            .page_frames
+            .get(state.page)
+            .and_then(|p| p.compute_bounds(w))
+        else {
+            return;
+        };
+        cr.set_source_rgb(0.16, 0.16, 0.16);
+        cr.set_line_width(1.);
+        cr.set_font_size(8.);
+        let unit = 72. / 2.54_f32;
+        for n in 0..=(state.page_height / unit * 10.).ceil() as i32 {
+            let y = rect.y() as f64 + (n as f32 * unit / 10. * d.zoom) as f64;
+            if y < 0. || y > height as f64 {
+                continue;
+            }
+            let length = if n % 10 == 0 {
+                7.
+            } else if n % 5 == 0 {
+                5.
             } else {
-                r.hide_later();
+                3.
+            };
+            cr.move_to(23., y.round() + 0.5);
+            cr.line_to(23. - length, y.round() + 0.5);
+            let _ = cr.stroke();
+            if n % 10 == 0 {
+                cr.move_to(2., y + 3.);
+                let _ = cr.show_text(&(n / 10).to_string());
             }
         }
     });
+    let weak_strip = r.vertical_strip.downgrade();
+    r.vertical_reveal
+        .connect_reveal_child_notify(move |reveal| {
+            if let Some(strip) = weak_strip.upgrade() {
+                strip.set_can_target(!reveal.reveals_child());
+            }
+        });
+    let hover = gtk::EventControllerMotion::new();
+    let weak = Rc::downgrade(&r);
+    hover.connect_enter(move |_, _, _| {
+        if let Some(r) = weak.upgrade() {
+            r.refresh();
+            r.vertical_reveal.set_transition_duration(
+                if r.area.settings().is_gtk_enable_animations() {
+                    175
+                } else {
+                    0
+                },
+            );
+            r.vertical_reveal.set_reveal_child(true);
+        }
+    });
+    r.vertical_strip.add_controller(hover);
+    let hover = gtk::EventControllerMotion::new();
+    let weak = Rc::downgrade(&r);
+    hover.connect_leave(move |_| {
+        if let Some(r) = weak.upgrade() {
+            r.vertical_reveal.set_reveal_child(false);
+        }
+    });
+    r.vertical.add_controller(hover);
+    // Refresh nonmeasuring overlay geometry on viewport allocation/scroll, and
+    // on pointer entry after an initially empty tab. No permanent frame callback.
+    for adjustment in [ui.scroll.hadjustment(), ui.scroll.vadjustment()] {
+        let weak = Rc::downgrade(&r);
+        adjustment.connect_changed(move |_| {
+            let weak = weak.clone();
+            glib::idle_add_local_once(move || {
+                if let Some(r) = weak.upgrade() {
+                    r.refresh();
+                }
+            });
+        });
+    }
+    let motion = gtk::EventControllerMotion::new();
+    motion.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let weak = Rc::downgrade(&r);
+    let canvas = overlay.downgrade();
+    motion.connect_motion(move |_, x, y| {
+        let (Some(r), Some(canvas)) = (weak.upgrade(), canvas.upgrade()) else {
+            return;
+        };
+        r.refresh();
+        let within = |w: &gtk::Widget| {
+            w.compute_bounds(&canvas).is_some_and(|b| {
+                x >= b.x() as f64
+                    && x < (b.x() + b.width()) as f64
+                    && y >= b.y() as f64
+                    && y < (b.y() + b.height()) as f64
+            })
+        };
+        let horizontal = within(r.strip.upcast_ref())
+            || (r.reveal.reveals_child() && within(r.reveal.upcast_ref()));
+        r.hovered.set(horizontal);
+        if !horizontal {
+            r.hide_later();
+        }
+        let vertical = within(r.vertical_strip.upcast_ref())
+            || (r.vertical_reveal.reveals_child() && within(r.vertical_reveal.upcast_ref()));
+        if !vertical {
+            r.vertical_reveal.set_reveal_child(false);
+        }
+    });
+    let weak = Rc::downgrade(&r);
+    motion.connect_leave(move |_| {
+        if let Some(r) = weak.upgrade() {
+            r.hovered.set(false);
+            r.hide_later();
+            r.vertical_reveal.set_reveal_child(false);
+        }
+    });
+    overlay.add_controller(motion);
     let drag = gtk::GestureDrag::new();
     drag.set_button(gdk::BUTTON_PRIMARY);
     let weak = Rc::downgrade(&r);
@@ -430,6 +620,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             drop: false,
         }));
         r.area.grab_focus();
+        r.focused.set(false);
         g.set_state(gtk::EventSequenceState::Claimed);
         r.show();
     });
@@ -439,7 +630,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             if let Some(v) = r.view() {
                 if let Some(d) = r.drag.borrow_mut().as_mut() {
                     d.distance = (v.distance(d.start_x + dx) * 2.0).round() / 2.0;
-                    d.drop = d.start_y + dy < -18.0 || d.start_y + dy > 62.0;
+                    d.drop = d.start_y + dy < -18.0 || d.start_y + dy > 42.0;
                 }
             }
             r.area.queue_draw();

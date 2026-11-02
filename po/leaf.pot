@@ -25,11 +25,11 @@ msgstr ""
 msgid "Aa Bb Cc · Sample Text"
 msgstr ""
 
-#: src/gnome/menus.rs:349
+#: src/gnome/menus.rs:342
 msgid "About Leaf"
 msgstr ""
 
-#: src/gnome/tab.rs:59 src/gnome/tab.rs:437 src/gnome/tab.rs:438
+#: src/gnome/tab.rs:59 src/gnome/tab.rs:434 src/gnome/tab.rs:435
 msgid "Actual Size (100%)"
 msgstr ""
 
@@ -89,11 +89,11 @@ msgstr ""
 msgid "Allow Row to Split Across Pages"
 msgstr ""
 
-#: src/gnome/adaptive.rs:461
+#: src/gnome/adaptive.rs:463
 msgid "Annotation"
 msgstr ""
 
-#: src/gnome/adaptive.rs:347
+#: src/gnome/adaptive.rs:349
 msgid "Annotations"
 msgstr ""
 
@@ -117,7 +117,7 @@ msgstr ""
 msgid "Apply Line Spacing {}"
 msgstr ""
 
-#: src/gnome/adaptive.rs:466
+#: src/gnome/adaptive.rs:468
 msgid "Apply Phonetic Guide"
 msgstr ""
 
@@ -141,7 +141,7 @@ msgstr ""
 msgid "Apply To"
 msgstr ""
 
-#: src/gnome/tab.rs:278
+#: src/gnome/tab.rs:275
 msgid "Apply and Manage Styles"
 msgstr ""
 
@@ -201,15 +201,15 @@ msgstr ""
 msgid "Blue"
 msgstr ""
 
-#: src/gnome/accessibility.rs:106 src/gnome/menus.rs:514
+#: src/gnome/accessibility.rs:106 src/gnome/menus.rs:504
 msgid "Bold"
 msgstr ""
 
-#: src/gnome/tab.rs:212
+#: src/gnome/tab.rs:208
 msgid "Bold (Ctrl+B)"
 msgstr ""
 
-#: src/gnome/tab.rs:268
+#: src/gnome/tab.rs:265
 msgid "Bold, Italic, Underline and Font Size"
 msgstr ""
 
@@ -225,7 +225,7 @@ msgstr ""
 msgid "Bookmarks can only be added to the editable document body."
 msgstr ""
 
-#: src/gnome/menus.rs:388
+#: src/gnome/menus.rs:378
 msgid "Bookmark…"
 msgstr ""
 
@@ -281,11 +281,11 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/gnome/adaptive.rs:368
+#: src/gnome/adaptive.rs:370
 msgid "Capitalization"
 msgstr ""
 
-#: src/gnome/adaptive.rs:337
+#: src/gnome/adaptive.rs:339
 msgid "Capitalize Each Word"
 msgstr ""
 
@@ -321,7 +321,7 @@ msgstr ""
 msgid "Centered"
 msgstr ""
 
-#: src/gnome/adaptive.rs:332 src/gnome/adaptive.rs:532
+#: src/gnome/adaptive.rs:334 src/gnome/adaptive.rs:534
 msgid "Change Case"
 msgstr ""
 
@@ -333,11 +333,11 @@ msgstr ""
 msgid "Character Border"
 msgstr ""
 
-#: src/gnome/adaptive.rs:360
+#: src/gnome/adaptive.rs:362
 msgid "Character Formatting"
 msgstr ""
 
-#: src/gnome/adaptive.rs:387
+#: src/gnome/adaptive.rs:389
 msgid "Character Spacing"
 msgstr ""
 
@@ -385,7 +385,7 @@ msgstr ""
 msgid "Choose…"
 msgstr ""
 
-#: src/gnome/adaptive.rs:446
+#: src/gnome/adaptive.rs:448
 msgid "Circle"
 msgstr ""
 
@@ -397,7 +397,7 @@ msgstr ""
 msgid "Clear Tab Stops"
 msgstr ""
 
-#: src/gnome/adaptive.rs:540
+#: src/gnome/adaptive.rs:542
 msgid "Clear Text Formatting"
 msgstr ""
 
@@ -409,7 +409,7 @@ msgstr ""
 msgid "Close Header and Footer"
 msgstr ""
 
-#: src/gnome/menus.rs:502
+#: src/gnome/menus.rs:492
 msgid "Close Tab"
 msgstr ""
 
@@ -421,7 +421,7 @@ msgstr ""
 msgid "Collapse Section"
 msgstr ""
 
-#: src/gnome/adaptive.rs:346
+#: src/gnome/adaptive.rs:348
 msgid "Color and Effects"
 msgstr ""
 
@@ -461,7 +461,7 @@ msgstr ""
 msgid "Comments"
 msgstr ""
 
-#: src/gnome/menus.rs:394
+#: src/gnome/menus.rs:384
 msgid "Comment…"
 msgstr ""
 
@@ -573,11 +573,11 @@ msgstr ""
 msgid "Cut"
 msgstr ""
 
-#: src/gnome/menus.rs:474
+#: src/gnome/menus.rs:464
 msgid "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Navigation, Comments, and Spelling and Grammar. Navigation groups bookmarks under their headings. Select a thumbnail, heading or bookmark to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks appear in Navigation; each comment thread shares one bubble in Comments. Spelling issues only select their text; corrections remain in the document context menu. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
 msgstr ""
 
-#: src/gnome/tab.rs:654
+#: src/gnome/tab.rs:651
 msgid "DOCX and ODT Documents"
 msgstr ""
 
@@ -617,11 +617,11 @@ msgstr ""
 msgid "Decrease Indent"
 msgstr ""
 
-#: src/gnome/adaptive.rs:383
+#: src/gnome/adaptive.rs:385
 msgid "Decrease Size"
 msgstr ""
 
-#: src/gnome/adaptive.rs:154 src/gnome/adaptive.rs:308
+#: src/gnome/adaptive.rs:156 src/gnome/adaptive.rs:310
 msgid "Default"
 msgstr ""
 
@@ -681,7 +681,7 @@ msgstr ""
 msgid "Destination"
 msgstr ""
 
-#: src/gnome/adaptive.rs:449
+#: src/gnome/adaptive.rs:451
 msgid "Diamond"
 msgstr ""
 
@@ -725,11 +725,11 @@ msgstr ""
 msgid "Distributed Alignment"
 msgstr ""
 
-#: src/gnome/adaptive.rs:155 src/gnome/adaptive.rs:307
+#: src/gnome/adaptive.rs:157 src/gnome/adaptive.rs:309
 msgid "Do Not Check"
 msgstr ""
 
-#: src/gnome/application.rs:74 src/gnome/files.rs:153 src/gnome/tab.rs:690
+#: src/gnome/application.rs:74 src/gnome/files.rs:153 src/gnome/tab.rs:687
 msgid "Document"
 msgstr ""
 
@@ -753,7 +753,7 @@ msgstr ""
 msgid "Document Properties"
 msgstr ""
 
-#: src/gnome/menus.rs:410
+#: src/gnome/menus.rs:400
 msgid "Document Properties…"
 msgstr ""
 
@@ -765,7 +765,7 @@ msgstr ""
 msgid "Document Sent to Printer"
 msgstr ""
 
-#: src/gnome/menus.rs:264
+#: src/gnome/menus.rs:257
 msgid "Document editor for GNOME powered by WordCraft."
 msgstr ""
 
@@ -773,7 +773,7 @@ msgstr ""
 msgid "Document protection prevents changing header/footer settings"
 msgstr ""
 
-#: src/gnome/menus.rs:494
+#: src/gnome/menus.rs:484
 msgid "Documents"
 msgstr ""
 
@@ -821,15 +821,15 @@ msgstr ""
 msgid "Edit Header"
 msgstr ""
 
-#: src/gnome/menus.rs:434
+#: src/gnome/menus.rs:424
 msgid "Editing"
 msgstr ""
 
-#: src/gnome/menus.rs:507
+#: src/gnome/menus.rs:497
 msgid "Editing and Search"
 msgstr ""
 
-#: src/gnome/adaptive.rs:427
+#: src/gnome/adaptive.rs:429
 msgid "Effects"
 msgstr ""
 
@@ -837,7 +837,7 @@ msgstr ""
 msgid "Emboss"
 msgstr ""
 
-#: src/gnome/adaptive.rs:431
+#: src/gnome/adaptive.rs:433
 msgid "Embossed"
 msgstr ""
 
@@ -845,7 +845,7 @@ msgstr ""
 msgid "Enclose Characters"
 msgstr ""
 
-#: src/gnome/adaptive.rs:444
+#: src/gnome/adaptive.rs:446
 msgid "Enclosed Characters"
 msgstr ""
 
@@ -853,7 +853,7 @@ msgstr ""
 msgid "Engrave"
 msgstr ""
 
-#: src/gnome/adaptive.rs:432
+#: src/gnome/adaptive.rs:434
 msgid "Engraved"
 msgstr ""
 
@@ -901,7 +901,7 @@ msgstr ""
 msgid "Export to PDF"
 msgstr ""
 
-#: src/gnome/menus.rs:416
+#: src/gnome/menus.rs:406
 msgid "Export to PDF…"
 msgstr ""
 
@@ -925,7 +925,7 @@ msgstr ""
 msgid "First Section"
 msgstr ""
 
-#: src/gnome/ruler.rs:162
+#: src/gnome/ruler.rs:223
 msgid "First line indent"
 msgstr ""
 
@@ -937,12 +937,16 @@ msgstr ""
 msgid "Fit Contents"
 msgstr ""
 
-#: src/gnome/tab.rs:58 src/gnome/tab.rs:441 src/gnome/tab.rs:442 src/gnome/tables.rs:223
+#: src/gnome/tab.rs:58 src/gnome/tab.rs:438 src/gnome/tab.rs:439 src/gnome/tables.rs:223
 msgid "Fit Width"
 msgstr ""
 
 #: src/gnome/tables.rs:227
 msgid "Fixed Width"
+msgstr ""
+
+#: src/gnome/menus.rs:515
+msgid "Focus ruler"
 msgstr ""
 
 #: src/gnome/appearance.rs:19
@@ -953,7 +957,7 @@ msgstr ""
 msgid "Following Spacing (mm)"
 msgstr ""
 
-#: src/gnome/tab.rs:241 src/gnome/tab.rs:244 src/gnome/text_controls.rs:439
+#: src/gnome/tab.rs:237 src/gnome/tab.rs:240 src/gnome/text_controls.rs:438
 msgid "Font"
 msgstr ""
 
@@ -965,7 +969,7 @@ msgstr ""
 msgid "Font Family"
 msgstr ""
 
-#: src/gnome/tab.rs:254 src/gnome/text_controls.rs:441
+#: src/gnome/tab.rs:251 src/gnome/text_controls.rs:440
 msgid "Font Size"
 msgstr ""
 
@@ -973,7 +977,7 @@ msgstr ""
 msgid "Font Size in Points"
 msgstr ""
 
-#: src/gnome/adaptive.rs:345
+#: src/gnome/adaptive.rs:347
 msgid "Font and Characters"
 msgstr ""
 
@@ -981,7 +985,7 @@ msgstr ""
 msgid "Font size must be between 6 and 96 points"
 msgstr ""
 
-#: src/gnome/menus.rs:399
+#: src/gnome/menus.rs:389
 msgid "Footer"
 msgstr ""
 
@@ -1013,7 +1017,7 @@ msgstr ""
 msgid "Green"
 msgstr ""
 
-#: src/gnome/menus.rs:398
+#: src/gnome/menus.rs:388
 msgid "Header"
 msgstr ""
 
@@ -1037,11 +1041,11 @@ msgstr ""
 msgid "Height (mm)"
 msgstr ""
 
-#: src/gnome/menus.rs:348 src/gnome/menus.rs:526
+#: src/gnome/menus.rs:341 src/gnome/menus.rs:517
 msgid "Help"
 msgstr ""
 
-#: src/gnome/menus.rs:268
+#: src/gnome/menus.rs:261
 msgid "Help Translate Leaf"
 msgstr ""
 
@@ -1053,7 +1057,7 @@ msgstr ""
 msgid "Hidden"
 msgstr ""
 
-#: src/gnome/adaptive.rs:373
+#: src/gnome/adaptive.rs:375
 msgid "Hidden Text"
 msgstr ""
 
@@ -1097,7 +1101,7 @@ msgstr ""
 msgid "Images cannot be inserted inside a drawing canvas"
 msgstr ""
 
-#: src/gnome/menus.rs:385
+#: src/gnome/menus.rs:375
 msgid "Image…"
 msgstr ""
 
@@ -1117,7 +1121,7 @@ msgstr ""
 msgid "Increase Indent"
 msgstr ""
 
-#: src/gnome/adaptive.rs:382
+#: src/gnome/adaptive.rs:384
 msgid "Increase Size"
 msgstr ""
 
@@ -1141,7 +1145,7 @@ msgstr ""
 msgid "Information"
 msgstr ""
 
-#: src/gnome/headers.rs:128 src/gnome/menus.rs:406
+#: src/gnome/headers.rs:128 src/gnome/menus.rs:396
 msgid "Insert"
 msgstr ""
 
@@ -1193,19 +1197,19 @@ msgstr ""
 msgid "Inside"
 msgstr ""
 
-#: src/gnome/menus.rs:520
+#: src/gnome/menus.rs:510
 msgid "Interface"
 msgstr ""
 
-#: src/gnome/adaptive.rs:338
+#: src/gnome/adaptive.rs:340
 msgid "Invert"
 msgstr ""
 
-#: src/gnome/accessibility.rs:107 src/gnome/menus.rs:515
+#: src/gnome/accessibility.rs:107 src/gnome/menus.rs:505
 msgid "Italic"
 msgstr ""
 
-#: src/gnome/tab.rs:215
+#: src/gnome/tab.rs:211
 msgid "Italic (Ctrl+I)"
 msgstr ""
 
@@ -1225,15 +1229,11 @@ msgstr ""
 msgid "Keep Lines Together"
 msgstr ""
 
-#: src/gnome/ruler.rs:306
-msgid "Keep the ruler visible"
-msgstr ""
-
 #: src/gnome/paragraph.rs:882
 msgid "Keep with Next"
 msgstr ""
 
-#: src/gnome/menus.rs:344
+#: src/gnome/menus.rs:337
 msgid "Keyboard Shortcuts"
 msgstr ""
 
@@ -1245,7 +1245,7 @@ msgstr ""
 msgid "Landscape"
 msgstr ""
 
-#: src/gnome/adaptive.rs:518 src/gnome/document_tools.rs:522 src/gnome/tab.rs:261
+#: src/gnome/adaptive.rs:520 src/gnome/document_tools.rs:522 src/gnome/tab.rs:258
 msgid "Language"
 msgstr ""
 
@@ -1253,7 +1253,7 @@ msgstr ""
 msgid "Language and Review"
 msgstr ""
 
-#: src/gnome/adaptive.rs:323
+#: src/gnome/adaptive.rs:325
 msgid "Languages without an installed dictionary cannot be spell-checked."
 msgstr ""
 
@@ -1265,15 +1265,15 @@ msgstr ""
 msgid "Layout"
 msgstr ""
 
-#: src/gnome/ruler.rs:161
+#: src/gnome/ruler.rs:222
 msgid "Leading indent"
 msgstr ""
 
-#: src/gnome/menus.rs:468
+#: src/gnome/menus.rs:458
 msgid "Leaf Help"
 msgstr ""
 
-#: src/gnome/menus.rs:260
+#: src/gnome/menus.rs:253
 msgid "Leaf Project"
 msgstr ""
 
@@ -1353,7 +1353,7 @@ msgstr ""
 msgid "Line and Paragraph Spacing"
 msgstr ""
 
-#: src/gnome/context.rs:381 src/gnome/diagnostics/issues.rs:72 src/gnome/links.rs:59 src/gnome/menus.rs:511
+#: src/gnome/context.rs:381 src/gnome/diagnostics/issues.rs:72 src/gnome/links.rs:59 src/gnome/menus.rs:501
 msgid "Link"
 msgstr ""
 
@@ -1369,7 +1369,7 @@ msgstr ""
 msgid "Linked to Previous Section"
 msgstr ""
 
-#: src/gnome/accessibility.rs:100 src/gnome/accessibility.rs:101 src/gnome/menus.rs:525 src/gnome/tab.rs:38 src/gnome/tab.rs:64
+#: src/gnome/accessibility.rs:100 src/gnome/accessibility.rs:101 src/gnome/menus.rs:516 src/gnome/tab.rs:38 src/gnome/tab.rs:64
 msgid "Main Menu"
 msgstr ""
 
@@ -1389,7 +1389,7 @@ msgstr ""
 msgid "Minimum Row Height"
 msgstr ""
 
-#: src/gnome/adaptive.rs:156 src/gnome/selection_view.rs:136
+#: src/gnome/adaptive.rs:158 src/gnome/selection_view.rs:136
 msgid "Mixed"
 msgstr ""
 
@@ -1405,7 +1405,7 @@ msgstr ""
 msgid "More Table Options…"
 msgstr ""
 
-#: src/gnome/tab.rs:260
+#: src/gnome/tab.rs:257
 msgid "More Text Options…"
 msgstr ""
 
@@ -1437,7 +1437,7 @@ msgstr ""
 msgid "New Comment"
 msgstr ""
 
-#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:141 src/gnome/tab.rs:731 src/gnome/workspace.rs:307
+#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:141 src/gnome/tab.rs:728 src/gnome/workspace.rs:307
 msgid "New Document"
 msgstr ""
 
@@ -1453,11 +1453,11 @@ msgstr ""
 msgid "New Style…"
 msgstr ""
 
-#: src/gnome/menus.rs:312 src/gnome/menus.rs:496
+#: src/gnome/menus.rs:305 src/gnome/menus.rs:486
 msgid "New Tab"
 msgstr ""
 
-#: src/gnome/menus.rs:306 src/gnome/menus.rs:497
+#: src/gnome/menus.rs:299 src/gnome/menus.rs:487
 msgid "New Window"
 msgstr ""
 
@@ -1529,7 +1529,7 @@ msgstr ""
 msgid "ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."
 msgstr ""
 
-#: src/gnome/adaptive.rs:401
+#: src/gnome/adaptive.rs:403
 msgid "Offset (pt)"
 msgstr ""
 
@@ -1537,19 +1537,19 @@ msgstr ""
 msgid "Only DOCX and ODT files are supported"
 msgstr ""
 
-#: src/gnome/application.rs:66 src/gnome/tab.rs:679
+#: src/gnome/application.rs:66 src/gnome/tab.rs:676
 msgid "Only local files are supported"
 msgstr ""
 
-#: src/gnome/menus.rs:499
+#: src/gnome/menus.rs:489
 msgid "Open"
 msgstr ""
 
-#: src/gnome/tab.rs:652
+#: src/gnome/tab.rs:649
 msgid "Open Document"
 msgstr ""
 
-#: src/gnome/menus.rs:324 src/gnome/tab.rs:35
+#: src/gnome/menus.rs:317 src/gnome/tab.rs:35
 msgid "Open…"
 msgstr ""
 
@@ -1561,7 +1561,7 @@ msgstr ""
 msgid "Orientation"
 msgstr ""
 
-#: src/gnome/adaptive.rs:429 src/gnome/paragraph.rs:670
+#: src/gnome/adaptive.rs:431 src/gnome/paragraph.rs:670
 msgid "Outline"
 msgstr ""
 
@@ -1593,7 +1593,7 @@ msgstr ""
 msgid "Page Numbering"
 msgstr ""
 
-#: src/gnome/menus.rs:402
+#: src/gnome/menus.rs:392
 msgid "Page Number…"
 msgstr ""
 
@@ -1609,15 +1609,11 @@ msgstr ""
 msgid "Page numbers update automatically. Existing header and footer content is kept."
 msgstr ""
 
-#: src/gnome/ruler.rs:214
-msgid "Page {page}"
-msgstr ""
-
 #: src/gnome/tab.rs:128 src/gnome/tab.rs:130 src/gnome/view.rs:47
 msgid "Pages"
 msgstr ""
 
-#: src/gnome/diagnostics/sweep20.rs:222 src/gnome/view.rs:40
+#: src/gnome/diagnostics/sweep20.rs:285 src/gnome/view.rs:40
 msgid "Pages: {current} of {total}"
 msgstr ""
 
@@ -1625,11 +1621,11 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:216 src/gnome/context.rs:487 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/register.rs:153 src/gnome/paragraph.rs:594 src/gnome/paragraph.rs:1018 src/gnome/tab.rs:280 src/gnome/tab.rs:512
+#: src/gnome/context.rs:216 src/gnome/context.rs:487 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/register.rs:153 src/gnome/paragraph.rs:594 src/gnome/paragraph.rs:1018 src/gnome/tab.rs:277 src/gnome/tab.rs:509
 msgid "Paragraph"
 msgstr ""
 
-#: src/gnome/tab.rs:282
+#: src/gnome/tab.rs:279
 msgid "Paragraph Formatting"
 msgstr ""
 
@@ -1649,11 +1645,11 @@ msgstr ""
 msgid "Paste"
 msgstr ""
 
-#: src/gnome/adaptive.rs:462
+#: src/gnome/adaptive.rs:464
 msgid "Phonetic Annotation"
 msgstr ""
 
-#: src/gnome/adaptive.rs:459
+#: src/gnome/adaptive.rs:461
 msgid "Phonetic Guide"
 msgstr ""
 
@@ -1661,7 +1657,7 @@ msgstr ""
 msgid "Pictures"
 msgstr ""
 
-#: src/gnome/popovers.rs:78 src/gnome/popovers.rs:207 src/gnome/popovers.rs:208 src/gnome/ruler.rs:303
+#: src/gnome/popovers.rs:78 src/gnome/popovers.rs:207 src/gnome/popovers.rs:208
 msgid "Pin"
 msgstr ""
 
@@ -1681,7 +1677,7 @@ msgstr ""
 msgid "Position (pt)"
 msgstr ""
 
-#: src/gnome/menus.rs:338 src/gnome/menus.rs:523 src/gnome/workspace.rs:316
+#: src/gnome/menus.rs:331 src/gnome/menus.rs:513 src/gnome/workspace.rs:316
 msgid "Preferences"
 msgstr ""
 
@@ -1689,11 +1685,11 @@ msgstr ""
 msgid "Preparing to Print…"
 msgstr ""
 
-#: src/gnome/menus.rs:503
+#: src/gnome/menus.rs:493
 msgid "Print"
 msgstr ""
 
-#: src/gnome/menus.rs:422
+#: src/gnome/menus.rs:412
 msgid "Print…"
 msgstr ""
 
@@ -1713,7 +1709,7 @@ msgstr ""
 msgid "RGB Color, for Example 2266AA"
 msgstr ""
 
-#: src/gnome/tab.rs:801
+#: src/gnome/tab.rs:798
 msgid "Recover"
 msgstr ""
 
@@ -1721,7 +1717,7 @@ msgstr ""
 msgid "Recover Documents"
 msgstr ""
 
-#: src/gnome/menus.rs:330
+#: src/gnome/menus.rs:323
 msgid "Recover Documents…"
 msgstr ""
 
@@ -1745,15 +1741,15 @@ msgstr ""
 msgid "Red"
 msgstr ""
 
-#: src/gnome/history.rs:129 src/gnome/history.rs:138 src/gnome/menus.rs:510 src/gnome/tab.rs:196
+#: src/gnome/history.rs:151 src/gnome/history.rs:160 src/gnome/menus.rs:500 src/gnome/tab.rs:192
 msgid "Redo"
 msgstr ""
 
-#: src/gnome/history.rs:144 src/gnome/tab.rs:200
+#: src/gnome/history.rs:166 src/gnome/tab.rs:196
 msgid "Redo (Ctrl+Shift+Z)"
 msgstr ""
 
-#: src/gnome/history.rs:211
+#: src/gnome/history.rs:250
 msgid "Redo History"
 msgstr ""
 
@@ -1761,11 +1757,11 @@ msgstr ""
 msgid "Remove List"
 msgstr ""
 
-#: src/gnome/adaptive.rs:471
+#: src/gnome/adaptive.rs:473
 msgid "Remove Phonetic Guide"
 msgstr ""
 
-#: src/gnome/adaptive.rs:455
+#: src/gnome/adaptive.rs:457
 msgid "Remove Shape"
 msgstr ""
 
@@ -1789,7 +1785,7 @@ msgstr ""
 msgid "Repeat Header Rows"
 msgstr ""
 
-#: src/gnome/history.rs:123 src/gnome/history.rs:136 src/gnome/history.rs:142
+#: src/gnome/history.rs:145 src/gnome/history.rs:158 src/gnome/history.rs:164
 msgid "Repeat Last Action"
 msgstr ""
 
@@ -1797,7 +1793,7 @@ msgstr ""
 msgid "Repeat as Header"
 msgstr ""
 
-#: src/gnome/menus.rs:513 src/gnome/search.rs:264
+#: src/gnome/menus.rs:503 src/gnome/search.rs:264
 msgid "Replace"
 msgstr ""
 
@@ -1873,7 +1869,7 @@ msgstr ""
 msgid "Review New Documents"
 msgstr ""
 
-#: src/gnome/menus.rs:435
+#: src/gnome/menus.rs:425
 msgid "Reviewing"
 msgstr ""
 
@@ -1917,27 +1913,27 @@ msgstr ""
 msgid "Rows"
 msgstr ""
 
-#: src/gnome/menus.rs:367 src/gnome/ruler.rs:301
+#: src/gnome/ruler.rs:355
 msgid "Ruler"
 msgstr ""
 
-#: src/gnome/ruler.rs:302
+#: src/gnome/ruler.rs:356
 msgid "Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it."
 msgstr ""
 
-#: src/gnome/ruler.rs:167
+#: src/gnome/ruler.rs:228
 msgid "Ruler: {marker}, {value} pt, page {page}"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:78 src/gnome/diagnostics/localization.rs:20 src/gnome/files.rs:21 src/gnome/menus.rs:372 src/gnome/menus.rs:500
+#: src/gnome/annotation_dialog.rs:78 src/gnome/diagnostics/localization.rs:20 src/gnome/files.rs:21 src/gnome/menus.rs:362 src/gnome/menus.rs:490
 msgid "Save"
 msgstr ""
 
-#: src/gnome/menus.rs:501
+#: src/gnome/menus.rs:491
 msgid "Save As"
 msgstr ""
 
-#: src/gnome/menus.rs:378
+#: src/gnome/menus.rs:368
 msgid "Save As…"
 msgstr ""
 
@@ -1981,11 +1977,11 @@ msgstr ""
 msgid "Save comments as DOCX. ODT does not preserve them."
 msgstr ""
 
-#: src/gnome/adaptive.rs:395
+#: src/gnome/adaptive.rs:397
 msgid "Scale (%)"
 msgstr ""
 
-#: src/gnome/menus.rs:512
+#: src/gnome/menus.rs:502
 msgid "Search"
 msgstr ""
 
@@ -2073,7 +2069,7 @@ msgstr ""
 msgid "Selection Borders and Shading"
 msgstr ""
 
-#: src/gnome/adaptive.rs:334
+#: src/gnome/adaptive.rs:336
 msgid "Sentence case"
 msgstr ""
 
@@ -2085,7 +2081,7 @@ msgstr ""
 msgid "Shading"
 msgstr ""
 
-#: src/gnome/adaptive.rs:430
+#: src/gnome/adaptive.rs:432
 msgid "Shadow"
 msgstr ""
 
@@ -2093,7 +2089,7 @@ msgstr ""
 msgid "Shift+Tab"
 msgstr ""
 
-#: src/gnome/menus.rs:318 src/gnome/menus.rs:498
+#: src/gnome/menus.rs:311 src/gnome/menus.rs:488
 msgid "Show All Tabs"
 msgstr ""
 
@@ -2101,7 +2097,7 @@ msgstr ""
 msgid "Show Formatting Marks (¶)"
 msgstr ""
 
-#: src/gnome/accessibility.rs:85 src/gnome/menus.rs:522
+#: src/gnome/accessibility.rs:85 src/gnome/menus.rs:512
 msgid "Show or Hide Sidebar"
 msgstr ""
 
@@ -2117,7 +2113,7 @@ msgstr ""
 msgid "Size"
 msgstr ""
 
-#: src/gnome/adaptive.rs:464
+#: src/gnome/adaptive.rs:466
 msgid "Size (pt)"
 msgstr ""
 
@@ -2129,7 +2125,7 @@ msgstr ""
 msgid "Size must be between 1 and 4000 points"
 msgstr ""
 
-#: src/gnome/adaptive.rs:363
+#: src/gnome/adaptive.rs:365
 msgid "Small Caps"
 msgstr ""
 
@@ -2149,7 +2145,7 @@ msgstr ""
 msgid "Spacing (mm)"
 msgstr ""
 
-#: src/gnome/adaptive.rs:389 src/gnome/adaptive.rs:465
+#: src/gnome/adaptive.rs:391 src/gnome/adaptive.rs:467
 msgid "Spacing (pt)"
 msgstr ""
 
@@ -2181,7 +2177,7 @@ msgstr ""
 msgid "Split Table"
 msgstr ""
 
-#: src/gnome/adaptive.rs:447
+#: src/gnome/adaptive.rs:449
 msgid "Square"
 msgstr ""
 
@@ -2201,7 +2197,7 @@ msgstr ""
 msgid "Strikethrough"
 msgstr ""
 
-#: src/gnome/context.rs:213 src/gnome/context.rs:486 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/register.rs:152 src/gnome/styles.rs:391 src/gnome/tab.rs:276 src/gnome/tab.rs:511
+#: src/gnome/context.rs:213 src/gnome/context.rs:486 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/register.rs:152 src/gnome/styles.rs:391 src/gnome/tab.rs:273 src/gnome/tab.rs:508
 msgid "Style"
 msgstr ""
 
@@ -2229,7 +2225,7 @@ msgstr ""
 msgid "Subject"
 msgstr ""
 
-#: src/gnome/adaptive.rs:381
+#: src/gnome/adaptive.rs:383
 msgid "Subscript"
 msgstr ""
 
@@ -2237,7 +2233,7 @@ msgstr ""
 msgid "Superscript"
 msgstr ""
 
-#: src/gnome/menus.rs:524
+#: src/gnome/menus.rs:514
 msgid "Switch Pane"
 msgstr ""
 
@@ -2253,7 +2249,7 @@ msgstr ""
 msgid "Tab Stops"
 msgstr ""
 
-#: src/gnome/ruler.rs:164
+#: src/gnome/ruler.rs:225
 msgid "Tab stop"
 msgstr ""
 
@@ -2281,7 +2277,7 @@ msgstr ""
 msgid "Table Size"
 msgstr ""
 
-#: src/gnome/menus.rs:384
+#: src/gnome/menus.rs:374
 msgid "Table…"
 msgstr ""
 
@@ -2293,11 +2289,11 @@ msgstr ""
 msgid "Teal"
 msgstr ""
 
-#: src/gnome/adaptive.rs:290 src/gnome/context.rs:219 src/gnome/context.rs:488 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:154 src/gnome/diagnostics/spellcheck.rs:121 src/gnome/tab.rs:234 src/gnome/tab.rs:267 src/gnome/tab.rs:513
+#: src/gnome/adaptive.rs:292 src/gnome/context.rs:219 src/gnome/context.rs:488 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:154 src/gnome/diagnostics/spellcheck.rs:121 src/gnome/tab.rs:230 src/gnome/tab.rs:264 src/gnome/tab.rs:510
 msgid "Text"
 msgstr ""
 
-#: src/gnome/adaptive.rs:434
+#: src/gnome/adaptive.rs:436
 msgid "Text Border"
 msgstr ""
 
@@ -2321,7 +2317,7 @@ msgstr ""
 msgid "Text Language"
 msgstr ""
 
-#: src/gnome/adaptive.rs:292
+#: src/gnome/adaptive.rs:294
 msgid "Text Options"
 msgstr ""
 
@@ -2365,7 +2361,7 @@ msgstr ""
 msgid "The document has changed; search results have been updated"
 msgstr ""
 
-#: src/ruler.rs:158
+#: src/ruler.rs:160
 msgid "The document has changed; start the ruler gesture again."
 msgstr ""
 
@@ -2437,7 +2433,7 @@ msgstr ""
 msgid "The text has changed. Check it again."
 msgstr ""
 
-#: src/gnome/tab.rs:800
+#: src/gnome/tab.rs:797
 msgid "There Are Documents to Recover"
 msgstr ""
 
@@ -2497,11 +2493,11 @@ msgstr ""
 msgid "Track Changes"
 msgstr ""
 
-#: src/gnome/ruler.rs:163
+#: src/gnome/ruler.rs:224
 msgid "Trailing indent"
 msgstr ""
 
-#: src/gnome/adaptive.rs:448
+#: src/gnome/adaptive.rs:450
 msgid "Triangle"
 msgstr ""
 
@@ -2521,15 +2517,15 @@ msgstr ""
 msgid "Typing"
 msgstr ""
 
-#: src/gnome/adaptive.rs:336
+#: src/gnome/adaptive.rs:338
 msgid "UPPERCASE"
 msgstr ""
 
-#: src/gnome/accessibility.rs:108 src/gnome/menus.rs:516 src/gnome/text_palette.rs:76
+#: src/gnome/accessibility.rs:108 src/gnome/menus.rs:506 src/gnome/text_palette.rs:76
 msgid "Underline"
 msgstr ""
 
-#: src/gnome/tab.rs:218
+#: src/gnome/tab.rs:214
 msgid "Underline (Ctrl+U)"
 msgstr ""
 
@@ -2541,15 +2537,15 @@ msgstr ""
 msgid "Underline Color…"
 msgstr ""
 
-#: src/gnome/history.rs:119 src/gnome/menus.rs:509 src/gnome/tab.rs:193
+#: src/gnome/history.rs:141 src/gnome/menus.rs:499 src/gnome/tab.rs:189
 msgid "Undo"
 msgstr ""
 
-#: src/gnome/tab.rs:199
+#: src/gnome/tab.rs:195
 msgid "Undo (Ctrl+Z)"
 msgstr ""
 
-#: src/gnome/history.rs:213
+#: src/gnome/history.rs:252
 msgid "Undo History"
 msgstr ""
 
@@ -2599,6 +2595,10 @@ msgstr ""
 
 #: src/gnome/tables.rs:325
 msgid "Vertical Upwards"
+msgstr ""
+
+#: src/gnome/ruler.rs:364
+msgid "Vertical ruler (cm)"
 msgstr ""
 
 #: src/gnome/text_palette.rs:200
@@ -2685,7 +2685,7 @@ msgstr ""
 msgid "indents"
 msgstr ""
 
-#: src/gnome/adaptive.rs:335
+#: src/gnome/adaptive.rs:337
 msgid "lowercase"
 msgstr ""
 
@@ -2693,7 +2693,7 @@ msgstr ""
 msgid "numbering"
 msgstr ""
 
-#: src/gnome/history.rs:64
+#: src/gnome/history.rs:86
 msgid "{action} ({count} steps)"
 msgstr ""
 

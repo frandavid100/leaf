@@ -184,12 +184,8 @@ pub(super) fn build_tab(
     format_bar.set_margin_end(10);
     format_bar.set_margin_top(5);
     format_bar.set_margin_bottom(5);
-    let undo_button = gtk::Button::from_icon_name("edit-undo-symbolic");
-    let redo_button = gtk::Button::from_icon_name("edit-redo-symbolic");
-    undo_button.set_child(Some(&history_icon(false)));
-    redo_button.set_child(Some(&history_icon(true)));
-    undo_button.add_css_class("image-button");
-    redo_button.add_css_class("image-button");
+    let (undo_split, undo_button, _) = history_button(false);
+    let (redo_split, redo_button, _) = history_button(true);
     undo_button.update_property(&[gtk::accessible::Property::Label(wordcraft_gnome::t!(
         "Undo"
     ))]);
@@ -200,9 +196,9 @@ pub(super) fn build_tab(
     redo_button.set_tooltip_text(Some(wordcraft_gnome::t!("Redo (Ctrl+Shift+Z)")));
     undo_button.set_sensitive(false);
     redo_button.set_sensitive(false);
-    let history_tools = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    history_tools.append(&undo_button);
-    history_tools.append(&redo_button);
+    let history_tools = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    history_tools.append(&undo_split);
+    history_tools.append(&redo_split);
     format_bar.append(&history_tools);
     let history_separator = gtk::Separator::new(gtk::Orientation::Vertical);
     format_bar.append(&history_separator);
@@ -246,6 +242,7 @@ pub(super) fn build_tab(
         text_selector(&font_input, "text-font-choices");
     selectors.append(&font_selector);
     let size_input = gtk::SpinButton::with_range(1.0, 1638.0, 0.5);
+    size_input.set_hexpand(true);
     size_input.set_digits(2);
     size_input.set_value(12.0);
     size_input.set_width_chars(5);
