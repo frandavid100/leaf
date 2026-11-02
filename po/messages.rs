@@ -297,6 +297,7 @@ pub const MESSAGES: &[&str] = &[
     "Line Between Columns",
     "Line Spacing",
     "Link",
+    "Link Text",
     "Link to Previous Section",
     "Linked to Previous Section",
     "Main Menu",

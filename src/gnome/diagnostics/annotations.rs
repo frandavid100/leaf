@@ -59,6 +59,33 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
         Some("outline")
     );
     assert!(find_widget(&ui.navigation_pages, "bookmark-go-Café_1").is_some());
+    let go = find_widget(&ui.navigation_pages, "bookmark-go-Café_1")
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap();
+    let label = go
+        .child()
+        .unwrap()
+        .last_child()
+        .unwrap()
+        .downcast::<gtk::Label>()
+        .unwrap();
+    assert!(label.has_css_class("bookmark-name"));
+    for state in [
+        gtk::StateFlags::NORMAL,
+        gtk::StateFlags::PRELIGHT,
+        gtk::StateFlags::FOCUSED,
+        gtk::StateFlags::SELECTED,
+    ] {
+        label.set_state_flags(state, true);
+        assert_eq!(
+            label.pango_context().font_description().unwrap().weight(),
+            gtk::pango::Weight::Normal
+        );
+    }
+    label.unset_state_flags(
+        gtk::StateFlags::PRELIGHT | gtk::StateFlags::FOCUSED | gtk::StateFlags::SELECTED,
+    );
     let heading = find_widget(&ui.navigation_pages, "outline-heading-0").unwrap();
     assert_eq!(
         heading.next_sibling(),

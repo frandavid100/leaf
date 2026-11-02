@@ -34,6 +34,47 @@ pub fn at(s: &Session, pos: &wordcraft_doc::Pos) -> Option<String> {
             .and_then(|(off, _)| resolved(off))
     })
 }
+
+/// A contiguous link within one document paragraph; character formatting may
+/// split it into runs. Visual line wrapping does not split the link.
+pub fn range_at(
+    s: &Session,
+    pos: &wordcraft_doc::Pos,
+) -> Option<(wordcraft_doc::Pos, wordcraft_doc::Pos, String)> {
+    let p = s.doc.para_at(pos)?;
+    let url = at(s, pos)?;
+    let mut groups: Vec<(usize, usize, String)> = Vec::new();
+    for (range, props) in p.run_ranges() {
+        let link = s
+            .doc
+            .styles
+            .resolve_char(p.props.style.as_deref(), props)
+            .link;
+        if let Some(link) = link {
+            if let Some(last) = groups
+                .last_mut()
+                .filter(|g| g.1 == range.start && g.2 == link)
+            {
+                last.1 = range.end;
+            } else {
+                groups.push((range.start, range.end, link));
+            }
+        }
+    }
+    let (start, end, _) = groups
+        .iter()
+        .find(|(a, b, u)| *a <= pos.off && pos.off < *b && *u == url)
+        .or_else(|| {
+            groups
+                .iter()
+                .find(|(a, b, u)| *a < pos.off && pos.off == *b && *u == url)
+        })?;
+    let mut a = pos.clone();
+    a.off = *start;
+    let mut b = pos.clone();
+    b.off = *end;
+    Some((a, b, url))
+}
 fn command(s: &mut Session, v: &Value) -> CmdResult {
     let url = v["url"]
         .as_str()
@@ -41,7 +82,40 @@ fn command(s: &mut Session, v: &Value) -> CmdResult {
         .ok_or_else(|| CmdError::Params("Enter a link destination".into()))?
         .trim()
         .to_string();
-    let creating = v["creating"].as_bool().unwrap_or(false);
+    let target = v
+        .get("target")
+        .map(|v| serde_json::from_value::<wordcraft_engine::Selection>(v.clone()))
+        .transpose()
+        .map_err(|_| CmdError::Params("Invalid link target".into()))?;
+    let collapsed = target.as_ref().unwrap_or(&s.sel).is_collapsed();
+    let text = if collapsed {
+        Some(
+            v["text"]
+                .as_str()
+                .filter(|t| !t.trim().is_empty())
+                .ok_or_else(|| CmdError::Params("Enter the link text".into()))?,
+        )
+    } else {
+        None
+    };
+    if let Some(target) = target {
+        s.run(
+            "select.range",
+            &json!({"anchor": target.anchor, "focus": target.focus}),
+        )?;
+    }
+    let creating = collapsed || state(s) == LinkState::None;
+    if let Some(text) = text {
+        let start = s.sel.focus.clone();
+        // Compose public command handlers inside this one engine history step.
+        let insert = s
+            .registry
+            .get("text.insert")
+            .ok_or_else(|| CmdError::Failed("Text insertion unavailable".into()))?
+            .run;
+        insert(s, &json!({"text":text,"raw":true}))?;
+        s.run("select.range", &json!({"anchor":start,"focus":s.sel.focus}))?;
+    }
     wordcraft_engine::cmd::format::apply(s, &|c| {
         c.link = Some(url.clone());
         if creating {
@@ -60,7 +134,11 @@ fn command(s: &mut Session, v: &Value) -> CmdResult {
                 c.underline = Some(wordcraft_doc::props::Underline::Single);
             }
         }
-    })
+    })?;
+    if collapsed {
+        s.run("caret.set", &json!({"pos":s.sel.focus}))?;
+    }
+    Ok(json!({}))
 }
 pub fn apply(s: &mut Session, url: &str) -> Result<bool, String> {
     if s.sel.is_collapsed() {
@@ -69,6 +147,15 @@ pub fn apply(s: &mut Session, url: &str) -> Result<bool, String> {
     if state(s) == LinkState::Uniform(url.trim().into()) {
         return Ok(false);
     }
+    apply_to(s, &s.sel.clone(), url, "")
+}
+
+pub fn apply_to(
+    s: &mut Session,
+    target: &wordcraft_engine::Selection,
+    url: &str,
+    text: &str,
+) -> Result<bool, String> {
     if s.registry.get("leaf.link").is_none() {
         let mut specs = s.registry.all().to_vec();
         specs.push(CommandSpec::new(
@@ -79,9 +166,8 @@ pub fn apply(s: &mut Session, url: &str) -> Result<bool, String> {
         ));
         s.registry = std::sync::Arc::new(Registry::new(specs));
     }
-    let creating = state(s) == LinkState::None;
     let before = s.doc.clone();
-    s.run("leaf.link", &json!({"url":url,"creating":creating}))
+    s.run("leaf.link", &json!({"url":url,"target":target,"text":text}))
         .map_err(|e| e.to_string())?;
     Ok(s.doc != before)
 }

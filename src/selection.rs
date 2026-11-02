@@ -73,6 +73,26 @@ pub fn word_drag_range(session: &Session, start: &(Pos, Pos), target: &Pos) -> O
     })
 }
 
+pub fn paragraph_drag_range(
+    session: &mut Session,
+    start: &(Pos, Pos),
+    target: &Pos,
+) -> Option<(Pos, Pos)> {
+    if target.story != start.0.story || session.doc.para_at(target).is_none() {
+        return None;
+    }
+    let (a, b) = wordcraft_engine::cmd::caret::unit_range(
+        session,
+        target,
+        wordcraft_engine::cmd::caret::Unit::Paragraph,
+    );
+    Some(if target < &start.0 {
+        (start.1.clone(), a)
+    } else {
+        (start.0.clone(), b.max(start.1.clone()))
+    })
+}
+
 pub fn move_caret(session: &mut Session, action: &str, extend: bool) -> Result<(), String> {
     let id = match action {
         "left" => "caret.left",

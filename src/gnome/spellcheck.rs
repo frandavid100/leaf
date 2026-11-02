@@ -210,7 +210,10 @@ impl SpellReview {
             menu.set_icon_name("view-more-symbolic");
             menu.add_css_class("flat");
             menu.set_widget_name(&format!("proofing-menu-{n}"));
-            menu.set_valign(gtk::Align::Start);
+            menu.set_valign(gtk::Align::Center);
+            menu.set_margin_end(8);
+            menu.set_margin_top(8);
+            menu.set_margin_bottom(8);
             accessible_name(&menu, wordcraft_gnome::t!("Spelling actions"));
             let weak = Rc::downgrade(self);
             let issue = issue.clone();

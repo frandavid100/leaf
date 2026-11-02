@@ -1955,6 +1955,9 @@ msgstr "Oscuro"
 msgid "Link"
 msgstr "Vínculo"
 
+msgid "Link Text"
+msgstr "Texto del enlace"
+
 msgid "This selection contains different links. Enter a destination to replace them all."
 msgstr "La selección contiene vínculos diferentes. Introduce un destino para reemplazarlos todos."
 

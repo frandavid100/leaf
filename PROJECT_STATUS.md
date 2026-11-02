@@ -12,6 +12,14 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## En validación: alpha.19
+
+Pasada autorizada de nueve informes: ocho candidatos (#25, #26, #28, #34 y
+#44–#47) y #35 aún abierto porque su fallo de escritura no se ha reproducido.
+128 pruebas Rust y eventos reales de teclado/ratón superados localmente.
+[Alcance, pruebas y límites](docs/ISSUE_SWEEP_ALPHA19.md). La última release
+publicada sigue siendo alpha.18 hasta terminar y comprobar CI/empaquetado.
+
 ## Última versión publicada
 
 [Alpha.18, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.18),

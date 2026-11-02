@@ -41,6 +41,14 @@ pub(super) fn install_diagnostics(
         titles_toggle,
         search_panel,
     } = controls;
+    if let Some(mode) =
+        std::env::args().find_map(|a| a.strip_prefix("--followup19-").map(str::to_owned))
+    {
+        let (u, w, a, m) = (ui.clone(), window.clone(), app.clone(), text_menu.clone());
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+            followup_pointer_test(&u, &w, &a, &m, mode)
+        });
+    }
     if std::env::args().any(|a| a == "--text18-pointer-test") {
         let (u, a) = (ui.clone(), app.clone());
         glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {

@@ -11,7 +11,7 @@ mkdir -p "$HOME/.config/xdg-desktop-portal"
 printf '[preferred]\ndefault=gtk\n' > "$HOME/.config/xdg-desktop-portal/portals.conf"
 flatpak run --command=sh "$app_id" -c 'grep -q retained "$XDG_DATA_HOME/upgrade-test"'
 echo FLATPAK_UPGRADE_SANDBOX_OK
-flatpak run "$app_id" --version | grep -F 'Leaf 0.1.0-alpha.18'
+flatpak run "$app_id" --version | grep -F 'Leaf 0.1.0-alpha.19'
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --issue-sweep-ui-test 2>dist/flatpak-issues.log
 grep -q ISSUE_SWEEP_UI_OK dist/flatpak-issues.log
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --sweep18-ui-test 2>dist/flatpak-sweep18.log
@@ -21,6 +21,18 @@ cp table18-*.log dist/
 bash tools/text-pointer-test.sh tools/flatpak_print_run.sh
 cp text18-pointer.log dist/
 bash tools/interaction-pointer-test.sh tools/flatpak_print_run.sh
+# Acknowledgements use the app's existing cache mapping, with no extra permissions.
+mkdir -p "$HOME/.var/app/$app_id/cache"
+export LEAF19_ACK_PARENT="$HOME/.var/app/$app_id/cache"
+for target in range caret; do
+  LANGUAGE=en LEAF19_RANGE=$target timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh font
+done
+LANGUAGE=en LEAF19_NARROW=1 LEAF19_LARGE=1 timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh font
+LANGUAGE=en GDK_SCALE=2 LEAF19_RANGE=caret LEAF19_NARROW=1 LEAF19_LARGE=1 xvfb-run -a -s '-screen 0 2560x1800x24' timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh font
+for mode in link paragraph; do
+  LANGUAGE=en timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh "$mode"
+done
+cp followup19-*.log dist/
 cp interactions-pointer.log dist/flatpak-interactions.log
 flatpak run "$app_id" --issue-preferences-read-test | tee dist/flatpak-issue-preferences.log
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --annotations-ui-test 2>dist/flatpak-annotations.log
@@ -89,7 +101,7 @@ flatpak run --command=sh "$app_id" -c '
 flatpak run --command=sh "$app_id" -c 'unset XDG_STATE_HOME; exec /app/bin/leaf --package-storage-test' | grep PACKAGE_STORAGE_OK
 flatpak --user uninstall -y --noninteractive "$app_id"
 # Intentionally do not pass --delete-data: verify normal reinstall preserves app data.
-flatpak --user install -y --noninteractive dist/Leaf-0.1.0-alpha.18-x86_64.flatpak
+flatpak --user install -y --noninteractive dist/Leaf-0.1.0-alpha.19-x86_64.flatpak
 flatpak run --command=sh "$app_id" -c '
   grep -q "autosave.*0" "$XDG_CONFIG_HOME/wordcraft-gnome/preferences.json"
   leaf_state_root="${XDG_STATE_HOME:-$XDG_DATA_HOME/state}/wordcraft-gnome/recovery"

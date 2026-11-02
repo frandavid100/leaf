@@ -1,5 +1,44 @@
 //! Read the resolved heading levels; never infer headings from font size or names.
 use wordcraft_doc::{Document, Pos, StoryRef};
+
+/// Position a heading with three preceding line heights of context. Read the
+/// actual layout, so large heading fonts do not determine the body-text margin.
+pub fn heading_view_target(
+    session: &mut wordcraft_engine::Session,
+    target: &Pos,
+) -> Option<(usize, f32)> {
+    let layout = session.layout();
+    let caret = layout.caret_on(target, session.page_hint)?;
+    let mut preceding = std::collections::VecDeque::with_capacity(3);
+    for page in layout.pages.iter().take(caret.page + 1) {
+        for item in &page.items {
+            if let wordcraft_engine::layout::Placed::Lines {
+                story,
+                path,
+                para,
+                l0,
+                l1,
+                ..
+            } = item
+            {
+                if *story == target.story && path < &target.path {
+                    for line in &para.lines[*l0..*l1] {
+                        if preceding.len() == 3 {
+                            preceding.pop_front();
+                        }
+                        preceding.push_back(line.height);
+                    }
+                }
+            }
+        }
+    }
+    let context = if preceding.is_empty() {
+        caret.height * 2.5
+    } else {
+        preceding.iter().rev().take(3).sum()
+    };
+    Some((caret.page, caret.top - context))
+}
 #[derive(Clone, Debug)]
 pub struct Heading {
     pub pos: Pos,

@@ -4,6 +4,13 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## En curso: cuarta revisión y candidata alpha.19
+
+Ocho correcciones candidatas: #25, #26, #28, #34 y #44–#47. #35 se investiga con
+más recorridos de teclado; no se da por resuelto sin reproducir su fallo.
+[Alcance y validación](docs/ISSUE_SWEEP_ALPHA19.md). No ampliar esta pasada con
+las funciones nuevas ni cambios del motor. CI y paquete instalado pendientes.
+
 ## Consolidación en main y preparación de Weblate
 
 Integración de los historiales de ApexDesk y Leaf en `main`, con archivo del

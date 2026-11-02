@@ -4,6 +4,12 @@ These notes were moved from the README on 2 November 2026. They describe the
 releases and checks recorded at that point; consult [GitHub Releases](https://github.com/frandavid100/leaf/releases)
 and [project status](../PROJECT_STATUS.md) for the current release and work in progress.
 
+## Alpha.19 candidate
+
+Readable bounded font lists, Ctrl+K and whole-link editing/insertion, destination
+hover feedback, paragraph-granular triple-click dragging and navigation/sidebar
+refinements. Font/Size typing report #35 stays open. [Scope and validation](ISSUE_SWEEP_ALPHA19.md).
+
 ## Recorded alpha updates
 
 Alpha.16 adds immediate formatting and compact editable Font/Size selectors, selection-link editing, comment-anchor navigation, theme/zoom/editing-mode menus, user identity preferences, direct saving of opened files, current-cursor page numbers and page-view refinements. The issue review closed 14 reports and leaves 18 open, including eight added during the work and the partially improved selection-sync report. [Detailed results and validation](ISSUE_SWEEP_ALPHA16.md).

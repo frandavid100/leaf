@@ -77,6 +77,7 @@ pub(super) struct Ui {
     pub(super) drag_scroll: RefCell<Option<glib::SourceId>>,
     pub(super) drag_point: Cell<Option<(f64, f64)>>,
     pub(super) word_drag: RefCell<Option<(Pos, Pos)>>,
+    pub(super) paragraph_drag: RefCell<Option<(Pos, Pos)>>,
     pub(super) drag_anchor: RefCell<Option<Pos>>,
     pub(super) pointer_moved: Cell<bool>,
     pub(super) dirty: Cell<bool>,

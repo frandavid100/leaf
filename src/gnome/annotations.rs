@@ -203,6 +203,7 @@ pub(super) fn bookmark_row(ui: &Rc<Ui>, name: &str) -> gtk::Box {
     let label = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     label.append(&gtk::Image::from_icon_name("bookmark-new-symbolic"));
     let text = annotation_label(name, false);
+    text.add_css_class("bookmark-name");
     text.set_hexpand(true);
     label.append(&text);
     go.set_child(Some(&label));

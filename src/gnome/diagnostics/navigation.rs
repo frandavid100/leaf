@@ -89,7 +89,7 @@ pub(super) fn heading_top_ui_test(ui: &Rc<Ui>, panel: &Rc<OutlinePanel>, app: &A
 fn heading_top_case(ui: Rc<Ui>, panel: Rc<OutlinePanel>, app: Application, case: usize) {
     if case == 8 {
         eprintln!(
-            "HEADING_TOP_UI_OK downward=true upward=true visible=true clamped=true zoom=true"
+            "HEADING_TOP_UI_OK downward=true upward=true visible=true clamped=true zoom=true context_lines=3"
         );
         app.quit();
         return;
@@ -116,8 +116,27 @@ fn heading_top_case(ui: Rc<Ui>, panel: Rc<OutlinePanel>, app: Application, case:
             let max = (adj.upper() - adj.page_size()).max(adj.lower());
             if adj.value() > adj.lower() + 1.0 && adj.value() < max - 1.0 {
                 assert!(
-                    (top - 12.0).abs() < 3.0,
-                    "heading should align at top, got {top}"
+                    (top - 3.0
+                        * d.session
+                            .layout()
+                            .pages
+                            .iter()
+                            .flat_map(|p| p.items.iter())
+                            .find_map(|item| {
+                                if let wordcraft_engine::layout::Placed::Lines {
+                                    para, l0, ..
+                                } = item
+                                {
+                                    Some(para.lines[*l0].height as f64)
+                                } else {
+                                    None
+                                }
+                            })
+                            .unwrap()
+                        * d.zoom as f64)
+                        .abs()
+                        < 3.0,
+                    "heading should retain three body lines above it, got {top}"
                 );
             } else {
                 assert!(

@@ -30,7 +30,7 @@ use wordcraft_gnome::{
     pdf_export, pictures,
 };
 
-const APP_VERSION: &str = "0.1.0-alpha.18";
+const APP_VERSION: &str = "0.1.0-alpha.19";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -200,3 +200,7 @@ use table_pointer::*;
 #[path = "diagnostics/sweep18.rs"]
 mod diagnostic_sweep18;
 use diagnostic_sweep18::*;
+
+#[path = "diagnostics/sweep19.rs"]
+mod diagnostic_sweep19;
+use diagnostic_sweep19::*;

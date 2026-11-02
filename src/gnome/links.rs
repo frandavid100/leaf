@@ -7,19 +7,49 @@ pub(super) struct LinkDialog {
     pub(super) apply: gtk::Button,
 }
 pub(super) fn show_link(ui: &Rc<Ui>) -> Option<LinkDialog> {
+    show_link_for(ui, None)
+}
+pub(super) fn show_link_at(ui: &Rc<Ui>, pos: &Pos) -> Option<LinkDialog> {
+    show_link_for(ui, Some(pos))
+}
+fn show_link_for(ui: &Rc<Ui>, pointer: Option<&Pos>) -> Option<LinkDialog> {
     let host = ui.host.upgrade()?;
+    if !selected_ui(&host).is_some_and(|active| Rc::ptr_eq(&active, ui)) {
+        return None;
+    }
     let identity = document_identity(ui);
-    let (selection, text, state) = {
+    let (selection, target, text, state) = {
         let mut v = ui.current.borrow_mut();
         let d = v.as_mut()?;
-        if d.session.sel.is_collapsed() {
-            return None;
-        }
-        (
-            d.session.sel.clone(),
-            selection::copy_text(&mut d.session).ok()?,
-            links::state(&d.session),
-        )
+        let original = d.session.sel.clone();
+        let (a, b) = original.ordered();
+        let range = links::range_at(&d.session, pointer.unwrap_or(&a)).filter(|(start, end, _)| {
+            pointer.is_some() || original.is_collapsed() || (start <= &a && &b <= end)
+        });
+        let (target, text, state) = if let Some((a, b, url)) = range {
+            let text = d
+                .session
+                .doc
+                .para_at(&a)?
+                .text
+                .get(a.off..b.off)?
+                .to_string();
+            (
+                wordcraft_engine::Selection {
+                    anchor: a,
+                    focus: b,
+                },
+                text,
+                LinkState::Uniform(url),
+            )
+        } else {
+            (
+                original.clone(),
+                selection::copy_text(&mut d.session).ok()?,
+                links::state(&d.session),
+            )
+        };
+        (original, target, text, state)
     };
     let old = ui.link_dialog.borrow_mut().take();
     if let Some(old) = old {
@@ -37,8 +67,10 @@ pub(super) fn show_link(ui: &Rc<Ui>) -> Option<LinkDialog> {
     header.set_show_start_title_buttons(false);
     header.set_show_end_title_buttons(false);
     let cancel = gtk::Button::with_label(wordcraft_gnome::t!("Cancel"));
+    cancel.set_widget_name("link-cancel");
     header.pack_start(&cancel);
     let apply = gtk::Button::with_label(wordcraft_gnome::t!("Apply"));
+    apply.set_widget_name("link-apply");
     apply.add_css_class("suggested-action");
     header.pack_end(&apply);
     toolbar.add_top_bar(&header);
@@ -47,12 +79,22 @@ pub(super) fn show_link(ui: &Rc<Ui>) -> Option<LinkDialog> {
     body.set_margin_end(18);
     body.set_margin_top(18);
     body.set_margin_bottom(18);
-    let label = gtk::Label::new(Some(&text));
-    label.set_wrap(true);
-    label.set_wrap_mode(gtk::pango::WrapMode::WordChar);
-    label.set_max_width_chars(40);
-    label.set_xalign(0.0);
-    body.append(&label);
+    let display_text = if target.is_collapsed() {
+        let entry = gtk::Entry::new();
+        entry.set_widget_name("link-display-text");
+        entry.set_placeholder_text(Some(wordcraft_gnome::t!("Link Text")));
+        accessible_name(&entry, wordcraft_gnome::t!("Link Text"));
+        body.append(&entry);
+        Some(entry)
+    } else {
+        let label = gtk::Label::new(Some(&text));
+        label.set_wrap(true);
+        label.set_wrap_mode(gtk::pango::WrapMode::WordChar);
+        label.set_max_width_chars(40);
+        label.set_xalign(0.0);
+        body.append(&label);
+        None
+    };
     if state == LinkState::Mixed {
         let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
             "This selection contains different links. Enter a destination to replace them all."
@@ -76,12 +118,32 @@ pub(super) fn show_link(ui: &Rc<Ui>) -> Option<LinkDialog> {
     toolbar.set_content(Some(&body));
     window.set_content(Some(&toolbar));
     let weak = apply.downgrade();
+    let text = display_text.as_ref().map(|e| e.downgrade());
     destination.connect_changed(move |e| {
         if let Some(b) = weak.upgrade() {
-            b.set_sensitive(!e.text().trim().is_empty() && e.text().len() <= 4096)
+            b.set_sensitive(
+                !e.text().trim().is_empty()
+                    && e.text().len() <= 4096
+                    && text
+                        .as_ref()
+                        .is_none_or(|e| e.upgrade().is_some_and(|e| !e.text().trim().is_empty())),
+            )
         }
     });
-    apply.set_sensitive(!destination.text().is_empty());
+    if let Some(text) = &display_text {
+        let weak = apply.downgrade();
+        let dest = destination.downgrade();
+        text.connect_changed(move |text| {
+            if let (Some(button), Some(dest)) = (weak.upgrade(), dest.upgrade()) {
+                button.set_sensitive(
+                    !text.text().trim().is_empty()
+                        && !dest.text().trim().is_empty()
+                        && dest.text().len() <= 4096,
+                );
+            }
+        });
+    }
+    apply.set_sensitive(!destination.text().is_empty() && display_text.is_none());
     let weak = window.downgrade();
     cancel.connect_clicked(move |_| {
         if let Some(w) = weak.upgrade() {
@@ -91,11 +153,17 @@ pub(super) fn show_link(ui: &Rc<Ui>) -> Option<LinkDialog> {
     let weak = Rc::downgrade(ui);
     let weak_window = window.downgrade();
     let entry = destination.clone();
+    let inserted_text = display_text.clone();
     apply.connect_clicked(move |_| {
         let (Some(ui), Some(window)) = (weak.upgrade(), weak_window.upgrade()) else {
             return;
         };
         if ui.closed.get()
+            || !ui
+                .host
+                .upgrade()
+                .and_then(|h| selected_ui(&h))
+                .is_some_and(|active| Rc::ptr_eq(&active, &ui))
             || document_identity(&ui) != identity
             || ui.current.borrow().as_ref().map(|d| d.session.sel.clone())
                 != Some(selection.clone())
@@ -107,7 +175,15 @@ pub(super) fn show_link(ui: &Rc<Ui>) -> Option<LinkDialog> {
         }
         let result = {
             let mut v = ui.current.borrow_mut();
-            links::apply(&mut v.as_mut().unwrap().session, &entry.text())
+            links::apply_to(
+                &mut v.as_mut().unwrap().session,
+                &target,
+                &entry.text(),
+                &inserted_text
+                    .as_ref()
+                    .map(|e| e.text().to_string())
+                    .unwrap_or_default(),
+            )
         };
         match result {
             Ok(changed) => {
@@ -136,11 +212,6 @@ pub(super) fn show_link(ui: &Rc<Ui>) -> Option<LinkDialog> {
     })
 }
 
-/// Resolve the actual pointer position without moving the editor selection.
-pub(super) fn link_at_canvas_position(ui: &Rc<Ui>, pos: &Pos) -> Option<String> {
-    let v = ui.current.borrow();
-    links::at(&v.as_ref()?.session, pos)
-}
 pub(super) fn launch_document_link(ui: &Rc<Ui>, url: &str) {
     let Some(host) = ui.host.upgrade() else {
         return;
@@ -158,4 +229,62 @@ pub(super) fn launch_document_link(ui: &Rc<Ui>, url: &str) {
             }
         }
     });
+}
+
+/// Query the current document at tooltip time, avoiding stale hover targets.
+pub(super) fn install_link_tooltip(ui: &Rc<Ui>) {
+    let weak = Rc::downgrade(ui);
+    ui.document_box
+        .connect_query_tooltip(move |_, x, y, keyboard, tooltip| {
+            let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+                return false;
+            };
+            let url = if keyboard {
+                ui.current
+                    .borrow()
+                    .as_ref()
+                    .and_then(|d| links::at(&d.session, &d.session.sel.focus))
+            } else {
+                document_link_at_point(&ui, x as f64, y as f64)
+            };
+            let Some(url) = url else {
+                return false;
+            };
+            if std::env::args().any(|a| a == "--followup19-link") {
+                eprintln!("ISSUE19_TOOLTIP {url}");
+            }
+            let label = gtk::Label::new(Some(&format!(
+                "{}\n{}",
+                url,
+                wordcraft_gnome::t!("Ctrl+click to open a link")
+            )));
+            label.set_wrap(true);
+            label.set_wrap_mode(gtk::pango::WrapMode::WordChar);
+            label.set_max_width_chars(72);
+            tooltip.set_custom(Some(&label));
+            true
+        });
+}
+
+/// Verify real link ink bounds, rather than treating the nearest caret in a
+/// blank page area as a link hit. Works across wrapped lines and zoom levels.
+pub(super) fn document_link_at_point(ui: &Rc<Ui>, x: f64, y: f64) -> Option<String> {
+    let pos = pos_at_canvas(ui, x, y)?;
+    let mut v = ui.current.borrow_mut();
+    let d = v.as_mut()?;
+    let (a, b, url) = links::range_at(&d.session, &pos)?;
+    let layout = d.session.layout();
+    for (page, rect) in layout.selection_rects(&d.session.doc, &a, &b, d.session.page_hint) {
+        let frame = d.page_frames.get(page)?.compute_bounds(&ui.document_box)?;
+        let left = frame.x() as f64 + rect.x as f64 * d.zoom as f64;
+        let top = frame.y() as f64 + rect.y as f64 * d.zoom as f64;
+        if x >= left
+            && x <= left + rect.w as f64 * d.zoom as f64
+            && y >= top
+            && y <= top + rect.h as f64 * d.zoom as f64
+        {
+            return Some(url);
+        }
+    }
+    None
 }

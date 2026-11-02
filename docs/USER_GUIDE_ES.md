@@ -142,3 +142,11 @@ El menú principal permite seguir el tema del sistema o elegir claro/oscuro. El
 menú de documento reúne zoom y modo Edición/Revisión. Revisión registra los
 cambios posteriores; cambiar de modo conserva las revisiones existentes y es
 independiente de la revisión ortográfica.
+
+## Enlaces y selección de párrafos
+
+Ctrl+K crea un enlace sobre la selección o inserta texto y destino donde está el
+caret. Dentro de un enlace abre su destino completo; también se puede editar
+desde el clic derecho sin seleccionar todo el texto. Pasar el ratón muestra la
+dirección y el gesto Ctrl+clic. Cancelar conserva el contenido; confirmar se
+puede deshacer. Tras triple clic, arrastrar amplía la selección por párrafos.

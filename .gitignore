@@ -17,3 +17,7 @@ text18-*.log
 /vista-dividido-*.png
 
 /split-pointer-window.log
+
+# Native issue-followup evidence (uploaded by CI, never source assets)
+/followup19-*.log
+/followup19-*.png

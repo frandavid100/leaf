@@ -483,6 +483,7 @@ pub(super) fn show_keyboard_shortcuts(parent: &ApplicationWindow) {
             vec![
                 (wordcraft_gnome::t!("Undo"), "<Control>z"),
                 (wordcraft_gnome::t!("Redo"), "<Control><Shift>z"),
+                (wordcraft_gnome::t!("Link"), "<Control>k"),
                 (wordcraft_gnome::t!("Search"), "<Control>f"),
                 (wordcraft_gnome::t!("Replace"), "<Control>h"),
                 (wordcraft_gnome::t!("Bold"), "<Control>b"),

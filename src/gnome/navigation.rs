@@ -321,15 +321,14 @@ impl OutlinePanel {
                 if d.session.sel.focus != target {
                     return;
                 }
-                d.session
-                    .layout()
-                    .caret_on(&target, d.session.page_hint)
-                    .and_then(|c| {
+                wordcraft_gnome::navigation::heading_view_target(&mut d.session, &target).and_then(
+                    |(page, top)| {
                         d.page_frames
-                            .get(c.page)
+                            .get(page)
                             .and_then(|f| f.compute_bounds(&ui.document_box))
-                            .map(|r| r.y() as f64 + c.top as f64 * d.zoom as f64 - 12.0)
-                    })
+                            .map(|r| r.y() as f64 + top as f64 * d.zoom as f64)
+                    },
+                )
             };
             if let Some(y) = y {
                 let adj = ui.scroll.vadjustment();

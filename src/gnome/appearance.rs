@@ -134,6 +134,7 @@ pub(super) fn install_css() {
       .search-options > button { background: transparent; box-shadow: none; }
       button.search-replace { min-width: 24px; min-height: 24px; padding: 0; }
       .style-popover button, .format-popover button { font-weight: normal; }
+      .bookmark-name { font-weight: normal; }
       .style-row.current-style { background: alpha(@window_fg_color, 0.14); border-radius: 6px; }
       .format-popover button:checked:not(.split-action) { background: alpha(@window_fg_color, 0.14); }
       .page-indicator, .zoom-value { font-feature-settings: 'tnum'; }

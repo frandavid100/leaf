@@ -17,6 +17,7 @@ pub(super) fn install_pointer_and_view_input(
     compact_search: &gtk::Button,
 ) {
     install_table_hover(ui);
+    install_link_tooltip(ui);
     // The centered page stack can be narrower than its viewport. Its surrounding
     // background belongs to the scroller, so page-stack gestures never see it.
     let outside = gtk::GestureClick::new();
@@ -83,6 +84,7 @@ pub(super) fn install_pointer_and_view_input(
                 }
                 ui.pointer_moved.set(false);
                 ui.word_drag.borrow_mut().take();
+                ui.paragraph_drag.borrow_mut().take();
                 if leave_header_outside_at(&ui, x, y) == Some(false) {
                     ui.document_box.grab_focus();
                     refresh_selection(&ui);
@@ -109,7 +111,7 @@ pub(super) fn install_pointer_and_view_input(
                         .current_event_state()
                         .contains(gdk::ModifierType::CONTROL_MASK)
                 {
-                    if let Some(url) = link_at_canvas_position(&ui, &pos) {
+                    if let Some(url) = document_link_at_point(&ui, x, y) {
                         launch_document_link(&ui, &url);
                         return;
                     }
@@ -141,6 +143,12 @@ pub(super) fn install_pointer_and_view_input(
                             doc.session
                                 .run(cmd, &serde_json::json!({}))
                                 .map_err(|e| e.to_string())?;
+                            if count >= 3 {
+                                ui.paragraph_drag.replace(Some((
+                                    doc.session.sel.anchor.clone(),
+                                    doc.session.sel.focus.clone(),
+                                )));
+                            }
                         }
                         Ok(())
                     })
@@ -496,6 +504,10 @@ pub(super) fn install_keyboard_input(
                     return glib::Propagation::Stop;
                 }
                 if ui.document_box.has_focus() {
+                    if control && !shift && matches!(key, gdk::Key::k | gdk::Key::K) {
+                        show_link(&ui);
+                        return glib::Propagation::Stop;
+                    }
                     if control && shift && key == gdk::Key::F5 {
                         show_annotation_dialog(&ui, AnnotationEdit::Bookmark);
                         return glib::Propagation::Stop;
@@ -725,6 +737,7 @@ pub(super) fn stop_document_drag(ui: &Rc<Ui>) {
     ui.drag_point.set(None);
     ui.drag_anchor.borrow_mut().take();
     ui.word_drag.borrow_mut().take();
+    ui.paragraph_drag.borrow_mut().take();
 }
 fn update_document_drag(ui: &Rc<Ui>, x: f64, y: f64) {
     let Some(anchor) = ui.drag_anchor.borrow().clone() else {
@@ -739,11 +752,18 @@ fn update_document_drag(ui: &Rc<Ui>, x: f64, y: f64) {
     let result = {
         let mut v = ui.current.borrow_mut();
         v.as_mut().map(|d| {
-            let (a, b) = ui
-                .word_drag
+            let paragraph = ui
+                .paragraph_drag
                 .borrow()
                 .as_ref()
-                .and_then(|r| selection::word_drag_range(&d.session, r, &focus))
+                .and_then(|r| selection::paragraph_drag_range(&mut d.session, r, &focus));
+            let (a, b) = paragraph
+                .or_else(|| {
+                    ui.word_drag
+                        .borrow()
+                        .as_ref()
+                        .and_then(|r| selection::word_drag_range(&d.session, r, &focus))
+                })
                 .unwrap_or((anchor, focus));
             selection::select_range(&mut d.session, &a, &b)
         })

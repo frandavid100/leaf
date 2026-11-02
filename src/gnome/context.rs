@@ -307,6 +307,7 @@ pub(super) fn context_item(
     group.add_action(&action);
     let item = gio::MenuItem::new(Some(label), Some(&format!("context.{name}")));
     let accel = match name {
+        "link" => Some("<Control>k"),
         "cut" => Some("<Control>x"),
         "copy" => Some("<Control>c"),
         "paste" => Some("<Control>v"),
@@ -370,6 +371,8 @@ pub(super) fn show_document_context(
         }
     }
     let edit = gio::Menu::new();
+    let link_position = pos_at_canvas(ui, x as f64, y as f64);
+    let link_identity = document_identity(ui);
     context_item(
         &edit,
         &group,
@@ -377,9 +380,15 @@ pub(super) fn show_document_context(
         ui,
         wordcraft_gnome::t!("Link"),
         "link",
-        selected,
-        |u| {
-            show_link(u);
+        selected || kind != DocumentContext::Picture,
+        move |u| {
+            if document_identity(u) == link_identity {
+                if let Some(pos) = &link_position {
+                    show_link_at(u, pos);
+                } else {
+                    show_link(u);
+                }
+            }
         },
     );
     context_item(

@@ -88,7 +88,7 @@ pub(super) fn build_tab(
     document_box.set_halign(gtk::Align::Center);
     document_box.set_focusable(true);
     document_box.set_cursor_from_name(Some("text"));
-    document_box.set_tooltip_text(Some(wordcraft_gnome::t!("Ctrl+click to open a link")));
+    document_box.set_has_tooltip(true);
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_hexpand(true);
     scroll.set_vexpand(true);
@@ -339,6 +339,7 @@ pub(super) fn build_tab(
         drag_scroll: RefCell::new(None),
         drag_point: Cell::new(None),
         word_drag: RefCell::new(None),
+        paragraph_drag: RefCell::new(None),
         drag_anchor: RefCell::new(None),
         pointer_moved: Cell::new(false),
         dirty: Cell::new(false),

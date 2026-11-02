@@ -22,6 +22,12 @@
   <url type="help">https://github.com/frandavid100/leaf/blob/main/docs/TESTING.md</url>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.0-alpha.19" date="2026-11-02" type="development">
+      <description>
+        <p>Improve readable font choices, whole-link editing and keyboard insertion, paragraph selection dragging, heading context and sidebar presentation.</p>
+        <p xml:lang="es">Mejora la legibilidad de las fuentes, la edición e inserción de enlaces, el arrastre por párrafos, el contexto de títulos y la presentación lateral.</p>
+      </description>
+    </release>
     <release version="0.1.0-alpha.18" date="2026-11-02" type="development">
       <description>
         <p>Compact text tools, inherited language and review settings, native selection colors, active outline headings and table pointer controls.</p>

@@ -312,6 +312,7 @@ impl TextControls {
             preview.set_xalign(0.0);
             preview.set_ellipsize(gtk::pango::EllipsizeMode::End);
             preview.set_max_width_chars(28);
+            preview.set_tooltip_text(Some(&family));
             let mut description = gtk::pango::FontDescription::new();
             description.set_family(&family);
             description.set_size((size * gtk::pango::SCALE as f64).round() as i32);
@@ -322,6 +323,8 @@ impl TextControls {
             clip.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Never);
             clip.set_max_content_height(80);
             clip.set_propagate_natural_height(true);
+            clip.set_propagate_natural_width(true);
+            clip.set_max_content_width(420);
             clip.set_child(Some(&preview));
             body.append(&clip);
             button.set_child(Some(&body));
@@ -395,10 +398,27 @@ pub(super) fn text_selector(
     scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
     scroll.set_max_content_height(320);
     scroll.set_propagate_natural_height(true);
-    scroll.set_min_content_width(180);
+    scroll.set_min_content_width(280);
+    scroll.set_max_content_width(440);
+    scroll.set_propagate_natural_width(true);
     scroll.set_child(Some(&content));
     let popover = gtk::Popover::new();
     popover.set_child(Some(&scroll));
+    let sizing = scroll.downgrade();
+    let anchor = menu.downgrade();
+    popover.connect_show(move |_| {
+        if let (Some(scroll), Some(menu)) = (sizing.upgrade(), anchor.upgrade()) {
+            let available = menu
+                .root()
+                .and_then(|r| r.downcast::<gtk::Window>().ok())
+                .map(|w| w.width())
+                .unwrap_or(640);
+            let width = (available - 80).clamp(180, 440);
+            scroll.set_min_content_width(width.min(280));
+            scroll.set_max_content_width(width);
+            scroll.set_size_request(width, -1);
+        }
+    });
     menu.set_popover(Some(&popover));
     (linked, menu, content)
 }

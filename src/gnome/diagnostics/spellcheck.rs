@@ -98,6 +98,14 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                     .unwrap()
                     .downcast::<gtk::MenuButton>()
                     .unwrap();
+                assert_eq!(menu.valign(), gtk::Align::Center);
+                let row = s.list.row_at_index(index as i32).unwrap();
+                let bounds = menu.compute_bounds(&row).unwrap();
+                assert!(
+                    (bounds.y() + bounds.height() / 2.0 - row.height() as f32 / 2.0).abs() < 2.0,
+                    "proofing action must be centered in the complete row"
+                );
+                assert!(menu.margin_end() >= 8);
                 menu.popup();
                 let pop = menu
                     .popover()
