@@ -1,5 +1,12 @@
 use super::*;
 
+fn document_pointer_surface(ui: &Ui, controller: &impl IsA<gtk::EventController>) -> bool {
+    let Some(surface) = controller.as_ref().current_event().and_then(|e| e.surface()) else {
+        return false;
+    };
+    ui.document_box.native().and_then(|n| n.surface()).as_ref() == Some(&surface)
+}
+
 pub(super) fn install_pointer_and_view_input(
     ui: &Rc<Ui>,
     compact_app_menu: &gtk::MenuButton,
@@ -15,6 +22,9 @@ pub(super) fn install_pointer_and_view_input(
         let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
+        if !document_pointer_surface(&ui, gesture) {
+            return;
+        }
         let contains = |widget: &gtk::Widget| {
             widget.compute_bounds(&ui.scroll).is_some_and(|r| {
                 x >= r.x() as f64
@@ -59,6 +69,9 @@ pub(super) fn install_pointer_and_view_input(
             #[weak]
             ui,
             move |gesture, count, x, y| {
+                if !document_pointer_surface(&ui, gesture) {
+                    return;
+                }
                 ui.pointer_moved.set(false);
                 ui.word_drag.borrow_mut().take();
                 if leave_header_outside_at(&ui, x, y) == Some(false) {
@@ -134,6 +147,9 @@ pub(super) fn install_pointer_and_view_input(
             let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
                 return;
             };
+            if !document_pointer_surface(&ui, gesture) {
+                return;
+            }
             if count != 1
                 || ui.pointer_moved.get()
                 || gesture
@@ -169,6 +185,9 @@ pub(super) fn install_pointer_and_view_input(
                 #[weak]
                 ui,
                 move |gesture, x, y| {
+                    if !document_pointer_surface(&ui, gesture) {
+                        return;
+                    }
                     *ui.drag_anchor.borrow_mut() = if gesture
                         .current_event_state()
                         .contains(gdk::ModifierType::SHIFT_MASK)

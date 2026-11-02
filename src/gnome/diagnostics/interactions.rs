@@ -30,9 +30,11 @@ pub(super) fn interaction_pointer_test(
     trace.connect_pressed(move |gesture, count, x, y| {
         if let Some(ui) = weak.upgrade() {
             eprintln!(
-                "POINTER_HIT count={count} x={x} y={y} modifiers={:?} pos={:?}",
+                "POINTER_HIT count={count} x={x} y={y} modifiers={:?} pos={:?} native={}",
                 gesture.current_event_state(),
-                pos_at_canvas(&ui, x, y)
+                pos_at_canvas(&ui, x, y),
+                gesture.current_event().and_then(|e| e.surface())
+                    == ui.document_box.native().and_then(|n| n.surface())
             );
         }
     });
@@ -126,6 +128,11 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
                 .unwrap();
                 let popup = pop.surface().unwrap().downcast::<gdk::Popup>().unwrap();
                 let (tx, ty) = pop.surface_transform();
+                eprintln!(
+                    "FONT_TARGET stage={stage} popup={},{} bounds={r:?} transform={tx},{ty}",
+                    popup.position_x(),
+                    popup.position_y()
+                );
                 eprintln!(
                     "FONT_INPUT_READY_{stage} {} {}",
                     (popup.position_x() as f64
