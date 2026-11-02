@@ -232,23 +232,7 @@ pub(super) fn install_diagnostics(
         let m = align_menu.clone();
         let s = paragraph_popover.clone();
         window.set_title(Some("Leaf Split Button Regression"));
-        let events = gtk::EventControllerLegacy::new();
-        events.set_propagation_phase(gtk::PropagationPhase::Capture);
-        events.set_propagation_limit(gtk::PropagationLimit::None);
-        events.connect_event(|_, event| {
-            if matches!(
-                event.event_type(),
-                gdk::EventType::ButtonPress | gdk::EventType::ButtonRelease
-            ) {
-                eprintln!(
-                    "SPLIT_RAW_EVENT {:?} {:?}",
-                    event.event_type(),
-                    event.position()
-                );
-            }
-            glib::Propagation::Proceed
-        });
-        window.add_controller(events);
+        // Supply coordinates only: extra capture controllers change native routing.
         glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
             m.popup();
             glib::timeout_add_local_once(std::time::Duration::from_millis(400), move || {
@@ -258,50 +242,14 @@ pub(super) fn install_diagnostics(
                     .unwrap()
                     .compute_bounds(&pop)
                     .unwrap();
-                let arrow_widget = find_widget(&s.main, "paragraph-more-indents").unwrap();
-                let arrow = arrow_widget.compute_bounds(&pop).unwrap();
-                let events = gtk::EventControllerLegacy::new();
-                events.set_propagation_phase(gtk::PropagationPhase::Capture);
-                events.set_propagation_limit(gtk::PropagationLimit::None);
-                events.connect_event(|_, event| {
-                    if matches!(
-                        event.event_type(),
-                        gdk::EventType::ButtonPress | gdk::EventType::ButtonRelease
-                    ) {
-                        eprintln!("SPLIT_BUTTON_EVENT {:?}", event.event_type());
-                    }
-                    glib::Propagation::Proceed
-                });
-                arrow_widget.add_controller(events);
-                eprintln!(
-                    "SPLIT_TARGET sensitive={} mapped={} target={} picked={:?}",
-                    arrow_widget.is_sensitive(),
-                    arrow_widget.is_mapped(),
-                    arrow_widget.can_target(),
-                    pop.pick(
-                        arrow.x() as f64 + arrow.width() as f64 / 2.0,
-                        arrow.y() as f64 + arrow.height() as f64 / 2.0,
-                        gtk::PickFlags::DEFAULT
-                    )
-                    .map(|w| (w.type_().name(), w.widget_name()))
-                );
+                let arrow = find_widget(&s.main, "paragraph-more-indents")
+                    .unwrap()
+                    .compute_bounds(&pop)
+                    .unwrap();
                 let surface = pop.surface().unwrap().downcast::<gdk::Popup>().unwrap();
                 let (tx, ty) = pop.surface_transform();
                 let x = surface.position_x() as f64 - tx;
                 let y = surface.position_y() as f64 - ty;
-                let trace = gtk::GestureClick::new();
-                trace.set_propagation_phase(gtk::PropagationPhase::Capture);
-                let weak = pop.downgrade();
-                trace.connect_pressed(move |_, _, x, y| {
-                    if let Some(pop) = weak.upgrade() {
-                        eprintln!(
-                            "SPLIT_CLICK {x} {y} target={:?}",
-                            pop.pick(x, y, gtk::PickFlags::DEFAULT)
-                                .map(|w| w.widget_name())
-                        );
-                    }
-                });
-                pop.add_controller(trace);
                 eprintln!(
                     "SPLIT_POINTER_READY {} {} {} {}",
                     (x + body.x() as f64 + body.width() as f64 / 2.0) as i32,

@@ -70,5 +70,16 @@ Restaurar Predeterminado borra también idioma directo complejo y de Asia orient
 Pendiente antes de publicar/cerrar: build release de esta fuente, CI completa y
 Flatpak instalado. Dos ejecuciones iniciales se detuvieron por representaciones
 JSON incorrectas en las aserciones de color/resaltado (RGB objeto/array, no nombres).
-Se corrigieron las pruebas; no se publicó ninguna de esas fuentes. No se presenta
+Se corrigieron las pruebas; ninguna de esas compilaciones se distribuyó como release. No se presenta
 el éxito de un test de comandos como prueba de interacción de ratón.
+
+
+La siguiente ejecución superó los controles nuevos y los trece casos de tabla,
+pero falló el script antiguo de sangría de Párrafo. La prueba añadía controladores
+de captura y enviaba movimiento/clic en clientes separados. Se simplificó el
+diagnóstico a coordenadas (sin controladores adicionales) y el script vuelve a
+entrar en la flecha y pulsa en una misma invocación. Los metadatos X11 van a otro
+log para no sobrescribir el stderr del proceso. Tres ejecuciones locales seguidas
+superaron la navegación real a la subpágina con el código de producción.
+Los cambios experimentales de controladores y menús se descartaron; no se alteró
+la implementación de Párrafo para hacer pasar el test. Falta la CI final completa.

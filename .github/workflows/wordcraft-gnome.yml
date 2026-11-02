@@ -516,6 +516,7 @@ jobs:
             hidpi-*.log
             vista-hidpi-*.png
             split-states.log
+            split-pointer-window.log
             vista-dividido-reposo.png
             vista-dividido-cuerpo.png
             vista-dividido-flecha.png

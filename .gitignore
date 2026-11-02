@@ -12,3 +12,8 @@ __pycache__/
 sweep18-*.log
 table18-*.log
 text18-*.log
+
+/split-states.log
+/vista-dividido-*.png
+
+/split-pointer-window.log
