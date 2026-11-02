@@ -113,9 +113,9 @@ pub(super) fn history_icon(redo: bool) -> gtk::DrawingArea {
 }
 pub(super) fn format_icon_button(menu: &gtk::MenuButton, label: &str, kind: &str) {
     let name = match kind {
-        "style" => "format-text-rich-symbolic",
+        "style" => "headings-allcap-symbolic",
         "paragraph" => "format-justify-left-symbolic",
-        _ => "font-select-symbolic",
+        _ => "font-symbolic",
     };
     menu.set_icon_name(name);
     menu.add_css_class("flat");
@@ -139,10 +139,24 @@ pub(super) struct TextTools {
     pub(super) header: Rc<FormatHeader>,
     active_page: RefCell<Option<String>>,
     displayed: RefCell<serde_json::Value>,
+    pub(super) palette: RefCell<Option<Rc<TextPalette>>>,
+    language_value: gtk::Label,
 }
 impl TextTools {
     pub(super) fn sync_selection(self: &Rc<Self>) {
         let Some(ui) = self.ui.upgrade() else { return };
+        if let Some(palette) = self.palette.borrow().as_ref() {
+            palette.sync();
+        }
+        if let Some(d) = ui.current.borrow().as_ref() {
+            let value = wordcraft_gnome::proofing_defaults::choice(&d.session);
+            self.language_value.set_text(match value.as_str() {
+                "default" => wordcraft_gnome::t!("Default"),
+                "off" => wordcraft_gnome::t!("Do Not Check"),
+                "mixed" => wordcraft_gnome::t!("Mixed"),
+                _ => &value,
+            });
+        }
         let Some(pop) = self.popover.upgrade().filter(|p| p.is_visible()) else {
             return;
         };
@@ -225,82 +239,6 @@ impl TextTools {
             self.action(label, cmd, serde_json::json!({key:*value}));
         }
     }
-    pub(super) fn color(self: &Rc<Self>, title: &str, cmd: &'static str) {
-        self.heading(title);
-        let choose = style_menu_button(wordcraft_gnome::t!("Choose Color…"));
-        self.detail.append(&choose);
-        let weak = Rc::downgrade(self);
-        choose.connect_clicked(move |_| {
-            let Some(s) = weak.upgrade() else {
-                return;
-            };
-            let Some(ui) = s.ui.upgrade() else {
-                return;
-            };
-            let Some(host) = ui.host.upgrade() else {
-                return;
-            };
-            let identity = document_identity(&ui);
-            if let Some(p) = s.popover.upgrade() {
-                close_format_popover(&p);
-            }
-            let dialog = gtk::ColorDialog::new();
-            dialog.set_title(wordcraft_gnome::t!("Choose Color"));
-            dialog.set_with_alpha(false);
-            let weak = Rc::downgrade(&s);
-            dialog.choose_rgba(
-                Some(&host.window),
-                None::<&gdk::RGBA>,
-                None::<&gio::Cancellable>,
-                move |result| {
-                    let Some(s) = weak.upgrade() else {
-                        return;
-                    };
-                    let Some(ui) = s.ui.upgrade() else {
-                        return;
-                    };
-                    if ui.closed.get() || document_identity(&ui) != identity {
-                        return;
-                    }
-                    match result {
-                        Ok(c) => {
-                            let color = format!(
-                                "{:02X}{:02X}{:02X}",
-                                (c.red() * 255.0).round() as u8,
-                                (c.green() * 255.0).round() as u8,
-                                (c.blue() * 255.0).round() as u8
-                            );
-                            s.execute(cmd, serde_json::json!({"color":color}));
-                        }
-                        Err(e)
-                            if e.matches(gtk::DialogError::Cancelled)
-                                || e.matches(gtk::DialogError::Dismissed) => {}
-                        Err(e) => ui.toasts.add_toast(Toast::new(&e.to_string())),
-                    }
-                },
-            );
-        });
-        let e = gtk::Entry::new();
-        e.set_placeholder_text(Some("RGB: 2266AA"));
-        accessible_name(&e, wordcraft_gnome::t!("Hexadecimal RGB Color"));
-        self.detail.append(&e);
-        let weak = Rc::downgrade(self);
-        e.connect_changed(move |entry| {
-            if let Some(s) = weak.upgrade() {
-                let c = entry.text().trim().trim_start_matches('#').to_string();
-                if c.len() == 6 && c.bytes().all(|b| b.is_ascii_hexdigit()) {
-                    entry.remove_css_class("error");
-                    if let Some(ui) = s.ui.upgrade() {
-                        if let Err(e) = immediate_format(&ui, cmd, serde_json::json!({"color":c})) {
-                            ui.toasts.add_toast(Toast::new(&e));
-                        }
-                    }
-                } else if !c.is_empty() {
-                    entry.add_css_class("error");
-                }
-            }
-        });
-    }
     pub(super) fn toggle(self: &Rc<Self>, label: &str, on: bool, cmd: &'static str) {
         let b = gtk::CheckButton::with_label(label);
         b.set_active(on);
@@ -346,7 +284,7 @@ impl TextTools {
         };
         let state = selection_character(&ui);
         let weak = Rc::downgrade(self);
-        let home = page == "options";
+        let home = matches!(page, "options" | "language" | "case");
         self.header.back(
             if home {
                 wordcraft_gnome::t!("Text")
@@ -364,6 +302,44 @@ impl TextTools {
             },
         );
         match page {
+            "language" => {
+                for (label, choice) in [
+                    (wordcraft_gnome::t!("Do Not Check"), "off"),
+                    (wordcraft_gnome::t!("Default"), "default"),
+                ]
+                .into_iter()
+                .chain(TEXT_LANGUAGES.iter().map(|(tag, name)| (*name, *tag)))
+                {
+                    let b = style_menu_button(label);
+                    b.set_widget_name(&format!("language-choice-{choice}"));
+                    self.detail.append(&b);
+                    let weak = Rc::downgrade(self);
+                    b.connect_clicked(move |_| {
+                        if let Some(s) = weak.upgrade() {
+                            s.execute("leaf.proofText", serde_json::json!({"choice":choice}));
+                        }
+                    });
+                }
+                let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
+                    "Languages without an installed dictionary cannot be spell-checked."
+                )));
+                hint.set_wrap(true);
+                hint.set_max_width_chars(30);
+                hint.add_css_class("dim-label");
+                self.detail.append(&hint);
+            }
+            "case" => self.choice(
+                wordcraft_gnome::t!("Change Case"),
+                &[
+                    (wordcraft_gnome::t!("Sentence case"), "sentence"),
+                    (wordcraft_gnome::t!("lowercase"), "lower"),
+                    (wordcraft_gnome::t!("UPPERCASE"), "upper"),
+                    (wordcraft_gnome::t!("Capitalize Each Word"), "title"),
+                    (wordcraft_gnome::t!("Invert"), "toggle"),
+                ],
+                "format.changeCase",
+                "mode",
+            ),
             "options" => {
                 for (label, page) in [
                     (wordcraft_gnome::t!("Font and Characters"), "character"),
@@ -383,18 +359,6 @@ impl TextTools {
             "character" => {
                 self.heading(wordcraft_gnome::t!("Character Formatting"));
                 for (label, key, cmd) in [
-                    (wordcraft_gnome::t!("Bold"), "bold", "format.bold"),
-                    (wordcraft_gnome::t!("Italic"), "italic", "format.italic"),
-                    (
-                        wordcraft_gnome::t!("Strikethrough"),
-                        "strike",
-                        "format.strikethrough",
-                    ),
-                    (
-                        wordcraft_gnome::t!("Double Strikethrough"),
-                        "doubleStrike",
-                        "format.doubleStrikethrough",
-                    ),
                     (
                         wordcraft_gnome::t!("Small Caps"),
                         "smallCaps",
@@ -415,25 +379,11 @@ impl TextTools {
                 }
                 for (label, cmd) in [
                     (wordcraft_gnome::t!("Subscript"), "format.subscript"),
-                    (wordcraft_gnome::t!("Superscript"), "format.superscript"),
                     (wordcraft_gnome::t!("Increase Size"), "format.growFont"),
                     (wordcraft_gnome::t!("Decrease Size"), "format.shrinkFont"),
-                    (wordcraft_gnome::t!("Clear Text Formatting"), "format.clear"),
                 ] {
                     self.action(label, cmd, serde_json::json!({}));
                 }
-                self.choice(
-                    wordcraft_gnome::t!("Change Case"),
-                    &[
-                        (wordcraft_gnome::t!("Sentence case"), "sentence"),
-                        (wordcraft_gnome::t!("lowercase"), "lower"),
-                        (wordcraft_gnome::t!("UPPERCASE"), "upper"),
-                        (wordcraft_gnome::t!("Capitalize Each Word"), "title"),
-                        (wordcraft_gnome::t!("Invert"), "toggle"),
-                    ],
-                    "format.changeCase",
-                    "mode",
-                );
                 self.heading(wordcraft_gnome::t!("Character Spacing"));
                 let spacing = self.number(
                     wordcraft_gnome::t!("Spacing (pt)"),
@@ -474,65 +424,6 @@ impl TextTools {
                 }
             }
             "color" => {
-                self.color(wordcraft_gnome::t!("Text Color"), "format.color");
-                self.action(
-                    wordcraft_gnome::t!("Automatic Color"),
-                    "format.color",
-                    serde_json::json!({"color":"auto"}),
-                );
-                self.choice(
-                    wordcraft_gnome::t!("Highlight"),
-                    &[
-                        (wordcraft_gnome::t!("No Highlight"), "none"),
-                        (wordcraft_gnome::t!("Yellow"), "yellow"),
-                        (wordcraft_gnome::t!("Green"), "brightGreen"),
-                        (wordcraft_gnome::t!("Turquoise"), "turquoise"),
-                        (wordcraft_gnome::t!("Pink"), "pink"),
-                        (wordcraft_gnome::t!("Blue"), "blue"),
-                        (wordcraft_gnome::t!("Red"), "red"),
-                        (wordcraft_gnome::t!("Dark Blue"), "darkBlue"),
-                        (wordcraft_gnome::t!("Teal"), "teal"),
-                        (wordcraft_gnome::t!("Dark Green"), "green"),
-                        (wordcraft_gnome::t!("Purple"), "violet"),
-                        (wordcraft_gnome::t!("Dark Red"), "darkRed"),
-                        (wordcraft_gnome::t!("Dark Yellow"), "darkYellow"),
-                        (wordcraft_gnome::t!("50% Gray"), "gray50"),
-                        (wordcraft_gnome::t!("25% Gray"), "gray25"),
-                        (wordcraft_gnome::t!("Black"), "black"),
-                    ],
-                    "format.highlight",
-                    "color",
-                );
-                self.action(
-                    wordcraft_gnome::t!("Remove Underline"),
-                    "format.underline",
-                    serde_json::json!({"value":false}),
-                );
-                self.choice(
-                    wordcraft_gnome::t!("Underline"),
-                    &[
-                        (wordcraft_gnome::t!("Single"), "single"),
-                        (wordcraft_gnome::t!("Double"), "double"),
-                        (wordcraft_gnome::t!("Thick"), "thick"),
-                        (wordcraft_gnome::t!("Dotted"), "dotted"),
-                        (wordcraft_gnome::t!("Dashed"), "dash"),
-                        (wordcraft_gnome::t!("Dot Dash"), "dotDash"),
-                        (wordcraft_gnome::t!("Dot Dot Dash"), "dotDotDash"),
-                        (wordcraft_gnome::t!("Wavy"), "wave"),
-                        (wordcraft_gnome::t!("Words Only"), "words"),
-                    ],
-                    "format.underline",
-                    "style",
-                );
-                self.color(
-                    wordcraft_gnome::t!("Underline Color"),
-                    "format.underlineColor",
-                );
-                self.action(
-                    wordcraft_gnome::t!("Automatic Underline Color"),
-                    "format.underlineColor",
-                    serde_json::json!({"color":"auto"}),
-                );
                 self.heading(wordcraft_gnome::t!("Effects"));
                 for (label, key, cmd) in [
                     (wordcraft_gnome::t!("Outline"), "outline", "format.outline"),
@@ -618,15 +509,69 @@ pub(super) fn install_text_pages(
     stack.add_named(&main, Some("main"));
     stack.add_named(&scroll, Some("detail"));
     root.append(&stack);
-    root.set_width_request(330);
+    root.set_width_request(260);
+    let language_button = find_widget(&main, "text-language")
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap();
+    let language_row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    let language_title = gtk::Label::new(Some(wordcraft_gnome::t!("Language")));
+    language_title.set_hexpand(true);
+    language_title.set_xalign(0.0);
+    language_row.append(&language_title);
+    let language_value = gtk::Label::new(None);
+    language_value.set_widget_name("text-language-value");
+    language_value.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    language_value.set_max_width_chars(12);
+    language_row.append(&language_value);
+    language_row.append(&format_chevron());
+    language_button.set_child(Some(&language_row));
+    let case = gtk::Button::new();
+    case.set_widget_name("text-change-case");
+    let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    let l = gtk::Label::new(Some(wordcraft_gnome::t!("Change Case")));
+    l.set_hexpand(true);
+    l.set_xalign(0.0);
+    row.append(&l);
+    row.append(&format_chevron());
+    case.set_child(Some(&row));
+    main.insert_child_after(&case, Some(&language_button));
+    main.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+    let clear = style_menu_button(wordcraft_gnome::t!("Clear Text Formatting"));
+    clear.set_widget_name("text-clear-formatting");
+    main.append(&clear);
     let s = Rc::new(TextTools {
         ui: Rc::downgrade(ui),
         popover: pop.downgrade(),
         stack,
         detail,
         header: header.clone(),
+        palette: RefCell::new(None),
+        language_value,
         active_page: RefCell::new(None),
         displayed: RefCell::new(serde_json::Value::Null),
+    });
+    let palette = TextPalette::new(ui, _inline);
+    main.remove(_inline);
+    main.prepend(&palette.root);
+    s.palette.replace(Some(palette));
+    let weak = Rc::downgrade(&s);
+    language_button.connect_clicked(move |_| {
+        if let Some(s) = weak.upgrade() {
+            s.page("language");
+        }
+    });
+    let weak = Rc::downgrade(&s);
+    case.connect_clicked(move |_| {
+        if let Some(s) = weak.upgrade() {
+            s.page("case");
+        }
+    });
+    let weak = Rc::downgrade(&s);
+    clear.connect_clicked(move |_| {
+        if let Some(s) = weak.upgrade() {
+            s.execute("format.clear", serde_json::json!({}));
+        }
     });
     let weak = Rc::downgrade(&s);
     more.connect_clicked(move |_| {

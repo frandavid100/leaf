@@ -25,6 +25,8 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
     stop_document_drag(ui);
     ui.input_context.focus_out();
     ui.input_context.set_client_widget(None::<&gtk::Widget>);
+    ui.selection_rasters.borrow_mut().clear();
+    *ui.table_pointer.borrow_mut() = TablePointer::default();
     ui.document_box.reset();
     let link = ui.link_dialog.borrow_mut().take();
     if let Some(window) = link {
@@ -298,7 +300,7 @@ pub(super) fn blank_tab(app: &Application, host: &Rc<Workspace>) {
         false,
         false,
         Some((
-            Session::new(wordcraft_doc::Document::new()),
+            wordcraft_gnome::proofing_defaults::new_document(),
             wordcraft_gnome::t!("New Document").into(),
         )),
     );
@@ -371,15 +373,20 @@ pub(super) fn show_preferences(parent: &ApplicationWindow) -> adw::PreferencesWi
     page.add(&group);
     let proofing = adw::PreferencesGroup::new();
     proofing.set_title(wordcraft_gnome::t!("Spelling and Grammar"));
-    let live = option_switch(
-        &proofing,
-        wordcraft_gnome::t!("Check Spelling and Grammar as You Type"),
+    let language = adw::EntryRow::new();
+    language.set_title(wordcraft_gnome::t!("Default Language for New Documents"));
+    language.set_widget_name("preferences-document-language");
+    language.set_text(&wordcraft_gnome::proofing_defaults::preferred_language());
+    language.connect_changed(
+        move |entry| match wordcraft_gnome::preferences::set_default_language(&entry.text()) {
+            Ok(()) => entry.remove_css_class("error"),
+            Err(_) => entry.add_css_class("error"),
+        },
     );
+    proofing.add(&language);
+    let live = option_switch(&proofing, wordcraft_gnome::t!("Review New Documents"));
     live.set_widget_name("preferences-live-proofing");
-    accessible_name(
-        &live,
-        wordcraft_gnome::t!("Check Spelling and Grammar as You Type"),
-    );
+    accessible_name(&live, wordcraft_gnome::t!("Review New Documents"));
     live.set_active(wordcraft_gnome::preferences::check_spelling());
     let weak = dialog.downgrade();
     live.connect_active_notify(move |toggle| {

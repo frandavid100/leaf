@@ -1984,3 +1984,33 @@ msgstr "Ctrl+click to open a link"
 
 msgid "Author Name"
 msgstr "Author Name"
+
+msgid "Default"
+msgstr "Default"
+
+msgid "Do Not Check"
+msgstr "Do Not Check"
+
+msgid "Languages without an installed dictionary cannot be spell-checked."
+msgstr "Languages without an installed dictionary cannot be spell-checked."
+
+msgid "Language and Review"
+msgstr "Language and Review"
+
+msgid "Review"
+msgstr "Review"
+
+msgid "Underline Color…"
+msgstr "Underline Color…"
+
+msgid "White"
+msgstr "White"
+
+msgid "Default Language for New Documents"
+msgstr "Default Language for New Documents"
+
+msgid "Review New Documents"
+msgstr "Review New Documents"
+
+msgid "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
+msgstr "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."

@@ -8,12 +8,21 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
         )),
         "Proofing",
     );
-    let language = show_text_language(ui, parent);
-    language.tag.set_text("es-ES");
-    language.scope.set_selected(1);
-    language.no_proof.set_active(false);
-    language.apply.emit_clicked();
-    assert!(!language.window.is_visible());
+    {
+        let mut current = ui.current.borrow_mut();
+        wordcraft_gnome::proofing_defaults::apply(
+            &mut current.as_mut().unwrap().session,
+            "es-ES",
+            true,
+        )
+        .unwrap();
+    }
+    after_content_change(ui);
+    show_text_language(ui, parent);
+    let language = format_button(ui, "text-menu").unwrap();
+    assert!(find_widget(&language.popover().unwrap(), "language-choice-off").is_some());
+    assert!(find_widget(&language.popover().unwrap(), "language-choice-default").is_some());
+    language.popdown();
     let prefs = show_preferences(parent);
     let live = find_widget(&prefs, "preferences-live-proofing")
         .unwrap()
@@ -21,6 +30,10 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
         .unwrap();
     live.set_active(false);
     assert!(!wordcraft_gnome::preferences::check_spelling());
+    assert!(
+        ui.current.borrow().as_ref().unwrap().session.view.proofing,
+        "preferences do not disable existing document review"
+    );
     prefs.close();
     assert!(find_widget(&ui.navigation_pages, "preferences-live-proofing").is_none());
     let before = ui.current.borrow().as_ref().unwrap().session.sel.clone();
@@ -110,7 +123,7 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                 );
                 context.popdown();
                 apply_user_edit(&ui, Edit::Insert("profesor".into()));
-                // Manual review remains available with live checking disabled.
+                // New-document preferences do not disable this document.
                 assert!(find_widget(&ui.navigation_pages, "proofing-refresh").is_none());
                 // The visible list refreshes automatically after this edit.
                 assert!(
@@ -141,7 +154,7 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                 assert!(s.issues.borrow().is_empty());
                 assert!(
                     s.debounce.borrow().is_some(),
-                    "the visible list refreshes with live marks disabled"
+                    "the visible list refreshes independently of new-document preferences"
                 );
                 {
                     let mut v = ui.current.borrow_mut();

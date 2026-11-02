@@ -41,6 +41,20 @@ pub(super) fn install_diagnostics(
         titles_toggle,
         search_panel,
     } = controls;
+    if std::env::args().any(|a| a == "--sweep18-ui-test") {
+        let (u, a) = (ui.clone(), app.clone());
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+            sweep18_ui_test(&u, &a)
+        });
+    }
+    if let Some(case) =
+        std::env::args().find_map(|a| a.strip_prefix("--table18-").map(str::to_owned))
+    {
+        let (u, a) = (ui.clone(), app.clone());
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+            table_pointer_ui_test(&u, &a, case)
+        });
+    }
     if std::env::args().any(|a| a == "--heading-top-test") {
         let (u, s, a) = (ui.clone(), outline_panel.clone(), app.clone());
         glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {

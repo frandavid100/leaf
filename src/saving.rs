@@ -6,7 +6,9 @@ use wordcraft_engine::Session;
 /// Prevent silent loss through the pinned upstream ODT exporter. The recovery
 /// copy is engine-native; this guard applies to document files and autosave.
 pub fn requires_docx(session: &Session) -> bool {
-    !session.doc.comments.is_empty() || !session.doc.core.category.is_empty()
+    !session.doc.comments.is_empty()
+        || !session.doc.core.category.is_empty()
+        || crate::proofing_defaults::odt_loses_inheritance(session)
 }
 
 pub fn format_preservation_error(session: &Session, path: &Path) -> Option<&'static str> {
@@ -19,6 +21,11 @@ pub fn format_preservation_error(session: &Session, path: &Path) -> Option<&'sta
     if !session.doc.comments.is_empty() {
         return Some(wordcraft_gnome::t!(
             "ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."
+        ));
+    }
+    if crate::proofing_defaults::odt_loses_inheritance(session) {
+        return Some(wordcraft_gnome::t!(
+            "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
         ));
     }
     (!session.doc.core.category.is_empty()).then(|| wordcraft_gnome::t!("Save as DOCX to preserve the document category. The current ODT exporter cannot keep it."))

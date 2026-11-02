@@ -4,6 +4,12 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## En curso: tercera revisión solicitada por David
+
+Resolver los informes que permitan las API públicas de la base fijada y cerrar
+solo los verificados. [Trabajo y límites de alpha.18](docs/ISSUE_SWEEP_ALPHA18.md).
+Ninguna actualización del motor, Weblate, Flathub o fusión con main autorizada.
+
 ## Completado: mantenimiento y facilidad de contribución
 
 **Autorizado por David:** revisar estructura y claridad, separar responsabilidades,
@@ -36,7 +42,7 @@ portales y Orca automatizada. [Resultado](docs/ISSUE_SWEEP_ALPHA17.md) y
 [evidencia](docs/ISSUE_SWEEP_ALPHA17_VALIDATION.json).
 
 Quedan 14 issues abiertos: los diez pendientes conservados y #40–#43, creados
-posteriormente. No se ha iniciado otra ampliación, Weblate, Flathub ni la fusión
+posteriormente. La tercera revisión está en curso; no se inicia Weblate, Flathub ni la fusión
 con main. La rama activa sigue siendo wordcraft-saving.
 
 ## Completado: revisión de issues y alpha.16

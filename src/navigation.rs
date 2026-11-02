@@ -27,6 +27,12 @@ pub fn bookmarks(doc: &Document, headings: &[Heading]) -> Vec<Bookmark> {
         })
         .collect()
 }
+/// Body text belongs to the nearest preceding heading, regardless of page.
+pub fn containing_heading(headings: &[Heading], pos: &Pos) -> Option<usize> {
+    (pos.story == StoryRef::Body)
+        .then(|| headings.iter().rposition(|h| h.pos <= *pos))
+        .flatten()
+}
 pub fn headings(doc: &Document) -> Vec<Heading> {
     let mut counters = wordcraft_doc::numbering::Counters::default();
     doc.para_paths(StoryRef::Body)
@@ -76,6 +82,40 @@ mod tests {
     use super::*;
     use serde_json::json;
     use wordcraft_engine::Session;
+    #[test]
+    fn active_heading_uses_body_boundaries_and_nearest_nested_section() {
+        let h = vec![
+            Heading {
+                pos: Pos::body(1, 0),
+                level: 0,
+                text: "Top".into(),
+            },
+            Heading {
+                pos: Pos::body(3, 0),
+                level: 1,
+                text: "Nested".into(),
+            },
+            Heading {
+                pos: Pos::body(6, 0),
+                level: 0,
+                text: "Next".into(),
+            },
+        ];
+        for (p, expected) in [
+            (0, None),
+            (1, Some(0)),
+            (2, Some(0)),
+            (3, Some(1)),
+            (5, Some(1)),
+            (6, Some(2)),
+            (9, Some(2)),
+        ] {
+            assert_eq!(containing_heading(&h, &Pos::body(p, 0)), expected);
+        }
+        let mut p = Pos::body(4, 0);
+        p.story = StoryRef::Part(1);
+        assert_eq!(containing_heading(&h, &p), None);
+    }
     #[test]
     fn bookmarks_follow_the_nearest_heading_and_refresh_after_outline_edits() {
         let mut s = Session::new(Document::from_text("Preface\nTop\nBody\nSub\nMore\nNext"));

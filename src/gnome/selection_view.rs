@@ -62,6 +62,9 @@ pub(super) fn refresh_selection(ui: &Rc<Ui>) {
             }
         });
     }
+    if let Some(outline) = ui.outline.borrow().as_ref() {
+        outline.sync_caret();
+    }
     refresh_overlay_layers(ui);
     refresh_format_controls(ui);
     if let Some(style) = ui.style.borrow().as_ref() {

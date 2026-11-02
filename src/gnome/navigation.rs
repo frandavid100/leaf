@@ -42,6 +42,8 @@ pub(super) struct OutlinePanel {
     pub(super) collapsed: RefCell<std::collections::HashSet<String>>,
     pub(super) positions: RefCell<Vec<Pos>>,
     pub(super) pending: Cell<bool>,
+    headings: RefCell<Vec<wordcraft_gnome::navigation::Heading>>,
+    caret: RefCell<Option<(u64, u64, Pos)>>,
 }
 impl OutlinePanel {
     pub(super) fn show(self: &Rc<Self>) {
@@ -96,7 +98,8 @@ impl OutlinePanel {
             .set_visible(headings.is_empty() && bookmarks.is_empty());
         self.positions.borrow_mut().clear();
         let mut hidden: Option<u8> = None;
-        let current = headings.iter().rposition(|h| h.pos <= focus);
+        let current = wordcraft_gnome::navigation::containing_heading(&headings, &focus);
+        self.headings.replace(headings.clone());
         let mut selected = None;
         for mark in bookmarks.iter().filter(|b| b.heading.is_none()) {
             self.append_bookmark(&ui, mark, 0);
@@ -181,6 +184,88 @@ impl OutlinePanel {
         }
         if let Some(row) = selected {
             self.list.select_row(Some(&row));
+        } else {
+            self.list.unselect_all();
+        }
+        self.sync_caret();
+    }
+    pub(super) fn sync_caret(self: &Rc<Self>) {
+        let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
+            return;
+        };
+        if ui.sidebar_pages.visible_child_name().as_deref() != Some("navigation")
+            || ui.navigation_pages.visible_child_name().as_deref() != Some("outline")
+        {
+            return;
+        }
+        let Some(key) = ui.current.borrow().as_ref().map(|d| {
+            (
+                d.session.document_id(),
+                d.session.rev(),
+                d.session.sel.focus.clone(),
+            )
+        }) else {
+            return;
+        };
+        let moved = self.caret.borrow().as_ref() != Some(&key);
+        self.caret.replace(Some(key.clone()));
+        let headings = self.headings.borrow();
+        let owner = wordcraft_gnome::navigation::containing_heading(&headings, &key.2);
+        let Some(owner) = owner else {
+            self.list.unselect_all();
+            return;
+        };
+        let find = |i: usize| {
+            find_widget(&self.list, &format!("outline-heading-{i}"))
+                .and_then(|w| w.downcast::<gtk::ListBoxRow>().ok())
+        };
+        let mut row = find(owner);
+        if row.is_none() && moved {
+            let mut level = headings[owner].level;
+            let mut collapsed = self.collapsed.borrow_mut();
+            for h in headings[..owner].iter().rev() {
+                if h.level < level {
+                    collapsed.remove(&format!("{:?}:{}", h.pos.path, h.text));
+                    level = h.level;
+                }
+            }
+            drop(collapsed);
+            drop(headings);
+            self.refresh();
+            return;
+        }
+        if row.is_none() {
+            row = (0..owner)
+                .rev()
+                .filter(|i| headings[*i].level < headings[owner].level)
+                .find_map(find);
+        }
+        drop(headings);
+        if let Some(row) = row {
+            self.list.select_row(Some(&row));
+            let weak = row.downgrade();
+            glib::idle_add_local_once(move || {
+                let Some(row) = weak.upgrade() else { return };
+                let Some(scroll) = row
+                    .ancestor(gtk::ScrolledWindow::static_type())
+                    .and_then(|w| w.downcast::<gtk::ScrolledWindow>().ok())
+                else {
+                    return;
+                };
+                let Some(bounds) = scroll.child().and_then(|c| row.compute_bounds(&c)) else {
+                    return;
+                };
+                let adj = scroll.vadjustment();
+                let top = bounds.y() as f64;
+                let bottom = top + bounds.height() as f64;
+                if top < adj.value() {
+                    adj.set_value(top);
+                } else if bottom > adj.value() + adj.page_size() {
+                    adj.set_value(bottom - adj.page_size());
+                }
+            });
+        } else {
+            self.list.unselect_all();
         }
     }
     fn append_bookmark(
@@ -286,6 +371,8 @@ pub(super) fn install_outline(
         collapsed: RefCell::new(Default::default()),
         positions: RefCell::new(Vec::new()),
         pending: Cell::new(false),
+        headings: RefCell::new(Vec::new()),
+        caret: RefCell::new(None),
     });
     let weak = Rc::downgrade(&s);
     s.list.connect_row_activated(move |_, row| {

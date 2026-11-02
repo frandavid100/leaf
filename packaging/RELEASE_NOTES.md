@@ -1,14 +1,11 @@
-Leaf 0.1.0-alpha.17 fixes interaction and presentation reports from the alpha.16 review.
+Leaf 0.1.0-alpha.18 adds inherited language/review settings, compact native text tools, GNOME selection colors, active outline headings and table pointer controls.
 
-- Correct canvas input-method ownership so Font and Size accept real keyboard input. Font choices show each family once in its own typeface.
-- Shift+click keeps the original anchor; double-click excludes trailing spaces; double-click dragging selects complete words in both directions, with viewport-edge scrolling.
-- New ordinary links are blue/underlined. Ctrl+click opens the destination using the native URI launcher and Flatpak portal; the canvas tooltip explains the gesture.
-- The theme selector uses larger circles and the current accent. Zoom is a flat row at the top of the document menu and keeps that menu open during adjustments.
-- Author preferences default to the account's real/full name, preserving explicit custom names and existing authorship.
-- Heading jumps align near the top. Page rows show as many pages as fit, with stable incomplete-row alignment; thumbnail gaps are slightly reduced.
-- Pinned Columns controls follow section/selection changes. Formatting headers have less padding; Document Properties uses the supported native libadwaita view switcher.
-- Spelling entries have proofing-only menus sharing the document's suggestions/actions. Sidebar headings/manual refresh and the routine Pending Changes toast are removed; visible spelling results refresh automatically.
+Preferences supplies new-document defaults. Document Properties changes inherited defaults without overwriting explicit text/style settings. Text → Language starts with Do Not Check and Default. Review runs automatically according to the effective settings.
 
-The spelling/default inheritance redesign (#14–#16 and the remaining part of #30), upstream columns, advanced mouse table handles, odd/even independence and the document-specific spacing report remain open. Engine, dependencies, vendor and patches are unchanged. ODT comments/category still require DOCX for preservation.
+Text has the agreed three rows, independent last-used color/highlight values, separate Font/Size rows and Clear Formatting last. Exact GNOME style/text icons are bundled. Selection foreground/background follows GTK styling; outline selection follows the caret without navigating the document.
 
-Install Leaf-0.1.0-alpha.17-x86_64.flatpak over alpha.16. Experimental, AI-assisted development. See docs/ISSUE_SWEEP_ALPHA17.md for verified scope and limitations.
+Table borders/corner resize with previews and Escape cancellation; table mouse selection, insertion and move gestures use public WordCraft commands.
+
+DOCX preserves inheritance and explicit review exceptions. The pinned ODT exporter flattens language inheritance and cannot retain all review overrides; Leaf requires DOCX for disabled document review or explicit enabled-review exceptions. Unequal columns, column separators, absent even header/footer isolation and the original spacing report remain under investigation. Cross-page table selection dragging remains limited to the starting page.
+
+Install Leaf-0.1.0-alpha.18-x86_64.flatpak over alpha.17. Experimental, AI-assisted development. See docs/ISSUE_SWEEP_ALPHA18.md for verified scope and limitations.

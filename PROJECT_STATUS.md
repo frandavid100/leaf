@@ -11,6 +11,13 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## En curso: nueva pasada autorizada
+
+Implementación alpha.18 en validación; [alcance y límites](docs/ISSUE_SWEEP_ALPHA18.md).
+Incluye idioma/revisión heredados, Texto compacto, iconos, selección nativa,
+navegación según caret y gestos de tabla. No se han cerrado informes por cambios
+sin validar ni se ha publicado esta fuente todavía.
+
 ## Última versión publicada
 
 [Alpha.17, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.17),
@@ -55,8 +62,8 @@ mensajes y guías para las respuestas. Se conservan todas las acciones e histori
 **Ortografía y gramática** conserva la lista lateral, sin instrucciones iniciales
 ni bloque de correcciones. Pulsar una fila solo selecciona y muestra el texto.
 Se retira la entrada del menú de documento; F7 y el selector lateral la abren.
-Las correcciones siguen en el contexto del texto y la revisión al escribir en
-Preferencias. [Detalle](docs/PROOFING_SIDEBAR.md).
+Las correcciones siguen en el contexto del texto; la nueva pasada cambia la
+revisión a herencia por documento con preferencias solo para documentos nuevos. [Detalle](docs/PROOFING_SIDEBAR.md).
 
 **Propiedades → Información** permite editar título, asunto, autor, palabras clave
 y categoría. Aplicar confirma metadatos, página y encabezados en un solo paso de

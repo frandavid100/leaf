@@ -114,9 +114,10 @@ impl LifecycleAudit {
             context.popdown();
             schedule_thumbnail_refresh(&ui);
             if self.extra {
-                let language = show_text_language(&ui, &host.window);
-                self.dialogs.borrow_mut().push(language.window.downgrade());
-                language.window.close();
+                show_text_language(&ui, &host.window);
+                if let Some(menu) = format_button(&ui, "text-menu") {
+                    menu.popdown();
+                }
                 show_spelling(&ui, &host.window);
                 let spell = ui.spelling.borrow().as_ref().unwrap().clone();
                 assert!(spell.toggle.is_active());

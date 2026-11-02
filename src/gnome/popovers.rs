@@ -123,7 +123,19 @@ impl FormatPopoverGroup {
                         surface == p.surface()
                     );
                 }
-                if !p.is_visible() || surface == p.surface() {
+                let mut ancestor = surface.clone();
+                let mut in_popup = false;
+                while let Some(s) = ancestor {
+                    if Some(&s) == p.surface().as_ref() {
+                        in_popup = true;
+                        break;
+                    }
+                    ancestor = s
+                        .downcast::<gdk::Popup>()
+                        .ok()
+                        .and_then(|s| gdk::prelude::PopupExt::parent(&s));
+                }
+                if !p.is_visible() || in_popup {
                     continue;
                 }
                 let anchor = p

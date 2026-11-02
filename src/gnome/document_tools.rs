@@ -516,6 +516,21 @@ pub(super) fn show_document_properties(
         properties.add(&row);
         row
     });
+    let review_group = adw::PreferencesGroup::new();
+    review_group.set_title(wordcraft_gnome::t!("Language and Review"));
+    let language = adw::EntryRow::new();
+    language.set_title(wordcraft_gnome::t!("Language"));
+    language.set_widget_name("document-language");
+    let review = option_switch(&review_group, wordcraft_gnome::t!("Review"));
+    review.set_widget_name("document-review");
+    {
+        let current = ui.current.borrow();
+        let s = &current.as_ref().unwrap().session;
+        language.set_text(&wordcraft_gnome::proofing_defaults::language(s));
+        review.set_active(wordcraft_gnome::proofing_defaults::review(s));
+    }
+    review_group.add(&language);
+    information.add(&review_group);
     stack.add_titled(
         &information,
         Some("information"),
@@ -649,6 +664,10 @@ pub(super) fn show_document_properties(
         ];
         let headers = headers.clone();
         let metadata = metadata.clone();
+        let language = language.clone();
+        let review = review.clone();
+        let initial_language = language.text().to_string();
+        let initial_review = review.is_active();
         apply.connect_clicked(glib::clone!(
             #[weak]
             ui,
@@ -658,6 +677,10 @@ pub(super) fn show_document_properties(
                         "The document has changed. Close and reopen its properties."
                     ));
                     message.set_visible(true);
+                    return;
+                }
+                if wordcraft_engine::proof::lang::normalize_tag(&language.text()).is_none() {
+                    language.add_css_class("error");
                     return;
                 }
                 for n in &fields {
@@ -678,8 +701,12 @@ pub(super) fn show_document_properties(
                     let mut value = ui.current.borrow_mut();
                     let [title, subject, author, keywords, category] =
                         metadata.each_ref().map(|r| r.text().to_string());
-                    apply_properties(
-                        &mut value.as_mut().unwrap().session,
+                    let session = &mut value.as_mut().unwrap().session;
+                    let snapshot = session.edit_snapshot();
+                    let pending = session.pending.clone();
+                    let mark = session.undo_mark();
+                    let result = apply_properties(
+                        session,
                         setup,
                         scope.selected() == 0,
                         section,
@@ -692,6 +719,27 @@ pub(super) fn show_document_properties(
                             category,
                         },
                     )
+                    .and_then(|changed| {
+                        if language.text().as_str() == initial_language
+                            && review.is_active() == initial_review
+                        {
+                            Ok(changed)
+                        } else {
+                            wordcraft_gnome::proofing_defaults::apply(
+                                session,
+                                &language.text(),
+                                review.is_active(),
+                            )
+                            .map(|defaults| changed || defaults)
+                        }
+                    });
+                    if result.is_err() {
+                        session.restore(snapshot);
+                        session.pending = pending;
+                    } else {
+                        session.merge_undo_since(mark);
+                    }
+                    result
                 };
                 match result {
                     Ok(changed) => {

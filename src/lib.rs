@@ -153,9 +153,12 @@ pub mod page_options;
 pub mod pdf_export;
 pub mod pictures;
 pub mod proofing;
+pub mod proofing_defaults;
 
 pub mod accessible_text;
 pub mod annotations;
 pub mod links;
 pub mod printing;
 pub mod text_properties;
+
+pub mod selection_ink;

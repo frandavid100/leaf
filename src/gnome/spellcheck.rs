@@ -33,34 +33,8 @@ pub(super) fn refresh_all_proofing(ui: &Rc<Ui>) {
 }
 
 pub(super) fn set_live_proofing(on: bool) -> Result<(), String> {
-    wordcraft_gnome::preferences::set_check_spelling(on)?;
-    let docs = WORKSPACES.with(|hosts| {
-        hosts
-            .borrow()
-            .iter()
-            .flat_map(|h| {
-                h.docs
-                    .borrow()
-                    .iter()
-                    .map(|(_, u)| u.clone())
-                    .collect::<Vec<_>>()
-            })
-            .collect::<Vec<_>>()
-    });
-    for ui in &docs {
-        if ui.closed.get() {
-            continue;
-        }
-        if let Some(d) = ui.current.borrow_mut().as_mut() {
-            d.session
-                .run("review.proofing", &serde_json::json!({"value": on}))
-                .map_err(|e| e.to_string())?;
-        }
-    }
-    if let Some(ui) = docs.first() {
-        refresh_all_proofing(ui);
-    }
-    Ok(())
+    // Preferences initialize the next blank document; existing documents own theirs.
+    wordcraft_gnome::preferences::set_check_spelling(on)
 }
 
 pub(super) fn proof_replace(ui: &Rc<Ui>, issue: &ProofIssue, text: &str) {
@@ -383,166 +357,11 @@ pub(super) const TEXT_LANGUAGES: &[(&str, &str)] = &[
     ("eu-ES", "Euskara"),
     ("gl-ES", "Galego"),
 ];
-pub(super) struct LanguageDialog {
-    pub(super) window: adw::Window,
-    pub(super) tag: gtk::Entry,
-    pub(super) no_proof: gtk::Switch,
-    pub(super) scope: adw::ComboRow,
-    pub(super) apply: gtk::Button,
-}
-pub(super) fn show_text_language(ui: &Rc<Ui>, parent: &ApplicationWindow) -> LanguageDialog {
-    let identity = document_identity(ui);
-    let state = {
-        let mut v = ui.current.borrow_mut();
-        proofing::state(&mut v.as_mut().unwrap().session)
-    };
-    let window = adw::Window::builder()
-        .title(wordcraft_gnome::t!("Text Language"))
-        .transient_for(parent)
-        .modal(true)
-        .default_width(460)
-        .default_height(460)
-        .build();
-    let toolbar = ToolbarView::new();
-    let header = HeaderBar::new();
-    header.set_show_start_title_buttons(false);
-    header.set_show_end_title_buttons(false);
-    let cancel = gtk::Button::with_label(wordcraft_gnome::t!("Cancel"));
-    header.pack_start(&cancel);
-    let apply = gtk::Button::with_label(wordcraft_gnome::t!("Apply"));
-    apply.add_css_class("suggested-action");
-    header.pack_end(&apply);
-    toolbar.add_top_bar(&header);
-    let page = adw::PreferencesPage::new();
-    let group = adw::PreferencesGroup::new();
-    page.add(&group);
-    let lang = option_combo(
-        &group,
-        wordcraft_gnome::t!("Language"),
-        &TEXT_LANGUAGES
-            .iter()
-            .map(|(_, name)| *name)
-            .chain(std::iter::once(wordcraft_gnome::t!("Other Language")))
-            .collect::<Vec<_>>(),
-    );
-    let current = state["lang"].as_str().unwrap_or("en-US");
-    let i = TEXT_LANGUAGES
-        .iter()
-        .position(|(tag, _)| tag.eq_ignore_ascii_case(current))
-        .unwrap_or(TEXT_LANGUAGES.len());
-    lang.set_selected(i as u32);
-    let tag = gtk::Entry::new();
-    tag.set_text(current);
-    tag.set_placeholder_text(Some("es-ES"));
-    accessible_name(&tag, wordcraft_gnome::t!("Language Tag"));
-    group.add(&tag);
-    let hint = gtk::Label::new(None);
-    hint.set_wrap(true);
-    hint.set_xalign(0.0);
-    group.add(&hint);
-    let no_proof = option_switch(
-        &group,
-        wordcraft_gnome::t!("Do Not Check Spelling or Grammar"),
-    );
-    no_proof.set_active(state["noProof"].as_bool().unwrap_or(false));
-    let scope = option_combo(
-        &group,
-        wordcraft_gnome::t!("Apply To"),
-        &[
-            wordcraft_gnome::t!("Selection or Typing Position"),
-            wordcraft_gnome::t!("Whole Document"),
-        ],
-    );
-    let future = option_switch(&group, wordcraft_gnome::t!("Use for New Documents"));
-    let message = gtk::Label::new(None);
-    message.add_css_class("error");
-    message.set_wrap(true);
-    message.set_wrap_mode(gtk::pango::WrapMode::WordChar);
-    group.add(&message);
-    {
-        let tag = tag.downgrade();
-        lang.connect_selected_notify(move |r| {
-            if let (Some(tag), Some((value, _))) =
-                (tag.upgrade(), TEXT_LANGUAGES.get(r.selected() as usize))
-            {
-                tag.set_text(value);
-            }
-        });
+pub(super) fn show_text_language(ui: &Rc<Ui>, _parent: &ApplicationWindow) {
+    if let Some(menu) = format_button(ui, "text-menu") {
+        menu.popup();
     }
-    let update = move |tag: &gtk::Entry| {
-        let value = tag.text();
-        hint.set_text(if wordcraft_engine::proof::has_dictionary(Some(&value)) {
-            wordcraft_gnome::t!("Spelling tools are available for this language.")
-        } else {
-            wordcraft_gnome::t!(
-                "No dictionary is installed for this language. Its spelling cannot be checked."
-            )
-        });
-    };
-    update(&tag);
-    tag.connect_changed(update);
-    {
-        let w = window.downgrade();
-        cancel.connect_clicked(move |_| {
-            if let Some(w) = w.upgrade() {
-                w.close();
-            }
-        });
-    }
-    {
-        let weak = Rc::downgrade(ui);
-        let w = window.downgrade();
-        let tag = tag.clone();
-        let no_proof = no_proof.clone();
-        let scope = scope.clone();
-        apply.connect_clicked(move |_| {
-            let (Some(ui), Some(w)) = (weak.upgrade(), w.upgrade()) else {
-                return;
-            };
-            if ui.closed.get() || document_identity(&ui) != identity {
-                message.set_text(wordcraft_gnome::t!("Checking…"));
-                return;
-            }
-            let result = {
-                let mut v = ui.current.borrow_mut();
-                proofing::language(
-                    &mut v.as_mut().unwrap().session,
-                    &tag.text(),
-                    no_proof.is_active(),
-                    scope.selected() == 1,
-                )
-            };
-            match result {
-                Ok(changed) => {
-                    if changed {
-                        after_content_change(&ui);
-                    } else {
-                        refresh_selection(&ui);
-                    }
-                    if future.is_active() {
-                        if let Err(e) =
-                            wordcraft_gnome::preferences::set_default_language(&tag.text())
-                        {
-                            message.set_text(&e);
-                            return;
-                        }
-                    }
-                    w.close();
-                    refresh_all_proofing(&ui);
-                    ui.document_box.grab_focus();
-                }
-                Err(e) => message.set_text(&e),
-            }
-        });
-    }
-    toolbar.set_content(Some(&page));
-    window.set_content(Some(&toolbar));
-    window.present();
-    LanguageDialog {
-        window,
-        tag,
-        no_proof,
-        scope,
-        apply,
+    if let Some(tools) = ui.text_tools.borrow().as_ref() {
+        tools.page("language");
     }
 }

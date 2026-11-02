@@ -236,7 +236,7 @@ pub(super) fn build_tab(
         &format_group,
     );
     text_options.append(&inline_buttons);
-    let selectors = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    let selectors = gtk::Box::new(gtk::Orientation::Vertical, 6);
     let font_input = gtk::Entry::new();
     font_input.set_widget_name("text-font");
     font_input.set_placeholder_text(Some(wordcraft_gnome::t!("Font")));
@@ -259,7 +259,8 @@ pub(super) fn build_tab(
     selectors.append(&size_selector);
     text_options.append(&selectors);
     let more_text = gtk::Button::with_label(wordcraft_gnome::t!("More Text Options…"));
-    let language_button = gtk::Button::with_label(wordcraft_gnome::t!("Text Language…"));
+    let language_button = gtk::Button::with_label(wordcraft_gnome::t!("Language"));
+    language_button.set_widget_name("text-language");
     text_options.append(&language_button);
     text_options.append(&more_text);
     text_popover.set_child(Some(&text_options));
@@ -326,8 +327,10 @@ pub(super) fn build_tab(
     window.set_size_request(360, 420);
 
     let ui = Rc::new(Ui {
+        table_pointer: RefCell::new(TablePointer::default()),
         current: RefCell::new(None),
         input_context: gtk::IMMulticontext::new(),
+        selection_rasters: RefCell::new(Vec::new()),
         printing: PrintState::default(),
         selection_data: Rc::new(RefCell::new(SelectionGeometry::default())),
         selection_zoom: Rc::new(Cell::new(1.0)),
@@ -437,15 +440,6 @@ pub(super) fn build_tab(
         {
             pop.add_child(&row, "zoom-controls");
         }
-    }
-    {
-        let weak = Rc::downgrade(&ui);
-        let parent = window.downgrade();
-        language_button.connect_clicked(move |_| {
-            if let (Some(ui), Some(parent)) = (weak.upgrade(), parent.upgrade()) {
-                show_text_language(&ui, &parent);
-            }
-        });
     }
     install_accessibility(&ui, &app_menu, &compact_app_menu);
     let text_tools = install_text_pages(
@@ -719,7 +713,7 @@ pub(super) fn build_tab(
     } else {
         opened(
             &ui,
-            Session::new(wordcraft_doc::Document::new()),
+            wordcraft_gnome::proofing_defaults::new_document(),
             wordcraft_gnome::t!("New Document"),
         );
     }

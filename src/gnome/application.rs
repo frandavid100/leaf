@@ -44,6 +44,15 @@ pub(super) fn run() {
         .flags(gio::ApplicationFlags::NON_UNIQUE)
         .build();
     app.connect_startup(|_| {
+        if let Some(display) = gdk::Display::default() {
+            let icons = gtk::IconTheme::for_display(&display);
+            if let Ok(exe) = std::env::current_exe() {
+                if let Some(root) = exe.parent().and_then(Path::parent) {
+                    icons.add_search_path(root.join("share/icons"));
+                }
+            }
+            icons.add_search_path(Path::new(env!("CARGO_MANIFEST_DIR")).join("data/icons"));
+        }
         gtk::Window::set_default_icon_name(APP_ID);
         apply_theme(wordcraft_gnome::preferences::theme());
     });

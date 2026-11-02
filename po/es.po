@@ -1984,3 +1984,33 @@ msgstr "Ctrl+clic para abrir un vínculo"
 
 msgid "Author Name"
 msgstr "Nombre del autor"
+
+msgid "Default"
+msgstr "Predeterminado"
+
+msgid "Do Not Check"
+msgstr "No revisar"
+
+msgid "Languages without an installed dictionary cannot be spell-checked."
+msgstr "Los idiomas sin un diccionario instalado no se pueden revisar."
+
+msgid "Language and Review"
+msgstr "Idioma y revisión"
+
+msgid "Review"
+msgstr "Revisar"
+
+msgid "Underline Color…"
+msgstr "Color del subrayado…"
+
+msgid "White"
+msgstr "Blanco"
+
+msgid "Default Language for New Documents"
+msgstr "Idioma predeterminado de los documentos nuevos"
+
+msgid "Review New Documents"
+msgstr "Revisar documentos nuevos"
+
+msgid "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
+msgstr "Guarda como DOCX para conservar la herencia de idioma y revisión. El exportador ODT actual pierde esa herencia."

@@ -16,6 +16,7 @@ pub(super) fn install_pointer_and_view_input(
     compact_app_menu: &gtk::MenuButton,
     compact_search: &gtk::Button,
 ) {
+    install_table_hover(ui);
     // The centered page stack can be narrower than its viewport. Its surrounding
     // background belongs to the scroller, so page-stack gestures never see it.
     let outside = gtk::GestureClick::new();
@@ -75,6 +76,9 @@ pub(super) fn install_pointer_and_view_input(
             move |gesture, count, x, y| {
                 if !document_pointer_surface(&ui, gesture) {
                     gesture.set_state(gtk::EventSequenceState::Denied);
+                    return;
+                }
+                if table_pointer_press(&ui, count, x, y, gesture.current_event_state()) {
                     return;
                 }
                 ui.pointer_moved.set(false);
@@ -155,6 +159,9 @@ pub(super) fn install_pointer_and_view_input(
             if !document_pointer_surface(&ui, gesture) {
                 return;
             }
+            if table_pointer_active(&ui) {
+                return;
+            }
             if count != 1
                 || ui.pointer_moved.get()
                 || gesture
@@ -194,6 +201,9 @@ pub(super) fn install_pointer_and_view_input(
                         gesture.set_state(gtk::EventSequenceState::Denied);
                         return;
                     }
+                    if table_pointer_active(&ui) {
+                        return;
+                    }
                     *ui.drag_anchor.borrow_mut() = if gesture
                         .current_event_state()
                         .contains(gdk::ModifierType::SHIFT_MASK)
@@ -215,6 +225,16 @@ pub(super) fn install_pointer_and_view_input(
                 #[weak]
                 ui,
                 move |gesture, dx, dy| {
+                    if let Some((sx, sy)) = gesture.start_point() {
+                        if table_pointer_update(
+                            &ui,
+                            sx + dx,
+                            sy + dy,
+                            gesture.current_event_state(),
+                        ) {
+                            return;
+                        }
+                    }
                     if !document_pointer_surface(&ui, gesture) || ui.drag_anchor.borrow().is_none()
                     {
                         return;
@@ -241,6 +261,9 @@ pub(super) fn install_pointer_and_view_input(
                 #[weak]
                 ui,
                 move |gesture, _, _| {
+                    if table_pointer_finish(&ui) {
+                        return;
+                    }
                     let document_drag =
                         document_pointer_surface(&ui, gesture) && ui.drag_anchor.borrow().is_some();
                     stop_document_drag(&ui);
@@ -253,6 +276,7 @@ pub(super) fn install_pointer_and_view_input(
         let weak = Rc::downgrade(&ui);
         drag.connect_cancel(move |_, _| {
             if let Some(ui) = weak.upgrade() {
+                table_pointer_cancel(&ui);
                 stop_document_drag(&ui);
             }
         });
@@ -394,6 +418,26 @@ pub(super) fn install_keyboard_input(
         // the key controller instead of being converted into characters.
         // The tab owns the context even while it is detached from the controller.
         // Weak focus callbacks must not be its only owner between focus changes.
+        let weak = Rc::downgrade(&ui);
+        ui.document_box.connect_has_focus_notify(move |_| {
+            if let Some(ui) = weak.upgrade() {
+                if let Some(d) = ui.current.borrow().as_ref() {
+                    for area in &d.selection_areas {
+                        area.queue_draw();
+                    }
+                }
+            }
+        });
+        let weak = Rc::downgrade(&ui);
+        window.connect_is_active_notify(move |_| {
+            if let Some(ui) = weak.upgrade() {
+                if let Some(d) = ui.current.borrow().as_ref() {
+                    for area in &d.selection_areas {
+                        area.queue_draw();
+                    }
+                }
+            }
+        });
         let input = ui.input_context.clone();
         input.set_client_widget(Some(&ui.document_box));
         // Attach the canvas IM only while the canvas owns keyboard focus.
@@ -448,6 +492,9 @@ pub(super) fn install_keyboard_input(
             move |_, key, _, modifiers| {
                 let shift = modifiers.contains(gdk::ModifierType::SHIFT_MASK);
                 let control = modifiers.contains(gdk::ModifierType::CONTROL_MASK);
+                if key == gdk::Key::Escape && table_pointer_cancel(&ui) {
+                    return glib::Propagation::Stop;
+                }
                 if ui.document_box.has_focus() {
                     if control && shift && key == gdk::Key::F5 {
                         show_annotation_dialog(&ui, AnnotationEdit::Bookmark);

@@ -27,11 +27,13 @@ pub(super) struct Current {
 /// and back references to Workspace stay weak. release_document tears down
 /// timers, controllers, popovers and workers before the tab owner is removed.
 pub(super) struct Ui {
+    pub(super) table_pointer: RefCell<TablePointer>,
     pub(super) current: RefCell<Option<Current>>,
     pub(super) printing: PrintState,
     pub(super) spelling: RefCell<Option<Rc<SpellReview>>>,
     pub(super) document_box: DocumentCanvas,
     pub(super) input_context: gtk::IMMulticontext,
+    pub(super) selection_rasters: RefCell<Vec<(String, gtk::cairo::ImageSurface)>>,
     pub(super) thumbnails_box: gtk::Box,
     pub(super) scroll: gtk::ScrolledWindow,
     pub(super) thumbnails_scroll: gtk::ScrolledWindow,

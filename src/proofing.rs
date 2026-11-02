@@ -185,17 +185,8 @@ pub fn configure(s: &mut Session) {
     if std::fs::create_dir_all(&dir).is_ok() {
         s.user_dict_path = Some(dir.join("custom-dictionary.txt"));
     }
-    let language = crate::preferences::default_language().unwrap_or_else(|| {
-        let locale = std::env::var("LANGUAGE")
-            .or_else(|_| std::env::var("LANG"))
-            .unwrap_or_default();
-        if locale.starts_with("es") {
-            "es-ES".into()
-        } else {
-            "en-US".into()
-        }
-    });
-    s.set_editing_language(Some(&language));
-    s.view.proofing = crate::preferences::check_spelling();
-    s.prefs.check_spelling = s.view.proofing;
+    crate::proofing_defaults::register(s);
+    s.prefs.default_language = Some(crate::proofing_defaults::language(s));
+    s.view.proofing = true;
+    s.prefs.check_spelling = true;
 }

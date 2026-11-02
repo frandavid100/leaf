@@ -378,6 +378,8 @@ pub(super) fn clear_canvas(canvas: &impl IsA<gtk::Fixed>) {
 
 pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
     let _perf = perf_scope("leaf.opened");
+    *ui.table_pointer.borrow_mut() = TablePointer::default();
+    ui.selection_rasters.borrow_mut().clear();
     wordcraft_gnome::proofing::configure(&mut session);
     if ui.closed.get() {
         return;
@@ -456,7 +458,7 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
             let motion = ui.caret_motion.clone();
             let search = ui.search_highlights.clone();
             let weak = Rc::downgrade(ui);
-            area.set_draw_func(move |_, cr, _, _| {
+            area.set_draw_func(move |widget, cr, _, _| {
                 let selection = data.borrow();
                 let z = f64::from(scale.get());
                 if let Some(ui) = weak.upgrade() {
@@ -487,10 +489,9 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
                     cr.rectangle(r.x * z, r.y * z, r.width * z, r.height * z);
                     let _ = cr.fill();
                 }
-                for r in selection.highlights.iter().filter(|r| r.page == i) {
-                    cr.set_source_rgba(0.20, 0.44, 0.88, 0.30);
-                    cr.rectangle(r.x * z, r.y * z, r.width * z, r.height * z);
-                    let _ = cr.fill();
+                if let Some(ui) = weak.upgrade() {
+                    paint_selection(&ui, widget, cr, i, z, &selection.highlights);
+                    paint_table_pointer(&ui, widget, cr, i, z);
                 }
                 if let Some(r) = motion.borrow().position().filter(|r| r.page == i) {
                     if adw::StyleManager::default().is_dark() {
