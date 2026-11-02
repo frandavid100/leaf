@@ -119,4 +119,8 @@ flatpak run --command=sh "$app_id" -c '
 echo FLATPAK_INSTALLED_LAUNCHER_OK
 echo FLATPAK_PORTAL_FILE_OPEN_OK
 echo FLATPAK_REINSTALL_DATA_OK
+# Explicitly compare actual GNOME high-contrast and keyboard/hover/selected states.
+# Libadwaita's own debug setting changes appearance without changing host settings.
+bash packaging/appearance-smoke.sh flatpak 1
+xvfb-run -a -s '-screen 0 2560x1800x24' bash packaging/appearance-smoke.sh flatpak 2
 echo FLATPAK_SMOKE_OK
