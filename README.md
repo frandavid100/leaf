@@ -2,9 +2,11 @@
 
 <img src="https://raw.githubusercontent.com/frandavid100/leaf/wordcraft-saving/data/icons/hicolor/scalable/apps/leaf.svg" width="96" height="96" alt="Leaf icon">
 
-**Create and edit documents on GNOME.**
+**Powerful word processing, designed for GNOME.**
 
-Leaf is a document editor for Linux with a native GTK4/libadwaita interface. Write and format documents, work with tables and images, and navigate longer files with page thumbnails and headings. Leaf uses the [WordCraft](https://github.com/storytold/wordcraft) engine for document editing, layout and rendering.
+Leaf is a document editor for Linux, designed for GNOME. Its goal is to make advanced word processing accessible through a simple, intuitive interface: powerful tools when you need them, with an uncluttered workspace that helps you concentrate on your document.
+
+Following GNOME's design approach, Leaf aims to keep everyday actions easy to reach and reveal more detailed controls when they are relevant. It combines a native GTK4/libadwaita interface with the [WordCraft](https://github.com/storytold/wordcraft) engine for document editing, layout and rendering.
 
 **[Download the Flatpak alpha](https://github.com/frandavid100/leaf/releases)** · [Installation](https://github.com/frandavid100/leaf/blob/wordcraft-saving/docs/INSTALLING.md) · [Report a problem](https://github.com/frandavid100/leaf/issues/new/choose)
 
