@@ -62,6 +62,8 @@ mod paintable;
 use paintable::*;
 mod workspace;
 use workspace::*;
+mod history;
+use history::*;
 mod menus;
 use menus::*;
 mod navigation;

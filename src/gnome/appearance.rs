@@ -8,14 +8,13 @@ pub(super) fn apply_theme(mode: u32) {
         _ => adw::ColorScheme::Default,
     });
 }
+// GNOME Text Editor's grouped-checkbutton theme selector; see data/THEME_SELECTOR_SOURCES.md.
 pub(super) fn theme_selector() -> gtk::Box {
     let row = gtk::Box::new(gtk::Orientation::Horizontal, 12);
     row.set_widget_name("theme-selector");
-    row.set_halign(gtk::Align::Fill);
+    row.add_css_class("leaf-theme-selector");
     row.set_hexpand(true);
-    row.set_margin_top(6);
-    row.set_margin_bottom(6);
-    let mut buttons: Vec<gtk::ToggleButton> = Vec::new();
+    let mut buttons: Vec<gtk::CheckButton> = Vec::new();
     for (mode, label) in [
         wordcraft_gnome::t!("Follow System"),
         wordcraft_gnome::t!("Light"),
@@ -24,74 +23,20 @@ pub(super) fn theme_selector() -> gtk::Box {
     .into_iter()
     .enumerate()
     {
-        let button = gtk::ToggleButton::new();
+        let button = gtk::CheckButton::new();
         button.set_widget_name(&format!("theme-{mode}"));
+        button.add_css_class("theme-selector");
+        button.add_css_class(["follow", "light", "dark"][mode]);
         button.set_hexpand(true);
-        button.add_css_class("circular");
-        button.add_css_class("flat");
+        button.set_halign(gtk::Align::Center);
+        button.set_focus_on_click(false);
         accessible_name(&button, label);
         button.set_tooltip_text(Some(label));
         if let Some(first) = buttons.first() {
             button.set_group(Some(first));
         }
-        let circle = gtk::DrawingArea::new();
-        circle.set_content_width(64);
-        circle.set_content_height(64);
-        let weak = button.downgrade();
-        circle.set_draw_func(move |w, cr, width, height| {
-            cr.translate((width as f64 - 64.0) / 2.0, (height as f64 - 64.0) / 2.0);
-            cr.scale(2.0, 2.0);
-            cr.arc(16.0, 16.0, 11.0, 0.0, std::f64::consts::TAU);
-            cr.set_source_rgb(
-                if mode == 2 { 0.2 } else { 0.95 },
-                if mode == 2 { 0.2 } else { 0.95 },
-                if mode == 2 { 0.2 } else { 0.95 },
-            );
-            let _ = cr.fill_preserve();
-            cr.set_source_rgb(0.5, 0.5, 0.5);
-            cr.set_line_width(1.0);
-            let _ = cr.stroke();
-            if mode == 0 {
-                cr.arc(
-                    16.0,
-                    16.0,
-                    10.0,
-                    -std::f64::consts::FRAC_PI_2,
-                    std::f64::consts::FRAC_PI_2,
-                );
-                cr.close_path();
-                cr.set_source_rgb(0.2, 0.2, 0.2);
-                let _ = cr.fill();
-            }
-            if weak.upgrade().is_some_and(|b| b.is_active()) {
-                let accent = w.style_context().lookup_color("accent_bg_color");
-                if let Some(c) = accent {
-                    cr.set_source_rgba(
-                        c.red() as f64,
-                        c.green() as f64,
-                        c.blue() as f64,
-                        c.alpha() as f64,
-                    );
-                } else {
-                    cr.set_source_rgb(0.2, 0.5, 0.9);
-                }
-                cr.arc(25.0, 25.0, 4.5, 0.0, std::f64::consts::TAU);
-                let _ = cr.fill();
-                cr.set_source_rgb(1.0, 1.0, 1.0);
-                cr.set_line_width(2.0);
-                cr.move_to(21.0, 25.0);
-                cr.line_to(24.0, 28.0);
-                cr.line_to(29.0, 22.0);
-                let _ = cr.stroke();
-            }
-        });
-        button.set_child(Some(&circle));
         button.set_active(wordcraft_gnome::preferences::theme() == mode as u32);
-        let weak = circle.downgrade();
         button.connect_toggled(move |b| {
-            if let Some(c) = weak.upgrade() {
-                c.queue_draw();
-            }
             if b.is_active() && wordcraft_gnome::preferences::theme() != mode as u32 {
                 if wordcraft_gnome::preferences::set_theme(mode as u32).is_ok() {
                     apply_theme(mode as u32);
@@ -101,14 +46,21 @@ pub(super) fn theme_selector() -> gtk::Box {
         row.append(&button);
         buttons.push(button);
     }
-    row.connect_map(move |row| {
+    let sync = |row: &gtk::Box| {
         if let Some(button) = find_widget(
             row,
             &format!("theme-{}", wordcraft_gnome::preferences::theme()),
         )
-        .and_then(|w| w.downcast::<gtk::ToggleButton>().ok())
+        .and_then(|w| w.downcast::<gtk::CheckButton>().ok())
         {
             button.set_active(true);
+        }
+    };
+    row.connect_map(sync);
+    let weak = row.downgrade();
+    adw::StyleManager::default().connect_color_scheme_notify(move |_| {
+        if let Some(row) = weak.upgrade() {
+            sync(&row);
         }
     });
     row
@@ -117,6 +69,8 @@ pub(super) fn install_css() {
     if CSS_INSTALLED.with(|s| s.replace(true)) {
         return;
     }
+    let theme_provider = gtk::CssProvider::new();
+    theme_provider.load_from_data(include_str!("../../data/theme-selector.css"));
     let provider = gtk::CssProvider::new();
     // Adwaita suministra color, espaciados y estados; CSS mínimo para papel.
     provider.load_from_data("
@@ -140,6 +94,11 @@ pub(super) fn install_css() {
       .page-indicator, .zoom-value { font-feature-settings: 'tnum'; }
     ");
     if let Some(display) = gdk::Display::default() {
+        gtk::style_context_add_provider_for_display(
+            &display,
+            &theme_provider,
+            gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+        );
         gtk::style_context_add_provider_for_display(
             &display,
             &provider,

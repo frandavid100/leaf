@@ -73,6 +73,15 @@ pub fn tr(id: &'static str) -> &'static str {
     catalog().get(id).map(String::as_str).unwrap_or(id)
 }
 /// Native gettext evaluates each language's Plural-Forms expression.
+/// Translate an engine-provided description without borrowing its temporary label.
+pub fn translate(id: &str) -> String {
+    catalog()
+        .get(id)
+        .map(String::as_str)
+        .unwrap_or(id)
+        .to_owned()
+}
+
 pub fn plural(one: &str, many: &str, n: u64) -> String {
     init();
     let one = CString::new(one).unwrap();

@@ -68,7 +68,6 @@ pub(super) fn build_tab(
     menu_button.set_icon_name("view-more-symbolic");
     menu_button.set_tooltip_text(Some(wordcraft_gnome::t!("Document Options")));
     accessible_name(&menu_button, wordcraft_gnome::t!("Document Options"));
-    install_document_menu(&menu_button);
     header.pack_end(&menu_button);
     let top_history = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     header.pack_start(&top_history);
@@ -134,7 +133,7 @@ pub(super) fn build_tab(
     pages_toggle.set_widget_name("sidebar-pages");
     let titles_toggle = gtk::ToggleButton::new();
     accessible_name(&titles_toggle, wordcraft_gnome::t!("Navigation"));
-    titles_toggle.set_child(Some(&sidebar_icon("outline")));
+    titles_toggle.set_icon_name("compass-symbolic");
     titles_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Navigation")));
     titles_toggle.set_hexpand(true);
     titles_toggle.add_css_class("flat");
@@ -142,7 +141,7 @@ pub(super) fn build_tab(
     titles_toggle.set_group(Some(&pages_toggle));
     let annotations_toggle = gtk::ToggleButton::new();
     accessible_name(&annotations_toggle, wordcraft_gnome::t!("Comments"));
-    annotations_toggle.set_icon_name("chat-message-new-symbolic");
+    annotations_toggle.set_icon_name("comment-symbolic");
     annotations_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Comments")));
     annotations_toggle.set_hexpand(true);
     annotations_toggle.add_css_class("flat");
@@ -362,12 +361,17 @@ pub(super) fn build_tab(
         style: RefCell::new(None),
         text_tools: RefCell::new(None),
         format_reflowing: Cell::new(false),
+        pages_button: pages_toggle.clone(),
         sidebar_selector: selector_bar.clone(),
         _bottom_heights: bottom_heights,
         format_bold: bold_button.clone(),
         format_italic: italic_button.clone(),
         format_underline: underline_button.clone(),
         format_syncing: Cell::new(false),
+        history_controls: RefCell::new(None),
+        repeat_action: RefCell::new(None),
+        document_menu_open: Cell::new(false),
+        document_menu: RefCell::new(None),
         undo_button: undo_button.clone(),
         redo_button: redo_button.clone(),
         font_input: font_input.clone(),
@@ -407,6 +411,9 @@ pub(super) fn build_tab(
         title,
         toasts,
     });
+    ui.history_controls
+        .replace(Some(install_history_controls(&ui, &history_tools)));
+    install_document_menu(&menu_button, &ui);
 
     {
         let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
@@ -547,7 +554,11 @@ pub(super) fn build_tab(
             #[weak]
             ui,
             move |_| {
-                apply_user_edit(&ui, edit.clone());
+                if edit == Edit::Redo {
+                    redo_or_repeat(&ui);
+                } else {
+                    apply_user_edit(&ui, edit.clone());
+                }
                 ui.document_box.grab_focus();
             }
         ));

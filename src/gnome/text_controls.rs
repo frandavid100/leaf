@@ -101,6 +101,7 @@ pub(super) fn immediate_format(
     if changed {
         after_content_change(ui);
     } else {
+        remember_repeat(ui);
         refresh_selection(ui);
     }
     let weak = Rc::downgrade(ui);

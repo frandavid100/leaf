@@ -29,6 +29,22 @@ pub(super) fn update_status(ui: &Rc<Ui>) {
     let Ok(mut current) = ui.current.try_borrow_mut() else {
         return;
     };
+    let pages_tip = current
+        .as_ref()
+        .filter(|d| !d.sizes.is_empty())
+        .map(|d| {
+            wordcraft_gnome::i18n::interpolate(
+                wordcraft_gnome::t!("Pages: {current} of {total}"),
+                &[
+                    ("current", (d.active.min(d.sizes.len() - 1) + 1).to_string()),
+                    ("total", d.sizes.len().to_string()),
+                ],
+            )
+        })
+        .unwrap_or_else(|| wordcraft_gnome::t!("Pages").into());
+    if ui.pages_button.tooltip_text().as_deref() != Some(pages_tip.as_str()) {
+        ui.pages_button.set_tooltip_text(Some(&pages_tip));
+    }
     if let Some(doc) = current.as_mut() {
         ui.zoom_label
             .set_text(&format!("{:.0} %", doc.zoom * 100.0));
@@ -493,19 +509,25 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
                     paint_selection(&ui, widget, cr, i, z, &selection.highlights);
                     paint_table_pointer(&ui, widget, cr, i, z);
                 }
-                if let Some(r) = motion.borrow().position().filter(|r| r.page == i) {
-                    if adw::StyleManager::default().is_dark() {
-                        cr.set_source_rgba(0.55, 0.75, 1.0, 1.0);
-                    } else {
-                        cr.set_source_rgba(0.08, 0.30, 0.74, 1.0);
+                if let Some(ui) = weak.upgrade().filter(caret_is_shown) {
+                    let now = widget.frame_clock().map(|c| c.frame_time()).unwrap_or(0);
+                    let alpha = caret_opacity(&ui, now);
+                    if let Some(r) = motion.borrow().position().filter(|r| r.page == i) {
+                        let color = if adw::StyleManager::default().is_dark() {
+                            1.0
+                        } else {
+                            0.0
+                        };
+                        cr.set_source_rgba(color, color, color, alpha);
+                        let density = f64::from(widget.scale_factor().max(1));
+                        cr.rectangle(
+                            (r.x * z * density).round() / density,
+                            (r.y * z * density).round() / density,
+                            (r.width * z * density).round().max(1.0) / density,
+                            (r.height * z * density).round().max(2.0) / density,
+                        );
+                        let _ = cr.fill();
                     }
-                    cr.rectangle(
-                        r.x * z,
-                        r.y * z,
-                        (r.width * z).max(1.5),
-                        (r.height * z).max(2.0),
-                    );
-                    let _ = cr.fill();
                 }
             });
         }

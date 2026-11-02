@@ -202,7 +202,7 @@ pub(super) fn issue_sweep_ui_test(
     ] {
         find_widget(&theme, &format!("theme-{mode}"))
             .unwrap()
-            .downcast::<gtk::ToggleButton>()
+            .downcast::<gtk::CheckButton>()
             .unwrap()
             .set_active(true);
         assert_eq!(wordcraft_gnome::preferences::theme(), mode);

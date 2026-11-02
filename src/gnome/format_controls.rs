@@ -18,11 +18,14 @@ pub(super) fn format_execute(
     } else if command == "view.marks" {
         let dirty = ui.dirty.get();
         let subtitle = ui.title.subtitle().to_string();
-        after_content_change(ui);
+        after_history_change(ui);
         ui.dirty.set(dirty);
         ui.title.set_subtitle(&subtitle);
         sync_tab(ui);
     } else {
+        if command.starts_with("format.") || command.starts_with("para.") {
+            remember_repeat(ui);
+        }
         refresh_selection(ui);
     }
     Ok(())

@@ -1,6 +1,13 @@
 use super::*;
 
 pub(super) fn after_content_change(ui: &Rc<Ui>) {
+    remember_repeat(ui);
+    refresh_after_content_change(ui);
+}
+pub(super) fn after_history_change(ui: &Rc<Ui>) {
+    refresh_after_content_change(ui);
+}
+fn refresh_after_content_change(ui: &Rc<Ui>) {
     let _perf = perf_scope("leaf.after_content_change");
     // A formatting entry owns its edit even when pagination rebuilds the canvas.
     let was_canvas_focused = ui.document_box.has_focus();
@@ -90,6 +97,7 @@ pub(super) fn after_content_change(ui: &Rc<Ui>) {
 }
 
 pub(super) fn apply_user_edit(ui: &Rc<Ui>, edit: Edit) {
+    let is_history = matches!(edit, Edit::Undo | Edit::Redo);
     let changed = {
         let mut value = ui.current.borrow_mut();
         value.as_mut().map(|doc| {
@@ -99,7 +107,11 @@ pub(super) fn apply_user_edit(ui: &Rc<Ui>, edit: Edit) {
     };
     match changed {
         Some(Ok(true)) => {
-            after_content_change(ui);
+            if is_history {
+                after_history_change(ui);
+            } else {
+                after_content_change(ui);
+            }
         }
         Some(Ok(false)) | None => {}
         Some(Err(err)) => ui.toasts.add_toast(Toast::new(&err)),
@@ -131,7 +143,10 @@ pub(super) fn apply_format_operation(
                 )));
             }
         }
-        Some(Ok(false)) => refresh_selection(ui),
+        Some(Ok(false)) => {
+            remember_repeat(ui);
+            refresh_selection(ui);
+        }
         Some(Err(err)) => ui.toasts.add_toast(Toast::new(&err)),
         None => {}
     }

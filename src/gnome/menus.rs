@@ -24,6 +24,7 @@ pub(super) fn refresh_main_actions(host: &Workspace) {
     for (name, on) in [
         ("undo", undo),
         ("redo", redo),
+        ("repeat", ui.as_ref().is_some_and(|u| repeat_available(u))),
         ("tab-overview", host.tabs.n_pages() > 0),
         (
             "print",
@@ -156,6 +157,11 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
         if let Some(ui) = selected_ui(h) {
             apply_user_edit(&ui, Edit::Redo);
             ui.document_box.grab_focus();
+        }
+    });
+    window_action(host, "repeat", |h| {
+        if let Some(ui) = selected_ui(h) {
+            repeat_last(&ui);
         }
     });
     window_action(host, "save", |h| {
@@ -346,22 +352,10 @@ pub(super) fn install_main_menu(button: &gtk::MenuButton) {
         pop.add_child(&theme_selector(), "theme-selector");
     }
 }
-pub(super) fn install_document_menu(button: &gtk::MenuButton) {
+pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
     let root = gio::Menu::new();
-    let history = gio::Menu::new();
-    menu_item(
-        &history,
-        wordcraft_gnome::t!("Undo"),
-        "undo",
-        Some("<Control>z"),
-    );
-    menu_item(
-        &history,
-        wordcraft_gnome::t!("Redo"),
-        "redo",
-        Some("<Control><Shift>z"),
-    );
-    root.append_section(None, &history);
+    let controls = ui.history_controls.borrow().as_ref().unwrap().clone();
+    root.append_section(None, &controls.document_model);
     let save = gio::Menu::new();
     menu_item(
         &save,
@@ -436,6 +430,27 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton) {
     }
     root.append_section(None, &modes);
     button.set_menu_model(Some(&root));
+    if let Some(pop) = button
+        .popover()
+        .and_then(|p| p.downcast::<gtk::PopoverMenu>().ok())
+    {
+        pop.insert_action_group("history", Some(&controls.actions));
+        ui.document_menu
+            .replace(Some(pop.clone().upcast::<gtk::Popover>().downgrade()));
+        let weak = Rc::downgrade(ui);
+        pop.connect_show(move |_| {
+            if let Some(ui) = weak.upgrade() {
+                ui.document_menu_open.set(true);
+                refresh_history_controls(&ui);
+            }
+        });
+        let weak = Rc::downgrade(ui);
+        pop.connect_closed(move |_| {
+            if let Some(ui) = weak.upgrade() {
+                ui.document_menu_open.set(false);
+            }
+        });
+    }
 }
 pub(super) fn show_editor_help(parent: &ApplicationWindow) {
     let w = adw::Window::builder()

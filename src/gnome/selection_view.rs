@@ -28,40 +28,7 @@ pub(super) fn refresh_selection(ui: &Rc<Ui>) {
         .borrow_mut()
         .retarget(snapshot.caret.clone(), now, animate);
     *ui.selection_data.borrow_mut() = snapshot;
-    if ui.caret_motion.borrow().is_moving() && !ui.caret_tick_active.replace(true) {
-        let weak = Rc::downgrade(ui);
-        ui.document_box.add_tick_callback(move |widget, clock| {
-            let Some(ui) = weak.upgrade() else {
-                return glib::ControlFlow::Break;
-            };
-            let enabled = widget.settings().property::<bool>("gtk-enable-animations");
-            let moving = {
-                let mut motion = ui.caret_motion.borrow_mut();
-                if !enabled || ui.closed.get() {
-                    motion.finish();
-                }
-                motion.advance(clock.frame_time());
-                motion.is_moving()
-            };
-            if let Some(page) = ui.caret_motion.borrow().position().map(|r| r.page) {
-                if let Some(area) = ui
-                    .current
-                    .borrow()
-                    .as_ref()
-                    .and_then(|d| d.selection_areas.get(page))
-                {
-                    perf_count("overlay_queue", 1);
-                    area.queue_draw();
-                }
-            }
-            if moving {
-                glib::ControlFlow::Continue
-            } else {
-                ui.caret_tick_active.set(false);
-                glib::ControlFlow::Break
-            }
-        });
-    }
+    start_caret_animation(ui);
     if let Some(outline) = ui.outline.borrow().as_ref() {
         outline.sync_caret();
     }
@@ -120,11 +87,13 @@ pub(super) fn refresh_format_controls(ui: &Rc<Ui>) {
     let state = selection_character(ui);
     if let Some(doc) = ui.current.borrow().as_ref() {
         ui.undo_button.set_sensitive(doc.session.can_undo());
-        ui.redo_button.set_sensitive(doc.session.can_redo());
+        ui.redo_button
+            .set_sensitive(doc.session.can_redo() || repeat_available(ui));
     }
     if let Some(host) = ui.host.upgrade() {
         refresh_main_actions(&host);
     }
+    refresh_history_controls(ui);
     let effective = &state;
     ui.format_syncing.set(true);
     for (button, property) in [
@@ -283,4 +252,92 @@ pub(super) fn selected_command(ui: &Rc<Ui>, action: &str, extend: bool) {
 
 pub(super) fn copy_selection(ui: &Rc<Ui>) {
     context_copy(ui);
+}
+
+pub(super) fn caret_is_shown(ui: &Rc<Ui>) -> bool {
+    !ui.closed.get()
+        && ui.document_box.has_focus()
+        && ui.host.upgrade().is_some_and(|h| {
+            h.window.is_active() && selected_ui(&h).is_some_and(|u| Rc::ptr_eq(&u, ui))
+        })
+        && ui.selection_data.borrow().caret.is_some()
+}
+fn caret_blink_settings(ui: &Ui) -> (bool, i64, i64) {
+    let settings = ui.document_box.settings();
+    let enabled = settings.property::<bool>("gtk-enable-animations")
+        && settings.property::<bool>("gtk-cursor-blink");
+    let period = i64::from(settings.property::<i32>("gtk-cursor-blink-time").max(200)) * 1000;
+    let timeout =
+        i64::from(settings.property::<i32>("gtk-cursor-blink-timeout").max(0)) * 1_000_000;
+    (enabled, period, timeout)
+}
+pub(super) fn caret_opacity(ui: &Ui, now: i64) -> f64 {
+    let (enabled, period, timeout) = caret_blink_settings(ui);
+    ui.caret_motion
+        .borrow()
+        .opacity(now, enabled, period, timeout)
+}
+pub(super) fn restart_caret(ui: &Rc<Ui>) {
+    let now = ui
+        .document_box
+        .frame_clock()
+        .map(|c| c.frame_time())
+        .unwrap_or(0);
+    ui.caret_motion.borrow_mut().restart_blink(now);
+    start_caret_animation(ui);
+}
+fn start_caret_animation(ui: &Rc<Ui>) {
+    let now = ui
+        .document_box
+        .frame_clock()
+        .map(|c| c.frame_time())
+        .unwrap_or(0);
+    ui.caret_motion
+        .borrow_mut()
+        .set_visible(caret_is_shown(ui), now);
+    let (enabled, _, timeout) = caret_blink_settings(ui);
+    if !(ui.caret_motion.borrow().is_moving()
+        || ui.caret_motion.borrow().blinking(now, enabled, timeout))
+        || ui.caret_tick_active.replace(true)
+    {
+        return;
+    }
+    let weak = Rc::downgrade(ui);
+    let last_alpha = Cell::new(-1.0_f64);
+    ui.document_box.add_tick_callback(move |_, clock| {
+        let Some(ui) = weak.upgrade() else {
+            return glib::ControlFlow::Break;
+        };
+        let now = clock.frame_time();
+        let visible = caret_is_shown(&ui);
+        let (enabled, _, timeout) = caret_blink_settings(&ui);
+        let moving = {
+            let mut motion = ui.caret_motion.borrow_mut();
+            motion.set_visible(visible, now);
+            if !enabled || !visible {
+                motion.finish();
+            }
+            motion.advance(now);
+            motion.is_moving()
+        };
+        let alpha = caret_opacity(&ui, now);
+        if moving || (last_alpha.replace(alpha) - alpha).abs() > 0.001 {
+            if let Some(page) = ui.caret_motion.borrow().position().map(|r| r.page) {
+                if let Some(area) = ui
+                    .current
+                    .borrow()
+                    .as_ref()
+                    .and_then(|d| d.selection_areas.get(page))
+                {
+                    area.queue_draw();
+                }
+            }
+        }
+        if moving || ui.caret_motion.borrow().blinking(now, enabled, timeout) {
+            glib::ControlFlow::Continue
+        } else {
+            ui.caret_tick_active.set(false);
+            glib::ControlFlow::Break
+        }
+    });
 }

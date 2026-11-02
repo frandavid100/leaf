@@ -82,6 +82,7 @@ pub(super) fn install_pointer_and_view_input(
                 if table_pointer_press(&ui, count, x, y, gesture.current_event_state()) {
                     return;
                 }
+                restart_caret(&ui);
                 ui.pointer_moved.set(false);
                 ui.word_drag.borrow_mut().take();
                 ui.paragraph_drag.borrow_mut().take();
@@ -429,21 +430,15 @@ pub(super) fn install_keyboard_input(
         let weak = Rc::downgrade(&ui);
         ui.document_box.connect_has_focus_notify(move |_| {
             if let Some(ui) = weak.upgrade() {
-                if let Some(d) = ui.current.borrow().as_ref() {
-                    for area in &d.selection_areas {
-                        area.queue_draw();
-                    }
-                }
+                refresh_selection(&ui);
+                restart_caret(&ui);
             }
         });
         let weak = Rc::downgrade(&ui);
         window.connect_is_active_notify(move |_| {
             if let Some(ui) = weak.upgrade() {
-                if let Some(d) = ui.current.borrow().as_ref() {
-                    for area in &d.selection_areas {
-                        area.queue_draw();
-                    }
-                }
+                refresh_selection(&ui);
+                restart_caret(&ui);
             }
         });
         let input = ui.input_context.clone();
@@ -504,6 +499,7 @@ pub(super) fn install_keyboard_input(
                     return glib::Propagation::Stop;
                 }
                 if ui.document_box.has_focus() {
+                    restart_caret(&ui);
                     if control
                         && !shift
                         && !modifiers.contains(gdk::ModifierType::ALT_MASK)
