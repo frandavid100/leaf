@@ -4,11 +4,15 @@ These notes were moved from the README on 2 November 2026. They describe the
 releases and checks recorded at that point; consult [GitHub Releases](https://github.com/frandavid100/leaf/releases)
 and [project status](../PROJECT_STATUS.md) for the current release and work in progress.
 
-## Alpha.19 candidate
+## Alpha.19 — published and verified
 
 Readable bounded font lists, Ctrl+K and whole-link editing/insertion, destination
 hover feedback, paragraph-granular triple-click dragging and navigation/sidebar
-refinements. Font/Size typing report #35 stays open. [Scope and validation](ISSUE_SWEEP_ALPHA19.md).
+refinements. Font/Size input preserves edits and focus across live reflow; installed
+GNOME 49 testing reproduced and verified the decimal-input correction. Nine
+reports were closed after native/installed checks and public asset verification.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.19) ·
+[Scope and validation](ISSUE_SWEEP_ALPHA19.md).
 
 ## Recorded alpha updates
 

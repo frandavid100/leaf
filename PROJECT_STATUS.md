@@ -12,16 +12,29 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En validación: alpha.19
+## Última versión publicada: alpha.19
 
-Pasada autorizada de nueve informes: #25, #26, #28, #34, #35 y #44–#47.
-La primera prueba instalada reprodujo #35 (`18,75` terminaba en `75`) y bloqueó
-la publicación. Se valida su corrección de entrada/foco antes de cerrar informes.
-128 pruebas Rust y eventos reales de teclado/ratón superados localmente.
-[Alcance, pruebas y límites](docs/ISSUE_SWEEP_ALPHA19.md). La última release
-publicada sigue siendo alpha.18 hasta terminar y comprobar CI/empaquetado.
+[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.19), publicado y verificado el 2 de noviembre
+de 2026. Fuente/tag: `1f8694dd8cf51c8f981baf8aa23093ea4e09b625`. Runtime GNOME 49;
+actualización desde alpha.18, ocho assets públicos y sumas verificados.
+Bundle: 10.984.832 bytes; SHA256
+`71656fe9c658fff1f24804f2ee7c2ed9d9086de72919b66053594efa9ffdf39c`.
 
-## Última versión publicada
+**Nueve informes cerrados:** #25, #26, #28, #34, #35 y #44–#47. Listas de fuentes
+legibles y escritura estable, enlaces con Ctrl+K/contexto/URL visible, arrastre
+por párrafos, contexto de títulos y ajustes de revisión/marcadores.
+Superadas 128 pruebas Rust, cuatro Python, 588 mensajes gettext y compilación
+optimizada. La [CI nativa](https://github.com/frandavid100/leaf/actions/runs/41439845294) y la [validación instalada](https://github.com/frandavid100/leaf/actions/runs/41442198035) también han pasado, incluidas actualización,
+portales, impresión y Orca automatizada. [Alcance](docs/ISSUE_SWEEP_ALPHA19.md) ·
+[evidencia](docs/ISSUE_SWEEP_ALPHA19_VALIDATION.json).
+
+#35 se reprodujo realmente en GNOME 49 (`18,75` acababa en `75`) antes de corregir
+el filtro numérico y el foco de los delegados durante la repaginación. Ambos
+campos se verificaron con teclado real; no equivale a prueba humana Wayland/IME.
+Estado al terminar: 41 cerrados y 18 abiertos. Las funciones nuevas,
+los límites del motor y los informes posteriores conservan su alcance propio.
+
+## Entrega anterior: alpha.18
 
 [Alpha.18, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.18),
 publicada y verificada el 2 de noviembre de 2026. Fuente y tag:
@@ -47,12 +60,11 @@ DOCX conserva la herencia y las excepciones de revisión. ODT aplana la herencia
 de idioma; Leaf exige DOCX para revisión predeterminada desactivada o excepciones
 explícitas de revisión activada que ODT perdería. No se alteró WordCraft.
 
-**Estado tras la entrega: 32 cerrados y 20 abiertos, de 52 informes.** Quedan
+**Estado histórico tras alpha.18: 32 cerrados y 20 abiertos, de 52 informes.** Quedaban
 #1, #2, #7 y #9 de la pasada inicial. Durante el trabajo aparecieron #44–#52 y
-se reabrieron #18, #25, #26, #28, #34, #35 y #37. Sus nuevos requisitos siguen
-pendientes y están identificados en el informe; alpha.18 no los da por resueltos.
-En particular, Fuente/Tamaño y su lista vuelven a tener informes abiertos, aunque
-los recorridos de entrada ensayados en las regresiones pasen.
+se reabrieron #18, #25, #26, #28, #34, #35 y #37. Sus nuevos requisitos quedaron
+pendientes de aquella entrega; alpha.18 no los daba por resueltos. La cuarta
+revisión y su resultado actualizado están descritos arriba.
 
 La [alpha.17 anterior](docs/ISSUE_SWEEP_ALPHA17.md) y sus resultados se conservan
 como historial. La prueba de flecha de Párrafo se simplificó y ahora envía movimiento
@@ -96,7 +108,7 @@ La revisión anterior de organización y continuidad está terminada y validada:
 | Revisión y anotaciones | Lista lateral de errores, revisión al escribir en Preferencias, marcadores e hilos de comentarios. [Revisión](docs/PROOFING_SIDEBAR.md), [anotaciones](docs/BOOKMARKS_COMMENTS.md) |
 | Interfaz | GTK4/libadwaita, pestañas/ventanas, búsqueda/reemplazo, miniaturas/títulos, contexto nativo y controles adaptables. |
 | Salida y recuperación | PDF, impresión por portal y preferencias de autoguardado/recuperación. [Impresión](docs/KEYBOARD_PRINTING.md) |
-| Idiomas y apariencia | 600 mensajes gettext, inglés/español y páginas oscuras. [Traducciones](docs/TRANSLATING.md) |
+| Idiomas y apariencia | 588 mensajes gettext, inglés/español y páginas oscuras. [Traducciones](docs/TRANSLATING.md) |
 | Accesibilidad | Texto normal, cursor y selección mediante GtkAccessibleText; prueba real AT-SPI/Orca automatizada. [Alcance](docs/ACCESSIBLE_DOCUMENT_TEXT.md) |
 | Rendimiento | Miniaturas acotadas, invalidación de capas afectadas y búsqueda cerrada sin trabajo redundante. [Mediciones](docs/HOST_PERFORMANCE_AUDIT.md) |
 

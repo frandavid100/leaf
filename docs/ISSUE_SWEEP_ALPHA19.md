@@ -1,7 +1,7 @@
-# Cuarta revisión de issues — candidata alpha.19
+# Cuarta revisión de issues — alpha.19 publicada
 
 Petición de David: intentar #35, #34, #44–#46, #28, #25, #26 y #47.
-Base: `719907697ab4ecdb5c081f758b454a4ee58ec6d5`, rama main. Se conserva el
+Base integrada: `4e212a97721de1913def6d3ce406b828847b7ab4`, rama main. Se conserva el
 README actualizado para Weblate y su PR de traducciones; no se integra esa PR
 como parte de esta revisión.
 
@@ -20,7 +20,7 @@ Los cambios usan API públicas. No se modifica WordCraft, Cargo.toml/Cargo.lock,
 vendor ni parches. No se implementan regla, historial, imágenes flotantes,
 índices, notas o ecuaciones en esta entrega.
 
-## #35: reproducción instalada y corrección candidata
+## #35: reproducción instalada y corrección verificada
 
 La primera validación del Flatpak en GNOME 49 reprodujo un fallo real: escribir
 lentamente `18,75` acababa aplicando `75`. El entorno nativo GTK 4.14 no había
@@ -36,8 +36,10 @@ La regresión usa apertura por ratón, familia instalada, caret/selección,
 popover fijado/no fijado, escritura lenta, pegar/borrar, decimal con punto/coma,
 ventana estrecha, fuente grande y escala 200 %, y vuelta al documento. Un
 caso adicional selecciona un documento largo y exige que cambie el número de
-páginas durante la escritura sin perder el foco. La corrección sigue pendiente
-de superar de nuevo la prueba instalada; no se afirma prueba humana Wayland/IME.
+páginas durante la escritura sin perder el foco. La reproducción instalada y
+la matriz completa pasan con la corrección. El recorrido original específico de Fuente no se reprodujo por separado;
+ambos campos sí se verificaron con eventos reales. No se afirma prueba humana
+Wayland/IME.
 
 ## Validación local
 
@@ -50,7 +52,7 @@ de superar de nuevo la prueba instalada; no se afirma prueba humana Wayland/IME.
   autoscroll entre páginas; Ctrl+K, contexto de enlace, cancelar, insertar y hover.
 - Pruebas gráficas de títulos, revisión y marcadores superadas; inspeccionadas
   las capturas internas de listas estrechas y grandes. No son capturas públicas.
-- Formato, compilación GUI optimizada y CI nativa/Flatpak instalado: en curso.
+- Formato, compilación GUI optimizada y CI nativa/Flatpak instalado superados.
 
 Las nuevas pruebas están en `tests/alpha19_interactions.rs`,
 `src/gnome/diagnostics/sweep19.rs` y `tools/followup19-pointer-test.sh`.
@@ -65,6 +67,19 @@ prueba humana de GNOME OS, Wayland, impresora física o todos los documentos.
 
 ## Publicación y cierre
 
-Pendientes del resultado de CI nativa y paquete instalado. Los nueve candidatos
-se cerrarán solo tras verificar la entrega publicada. No se mueve ningún tag
-previo ni se altera ninguna release existente.
+[Alpha.19 publicada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.19), fuente/tag `1f8694dd8cf51c8f981baf8aa23093ea4e09b625`.
+[CI nativa](https://github.com/frandavid100/leaf/actions/runs/41439845294) y [CI instalada](https://github.com/frandavid100/leaf/actions/runs/41442198035) superadas. Descargados los ocho assets
+públicos; fuente, tamaños y SHA256 comprobados. Bundle: 10.984.832 bytes;
+SHA256 `71656fe9c658fff1f24804f2ee7c2ed9d9086de72919b66053594efa9ffdf39c`. Actualización desde alpha.18, persistencia,
+portales, impresión y regresión AT-SPI/Orca superadas en el paquete instalado.
+[Evidencia estructurada](ISSUE_SWEEP_ALPHA19_VALIDATION.json).
+
+Cerrados tras verificar la entrega: #25, #26, #28, #34, #35 y #44–#47.
+Quedan 18 informes abiertos y 41 cerrados al terminar esta pasada;
+las incidencias posteriores y funciones nuevas no se incorporan por aparecer aquí.
+El paquete reutiliza el binario validado de `2fd69ff222d2f3f0b5ba9c64289af5d8cd7da2e4`.
+La fuente final solo ajusta la conservación de capturas y la referencia del artefacto;
+el workflow exige identidad de código, dependencias, pruebas, catálogos, datos y
+herramientas antes de reutilizarlo. La reutilización queda registrada en la evidencia.
+Las 17 etiquetas y releases previas se conservan, junto al archivo ApexDesk y
+`wordcraft-saving`. La PR #57 de Weblate queda intacta y fuera de esta revisión.

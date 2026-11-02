@@ -4,13 +4,17 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En curso: cuarta revisión y candidata alpha.19
+## Completado: cuarta revisión y alpha.19
 
-Nueve correcciones candidatas: #25, #26, #28, #34, #35 y #44–#47. La prueba
-instalada reprodujo pérdida del separador decimal en #35; se corrige entrada/foco
-y se exige repetir la validación antes de cerrar.
-[Alcance y validación](docs/ISSUE_SWEEP_ALPHA19.md). No ampliar esta pasada con
-las funciones nuevas ni cambios del motor. CI y paquete instalado pendientes.
+Publicada y verificada: nueve cierres (#25, #26, #28, #34, #35 y #44–#47).
+128 pruebas Rust, cuatro Python, 588 mensajes gettext y CI nativa/Flatpak
+instalado completas. #35 se reprodujo en el runtime instalado y se verificó
+tras corregir entrada y foco. [Alcance](docs/ISSUE_SWEEP_ALPHA19.md) ·
+[evidencia](docs/ISSUE_SWEEP_ALPHA19_VALIDATION.json).
+
+Quedan 18 informes abiertos al terminar; consultar GitHub antes de elegir
+otra tarea. No ampliar automáticamente con funciones nuevas, cambios del motor,
+Weblate, Flathub o nuevas etapas de Orca.
 
 ## Consolidación en main y preparación de Weblate
 
@@ -27,9 +31,10 @@ Publicada y verificada. Diez informes cerrados de los catorce iniciales: #5, #6,
 instalado completas. [Alcance y pendientes](docs/ISSUE_SWEEP_ALPHA18.md) ·
 [evidencia](docs/ISSUE_SWEEP_ALPHA18_VALIDATION.json).
 
-Estado posterior: 32 cerrados y 20 abiertos, de 52. Los cuatro pendientes de la
-pasada inicial son #1, #2, #7 y #9. Los nueve nuevos (#44–#52) y siete reabiertos
-(#18, #25, #26, #28, #34, #35, #37) conservan sus requisitos y siguen pendientes.
+Estado histórico tras alpha.18: 32 cerrados y 20 abiertos, de 52. Los cuatro
+pendientes de la pasada inicial eran #1, #2, #7 y #9. Los nueve nuevos (#44–#52)
+y siete reabiertos (#18, #25, #26, #28, #34, #35, #37) conservaron sus requisitos
+para revisiones posteriores.
 No se incorporaron esas ampliaciones a alpha.18 ni se cerraron por pruebas de
 requisitos anteriores. No se actualizaron motor/dependencias de WordCraft,
 Weblate, Flathub ni main.
