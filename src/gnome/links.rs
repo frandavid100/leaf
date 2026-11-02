@@ -269,12 +269,12 @@ pub(super) fn install_link_tooltip(ui: &Rc<Ui>) {
 /// Verify real link ink bounds, rather than treating the nearest caret in a
 /// blank page area as a link hit. Works across wrapped lines and zoom levels.
 pub(super) fn document_link_at_point(ui: &Rc<Ui>, x: f64, y: f64) -> Option<String> {
-    let pos = pos_at_canvas(ui, x, y)?;
-    let mut v = ui.current.borrow_mut();
+    let (hover_page, pos) = inspect_canvas_point(ui, x, y)?;
+    let mut v = ui.current.try_borrow_mut().ok()?;
     let d = v.as_mut()?;
     let (a, b, url) = links::range_at(&d.session, &pos)?;
     let layout = d.session.layout();
-    for (page, rect) in layout.selection_rects(&d.session.doc, &a, &b, d.session.page_hint) {
+    for (page, rect) in layout.selection_rects(&d.session.doc, &a, &b, hover_page) {
         let frame = d.page_frames.get(page)?.compute_bounds(&ui.document_box)?;
         let left = frame.x() as f64 + rect.x as f64 * d.zoom as f64;
         let top = frame.y() as f64 + rect.y as f64 * d.zoom as f64;

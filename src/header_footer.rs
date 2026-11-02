@@ -59,6 +59,13 @@ pub fn close(s: &mut Session) -> Result<bool, String> {
 /// Header/footer hit testing uses the story actually displayed on this page,
 /// including inherited, first-page and even-page variants.
 pub fn hit(s: &mut Session, page: usize, x: f32, y: f32) -> Option<Pos> {
+    let pos = probe(s, page, x, y)?;
+    s.page_hint = page;
+    Some(pos)
+}
+
+/// Passive hover/tooltip inspection must not move the active header/footer page.
+pub fn probe(s: &mut Session, page: usize, x: f32, y: f32) -> Option<Pos> {
     if !x.is_finite() || !y.is_finite() {
         return None;
     }
@@ -68,9 +75,7 @@ pub fn hit(s: &mut Session, page: usize, x: f32, y: f32) -> Option<Pos> {
         .map(|(story, _)| story)
         .or_else(|| layout.story_at(page, x, y))
         .unwrap_or(StoryRef::Body);
-    let pos = layout.hit(page, x, y, story)?;
-    s.page_hint = page;
-    Some(pos)
+    layout.hit(page, x, y, story)
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

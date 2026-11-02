@@ -197,3 +197,29 @@ fn protected_documents_refuse_creation_and_number_insertion_without_partial_edit
     assert_eq!(s.sel, sel);
     assert_eq!(s.undo_depth(), depth);
 }
+
+#[test]
+fn passive_header_probe_keeps_the_active_page_and_selection() {
+    let mut s = session();
+    hf::enter(&mut s, 1, Region::Header).unwrap();
+    s.run("text.insert", &json!({"text":"Shared header"}))
+        .unwrap();
+    let pos = s.doc.start_of(s.sel.focus.story);
+    let c = s.layout().caret_on(&pos, 0).unwrap();
+    let doc = s.doc.clone();
+    let sel = s.sel.clone();
+    let rev = s.rev();
+    let depth = s.undo_depth();
+    assert_eq!(s.page_hint, 1);
+    assert!(hf::probe(&mut s, 0, c.x, c.top + c.height / 2.).is_some());
+    assert_eq!(s.page_hint, 1);
+    assert_eq!(s.sel, sel);
+    assert_eq!(s.rev(), rev);
+    assert_eq!(s.doc, doc);
+    assert_eq!(s.undo_depth(), depth);
+    assert!(hf::hit(&mut s, 0, c.x, c.top + c.height / 2.).is_some());
+    assert_eq!(
+        s.page_hint, 0,
+        "committed pointer hits still choose their physical page"
+    );
+}

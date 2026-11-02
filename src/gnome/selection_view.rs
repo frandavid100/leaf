@@ -147,7 +147,14 @@ pub(super) fn refresh_format_controls(ui: &Rc<Ui>) {
 }
 
 pub(super) fn pos_at_canvas(ui: &Rc<Ui>, x: f64, y: f64) -> Option<Pos> {
-    let mut value = ui.current.borrow_mut();
+    let (page, pos) = inspect_canvas_point(ui, x, y)?;
+    ui.current.borrow_mut().as_mut()?.session.page_hint = page;
+    Some(pos)
+}
+
+/// Passive hit inspection returns its own page without changing the edit target.
+pub(super) fn inspect_canvas_point(ui: &Rc<Ui>, x: f64, y: f64) -> Option<(usize, Pos)> {
+    let mut value = ui.current.try_borrow_mut().ok()?;
     let doc = value.as_mut()?;
     let (page, rect, _) = doc
         .page_frames
@@ -168,7 +175,7 @@ pub(super) fn pos_at_canvas(ui: &Rc<Ui>, x: f64, y: f64) -> Option<Pos> {
     let (w, h) = doc.sizes[page];
     let px = ((x - f64::from(rect.x())) / z).clamp(0.0, f64::from(w)) as f32;
     let py = ((y - f64::from(rect.y())) / z).clamp(0.0, f64::from(h)) as f32;
-    header_footer::hit(&mut doc.session, page, px, py)
+    header_footer::probe(&mut doc.session, page, px, py).map(|pos| (page, pos))
 }
 
 pub(super) fn select_picture_at_canvas(ui: &Rc<Ui>, x: f64, y: f64) -> bool {

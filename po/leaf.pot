@@ -1417,7 +1417,7 @@ msgstr ""
 msgid "Page Break Before"
 msgstr ""
 
-#: src/gnome/headers.rs:116 src/header_footer.rs:101
+#: src/gnome/headers.rs:116 src/header_footer.rs:106
 msgid "Page Number"
 msgstr ""
 
