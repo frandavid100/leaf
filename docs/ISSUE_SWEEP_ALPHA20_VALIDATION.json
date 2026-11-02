@@ -1,13 +1,11 @@
 {
   "release": "v0.1.0-alpha.20",
   "date": "2026-11-02",
-  "source_commit": "06126ef357531fb33b4691361af2dbf2da17bb77",
-  "source_tree": "4a7de309dc3407a326358c3f3d97cfc86c7f2a8c",
+  "source_commit": "e5d65dde0c788ef563b5263dbcf3e4e823df92ba",
+  "source_tree": "f20f6cd945afbf20ceb1e239d191b301326b2401",
   "base_commit": "21667e8b649538d3a61d230b327a658e9906fd66",
   "branch": "main",
-  "candidate_closures": [
-    18,
-    48,
+  "closed": [
     49,
     50,
     51,
@@ -15,13 +13,14 @@
     59,
     60
   ],
-  "closed": [],
   "remaining": [
     1,
     2,
     7,
     9,
+    18,
     37,
+    48,
     52,
     53,
     54,
@@ -31,7 +30,7 @@
   "checks": {
     "rust": 141,
     "python": 4,
-    "gettext_source_messages": 611,
+    "gettext_source_messages": 678,
     "fmt": true,
     "docs_links": true,
     "release_build": true,
@@ -53,7 +52,9 @@
     "header_page_hint_passive_probe_regression": true,
     "header_menu_and_real_pointer_return": true,
     "link_shortcut_context_cancel_insert_and_hover": true,
-    "ruler_keyboard_pin_unpin_visual_inspection": true
+    "ruler_keyboard_pin_unpin_visual_inspection": true,
+    "theme_8_light_dark_high_contrast_hidpi_variants": true,
+    "theme_actual_keyboard_choice_assertions": true
   },
   "capability_audit": {
     "reproducer": "examples/issue20_capabilities.rs",
@@ -63,17 +64,35 @@
     "scope": "no full native advanced authoring UI or universal interoperability claim"
   },
   "ci": {
-    "source": "06126ef357531fb33b4691361af2dbf2da17bb77",
-    "run": 41465864269,
-    "url": "https://github.com/frandavid100/leaf/actions/runs/41465864269",
-    "status": "in_progress",
-    "conclusion": null
+    "source": "e5d65dde0c788ef563b5263dbcf3e4e823df92ba",
+    "run": 41471767320,
+    "url": "https://github.com/frandavid100/leaf/actions/runs/41471767320",
+    "status": "completed",
+    "conclusion": "success",
+    "native_source": "f6fc319c05139896964fc3c402d6035e2264b068",
+    "native_run": 41466739518,
+    "native_test_job": 125349502561,
+    "native_conclusion": "success",
+    "source_identical_native_reuse": true
   },
-  "publication": null,
+  "publication": {
+    "url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.20",
+    "tag": "v0.1.0-alpha.20",
+    "target": "e5d65dde0c788ef563b5263dbcf3e4e823df92ba",
+    "tag_sha_verified": true,
+    "asset_count": 8,
+    "bundle_bytes": 11059320,
+    "bundle_sha256": "0e178093f421f08be493086198943c042c4e719d431506a8381a41de89e90e5b",
+    "public_release_metadata_verified": true,
+    "github_server_asset_digests_recorded": true,
+    "independent_public_download_readback": false,
+    "upgrade_from": "v0.1.0-alpha.19"
+  },
   "preserved": {
     "prior_releases_and_tags": 18,
-    "apexdesk_archive": true,
-    "wordcraft_saving": true,
+    "prior_release_ids_assets_targets_unchanged": true,
+    "apexdesk_archive": "58da57efcfd03e7b442b20629703d32a697274f4",
+    "wordcraft_saving": "61f3045d63eb5c0f985c4adacc338f51172daa52",
     "separate_weblate_pr_57": true
   },
   "limits": [
@@ -81,7 +100,8 @@
     "Original contextual-spacing DOCX and affected GNOME Files samples remain needed.",
     "Advanced authoring issues 53–56 remain open despite saving guards.",
     "No new Orca stages or public screenshot replacements.",
-    "Automated success is not human GNOME OS/Wayland/IME/device testing."
+    "Automated success is not human GNOME OS/Wayland/IME/device testing.",
+    "Execution environment disconnected after publication. Final installed high-contrast/focus/HiDPI/ruler image review and independent public download/readback could not be completed. Issues 18 and 48 remain open."
   ],
   "previous_ci_attempt": {
     "source": "f52a36d5a8889ba9cefe57c5bbeb0117c0409604",
@@ -90,5 +110,35 @@
     "blocked_publication": true,
     "failure": "passive canvas link tooltip changed the active header page hint",
     "fixed": "separate passive probe from committed hit selection; 141 Rust tests and unchanged header UI/pointer and link regressions pass locally"
+  },
+  "implemented_pending_visual_review": [
+    18,
+    48
+  ],
+  "issue_counts": {
+    "closed": 47,
+    "open": 12
+  },
+  "installed": {
+    "runtime": "org.gnome.Platform 49",
+    "upgrade_and_reinstall_data_retention": true,
+    "new_history_ruler_pointer_english_spanish_hidpi": true,
+    "prior_font_size_links_and_paragraph_gestures": true,
+    "theme_8_capture_cases_and_actual_keyboard_preferences": true,
+    "print_file_and_uri_portals": true,
+    "existing_automated_orca_at_spi_regression": true,
+    "artifact": 13156181480,
+    "complete_final_visual_review": false
+  },
+  "superseded_candidate": {
+    "source": "06126ef357531fb33b4691361af2dbf2da17bb77",
+    "run": 41465864269,
+    "reason": "superseded by localized history descriptions"
+  },
+  "packaging_audit_followup": {
+    "source": "20a8961227ee5990b814bf63f8ecea582e79377a",
+    "run": 41469643437,
+    "reason": "functional installed checks passed; fixed-count theme keyboard audit failed with recovery UI present",
+    "fixed": "isolate config/state/data inside sandbox and detect actual keyboard preference changes; all eight cases pass in final run"
   }
 }

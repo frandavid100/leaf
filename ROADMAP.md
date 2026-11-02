@@ -4,6 +4,17 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## Quinta revisión: alpha.20 publicada
+
+Seis cierres verificados (#49–#51, #58–#60): cursor, historial/Repetir y presentación
+lateral. Regla (#48) y selector GNOME (#18) implementados y probados automáticamente;
+la comparación visual instalada sigue pendiente tras desconectarse el entorno.
+141 pruebas Rust, cuatro Python, 678 mensajes y CI nativa/instalada correctos.
+ODT queda protegido ante cuatro pérdidas estructurales adicionales; #53–#56 no
+se consideran completos. Estado: 47 cerrados / 12 abiertos.
+[Alcance](docs/ISSUE_SWEEP_ALPHA20.md) · [evidencia](docs/ISSUE_SWEEP_ALPHA20_VALIDATION.json).
+Motor/dependencias intactos; no se amplía Weblate, Flathub, Orca ni el corpus.
+
 ## Completado: cuarta revisión y alpha.19
 
 Publicada y verificada: nueve cierres (#25, #26, #28, #34, #35 y #44–#47).

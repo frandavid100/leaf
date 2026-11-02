@@ -1,137 +1,125 @@
-# Fifth issue sweep — in progress
+# Fifth issue sweep — alpha.20
 
-David authorized another pass over all current issues, new and old. Base:
-`21667e8b649538d3a61d230b327a658e9906fd66` on main; published alpha.19 remains
-unchanged while this work is validated. Existing pending work, releases/tags,
-archive branches and the separate Weblate PR are preserved.
+Published [alpha.20](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.20), 2 November 2026.
+Source/tag: `e5d65dde0c788ef563b5263dbcf3e4e823df92ba`.
+**Six verified closures:** #49–#51 and #58–#60. **Two implementations await final
+visual review:** #18 and #48. Final issue count: 47 closed / 12 open.
 
-## Current candidates
+## Delivered
 
-- #58/#59: exact compass-symbolic/comment-symbolic assets from the existing
-  pinned, CC0 GNOME Icon Development Kit; native symbolic GTK presentation.
-- #60: Pages tooltip uses the same current/total layout state as thumbnails,
-  with a localized complete message and a safe empty-document fallback.
-- #18: GNOME Text Editor's established grouped-checkbutton theme selector and
-  attributed stylesheet replace the former Cairo circles. Libpanel is absent
-  from the supported native dependency graph; no new dependency is introduced.
-- #49: black/white contrasting insertion caret, WordCraft's 100ms idle opacity
-  fade, native blink timing/timeout, static reduced-motion/blink-disabled state,
-  and inactive caret animation cancellation. Geometry remains engine-owned.
-- #50: contextual Redo/Repeat body, with the last supported formatting result
-  captured per document. Toggle results are canonicalized; selection changes do
-  not supply old target IDs. IO, typing and structural edits are not replayed.
-- #51: real engine undo labels and redo snapshots, cumulative engine traversal,
-  shared toolbar/document-menu models, shortcut columns and document/revision
-  guards. Redo inspection uses a disposable public edit snapshot, never a
-  guessed frontend history or mutations of the live session.
-- #48: 175ms native overlay, hover strip/pin/menu keyboard entry, public layout
-  alignment and indent/tab commands. Gestures retain selection and commit once;
-  stale document/revision/selection leases are rejected. Drag cancellation and
-  keyboard Undo/Redo are supported; no permanent page space is reserved.
+- #49: black insertion caret on light pages and contrasting white on dark pages.
+  WordCraft's inspected 100 ms linear idle fade is combined with native GTK blink
+  period/timeout and disabled/reduced-motion settings. Activity restarts it and
+  inactive/hidden carets stop repainting; canonical geometry/history are untouched.
+- #50: contextual Redo/Repeat body. Real Redo takes priority. Supported text/basic
+  paragraph formatting repeats its canonical chosen result at the current target,
+  per document, through public commands. IO, typing and unsupported structure are
+  excluded. Undo/no-op/protection/redo-branch rules remain engine-owned.
+- #51: separate native linked history chevrons, shared document-menu models,
+  actual engine undo labels and disposable-snapshot redo inspection. Deeper rows
+  traverse cumulatively; only the first has the native accelerator. Document/revision
+  guards reject stale targets. Leaf-exposed engine descriptions are localized.
+- #58/#59: exact compass-symbolic/comment-symbolic assets from the existing pinned
+  CC0 GNOME Icon Development Kit, with native sizing/color and identity preserved.
+- #60: localized current/total Pages-tab tooltip using actual layout and the same
+  active-page state as thumbnails, with a safe empty fallback and no panel switch.
 
-No issue is closed by this work until native and installed verification passes.
+## Implemented; final visual review remains open
 
-## Capability audit before authoring UI
+#18 now uses actual grouped GtkCheckButtons and the attributed GNOME Text Editor
+stylesheet: 44 logical-pixel previews, native accent/check and diagonal System.
+Libpanel is absent from the supported native/locked build and needs a dependency
+change outside this frontend pass. [Attribution](../data/THEME_SELECTOR_SOURCES.md).
+Functional/persistence checks and eight native/installed light/dark/high-contrast
+1×/2× capture/keyboard-preference cases pass. Native variants and normal installed
+rendering were inspected. Complete final installed-image comparison remains pending.
 
-`examples/issue20_capabilities.rs` exercises public commands and real files:
+#48 implements a 175 ms non-measuring viewport overlay, hover activation, pin and
+native document-menu keyboard entry. Public layout supplies page/column/zoom
+coordinates; public indent/tab commands commit one undoable edit. Leases protect
+identity/revision/selection; dragging, cancellation and keyboard controls retain
+the target. Native/installed English/Spanish/HiDPI pointer checks pass. Local dark
+inspection also covered hide, tab removal outside the ruler, Undo, Escape and
+keyboard pin/unpin. Final installed visual assessment remains pending.
 
-| Feature | DOCX reopen | ODT reopen with the pinned exporter |
+The execution environment disconnected after publication, before the final
+[installed capture artifact](https://github.com/frandavid100/leaf/actions/runs/41471767320/artifacts/13156181480)
+could be opened. Capture success is not substituted for a completed visual review;
+#18 and #48 remain open for that requirement and any resulting adjustments.
+Public asset metadata/server SHA256 digests are verified. Independent public
+binary download/readback could not be completed after the disconnection.
+
+## Source and verification
+
+- Full optimized [native CI](https://github.com/frandavid100/leaf/actions/runs/41466739518)
+  passed at `f6fc319c05139896964fc3c402d6035e2264b068`: 141 Rust tests, four Python tests,
+  format/project links, 678 complete English/Spanish messages, GUI and prior input,
+  lifecycle, portal, localization, printing and geometry regressions.
+- [Final installed/publication CI](https://github.com/frandavid100/leaf/actions/runs/41471767320)
+  passed at `e5d65dde0c788ef563b5263dbcf3e4e823df92ba`. Packaging-only changes add capture validation;
+  a guard rejects any difference from the tested native executable across src,
+  Cargo files, tests, vendor, PO/data, examples, tools and patches before reuse.
+- Installed GNOME 49: upgrade from alpha.19, reinstall/data retention, new and prior
+  real pointer/keyboard controls, portals/printing and existing AT-SPI/Orca test.
+  All eight theme cases assert actual keyboard preference changes. They isolate
+  temporary config/state/data and use libadwaita's own high-contrast debug setting.
+- Eight public assets; tag/source verified by GitHub API. Bundle: 11059320 bytes;
+  SHA256 `0e178093f421f08be493086198943c042c4e719d431506a8381a41de89e90e5b`.
+- All 18 previous release IDs, targets and assets remain unchanged; archive and
+  wordcraft-saving refs are retained. Separate Weblate PR #57 is untouched.
+
+No engine, dependency, vendor or compatibility patch changed. No new Orca stages,
+public screenshot replacement, Flathub work or mandatory full corpus was added.
+Automated success does not establish human Wayland/GNOME OS/IME/device coverage.
+[Machine-readable evidence](ISSUE_SWEEP_ALPHA20_VALIDATION.json).
+
+## Saving safeguards and remaining authoring work
+
+`examples/issue20_capabilities.rs` is a reduced synthetic public-command audit:
+
+| Feature | DOCX reopen | Pinned ODT export/reopen |
 | --- | --- | --- |
-| #56 fraction/power/root equation | Structured editable Equation retained. | No Equation object survives. |
-| #55 footnote | Independent Footnote part and reference retained. | Footnote part/reference structure lost. |
-| #54 multipage automatic TOC | TOC field retained and update command works. | TOC field absent; visible entries alone are static. |
-| #53 floating image | Square wrapping/position retained. | Image survives as inline; wrapping/position lost. |
+| #56 fraction/script/radical equation | Editable structure retained | No Equation object |
+| #55 footnote | Part/reference retained | Structure lost |
+| #54 automatic TOC, 13-page control | Field retained and update works | Field lost; static entries |
+| #53 floating image | Square wrap/position retained | Becomes inline |
 
-These are runtime results from synthetic public-API cases, not a claim about
-all imported files. Their DOCX/PDF and on-screen editing requirements still need
-feature-specific verification. Do not expose lossy ODT save as a successful
-editable round trip or modify the engine/dependency pins to complete these issues.
+Alpha.20 refuses these lossy ODT saves and offers DOCX. Four tests confirm refusal
+before writing existing files, unchanged session/selection/history/path and valid
+DOCX round trips. Recovery also selects the preserving format. These safeguards
+are not the full native authoring interfaces requested in #53–#56; those stay open.
+Existing upstream [#2669](https://github.com/storytold/wordcraft/issues/2669) already
+covers ODT model-depth gaps; no duplicate report or engine fork was introduced.
 
-Generated DOCX controls contain no embedded thumbnail part, and Leaf registers
-no system thumbnailer. That does not attribute the maintainer's GNOME Files
-report (#52); the actual affected files/cache/provider remain uninspected.
+## Other older reports
 
-Old engine/layout reports #1/#2/#7 retain their confirmed or tracked upstream
-limits. #9 still needs its original contextual-spacing case; ordinary spacing
-success is insufficient. #37's actual AdwInlineViewSwitcher requires a newer
-native API baseline; substituting the old widget does not meet its specification.
+- #1: upstream [#2382](https://github.com/storytold/wordcraft/issues/2382) remains open;
+  retained widths do not establish correct automatic paragraph continuation.
+- #2: upstream [#5178](https://github.com/storytold/wordcraft/issues/5178) is closed,
+  but Leaf's pin is unchanged and its two-versus-three selected-text case is unverified.
+- #7: [missing-even-slot reproduction](ISSUE7_TRIAGE.md) still applies. Direct
+  createHeader/createFooter uses own-section allocation and different inheritance;
+  it is not a verified general replacement for page-based editing.
+- #9: ordinary spacing works; the original DOCX/contextual/automatic case still
+  needs its reproducer. Plain paragraph success is insufficient to close it.
+- #37: actual AdwInlineViewSwitcher needs a newer native API/binding baseline.
+- #52: Leaf has no system thumbnailer and synthetic DOCX controls have no embedded
+  thumbnail. The affected files/provider/cache remain needed for attribution;
+  no user cache was cleared.
 
-## Validation so far
+## Failures caught during validation
 
-Baseline: 128 Rust tests; current full suite: **141 passed**. Four new engine
-history/repeat tests, one caret fade/static-state test, three ruler regressions
-and four structural ODT save-preservation tests pass. The additional passive
-header-probe regression preserves the active page, selection and history. Four Python tests,
-project links and 611 complete English/Spanish gettext messages also pass.
+First candidate `f52a36d5a8889ba9cefe57c5bbeb0117c0409604`,
+[CI 41463228240](https://github.com/frandavid100/leaf/actions/runs/41463228240), caught
+passive link-tooltip hit testing changing the active header page. The dynamic
+Pages tooltip caused GTK to request that query immediately. Passive probe and
+committed selection are now separate; the unchanged header UI/pointer checks and
+new page/selection/revision/history regression pass. Font/size focus notifications
+also avoid overwriting input during focus transitions.
 
-The real pointer/keyboard driver `tools/sweep20-pointer-test.sh` verifies
-Repeat at another selection, ordinary Undo/Redo, cumulative history traversal,
-non-mutating opening/cancellation, ruler hover/pin, drag, keyboard adjustment,
-Undo, selection retention, zoom/scroll and current/total tooltip synchronization.
-Native English, Spanish and 200% HiDPI pointer runs pass, as does the optimized
-binary run. Explicit Spanish localization assertions and the previous Font/Size
-regression also pass. Optimized native CI has passed the new gestures and document
-chrome checks; the remaining native and installed Flatpak checks are pending.
-No issue is closed and no alpha.20 release is claimed at this checkpoint.
-
-Additional local Xvfb interaction/visual inspection in dark mode verified reveal,
-auto-hide, pinning, adding a tab, dragging it outside the ruler to remove it,
-Undo restoration, Escape cancellation without committing, document-menu entry
-and keyboard pin/unpin. Page geometry stayed fixed. These are synthetic local
-observations, not a claim of human Wayland/physical-device testing.
-
-Native interaction testing found and fixed two reentrancy/focus problems: focus
-notifications must not overwrite font/size input, and changing the Pages tooltip
-must occur after releasing the document borrow because GTK can immediately query
-the canvas tooltip. Native ruler keyboard Undo is explicitly routed while ruler
-focus is held, without taking Ctrl+Z from native text fields.
-
-The source-identical engine boundary remains intact (`Cargo.toml`, `Cargo.lock`,
-`vendor`, `patches`). Full DOCX/ODT corpus and new Orca stages were not added.
-No claim of human Wayland/GNOME OS/IME/device testing is made.
-
-## Follow-up on older reports
-
-- #1: upstream [#2382](https://github.com/storytold/wordcraft/issues/2382)
-  remains open. Distinct stored widths do not establish correct automatic
-  continuation of a paragraph into the next column; the engine pin is unchanged.
-- #2: upstream [#5178](https://github.com/storytold/wordcraft/issues/5178) is now
-  closed. This does not update Leaf's pinned revision or verify its reported
-  two-versus-three selected-text case. No duplicate issue or local renderer fork.
-- #7: the missing-even-slot fallback reproduction in [ISSUE7_TRIAGE](ISSUE7_TRIAGE.md)
-  still applies to the current entry path. A direct createHeader command has a
-  different allocation path, but temporary body positioning, inherited sections,
-  direct clicks and return/undo semantics need verification before using it as
-  a fix. Existing distinct variants passing round trips is not enough.
-- #9: ordinary paragraph spacing passes; the original DOCX/contextual/automatic
-  spacing case is still not reproduced, so it remains open.
-- #37: the requested AdwInlineViewSwitcher requires a newer libadwaita API than
-  the supported native baseline. A dependency upgrade needs separate scope.
-- #52: no Leaf thumbnail provider or embedded DOCX thumbnails were found in the
-  synthetic controls. The reported affected files/provider/cache are still needed
-  to attribute the blank GNOME Files preview; no cache was deleted.
-- #53–#56: existing upstream [#2669](https://github.com/storytold/wordcraft/issues/2669)
-  already covers ODT model-depth gaps including math, notes and automatic TOC;
-  [#2686](https://github.com/storytold/wordcraft/issues/2686) is a closed historical
-  field-export report. New reduced tests show the pinned build's specific losses.
-  Leaf now blocks these lossy ODT saves, but full native authoring, update,
-  navigation and interoperability requirements remain. No duplicate upstream
-  issue was opened and no engine patch was made.
-
-## First CI candidate
-
-Source `f52a36d5a8889ba9cefe57c5bbeb0117c0409604`,
-[run 41463228240](https://github.com/frandavid100/leaf/actions/runs/41463228240),
-passed format/Python/gettext/Rust, optimized compilation, alpha18/19 pointer
-regressions, new alpha20 gestures, document chrome, issue controls, cache and
-localization. The header regression then caught an unintended page-hint change:
-querying a canvas hyperlink tooltip used the same hit adapter as a committed
-click. The new Pages tooltip caused GTK to issue that passive query immediately.
-Publication was blocked; no alpha.20 tag/release was created from this source.
-
-The follow-up separates passive `header_footer::probe`/`inspect_canvas_point`
-from committed hit selection. Link hover/tooltip uses its own physical-page hint
-for ink geometry, leaving the active document target untouched. A new regression
-checks page hint, selection, document, revision and undo depth; committed hits
-still select their clicked page. The original UI and real-pointer header tests
-are rerun unchanged.
+The packaging audit at `20a8961227ee5990b814bf63f8ecea582e79377a`,
+[CI 41469643437](https://github.com/frandavid100/leaf/actions/runs/41469643437), passed
+functional installed checks but failed a fixed-count theme keyboard driver with
+recovery UI present. The follow-up isolates all data and observes the actual
+changed preference instead of assuming a tab-stop count. All eight cases pass.
+Neither failed candidate published alpha.20.

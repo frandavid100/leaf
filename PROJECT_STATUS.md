@@ -12,7 +12,39 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## Última versión publicada: alpha.19
+## Última versión publicada: alpha.20
+
+[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.20),
+publicado el 2 de noviembre de 2026. Fuente/tag: `e5d65dde0c788ef563b5263dbcf3e4e823df92ba`.
+GNOME 49; actualización desde alpha.19. Ocho assets públicos y digests registrados
+por GitHub. Bundle: 11.059.320 bytes; SHA256
+`0e178093f421f08be493086198943c042c4e719d431506a8381a41de89e90e5b`.
+
+**Seis informes cerrados:** #49–#51 y #58–#60. Cursor con fundido, Repetir,
+historiales Deshacer/Rehacer, iconos de Navegación/Comentarios y tooltip de páginas.
+La regla (#48) y el selector GNOME (#18) están implementados y pasan las pruebas
+automáticas; permanecen abiertos para completar la comparación visual instalada.
+Leaf también bloquea guardar en ODT notas, ecuaciones, índice automático e imágenes
+flotantes que el exportador perdería; sus interfaces completas (#53–#56) siguen pendientes.
+
+141 pruebas Rust, cuatro Python, 678 mensajes gettext y build optimizado correctos.
+[CI nativa](https://github.com/frandavid100/leaf/actions/runs/41466739518) y
+[Flatpak instalado](https://github.com/frandavid100/leaf/actions/runs/41471767320)
+completos, con equivalencia de fuentes comprobada antes de reutilizar el ejecutable.
+Incluye gestos, actualización/reinstalación, portales, impresión y la regresión
+Orca existente; las ocho capturas de tema verifican también el cambio real por teclado.
+
+El entorno de ejecución se desconectó al terminar la publicación. Quedan pendientes
+la revisión visual completa de las capturas instaladas y repetir la descarga
+independiente de los assets; publicación, fuente/tag y digests sí están confirmados
+por GitHub. No se afirma validación humana de Wayland, IME o dispositivos.
+[Alcance y pendientes](docs/ISSUE_SWEEP_ALPHA20.md) ·
+[evidencia](docs/ISSUE_SWEEP_ALPHA20_VALIDATION.json).
+
+Estado: **47 cerrados y 12 abiertos**. Se preservan releases, etiquetas, archivo de
+ApexDesk, wordcraft-saving y la PR de Weblate separada.
+
+## Entrega anterior: alpha.19
 
 [Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.19), publicado y verificado el 2 de noviembre
 de 2026. Fuente/tag: `1f8694dd8cf51c8f981baf8aa23093ea4e09b625`. Runtime GNOME 49;
@@ -106,9 +138,9 @@ La revisión anterior de organización y continuidad está terminada y validada:
 | Documentos | DOCX/ODT, edición, formato, estilos, tablas, imágenes en línea, deshacer/rehacer y guardado. [Guía](docs/USER_GUIDE_ES.md) |
 | Página | Columnas, propiedades, encabezados/pies, campos de página y opciones por sección. [Encabezados](docs/HEADERS_FOOTERS.md), [opciones e idioma](docs/PAGE_OPTIONS_PROOFING.md) |
 | Revisión y anotaciones | Lista lateral de errores, revisión al escribir en Preferencias, marcadores e hilos de comentarios. [Revisión](docs/PROOFING_SIDEBAR.md), [anotaciones](docs/BOOKMARKS_COMMENTS.md) |
-| Interfaz | GTK4/libadwaita, pestañas/ventanas, búsqueda/reemplazo, miniaturas/títulos, contexto nativo y controles adaptables. |
+| Interfaz | Regla superpuesta, historiales y repetición de formato; GTK4/libadwaita, pestañas/ventanas, búsqueda/reemplazo, miniaturas/títulos, contexto nativo y controles adaptables. |
 | Salida y recuperación | PDF, impresión por portal y preferencias de autoguardado/recuperación. [Impresión](docs/KEYBOARD_PRINTING.md) |
-| Idiomas y apariencia | 588 mensajes gettext, inglés/español y páginas oscuras. [Traducciones](docs/TRANSLATING.md) |
+| Idiomas y apariencia | 678 mensajes gettext, inglés/español y páginas oscuras. [Traducciones](docs/TRANSLATING.md) |
 | Accesibilidad | Texto normal, cursor y selección mediante GtkAccessibleText; prueba real AT-SPI/Orca automatizada. [Alcance](docs/ACCESSIBLE_DOCUMENT_TEXT.md) |
 | Rendimiento | Miniaturas acotadas, invalidación de capas afectadas y búsqueda cerrada sin trabajo redundante. [Mediciones](docs/HOST_PERFORMANCE_AUDIT.md) |
 
