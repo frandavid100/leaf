@@ -2086,3 +2086,195 @@ msgstr "Historial de deshacer"
 
 msgid "{action} ({count} steps)"
 msgstr "{action} ({count} pasos)"
+
+msgid "All Caps"
+msgstr "Todas mayúsculas"
+
+msgid "Apply Style"
+msgstr "Aplicar estilo"
+
+msgid "AutoFit"
+msgstr "Ajuste automático"
+
+msgid "AutoFit Column by Double-Clicking"
+msgstr "Ajustar columna con doble clic"
+
+msgid "Backspace"
+msgstr "Retroceso"
+
+msgid "Bookmark"
+msgstr "Marcador"
+
+msgid "Change List Level"
+msgstr "Cambiar nivel de lista"
+
+msgid "Character Border"
+msgstr "Borde de caracteres"
+
+msgid "Clear All Formatting"
+msgstr "Borrar todo el formato"
+
+msgid "Close Header and Footer"
+msgstr "Cerrar encabezado y pie"
+
+msgid "Create a Style"
+msgstr "Crear un estilo"
+
+msgid "Decrease Font Size"
+msgstr "Reducir tamaño de letra"
+
+msgid "Delete Columns"
+msgstr "Eliminar columnas"
+
+msgid "Delete Rows"
+msgstr "Eliminar filas"
+
+msgid "Different Odd & Even Pages"
+msgstr "Páginas pares e impares diferentes"
+
+msgid "Distribute Columns"
+msgstr "Distribuir columnas"
+
+msgid "Distribute Rows"
+msgstr "Distribuir filas"
+
+msgid "Edit Footer"
+msgstr "Editar pie de página"
+
+msgid "Edit Header"
+msgstr "Editar encabezado"
+
+msgid "Emboss"
+msgstr "Relieve"
+
+msgid "Enclose Characters"
+msgstr "Enmarcar caracteres"
+
+msgid "Engrave"
+msgstr "Grabado"
+
+msgid "Field"
+msgstr "Campo"
+
+msgid "Font Color"
+msgstr "Color de letra"
+
+msgid "Formatting at Selection"
+msgstr "Formato de la selección"
+
+msgid "Hidden"
+msgstr "Oculto"
+
+msgid "Increase Font Size"
+msgstr "Aumentar tamaño de letra"
+
+msgid "Indents"
+msgstr "Sangrías"
+
+msgid "Insert Above"
+msgstr "Insertar encima"
+
+msgid "Insert Below"
+msgstr "Insertar debajo"
+
+msgid "Insert Left"
+msgstr "Insertar a la izquierda"
+
+msgid "Insert Right"
+msgstr "Insertar a la derecha"
+
+msgid "Insert Row or Column by Clicking"
+msgstr "Insertar fila o columna con un clic"
+
+msgid "Left-to-Right Text Direction"
+msgstr "Dirección del texto de izquierda a derecha"
+
+msgid "Line Break"
+msgstr "Salto de línea"
+
+msgid "Line and Paragraph Spacing"
+msgstr "Interlineado y espaciado de párrafo"
+
+msgid "Modify Style"
+msgstr "Modificar estilo"
+
+msgid "Move Table by Dragging"
+msgstr "Mover tabla mediante arrastre"
+
+msgid "New Comment"
+msgstr "Nuevo comentario"
+
+msgid "Normal Style"
+msgstr "Estilo normal"
+
+msgid "Page Setup"
+msgstr "Configuración de página"
+
+msgid "Pictures"
+msgstr "Imágenes"
+
+msgid "Properties"
+msgstr "Propiedades"
+
+msgid "Repeat Header Rows"
+msgstr "Repetir filas de encabezado"
+
+msgid "Resize Table by Dragging"
+msgstr "Cambiar tamaño de tabla mediante arrastre"
+
+msgid "Resolve"
+msgstr "Resolver"
+
+msgid "Restart at 1"
+msgstr "Reiniciar en 1"
+
+msgid "Reviewing Pane"
+msgstr "Panel de revisión"
+
+msgid "Right-to-Left Text Direction"
+msgstr "Dirección del texto de derecha a izquierda"
+
+msgid "Select Table Cells by Clicking"
+msgstr "Seleccionar celdas con un clic"
+
+msgid "Set Character Formatting"
+msgstr "Establecer formato de caracteres"
+
+msgid "Shift+Tab"
+msgstr "Mayús+Tab"
+
+msgid "Sort"
+msgstr "Ordenar"
+
+msgid "Spelling Suggestions"
+msgstr "Sugerencias ortográficas"
+
+msgid "Tab"
+msgstr "Tabulación"
+
+msgid "Tab Character"
+msgstr "Carácter de tabulación"
+
+msgid "Table Column Width"
+msgstr "Anchura de columna de tabla"
+
+msgid "Table Row Height"
+msgstr "Altura de fila de tabla"
+
+msgid "Tabs"
+msgstr "Tabulaciones"
+
+msgid "Text Highlight Color"
+msgstr "Color de resaltado del texto"
+
+msgid "Track Changes"
+msgstr "Seguimiento de cambios"
+
+msgid "Type Text"
+msgstr "Escribir texto"
+
+msgid "Update Style to Match Selection"
+msgstr "Actualizar estilo a partir de la selección"
+
+msgid "Widow/Orphan Control"
+msgstr "Control de viudas y huérfanas"

@@ -73,8 +73,16 @@ msgstr ""
 msgid "Align Right"
 msgstr ""
 
+#: src/history.rs:156
+msgid "Alignment"
+msgstr ""
+
 #: src/gnome/paragraph.rs:831 src/gnome/tables.rs:389
 msgid "All"
+msgstr ""
+
+#: src/history.rs:158
+msgid "All Caps"
 msgstr ""
 
 #: src/gnome/tables.rs:292
@@ -121,6 +129,10 @@ msgstr ""
 msgid "Apply Size"
 msgstr ""
 
+#: src/history.rs:159
+msgid "Apply Style"
+msgstr ""
+
 #: src/gnome/styles.rs:129
 msgid "Apply Style {}"
 msgstr ""
@@ -153,6 +165,14 @@ msgstr ""
 msgid "Author Name"
 msgstr ""
 
+#: src/history.rs:160
+msgid "AutoFit"
+msgstr ""
+
+#: src/history.rs:162
+msgid "AutoFit Column by Double-Clicking"
+msgstr ""
+
 #: src/gnome/text_palette.rs:229 src/gnome/text_palette.rs:267
 msgid "Automatic Color"
 msgstr ""
@@ -163,6 +183,10 @@ msgstr ""
 
 #: src/gnome/tables.rs:372
 msgid "Background Color"
+msgstr ""
+
+#: src/history.rs:164
+msgid "Backspace"
 msgstr ""
 
 #: src/gnome/paragraph.rs:755
@@ -187,6 +211,10 @@ msgstr ""
 
 #: src/gnome/tab.rs:268
 msgid "Bold, Italic, Underline and Font Size"
+msgstr ""
+
+#: src/history.rs:165
+msgid "Bookmark"
 msgstr ""
 
 #: src/gnome/annotation_dialog.rs:96 src/gnome/annotation_dialog.rs:107
@@ -297,6 +325,14 @@ msgstr ""
 msgid "Change Case"
 msgstr ""
 
+#: src/history.rs:166
+msgid "Change List Level"
+msgstr ""
+
+#: src/history.rs:167
+msgid "Character Border"
+msgstr ""
+
 #: src/gnome/adaptive.rs:360
 msgid "Character Formatting"
 msgstr ""
@@ -353,6 +389,10 @@ msgstr ""
 msgid "Circle"
 msgstr ""
 
+#: src/history.rs:168
+msgid "Clear All Formatting"
+msgstr ""
+
 #: src/gnome/paragraph.rs:932
 msgid "Clear Tab Stops"
 msgstr ""
@@ -363,6 +403,10 @@ msgstr ""
 
 #: src/gnome/application.rs:127
 msgid "Close"
+msgstr ""
+
+#: src/history.rs:169
+msgid "Close Header and Footer"
 msgstr ""
 
 #: src/gnome/menus.rs:502
@@ -481,6 +525,10 @@ msgstr ""
 msgid "Create Style"
 msgstr ""
 
+#: src/history.rs:170
+msgid "Create a Style"
+msgstr ""
+
 #: data/*.in data/*.in
 msgid "Create and edit documents"
 msgstr ""
@@ -561,6 +609,10 @@ msgstr ""
 msgid "Dashed"
 msgstr ""
 
+#: src/history.rs:171
+msgid "Decrease Font Size"
+msgstr ""
+
 #: src/gnome/paragraph.rs:487
 msgid "Decrease Indent"
 msgstr ""
@@ -589,6 +641,10 @@ msgstr ""
 msgid "Delete Column"
 msgstr ""
 
+#: src/history.rs:172
+msgid "Delete Columns"
+msgstr ""
+
 #: src/gnome/annotations.rs:388
 msgid "Delete Comment?"
 msgstr ""
@@ -603,6 +659,10 @@ msgstr ""
 
 #: src/gnome/tables.rs:518
 msgid "Delete Row"
+msgstr ""
+
+#: src/history.rs:173
+msgid "Delete Rows"
 msgstr ""
 
 #: src/gnome/styles.rs:292
@@ -629,6 +689,10 @@ msgstr ""
 msgid "Different First Page"
 msgstr ""
 
+#: src/history.rs:174
+msgid "Different Odd & Even Pages"
+msgstr ""
+
 #: src/gnome/header_options.rs:81
 msgid "Different Odd and Even Pages"
 msgstr ""
@@ -641,8 +705,16 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
+#: src/history.rs:175
+msgid "Distribute Columns"
+msgstr ""
+
 #: src/gnome/tables.rs:236
 msgid "Distribute Columns Evenly"
+msgstr ""
+
+#: src/history.rs:176
+msgid "Distribute Rows"
 msgstr ""
 
 #: src/gnome/tables.rs:244
@@ -725,6 +797,10 @@ msgstr ""
 msgid "Double"
 msgstr ""
 
+#: src/history.rs:177
+msgid "Double Strikethrough"
+msgstr ""
+
 #: src/gnome/annotation_dialog.rs:57
 msgid "Edit Comment"
 msgstr ""
@@ -735,6 +811,14 @@ msgstr ""
 
 #: data/*.in
 msgid "Edit DOCX and ODT files, use text and paragraph styles, work with tables and inline images, and export PDFs. Browse page thumbnails or headings, search and replace text, and open multiple documents."
+msgstr ""
+
+#: src/history.rs:178
+msgid "Edit Footer"
+msgstr ""
+
+#: src/history.rs:179
+msgid "Edit Header"
 msgstr ""
 
 #: src/gnome/menus.rs:434
@@ -749,12 +833,24 @@ msgstr ""
 msgid "Effects"
 msgstr ""
 
+#: src/history.rs:180
+msgid "Emboss"
+msgstr ""
+
 #: src/gnome/adaptive.rs:431
 msgid "Embossed"
 msgstr ""
 
+#: src/history.rs:181
+msgid "Enclose Characters"
+msgstr ""
+
 #: src/gnome/adaptive.rs:444
 msgid "Enclosed Characters"
+msgstr ""
+
+#: src/history.rs:182
+msgid "Engrave"
 msgstr ""
 
 #: src/gnome/adaptive.rs:432
@@ -817,6 +913,10 @@ msgstr ""
 msgid "F6 switches between the document, sidebar and formatting controls. Tab moves between table cells. Shift+F10 opens the context menu."
 msgstr ""
 
+#: src/history.rs:183
+msgid "Field"
+msgstr ""
+
 #: src/gnome/paragraph.rs:706
 msgid "First Line (−: Hanging)"
 msgstr ""
@@ -857,6 +957,10 @@ msgstr ""
 msgid "Font"
 msgstr ""
 
+#: src/history.rs:184
+msgid "Font Color"
+msgstr ""
+
 #: src/gnome/accessibility.rs:94
 msgid "Font Family"
 msgstr ""
@@ -887,6 +991,10 @@ msgstr ""
 
 #: src/gnome/header_options.rs:134
 msgid "Footers"
+msgstr ""
+
+#: src/history.rs:185
+msgid "Formatting at Selection"
 msgstr ""
 
 #: src/gnome/commands.rs:141
@@ -939,6 +1047,10 @@ msgstr ""
 
 #: src/gnome/text_palette.rs:298
 msgid "Hexadecimal RGB Color"
+msgstr ""
+
+#: src/history.rs:186
+msgid "Hidden"
 msgstr ""
 
 #: src/gnome/adaptive.rs:373
@@ -997,12 +1109,20 @@ msgstr ""
 msgid "Include Total Pages"
 msgstr ""
 
+#: src/history.rs:187
+msgid "Increase Font Size"
+msgstr ""
+
 #: src/gnome/paragraph.rs:495
 msgid "Increase Indent"
 msgstr ""
 
 #: src/gnome/adaptive.rs:382
 msgid "Increase Size"
+msgstr ""
+
+#: src/history.rs:188
+msgid "Indents"
 msgstr ""
 
 #: src/gnome/paragraph.rs:692
@@ -1025,12 +1145,32 @@ msgstr ""
 msgid "Insert"
 msgstr ""
 
+#: src/history.rs:189
+msgid "Insert Above"
+msgstr ""
+
+#: src/history.rs:190
+msgid "Insert Below"
+msgstr ""
+
 #: src/gnome/document_tools.rs:106
 msgid "Insert Image"
 msgstr ""
 
 #: src/gnome/document_tools.rs:196
 msgid "Insert Image…"
+msgstr ""
+
+#: src/history.rs:191
+msgid "Insert Left"
+msgstr ""
+
+#: src/history.rs:192
+msgid "Insert Right"
+msgstr ""
+
+#: src/history.rs:194
+msgid "Insert Row or Column by Clicking"
 msgstr ""
 
 #: src/gnome/tables.rs:35 src/gnome/tables.rs:95
@@ -1161,6 +1301,10 @@ msgstr ""
 msgid "Left to Right"
 msgstr ""
 
+#: src/history.rs:196
+msgid "Left-to-Right Text Direction"
+msgstr ""
+
 #: src/gnome/document_tools.rs:430
 msgid "Letter"
 msgstr ""
@@ -1197,8 +1341,16 @@ msgstr ""
 msgid "Line Between Columns"
 msgstr ""
 
+#: src/history.rs:197
+msgid "Line Break"
+msgstr ""
+
 #: src/gnome/paragraph.rs:724 src/history.rs:153
 msgid "Line Spacing"
+msgstr ""
+
+#: src/history.rs:198
+msgid "Line and Paragraph Spacing"
 msgstr ""
 
 #: src/gnome/context.rs:381 src/gnome/diagnostics/issues.rs:72 src/gnome/links.rs:59 src/gnome/menus.rs:511
@@ -1241,6 +1393,10 @@ msgstr ""
 msgid "Mixed"
 msgstr ""
 
+#: src/history.rs:199
+msgid "Modify Style"
+msgstr ""
+
 #: src/gnome/paragraph.rs:547
 msgid "More Paragraph Options…"
 msgstr ""
@@ -1251,6 +1407,10 @@ msgstr ""
 
 #: src/gnome/tab.rs:260
 msgid "More Text Options…"
+msgstr ""
+
+#: src/history.rs:200
+msgid "Move Table by Dragging"
 msgstr ""
 
 #: src/gnome/paragraph.rs:662
@@ -1271,6 +1431,10 @@ msgstr ""
 
 #: src/gnome/tab.rs:135 src/gnome/tab.rs:137
 msgid "Navigation"
+msgstr ""
+
+#: src/history.rs:201
+msgid "New Comment"
 msgstr ""
 
 #: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:141 src/gnome/tab.rs:731 src/gnome/workspace.rs:307
@@ -1339,6 +1503,10 @@ msgstr ""
 
 #: src/gnome/tables.rs:392
 msgid "None"
+msgstr ""
+
+#: src/history.rs:202
+msgid "Normal Style"
 msgstr ""
 
 #: src/gnome/header_options.rs:99
@@ -1429,6 +1597,10 @@ msgstr ""
 msgid "Page Number…"
 msgstr ""
 
+#: src/history.rs:203
+msgid "Page Setup"
+msgstr ""
+
 #: src/gnome/tables.rs:226
 msgid "Page Width"
 msgstr ""
@@ -1485,6 +1657,10 @@ msgstr ""
 msgid "Phonetic Guide"
 msgstr ""
 
+#: src/history.rs:204
+msgid "Pictures"
+msgstr ""
+
 #: src/gnome/popovers.rs:78 src/gnome/popovers.rs:207 src/gnome/popovers.rs:208 src/gnome/ruler.rs:303
 msgid "Pin"
 msgstr ""
@@ -1519,6 +1695,10 @@ msgstr ""
 
 #: src/gnome/menus.rs:422
 msgid "Print…"
+msgstr ""
+
+#: src/history.rs:205
+msgid "Properties"
 msgstr ""
 
 #: src/gnome/context.rs:627 src/gnome/tables.rs:547
@@ -1605,6 +1785,10 @@ msgstr ""
 msgid "Reopen Comment"
 msgstr ""
 
+#: src/history.rs:206
+msgid "Repeat Header Rows"
+msgstr ""
+
 #: src/gnome/history.rs:123 src/gnome/history.rs:136 src/gnome/history.rs:142
 msgid "Repeat Last Action"
 msgstr ""
@@ -1649,6 +1833,14 @@ msgstr ""
 msgid "Reset Paragraph Formatting"
 msgstr ""
 
+#: src/history.rs:207
+msgid "Resize Table by Dragging"
+msgstr ""
+
+#: src/history.rs:208
+msgid "Resolve"
+msgstr ""
+
 #: src/gnome/annotations.rs:313
 msgid "Resolve Comment"
 msgstr ""
@@ -1659,6 +1851,10 @@ msgstr ""
 
 #: src/gnome/paragraph.rs:685
 msgid "Restart Numbering at 1"
+msgstr ""
+
+#: src/history.rs:209
+msgid "Restart at 1"
 msgstr ""
 
 #: src/gnome/tables.rs:275
@@ -1681,6 +1877,10 @@ msgstr ""
 msgid "Reviewing"
 msgstr ""
 
+#: src/history.rs:210
+msgid "Reviewing Pane"
+msgstr ""
+
 #: src/gnome/paragraph.rs:700 src/gnome/paragraph.rs:837 src/gnome/tables.rs:214 src/gnome/tables.rs:396
 msgid "Right"
 msgstr ""
@@ -1695,6 +1895,10 @@ msgstr ""
 
 #: src/gnome/paragraph.rs:864
 msgid "Right to Left"
+msgstr ""
+
+#: src/history.rs:211
+msgid "Right-to-Left Text Direction"
 msgstr ""
 
 #: src/gnome/context.rs:571 src/gnome/context.rs:580
@@ -1837,6 +2041,10 @@ msgstr ""
 msgid "Select Table"
 msgstr ""
 
+#: src/history.rs:212
+msgid "Select Table Cells by Clicking"
+msgstr ""
+
 #: src/pictures.rs:24 src/pictures.rs:51 src/pictures.rs:66 src/pictures.rs:86 src/pictures.rs:92
 msgid "Select an Image"
 msgstr ""
@@ -1869,12 +2077,20 @@ msgstr ""
 msgid "Sentence case"
 msgstr ""
 
+#: src/history.rs:213
+msgid "Set Character Formatting"
+msgstr ""
+
 #: src/gnome/paragraph.rs:778
 msgid "Shading"
 msgstr ""
 
 #: src/gnome/adaptive.rs:430
 msgid "Shadow"
+msgstr ""
+
+#: src/history.rs:214
+msgid "Shift+Tab"
 msgstr ""
 
 #: src/gnome/menus.rs:318 src/gnome/menus.rs:498
@@ -1921,6 +2137,10 @@ msgstr ""
 msgid "Some Variants Are Linked"
 msgstr ""
 
+#: src/history.rs:215
+msgid "Sort"
+msgstr ""
+
 #: src/gnome/paragraph.rs:904
 msgid "Sort Selected Paragraphs"
 msgstr ""
@@ -1935,6 +2155,10 @@ msgstr ""
 
 #: src/gnome/columns.rs:192
 msgid "Spacing After Column {} (mm)"
+msgstr ""
+
+#: src/history.rs:216
+msgid "Spelling Suggestions"
 msgstr ""
 
 #: src/gnome/spellcheck.rs:217
@@ -2017,6 +2241,14 @@ msgstr ""
 msgid "Switch Pane"
 msgstr ""
 
+#: src/history.rs:217
+msgid "Tab"
+msgstr ""
+
+#: src/history.rs:218
+msgid "Tab Character"
+msgstr ""
+
 #: src/gnome/paragraph.rs:917
 msgid "Tab Stops"
 msgstr ""
@@ -2033,8 +2265,16 @@ msgstr ""
 msgid "Table Alignment"
 msgstr ""
 
+#: src/history.rs:219
+msgid "Table Column Width"
+msgstr ""
+
 #: src/gnome/tables.rs:204
 msgid "Table Properties"
+msgstr ""
+
+#: src/history.rs:220
+msgid "Table Row Height"
 msgstr ""
 
 #: src/gnome/tables.rs:39
@@ -2043,6 +2283,10 @@ msgstr ""
 
 #: src/gnome/menus.rs:384
 msgid "Table…"
+msgstr ""
+
+#: src/history.rs:221
+msgid "Tabs"
 msgstr ""
 
 #: src/gnome/text_palette.rs:323
@@ -2067,6 +2311,10 @@ msgstr ""
 
 #: src/history.rs:149
 msgid "Text Formatting"
+msgstr ""
+
+#: src/history.rs:222
+msgid "Text Highlight Color"
 msgstr ""
 
 #: src/proofing.rs:120
@@ -2245,6 +2493,10 @@ msgstr ""
 msgid "Top · Right"
 msgstr ""
 
+#: src/history.rs:223
+msgid "Track Changes"
+msgstr ""
+
 #: src/gnome/ruler.rs:163
 msgid "Trailing indent"
 msgstr ""
@@ -2255,6 +2507,10 @@ msgstr ""
 
 #: src/gnome/text_palette.rs:318
 msgid "Turquoise"
+msgstr ""
+
+#: src/history.rs:224
+msgid "Type Text"
 msgstr ""
 
 #: src/gnome/search.rs:84 src/gnome/search.rs:290
@@ -2275,6 +2531,10 @@ msgstr ""
 
 #: src/gnome/tab.rs:218
 msgid "Underline (Ctrl+U)"
+msgstr ""
+
+#: src/history.rs:225
+msgid "Underline Color"
 msgstr ""
 
 #: src/gnome/text_palette.rs:221
@@ -2307,6 +2567,10 @@ msgstr ""
 
 #: src/gnome/popovers.rs:76
 msgid "Unpin"
+msgstr ""
+
+#: src/history.rs:226
+msgid "Update Style to Match Selection"
 msgstr ""
 
 #: src/gnome/styles.rs:275
@@ -2351,6 +2615,10 @@ msgstr ""
 
 #: src/gnome/paragraph.rs:897
 msgid "Widow and Orphan Control"
+msgstr ""
+
+#: src/history.rs:227
+msgid "Widow/Orphan Control"
 msgstr ""
 
 #: src/gnome/columns.rs:182 src/gnome/document_tools.rs:216 src/gnome/document_tools.rs:442

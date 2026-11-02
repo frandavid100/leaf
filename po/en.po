@@ -2086,3 +2086,195 @@ msgstr "Undo History"
 
 msgid "{action} ({count} steps)"
 msgstr "{action} ({count} steps)"
+
+msgid "All Caps"
+msgstr "All Caps"
+
+msgid "Apply Style"
+msgstr "Apply Style"
+
+msgid "AutoFit"
+msgstr "AutoFit"
+
+msgid "AutoFit Column by Double-Clicking"
+msgstr "AutoFit Column by Double-Clicking"
+
+msgid "Backspace"
+msgstr "Backspace"
+
+msgid "Bookmark"
+msgstr "Bookmark"
+
+msgid "Change List Level"
+msgstr "Change List Level"
+
+msgid "Character Border"
+msgstr "Character Border"
+
+msgid "Clear All Formatting"
+msgstr "Clear All Formatting"
+
+msgid "Close Header and Footer"
+msgstr "Close Header and Footer"
+
+msgid "Create a Style"
+msgstr "Create a Style"
+
+msgid "Decrease Font Size"
+msgstr "Decrease Font Size"
+
+msgid "Delete Columns"
+msgstr "Delete Columns"
+
+msgid "Delete Rows"
+msgstr "Delete Rows"
+
+msgid "Different Odd & Even Pages"
+msgstr "Different Odd & Even Pages"
+
+msgid "Distribute Columns"
+msgstr "Distribute Columns"
+
+msgid "Distribute Rows"
+msgstr "Distribute Rows"
+
+msgid "Edit Footer"
+msgstr "Edit Footer"
+
+msgid "Edit Header"
+msgstr "Edit Header"
+
+msgid "Emboss"
+msgstr "Emboss"
+
+msgid "Enclose Characters"
+msgstr "Enclose Characters"
+
+msgid "Engrave"
+msgstr "Engrave"
+
+msgid "Field"
+msgstr "Field"
+
+msgid "Font Color"
+msgstr "Font Color"
+
+msgid "Formatting at Selection"
+msgstr "Formatting at Selection"
+
+msgid "Hidden"
+msgstr "Hidden"
+
+msgid "Increase Font Size"
+msgstr "Increase Font Size"
+
+msgid "Indents"
+msgstr "Indents"
+
+msgid "Insert Above"
+msgstr "Insert Above"
+
+msgid "Insert Below"
+msgstr "Insert Below"
+
+msgid "Insert Left"
+msgstr "Insert Left"
+
+msgid "Insert Right"
+msgstr "Insert Right"
+
+msgid "Insert Row or Column by Clicking"
+msgstr "Insert Row or Column by Clicking"
+
+msgid "Left-to-Right Text Direction"
+msgstr "Left-to-Right Text Direction"
+
+msgid "Line Break"
+msgstr "Line Break"
+
+msgid "Line and Paragraph Spacing"
+msgstr "Line and Paragraph Spacing"
+
+msgid "Modify Style"
+msgstr "Modify Style"
+
+msgid "Move Table by Dragging"
+msgstr "Move Table by Dragging"
+
+msgid "New Comment"
+msgstr "New Comment"
+
+msgid "Normal Style"
+msgstr "Normal Style"
+
+msgid "Page Setup"
+msgstr "Page Setup"
+
+msgid "Pictures"
+msgstr "Pictures"
+
+msgid "Properties"
+msgstr "Properties"
+
+msgid "Repeat Header Rows"
+msgstr "Repeat Header Rows"
+
+msgid "Resize Table by Dragging"
+msgstr "Resize Table by Dragging"
+
+msgid "Resolve"
+msgstr "Resolve"
+
+msgid "Restart at 1"
+msgstr "Restart at 1"
+
+msgid "Reviewing Pane"
+msgstr "Reviewing Pane"
+
+msgid "Right-to-Left Text Direction"
+msgstr "Right-to-Left Text Direction"
+
+msgid "Select Table Cells by Clicking"
+msgstr "Select Table Cells by Clicking"
+
+msgid "Set Character Formatting"
+msgstr "Set Character Formatting"
+
+msgid "Shift+Tab"
+msgstr "Shift+Tab"
+
+msgid "Sort"
+msgstr "Sort"
+
+msgid "Spelling Suggestions"
+msgstr "Spelling Suggestions"
+
+msgid "Tab"
+msgstr "Tab"
+
+msgid "Tab Character"
+msgstr "Tab Character"
+
+msgid "Table Column Width"
+msgstr "Table Column Width"
+
+msgid "Table Row Height"
+msgstr "Table Row Height"
+
+msgid "Tabs"
+msgstr "Tabs"
+
+msgid "Text Highlight Color"
+msgstr "Text Highlight Color"
+
+msgid "Track Changes"
+msgstr "Track Changes"
+
+msgid "Type Text"
+msgstr "Type Text"
+
+msgid "Update Style to Match Selection"
+msgstr "Update Style to Match Selection"
+
+msgid "Widow/Orphan Control"
+msgstr "Widow/Orphan Control"
