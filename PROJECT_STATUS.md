@@ -98,8 +98,12 @@ La revisión anterior de organización y continuidad está terminada y validada:
 
 ## Quién tiene lo pendiente
 
-David hará las capturas públicas y el alta de Weblate cuando pueda. No sustituir
-las capturas con otras de CI ni repetir el intento de acceso en el navegador remoto.
+David ha aportado la captura principal del README, incorporada con su
+[procedencia](docs/screenshots/README.md). La presentación pública y la guía de
+instalación se han simplificado; las notas de versiones siguen enlazadas en
+[docs](docs/RELEASE_NOTES.md). El alta de Weblate sigue pendiente de David.
+No sustituir capturas públicas por otras de CI ni repetir el intento de acceso
+en el navegador remoto.
 Las traducciones por PR ya son posibles. La preparación de Flathub requerirá
 revisar sus requisitos vigentes y participación humana; no se inicia ahora.
 

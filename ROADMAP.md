@@ -71,7 +71,7 @@ consultar las incidencias vigentes en GitHub antes de elegir un fallo.
 | --- | --- |
 | Nuevas ampliaciones de Orca | Aplazadas por David. Conservar el soporte y la prueba automática actuales. |
 | Pruebas humanas con Orca/braille, impresoras y GNOME OS | Esperar a disponer de usuarios; no bloquear otras tareas ni presentarlas como ya realizadas. |
-| Capturas públicas | Las proporcionará David; mantener las actuales hasta entonces. |
+| Capturas públicas | Captura principal proporcionada por David e incorporada al README; conservar procedencia y no sustituir por imágenes de CI. |
 | Weblate alojado | David completará la cuenta/autorización. Catálogos PO y aportaciones por PR ya disponibles. |
 | Flathub | Más adelante, con revisión de requisitos y colaboración humana. La distribución GitHub Flatpak ya existe. |
 | Actualización/optimización de WordCraft | Solo con autorización específica. Proponer allí los cambios del motor; no mezclarlos con optimizaciones de Leaf. |

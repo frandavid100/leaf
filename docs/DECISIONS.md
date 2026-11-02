@@ -23,7 +23,7 @@ propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funcion
 | Conflictos con cambios externos | Aplazados para priorizar marcadores/comentarios. | No iniciar esa ampliación ahora. |
 | Orca | La primera etapa se conserva; ampliaciones aplazadas. | Mantener las regresiones actuales sin iniciar tablas/imágenes accesibles por cuenta propia. |
 | Pruebas con personas | Esperar a que haya usuarios disponibles. | Diferenciar éxito automático de prueba humana; no bloquear trabajo independiente. |
-| Capturas | David proporcionará las públicas. | No sustituirlas por capturas de CI. Las capturas internas son solo validación. |
+| Capturas | Usar capturas públicas reales proporcionadas por David; la principal ya está incorporada al README. | Conservar procedencia; no sustituirlas por capturas de CI. Las capturas internas son solo validación. |
 | Traducciones | Inglés/español disponibles; colaboración por PO. Weblate pendiente de David. | No repetir el acceso remoto; conservar mensajes/placeholders y herramientas gettext. |
 | Corpus | Comprobaciones extensas manuales cuando se justifiquen. | No imponer el corpus completo por versión; usar regresiones pequeñas para fallos concretos. |
 | Distribución | GitHub Flatpak experimental, GNOME 49, permisos mínimos y portales. | Una nueva release exige fuentes identificables y pruebas instaladas. No iniciar Flathub automáticamente. |
