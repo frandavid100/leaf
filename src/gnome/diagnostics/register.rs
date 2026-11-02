@@ -211,6 +211,7 @@ pub(super) fn install_diagnostics(
     if std::env::args().any(|a| a == "--split-states-demo") {
         let m = align_menu.clone();
         let s = paragraph_popover.clone();
+        window.set_title(Some("Leaf Split Button Regression"));
         glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
             m.popup();
             glib::timeout_add_local_once(std::time::Duration::from_millis(400), move || {
@@ -228,6 +229,19 @@ pub(super) fn install_diagnostics(
                 let (tx, ty) = pop.surface_transform();
                 let x = surface.position_x() as f64 - tx;
                 let y = surface.position_y() as f64 - ty;
+                let trace = gtk::GestureClick::new();
+                trace.set_propagation_phase(gtk::PropagationPhase::Capture);
+                let weak = pop.downgrade();
+                trace.connect_pressed(move |_, _, x, y| {
+                    if let Some(pop) = weak.upgrade() {
+                        eprintln!(
+                            "SPLIT_CLICK {x} {y} target={:?}",
+                            pop.pick(x, y, gtk::PickFlags::DEFAULT)
+                                .map(|w| w.widget_name())
+                        );
+                    }
+                });
+                pop.add_controller(trace);
                 eprintln!(
                     "SPLIT_POINTER_READY {} {} {} {}",
                     (x + body.x() as f64 + body.width() as f64 / 2.0) as i32,
