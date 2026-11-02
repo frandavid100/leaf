@@ -20,7 +20,7 @@ while kill -0 "$pid" 2>/dev/null; do
   if [[ "$role" = edit || "$role" = cancel || "$role" = insert ]]; then
     window=$(xdotool search --onlyvisible --name '^Link$' | head -n1)
   fi
-  if (( last == 0 )) || [[ "$role" = edit || "$role" = cancel || "$role" = insert ]]; then
+  if [[ "$mode" != font ]] || (( last == 0 )); then
     xdotool windowfocus --sync "$window"
   fi
   case "$role" in
