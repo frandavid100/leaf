@@ -466,6 +466,8 @@ jobs:
           path: |
             followup19-*.log
             followup19-*.png
+            sweep20-pointer-*.log
+            sweep20-pointer-*.png
             sweep18-*.log
             table18-*.log
             text18-*.log

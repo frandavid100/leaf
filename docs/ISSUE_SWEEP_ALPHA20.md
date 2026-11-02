@@ -24,7 +24,10 @@ archive branches and the separate Weblate PR are preserved.
   shared toolbar/document-menu models, shortcut columns and document/revision
   guards. Redo inspection uses a disposable public edit snapshot, never a
   guessed frontend history or mutations of the live session.
-- #48: ruler API/layout investigation ongoing.
+- #48: 175ms native overlay, hover strip/pin/menu keyboard entry, public layout
+  alignment and indent/tab commands. Gestures retain selection and commit once;
+  stale document/revision/selection leases are rejected. Drag cancellation and
+  keyboard Undo/Redo are supported; no permanent page space is reserved.
 
 No issue is closed by this work until native and installed verification passes.
 
@@ -55,6 +58,25 @@ native API baseline; substituting the old widget does not meet its specification
 
 ## Validation so far
 
-Baseline: 128 Rust tests. Four new engine-history/repeat tests and the new caret
-fade/static-state test pass. GUI compilation succeeds. Real GTK interaction,
-visual inspection, translations and installed packaging are in progress.
+Baseline: 128 Rust tests; current full suite: **140 passed**. Four new engine
+history/repeat tests, one caret fade/static-state test, three ruler regressions
+and four structural ODT save-preservation tests pass. Four Python tests,
+project links and 611 complete English/Spanish gettext messages also pass.
+
+The real pointer/keyboard driver `tools/sweep20-pointer-test.sh` verifies
+Repeat at another selection, ordinary Undo/Redo, cumulative history traversal,
+non-mutating opening/cancellation, ruler hover/pin, drag, keyboard adjustment,
+Undo, selection retention, zoom/scroll and current/total tooltip synchronization.
+The native English run passes. Spanish/HiDPI, optimized native CI and installed
+Flatpak checks are still pending; no issue is closed and no alpha.20 release is
+claimed at this checkpoint.
+
+Native interaction testing found and fixed two reentrancy/focus problems: focus
+notifications must not overwrite font/size input, and changing the Pages tooltip
+must occur after releasing the document borrow because GTK can immediately query
+the canvas tooltip. Native ruler keyboard Undo is explicitly routed while ruler
+focus is held, without taking Ctrl+Z from native text fields.
+
+The source-identical engine boundary remains intact (`Cargo.toml`, `Cargo.lock`,
+`vendor`, `patches`). Full DOCX/ODT corpus and new Orca stages were not added.
+No claim of human Wayland/GNOME OS/IME/device testing is made.

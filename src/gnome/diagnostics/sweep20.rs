@@ -36,6 +36,8 @@ fn selected(ui: &Rc<Ui>, n: usize) {
 }
 pub(super) fn sweep20_pointer_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     window.set_title(Some("Leaf Sweep20 Regression"));
+    let icons = gtk::IconTheme::for_display(&gdk::Display::default().unwrap());
+    assert!(icons.has_icon("compass-symbolic") && icons.has_icon("comment-symbolic"));
     opened(
         ui,
         Session::new(wordcraft_doc::Document::from_text(
@@ -125,6 +127,21 @@ fn stage(t: Rc<Sweep>, n: u8) {
             ("hover", vec![(10, 20)])
         }
         _ => {
+            let before = u.current.borrow().as_ref().unwrap().session.doc.clone();
+            let settings = u.document_box.settings();
+            let old = settings.property::<bool>("gtk-cursor-blink");
+            settings.set_property("gtk-cursor-blink", false);
+            {
+                let mut c = u.current.borrow_mut();
+                selection::set_caret(&mut c.as_mut().unwrap().session, &Pos::body(1, 0), false)
+                    .unwrap();
+            }
+            refresh_selection(u);
+            u.document_box.grab_focus();
+            restart_caret(u);
+            assert_eq!(caret_opacity(u, glib::monotonic_time()), 1.0);
+            settings.set_property("gtk-cursor-blink", old);
+            assert_eq!(u.current.borrow().as_ref().unwrap().session.doc, before);
             eprintln!("SWEEP20_POINTER_OK");
             t.app.quit();
             return;

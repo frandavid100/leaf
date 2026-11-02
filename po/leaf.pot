@@ -1445,7 +1445,7 @@ msgstr ""
 msgid "Pages"
 msgstr ""
 
-#: src/gnome/diagnostics/sweep20.rs:205 src/gnome/view.rs:40
+#: src/gnome/diagnostics/sweep20.rs:222 src/gnome/view.rs:40
 msgid "Pages: {current} of {total}"
 msgstr ""
 
