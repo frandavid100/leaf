@@ -24,6 +24,12 @@ Preferencias permite desactivar el autoguardado, usar un archivo de recuperació
 puede modificar el original abierto; actívala conscientemente. Recuperar documentos
 está en el menú principal. Una operación cancelada o fallida conserva los cambios.
 
+Para conservar ecuaciones editables, notas al pie, índice automático e imágenes
+flotantes con ajuste del texto, usa DOCX. Leaf rechaza guardar esas estructuras
+en ODT mientras el exportador actual las pierda o aplane. La recuperación usa
+un formato que las conserve. Las interfaces completas de creación de esas cuatro
+funciones siguen pendientes.
+
 ## Edición e interfaz
 
 Escritura Unicode, selección con ratón/teclado, copiar/cortar/pegar y deshacer/rehacer.
@@ -37,12 +43,32 @@ permite seguir aplicando opciones sin cerrarlos; abrir otro sustituye al anterio
 El clic derecho abre opciones nativas de texto, tablas o imágenes; sus páginas
 de formato quedan contenidas en el menú contextual.
 
+Cada botón de Deshacer/Rehacer tiene una flecha para abrir su historial; el menú
+del documento contiene las mismas listas. Elegir una fila inferior recorre todos
+los pasos hasta ella. Solo la primera muestra Ctrl+Z o Ctrl+Mayús+Z. Si no hay
+nada que rehacer, el cuerpo de Rehacer puede mostrar «Repetir última acción»:
+aplica el último formato de texto/párrafo admitido al destino actual. Por ejemplo,
+aplica 14 pt a otro fragmento seleccionado. Escritura, archivos y operaciones
+estructurales no se repiten; un cambio nuevo conserva las reglas normales de
+invalidación de Rehacer.
+
+La regla aparece sobre el borde superior del área visible del documento al
+acercar el puntero, o desde «Regla» en el menú del documento. «Mantener abierto»
+la fija sin reservar espacio ni mover páginas. Arrastra los marcadores de sangría
+o tabulación; pulsa en la escala para añadir una tabulación izquierda. Con foco
+en la regla, Arriba/Abajo eligen marcador, Izquierda/Derecha lo ajustan (Mayús:
+10 pt), Insertar añade tabulación, Suprimir la elimina y Escape vuelve al texto.
+La selección se conserva; cada gesto confirmado admite Deshacer. «Página N»
+identifica la página del destino activo, incluso si se ha desplazado fuera de la
+vista. Las pestañas laterales Navegación y Comentarios usan brújula y bocadillo;
+el tooltip de Páginas muestra página actual y total.
+
 Estilo muestra los estilos del documento con búsqueda, aplicación y gestión.
 Párrafo reúne alineación, listas, sangría, interlineado, bordes/sombreado y columnas.
 Texto contiene fuente y tamaño editables en una fila, con menús de opciones y
 vistas previas. Los valores válidos de formato se aplican directamente. Los controles principales de los paneles
-fijados siguen la selección y muestran valores mixtos; la sincronización del editor
-de columnas al cambiar de sección sigue pendiente en #12. Texto también contiene formato e idioma. Las opciones avanzadas están
+fijados siguen la selección y muestran valores mixtos. El editor de columnas se
+sincroniza al cambiar de sección. Texto también contiene formato e idioma. Las opciones avanzadas están
 un nivel dentro de sus paneles. Columnas admite el alcance que ofrece su editor;
 las anchuras desiguales tienen limitaciones de conservación en ODT.
 También hay [fallos visuales comunicados](TEST_RESULTS.md) con anchuras desiguales

@@ -1,0 +1,94 @@
+{
+  "release": "v0.1.0-alpha.20",
+  "date": "2026-11-02",
+  "source_commit": "06126ef357531fb33b4691361af2dbf2da17bb77",
+  "source_tree": "4a7de309dc3407a326358c3f3d97cfc86c7f2a8c",
+  "base_commit": "21667e8b649538d3a61d230b327a658e9906fd66",
+  "branch": "main",
+  "candidate_closures": [
+    18,
+    48,
+    49,
+    50,
+    51,
+    58,
+    59,
+    60
+  ],
+  "closed": [],
+  "remaining": [
+    1,
+    2,
+    7,
+    9,
+    37,
+    52,
+    53,
+    54,
+    55,
+    56
+  ],
+  "checks": {
+    "rust": 141,
+    "python": 4,
+    "gettext_source_messages": 611,
+    "fmt": true,
+    "docs_links": true,
+    "release_build": true,
+    "engine_dependencies_patches_unchanged": true
+  },
+  "local_native": {
+    "environment": "Xvfb, GTK 4.14/libadwaita 1.4 compatibility libraries; accessibility bridge disabled locally",
+    "real_repeat_undo_redo_cumulative_history_pointer_keyboard": true,
+    "ruler_hover_pin_drag_keyboard_undo": true,
+    "selection_and_one_undo_step_per_ruler_drag": true,
+    "scroll_zoom_current_total_tooltip": true,
+    "english_spanish_hidpi_200_percent": true,
+    "optimized_binary_pointer_regression": true,
+    "font_size_focus_regression_english_spanish": true,
+    "document_chrome_submenus_and_actions": true,
+    "spanish_localization_assertions": true,
+    "theme_light_dark_visual_inspection": true,
+    "ruler_dark_hide_add_tab_drop_outside_undo_cancel_visual_inspection": true,
+    "header_page_hint_passive_probe_regression": true,
+    "header_menu_and_real_pointer_return": true,
+    "link_shortcut_context_cancel_insert_and_hover": true,
+    "ruler_keyboard_pin_unpin_visual_inspection": true
+  },
+  "capability_audit": {
+    "reproducer": "examples/issue20_capabilities.rs",
+    "docx": "structured math, footnote parts, automatic TOC field and square floating-image wrapping retained in synthetic controls",
+    "odt": "equation/footnote/TOC structures lost; floating image becomes inline",
+    "save_guards": "four tests refuse before writing existing ODT, preserve live session/selection/history/path and permit DOCX roundtrip",
+    "scope": "no full native advanced authoring UI or universal interoperability claim"
+  },
+  "ci": {
+    "source": "06126ef357531fb33b4691361af2dbf2da17bb77",
+    "run": 41465864269,
+    "url": "https://github.com/frandavid100/leaf/actions/runs/41465864269",
+    "status": "in_progress",
+    "conclusion": null
+  },
+  "publication": null,
+  "preserved": {
+    "prior_releases_and_tags": 18,
+    "apexdesk_archive": true,
+    "wordcraft_saving": true,
+    "separate_weblate_pr_57": true
+  },
+  "limits": [
+    "No engine, dependency, vendor or patch changes.",
+    "Original contextual-spacing DOCX and affected GNOME Files samples remain needed.",
+    "Advanced authoring issues 53–56 remain open despite saving guards.",
+    "No new Orca stages or public screenshot replacements.",
+    "Automated success is not human GNOME OS/Wayland/IME/device testing."
+  ],
+  "previous_ci_attempt": {
+    "source": "f52a36d5a8889ba9cefe57c5bbeb0117c0409604",
+    "run": 41463228240,
+    "conclusion": "failure",
+    "blocked_publication": true,
+    "failure": "passive canvas link tooltip changed the active header page hint",
+    "fixed": "separate passive probe from committed hit selection; 141 Rust tests and unchanged header UI/pointer and link regressions pass locally"
+  }
+}

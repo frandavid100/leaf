@@ -58,18 +58,27 @@ native API baseline; substituting the old widget does not meet its specification
 
 ## Validation so far
 
-Baseline: 128 Rust tests; current full suite: **140 passed**. Four new engine
+Baseline: 128 Rust tests; current full suite: **141 passed**. Four new engine
 history/repeat tests, one caret fade/static-state test, three ruler regressions
-and four structural ODT save-preservation tests pass. Four Python tests,
+and four structural ODT save-preservation tests pass. The additional passive
+header-probe regression preserves the active page, selection and history. Four Python tests,
 project links and 611 complete English/Spanish gettext messages also pass.
 
 The real pointer/keyboard driver `tools/sweep20-pointer-test.sh` verifies
 Repeat at another selection, ordinary Undo/Redo, cumulative history traversal,
 non-mutating opening/cancellation, ruler hover/pin, drag, keyboard adjustment,
 Undo, selection retention, zoom/scroll and current/total tooltip synchronization.
-The native English run passes. Spanish/HiDPI, optimized native CI and installed
-Flatpak checks are still pending; no issue is closed and no alpha.20 release is
-claimed at this checkpoint.
+Native English, Spanish and 200% HiDPI pointer runs pass, as does the optimized
+binary run. Explicit Spanish localization assertions and the previous Font/Size
+regression also pass. Optimized native CI has passed the new gestures and document
+chrome checks; the remaining native and installed Flatpak checks are pending.
+No issue is closed and no alpha.20 release is claimed at this checkpoint.
+
+Additional local Xvfb interaction/visual inspection in dark mode verified reveal,
+auto-hide, pinning, adding a tab, dragging it outside the ruler to remove it,
+Undo restoration, Escape cancellation without committing, document-menu entry
+and keyboard pin/unpin. Page geometry stayed fixed. These are synthetic local
+observations, not a claim of human Wayland/physical-device testing.
 
 Native interaction testing found and fixed two reentrancy/focus problems: focus
 notifications must not overwrite font/size input, and changing the Pages tooltip
@@ -80,3 +89,49 @@ focus is held, without taking Ctrl+Z from native text fields.
 The source-identical engine boundary remains intact (`Cargo.toml`, `Cargo.lock`,
 `vendor`, `patches`). Full DOCX/ODT corpus and new Orca stages were not added.
 No claim of human Wayland/GNOME OS/IME/device testing is made.
+
+## Follow-up on older reports
+
+- #1: upstream [#2382](https://github.com/storytold/wordcraft/issues/2382)
+  remains open. Distinct stored widths do not establish correct automatic
+  continuation of a paragraph into the next column; the engine pin is unchanged.
+- #2: upstream [#5178](https://github.com/storytold/wordcraft/issues/5178) is now
+  closed. This does not update Leaf's pinned revision or verify its reported
+  two-versus-three selected-text case. No duplicate issue or local renderer fork.
+- #7: the missing-even-slot fallback reproduction in [ISSUE7_TRIAGE](ISSUE7_TRIAGE.md)
+  still applies to the current entry path. A direct createHeader command has a
+  different allocation path, but temporary body positioning, inherited sections,
+  direct clicks and return/undo semantics need verification before using it as
+  a fix. Existing distinct variants passing round trips is not enough.
+- #9: ordinary paragraph spacing passes; the original DOCX/contextual/automatic
+  spacing case is still not reproduced, so it remains open.
+- #37: the requested AdwInlineViewSwitcher requires a newer libadwaita API than
+  the supported native baseline. A dependency upgrade needs separate scope.
+- #52: no Leaf thumbnail provider or embedded DOCX thumbnails were found in the
+  synthetic controls. The reported affected files/provider/cache are still needed
+  to attribute the blank GNOME Files preview; no cache was deleted.
+- #53–#56: existing upstream [#2669](https://github.com/storytold/wordcraft/issues/2669)
+  already covers ODT model-depth gaps including math, notes and automatic TOC;
+  [#2686](https://github.com/storytold/wordcraft/issues/2686) is a closed historical
+  field-export report. New reduced tests show the pinned build's specific losses.
+  Leaf now blocks these lossy ODT saves, but full native authoring, update,
+  navigation and interoperability requirements remain. No duplicate upstream
+  issue was opened and no engine patch was made.
+
+## First CI candidate
+
+Source `f52a36d5a8889ba9cefe57c5bbeb0117c0409604`,
+[run 41463228240](https://github.com/frandavid100/leaf/actions/runs/41463228240),
+passed format/Python/gettext/Rust, optimized compilation, alpha18/19 pointer
+regressions, new alpha20 gestures, document chrome, issue controls, cache and
+localization. The header regression then caught an unintended page-hint change:
+querying a canvas hyperlink tooltip used the same hit adapter as a committed
+click. The new Pages tooltip caused GTK to issue that passive query immediately.
+Publication was blocked; no alpha.20 tag/release was created from this source.
+
+The follow-up separates passive `header_footer::probe`/`inspect_canvas_point`
+from committed hit selection. Link hover/tooltip uses its own physical-page hint
+for ink geometry, leaving the active document target untouched. A new regression
+checks page hint, selection, document, revision and undo depth; committed hits
+still select their clicked page. The original UI and real-pointer header tests
+are rerun unchanged.

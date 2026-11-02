@@ -61,6 +61,8 @@ session while inspecting it.
 | --- | --- | --- |
 | Mouse, keyboard, input methods | [input.rs](../src/gnome/input.rs) | [selection.rs](../src/selection.rs), [editing.rs](../src/editing.rs); selection/editing root tests. |
 | Native selection appearance | [selection_style.rs](../src/gnome/selection_style.rs) | [selection_ink.rs](../src/selection_ink.rs); disposable public display-list ink, bounded raster cache, theme colors and no document mutation. |
+| History and repeat | [history.rs](../src/gnome/history.rs) | [history.rs](../src/history.rs); real engine labels/snapshots, cumulative traversal, bounded formatting replay, stale targets and `tools/sweep20-pointer-test.sh`. |
+| Viewport ruler | [ruler.rs](../src/gnome/ruler.rs) | [ruler.rs](../src/ruler.rs); public placed-line geometry and indent/tab commands, selection leases, ruler tests and real pointer/keyboard checks. |
 | Edit/format refresh | [commands.rs](../src/gnome/commands.rs), [selection_view.rs](../src/gnome/selection_view.rs) | [formatting.rs](../src/formatting.rs); advanced_formatting tests. |
 | Open/save/close confirmation | [files.rs](../src/gnome/files.rs), [workspace.rs](../src/gnome/workspace.rs) | [saving.rs](../src/saving.rs); saving/recovery_search tests. |
 | Pages, zoom, thumbnails, HiDPI | [view.rs](../src/gnome/view.rs), [paintable.rs](../src/gnome/paintable.rs) | [viewer_layout.rs](../src/viewer_layout.rs); hidpi tests and `--host-cache-ui-test`. |
