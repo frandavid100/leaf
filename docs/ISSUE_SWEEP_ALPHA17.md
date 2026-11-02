@@ -3,10 +3,9 @@
 Requested by David on 2026-11-02: close all issues that can be resolved and publish
 another alpha. Starting branch `wordcraft-saving`, source
 `27bbfcb5930964db2c2e179a679430c9ce6d5c0c`. The 28 currently open reports were read.
-This candidate is awaiting full native/installed validation and publication;
-no issue is closed before that verification.
+Published and verified on 2026-11-02 as [v0.1.0-alpha.17](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.17), source `d1bbc41fdcd79de3b88c974e3f3549f37e58a00a`. The 18 candidates below were closed only after native/installed validation and public download/checksum verification. [Machine-readable evidence](ISSUE_SWEEP_ALPHA17_VALIDATION.json).
 
-## Candidates for closure
+## Resolved and closed
 
 | Issues | Implemented change and targeted checks |
 | --- | --- |
@@ -63,8 +62,31 @@ destroyed before the canvas gained focus. The tab now owns that context and
 clears its client widget during teardown. The real-keyboard interaction test
 also returns from the Font/Size entries to the canvas and inserts `GNOME`; this
 runs both natively and in the installed Flatpak. Full validation and publication
-are still pending; the candidate issues remain open until those checks pass.
+completed successfully in [run 41373872997](https://github.com/frandavid100/leaf/actions/runs/41373872997); the 18 candidate issues are now closed.
 
 Native/installed screenshots are internal QA only. Keep the existing Orca stage
 as regression, without new accessibility scope. No claim of human GNOME OS,
 physical-printer, braille or every-document testing. Dependency boundary unchanged.
+
+## Final verification and remaining work
+
+117 Rust and four Python tests, catalogs, GUI compilation, native controls,
+real pointer/keyboard input, GTK lifecycle, screenshots and 100/200 percent HiDPI
+passed. Installed Flatpak upgrade from alpha.16, input, native URI delivery,
+file/print portals, reinstall/data retention and AT-SPI/Orca regression passed.
+All eight public release assets match their GitHub digests; SHA256SUMS and the
+source file were independently checked after downloading the published assets.
+
+Earlier split-button Xvfb attempts failed despite matching coordinates and an
+enabled widget. The final probe retains raw event diagnostics and asserts that
+the detail page remains open after release. Focus/root-coordinate changes alone
+did not establish the cause of those earlier failures. Document gestures now
+deny foreign-surface sequences and avoid refreshing on an unrelated drag end;
+the paragraph home page records its displayed state to avoid redundant rebuilds.
+Do not turn this single automated desktop into a claim about every environment.
+
+The ten preserved reports (#1, #2, #5, #6, #7, #9, #14, #15, #16, #30) stay open.
+The later #40–#43 also remain open: the three-row Text redesign, launcher icons,
+system selection colors and current-heading highlighting are not in alpha.17.
+There are 14 open reports after this release. main, WordCraft, dependencies,
+vendor and patches are unchanged by this publication recovery.

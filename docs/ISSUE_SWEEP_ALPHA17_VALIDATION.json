@@ -1,0 +1,120 @@
+{
+  "version": "0.1.0-alpha.17",
+  "source_commit": "d1bbc41fdcd79de3b88c974e3f3549f37e58a00a",
+  "release_url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.17",
+  "published_at": "2026-11-02T01:58:08Z",
+  "workflow_run": "https://github.com/frandavid100/leaf/actions/runs/41373872997",
+  "native_job_id": 125049845170,
+  "installed_job_id": 125053019036,
+  "native_result": "success",
+  "installed_result": "success",
+  "rust_tests": 117,
+  "python_tests": 4,
+  "gettext_source_messages": 590,
+  "checks": [
+    "formatting",
+    "documentation links",
+    "English and Spanish catalogs",
+    "real pointer and keyboard input",
+    "canvas typing after font/size focus",
+    "heading top alignment",
+    "proofing menus",
+    "GTK lifetime and memory regression",
+    "table keyboard input",
+    "100% and 200% logical geometry and raster density",
+    "Flatpak upgrade from alpha.16",
+    "installed interactions",
+    "real URI handler/portal dispatch without contacting a website",
+    "file open/save through portals",
+    "reinstallation retains data",
+    "native print dialog and print portal handoff",
+    "AT-SPI document text",
+    "Orca document speech"
+  ],
+  "closed_issues": [
+    12,
+    18,
+    19,
+    22,
+    25,
+    26,
+    27,
+    28,
+    29,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39
+  ],
+  "remaining_issues": [
+    1,
+    2,
+    5,
+    6,
+    7,
+    9,
+    14,
+    15,
+    16,
+    30,
+    40,
+    41,
+    42,
+    43
+  ],
+  "engine_dependencies_vendor_patches_unchanged": true,
+  "public_assets_verified": [
+    {
+      "name": "flatpak-metadata.txt",
+      "size": 200,
+      "digest": "sha256:a7fdfdaba74ae6e2e1a65ef15051642e1b18808be444370aa3b4bad71b3b2345"
+    },
+    {
+      "name": "flatpak-smoke.log",
+      "size": 4260,
+      "digest": "sha256:39cb526caee1195984015377b6c98500bfa24aa2c504400584b71773cdb43fdc"
+    },
+    {
+      "name": "INSTALL.md",
+      "size": 2138,
+      "digest": "sha256:8c69574b36ee0f8fba657be1e3d6afbb12726cf24d0d5ca7a604080d69198614"
+    },
+    {
+      "name": "Leaf-0.1.0-alpha.17-x86_64.flatpak",
+      "size": 10924704,
+      "digest": "sha256:d4337d435395c7b8480d1563c05e0cce28a459c98ff064defeb0bb3904255ff0"
+    },
+    {
+      "name": "runtime-commit.txt",
+      "size": 65,
+      "digest": "sha256:588c80c4d5d01ba6871ca2336d2c615e16c8d0fdbdcc8c6707bdbe1ce3173499"
+    },
+    {
+      "name": "runtime.txt",
+      "size": 29,
+      "digest": "sha256:cc98943bf0d0696d69c2e647f51ef070a92528714cd03342e77b1d45a92efa3c"
+    },
+    {
+      "name": "SHA256SUMS",
+      "size": 596,
+      "digest": "sha256:bc981f8080d0cebc9c3e309d027e13fc45085ba105009b43407b5a4f9316a565"
+    },
+    {
+      "name": "source-commit.txt",
+      "size": 41,
+      "digest": "sha256:74a70ece0c8bd89affe1e460e8f26b59b0ee773fb1c858f14651e0d52c31fcac"
+    }
+  ],
+  "public_checksums_verified": true,
+  "source_file_verified": true,
+  "limitations": [
+    "Automated validation; no claim of human GNOME OS, physical printer or every-document testing.",
+    "ODT comments/category preservation still requires DOCX.",
+    "The split-button Xvfb probe failed in earlier attempts. The final successful run retains raw event diagnostics and checks that the detail page remains open after button release; focus/coordinate changes alone did not explain the earlier failures."
+  ]
+}

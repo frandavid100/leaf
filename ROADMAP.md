@@ -1,6 +1,6 @@
 # Hoja de ruta de Leaf
 
-Actualizada: 1 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
+Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
@@ -26,11 +26,18 @@ desde alpha.13, portales y Orca automatizada. [Registro](docs/BOOKMARKS_COMMENTS
 La protección general frente a cambios externos sigue aplazada. No iniciar
 nuevas etapas de Orca.
 
-## En curso: segunda revisión y alpha.17
+## Completado: segunda revisión y alpha.17
 
-David autoriza resolver los pendientes posibles y publicar otra alpha.
-[Alcance y candidatos](docs/ISSUE_SWEEP_ALPHA17.md). Cerrar solo después de
-validar; conservar las limitaciones y los demás issues abiertos.
+Publicada y verificada: 18 informes resueltos (#12, #18, #19, #22, #25–#29,
+#31–#39). La entrega incluye selección por palabras y con Mayús, entrada de texto,
+enlaces utilizables, menús de revisión, navegación y refinamientos nativos.
+117 pruebas Rust y CI nativa/Flatpak instalado completas, incluida actualización,
+portales y Orca automatizada. [Resultado](docs/ISSUE_SWEEP_ALPHA17.md) y
+[evidencia](docs/ISSUE_SWEEP_ALPHA17_VALIDATION.json).
+
+Quedan 14 issues abiertos: los diez pendientes conservados y #40–#43, creados
+posteriormente. No se ha iniciado otra ampliación, Weblate, Flathub ni la fusión
+con main. La rama activa sigue siendo wordcraft-saving.
 
 ## Completado: revisión de issues y alpha.16
 

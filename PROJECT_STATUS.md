@@ -1,6 +1,6 @@
 # Estado actual de Leaf
 
-Actualizado: 1 de noviembre de 2026. Esta página describe el presente;
+Actualizado: 2 de noviembre de 2026. Esta página describe el presente;
 el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.
 
 ## Dónde trabajar
@@ -11,33 +11,38 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En preparación: alpha.17
-
-Nueva revisión autorizada de los 28 issues abiertos. Candidatos: #12, #18, #19,
-#22, #25–#29 y #31–#39. #30 recibe mejoras parciales. Cierre y publicación
-pendientes de validación nativa/instalada. [Alcance](docs/ISSUE_SWEEP_ALPHA17.md).
-
 ## Última versión publicada
 
-[Alpha.16, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.16).
-ID `io.github.frandavid100.leaf`, runtime GNOME 49, actualización desde alpha.15.
-Tag, paquete y fuente nativa `a7e3f349f8a4a2fdb3033acaecbc36d20d5f3cd2`.
-Bundle: 10.894.408 bytes,
-SHA256 `e1f08d048733bcdc6725066c81785df8bd65775db67e574242947fb157993120`.
-Descarga pública, las ocho sumas/digests de assets y fuente verificadas.
+[Alpha.17, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.17),
+publicada y verificada el 2 de noviembre de 2026. Fuente nativa y tag:
+`d1bbc41fdcd79de3b88c974e3f3549f37e58a00a`.
+ID `io.github.frandavid100.leaf`, runtime GNOME 49, actualización desde alpha.16.
+Bundle: 10.924.704 bytes; SHA256
+`d4337d435395c7b8480d1563c05e0cce28a459c98ff064defeb0bb3904255ff0`.
+Descarga pública, las ocho sumas/digests de assets y fuente comprobadas.
 No hay feed automático de actualizaciones ni publicación en Flathub.
 
-**32 issues revisados**: los 24 iniciales y ocho añadidos durante el trabajo.
-**14 cerrados; 18 abiertos**, incluido #12 parcialmente mejorado. El resto conserva
-su trabajo pendiente, con notas de revisión en cada issue.
-[Resultado por issue, evidencia y límites](docs/ISSUE_SWEEP_ALPHA16.md).
+**18 issues cerrados en esta entrega:** #12, #18, #19, #22, #25–#29 y #31–#39.
+Estado consultado tras el cierre: **29 cerrados y 14 abiertos** de 43 informes.
+Siguen abiertos #1, #2, #5, #6, #7, #9, #14, #15, #16 y #30; los pedidos nuevos
+#40–#43 no forman parte de esta entrega. Consultar GitHub para cambios posteriores.
+[Resultado por issue](docs/ISSUE_SWEEP_ALPHA17.md) y
+[evidencia verificable](docs/ISSUE_SWEEP_ALPHA17_VALIDATION.json).
 
-113 pruebas Rust, cuatro Python, 590 mensajes fuente gettext y la ronda gráfica
-nativa completa superadas. Flatpak instalado: controles nuevos, actualización
-desde alpha.15, reinstalación con datos, guardado/reapertura real mediante portal,
-impresión y regresión Orca/AT-SPI.
-[CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41357492415).
+117 pruebas Rust, cuatro Python, 590 mensajes fuente gettext y la ronda gráfica
+nativa completa superadas, incluyendo ratón/teclado, memoria, tablas y HiDPI.
+Flatpak instalado: actualización desde alpha.16, escritura al volver desde
+Fuente/Tamaño, reinstalación con datos, guardado/reapertura por portal, impresión,
+apertura nativa de enlaces y regresión Orca/AT-SPI.
+[CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41373872997).
 No equivale a pruebas humanas de todos los documentos, lectores o impresoras.
+
+La interrupción anterior no perdió el trabajo. Se corrigió la propiedad del
+contexto de entrada para conservar la escritura del documento al cambiar de
+foco. La prueba Xvfb del chevrón se aisló y la ejecución final verifica que la
+subpágina permanece abierta tras soltar el ratón; las trazas conservan el alcance
+y las limitaciones del diagnóstico. La alpha.16 anterior queda documentada en
+[su revisión](docs/ISSUE_SWEEP_ALPHA16.md).
 
 ## Entrega acumulada completada
 
