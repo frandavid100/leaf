@@ -38,7 +38,12 @@ pub(super) fn option_switch(group: &adw::PreferencesGroup, title: &str) -> gtk::
     b
 }
 impl HeaderControls {
-    pub(super) fn new(ui: &Rc<Ui>, page: &adw::PreferencesPage, initial: usize) -> Rc<Self> {
+    pub(super) fn new(
+        ui: &Rc<Ui>,
+        page: &adw::PreferencesPage,
+        initial: usize,
+        odd_even: gtk::Switch,
+    ) -> Rc<Self> {
         let snapshots = {
             let v = ui.current.borrow();
             let s = &v.as_ref().unwrap().session;
@@ -76,10 +81,6 @@ impl HeaderControls {
         variants.set_title(wordcraft_gnome::t!("Headers and Footers"));
         page.add(&variants);
         let first = option_switch(&variants, wordcraft_gnome::t!("Different First Page"));
-        let odd_even = option_switch(
-            &variants,
-            wordcraft_gnome::t!("Different Odd and Even Pages"),
-        );
         odd_even.set_active(snapshots[initial].odd_even);
         let header = properties_number(
             &variants,

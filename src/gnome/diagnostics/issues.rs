@@ -27,7 +27,7 @@ pub(super) fn issue_sweep_ui_test(
         )),
         "Issues",
     );
-    let props = show_document_properties(ui, window);
+    let props = super::super::document_properties_dialog::show_section_properties(ui, window, 0);
     let pages = find_widget(&props.window, "document-properties-pages")
         .unwrap()
         .downcast::<adw::ViewStack>()
@@ -36,7 +36,7 @@ pub(super) fn issue_sweep_ui_test(
     props.metadata[0].set_text("Pending title");
     pages.set_visible_child_name("page");
     pages.set_visible_child_name("headers");
-    pages.set_visible_child_name("information");
+    pages.set_visible_child_name("page");
     assert_eq!(props.metadata[0].text(), "Pending title");
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, before);
     eprintln!("ISSUE_NATIVE_VIEW_SWITCHER_OK");

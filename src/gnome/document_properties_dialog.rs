@@ -32,10 +32,26 @@ pub(super) fn show_document_properties(
     ui: &Rc<Ui>,
     parent: &ApplicationWindow,
 ) -> DocumentProperties {
+    show_properties(ui, parent, None)
+}
+
+pub(super) fn show_section_properties(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+    section: usize,
+) -> DocumentProperties {
+    show_properties(ui, parent, Some(section))
+}
+
+fn show_properties(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+    target: Option<usize>,
+) -> DocumentProperties {
     let (state, section, info) = {
         let mut value = ui.current.borrow_mut();
         let s = &mut value.as_mut().unwrap().session;
-        let i = page_options::current_section(s);
+        let i = target.unwrap_or_else(|| page_options::current_section(s));
         let p = s.doc.sections()[i].1;
         (
             PageSetup {
@@ -52,7 +68,11 @@ pub(super) fn show_document_properties(
     };
     let identity = document_identity(ui);
     let window = adw::Window::builder()
-        .title(wordcraft_gnome::t!("Document Properties"))
+        .title(if target.is_some() {
+            wordcraft_gnome::t!("Section Properties")
+        } else {
+            wordcraft_gnome::t!("Document Properties")
+        })
         .transient_for(parent)
         .modal(true)
         .default_width(480)
@@ -135,8 +155,8 @@ pub(super) fn show_document_properties(
         .borrow()
         .as_ref()
         .is_some_and(|d| d.session.doc.sections().len() > 1);
-    scope.set_selected(if multi { 1 } else { 0 });
-    scope.set_visible(multi);
+    scope.set_selected(if multi || target.is_some() { 1 } else { 0 });
+    scope.set_visible(multi && target.is_none());
     margins.add(&scope);
     let message = gtk::Label::new(None);
     message.set_wrap(true);
@@ -191,12 +211,25 @@ pub(super) fn show_document_properties(
     );
     stack.add_titled(&page, Some("page"), wordcraft_gnome::t!("Page"));
     let header_page = adw::PreferencesPage::new();
-    let headers = HeaderControls::new(ui, &header_page, section);
+    let odd_even = option_switch(
+        &review_group,
+        wordcraft_gnome::t!("Different Odd and Even Pages"),
+    );
+    let headers = HeaderControls::new(ui, &header_page, section, odd_even);
+    if target.is_some() {
+        headers.section.set_sensitive(false);
+        stack.page(&information).set_visible(false);
+        stack.set_visible_child_name("page");
+    }
     stack.add_titled(
         &header_page,
         Some("headers"),
         wordcraft_gnome::t!("Headers and Footers"),
     );
+    if target.is_none() {
+        stack.page(&page).set_visible(false);
+        stack.page(&header_page).set_visible(false);
+    }
     for (child, icon) in [
         (
             information.upcast_ref::<gtk::Widget>(),
@@ -243,7 +276,9 @@ pub(super) fn show_document_properties(
     switcher.set_halign(gtk::Align::Center);
     switcher.set_margin_top(6);
     switcher.set_margin_bottom(6);
-    toolbar.add_top_bar(&switcher);
+    if target.is_some() {
+        toolbar.add_top_bar(&switcher);
+    }
     let content = gtk::Box::new(gtk::Orientation::Vertical, 6);
     content.append(&stack);
     content.append(&message);
@@ -382,20 +417,30 @@ pub(super) fn show_document_properties(
                     let snapshot = session.edit_snapshot();
                     let pending = session.pending.clone();
                     let mark = session.undo_mark();
-                    let result = apply_properties(
-                        session,
-                        setup,
-                        scope.selected() == 0,
-                        section,
-                        &headers.values(),
-                        &DocumentInfo {
-                            title,
-                            subject,
-                            author,
-                            keywords,
-                            category,
-                        },
-                    )
+                    let metadata = DocumentInfo {
+                        title,
+                        subject,
+                        author,
+                        keywords,
+                        category,
+                    };
+                    let result = if target.is_some() {
+                        apply_properties(
+                            session,
+                            setup,
+                            false,
+                            section,
+                            &headers.values(),
+                            &metadata,
+                        )
+                    } else {
+                        let mut options =
+                            wordcraft_gnome::page_options::Options::current(session, section);
+                        options.odd_even = headers.odd_even.is_active();
+                        metadata.apply(session).and_then(|changed| {
+                            page_options::apply(session, &options).map(|options| changed || options)
+                        })
+                    }
                     .and_then(|changed| {
                         if language.text().as_str() == initial_language
                             && review.is_active() == initial_review

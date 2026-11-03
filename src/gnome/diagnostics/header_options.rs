@@ -10,13 +10,6 @@ pub(super) fn page_options_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app:
     opened(ui, Session::new(d), "Sections");
     let original = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     let dialog = show_document_properties(ui, parent);
-    let switcher = find_widget(&dialog.window, "document-properties-switcher").unwrap();
-    let expected = if adw::minor_version() >= 7 {
-        "AdwInlineViewSwitcher"
-    } else {
-        "AdwViewSwitcher"
-    };
-    assert_eq!(switcher.type_().name(), expected);
     for (row, value) in dialog.metadata.iter().zip([
         "Tutoría entre iguales",
         "Tutoría",
@@ -26,9 +19,19 @@ pub(super) fn page_options_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app:
     ]) {
         row.set_text(value);
     }
-    dialog.headers.section.set_selected(1);
-    dialog.headers.first.set_active(true);
     dialog.headers.odd_even.set_active(true);
+    dialog.apply.emit_clicked();
+    let after_metadata = ui.current.borrow().as_ref().unwrap().session.doc.clone();
+    let dialog = super::super::document_properties_dialog::show_section_properties(ui, parent, 1);
+    let switcher = find_widget(&dialog.window, "document-properties-switcher").unwrap();
+    let expected = if adw::minor_version() >= 7 {
+        "AdwInlineViewSwitcher"
+    } else {
+        "AdwViewSwitcher"
+    };
+    assert_eq!(switcher.type_().name(), expected);
+    assert_eq!(dialog.headers.section.selected(), 1);
+    dialog.headers.first.set_active(true);
     dialog.headers.header.set_value(7.0);
     dialog.headers.footer.set_value(9.0);
     dialog.headers.format.set_selected(2);
@@ -58,7 +61,13 @@ pub(super) fn page_options_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app:
         assert!(p.headers.default.is_some());
     }
     apply_user_edit(ui, Edit::Undo);
+    assert_eq!(
+        ui.current.borrow().as_ref().unwrap().session.doc,
+        after_metadata
+    );
+    apply_user_edit(ui, Edit::Undo);
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, original);
+    apply_user_edit(ui, Edit::Redo);
     apply_user_edit(ui, Edit::Redo);
     let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     let cancelled = show_document_properties(ui, parent);

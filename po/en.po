@@ -2323,3 +2323,24 @@ msgstr "Save as DOCX to preserve column breaks and continuous, even-page or odd-
 
 msgid "Place the caret in the body of this even page before editing its header or footer."
 msgstr "Place the caret in the body of this even page before editing its header or footer."
+
+msgid "Install Additional Languages…"
+msgstr "Install Additional Languages…"
+
+msgid "Select Matching Hunspell .aff and .dic Files"
+msgstr "Select Matching Hunspell .aff and .dic Files"
+
+msgid "Select the matching .aff and .dic files for one Hunspell dictionary."
+msgstr "Select the matching .aff and .dic files for one Hunspell dictionary."
+
+msgid "A dictionary with this name is already installed."
+msgstr "A dictionary with this name is already installed."
+
+msgid "Dictionary installed. Reopen Leaf if the language is still unavailable."
+msgstr "Dictionary installed. Reopen Leaf if the language is still unavailable."
+
+msgid "Section Properties"
+msgstr "Section Properties"
+
+msgid "Section Properties…"
+msgstr "Section Properties…"

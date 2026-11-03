@@ -203,7 +203,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 wordcraft_engine::io::save_bytes(path.to_str().unwrap(), &s.doc)?,
             )?;
         }
-        _ => return Err("use generate DIRECTORY, inspect FILE DIRECTORY, or edit FILE DIRECTORY".into()),
+        _ => {
+            return Err(
+                "use generate DIRECTORY, inspect FILE DIRECTORY, or edit FILE DIRECTORY".into(),
+            );
+        }
     }
     println!("INTEROP_WORKER_OK");
     Ok(())

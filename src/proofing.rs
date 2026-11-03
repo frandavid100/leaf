@@ -157,18 +157,92 @@ pub fn state(s: &mut Session) -> Value {
     s.run("format.state", &json!({})).unwrap_or(Value::Null)
 }
 
+fn bundled_dictionaries() -> std::path::PathBuf {
+    std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent()?.parent().map(|p| p.join("share/hunspell")))
+        .filter(|p| p.is_dir())
+        .unwrap_or_else(|| {
+            std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data/dictionaries")
+        })
+}
+
+fn dictionary_directory() -> std::path::PathBuf {
+    crate::preferences::config_root().join("hunspell")
+}
+
+pub fn install_dictionary(files: &[std::path::PathBuf]) -> Result<(), String> {
+    let invalid = || {
+        wordcraft_gnome::t!("Select the matching .aff and .dic files for one Hunspell dictionary.")
+            .to_string()
+    };
+    let [first, second] = files else {
+        return Err(invalid());
+    };
+    let (aff, dic) = if first.extension().is_some_and(|ext| ext == "aff") {
+        (first, second)
+    } else {
+        (second, first)
+    };
+    let stem = aff
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .ok_or_else(invalid)?;
+    if !aff.extension().is_some_and(|ext| ext == "aff")
+        || !dic.extension().is_some_and(|ext| ext == "dic")
+        || dic.file_stem() != aff.file_stem()
+        || !stem
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
+    {
+        return Err(invalid());
+    }
+    wordcraft_engine::proof::hunspell::load(aff, dic)?;
+    let dir = dictionary_directory();
+    let io_error = |error: std::io::Error| error.to_string();
+    std::fs::create_dir_all(&dir).map_err(io_error)?;
+    if let Ok(bundled) = std::fs::read_dir(bundled_dictionaries()) {
+        for entry in bundled {
+            let entry = entry.map_err(io_error)?;
+            let target = dir.join(entry.file_name());
+            if !target.exists()
+                && entry
+                    .path()
+                    .extension()
+                    .is_some_and(|ext| ext == "aff" || ext == "dic")
+            {
+                std::fs::copy(entry.path(), target).map_err(io_error)?;
+            }
+        }
+    }
+    let aff_target = dir.join(format!("{stem}.aff"));
+    let dic_target = dir.join(format!("{stem}.dic"));
+    if aff_target.exists() || dic_target.exists() {
+        return Err(
+            wordcraft_gnome::t!("A dictionary with this name is already installed.").into(),
+        );
+    }
+    std::fs::copy(aff, &aff_target).map_err(io_error)?;
+    if let Err(error) = std::fs::copy(dic, &dic_target) {
+        let _ = std::fs::remove_file(aff_target);
+        let _ = std::fs::remove_file(dic_target);
+        return Err(error.to_string());
+    }
+    wordcraft_engine::proof::hunspell::set_dictionary_dir(Some(dir));
+    Ok(())
+}
+
 pub fn initialize() {
     static ONCE: std::sync::Once = std::sync::Once::new();
     ONCE.call_once(|| {
-        let bundled = std::env::current_exe()
-            .ok()
-            .and_then(|p| p.parent()?.parent().map(|p| p.join("share/hunspell")))
-            .filter(|p| p.is_dir())
-            .unwrap_or_else(|| {
-                std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data/dictionaries")
-            });
-        if bundled.is_dir() {
-            wordcraft_engine::proof::hunspell::set_dictionary_dir(Some(bundled));
+        let custom = dictionary_directory();
+        let path = if custom.is_dir() {
+            custom
+        } else {
+            bundled_dictionaries()
+        };
+        if path.is_dir() {
+            wordcraft_engine::proof::hunspell::set_dictionary_dir(Some(path));
         }
         wordcraft_engine::proof::load_user_dictionary(
             &crate::preferences::config_root().join("custom-dictionary.txt"),

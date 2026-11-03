@@ -89,7 +89,11 @@ impl OutlinePanel {
             };
             let headings = wordcraft_gnome::navigation::headings(&d.session.doc);
             let bookmarks = wordcraft_gnome::navigation::bookmarks(&d.session.doc, &headings);
-            let sections = wordcraft_gnome::navigation::section_starts(&d.session.doc);
+            let mut sections = wordcraft_gnome::navigation::section_starts(&d.session.doc);
+            sections.insert(
+                0,
+                (1, d.session.doc.start_of(wordcraft_doc::StoryRef::Body)),
+            );
             (headings, bookmarks, sections, d.session.sel.focus.clone())
         };
         while let Some(child) = self.list.first_child() {
@@ -201,7 +205,49 @@ impl OutlinePanel {
             text.set_margin_top(4);
             text.set_margin_bottom(4);
             text.add_css_class("heading");
-            row.set_child(Some(&text));
+            let line = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+            text.set_hexpand(true);
+            line.append(&text);
+            let menu = gtk::MenuButton::new();
+            menu.set_icon_name("view-more-symbolic");
+            menu.add_css_class("flat");
+            menu.set_valign(gtk::Align::Center);
+            menu.set_margin_end(8);
+            accessible_name(&menu, wordcraft_gnome::t!("Section Properties"));
+            let actions = gio::SimpleActionGroup::new();
+            let action = gio::SimpleAction::new("properties", None);
+            let weak = Rc::downgrade(&ui);
+            let identity = document_identity(&ui);
+            action.connect_activate(move |_, _| {
+                let Some(ui) = weak.upgrade().filter(|u| document_identity(u) == identity) else {
+                    return;
+                };
+                let Some(host) = ui.host.upgrade() else {
+                    return;
+                };
+                let valid = ui
+                    .current
+                    .borrow()
+                    .as_ref()
+                    .is_some_and(|doc| number <= doc.session.doc.sections().len());
+                if valid {
+                    super::document_properties_dialog::show_section_properties(
+                        &ui,
+                        &host.window,
+                        number - 1,
+                    );
+                }
+            });
+            actions.add_action(&action);
+            menu.insert_action_group("section", Some(&actions));
+            let model = gio::Menu::new();
+            model.append(
+                Some(wordcraft_gnome::t!("Section Properties…")),
+                Some("section.properties"),
+            );
+            menu.set_menu_model(Some(&model));
+            line.append(&menu);
+            row.set_child(Some(&line));
             self.list.insert(&row, index as i32);
             self.positions.borrow_mut().insert(index, pos);
         }

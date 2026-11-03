@@ -2323,3 +2323,24 @@ msgstr "Guarda como DOCX para conservar los saltos de columna y las secciones co
 
 msgid "Place the caret in the body of this even page before editing its header or footer."
 msgstr "Sitúa el cursor en el cuerpo de esta página par antes de editar su encabezado o pie."
+
+msgid "Install Additional Languages…"
+msgstr "Instalar idiomas adicionales…"
+
+msgid "Select Matching Hunspell .aff and .dic Files"
+msgstr "Selecciona los archivos .aff y .dic del diccionario Hunspell"
+
+msgid "Select the matching .aff and .dic files for one Hunspell dictionary."
+msgstr "Selecciona los archivos .aff y .dic del mismo diccionario Hunspell."
+
+msgid "A dictionary with this name is already installed."
+msgstr "Ya hay un diccionario instalado con ese nombre."
+
+msgid "Dictionary installed. Reopen Leaf if the language is still unavailable."
+msgstr "Diccionario instalado. Reinicia Leaf si el idioma sigue sin estar disponible."
+
+msgid "Section Properties"
+msgstr "Propiedades de sección"
+
+msgid "Section Properties…"
+msgstr "Propiedades de sección…"

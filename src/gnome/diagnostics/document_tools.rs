@@ -95,7 +95,8 @@ pub(super) fn document_tools_ui_test(
             apply_user_edit(&ui, Edit::Undo);
             assert!(panel.context.is_visible());
             panel.pop.popdown();
-            let props = show_document_properties(&ui, &parent);
+            let props =
+                super::super::document_properties_dialog::show_section_properties(&ui, &parent, 0);
             props.width.set_value(297.0);
             props.height.set_value(210.0);
             props.top.set_value(20.0);

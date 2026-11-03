@@ -53,6 +53,16 @@ impl Edge {
     }
 }
 
+fn visible_sheet(sheet: &gtk::graphene::Rect, viewport: &gtk::Widget) -> gtk::graphene::Rect {
+    let width = viewport.width().max(0) as f32;
+    let height = viewport.height().max(0) as f32;
+    let x = sheet.x().clamp(0., width);
+    let y = sheet.y().clamp(0., height);
+    let right = (sheet.x() + sheet.width()).clamp(x, width);
+    let bottom = (sheet.y() + sheet.height()).clamp(y, height);
+    gtk::graphene::Rect::new(x, y, right - x, bottom - y)
+}
+
 fn clip_sheet(cr: &gtk::cairo::Context, sheet: &gtk::graphene::Rect) {
     let (x, y, w, h) = (
         sheet.x() as f64,
@@ -134,6 +144,7 @@ impl Ruler {
         else {
             return;
         };
+        let sheet = visible_sheet(&sheet, overlay.upcast_ref());
         let (width, height) = (overlay.width() as f32, overlay.height() as f32);
         for (widget, edge, outside) in [
             (self.reveal.upcast_ref::<gtk::Widget>(), Edge::Top, false),
@@ -361,10 +372,10 @@ impl Ruler {
     }
     fn draw_scale(&self, widget: &gtk::DrawingArea, cr: &gtk::cairo::Context, edge: Edge) {
         let Some(ui) = self.ui.upgrade() else { return };
-        let Ok(current) = ui.current.try_borrow() else {
+        let Ok(mut current) = ui.current.try_borrow_mut() else {
             return;
         };
-        let Some(doc) = current.as_ref() else { return };
+        let Some(doc) = current.as_mut() else { return };
         let page = self.hovered_page.get().unwrap_or(doc.active);
         let Some(sheet) = doc
             .page_frames
@@ -376,44 +387,95 @@ impl Ruler {
         let Some(&(width, height)) = doc.sizes.get(page) else {
             return;
         };
-        clip_sheet(cr, &sheet);
-        cr.set_source_rgba(0.16, 0.16, 0.16, 0.58);
-        cr.set_line_width(1.);
-        cr.set_font_size(8.);
+        let Some(body) = doc.session.layout().pages.get(page).map(|page| page.body) else {
+            return;
+        };
         let horizontal = matches!(edge, Edge::Top | Edge::Bottom);
+        let zoom = f64::from(doc.zoom);
+        let origin = f64::from(if horizontal { sheet.x() } else { sheet.y() });
+        let length = f64::from(if horizontal {
+            widget.width()
+        } else {
+            widget.height()
+        });
+        let depth = f64::from(if horizontal {
+            widget.height()
+        } else {
+            widget.width()
+        });
+        let (margin, content) = if horizontal {
+            (body.x, body.w)
+        } else {
+            (body.y, body.h)
+        };
+        clip_sheet(cr, &sheet);
+        cr.set_source_rgba(1., 1., 1., 0.72);
+        let _ = cr.paint();
+        let (start, span) = (origin + f64::from(margin) * zoom, f64::from(content) * zoom);
+        cr.set_source_rgba(0.30, 0.30, 0.30, 0.14);
+        if horizontal {
+            cr.rectangle(start, 0., span, depth);
+        } else {
+            cr.rectangle(0., start, depth, span);
+        }
+        let _ = cr.fill();
+        cr.set_source_rgba(0.22, 0.22, 0.22, 0.50);
+        cr.set_line_width(1.);
+        let boundary = if matches!(edge, Edge::Top | Edge::Left) {
+            depth - 0.5
+        } else {
+            0.5
+        };
+        if horizontal {
+            cr.move_to(0., boundary);
+            cr.line_to(length, boundary);
+        } else {
+            cr.move_to(boundary, 0.);
+            cr.line_to(boundary, length);
+        }
+        let _ = cr.stroke();
+        cr.set_font_size(8.);
         let unit = 72. / 2.54 / 2.;
         let extent = if horizontal { width } else { height };
-        let band = edge.band(&sheet, false);
-        for n in 0..=(extent / unit).floor() as i32 {
-            let offset = (n as f32 * unit * doc.zoom) as f64;
-            let major = n % 2 == 0;
-            let length = if major { 6. } else { 3. };
-            if horizontal {
-                let x = sheet.x() as f64 + offset;
-                let y = band.y() as f64 + if matches!(edge, Edge::Top) { 15. } else { 5. };
-                let direction = if matches!(edge, Edge::Top) { -1. } else { 1. };
-                cr.move_to(x.round() + 0.5, y);
-                cr.line_to(x.round() + 0.5, y + length * direction);
-                let _ = cr.stroke();
-                if major {
-                    cr.move_to(x + 3., y + if direction < 0. { -5. } else { 15. });
-                    let _ = cr.show_text(&(n / 2).to_string());
-                }
-            } else {
-                let y = sheet.y() as f64 + offset;
-                let x = band.x() as f64 + if matches!(edge, Edge::Left) { 20. } else { 4. };
-                let direction = if matches!(edge, Edge::Left) { -1. } else { 1. };
-                cr.move_to(x, y.round() + 0.5);
-                cr.line_to(x + length * direction, y.round() + 0.5);
-                let _ = cr.stroke();
-                if major {
-                    cr.move_to(
-                        band.x() as f64 + if direction < 0. { 3. } else { 11. },
-                        y + 8.,
-                    );
-                    let _ = cr.show_text(&(n / 2).to_string());
-                }
+        for n in 1..=(extent / unit).floor() as i32 {
+            let offset = origin + f64::from(n as f32 * unit) * zoom;
+            if !(3. ..length - 3.).contains(&offset) {
+                continue;
             }
+            let (x, y) = if horizontal {
+                (offset, depth / 2.)
+            } else {
+                (depth / 2., offset)
+            };
+            if n % 2 != 0 {
+                if horizontal {
+                    cr.move_to(x, y - 1.5);
+                    cr.line_to(x, y + 1.5);
+                } else {
+                    cr.move_to(x - 1.5, y);
+                    cr.line_to(x + 1.5, y);
+                }
+                let _ = cr.stroke();
+                continue;
+            }
+            let label = (n / 2).to_string();
+            let Ok(metrics) = cr.text_extents(&label) else {
+                continue;
+            };
+            if offset - metrics.width() / 2. <= 3. || offset + metrics.width() / 2. >= length - 3. {
+                continue;
+            }
+            let _ = cr.save();
+            cr.translate(x, y);
+            if !horizontal {
+                cr.rotate(std::f64::consts::FRAC_PI_2);
+            }
+            cr.move_to(
+                -metrics.x_bearing() - metrics.width() / 2.,
+                -metrics.y_bearing() - metrics.height() / 2.,
+            );
+            let _ = cr.show_text(&label);
+            let _ = cr.restore();
         }
     }
 }
@@ -571,9 +633,13 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
                         return None;
                     }
                     let sheet = frame.compute_bounds(&canvas)?;
+                    let visible = visible_sheet(&sheet, canvas.upcast_ref());
+                    if visible.width() <= 0. || visible.height() <= 0. {
+                        return None;
+                    }
                     let hits = edges.map(|edge| {
-                        edge.band(&sheet, false).contains_point(&point)
-                            || edge.band(&sheet, true).contains_point(&point)
+                        edge.band(&visible, false).contains_point(&point)
+                            || edge.band(&visible, true).contains_point(&point)
                     });
                     let dx = point.x() - point.x().clamp(sheet.x(), sheet.x() + sheet.width());
                     let dy = point.y() - point.y().clamp(sheet.y(), sheet.y() + sheet.height());
