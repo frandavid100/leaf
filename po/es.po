@@ -2290,3 +2290,36 @@ msgstr "Idioma predeterminado"
 
 msgid "More Styles…"
 msgstr "Más estilos…"
+
+msgid "Page Break"
+msgstr "Salto de página"
+
+msgid "Column Break"
+msgstr "Salto de columna"
+
+msgid "Section Break (Next Page)"
+msgstr "Salto de sección (página siguiente)"
+
+msgid "Section Break (Continuous)"
+msgstr "Salto de sección (continuo)"
+
+msgid "Section Break (Even Page)"
+msgstr "Salto de sección (página par)"
+
+msgid "Section Break (Odd Page)"
+msgstr "Salto de sección (página impar)"
+
+msgid "Save as DOCX to use this break. The current ODT exporter cannot preserve it."
+msgstr "Guarda como DOCX para usar este salto. El exportador ODT actual no puede conservarlo."
+
+msgid "Breaks"
+msgstr "Saltos"
+
+msgid "Section {number}"
+msgstr "Sección {number}"
+
+msgid "Save as DOCX to preserve column breaks and continuous, even-page or odd-page sections."
+msgstr "Guarda como DOCX para conservar los saltos de columna y las secciones continuas, de página par o de página impar."
+
+msgid "Place the caret in the body of this even page before editing its header or footer."
+msgstr "Sitúa el cursor en el cuerpo de esta página par antes de editar su encabezado o pie."

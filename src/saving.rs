@@ -36,7 +36,25 @@ pub fn format_preservation_error(session: &Session, path: &Path) -> Option<&'sta
 }
 
 fn odt_structure_error(session: &Session) -> Option<&'static str> {
-    use wordcraft_doc::{InlineObject, PartKind, para::Wrap};
+    use wordcraft_doc::{
+        InlineObject, PartKind, StoryRef,
+        para::{COLUMN_BREAK, Wrap},
+        section::SectionStart,
+    };
+    if session.doc.sections().iter().skip(1).any(|(_, section)| {
+        matches!(
+            section.start,
+            SectionStart::Continuous | SectionStart::EvenPage | SectionStart::OddPage
+        )
+    }) || session
+        .doc
+        .plain_text(StoryRef::Body)
+        .contains(COLUMN_BREAK)
+    {
+        return Some(wordcraft_gnome::t!(
+            "Save as DOCX to preserve column breaks and continuous, even-page or odd-page sections."
+        ));
+    }
     if session
         .doc
         .parts

@@ -61,7 +61,7 @@ pub(super) fn leave_header_outside_at(ui: &Rc<Ui>, x: f64, y: f64) -> Option<boo
     };
     Some(inside_page)
 }
-// Double-clicking a previously empty page margin creates its editable story.
+// Double-clicking an empty or inherited odd margin creates its editable story.
 pub(super) fn enter_empty_header_at(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
     let target = {
         let mut value = ui.current.borrow_mut();
@@ -79,17 +79,15 @@ pub(super) fn enter_empty_header_at(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
             }
             let py = ((y - r.y() as f64) / d.zoom as f64) as f32;
             let (story, header) = d.session.layout().header_footer_zone(i, py)?;
-            if story.is_some() {
+            let region = if header {
+                Region::Header
+            } else {
+                Region::Footer
+            };
+            if story.is_some() && !header_footer::shows_odd_fallback(&mut d.session, i, region) {
                 return None;
             }
-            Some((
-                i,
-                if header {
-                    Region::Header
-                } else {
-                    Region::Footer
-                },
-            ))
+            Some((i, region))
         })
     };
     if let Some((page, region)) = target {

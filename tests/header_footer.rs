@@ -223,3 +223,35 @@ fn passive_header_probe_keeps_the_active_page_and_selection() {
         "committed pointer hits still choose their physical page"
     );
 }
+
+#[test]
+fn editing_an_even_fallback_preserves_the_odd_header_and_footer() {
+    let mut s = session();
+    for (region, odd, even) in [
+        (Region::Header, "Odd header", "Even header"),
+        (Region::Footer, "Odd footer", "Even footer"),
+    ] {
+        assert!(hf::enter(&mut s, 0, region).unwrap());
+        let odd_story = s.sel.focus.story;
+        s.run("text.insert", &json!({"text": odd})).unwrap();
+        hf::close(&mut s).unwrap();
+        s.run("layout.differentOddEven", &json!({"value": true}))
+            .unwrap();
+        assert!(hf::shows_odd_fallback(&mut s, 1, region));
+        assert!(hf::enter(&mut s, 1, region).unwrap());
+        assert_ne!(s.sel.focus.story, odd_story);
+        let even_story = s.sel.focus.story;
+        s.run("text.insert", &json!({"text": even})).unwrap();
+        hf::close(&mut s).unwrap();
+        assert_eq!(s.doc.plain_text(odd_story), odd);
+        assert_eq!(s.doc.plain_text(even_story), even);
+        let bytes = wordcraft_engine::io::save_bytes("variants.docx", &s.doc).unwrap();
+        let mut reopened =
+            Session::new(wordcraft_engine::io::open_bytes("variants.docx", &bytes).unwrap());
+        for (page, expected) in [(0, odd), (1, even), (2, odd)] {
+            assert!(!hf::enter(&mut reopened, page, region).unwrap());
+            assert_eq!(reopened.doc.plain_text(reopened.sel.focus.story), expected);
+            hf::close(&mut reopened).unwrap();
+        }
+    }
+}

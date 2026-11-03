@@ -15,7 +15,6 @@ struct View {
     lease: Lease,
     page_x: f64,
     page: usize,
-    page_width: f32,
     editable: bool,
     zoom: f64,
 }
@@ -28,6 +27,57 @@ impl View {
             .distance_at(((x - self.page_x) / self.zoom) as f32)
     }
 }
+const BAND: f32 = 24.0;
+
+#[derive(Clone, Copy)]
+enum Edge {
+    Top,
+    Left,
+    Bottom,
+    Right,
+}
+
+impl Edge {
+    fn band(self, sheet: &gtk::graphene::Rect, outside: bool) -> gtk::graphene::Rect {
+        let (x, y, w, h) = (sheet.x(), sheet.y(), sheet.width(), sheet.height());
+        match (self, outside) {
+            (Self::Top, false) => gtk::graphene::Rect::new(x, y, w, BAND),
+            (Self::Top, true) => gtk::graphene::Rect::new(x, y - BAND, w, BAND),
+            (Self::Bottom, false) => gtk::graphene::Rect::new(x, y + h - BAND, w, BAND),
+            (Self::Bottom, true) => gtk::graphene::Rect::new(x, y + h, w, BAND),
+            (Self::Left, false) => gtk::graphene::Rect::new(x, y, BAND, h),
+            (Self::Left, true) => gtk::graphene::Rect::new(x - BAND, y, BAND, h),
+            (Self::Right, false) => gtk::graphene::Rect::new(x + w - BAND, y, BAND, h),
+            (Self::Right, true) => gtk::graphene::Rect::new(x + w, y, BAND, h),
+        }
+    }
+}
+
+fn clip_sheet(cr: &gtk::cairo::Context, sheet: gtk::graphene::Rect) {
+    let (x, y, w, h) = (
+        sheet.x() as f64,
+        sheet.y() as f64,
+        sheet.width() as f64,
+        sheet.height() as f64,
+    );
+    let r = 6.0_f64.min(w / 2.).min(h / 2.);
+    let quarter = std::f64::consts::FRAC_PI_2;
+    cr.new_path();
+    for (i, (cx, cy)) in [
+        (x + w - r, y + r),
+        (x + w - r, y + h - r),
+        (x + r, y + h - r),
+        (x + r, y + r),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        cr.arc(cx, cy, r, (i as f64 - 1.) * quarter, i as f64 * quarter);
+    }
+    cr.close_path();
+    cr.clip();
+}
+
 pub(super) struct Ruler {
     ui: std::rc::Weak<Ui>,
     pub(super) area: gtk::DrawingArea,
@@ -37,6 +87,9 @@ pub(super) struct Ruler {
     pub(super) vertical: gtk::DrawingArea,
     pub(super) vertical_reveal: gtk::Revealer,
     vertical_strip: gtk::Box,
+    bottom: gtk::Revealer,
+    right: gtk::Revealer,
+    hovered_page: Cell<Option<usize>>,
     hovered: Cell<bool>,
     focused: Cell<bool>,
     drag: RefCell<Option<Drag>>,
@@ -51,13 +104,11 @@ impl Ruler {
         let d = value.as_mut()?;
         let state = ruler::state(&mut d.session)?;
         let lease = Lease::capture(&d.session);
-        let page = d.active;
+        let page = self.hovered_page.get().unwrap_or(d.active);
         let rect = d.page_frames.get(page)?.compute_bounds(&self.area)?;
-        let page_width = d.sizes.get(page)?.0;
         let editable = state.page == page;
         Some(View {
             page,
-            page_width,
             editable,
             state,
             lease,
@@ -75,55 +126,37 @@ impl Ruler {
         let Some(d) = c.as_ref() else {
             return;
         };
-        let Some(rect) = d
+        let page = self.hovered_page.get().unwrap_or(d.active);
+        let Some(sheet) = d
             .page_frames
-            .get(d.active)
+            .get(page)
             .and_then(|p| p.compute_bounds(&overlay))
         else {
             return;
         };
-        let width = overlay.width() as f32;
-        let height = overlay.height() as f32;
-        if width <= 0. || height <= 0. {
-            return;
-        }
-        // The horizontal ruler stays below the titlebar, with a small gap.
-        // Both axes use the real sheet bounds and are clipped by the viewport.
-        let x = rect.x().max(0.).min(width);
-        let right = (rect.x() + rect.width()).max(x).min(width);
-        let y = rect.y().max(8.).min(height);
-        let bottom = (rect.y() + rect.height()).max(y).min(height);
-        for w in [
-            self.reveal.upcast_ref::<gtk::Widget>(),
-            self.strip.upcast_ref(),
+        let (width, height) = (overlay.width() as f32, overlay.height() as f32);
+        for (widget, edge, outside) in [
+            (self.reveal.upcast_ref::<gtk::Widget>(), Edge::Top, false),
+            (self.strip.upcast_ref(), Edge::Top, true),
+            (self.vertical_reveal.upcast_ref(), Edge::Left, false),
+            (self.vertical_strip.upcast_ref(), Edge::Left, true),
+            (self.bottom.upcast_ref(), Edge::Bottom, false),
+            (self.right.upcast_ref(), Edge::Right, false),
         ] {
-            w.set_margin_start(x.round() as i32);
-            w.set_margin_top(8);
-            w.set_size_request(
-                (right - x).round().max(1.) as i32,
-                if w == self.strip.upcast_ref::<gtk::Widget>() {
-                    5
-                } else {
-                    24
-                },
-            );
-            w.set_visible(right > x);
+            let band = edge.band(&sheet, outside);
+            let x = band.x().clamp(0., width);
+            let y = band.y().clamp(0., height);
+            let right = (band.x() + band.width()).clamp(0., width);
+            let bottom = (band.y() + band.height()).clamp(0., height);
+            widget.set_margin_start(x.round() as i32);
+            widget.set_margin_top(y.round() as i32);
+            widget.set_size_request((right - x).round() as i32, (bottom - y).round() as i32);
+            widget.set_visible(right > x && bottom > y);
         }
-        for w in [
-            self.vertical_reveal.upcast_ref::<gtk::Widget>(),
-            self.vertical_strip.upcast_ref(),
-        ] {
-            w.set_margin_start((rect.x() - 28.).max(0.).min((width - 24.).max(0.)).round() as i32);
-            w.set_margin_top(y.round() as i32);
-            w.set_size_request(
-                if w == self.vertical_strip.upcast_ref::<gtk::Widget>() {
-                    5
-                } else {
-                    24
-                },
-                (bottom - y).round().max(1.) as i32,
-            );
-            w.set_visible(bottom > y);
+        for revealer in [&self.bottom, &self.right] {
+            if let Some(child) = revealer.child() {
+                child.queue_draw();
+            }
         }
         self.area.queue_draw();
         self.vertical.queue_draw();
@@ -135,6 +168,9 @@ impl Ruler {
         self.drag.borrow_mut().take();
         self.reveal.set_reveal_child(false);
         self.vertical_reveal.set_reveal_child(false);
+        self.bottom.set_reveal_child(false);
+        self.right.set_reveal_child(false);
+        self.hovered_page.set(None);
     }
     fn show(&self) {
         if let Some(id) = self.hide.borrow_mut().take() {
@@ -151,6 +187,13 @@ impl Ruler {
         self.area.queue_draw();
     }
     pub(super) fn show_and_focus(&self) {
+        self.hovered_page.set(None);
+        if let Some(ui) = self.ui.upgrade() {
+            let page = ui.current.borrow().as_ref().map(|doc| doc.active);
+            if let Some(page) = page {
+                super::view::scroll_to_page(&ui, page);
+            }
+        }
         self.show();
         self.area.grab_focus();
     }
@@ -217,7 +260,7 @@ impl Ruler {
         }
         self.area.queue_draw();
     }
-    fn draw(&self, widget: &gtk::DrawingArea, cr: &gtk::cairo::Context, width: i32, height: i32) {
+    fn draw(&self, widget: &gtk::DrawingArea, cr: &gtk::cairo::Context, width: i32, _height: i32) {
         let Some(v) = self.view() else {
             return;
         };
@@ -242,43 +285,9 @@ impl Ruler {
             self.announced.replace(announcement.clone());
             accessible_name(widget, &announcement);
         }
-        let fg = gdk::RGBA::new(0.16, 0.16, 0.16, 1.0);
-        cr.set_source_rgba(fg.red() as f64, fg.green() as f64, fg.blue() as f64, 0.0);
-        cr.rectangle(0.0, 0.0, width as f64, height as f64);
-        let _ = cr.fill();
-        let (a, b) = (v.x(0.0), v.x(state.width));
-        cr.set_source_rgba(fg.red() as f64, fg.green() as f64, fg.blue() as f64, 0.07);
-        if v.editable {
-            cr.rectangle(a.min(b), 2.0, (b - a).abs(), height as f64 - 4.0);
-        }
-        let _ = cr.fill();
-        cr.set_source_rgba(fg.red() as f64, fg.green() as f64, fg.blue() as f64, 1.0);
-        cr.set_line_width(1.0);
-        cr.set_font_size(8.0);
-        // Centimetres are converted from document points, never device pixels.
-        let unit = 72.0 / 2.54_f32;
-        let max = (v.page_width / unit * 10.0).ceil() as i32;
-        for n in 0..=max {
-            let x = v.page_x + (n as f32 * unit / 10.0) as f64 * v.zoom;
-            if x < 0.0 || x > width as f64 {
-                continue;
-            }
-            let major = n % 10 == 0;
-            let length = if major {
-                4.0
-            } else if n % 5 == 0 {
-                4.0
-            } else {
-                3.0
-            };
-            cr.move_to(x.round() + 0.5, 15.0);
-            cr.line_to(x.round() + 0.5, 15.0 - length);
-            let _ = cr.stroke();
-            if major {
-                cr.move_to(x + 3.0, 9.0);
-                let _ = cr.show_text(&(n / 10).to_string());
-            }
-        }
+        self.draw_scale(widget, cr, Edge::Top);
+        cr.set_source_rgba(0.16, 0.16, 0.16, 0.85);
+        cr.set_line_width(1.);
         if !v.editable {
             return;
         }
@@ -350,6 +359,63 @@ impl Ruler {
             let _ = cr.stroke();
         }
     }
+    fn draw_scale(&self, widget: &gtk::DrawingArea, cr: &gtk::cairo::Context, edge: Edge) {
+        let Some(ui) = self.ui.upgrade() else { return };
+        let Ok(current) = ui.current.try_borrow() else {
+            return;
+        };
+        let Some(doc) = current.as_ref() else { return };
+        let page = self.hovered_page.get().unwrap_or(doc.active);
+        let Some(sheet) = doc
+            .page_frames
+            .get(page)
+            .and_then(|frame| frame.compute_bounds(widget))
+        else {
+            return;
+        };
+        let Some(&(width, height)) = doc.sizes.get(page) else {
+            return;
+        };
+        clip_sheet(cr, sheet);
+        cr.set_source_rgba(0.16, 0.16, 0.16, 0.58);
+        cr.set_line_width(1.);
+        cr.set_font_size(8.);
+        let horizontal = matches!(edge, Edge::Top | Edge::Bottom);
+        let unit = 72. / 2.54 / 2.;
+        let extent = if horizontal { width } else { height };
+        let band = edge.band(&sheet, false);
+        for n in 0..=(extent / unit).floor() as i32 {
+            let offset = (n as f32 * unit * doc.zoom) as f64;
+            let major = n % 2 == 0;
+            let length = if major { 6. } else { 3. };
+            if horizontal {
+                let x = sheet.x() as f64 + offset;
+                let y = band.y() as f64 + if matches!(edge, Edge::Top) { 15. } else { 5. };
+                let direction = if matches!(edge, Edge::Top) { -1. } else { 1. };
+                cr.move_to(x.round() + 0.5, y);
+                cr.line_to(x.round() + 0.5, y + length * direction);
+                let _ = cr.stroke();
+                if major {
+                    cr.move_to(x + 3., y + if direction < 0. { -5. } else { 15. });
+                    let _ = cr.show_text(&(n / 2).to_string());
+                }
+            } else {
+                let y = sheet.y() as f64 + offset;
+                let x = band.x() as f64 + if matches!(edge, Edge::Left) { 20. } else { 4. };
+                let direction = if matches!(edge, Edge::Left) { -1. } else { 1. };
+                cr.move_to(x, y.round() + 0.5);
+                cr.line_to(x + length * direction, y.round() + 0.5);
+                let _ = cr.stroke();
+                if major {
+                    cr.move_to(
+                        band.x() as f64 + if direction < 0. { 3. } else { 11. },
+                        y + 8.,
+                    );
+                    let _ = cr.show_text(&(n / 2).to_string());
+                }
+            }
+        }
+    }
 }
 pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     let reveal = gtk::Revealer::new();
@@ -360,7 +426,6 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     reveal.set_valign(gtk::Align::Start);
 
     let area = gtk::DrawingArea::new();
-    area.add_css_class("leaf-ruler");
     area.set_content_height(24);
     area.set_focusable(true);
     area.set_widget_name("document-ruler");
@@ -371,7 +436,6 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     let strip = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     strip.set_widget_name("ruler-activation-strip");
     let vertical = gtk::DrawingArea::new();
-    vertical.add_css_class("leaf-ruler");
     vertical.set_content_width(24);
     vertical.set_widget_name("vertical-document-ruler");
     accessible_name(&vertical, wordcraft_gnome::t!("Vertical ruler (cm)"));
@@ -381,6 +445,15 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     vertical_reveal.set_transition_type(gtk::RevealerTransitionType::Crossfade);
     vertical_reveal.set_transition_duration(175);
     vertical_reveal.set_child(Some(&vertical));
+    let passive = || {
+        let revealer = gtk::Revealer::new();
+        revealer.set_can_target(false);
+        revealer.set_transition_type(gtk::RevealerTransitionType::Crossfade);
+        revealer.set_child(Some(&gtk::DrawingArea::new()));
+        revealer
+    };
+    let bottom = passive();
+    let right = passive();
     let vertical_strip = gtk::Box::new(gtk::Orientation::Vertical, 0);
     vertical_strip.set_widget_name("vertical-ruler-activation-strip");
     for w in [
@@ -388,6 +461,8 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         strip.upcast_ref(),
         vertical_reveal.upcast_ref(),
         vertical_strip.upcast_ref(),
+        bottom.upcast_ref(),
+        right.upcast_ref(),
     ] {
         w.set_halign(gtk::Align::Start);
         w.set_valign(gtk::Align::Start);
@@ -404,6 +479,9 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         vertical_reveal,
         vertical_strip,
         reveal,
+        bottom,
+        right,
+        hovered_page: Cell::new(None),
         hovered: Cell::new(false),
         focused: Cell::new(false),
         drag: RefCell::new(None),
@@ -411,12 +489,10 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         hide: RefCell::new(None),
         announced: RefCell::new(String::new()),
     });
-    let weak_strip = strip.downgrade();
+    strip.set_can_target(false);
+    r.vertical_strip.set_can_target(false);
     r.reveal.connect_reveal_child_notify(move |reveal| {
         reveal.set_can_target(reveal.reveals_child());
-        if let Some(strip) = weak_strip.upgrade() {
-            strip.set_can_target(!reveal.reveals_child());
-        }
     });
     let weak = Rc::downgrade(&r);
     r.area.set_draw_func(move |w, c, x, y| {
@@ -424,35 +500,6 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             r.draw(w, c, x, y);
         }
     });
-    let motion = gtk::EventControllerMotion::new();
-    let weak = Rc::downgrade(&r);
-    motion.connect_enter(move |_, _, _| {
-        if let Some(r) = weak.upgrade() {
-            if r.ui
-                .upgrade()
-                .is_some_and(|u| u.current.borrow().is_some() && u.drag_anchor.borrow().is_none())
-            {
-                r.show();
-            }
-        }
-    });
-    strip.add_controller(motion);
-    let hover = gtk::EventControllerMotion::new();
-    let weak = Rc::downgrade(&r);
-    hover.connect_enter(move |_, _, _| {
-        if let Some(r) = weak.upgrade() {
-            r.hovered.set(true);
-            r.show();
-        }
-    });
-    let weak = Rc::downgrade(&r);
-    hover.connect_leave(move |_| {
-        if let Some(r) = weak.upgrade() {
-            r.hovered.set(false);
-            r.hide_later();
-        }
-    });
-    r.area.add_controller(hover);
     let focus = gtk::EventControllerFocus::new();
     let weak = Rc::downgrade(&r);
     focus.connect_enter(move |_| {
@@ -469,87 +516,18 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         }
     });
     r.area.add_controller(focus);
-    let weak = Rc::downgrade(&r);
-    r.vertical.set_draw_func(move |w, cr, _, height| {
-        let Some(r) = weak.upgrade() else {
-            return;
-        };
-        let Some(ui) = r.ui.upgrade() else {
-            return;
-        };
-        let Ok(c) = ui.current.try_borrow() else {
-            return;
-        };
-        let Some(d) = c.as_ref() else {
-            return;
-        };
-        let Some((_, page_height)) = d.sizes.get(d.active).copied() else {
-            return;
-        };
-        let Some(rect) = d
-            .page_frames
-            .get(d.active)
-            .and_then(|p| p.compute_bounds(w))
-        else {
-            return;
-        };
-        cr.set_source_rgb(0.16, 0.16, 0.16);
-        cr.set_line_width(1.);
-        cr.set_font_size(8.);
-        let unit = 72. / 2.54_f32;
-        for n in 0..=(page_height / unit * 10.).ceil() as i32 {
-            let y = rect.y() as f64 + (n as f32 * unit / 10. * d.zoom) as f64;
-            if y < 0. || y > height as f64 {
-                continue;
-            }
-            let length = if n % 10 == 0 {
-                7.
-            } else if n % 5 == 0 {
-                5.
-            } else {
-                3.
-            };
-            cr.move_to(23., y.round() + 0.5);
-            cr.line_to(23. - length, y.round() + 0.5);
-            let _ = cr.stroke();
-            if n % 10 == 0 {
-                cr.move_to(2., (y + 3.).clamp(8., (height as f64 - 2.).max(8.)));
-                let _ = cr.show_text(&(n / 10).to_string());
-            }
-        }
-    });
-    let weak_strip = r.vertical_strip.downgrade();
-    r.vertical_reveal
-        .connect_reveal_child_notify(move |reveal| {
-            reveal.set_can_target(reveal.reveals_child());
-            if let Some(strip) = weak_strip.upgrade() {
-                strip.set_can_target(!reveal.reveals_child());
+    for (area, edge) in [
+        (r.vertical.clone(), Edge::Left),
+        (r.bottom.child().unwrap().downcast().unwrap(), Edge::Bottom),
+        (r.right.child().unwrap().downcast().unwrap(), Edge::Right),
+    ] {
+        let weak = Rc::downgrade(&r);
+        area.set_draw_func(move |area, cr, _, _| {
+            if let Some(r) = weak.upgrade() {
+                r.draw_scale(area, cr, edge);
             }
         });
-    let hover = gtk::EventControllerMotion::new();
-    let weak = Rc::downgrade(&r);
-    hover.connect_enter(move |_, _, _| {
-        if let Some(r) = weak.upgrade() {
-            r.refresh();
-            r.vertical_reveal.set_transition_duration(
-                if r.area.settings().is_gtk_enable_animations() {
-                    175
-                } else {
-                    0
-                },
-            );
-            r.vertical_reveal.set_reveal_child(true);
-        }
-    });
-    r.vertical_strip.add_controller(hover);
-    let hover = gtk::EventControllerMotion::new();
-    let weak = Rc::downgrade(&r);
-    hover.connect_leave(move |_| {
-        if let Some(r) = weak.upgrade() {
-            r.vertical_reveal.set_reveal_child(false);
-        }
-    });
-    r.vertical.add_controller(hover);
+    }
     // Refresh nonmeasuring overlay geometry on viewport allocation/scroll, and
     // on pointer entry after an initially empty tab. No permanent frame callback.
     for adjustment in [ui.scroll.hadjustment(), ui.scroll.vadjustment()] {
@@ -571,33 +549,69 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         let (Some(r), Some(canvas)) = (weak.upgrade(), canvas.upgrade()) else {
             return;
         };
-        r.refresh();
-        let within = |w: &gtk::Widget| {
-            w.compute_bounds(&canvas).is_some_and(|b| {
-                x >= b.x() as f64
-                    && x < (b.x() + b.width()) as f64
-                    && y >= b.y() as f64
-                    && y < (b.y() + b.height()) as f64
-            })
+        let Some(ui) = r.ui.upgrade() else { return };
+        if r.drag.borrow().is_some() || ui.drag_anchor.borrow().is_some() {
+            return;
+        }
+        let edges = [Edge::Top, Edge::Left, Edge::Bottom, Edge::Right];
+        let point = gtk::graphene::Point::new(x as f32, y as f32);
+        let target = ui.current.try_borrow().ok().and_then(|current| {
+            let doc = current.as_ref()?;
+            doc.page_frames
+                .iter()
+                .enumerate()
+                .filter_map(|(page, frame)| {
+                    if r.focused.get() && page != doc.active {
+                        return None;
+                    }
+                    let sheet = frame.compute_bounds(&canvas)?;
+                    let hits = edges.map(|edge| {
+                        edge.band(&sheet, false).contains_point(&point)
+                            || edge.band(&sheet, true).contains_point(&point)
+                    });
+                    hits.iter().any(|hit| *hit).then_some((
+                        page,
+                        hits,
+                        sheet.contains_point(&point),
+                    ))
+                })
+                .max_by_key(|(_, _, inside)| *inside)
+        });
+        let hits = if let Some((page, hits, _)) = target {
+            r.hovered_page.set(Some(page));
+            r.refresh();
+            hits
+        } else {
+            [false; 4]
         };
-        let horizontal = within(r.strip.upcast_ref())
-            || (r.reveal.reveals_child() && within(r.reveal.upcast_ref()));
-        r.hovered.set(horizontal);
-        if !horizontal {
+        r.hovered.set(hits[0]);
+        if hits[0] {
+            r.show();
+        } else {
             r.hide_later();
         }
-        let vertical = within(r.vertical_strip.upcast_ref())
-            || (r.vertical_reveal.reveals_child() && within(r.vertical_reveal.upcast_ref()));
-        if !vertical {
-            r.vertical_reveal.set_reveal_child(false);
+        let duration = if r.area.settings().is_gtk_enable_animations() {
+            175
+        } else {
+            0
+        };
+        for (revealer, hit) in [&r.vertical_reveal, &r.bottom, &r.right]
+            .into_iter()
+            .zip(hits[1..].iter().copied())
+        {
+            revealer.set_transition_duration(duration);
+            revealer.set_reveal_child(hit);
         }
     });
     let weak = Rc::downgrade(&r);
     motion.connect_leave(move |_| {
         if let Some(r) = weak.upgrade() {
             r.hovered.set(false);
+            r.hovered_page.set(None);
             r.hide_later();
             r.vertical_reveal.set_reveal_child(false);
+            r.bottom.set_reveal_child(false);
+            r.right.set_reveal_child(false);
         }
     });
     overlay.add_controller(motion);

@@ -187,6 +187,13 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
             save_document(&ui, &h.window, true, Box::new(|| {}));
         }
     });
+    for (kind, _) in break_items() {
+        window_action(host, &format!("break-{kind}"), move |host| {
+            if let Some(ui) = selected_ui(host) {
+                insert_break(&ui, kind);
+            }
+        });
+    }
     window_action(host, "insert-table", |h| {
         if let Some(ui) = selected_ui(h) {
             show_insert_table(&ui, &h.window);
@@ -365,6 +372,57 @@ pub(super) fn install_main_menu(button: &gtk::MenuButton) {
         pop.add_child(&theme_selector(), "theme-selector");
     }
 }
+fn break_items() -> [(&'static str, &'static str); 7] {
+    [
+        ("textWrapping", wordcraft_gnome::t!("Line Break")),
+        ("page", wordcraft_gnome::t!("Page Break")),
+        ("column", wordcraft_gnome::t!("Column Break")),
+        ("nextPage", wordcraft_gnome::t!("Section Break (Next Page)")),
+        (
+            "continuous",
+            wordcraft_gnome::t!("Section Break (Continuous)"),
+        ),
+        ("evenPage", wordcraft_gnome::t!("Section Break (Even Page)")),
+        ("oddPage", wordcraft_gnome::t!("Section Break (Odd Page)")),
+    ]
+}
+
+fn insert_break(ui: &Rc<Ui>, kind: &str) {
+    let odt = ui
+        .save_path
+        .borrow()
+        .as_deref()
+        .or(ui.source_path.borrow().as_deref())
+        .and_then(Path::extension)
+        .is_some_and(|ext| ext.eq_ignore_ascii_case("odt"));
+    if odt && matches!(kind, "column" | "continuous" | "evenPage" | "oddPage") {
+        ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
+            "Save as DOCX to use this break. The current ODT exporter cannot preserve it."
+        )));
+        return;
+    }
+    let result = {
+        let mut current = ui.current.borrow_mut();
+        let Some(doc) = current.as_mut() else { return };
+        let (start, end) = doc.session.sel.ordered();
+        if start.story != wordcraft_doc::StoryRef::Body
+            || end.story != wordcraft_doc::StoryRef::Body
+        {
+            return;
+        }
+        doc.session
+            .run("layout.break", &serde_json::json!({ "kind": kind }))
+    };
+    match result {
+        Ok(_) => {
+            ui.document_box.grab_focus();
+            after_content_change(ui);
+            caret_ensure_visible(ui);
+        }
+        Err(error) => ui.toasts.add_toast(Toast::new(&error.to_string())),
+    }
+}
+
 pub(super) fn append_insert_menu(root: &gio::Menu) {
     let add = gio::Menu::new();
     menu_item(&add, wordcraft_gnome::t!("Table…"), "insert-table", None);
@@ -389,6 +447,11 @@ pub(super) fn append_insert_menu(root: &gio::Menu) {
         "insert-page-number",
         None,
     );
+    let breaks = gio::Menu::new();
+    for (kind, label) in break_items() {
+        menu_item(&breaks, label, &format!("break-{kind}"), None);
+    }
+    add.append_submenu(Some(wordcraft_gnome::t!("Breaks")), &breaks);
     root.append_submenu(Some(wordcraft_gnome::t!("Insert")), &add);
 }
 

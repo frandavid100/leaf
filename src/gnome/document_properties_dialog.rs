@@ -213,9 +213,31 @@ pub(super) fn show_document_properties(
     ] {
         stack.page(child).set_icon_name(Some(icon));
     }
-    let switcher = adw::ViewSwitcher::new();
-    switcher.set_stack(Some(&stack));
-    switcher.set_policy(adw::ViewSwitcherPolicy::Narrow);
+    // GtkBuilder resolves the native widget on newer libadwaita runtimes.
+    // Keep the existing switcher for supported hosts with libadwaita 1.4–1.6.
+    let builder = gtk::Builder::new();
+    let switcher = if builder
+        .add_from_string(
+            r#"<interface>
+                <object class="AdwInlineViewSwitcher" id="properties-switcher">
+                    <property name="display-mode">labels</property>
+                    <property name="homogeneous">true</property>
+                </object>
+            </interface>"#,
+        )
+        .is_ok()
+    {
+        let switcher = builder
+            .object::<gtk::Widget>("properties-switcher")
+            .unwrap();
+        switcher.set_property("stack", &stack);
+        switcher
+    } else {
+        let switcher = adw::ViewSwitcher::new();
+        switcher.set_stack(Some(&stack));
+        switcher.set_policy(adw::ViewSwitcherPolicy::Narrow);
+        switcher.upcast()
+    };
     switcher.set_halign(gtk::Align::Center);
     switcher.set_margin_top(6);
     switcher.set_margin_bottom(6);

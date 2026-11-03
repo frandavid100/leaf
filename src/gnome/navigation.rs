@@ -82,20 +82,21 @@ impl OutlinePanel {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
-        let (headings, bookmarks, focus) = {
+        let (headings, bookmarks, sections, focus) = {
             let value = ui.current.borrow();
             let Some(d) = value.as_ref() else {
                 return;
             };
             let headings = wordcraft_gnome::navigation::headings(&d.session.doc);
             let bookmarks = wordcraft_gnome::navigation::bookmarks(&d.session.doc, &headings);
-            (headings, bookmarks, d.session.sel.focus.clone())
+            let sections = wordcraft_gnome::navigation::section_starts(&d.session.doc);
+            (headings, bookmarks, sections, d.session.sel.focus.clone())
         };
         while let Some(child) = self.list.first_child() {
             self.list.remove(&child);
         }
         self.status
-            .set_visible(headings.is_empty() && bookmarks.is_empty());
+            .set_visible(headings.is_empty() && bookmarks.is_empty() && sections.is_empty());
         self.positions.borrow_mut().clear();
         let mut hidden: Option<u8> = None;
         let current = wordcraft_gnome::navigation::containing_heading(&headings, &focus);
@@ -181,6 +182,28 @@ impl OutlinePanel {
                     self.append_bookmark(&ui, mark, h.level + 1);
                 }
             }
+        }
+        for (number, pos) in sections {
+            let index = self
+                .positions
+                .borrow()
+                .iter()
+                .position(|other| *other >= pos)
+                .unwrap_or_else(|| self.positions.borrow().len());
+            let label = wordcraft_gnome::i18n::interpolate(
+                wordcraft_gnome::t!("Section {number}"),
+                &[("number", number.to_string())],
+            );
+            let row = gtk::ListBoxRow::new();
+            let text = gtk::Label::new(Some(&label));
+            text.set_xalign(0.0);
+            text.set_margin_start(12);
+            text.set_margin_top(4);
+            text.set_margin_bottom(4);
+            text.add_css_class("heading");
+            row.set_child(Some(&text));
+            self.list.insert(&row, index as i32);
+            self.positions.borrow_mut().insert(index, pos);
         }
         if let Some(row) = selected {
             self.list.select_row(Some(&row));
