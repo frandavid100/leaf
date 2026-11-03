@@ -575,13 +575,13 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
                         edge.band(&sheet, false).contains_point(&point)
                             || edge.band(&sheet, true).contains_point(&point)
                     });
-                    hits.iter().any(|hit| *hit).then_some((
-                        page,
-                        hits,
-                        sheet.contains_point(&point),
-                    ))
+                    let dx = point.x() - point.x().clamp(sheet.x(), sheet.x() + sheet.width());
+                    let dy = point.y() - point.y().clamp(sheet.y(), sheet.y() + sheet.height());
+                    hits.iter()
+                        .any(|hit| *hit)
+                        .then_some((page, hits, dx * dx + dy * dy))
                 })
-                .max_by_key(|(_, _, inside)| *inside)
+                .min_by(|(_, _, first), (_, _, second)| first.total_cmp(second))
         });
         let hits = if let Some((page, hits, _)) = target {
             r.hovered_page.set(Some(page));
