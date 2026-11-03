@@ -23,7 +23,10 @@ WORKER = ROOT / "target/release/examples/interop_audit"
 
 
 def run(*args):
-    return subprocess.run(list(map(str, args)), check=True, text=True, capture_output=True, timeout=100).stdout
+    try:
+        return subprocess.run(list(map(str, args)), check=True, text=True, capture_output=True, timeout=100).stdout
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError(f"{args[0]}: {error.stderr.strip()}") from error
 
 
 def prop(name, value):
@@ -147,7 +150,14 @@ def check_writer_authored_docx(desktop, macro_mode):
     if doc is None:
         raise RuntimeError("LibreOffice could not create the worksheet fixture")
     try:
-        doc.Text.String = paragraphs
+        from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK
+
+        cursor = doc.Text.createTextCursor()
+        for index, paragraph in enumerate(paragraphs.splitlines()):
+            if index:
+                doc.Text.insertControlCharacter(cursor, PARAGRAPH_BREAK, False)
+            doc.Text.insertString(cursor, paragraph, False)
+            cursor.gotoEnd(False)
         first = doc.Text.createTextCursor()
         first.gotoStart(False)
         first.ParaBottomMargin = 318  # Nine points, in hundredths of a millimetre.
