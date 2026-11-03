@@ -184,8 +184,8 @@ fn followup_stage(t: Rc<Followup>, stage: u8) {
     match t.mode.as_str() {
         "font" => match stage {
             0 => followup_emit(stage, "open", &[followup_point(&t.menu, &t.window)]),
-            1 | 5 => {
-                if stage == 5 {
+            1 | 6 => {
+                if stage == 6 {
                     u.font_input.clipboard().set_text(&(t.family.clone() + "x"));
                 }
                 followup_emit(
@@ -194,38 +194,42 @@ fn followup_stage(t: Rc<Followup>, stage: u8) {
                     &[followup_point(&u.font_input, &t.window)],
                 );
             }
-            2 | 6 => {
+            2 | 8 => {
                 followup_emit(
                     stage,
                     if stage == 2 { "size" } else { "comma" },
                     &[followup_point_at(&u.size_input, &t.window, 0.1)],
                 );
             }
-            3 | 7 => {
+            3 | 9 => {
                 let menu = find_widget(&t.menu.popover().unwrap(), "text-font-choices").unwrap();
                 followup_emit(stage, "choices", &[followup_point(&menu, &t.window)]);
             }
-            4 => followup_emit(
-                stage,
-                "pin",
-                &[followup_point(
-                    &popover_pin(&t.menu.popover().unwrap()),
-                    &t.window,
-                )],
-            ),
-            8 => {
+            4 => followup_emit(stage, "escape", &[]),
+            5 => {
+                // Closing the nested popup can reposition its parent.
+                let pop = t.menu.popover().unwrap();
+                assert!(pop.is_visible(), "Escape should leave the Text popup open");
+                followup_emit(
+                    stage,
+                    "pin",
+                    &[followup_point(&popover_pin(&pop), &t.window)],
+                );
+            }
+            7 => followup_emit(stage, "backspace", &[]),
+            10 => {
                 followup_emit(stage, "return", &[followup_caret(&t, Pos::body(0, 22))]);
             }
-            9 => {
+            11 => {
                 t.menu.popup();
                 let menu = find_widget(&t.menu.popover().unwrap(), "text-size-choices").unwrap();
                 followup_emit(stage, "hover", &[followup_point(&menu, &t.window)]);
             }
-            10 => {
+            12 => {
                 let menu = find_widget(&t.menu.popover().unwrap(), "text-size-choices").unwrap();
                 followup_emit(stage, "choices", &[followup_point(&menu, &t.window)]);
             }
-            11 => {
+            13 => {
                 eprintln!(
                     "ISSUE19_FONT_OK real_open=true installed_family=true slow_size=true paste=true comma=true pinned=true width=true canvas=true"
                 );
@@ -371,7 +375,7 @@ fn followup_check(t: &Followup, stage: u8) {
     let u = &t.ui;
     match t.mode.as_str() {
         "font" => {
-            if stage == 1 || stage == 5 {
+            if stage == 1 || stage == 7 {
                 assert!(
                     u.link_dialog.borrow().is_none(),
                     "Ctrl+K inside a native field must stay in that field"
@@ -393,7 +397,7 @@ fn followup_check(t: &Followup, stage: u8) {
                     );
                 }
             }
-            if stage == 6 {
+            if stage == 8 {
                 assert_eq!(
                     selection_character(u)["size"],
                     if std::env::var("LEAF19_LARGE").is_ok() {
@@ -403,7 +407,7 @@ fn followup_check(t: &Followup, stage: u8) {
                     }
                 );
             }
-            if stage == 3 || stage == 7 {
+            if stage == 3 || stage == 9 {
                 let menu = find_widget(&t.menu.popover().unwrap(), "text-font-choices")
                     .unwrap()
                     .downcast::<gtk::MenuButton>()
@@ -436,7 +440,7 @@ fn followup_check(t: &Followup, stage: u8) {
                     "font labels may not collapse into ellipses"
                 );
             }
-            if stage == 0 || stage == 10 {
+            if stage == 0 || stage == 12 {
                 let font = find_widget(&t.menu.popover().unwrap(), "text-font-choices")
                     .unwrap()
                     .parent()
@@ -447,10 +451,10 @@ fn followup_check(t: &Followup, stage: u8) {
                     .unwrap();
                 let selector = menu.parent().unwrap();
                 assert!(
-                    (selector.width() - font.width()).abs() <= 1,
-                    "size must fill the same row as font"
+                    selector.width() < font.width(),
+                    "size selector must be narrower than the font selector"
                 );
-                if stage == 10 {
+                if stage == 12 {
                     let pop = menu.popover().unwrap();
                     assert!(pop.is_visible());
                     assert!(
@@ -466,7 +470,7 @@ fn followup_check(t: &Followup, stage: u8) {
                     );
                 }
             }
-            if stage == 4 {
+            if stage == 5 {
                 assert!(popover_pin(&t.menu.popover().unwrap()).is_active());
             }
             let text = u
@@ -477,7 +481,7 @@ fn followup_check(t: &Followup, stage: u8) {
                 .session
                 .doc
                 .plain_text(wordcraft_doc::StoryRef::Body);
-            if stage < 8 {
+            if stage < 10 {
                 assert_eq!(text, t.body);
             } else {
                 assert_eq!(

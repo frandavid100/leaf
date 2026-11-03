@@ -15,13 +15,14 @@ pub(super) struct StylePopover {
     pub(super) stack: gtk::Stack,
     pub(super) list: gtk::Box,
     pub(super) search: gtk::SearchEntry,
+    show_all: Cell<bool>,
     pub(super) detail: gtk::Box,
     pub(super) form: gtk::Box,
     pub(super) message: gtk::Label,
     pub(super) header: Rc<FormatHeader>,
 }
 impl StylePopover {
-    pub(super) fn sync_selection(&self) {
+    pub(super) fn sync_selection(self: &Rc<Self>) {
         // Reopening rebuilds the list from the current selection. The actual
         // list also covers its borrowed home inside a contextual menu: checking
         // only the original popover would miss that visible presentation.
@@ -34,6 +35,15 @@ impl StylePopover {
             .borrow()
             .as_ref()
             .and_then(|d| wordcraft_gnome::styles::current(&d.session));
+        if !self.show_all.get()
+            && self.search.text().is_empty()
+            && current
+                .as_ref()
+                .is_some_and(|id| find_widget(&self.list, &format!("style-apply-{id}")).is_none())
+        {
+            self.refresh_list();
+            return;
+        }
         let mut row = self.list.first_child();
         while let Some(w) = row {
             perf_count("style_rows_visited", 1);
@@ -79,15 +89,32 @@ impl StylePopover {
         let Some(ui) = self.ui.upgrade() else {
             return;
         };
-        let (styles, current) = {
+        let (styles, current, expandable) = {
             let s = ui.current.borrow();
             let Some(d) = s.as_ref() else {
                 return;
             };
-            (
-                wordcraft_gnome::styles::list(&d.session),
-                wordcraft_gnome::styles::current(&d.session),
-            )
+            let all = wordcraft_gnome::styles::list(&d.session);
+            let current = wordcraft_gnome::styles::current(&d.session);
+            let mut gallery = d.session.doc.styles.gallery();
+            let has_gallery = !gallery.is_empty();
+            if let Some(id) = current.as_deref() {
+                if let Some(style) = all.iter().find(|style| style.id == id) {
+                    if !gallery.iter().any(|shown| shown.id == style.id) {
+                        gallery.push(style);
+                    }
+                }
+            }
+            let expandable = !self.show_all.get()
+                && self.search.text().is_empty()
+                && has_gallery
+                && gallery.len() < all.len();
+            let styles = if expandable {
+                gallery.into_iter().cloned().collect()
+            } else {
+                all
+            };
+            (styles, current, expandable)
         };
         let query = self.search.text().to_lowercase();
         let mut count = 0;
@@ -139,7 +166,8 @@ impl StylePopover {
             );
             apply.set_child(Some(&content));
             row.append(&apply);
-            let manage = gtk::Button::with_label("›");
+            let manage = gtk::Button::new();
+            manage.set_icon_name("go-next-symbolic");
             manage.add_css_class("flat");
             manage.set_tooltip_text(Some(&format!("Gestionar «{}»", st.name)));
             manage.set_widget_name(&format!("style-manage-{}", st.id));
@@ -171,6 +199,17 @@ impl StylePopover {
                 }
             });
             self.list.append(&row);
+        }
+        if expandable {
+            let more = style_menu_button(wordcraft_gnome::t!("More Styles…"));
+            let weak = Rc::downgrade(self);
+            more.connect_clicked(move |_| {
+                if let Some(panel) = weak.upgrade() {
+                    panel.show_all.set(true);
+                    panel.refresh_list();
+                }
+            });
+            self.list.append(&more);
         }
         if count == 0 {
             let label = gtk::Label::new(Some(wordcraft_gnome::t!("No Styles Found")));
@@ -439,6 +478,7 @@ pub(super) fn install_style_popover(ui: &Rc<Ui>, menu: &gtk::MenuButton) -> Rc<S
         stack,
         list,
         search: search.clone(),
+        show_all: Cell::new(false),
         detail,
         form,
         message,

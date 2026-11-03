@@ -2284,3 +2284,9 @@ msgstr "Focus ruler"
 
 msgid "Vertical ruler (cm)"
 msgstr "Vertical ruler (cm)"
+
+msgid "Default language"
+msgstr "Default language"
+
+msgid "More Styles…"
+msgstr "More Styles…"

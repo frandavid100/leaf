@@ -10,6 +10,7 @@ pub(super) struct AnnotationPanel {
     pub(super) active: RefCell<HashSet<u32>>,
     document: Cell<Option<u64>>,
     pending: Cell<bool>,
+    draft: RefCell<Option<CommentComposer>>,
 }
 
 impl AnnotationPanel {
@@ -86,11 +87,25 @@ impl AnnotationPanel {
         };
         if self.document.replace(Some(id)) != Some(id) {
             self.active.borrow_mut().clear();
+            self.draft.borrow_mut().take();
         }
         self.active
             .borrow_mut()
             .retain(|id| comments.iter().any(|c| c.id == *id));
+        let draft = self.draft.borrow();
+        let had_focus = draft.as_ref().is_some_and(|draft| draft.text.has_focus());
+        if let Some(draft) = draft.as_ref() {
+            draft.detach();
+        }
         clear_box(&self.content);
+        if let Some(draft) = draft.as_ref().filter(|draft| {
+            draft
+                .parent
+                .is_none_or(|id| !comments.iter().any(|comment| comment.id == id))
+        }) {
+            self.content.append(&draft.root);
+        }
+        drop(draft);
         accessible_name(&self.content, wordcraft_gnome::t!("Comments"));
         if comments.is_empty() {
             self.content
@@ -115,6 +130,52 @@ impl AnnotationPanel {
                 );
             }
         }
+        if had_focus {
+            if let Some(draft) = self.draft.borrow().as_ref() {
+                draft.text.grab_focus();
+            }
+        }
+    }
+
+    pub(super) fn compose(self: &Rc<Self>, parent: Option<u32>) {
+        let Some(ui) = self.ui.upgrade().filter(|ui| !ui.closed.get()) else {
+            return;
+        };
+        self.show();
+        if self.draft.borrow().is_none() {
+            let Some(draft) = CommentComposer::new(self, &ui, parent) else {
+                return;
+            };
+            self.draft.replace(Some(draft));
+            self.refresh();
+        }
+        if let Some(draft) = self.draft.borrow().as_ref() {
+            draft.text.grab_focus();
+        }
+    }
+
+    pub(super) fn dismiss_composer(&self, root: &gtk::Box) -> bool {
+        let mut draft = self.draft.borrow_mut();
+        if draft.as_ref().is_none_or(|draft| draft.root != *root) {
+            return false;
+        }
+        let draft = draft.take().unwrap();
+        draft.detach();
+        true
+    }
+
+    fn select_thread(&self, root: u32) {
+        self.active.replace(HashSet::from([root]));
+        let name = format!("comment-thread-{root}");
+        let mut child = self.content.first_child();
+        while let Some(row) = child {
+            child = row.next_sibling();
+            if row.widget_name() == name {
+                row.add_css_class("selected");
+            } else {
+                row.remove_css_class("selected");
+            }
+        }
     }
 
     fn append_thread(
@@ -127,7 +188,6 @@ impl AnnotationPanel {
     ) {
         let thread = gtk::Box::new(gtk::Orientation::Vertical, 0);
         thread.set_widget_name(&format!("comment-thread-{root}"));
-        thread.add_css_class("card");
         thread.add_css_class("comment-thread");
         if self.active.borrow().contains(&root) {
             thread.add_css_class("selected");
@@ -147,10 +207,19 @@ impl AnnotationPanel {
             thread.append(&comment_message(
                 ui,
                 c,
+                root,
                 depth,
                 writable,
                 model::anchor_in(comments, c.id).is_some(),
             ));
+            if let Some(draft) = self
+                .draft
+                .borrow()
+                .as_ref()
+                .filter(|draft| draft.parent == Some(id))
+            {
+                thread.append(&draft.root);
+            }
             for reply in comments.iter().rev().filter(|c| c.parent == Some(id)) {
                 stack.push((reply.id, depth + 1));
             }
@@ -244,6 +313,7 @@ pub(super) fn bookmark_row(ui: &Rc<Ui>, name: &str) -> gtk::Box {
 fn comment_message(
     ui: &Rc<Ui>,
     c: &model::Comment,
+    root: u32,
     depth: usize,
     writable: bool,
     has_anchor: bool,
@@ -263,10 +333,11 @@ fn comment_message(
     body.set_margin_end(10);
     body.set_margin_top(10);
     body.set_margin_bottom(10);
+    let summary = gtk::Box::new(gtk::Orientation::Vertical, 4);
     // Plain labels deliberately avoid interpreting document content as markup.
     let author = annotation_label(&c.author, false);
     author.add_css_class("heading");
-    body.append(&author);
+    summary.append(&author);
     if !c.date.is_empty() {
         let formatted = glib::DateTime::from_iso8601(&c.date, None)
             .and_then(|d| d.to_local())
@@ -275,17 +346,20 @@ fn comment_message(
             .unwrap_or_else(|_| c.date.clone());
         let date = annotation_label(&formatted, true);
         date.add_css_class("caption");
-        body.append(&date);
+        summary.append(&date);
     }
     if c.resolved {
-        body.append(&annotation_label(wordcraft_gnome::t!("Resolved"), true));
+        summary.append(&annotation_label(wordcraft_gnome::t!("Resolved"), true));
     }
-    body.append(&annotation_label(&c.text, false));
-    let actions = gtk::Box::new(gtk::Orientation::Horizontal, 2);
-    let go = annotation_button("go-jump-symbolic", wordcraft_gnome::t!("Go to Comment"));
+    summary.append(&annotation_label(&c.text, false));
+    let go = gtk::Button::new();
+    go.add_css_class("flat");
+    go.set_child(Some(&summary));
     go.set_widget_name(&format!("comment-go-{}", c.id));
+    go.set_tooltip_text(Some(wordcraft_gnome::t!("Go to Comment")));
     go.set_sensitive(has_anchor);
-    actions.append(&go);
+    body.append(&go);
+    let actions = gtk::Box::new(gtk::Orientation::Horizontal, 2);
     let reply = gtk::Button::with_label(wordcraft_gnome::t!("Reply"));
     reply.add_css_class("flat");
     reply.set_sensitive(writable);
@@ -347,13 +421,16 @@ fn comment_message(
     let weak = Rc::downgrade(ui);
     go.connect_clicked(move |_| {
         if let Some(ui) = annotation_target(&weak, identity) {
+            if let Some(panel) = ui.annotations.borrow().as_ref() {
+                panel.select_thread(root);
+            }
             annotation_navigate(&ui, |s| model::goto_comment(s, id));
         }
     });
     let weak = Rc::downgrade(ui);
     reply.connect_clicked(move |_| {
         if let Some(ui) = annotation_target(&weak, identity) {
-            show_annotation_dialog(&ui, AnnotationEdit::Reply(id));
+            compose_comment(&ui, Some(id));
         }
     });
     message
@@ -425,6 +502,7 @@ pub(super) fn install_annotations(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc
         active: RefCell::new(HashSet::new()),
         document: Cell::new(None),
         pending: Cell::new(false),
+        draft: RefCell::new(None),
     });
     let weak = Rc::downgrade(&panel);
     toggle.connect_toggled(move |b| {
@@ -435,4 +513,11 @@ pub(super) fn install_annotations(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc
         }
     });
     panel
+}
+
+pub(super) fn compose_comment(ui: &Rc<Ui>, parent: Option<u32>) {
+    let panel = ui.annotations.borrow().as_ref().cloned();
+    if let Some(panel) = panel {
+        panel.compose(parent);
+    }
 }

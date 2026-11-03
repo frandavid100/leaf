@@ -437,7 +437,12 @@ pub(super) fn issue_sweep_ui_test(
         .unwrap()
         .downcast::<gtk::Label>()
         .unwrap();
-    assert!(preview.attributes().unwrap().to_string().contains("13.25"));
+    let attributes = preview.attributes().unwrap().to_string();
+    assert!(attributes.contains("family"));
+    assert!(
+        !attributes.contains("size"),
+        "preview inherits the menu size"
+    );
     fonts.popdown();
 
     let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();

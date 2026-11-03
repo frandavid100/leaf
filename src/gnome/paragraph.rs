@@ -325,6 +325,22 @@ impl ParagraphPopover {
                 serde_json::json!({"value":value}),
             ));
         }
+        let columns = gtk::Button::new();
+        columns.set_widget_name("paragraph-columns");
+        columns.add_css_class("flat");
+        columns.set_tooltip_text(Some(wordcraft_gnome::t!("Columns")));
+        accessible_name(&columns, wordcraft_gnome::t!("Columns"));
+        let content = gtk::Box::new(gtk::Orientation::Horizontal, 4);
+        content.append(&gtk::Image::from_icon_name("view-dual-symbolic"));
+        content.append(&format_chevron());
+        columns.set_child(Some(&content));
+        let weak = Rc::downgrade(self);
+        columns.connect_clicked(move |_| {
+            if let Some(panel) = weak.upgrade() {
+                panel.page("columns");
+            }
+        });
+        row.append(&columns);
         self.main.append(&row);
         self.main
             .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
@@ -417,15 +433,6 @@ impl ParagraphPopover {
         self.main.append(&row);
         self.main
             .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-        let columns = style_menu_button(wordcraft_gnome::t!("Columns…"));
-        columns.set_widget_name("paragraph-columns");
-        self.main.append(&columns);
-        let weak = Rc::downgrade(self);
-        columns.connect_clicked(move |_| {
-            if let Some(s) = weak.upgrade() {
-                s.page("columns");
-            }
-        });
         let more = style_menu_button(wordcraft_gnome::t!("More Paragraph Options…"));
         more.set_widget_name("paragraph-more-options");
         self.main.append(&more);
@@ -902,7 +909,7 @@ pub(super) fn install_paragraph_popover(
     let pop = gtk::Popover::new();
     pop.add_css_class("format-popover");
     let root = gtk::Box::new(gtk::Orientation::Vertical, 6);
-    root.set_width_request(300);
+    root.set_width_request(270);
     root.set_margin_top(8);
     root.set_margin_bottom(8);
     root.set_margin_start(8);

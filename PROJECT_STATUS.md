@@ -1,6 +1,6 @@
 # Estado actual de Leaf
 
-Actualizado: 2 de noviembre de 2026. Esta página describe el presente;
+Actualizado: 3 de noviembre de 2026. Esta página describe el presente;
 el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.
 
 ## Dónde trabajar
@@ -12,12 +12,22 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## Revisión de formato, comentarios e inserción
+
+La [PR #72](https://github.com/frandavid100/leaf/pull/72) compacta Fuente,
+Tamaño, Texto, Párrafo y Estilos (#66–#71), añade un editor de comentarios y
+respuestas en el panel lateral (#73) y comparte el submenú Insertar entre
+Documento y el menú contextual (#74). El [informe de revisión](docs/FORMAT_POPOVER_REVIEW.md)
+recoge la comparación de prototipos y las reproducciones pendientes de
+columnas (#1, #2), saltos (#65) y diccionarios (#69).
+
 ## Revisión adicional: integración y claridad del código
 
 David autoriza revisar el aprovechamiento de WordCraft 0.14 y limpiar estructura,
 formato y trabajo redundante del cliente. Se integra la API de PDF para impresión,
-se separan controladores/diálogos y se evita recorrer estilos ocultos. La rama de
-revisión está en validación; no es una nueva release. [Investigación y alcance](docs/WORDCRAFT_014_REVIEW.md).
+se separan controladores y diálogos y se evita recorrer estilos ocultos. La
+[PR #63](https://github.com/frandavid100/leaf/pull/63) está integrada tras superar la
+[CI nativa](https://github.com/frandavid100/leaf/actions/runs/41508412922). [Investigación y alcance](docs/WORDCRAFT_014_REVIEW.md).
 
 ## Última versión publicada: alpha.21 — WordCraft 0.14.0
 

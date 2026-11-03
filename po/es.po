@@ -2284,3 +2284,9 @@ msgstr "Enfocar la regla"
 
 msgid "Vertical ruler (cm)"
 msgstr "Regla vertical (cm)"
+
+msgid "Default language"
+msgstr "Idioma predeterminado"
+
+msgid "More Styles…"
+msgstr "Más estilos…"

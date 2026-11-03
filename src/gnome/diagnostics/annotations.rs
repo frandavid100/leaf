@@ -22,6 +22,19 @@ fn form(ui: &Rc<Ui>) -> AnnotationDialog {
     }
 }
 
+fn composer(ui: &Rc<Ui>) -> (gtk::Widget, gtk::TextView, gtk::Button) {
+    let root = find_widget(&ui.navigation_pages, "comment-composer").unwrap();
+    let text = find_widget(&root, "comment-text")
+        .unwrap()
+        .downcast()
+        .unwrap();
+    let submit = find_widget(&root, "annotation-submit")
+        .unwrap()
+        .downcast()
+        .unwrap();
+    (root, text, submit)
+}
+
 pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
     let toggle = find_widget(&ui.sidebar_pages, "sidebar-annotations")
         .unwrap()
@@ -32,7 +45,7 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     opened(
         ui,
         Session::new(wordcraft_doc::Document::from_text(
-            "Café con emoji 🦊.\nSegundo párrafo para revisar.",
+            "Café con emoji 🦊.\n\u{c}Segundo párrafo para revisar.",
         )),
         "Annotations",
     );
@@ -122,13 +135,48 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     assert!(!duplicate.error.text().is_empty());
     duplicate.window.close();
 
+    let anchor = {
+        let mut current = ui.current.borrow_mut();
+        let session = &mut current.as_mut().unwrap().session;
+        let paragraph = session.doc.para_at(&Pos::body(0, 0)).unwrap();
+        let start = paragraph.text.find("emoji").unwrap();
+        let anchor = Pos::body(0, start);
+        selection::select_range(session, &anchor, &Pos::body(0, start + 5)).unwrap();
+        assert_eq!(session.sel.anchor, anchor);
+        anchor
+    };
     let pop = show_document_context(ui, parent, 100, 150, DocumentContext::Text);
-    assert!(context_model_row(&pop, wordcraft_gnome::t!("Add Bookmark…")).is_some());
-    context_activate_row(&pop, wordcraft_gnome::t!("Add Comment…"));
-    let comment = form(ui);
-    comment.text.buffer().set_text("Review this café 🦊");
-    comment.submit.emit_clicked();
-    let root = model::comments(&ui.current.borrow().as_ref().unwrap().session)[0].id;
+    context_activate_row(&pop, wordcraft_gnome::t!("Insert"));
+    for label in [
+        wordcraft_gnome::t!("Table…"),
+        wordcraft_gnome::t!("Image…"),
+        wordcraft_gnome::t!("Bookmark…"),
+        wordcraft_gnome::t!("Comment…"),
+        wordcraft_gnome::t!("Header"),
+        wordcraft_gnome::t!("Footer"),
+        wordcraft_gnome::t!("Page Number…"),
+    ] {
+        assert!(context_model_row(&pop, label).is_some(), "missing {label}");
+    }
+    context_activate_row(&pop, wordcraft_gnome::t!("Comment…"));
+    assert!(!pop.is_visible());
+    let (_, text, submit) = composer(ui);
+    assert!(!submit.is_sensitive());
+    // Navigating while composing must keep the original first-page anchor.
+    {
+        let mut current = ui.current.borrow_mut();
+        selection::set_caret(
+            &mut current.as_mut().unwrap().session,
+            &Pos::body(1, 1),
+            false,
+        )
+        .unwrap();
+    }
+    text.buffer().set_text("Review this café 🦊");
+    submit.emit_clicked();
+    let comments = model::comments(&ui.current.borrow().as_ref().unwrap().session);
+    let root = comments[0].id;
+    assert_eq!(comments[0].anchor.as_ref(), Some(&anchor));
     let panel = ui.annotations.borrow().as_ref().unwrap().clone();
     panel.refresh();
     let reply = find_widget(&ui.navigation_pages, &format!("comment-reply-{root}"))
@@ -136,9 +184,13 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
         .downcast::<gtk::Button>()
         .unwrap();
     reply.emit_clicked();
-    let response = form(ui);
-    response.text.buffer().set_text("Checked the wording.");
-    response.submit.emit_clicked();
+    let (draft, text, submit) = composer(ui);
+    assert_eq!(
+        draft.prev_sibling().unwrap().widget_name(),
+        format!("comment-{root}")
+    );
+    text.buffer().set_text("Checked the wording.");
+    submit.emit_clicked();
     let reply_id = model::comments(&ui.current.borrow().as_ref().unwrap().session)
         .iter()
         .find(|c| c.parent == Some(root))
@@ -148,7 +200,8 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     let comments_view = find_widget(&ui.navigation_pages, "comments-panel").unwrap();
     assert!(find_widget(&comments_view, "bookmark-go-Café_1").is_none());
     let thread = find_widget(&ui.navigation_pages, &format!("comment-thread-{root}")).unwrap();
-    assert!(thread.has_css_class("card"));
+    assert!(thread.has_css_class("comment-thread"));
+    assert!(!thread.has_css_class("card"));
     for id in [root, reply_id] {
         let message = find_widget(&ui.navigation_pages, &format!("comment-{id}")).unwrap();
         assert!(!message.has_css_class("card"));
@@ -200,19 +253,69 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
         Some("annotations")
     );
 
-    // A stale modal cannot attach its comment to a replacement document.
-    let stale = show_annotation_dialog(ui, AnnotationEdit::NewComment).unwrap();
-    stale
-        .text
-        .buffer()
+    // Replies have their own inline position and retain their parent.
+    find_widget(&ui.navigation_pages, &format!("comment-reply-{reply_id}"))
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap()
+        .emit_clicked();
+    let (draft, text, submit) = composer(ui);
+    assert_eq!(
+        draft.prev_sibling().unwrap().widget_name(),
+        format!("comment-{reply_id}")
+    );
+    text.buffer().set_text("Nested reply");
+    submit.emit_clicked();
+    assert!(
+        model::comments(&ui.current.borrow().as_ref().unwrap().session)
+            .iter()
+            .any(|comment| comment.parent == Some(reply_id))
+    );
+
+    // Add a thread on the second page and select each thread through its content.
+    {
+        let mut current = ui.current.borrow_mut();
+        selection::select_range(
+            &mut current.as_mut().unwrap().session,
+            &Pos::body(1, 1),
+            &Pos::body(1, 8),
+        )
+        .unwrap();
+    }
+    gio::prelude::ActionGroupExt::activate_action(parent, "insert-comment", None);
+    let (_, text, submit) = composer(ui);
+    text.buffer().set_text("Second page");
+    submit.emit_clicked();
+    let second = model::comments(&ui.current.borrow().as_ref().unwrap().session)
+        .into_iter()
+        .find(|comment| comment.text == "Second page")
+        .unwrap()
+        .id;
+    for (id, page) in [(second, 1), (root, 0)] {
+        find_widget(&ui.navigation_pages, &format!("comment-go-{id}"))
+            .unwrap()
+            .downcast::<gtk::Button>()
+            .unwrap()
+            .emit_clicked();
+        assert_eq!(*panel.active.borrow(), HashSet::from([id]));
+        let mut current = ui.current.borrow_mut();
+        let session = &mut current.as_mut().unwrap().session;
+        let focus = session.sel.focus.clone();
+        let hint = session.page_hint;
+        assert_eq!(session.layout().caret_on(&focus, hint).unwrap().page, page);
+    }
+
+    // Replacing a document invalidates its pending composer.
+    compose_comment(ui, None);
+    let (_, text, stale_submit) = composer(ui);
+    text.buffer()
         .set_text("Must not be attached to another document");
     let original = ui.current.borrow().as_ref().unwrap().session.doc.clone();
-    opened(ui, Session::new(original), "Replacement");
-    stale.submit.emit_clicked();
-    assert!(!stale.error.text().is_empty());
-    assert!(stale.window.is_visible());
-    stale.window.close();
+    opened(ui, Session::new(original.clone()), "Replacement");
     panel.show();
+    stale_submit.emit_clicked();
+    assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, original);
+    assert!(find_widget(&ui.navigation_pages, "comment-composer").is_none());
     if std::env::args().any(|a| a == "--bookmarks-demo") {
         ui.outline.borrow().as_ref().unwrap().show();
         eprintln!("ANNOTATIONS_DEMO_READY");

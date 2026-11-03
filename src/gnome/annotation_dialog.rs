@@ -4,9 +4,7 @@ use wordcraft_gnome::annotations as model;
 #[derive(Clone, Copy)]
 pub(super) enum AnnotationEdit {
     Bookmark,
-    NewComment,
     Edit(u32),
-    Reply(u32),
 }
 
 pub(super) struct AnnotationDialog {
@@ -53,9 +51,7 @@ pub(super) fn show_annotation_dialog(
     }
     let title = match edit {
         AnnotationEdit::Bookmark => wordcraft_gnome::t!("Add Bookmark"),
-        AnnotationEdit::NewComment => wordcraft_gnome::t!("Add Comment"),
         AnnotationEdit::Edit(_) => wordcraft_gnome::t!("Edit Comment"),
-        AnnotationEdit::Reply(_) => wordcraft_gnome::t!("Reply to Comment"),
     };
     let window = adw::Window::builder()
         .title(title)
@@ -179,9 +175,7 @@ pub(super) fn show_annotation_dialog(
             let mut value = ui.current.borrow_mut();
             let Some(d) = value.as_mut() else { return };
             // A modal editor cannot silently attach to a newly navigated selection.
-            if d.session.sel != selection
-                && matches!(edit, AnnotationEdit::Bookmark | AnnotationEdit::NewComment)
-            {
+            if d.session.sel != selection && matches!(edit, AnnotationEdit::Bookmark) {
                 error_label.set_text(wordcraft_gnome::t!(
                     "The selection has changed; open this dialog again."
                 ));
@@ -190,9 +184,7 @@ pub(super) fn show_annotation_dialog(
             let rev = d.session.rev();
             let result = match edit {
                 AnnotationEdit::Bookmark => model::add_bookmark(&mut d.session, &field.text()),
-                AnnotationEdit::NewComment => model::add_comment(&mut d.session, &text),
                 AnnotationEdit::Edit(id) => model::edit_comment(&mut d.session, id, &text),
-                AnnotationEdit::Reply(id) => model::reply(&mut d.session, id, &text),
             };
             result.map(|_| d.session.rev() != rev)
         };

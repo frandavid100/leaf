@@ -4,7 +4,7 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En validación: integración de WordCraft 0.14 y limpieza del cliente
+## Completado: integración de WordCraft 0.14 y limpieza del cliente
 
 Autorizada por David tras alpha.21: investigar las novedades y limpiar código,
 estructura y formato. API de impresión específica, separación de responsabilidades
