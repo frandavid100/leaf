@@ -33,6 +33,8 @@ while kill -0 "$pid" 2>/dev/null; do
   touch "$LEAF20_ACK_DIR/$stage"
   last=$((last+1))
 done
-wait "$pid"
-grep -q SWEEP20_POINTER_OK "$log"
+status=0
+wait "$pid" || status=$?
 cat "$log"
+(( status == 0 ))
+grep -q SWEEP20_POINTER_OK "$log"

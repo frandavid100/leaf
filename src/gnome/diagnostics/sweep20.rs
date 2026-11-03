@@ -135,11 +135,19 @@ fn stage(t: Rc<Sweep>, n: u8) {
             ("hover", vec![(10, 20)])
         }
         14 => {
-            let w = find_widget(&t.window, "vertical-ruler-activation-strip").unwrap();
-            (
-                "hover",
-                vec![point(&w, &t.window, 2., w.height() as f32 / 2.)],
-            )
+            let current = u.current.borrow();
+            let doc = current.as_ref().unwrap();
+            let sheet = &doc.page_frames[doc.active];
+            let frame = sheet.compute_bounds(&t.window).unwrap();
+            let viewport = u.scroll.compute_bounds(&t.window).unwrap();
+            let top = frame.y().max(viewport.y());
+            let bottom = (frame.y() + frame.height()).min(viewport.y() + viewport.height());
+            assert!(
+                bottom > top,
+                "the scrolled sheet must intersect the viewport"
+            );
+            let y = (top + bottom) / 2. - frame.y();
+            ("hover", vec![point(sheet, &t.window, -4., y)])
         }
         15 => ("hover", vec![(10, 20)]),
         16 => ("ruler-keyboard", vec![]),
