@@ -22,6 +22,11 @@
   <url type="help">https://github.com/frandavid100/leaf/blob/main/docs/TESTING.md</url>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.0-alpha.26" date="2026-11-03" type="development">
+      <description>
+        <p>Arrange page rows by section, preview margin changes while dragging, and refine the rulers, comments and section menu.</p>
+      </description>
+    </release>
     <release version="0.1.0-alpha.25" date="2026-11-03" type="development">
       <description>
         <p>Refine comment threads, style previews, page thumbnails and rulers, and adjust margins by dragging ruler boundaries.</p>

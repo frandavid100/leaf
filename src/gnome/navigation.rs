@@ -213,6 +213,8 @@ impl OutlinePanel {
             menu.add_css_class("flat");
             menu.set_valign(gtk::Align::Center);
             menu.set_margin_end(8);
+            menu.set_margin_top(8);
+            menu.set_margin_bottom(8);
             accessible_name(&menu, wordcraft_gnome::t!("Section Properties"));
             let actions = gio::SimpleActionGroup::new();
             let action = gio::SimpleAction::new("properties", None);

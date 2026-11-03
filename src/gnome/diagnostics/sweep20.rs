@@ -7,6 +7,8 @@ struct Sweep {
     app: Application,
     selection: wordcraft_engine::Selection,
     depth: Cell<usize>,
+    margins: Cell<[f32; 4]>,
+    scroll_before: Cell<f64>,
 }
 fn point(w: &impl IsA<gtk::Widget>, root: &ApplicationWindow, x: f32, y: f32) -> (i32, i32) {
     let bounds = w.compute_bounds(root).unwrap();
@@ -63,9 +65,21 @@ pub(super) fn sweep20_pointer_test(ui: &Rc<Ui>, window: &ApplicationWindow, app:
         app: app.clone(),
         selection,
         depth: Cell::new(0),
+        margins: Cell::new([0.; 4]),
+        scroll_before: Cell::new(0.),
     });
     glib::timeout_add_local_once(std::time::Duration::from_millis(400), move || stage(t, 0));
 }
+fn margins(session: &Session) -> [f32; 4] {
+    let props = session.doc.sections()[0].1;
+    [
+        props.margin_left,
+        props.margin_right,
+        props.margin_top,
+        props.margin_bottom,
+    ]
+}
+
 fn stage(t: Rc<Sweep>, n: u8) {
     let u = &t.ui;
     let (role, points) = match n {
@@ -200,6 +214,40 @@ fn stage(t: Rc<Sweep>, n: u8) {
             ("hover", vec![target])
         }
         26 | 29 => ("hover", vec![(10, 20)]),
+        30..=41 if (n - 30) % 3 == 2 => ("undo", vec![]),
+        30..=41 => {
+            let side = usize::from((n - 30) / 3);
+            let mut current = u.current.borrow_mut();
+            let doc = current.as_mut().unwrap();
+            let body = doc.session.layout().pages[0].body;
+            let z = doc.zoom;
+            let (x, y, dx, dy) = match side {
+                0 => (body.x * z, 11., 12., 0.),
+                1 => ((body.x + body.w) * z, 11., -12., 0.),
+                2 => (11., body.y * z, 0., 12.),
+                _ => (11., (body.y + body.h) * z, 0., -12.),
+            };
+            let sheet = &doc.page_frames[0];
+            let start = point(sheet, &t.window, x, y);
+            if (n - 30) % 3 == 0 {
+                t.margins.set(margins(&doc.session));
+                t.depth.set(doc.session.undo_depth());
+                ("hover", vec![start])
+            } else {
+                ("drag", vec![start, point(sheet, &t.window, x + dx, y + dy)])
+            }
+        }
+        42 | 43 => {
+            let current = u.current.borrow();
+            let sheet = &current.as_ref().unwrap().page_frames[0];
+            let target = point(sheet, &t.window, sheet.width() as f32 / 2., 11.);
+            if n == 42 {
+                ("hover", vec![target])
+            } else {
+                t.scroll_before.set(u.scroll.vadjustment().value());
+                ("wheel", vec![target])
+            }
+        }
         _ => {
             let before = u.current.borrow().as_ref().unwrap().session.doc.clone();
             let settings = u.document_box.settings();
@@ -308,6 +356,33 @@ fn check(t: &Sweep, n: u8) {
             "horizontal must hide after leaving/cancel"
         );
         assert!(!r.vertical_reveal.reveals_child());
+    }
+    if (30..=41).contains(&n) && (n - 30) % 3 != 0 {
+        let current = u.current.borrow();
+        let doc = current.as_ref().unwrap();
+        let changed = (n - 30) % 3 == 1;
+        let mut expected = t.margins.get();
+        if changed {
+            expected[usize::from((n - 30) / 3)] += 12. / doc.zoom;
+        }
+        let actual = margins(&doc.session);
+        assert!(
+            actual
+                .iter()
+                .zip(expected)
+                .all(|(a, b)| (a - b).abs() < 1.6),
+            "margin stage {n}: {actual:?}, expected {expected:?}"
+        );
+        assert_eq!(
+            doc.session.undo_depth(),
+            t.depth.get() + usize::from(changed)
+        );
+    }
+    if n == 42 {
+        assert!(u.ruler.borrow().as_ref().unwrap().reveal.reveals_child());
+    }
+    if n == 43 {
+        assert!(u.scroll.vadjustment().value() > t.scroll_before.get());
     }
     if n == 17 {
         u.scroll.vadjustment().set_value(0.);
