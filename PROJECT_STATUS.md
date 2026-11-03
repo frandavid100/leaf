@@ -12,7 +12,11 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## Última versión publicada: alpha.22 — formato, comentarios e impresión
+## Última versión publicada: alpha.23
+
+[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.23), fuente `9cda589709aff7d0c21446c9b9b105b0d0750acc`. [CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41606977263) superada y sumas de las descargas verificadas. Cerrados #64, #65, #7 y #37.
+
+## Entrega anterior: alpha.22 — formato, comentarios e impresión
 
 [Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.22).
 Fuente: `1cda6b2df2eeabd46dbc3331c5adb64c452b679f`. GNOME 49 y actualización

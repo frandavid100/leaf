@@ -4,6 +4,10 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## Completado: alpha.23
+
+Reglas dentro de los cuatro bordes, menú de saltos y navegación por secciones, encabezados y pies pares independientes y pestañas nativas de Propiedades.
+
 ## Completado: alpha.22
 
 [Publicada y verificada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.22).
