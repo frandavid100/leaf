@@ -164,16 +164,68 @@ impl AnnotationPanel {
         true
     }
 
-    fn select_thread(&self, root: u32) {
-        self.active.replace(HashSet::from([root]));
-        let name = format!("comment-thread-{root}");
+    pub(super) fn sync_caret(&self) {
+        if !self.toggle.is_active() {
+            return;
+        }
+        let Some(ui) = self.ui.upgrade() else { return };
+        let root = {
+            let value = ui.current.borrow();
+            let Some(doc) = value.as_ref() else { return };
+            let (start, _) = doc.session.sel.ordered();
+            let roots = model::threads_at(&doc.session, &start);
+            let active = self.active.borrow();
+            roots
+                .iter()
+                .find(|root| active.contains(root))
+                .copied()
+                .or_else(|| roots.first().copied())
+        };
+        self.select_thread(root);
+    }
+
+    fn select_thread(&self, root: Option<u32>) {
+        let active: HashSet<_> = root.into_iter().collect();
+        if *self.active.borrow() == active {
+            return;
+        }
+        self.active.replace(active);
         let mut child = self.content.first_child();
         while let Some(row) = child {
             child = row.next_sibling();
-            if row.widget_name() == name {
+            let name = row.widget_name();
+            let Some(id) = name
+                .strip_prefix("comment-thread-")
+                .and_then(|s| s.parse::<u32>().ok())
+            else {
+                continue;
+            };
+            let expanded = Some(id) == root;
+            if expanded {
                 row.add_css_class("selected");
             } else {
                 row.remove_css_class("selected");
+            }
+            if let Some(label) = find_widget(&row, "comment-root-text")
+                .and_then(|widget| widget.downcast::<gtk::Label>().ok())
+            {
+                label.set_lines(if expanded { -1 } else { 2 });
+                label.set_ellipsize(if expanded {
+                    gtk::pango::EllipsizeMode::None
+                } else {
+                    gtk::pango::EllipsizeMode::End
+                });
+            }
+            if let Some(actions) = find_widget(&row, "comment-root-actions") {
+                actions.set_visible(expanded);
+            }
+            if let Some(details) = find_widget(&row, "comment-replies")
+                .and_then(|widget| widget.downcast::<gtk::Revealer>().ok())
+            {
+                details.set_reveal_child(expanded);
+            }
+            if let Some(count) = find_widget(&row, "comment-reply-count") {
+                count.set_visible(!expanded);
             }
         }
     }
@@ -193,6 +245,14 @@ impl AnnotationPanel {
             thread.add_css_class("selected");
         }
         thread.set_overflow(gtk::Overflow::Hidden);
+        let expanded = self.active.borrow().contains(&root);
+        let replies = gtk::Box::new(gtk::Orientation::Vertical, 0);
+        let details = gtk::Revealer::new();
+        details.set_widget_name("comment-replies");
+        details.set_transition_type(gtk::RevealerTransitionType::SlideDown);
+        details.set_transition_duration(160);
+        details.set_child(Some(&replies));
+        let mut count = 0;
         let mut stack = vec![(root, 0usize)];
         while let Some((id, depth)) = stack.pop() {
             if !seen.insert(id) {
@@ -201,16 +261,20 @@ impl AnnotationPanel {
             let Some(c) = comments.iter().find(|c| c.id == id) else {
                 continue;
             };
-            if thread.first_child().is_some() {
-                thread.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-            }
-            thread.append(&comment_message(
+            let destination = if depth == 0 {
+                &thread
+            } else {
+                count += 1;
+                &replies
+            };
+            destination.append(&comment_message(
                 ui,
                 c,
                 root,
                 depth,
                 writable,
                 model::anchor_in(comments, c.id).is_some(),
+                expanded,
             ));
             if let Some(draft) = self
                 .draft
@@ -218,12 +282,28 @@ impl AnnotationPanel {
                 .as_ref()
                 .filter(|draft| draft.parent == Some(id))
             {
-                thread.append(&draft.root);
+                destination.append(&draft.root);
             }
             for reply in comments.iter().rev().filter(|c| c.parent == Some(id)) {
                 stack.push((reply.id, depth + 1));
             }
         }
+        if count > 0 {
+            let count = annotation_label(
+                &wordcraft_gnome::i18n::interpolate(
+                    wordcraft_gnome::t!("Replies: {count}"),
+                    &[("count", count.to_string())],
+                ),
+                true,
+            );
+            count.set_widget_name("comment-reply-count");
+            count.set_margin_start(14);
+            count.set_margin_bottom(8);
+            count.set_visible(!expanded);
+            thread.append(&count);
+        }
+        details.set_reveal_child(expanded);
+        thread.append(&details);
         self.content.append(&thread);
     }
 }
@@ -317,14 +397,31 @@ fn comment_message(
     depth: usize,
     writable: bool,
     has_anchor: bool,
+    expanded: bool,
 ) -> gtk::Box {
     let message = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     message.set_widget_name(&format!("comment-{}", c.id));
     message.set_margin_start((depth.min(2) * 10) as i32);
     if depth > 0 {
-        let branch = gtk::Separator::new(gtk::Orientation::Vertical);
-        branch.set_margin_top(10);
-        branch.set_margin_bottom(10);
+        let branch = gtk::DrawingArea::new();
+        branch.set_content_width(12);
+        branch.set_draw_func(|widget, cr, _, height| {
+            let color = widget.color();
+            cr.set_source_rgba(
+                color.red().into(),
+                color.green().into(),
+                color.blue().into(),
+                0.38,
+            );
+            cr.set_line_width(1.);
+            cr.move_to(3.5, 0.);
+            cr.line_to(3.5, f64::from(height));
+            cr.move_to(3.5, 18.5);
+            cr.line_to(9., 18.5);
+            let _ = cr.stroke();
+            cr.arc(9., 18.5, 2., 0., std::f64::consts::TAU);
+            let _ = cr.fill();
+        });
         message.append(&branch);
     }
     let body = gtk::Box::new(gtk::Orientation::Vertical, 6);
@@ -335,23 +432,48 @@ fn comment_message(
     body.set_margin_bottom(10);
     let summary = gtk::Box::new(gtk::Orientation::Vertical, 4);
     // Plain labels deliberately avoid interpreting document content as markup.
+    let heading = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     let author = annotation_label(&c.author, false);
+    author.set_hexpand(true);
+    author.set_wrap(false);
+    author.set_ellipsize(gtk::pango::EllipsizeMode::End);
     author.add_css_class("heading");
-    summary.append(&author);
-    if !c.date.is_empty() {
-        let formatted = glib::DateTime::from_iso8601(&c.date, None)
-            .and_then(|d| d.to_local())
-            .and_then(|d| d.format("%x %H:%M"))
-            .map(|s| s.to_string())
-            .unwrap_or_else(|_| c.date.clone());
-        let date = annotation_label(&formatted, true);
-        date.add_css_class("caption");
-        summary.append(&date);
+    heading.append(&author);
+    if let Ok(date) = glib::DateTime::from_iso8601(&c.date, None).and_then(|date| date.to_local()) {
+        let age =
+            glib::DateTime::now_local().map_or(0, |now| (now.to_unix() - date.to_unix()).max(0));
+        let day = 86400;
+        let (count, format) = if age >= 365 * day {
+            (age / (365 * day), wordcraft_gnome::t!("{count}Y"))
+        } else if age >= 30 * day {
+            (age / (30 * day), wordcraft_gnome::t!("{count}M"))
+        } else if age >= day {
+            (age / day, wordcraft_gnome::t!("{count}D"))
+        } else {
+            (age / 3600, wordcraft_gnome::t!("{count}H"))
+        };
+        let value = wordcraft_gnome::i18n::interpolate(format, &[("count", count.to_string())]);
+        let timestamp = gtk::Label::new(Some(&value));
+        timestamp.add_css_class("caption");
+        timestamp.add_css_class("dim-label");
+        if let Ok(full) = date.format("%x %X") {
+            timestamp.set_tooltip_text(Some(&full));
+        }
+        heading.append(&timestamp);
     }
+    summary.append(&heading);
     if c.resolved {
         summary.append(&annotation_label(wordcraft_gnome::t!("Resolved"), true));
     }
-    summary.append(&annotation_label(&c.text, false));
+    let text = annotation_label(&c.text, false);
+    if depth == 0 {
+        text.set_widget_name("comment-root-text");
+        if !expanded {
+            text.set_lines(2);
+            text.set_ellipsize(gtk::pango::EllipsizeMode::End);
+        }
+    }
+    summary.append(&text);
     let go = gtk::Button::new();
     go.add_css_class("flat");
     go.set_child(Some(&summary));
@@ -416,13 +538,17 @@ fn comment_message(
     menu.insert_action_group("annotation", Some(&group));
     menu.set_menu_model(Some(&items));
     actions.append(&menu);
+    if depth == 0 {
+        actions.set_widget_name("comment-root-actions");
+        actions.set_visible(expanded);
+    }
     body.append(&actions);
     message.append(&body);
     let weak = Rc::downgrade(ui);
     go.connect_clicked(move |_| {
         if let Some(ui) = annotation_target(&weak, identity) {
             if let Some(panel) = ui.annotations.borrow().as_ref() {
-                panel.select_thread(root);
+                panel.select_thread(Some(root));
             }
             annotation_navigate(&ui, |s| model::goto_comment(s, id));
         }

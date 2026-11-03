@@ -105,7 +105,12 @@ pub(super) fn build_tab(
     let thumbnails_scroll = gtk::ScrolledWindow::new();
     thumbnails_scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
     thumbnails_scroll.set_vexpand(true);
-    thumbnails_scroll.set_child(Some(&thumbnails_box));
+    let thumbnail_column = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    thumbnail_column.append(&thumbnails_box);
+    let empty_height = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    empty_height.set_vexpand(true);
+    thumbnail_column.append(&empty_height);
+    thumbnails_scroll.set_child(Some(&thumbnail_column));
 
     let sidebar_toolbar = ToolbarView::new();
     sidebar_toolbar.add_top_bar(&side_header);

@@ -2425,3 +2425,18 @@ msgstr "Custom Column Widths"
 
 msgid "Column {number}"
 msgstr "Column {number}"
+
+msgid "Replies: {count}"
+msgstr "Replies: {count}"
+
+msgid "{count}Y"
+msgstr "{count}Y"
+
+msgid "{count}M"
+msgstr "{count}M"
+
+msgid "{count}D"
+msgstr "{count}D"
+
+msgid "{count}H"
+msgstr "{count}H"

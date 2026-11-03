@@ -27,7 +27,7 @@ impl View {
             .distance_at(((x - self.page_x) / self.zoom) as f32)
     }
 }
-const BAND: f32 = 24.0;
+const BAND: f32 = 21.0;
 
 #[derive(Clone, Copy)]
 enum Edge {
@@ -88,6 +88,16 @@ fn clip_sheet(cr: &gtk::cairo::Context, sheet: &gtk::graphene::Rect) {
     cr.clip();
 }
 
+struct MarginDrag {
+    document: (u64, u64),
+    section: usize,
+    horizontal: bool,
+    leading: bool,
+    zoom: f64,
+    setup: PageSetup,
+    delta: f32,
+}
+
 pub(super) struct Ruler {
     ui: std::rc::Weak<Ui>,
     pub(super) area: gtk::DrawingArea,
@@ -103,11 +113,89 @@ pub(super) struct Ruler {
     hovered: Cell<bool>,
     focused: Cell<bool>,
     drag: RefCell<Option<Drag>>,
+    margin_drag: RefCell<Option<MarginDrag>>,
     selected: Cell<usize>,
     hide: RefCell<Option<glib::SourceId>>,
     announced: RefCell<String>,
 }
 impl Ruler {
+    fn margin_at(&self, x: f64, y: f64) -> Option<MarginDrag> {
+        let ui = self.ui.upgrade()?;
+        let overlay = self.overlay.upgrade()?;
+        let mut current = ui.current.try_borrow_mut().ok()?;
+        let doc = current.as_mut()?;
+        let index = self.hovered_page.get()?;
+        let sheet = doc.page_frames.get(index)?.compute_bounds(&overlay)?;
+        let visible = visible_sheet(&sheet, overlay.upcast_ref());
+        let (section, body) = doc
+            .session
+            .layout()
+            .pages
+            .get(index)
+            .map(|p| (p.section, p.body))?;
+        let zoom = f64::from(doc.zoom);
+        let point = gtk::graphene::Point::new(x as f32, y as f32);
+        for (edge, revealer) in [
+            (Edge::Top, &self.reveal),
+            (Edge::Bottom, &self.bottom),
+            (Edge::Left, &self.vertical_reveal),
+            (Edge::Right, &self.right),
+        ] {
+            if !revealer.reveals_child() || !edge.band(&visible, false).contains_point(&point) {
+                continue;
+            }
+            let horizontal = matches!(edge, Edge::Top | Edge::Bottom);
+            // The top ruler reserves the lower part of its strip for indent and tab markers.
+            if matches!(edge, Edge::Top) && y - f64::from(visible.y()) >= 9.0 {
+                continue;
+            }
+            let (position, origin, start, end) = if horizontal {
+                (x, sheet.x(), body.x, body.x + body.w)
+            } else {
+                (y, sheet.y(), body.y, body.y + body.h)
+            };
+            let leading = (position - f64::from(origin) - f64::from(start) * zoom).abs();
+            let trailing = (position - f64::from(origin) - f64::from(end) * zoom).abs();
+            if leading.min(trailing) > 5.0 {
+                continue;
+            }
+            if matches!(edge, Edge::Top) {
+                if let Some(state) = ruler::state(&mut doc.session) {
+                    if state.page == index
+                        && Self::markers(&state).iter().any(|marker| {
+                            *marker == Marker::First
+                                && (position
+                                    - f64::from(sheet.x())
+                                    - f64::from(state.x(state.distance(*marker))) * zoom)
+                                    .abs()
+                                    < 8.0
+                        })
+                    {
+                        continue;
+                    }
+                }
+            }
+            let props = doc.session.doc.sections().get(section)?.1;
+            return Some(MarginDrag {
+                document: (doc.session.document_id(), doc.session.rev()),
+                section,
+                horizontal,
+                leading: leading <= trailing,
+                zoom,
+                setup: PageSetup {
+                    width: props.page_w,
+                    height: props.page_h,
+                    left: props.margin_left,
+                    right: props.margin_right,
+                    top: props.margin_top,
+                    bottom: props.margin_bottom,
+                },
+                delta: 0.,
+            });
+        }
+        None
+    }
+
     fn view(&self) -> Option<View> {
         let ui = self.ui.upgrade().filter(|u| !u.closed.get())?;
         let mut value = ui.current.try_borrow_mut().ok()?;
@@ -177,6 +265,7 @@ impl Ruler {
             id.remove();
         }
         self.drag.borrow_mut().take();
+        self.margin_drag.borrow_mut().take();
         self.reveal.set_reveal_child(false);
         self.vertical_reveal.set_reveal_child(false);
         self.bottom.set_reveal_child(false);
@@ -212,8 +301,8 @@ impl Ruler {
         if self.hovered.get() || self.focused.get() || self.drag.borrow().is_some() {
             return;
         }
-        if let Some(id) = self.hide.borrow_mut().take() {
-            id.remove();
+        if self.hide.borrow().is_some() {
+            return;
         }
         let weak = Rc::downgrade(self);
         let id = glib::timeout_add_local_once(std::time::Duration::from_millis(180), move || {
@@ -331,8 +420,8 @@ impl Ruler {
                     let _ = cr.fill();
                 }
                 Marker::Left | Marker::Right => {
-                    cr.move_to(x - 5.0, 22.0);
-                    cr.line_to(x + 5.0, 22.0);
+                    cr.move_to(x - 5.0, 20.0);
+                    cr.line_to(x + 5.0, 20.0);
                     cr.line_to(x, 16.0);
                     cr.close_path();
                     let _ = cr.fill();
@@ -340,19 +429,19 @@ impl Ruler {
                 Marker::Tab(n) => {
                     use wordcraft_doc::props::TabAlign;
                     cr.move_to(x, 15.0);
-                    cr.line_to(x, 21.0);
+                    cr.line_to(x, 19.0);
                     match state.tabs[*n].align {
                         TabAlign::Left => cr.line_to(x + 5.0, 21.0),
                         TabAlign::Right => cr.line_to(x - 5.0, 21.0),
                         TabAlign::Bar | TabAlign::Clear => {}
                         TabAlign::Center | TabAlign::Decimal => {
-                            cr.move_to(x - 5.0, 21.0);
-                            cr.line_to(x + 5.0, 21.0);
+                            cr.move_to(x - 5.0, 19.0);
+                            cr.line_to(x + 5.0, 19.0);
                         }
                     }
                     let _ = cr.stroke();
                     if state.tabs[*n].align == TabAlign::Decimal {
-                        cr.arc(x + 3.0, 22.0, 1.0, 0.0, std::f64::consts::TAU);
+                        cr.arc(x + 3.0, 20.0, 1.0, 0.0, std::f64::consts::TAU);
                         let _ = cr.fill();
                     }
                 }
@@ -365,8 +454,8 @@ impl Ruler {
         {
             let x = v.x(d.distance);
             cr.move_to(x, 15.0);
-            cr.line_to(x, 22.0);
-            cr.line_to(x + 5.0, 22.0);
+            cr.line_to(x, 20.0);
+            cr.line_to(x + 5.0, 20.0);
             let _ = cr.stroke();
         }
     }
@@ -412,14 +501,14 @@ impl Ruler {
         cr.set_source_rgba(1., 1., 1., 0.72);
         let _ = cr.paint();
         let (start, span) = (origin + f64::from(margin) * zoom, f64::from(content) * zoom);
-        cr.set_source_rgba(0.30, 0.30, 0.30, 0.14);
+        cr.set_source_rgba(0.30, 0.30, 0.30, 0.10);
         if horizontal {
             cr.rectangle(start, 0., span, depth);
         } else {
             cr.rectangle(0., start, depth, span);
         }
         let _ = cr.fill();
-        cr.set_source_rgba(0.22, 0.22, 0.22, 0.50);
+        cr.set_source_rgba(0.22, 0.22, 0.22, 0.19);
         cr.set_line_width(1.);
         let boundary = if matches!(edge, Edge::Top | Edge::Left) {
             depth - 0.5
@@ -488,7 +577,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     reveal.set_valign(gtk::Align::Start);
 
     let area = gtk::DrawingArea::new();
-    area.set_content_height(24);
+    area.set_content_height(BAND as i32);
     area.set_focusable(true);
     area.set_widget_name("document-ruler");
     accessible_name(&area, wordcraft_gnome::t!("Ruler"));
@@ -498,7 +587,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     let strip = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     strip.set_widget_name("ruler-activation-strip");
     let vertical = gtk::DrawingArea::new();
-    vertical.set_content_width(24);
+    vertical.set_content_width(BAND as i32);
     vertical.set_widget_name("vertical-document-ruler");
     accessible_name(&vertical, wordcraft_gnome::t!("Vertical ruler (cm)"));
     let vertical_reveal = gtk::Revealer::new();
@@ -547,6 +636,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         hovered: Cell::new(false),
         focused: Cell::new(false),
         drag: RefCell::new(None),
+        margin_drag: RefCell::new(None),
         selected: Cell::new(0),
         hide: RefCell::new(None),
         announced: RefCell::new(String::new()),
@@ -562,6 +652,18 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             r.draw(w, c, x, y);
         }
     });
+    for revealer in [&r.reveal, &r.vertical_reveal, &r.bottom, &r.right] {
+        let weak = Rc::downgrade(&r);
+        revealer.connect_child_revealed_notify(move |_| {
+            let Some(r) = weak.upgrade() else { return };
+            if [&r.reveal, &r.vertical_reveal, &r.bottom, &r.right]
+                .iter()
+                .all(|edge| !edge.reveals_child() && !edge.is_child_revealed())
+            {
+                r.hovered_page.set(None);
+            }
+        });
+    }
     let focus = gtk::EventControllerFocus::new();
     let weak = Rc::downgrade(&r);
     focus.connect_enter(move |_| {
@@ -612,7 +714,10 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             return;
         };
         let Some(ui) = r.ui.upgrade() else { return };
-        if r.drag.borrow().is_some() || ui.drag_anchor.borrow().is_some() {
+        if r.drag.borrow().is_some()
+            || r.margin_drag.borrow().is_some()
+            || ui.drag_anchor.borrow().is_some()
+        {
             return;
         }
         let edges = [Edge::Top, Edge::Left, Edge::Bottom, Edge::Right];
@@ -650,17 +755,23 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
                 .min_by(|(_, _, first), (_, _, second)| first.total_cmp(second))
         });
         let hits = if let Some((page, hits, _)) = target {
-            r.hovered_page.set(Some(page));
+            if r.hovered_page.get() != Some(page) {
+                for revealer in [&r.reveal, &r.vertical_reveal, &r.bottom, &r.right] {
+                    revealer.set_transition_duration(0);
+                    revealer.set_reveal_child(false);
+                }
+                r.hovered_page.set(Some(page));
+            }
             r.refresh();
             hits
         } else {
-            r.hovered_page.set(None);
-            r.refresh();
             [false; 4]
         };
         r.hovered.set(hits[0]);
         if hits[0] {
             r.show();
+        } else if hits[1..].iter().any(|hit| *hit) && !r.focused.get() {
+            r.reveal.set_reveal_child(false);
         } else {
             r.hide_later();
         }
@@ -676,14 +787,20 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             revealer.set_transition_duration(duration);
             revealer.set_reveal_child(hit);
         }
+        let cursor = r.margin_at(x, y).map(|margin| {
+            if margin.horizontal {
+                "ew-resize"
+            } else {
+                "ns-resize"
+            }
+        });
+        canvas.set_cursor_from_name(cursor);
+        r.area.set_cursor_from_name(cursor);
     });
     let weak = Rc::downgrade(&r);
     motion.connect_leave(move |_| {
         if let Some(r) = weak.upgrade() {
             r.hovered.set(false);
-            if r.drag.borrow().is_none() {
-                r.hovered_page.set(None);
-            }
             r.hide_later();
             r.vertical_reveal.set_reveal_child(false);
             r.bottom.set_reveal_child(false);
@@ -691,6 +808,88 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         }
     });
     overlay.add_controller(motion);
+    let margins = gtk::GestureDrag::new();
+    margins.set_button(gdk::BUTTON_PRIMARY);
+    margins.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let weak = Rc::downgrade(&r);
+    margins.connect_drag_begin(move |gesture, x, y| {
+        let Some(r) = weak.upgrade() else { return };
+        let Some(margin) = r.margin_at(x, y) else {
+            gesture.set_state(gtk::EventSequenceState::Denied);
+            return;
+        };
+        r.margin_drag.replace(Some(margin));
+        gesture.set_state(gtk::EventSequenceState::Claimed);
+    });
+    let weak = Rc::downgrade(&r);
+    margins.connect_drag_update(move |_, dx, dy| {
+        if let Some(r) = weak.upgrade() {
+            if let Some(margin) = r.margin_drag.borrow_mut().as_mut() {
+                let offset = if margin.horizontal { dx } else { dy };
+                let sign = if margin.leading { 1. } else { -1. };
+                margin.delta = (offset / margin.zoom * sign) as f32;
+            }
+        }
+    });
+    let weak = Rc::downgrade(&r);
+    margins.connect_drag_end(move |_, _, _| {
+        let Some(r) = weak.upgrade() else { return };
+        let Some(mut margin) = r.margin_drag.borrow_mut().take() else {
+            return;
+        };
+        let Some(ui) =
+            r.ui.upgrade()
+                .filter(|ui| document_identity(ui) == Some(margin.document))
+        else {
+            return;
+        };
+        if margin.delta.abs() < 0.5 {
+            return;
+        }
+        let value = match (margin.horizontal, margin.leading) {
+            (true, true) => &mut margin.setup.left,
+            (true, false) => &mut margin.setup.right,
+            (false, true) => &mut margin.setup.top,
+            (false, false) => &mut margin.setup.bottom,
+        };
+        *value = (*value + margin.delta).max(0.);
+        let result = {
+            let mut current = ui.current.borrow_mut();
+            let Some(doc) = current.as_mut() else { return };
+            document_properties::apply_at(&mut doc.session, margin.setup, false, margin.section)
+        };
+        match result {
+            Ok(true) => after_content_change(&ui),
+            Ok(false) => {}
+            Err(error) => ui.toasts.add_toast(Toast::new(&error)),
+        }
+    });
+    let weak = Rc::downgrade(&r);
+    margins.connect_cancel(move |_, _| {
+        if let Some(r) = weak.upgrade() {
+            r.margin_drag.borrow_mut().take();
+        }
+    });
+    overlay.add_controller(margins);
+
+    let scroll = gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::BOTH_AXES);
+    let weak = Rc::downgrade(ui);
+    scroll.connect_scroll(move |controller, dx, dy| {
+        let Some(ui) = weak.upgrade() else {
+            return glib::Propagation::Proceed;
+        };
+        for (adjustment, delta) in [(ui.scroll.hadjustment(), dx), (ui.scroll.vadjustment(), dy)] {
+            let scale = if controller.unit() == gdk::ScrollUnit::Surface {
+                1.0
+            } else {
+                adjustment.step_increment()
+            };
+            adjustment.set_value(adjustment.value() + delta * scale);
+        }
+        glib::Propagation::Stop
+    });
+    r.area.add_controller(scroll);
+
     let drag = gtk::GestureDrag::new();
     drag.set_button(gdk::BUTTON_PRIMARY);
     let weak = Rc::downgrade(&r);

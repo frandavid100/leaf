@@ -308,6 +308,7 @@ impl TextTools {
         );
         match page {
             "language" => {
+                let dictionaries = wordcraft_engine::proof::installed_dictionaries();
                 for (label, choice) in [
                     (wordcraft_gnome::t!("Do Not Check"), "off"),
                     (wordcraft_gnome::t!("Default"), "default"),
@@ -317,6 +318,13 @@ impl TextTools {
                 {
                     let b = style_menu_button(label);
                     b.set_widget_name(&format!("language-choice-{choice}"));
+                    let language = wordcraft_engine::proof::lang::ProofLang::from_tag(Some(choice));
+                    if let Some(path) = dictionaries.iter().find_map(|(lang, path)| {
+                        (*lang == language).then_some(path.as_ref()).flatten()
+                    }) {
+                        b.set_tooltip_text(Some(&path.to_string_lossy()));
+                    }
+
                     self.detail.append(&b);
                     if choice == "default" {
                         self.detail
