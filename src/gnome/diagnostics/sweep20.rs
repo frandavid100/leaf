@@ -153,14 +153,11 @@ fn stage(t: Rc<Sweep>, n: u8) {
         16 => ("ruler-keyboard", vec![]),
         17 => ("cancel", vec![]),
         18 | 21 => {
-            if n == 18 {
-                u.scroll.vadjustment().set_value(0.);
-            }
-            let w = find_widget(&t.window, "ruler-activation-strip").unwrap();
-            (
-                "hover",
-                vec![point(&w, &t.window, w.width() as f32 / 2., 2.)],
-            )
+            let current = u.current.borrow();
+            let doc = current.as_ref().unwrap();
+            let sheet = &doc.page_frames[0];
+            let x = sheet.width() as f32 / 2.;
+            ("hover", vec![point(sheet, &t.window, x, 4.)])
         }
         19 | 22 => {
             let r = u.ruler.borrow().as_ref().unwrap().clone();
@@ -311,6 +308,9 @@ fn check(t: &Sweep, n: u8) {
             "horizontal must hide after leaving/cancel"
         );
         assert!(!r.vertical_reveal.reveals_child());
+    }
+    if n == 17 {
+        u.scroll.vadjustment().set_value(0.);
     }
     if matches!(n, 19 | 22 | 23) {
         let mut c = u.current.borrow_mut();
