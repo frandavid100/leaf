@@ -331,6 +331,7 @@ impl TextTools {
                 }
                 let install =
                     style_menu_button(wordcraft_gnome::t!("Install Additional Languages…"));
+                install.set_widget_name("install-dictionaries");
                 let weak = Rc::downgrade(self);
                 install.connect_clicked(move |_| {
                     let Some(tools) = weak.upgrade() else { return };

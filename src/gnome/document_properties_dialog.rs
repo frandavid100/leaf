@@ -1,6 +1,9 @@
 //! Document metadata, page geometry and section options in one apply transaction.
 use super::*;
-use wordcraft_doc::section::SectionStart;
+use wordcraft_doc::{
+    props::TextDirection,
+    section::{LineNumberRestart, LineNumbering, PageVAlign, SectionStart},
+};
 use wordcraft_gnome::document_properties::{ColumnKind, ColumnSetup, DocumentInfo};
 
 pub(super) struct DocumentProperties {
@@ -195,6 +198,95 @@ fn show_properties(
     );
     let separator = option_switch(&flow, wordcraft_gnome::t!("Column Separator"));
     separator.set_active(original.columns.separator);
+    let vertical_modes = [
+        PageVAlign::Top,
+        PageVAlign::Center,
+        PageVAlign::Justify,
+        PageVAlign::Bottom,
+    ];
+    let vertical = option_combo(
+        &flow,
+        wordcraft_gnome::t!("Vertical Alignment"),
+        &[
+            wordcraft_gnome::t!("Top"),
+            wordcraft_gnome::t!("Center"),
+            wordcraft_gnome::t!("Justify"),
+            wordcraft_gnome::t!("Bottom"),
+        ],
+    );
+    vertical.set_selected(
+        vertical_modes
+            .iter()
+            .position(|mode| *mode == original.valign)
+            .unwrap() as u32,
+    );
+    let directions = [
+        TextDirection::Horizontal,
+        TextDirection::Down,
+        TextDirection::Up,
+    ];
+    let direction = option_combo(
+        &flow,
+        wordcraft_gnome::t!("Section Text Direction"),
+        &[
+            wordcraft_gnome::t!("Horizontal"),
+            wordcraft_gnome::t!("Top to Bottom"),
+            wordcraft_gnome::t!("Bottom to Top"),
+        ],
+    );
+    direction.set_selected(
+        directions
+            .iter()
+            .position(|mode| *mode == original.text_direction)
+            .unwrap() as u32,
+    );
+    let rtl = option_switch(&flow, wordcraft_gnome::t!("Right-to-Left Section"));
+    rtl.set_active(original.rtl);
+    let line_group = adw::PreferencesGroup::new();
+    line_group.set_title(wordcraft_gnome::t!("Line Numbering"));
+    page.add(&line_group);
+    let line_numbers = option_switch(&line_group, wordcraft_gnome::t!("Show Line Numbers"));
+    line_numbers.set_active(original.line_numbers.is_some());
+    let line = original.line_numbers.clone().unwrap_or_default();
+    let count_by = properties_number(
+        &line_group,
+        wordcraft_gnome::t!("Count By"),
+        line.count_by as f32 * PT_PER_MM as f32,
+    );
+    count_by.set_range(1., 10000.);
+    count_by.set_digits(0);
+    let first_line = properties_number(
+        &line_group,
+        wordcraft_gnome::t!("Starting Line Number"),
+        line.start as f32 * PT_PER_MM as f32,
+    );
+    first_line.set_range(0., 100000.);
+    first_line.set_digits(0);
+    let line_distance = properties_number(
+        &line_group,
+        wordcraft_gnome::t!("Distance from Text (mm)"),
+        line.distance,
+    );
+    let restarts = [
+        LineNumberRestart::Page,
+        LineNumberRestart::Section,
+        LineNumberRestart::Continuous,
+    ];
+    let restart = option_combo(
+        &line_group,
+        wordcraft_gnome::t!("Restart Line Numbers"),
+        &[
+            wordcraft_gnome::t!("Each Page"),
+            wordcraft_gnome::t!("Each Section"),
+            wordcraft_gnome::t!("Continuous"),
+        ],
+    );
+    restart.set_selected(
+        restarts
+            .iter()
+            .position(|value| *value == line.restart)
+            .unwrap() as u32,
+    );
     let message = gtk::Label::new(None);
     message.set_wrap(true);
     message.add_css_class("error");
@@ -465,6 +557,17 @@ fn show_properties(
                         document_properties::apply_section_setup(session, false, section, |old| {
                             let mut next = setup.section(old.clone())?;
                             next.start = starts[start.selected() as usize];
+                            next.valign = vertical_modes[vertical.selected() as usize];
+                            next.rtl = rtl.is_active();
+                            let text_direction = directions[direction.selected() as usize];
+                            next.text_direction_set |= next.text_direction != text_direction;
+                            next.text_direction = text_direction;
+                            next.line_numbers = line_numbers.is_active().then(|| LineNumbering {
+                                count_by: count_by.value_as_int() as u32,
+                                start: first_line.value_as_int() as u32,
+                                distance: line_distance.value() as f32 * PT_PER_MM as f32,
+                                restart: restarts[restart.selected() as usize],
+                            });
                             let new_gutter = gutter.value() as f32 * PT_PER_MM as f32;
                             if (new_gutter - old.gutter).abs() >= 0.02 {
                                 next.gutter = new_gutter;

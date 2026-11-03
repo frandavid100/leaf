@@ -2377,3 +2377,45 @@ msgstr "Separador de columnas"
 
 msgid "WordCraft does not use a dictionary with this language or filename."
 msgstr "WordCraft no usa diccionarios con este idioma o nombre de archivo."
+
+msgid "Vertical Alignment"
+msgstr "Alineación vertical"
+
+msgid "Section Text Direction"
+msgstr "Dirección del texto de la sección"
+
+msgid "Top to Bottom"
+msgstr "De arriba abajo"
+
+msgid "Bottom to Top"
+msgstr "De abajo arriba"
+
+msgid "Right-to-Left Section"
+msgstr "Sección de derecha a izquierda"
+
+msgid "Line Numbering"
+msgstr "Numeración de líneas"
+
+msgid "Show Line Numbers"
+msgstr "Mostrar números de línea"
+
+msgid "Count By"
+msgstr "Intervalo de numeración"
+
+msgid "Starting Line Number"
+msgstr "Número de línea inicial"
+
+msgid "Distance from Text (mm)"
+msgstr "Distancia al texto (mm)"
+
+msgid "Restart Line Numbers"
+msgstr "Reiniciar numeración de líneas"
+
+msgid "Each Page"
+msgstr "En cada página"
+
+msgid "Each Section"
+msgstr "En cada sección"
+
+msgid "Save as DOCX to preserve the section gutter, alignment, direction or line numbering."
+msgstr "Guarda como DOCX para conservar la encuadernación, la alineación, la dirección o la numeración de líneas de la sección."

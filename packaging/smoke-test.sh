@@ -49,7 +49,12 @@ grep -q LEAF_HOST_CACHE_UI_OK dist/flatpak-host-cache.log
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --page-options-ui-test 2>dist/flatpak-page-options.log
 grep -q PAGE_OPTIONS_UI_OK dist/flatpak-page-options.log
 grep -q DOCUMENT_METADATA_UI_OK dist/flatpak-page-options.log
-flatpak run --socket=x11 --nosocket=wayland "$app_id" --proofing-ui-test 2>dist/flatpak-proofing.log
+proofing_config=$(mktemp -d "$HOME/.var/app/$app_id/cache/leaf-proofing.XXXXXX")
+flatpak run --socket=x11 --nosocket=wayland \
+  --env="XDG_CONFIG_HOME=$proofing_config" --env="LEAF_DICTIONARY_TEST_DIR=$proofing_config" \
+  "$app_id" --proofing-ui-test 2>dist/flatpak-proofing.log
+grep -q DICTIONARY_INSTALL_OK dist/flatpak-proofing.log
+rm -rf "$proofing_config"
 grep -q PROOFING_UI_OK dist/flatpak-proofing.log
 flatpak run --socket=x11 --nosocket=wayland "$app_id" --headers-ui-test 2>dist/flatpak-headers.log
 grep -q HEADER_FOOTER_UI_OK dist/flatpak-headers.log
