@@ -49,6 +49,8 @@ mod canvas;
 use canvas::*;
 mod columns;
 use columns::*;
+mod comment_composer;
+use comment_composer::*;
 mod commands;
 use commands::*;
 mod context;

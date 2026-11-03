@@ -475,7 +475,7 @@ pub(super) fn show_document_context(
         "add-comment",
         can_comment,
         |u| {
-            show_annotation_dialog(u, AnnotationEdit::NewComment);
+            compose_comment(u, None);
         },
     );
     root.append_section(None, &annotations);

@@ -20,3 +20,26 @@ the existing menu typography and show the paragraph or character kind. The
 normalized styled-label proposal needs a visual comparison across fonts.
 
 Validation is tracked by the pull request's native workflow.
+
+## Comments
+
+New threads and replies use the sidebar composer. It holds the original
+selection and revision until submission. Navigation changes the selection
+without changing the revision. A later document edit makes the draft stale,
+and replacing a document drops its draft. The thread body opens its anchor,
+with separate Reply and overflow controls. The flat thread fill uses the
+thumbnail selection colour and a stronger fill for the current thread.
+
+## Remaining reproductions
+
+- #1: in the unequal selected-text fixture, lines continue with the wide
+  column's geometry when they should wrap for the narrow column.
+- #2: a three-column continuous section has no separator rules on its first
+  page. The next page has both rules.
+- #65: a synthetic DOCX round trip retains section start types. ODT loses
+  the inline column break, flattens a same-layout continuous section, and
+  normalizes odd and even starts to next-page starts. This needs explicit
+  format handling alongside navigation entries.
+- #69: the bundle packages Hunspell files under /app/share/hunspell. The
+  language chooser separator is present. The proposed settings destination
+  must install dictionaries that WordCraft can read in that sandbox.

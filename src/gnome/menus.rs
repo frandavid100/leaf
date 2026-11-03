@@ -191,7 +191,7 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
     });
     window_action(host, "insert-comment", |h| {
         if let Some(ui) = selected_ui(h) {
-            show_annotation_dialog(&ui, AnnotationEdit::NewComment);
+            compose_comment(&ui, None);
         }
     });
     window_action(host, "insert-header", |h| {

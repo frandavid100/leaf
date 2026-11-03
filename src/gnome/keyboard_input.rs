@@ -117,7 +117,7 @@ pub(super) fn install_keyboard_input(
                         && modifiers.contains(gdk::ModifierType::ALT_MASK)
                         && matches!(key, gdk::Key::m | gdk::Key::M)
                     {
-                        show_annotation_dialog(&ui, AnnotationEdit::NewComment);
+                        compose_comment(&ui, None);
                         return glib::Propagation::Stop;
                     }
                     if key == gdk::Key::Escape
