@@ -17,8 +17,9 @@ pub(super) fn navigation_ui_test(
     assert!(!s.positions.borrow().is_empty());
     let before = s.positions.borrow().len();
     let expand = || {
-        s.list
-            .row_at_index(0)
+        find_widget(&s.list, "outline-heading-0")
+            .unwrap()
+            .downcast::<gtk::ListBoxRow>()
             .unwrap()
             .child()
             .unwrap()
