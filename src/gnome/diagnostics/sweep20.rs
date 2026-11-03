@@ -180,6 +180,21 @@ fn stage(t: Rc<Sweep>, n: u8) {
         }
         20 => ("hover", vec![(10, 20)]),
         23 => ("undo", vec![]),
+        24 | 25 | 27 | 28 => {
+            let state = u.current.borrow();
+            let doc = state.as_ref().unwrap();
+            let sheet = &doc.page_frames[doc.active];
+            let x = sheet.width() as f32;
+            let y = sheet.height() as f32;
+            let offset = if matches!(n, 24 | 27) { -4. } else { 4. };
+            let target = if n <= 25 {
+                point(sheet, &t.window, x + offset, y / 2.)
+            } else {
+                point(sheet, &t.window, x / 2., y + offset)
+            };
+            ("hover", vec![target])
+        }
+        26 | 29 => ("hover", vec![(10, 20)]),
         _ => {
             let before = u.current.borrow().as_ref().unwrap().session.doc.clone();
             let settings = u.document_box.settings();
@@ -302,6 +317,11 @@ fn check(t: &Sweep, n: u8) {
         assert_eq!(s.sel, t.selection);
         assert_eq!(s.undo_depth(), t.depth.get() + usize::from(n == 22));
     }
+    if (24..=29).contains(&n) {
+        let r = u.ruler.borrow().as_ref().unwrap().clone();
+        assert_eq!(r.right.reveals_child(), matches!(n, 24 | 25));
+        assert_eq!(r.bottom.reveals_child(), matches!(n, 27 | 28));
+    }
     if n == 12 {
         let r = u.ruler.borrow().as_ref().unwrap().clone();
         for w in [
@@ -335,8 +355,8 @@ fn check(t: &Sweep, n: u8) {
             "vertical scale follows the visible page, not the offscreen caret"
         );
         let frame = d.page_frames[d.active].compute_bounds(&t.window).unwrap();
-        let area = r.reveal.compute_bounds(&t.window).unwrap();
-        assert!((area.width() - frame.width()).abs() < 2.);
+        let area = r.vertical_reveal.compute_bounds(&t.window).unwrap();
+        assert!((area.x() - frame.x()).abs() < 2.);
     }
     if n == 14 {
         let r = u.ruler.borrow().as_ref().unwrap().clone();

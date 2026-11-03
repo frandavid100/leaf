@@ -25,7 +25,7 @@ msgstr ""
 msgid "Aa Bb Cc · Sample Text"
 msgstr ""
 
-#: src/gnome/menus.rs:355
+#: src/gnome/menus.rs:362
 msgid "About Leaf"
 msgstr ""
 
@@ -193,7 +193,7 @@ msgstr ""
 msgid "Blue"
 msgstr ""
 
-#: src/gnome/accessibility.rs:106 src/gnome/menus.rs:521
+#: src/gnome/accessibility.rs:106 src/gnome/menus.rs:584
 msgid "Bold"
 msgstr ""
 
@@ -217,7 +217,7 @@ msgstr ""
 msgid "Bookmarks can only be added to the editable document body."
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:153 src/gnome/menus.rs:374
+#: src/gnome/diagnostics/annotations.rs:153 src/gnome/menus.rs:432
 msgid "Bookmark…"
 msgstr ""
 
@@ -253,6 +253,10 @@ msgstr ""
 msgid "Bottom · Right"
 msgstr ""
 
+#: src/gnome/menus.rs:454
+msgid "Breaks"
+msgstr ""
+
 #: src/gnome/paragraph.rs:781
 msgid "Breaks and Pagination"
 msgstr ""
@@ -269,7 +273,7 @@ msgstr ""
 msgid "Bullets"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:72 src/gnome/annotations.rs:470 src/gnome/columns.rs:413 src/gnome/comment_composer.rs:65 src/gnome/document_properties_dialog.rs:65 src/gnome/files.rs:19 src/gnome/headers.rs:126 src/gnome/links.rs:69
+#: src/gnome/annotation_dialog.rs:72 src/gnome/annotations.rs:470 src/gnome/columns.rs:413 src/gnome/comment_composer.rs:65 src/gnome/document_properties_dialog.rs:65 src/gnome/files.rs:19 src/gnome/headers.rs:124 src/gnome/links.rs:69
 msgid "Cancel"
 msgstr ""
 
@@ -401,15 +405,15 @@ msgstr ""
 msgid "Close Header and Footer"
 msgstr ""
 
-#: src/gnome/menus.rs:509
+#: src/gnome/menus.rs:572
 msgid "Close Tab"
 msgstr ""
 
-#: src/gnome/navigation.rs:146
+#: src/gnome/navigation.rs:147
 msgid "Collapse"
 msgstr ""
 
-#: src/gnome/navigation.rs:137
+#: src/gnome/navigation.rs:138
 msgid "Collapse Section"
 msgstr ""
 
@@ -419,6 +423,10 @@ msgstr ""
 
 #: src/gnome/context.rs:539 src/gnome/context.rs:548 src/gnome/diagnostics/context.rs:210
 msgid "Column"
+msgstr ""
+
+#: src/gnome/menus.rs:379
+msgid "Column Break"
 msgstr ""
 
 #: src/gnome/tables.rs:253
@@ -449,7 +457,7 @@ msgstr ""
 msgid "Comments"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:154 src/gnome/diagnostics/annotations.rs:161 src/gnome/menus.rs:380
+#: src/gnome/diagnostics/annotations.rs:154 src/gnome/diagnostics/annotations.rs:161 src/gnome/menus.rs:438
 msgid "Comment…"
 msgstr ""
 
@@ -561,7 +569,7 @@ msgstr ""
 msgid "Cut"
 msgstr ""
 
-#: src/gnome/menus.rs:481
+#: src/gnome/menus.rs:544
 msgid "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Navigation, Comments, and Spelling and Grammar. Navigation groups bookmarks under their headings. Select a thumbnail, heading or bookmark to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks appear in Navigation; each comment thread shares one bubble in Comments. Spelling issues only select their text; corrections remain in the document context menu. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
 msgstr ""
 
@@ -745,7 +753,7 @@ msgstr ""
 msgid "Document Properties"
 msgstr ""
 
-#: src/gnome/menus.rs:417
+#: src/gnome/menus.rs:480
 msgid "Document Properties…"
 msgstr ""
 
@@ -757,7 +765,7 @@ msgstr ""
 msgid "Document Sent to Printer"
 msgstr ""
 
-#: src/gnome/menus.rs:270
+#: src/gnome/menus.rs:277
 msgid "Document editor for GNOME powered by WordCraft."
 msgstr ""
 
@@ -765,7 +773,7 @@ msgstr ""
 msgid "Document protection prevents changing header/footer settings"
 msgstr ""
 
-#: src/gnome/menus.rs:501
+#: src/gnome/menus.rs:564
 msgid "Documents"
 msgstr ""
 
@@ -813,11 +821,11 @@ msgstr ""
 msgid "Edit Header"
 msgstr ""
 
-#: src/gnome/menus.rs:441
+#: src/gnome/menus.rs:504
 msgid "Editing"
 msgstr ""
 
-#: src/gnome/menus.rs:514
+#: src/gnome/menus.rs:577
 msgid "Editing and Search"
 msgstr ""
 
@@ -881,11 +889,11 @@ msgstr ""
 msgid "Existing Format"
 msgstr ""
 
-#: src/gnome/navigation.rs:144
+#: src/gnome/navigation.rs:145
 msgid "Expand"
 msgstr ""
 
-#: src/gnome/navigation.rs:135
+#: src/gnome/navigation.rs:136
 msgid "Expand Section"
 msgstr ""
 
@@ -893,7 +901,7 @@ msgstr ""
 msgid "Export to PDF"
 msgstr ""
 
-#: src/gnome/menus.rs:423
+#: src/gnome/menus.rs:486
 msgid "Export to PDF…"
 msgstr ""
 
@@ -917,7 +925,7 @@ msgstr ""
 msgid "First Section"
 msgstr ""
 
-#: src/gnome/ruler.rs:229
+#: src/gnome/ruler.rs:272
 msgid "First line indent"
 msgstr ""
 
@@ -937,7 +945,7 @@ msgstr ""
 msgid "Fixed Width"
 msgstr ""
 
-#: src/gnome/menus.rs:532
+#: src/gnome/menus.rs:595
 msgid "Focus ruler"
 msgstr ""
 
@@ -977,7 +985,7 @@ msgstr ""
 msgid "Font size must be between 6 and 96 points"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:156 src/gnome/menus.rs:385
+#: src/gnome/diagnostics/annotations.rs:156 src/gnome/menus.rs:443
 msgid "Footer"
 msgstr ""
 
@@ -1009,7 +1017,7 @@ msgstr ""
 msgid "Green"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:155 src/gnome/menus.rs:384
+#: src/gnome/diagnostics/annotations.rs:155 src/gnome/menus.rs:442
 msgid "Header"
 msgstr ""
 
@@ -1033,11 +1041,11 @@ msgstr ""
 msgid "Height (mm)"
 msgstr ""
 
-#: src/gnome/menus.rs:354 src/gnome/menus.rs:534
+#: src/gnome/menus.rs:361 src/gnome/menus.rs:597
 msgid "Help"
 msgstr ""
 
-#: src/gnome/menus.rs:274
+#: src/gnome/menus.rs:281
 msgid "Help Translate Leaf"
 msgstr ""
 
@@ -1093,7 +1101,7 @@ msgstr ""
 msgid "Images cannot be inserted inside a drawing canvas"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:152 src/gnome/menus.rs:371
+#: src/gnome/diagnostics/annotations.rs:152 src/gnome/menus.rs:429
 msgid "Image…"
 msgstr ""
 
@@ -1101,7 +1109,7 @@ msgstr ""
 msgid "Include .docx or .odt in the file name"
 msgstr ""
 
-#: src/gnome/headers.rs:139
+#: src/gnome/headers.rs:137
 msgid "Include Total Pages"
 msgstr ""
 
@@ -1137,7 +1145,7 @@ msgstr ""
 msgid "Information"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:149 src/gnome/headers.rs:128 src/gnome/menus.rs:392
+#: src/gnome/diagnostics/annotations.rs:149 src/gnome/headers.rs:126 src/gnome/menus.rs:455
 msgid "Insert"
 msgstr ""
 
@@ -1189,7 +1197,7 @@ msgstr ""
 msgid "Inside"
 msgstr ""
 
-#: src/gnome/menus.rs:527
+#: src/gnome/menus.rs:590
 msgid "Interface"
 msgstr ""
 
@@ -1197,7 +1205,7 @@ msgstr ""
 msgid "Invert"
 msgstr ""
 
-#: src/gnome/accessibility.rs:107 src/gnome/menus.rs:522
+#: src/gnome/accessibility.rs:107 src/gnome/menus.rs:585
 msgid "Italic"
 msgstr ""
 
@@ -1225,7 +1233,7 @@ msgstr ""
 msgid "Keep with Next"
 msgstr ""
 
-#: src/gnome/menus.rs:350
+#: src/gnome/menus.rs:357
 msgid "Keyboard Shortcuts"
 msgstr ""
 
@@ -1257,15 +1265,15 @@ msgstr ""
 msgid "Layout"
 msgstr ""
 
-#: src/gnome/ruler.rs:228
+#: src/gnome/ruler.rs:271
 msgid "Leading indent"
 msgstr ""
 
-#: src/gnome/menus.rs:475
+#: src/gnome/menus.rs:538
 msgid "Leaf Help"
 msgstr ""
 
-#: src/gnome/menus.rs:266
+#: src/gnome/menus.rs:273
 msgid "Leaf Project"
 msgstr ""
 
@@ -1333,7 +1341,7 @@ msgstr ""
 msgid "Line Between Columns"
 msgstr ""
 
-#: src/history.rs:197
+#: src/gnome/menus.rs:377 src/history.rs:197
 msgid "Line Break"
 msgstr ""
 
@@ -1345,7 +1353,7 @@ msgstr ""
 msgid "Line and Paragraph Spacing"
 msgstr ""
 
-#: src/gnome/context.rs:381 src/gnome/diagnostics/issues.rs:72 src/gnome/links.rs:59 src/gnome/menus.rs:518
+#: src/gnome/context.rs:381 src/gnome/diagnostics/issues.rs:72 src/gnome/links.rs:59 src/gnome/menus.rs:581
 msgid "Link"
 msgstr ""
 
@@ -1361,7 +1369,7 @@ msgstr ""
 msgid "Linked to Previous Section"
 msgstr ""
 
-#: src/gnome/accessibility.rs:100 src/gnome/accessibility.rs:101 src/gnome/menus.rs:533 src/gnome/tab.rs:38 src/gnome/tab.rs:64
+#: src/gnome/accessibility.rs:100 src/gnome/accessibility.rs:101 src/gnome/menus.rs:596 src/gnome/tab.rs:38 src/gnome/tab.rs:64
 msgid "Main Menu"
 msgstr ""
 
@@ -1449,11 +1457,11 @@ msgstr ""
 msgid "New Style…"
 msgstr ""
 
-#: src/gnome/menus.rs:318 src/gnome/menus.rs:503
+#: src/gnome/menus.rs:325 src/gnome/menus.rs:566
 msgid "New Tab"
 msgstr ""
 
-#: src/gnome/menus.rs:312 src/gnome/menus.rs:504
+#: src/gnome/menus.rs:319 src/gnome/menus.rs:567
 msgid "New Window"
 msgstr ""
 
@@ -1469,7 +1477,7 @@ msgstr ""
 msgid "No Comments"
 msgstr ""
 
-#: src/gnome/navigation.rs:353
+#: src/gnome/navigation.rs:376
 msgid "No Headings in This Document"
 msgstr ""
 
@@ -1537,7 +1545,7 @@ msgstr ""
 msgid "Only local files are supported"
 msgstr ""
 
-#: src/gnome/menus.rs:506
+#: src/gnome/menus.rs:569
 msgid "Open"
 msgstr ""
 
@@ -1545,7 +1553,7 @@ msgstr ""
 msgid "Open Document"
 msgstr ""
 
-#: src/gnome/menus.rs:330 src/gnome/tab.rs:35
+#: src/gnome/menus.rs:337 src/gnome/tab.rs:35
 msgid "Open…"
 msgstr ""
 
@@ -1577,11 +1585,15 @@ msgstr ""
 msgid "Page"
 msgstr ""
 
+#: src/gnome/menus.rs:378
+msgid "Page Break"
+msgstr ""
+
 #: src/gnome/paragraph.rs:794
 msgid "Page Break Before"
 msgstr ""
 
-#: src/gnome/headers.rs:116 src/header_footer.rs:106
+#: src/gnome/headers.rs:114 src/header_footer.rs:175
 msgid "Page Number"
 msgstr ""
 
@@ -1589,7 +1601,7 @@ msgstr ""
 msgid "Page Numbering"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:157 src/gnome/menus.rs:388
+#: src/gnome/diagnostics/annotations.rs:157 src/gnome/menus.rs:446
 msgid "Page Number…"
 msgstr ""
 
@@ -1601,7 +1613,7 @@ msgstr ""
 msgid "Page Width"
 msgstr ""
 
-#: src/gnome/headers.rs:134
+#: src/gnome/headers.rs:132
 msgid "Page numbers update automatically. Existing header and footer content is kept."
 msgstr ""
 
@@ -1609,7 +1621,7 @@ msgstr ""
 msgid "Pages"
 msgstr ""
 
-#: src/gnome/diagnostics/sweep20.rs:370 src/gnome/view.rs:34
+#: src/gnome/diagnostics/sweep20.rs:390 src/gnome/view.rs:34
 msgid "Pages: {current} of {total}"
 msgstr ""
 
@@ -1661,6 +1673,10 @@ msgstr ""
 msgid "Pink"
 msgstr ""
 
+#: src/header_footer.rs:75
+msgid "Place the caret in the body of this even page before editing its header or footer."
+msgstr ""
+
 #: src/document_properties.rs:291
 msgid "Place the cursor in the document body, outside a table."
 msgstr ""
@@ -1673,7 +1689,7 @@ msgstr ""
 msgid "Position (pt)"
 msgstr ""
 
-#: src/gnome/menus.rs:344 src/gnome/menus.rs:530 src/gnome/workspace.rs:316
+#: src/gnome/menus.rs:351 src/gnome/menus.rs:593 src/gnome/workspace.rs:316
 msgid "Preferences"
 msgstr ""
 
@@ -1681,11 +1697,11 @@ msgstr ""
 msgid "Preparing to Print…"
 msgstr ""
 
-#: src/gnome/menus.rs:510
+#: src/gnome/menus.rs:573
 msgid "Print"
 msgstr ""
 
-#: src/gnome/menus.rs:429
+#: src/gnome/menus.rs:492
 msgid "Print…"
 msgstr ""
 
@@ -1713,7 +1729,7 @@ msgstr ""
 msgid "Recover Documents"
 msgstr ""
 
-#: src/gnome/menus.rs:336
+#: src/gnome/menus.rs:343
 msgid "Recover Documents…"
 msgstr ""
 
@@ -1737,7 +1753,7 @@ msgstr ""
 msgid "Red"
 msgstr ""
 
-#: src/gnome/history.rs:151 src/gnome/history.rs:160 src/gnome/menus.rs:517 src/gnome/tab.rs:192
+#: src/gnome/history.rs:151 src/gnome/history.rs:160 src/gnome/menus.rs:580 src/gnome/tab.rs:192
 msgid "Redo"
 msgstr ""
 
@@ -1789,7 +1805,7 @@ msgstr ""
 msgid "Repeat as Header"
 msgstr ""
 
-#: src/gnome/menus.rs:520 src/gnome/search.rs:264
+#: src/gnome/menus.rs:583 src/gnome/search.rs:264
 msgid "Replace"
 msgstr ""
 
@@ -1865,7 +1881,7 @@ msgstr ""
 msgid "Review New Documents"
 msgstr ""
 
-#: src/gnome/menus.rs:442
+#: src/gnome/menus.rs:505
 msgid "Reviewing"
 msgstr ""
 
@@ -1909,27 +1925,27 @@ msgstr ""
 msgid "Rows"
 msgstr ""
 
-#: src/gnome/ruler.rs:367 src/gnome/ruler.rs:368
+#: src/gnome/ruler.rs:432 src/gnome/ruler.rs:433
 msgid "Ruler"
 msgstr ""
 
-#: src/gnome/ruler.rs:369
+#: src/gnome/ruler.rs:434
 msgid "Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it."
 msgstr ""
 
-#: src/gnome/ruler.rs:234
+#: src/gnome/ruler.rs:277
 msgid "Ruler: {marker}, {value} pt, page {page}"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:74 src/gnome/diagnostics/localization.rs:20 src/gnome/files.rs:21 src/gnome/menus.rs:402 src/gnome/menus.rs:507
+#: src/gnome/annotation_dialog.rs:74 src/gnome/diagnostics/localization.rs:20 src/gnome/files.rs:21 src/gnome/menus.rs:465 src/gnome/menus.rs:570
 msgid "Save"
 msgstr ""
 
-#: src/gnome/menus.rs:508
+#: src/gnome/menus.rs:571
 msgid "Save As"
 msgstr ""
 
-#: src/gnome/menus.rs:408
+#: src/gnome/menus.rs:471
 msgid "Save As…"
 msgstr ""
 
@@ -1941,15 +1957,19 @@ msgstr ""
 msgid "Save a Copy — DOCX or ODT"
 msgstr ""
 
-#: src/saving.rs:63
+#: src/saving.rs:54
+msgid "Save as DOCX to preserve column breaks and continuous, even-page or odd-page sections."
+msgstr ""
+
+#: src/saving.rs:81
 msgid "Save as DOCX to preserve editable equations. The current ODT exporter cannot keep their structure."
 msgstr ""
 
-#: src/saving.rs:71
+#: src/saving.rs:89
 msgid "Save as DOCX to preserve floating image placement and text wrapping. The current ODT exporter makes these images inline."
 msgstr ""
 
-#: src/saving.rs:46
+#: src/saving.rs:64
 msgid "Save as DOCX to preserve footnotes. The current ODT exporter cannot keep their structure."
 msgstr ""
 
@@ -1957,7 +1977,7 @@ msgstr ""
 msgid "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
 msgstr ""
 
-#: src/saving.rs:67
+#: src/saving.rs:85
 msgid "Save as DOCX to preserve the automatic table of contents. The current ODT exporter only keeps static entries."
 msgstr ""
 
@@ -1969,6 +1989,10 @@ msgstr ""
 msgid "Save as DOCX to preserve the document category. The current ODT exporter cannot keep it."
 msgstr ""
 
+#: src/gnome/menus.rs:399
+msgid "Save as DOCX to use this break. The current ODT exporter cannot preserve it."
+msgstr ""
+
 #: src/gnome/annotation_dialog.rs:118
 msgid "Save comments as DOCX. ODT does not preserve them."
 msgstr ""
@@ -1977,7 +2001,7 @@ msgstr ""
 msgid "Scale (%)"
 msgstr ""
 
-#: src/gnome/menus.rs:519
+#: src/gnome/menus.rs:582
 msgid "Search"
 msgstr ""
 
@@ -2005,8 +2029,28 @@ msgstr ""
 msgid "Section"
 msgstr ""
 
+#: src/gnome/menus.rs:383
+msgid "Section Break (Continuous)"
+msgstr ""
+
+#: src/gnome/menus.rs:385
+msgid "Section Break (Even Page)"
+msgstr ""
+
+#: src/gnome/menus.rs:380
+msgid "Section Break (Next Page)"
+msgstr ""
+
+#: src/gnome/menus.rs:386
+msgid "Section Break (Odd Page)"
+msgstr ""
+
 #: src/gnome/header_options.rs:125
 msgid "Section Links"
+msgstr ""
+
+#: src/gnome/navigation.rs:194
+msgid "Section {number}"
 msgstr ""
 
 #: src/gnome/context.rs:534 src/gnome/diagnostics/context.rs:209
@@ -2085,7 +2129,7 @@ msgstr ""
 msgid "Shift+Tab"
 msgstr ""
 
-#: src/gnome/menus.rs:324 src/gnome/menus.rs:505
+#: src/gnome/menus.rs:331 src/gnome/menus.rs:568
 msgid "Show All Tabs"
 msgstr ""
 
@@ -2093,7 +2137,7 @@ msgstr ""
 msgid "Show Formatting Marks (¶)"
 msgstr ""
 
-#: src/gnome/accessibility.rs:85 src/gnome/menus.rs:529
+#: src/gnome/accessibility.rs:85 src/gnome/menus.rs:592
 msgid "Show or Hide Sidebar"
 msgstr ""
 
@@ -2229,7 +2273,7 @@ msgstr ""
 msgid "Superscript"
 msgstr ""
 
-#: src/gnome/menus.rs:531
+#: src/gnome/menus.rs:594
 msgid "Switch Pane"
 msgstr ""
 
@@ -2245,7 +2289,7 @@ msgstr ""
 msgid "Tab Stops"
 msgstr ""
 
-#: src/gnome/ruler.rs:231
+#: src/gnome/ruler.rs:274
 msgid "Tab stop"
 msgstr ""
 
@@ -2273,7 +2317,7 @@ msgstr ""
 msgid "Table Size"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:151 src/gnome/menus.rs:370
+#: src/gnome/diagnostics/annotations.rs:151 src/gnome/menus.rs:428
 msgid "Table…"
 msgstr ""
 
@@ -2337,7 +2381,7 @@ msgstr ""
 msgid "The document has changed. Close and reopen Columns."
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:329
+#: src/gnome/document_properties_dialog.rs:353
 msgid "The document has changed. Close and reopen its properties."
 msgstr ""
 
@@ -2349,7 +2393,7 @@ msgstr ""
 msgid "The document has changed; export it again"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:168 src/gnome/headers.rs:172 src/gnome/links.rs:171 src/history.rs:131
+#: src/gnome/annotation_dialog.rs:168 src/gnome/headers.rs:170 src/gnome/links.rs:171 src/history.rs:131
 msgid "The document has changed; open this dialog again."
 msgstr ""
 
@@ -2377,7 +2421,7 @@ msgstr ""
 msgid "The file does not exist or is not a regular file"
 msgstr ""
 
-#: src/saving.rs:110
+#: src/saving.rs:128
 msgid "The file name must end in .docx or .odt"
 msgstr ""
 
@@ -2393,7 +2437,7 @@ msgstr ""
 msgid "The page exceeds the preview size limit"
 msgstr ""
 
-#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:54 src/saving.rs:89
+#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:54 src/saving.rs:107
 msgid "The path is not UTF-8"
 msgstr ""
 
@@ -2409,7 +2453,7 @@ msgstr ""
 msgid "The section does not contain an editable paragraph"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:179 src/gnome/headers.rs:183
+#: src/gnome/annotation_dialog.rs:179 src/gnome/headers.rs:181
 msgid "The selection has changed; open this dialog again."
 msgstr ""
 
@@ -2489,7 +2533,7 @@ msgstr ""
 msgid "Track Changes"
 msgstr ""
 
-#: src/gnome/ruler.rs:230
+#: src/gnome/ruler.rs:273
 msgid "Trailing indent"
 msgstr ""
 
@@ -2517,7 +2561,7 @@ msgstr ""
 msgid "UPPERCASE"
 msgstr ""
 
-#: src/gnome/accessibility.rs:108 src/gnome/menus.rs:523 src/gnome/text_palette.rs:76
+#: src/gnome/accessibility.rs:108 src/gnome/menus.rs:586 src/gnome/text_palette.rs:76
 msgid "Underline"
 msgstr ""
 
@@ -2533,7 +2577,7 @@ msgstr ""
 msgid "Underline Color…"
 msgstr ""
 
-#: src/gnome/history.rs:141 src/gnome/menus.rs:516 src/gnome/tab.rs:189
+#: src/gnome/history.rs:141 src/gnome/menus.rs:579 src/gnome/tab.rs:189
 msgid "Undo"
 msgstr ""
 
@@ -2573,7 +2617,7 @@ msgstr ""
 msgid "Use 1 to 12 columns with spacing between 0 and 105.83 mm."
 msgstr ""
 
-#: src/saving.rs:85
+#: src/saving.rs:103
 msgid "Use a .docx or .odt extension"
 msgstr ""
 
@@ -2593,7 +2637,7 @@ msgstr ""
 msgid "Vertical Upwards"
 msgstr ""
 
-#: src/gnome/ruler.rs:377
+#: src/gnome/ruler.rs:441
 msgid "Vertical ruler (cm)"
 msgstr ""
 
@@ -2637,7 +2681,7 @@ msgstr ""
 msgid "WordCraft Could Not Open the File: {e}"
 msgstr ""
 
-#: src/saving.rs:95
+#: src/saving.rs:113
 msgid "WordCraft did not confirm that the document was saved"
 msgstr ""
 

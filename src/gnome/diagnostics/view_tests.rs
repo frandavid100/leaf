@@ -176,7 +176,7 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     assert!(find_widget(&ui.format_toolbar, "table-menu").is_none());
     assert!(find_widget(&ui.format_toolbar, "picture-menu").is_none());
     let add = model.item_link(3, "submenu").unwrap();
-    let actions = (0..add.n_items())
+    let actions = (0..add.n_items() - 1)
         .map(|i| {
             add.item_attribute_value(i, "action", None)
                 .unwrap()
@@ -196,6 +196,7 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
             "win.insert-page-number",
         ]
     );
+    assert_eq!(add.item_link(7, "submenu").unwrap().n_items(), 7);
     let extra = model.item_link(4, "section").unwrap();
     assert_eq!(extra.n_items(), 3);
     assert_eq!(

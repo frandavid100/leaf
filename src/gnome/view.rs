@@ -220,7 +220,7 @@ pub(super) fn jump_to(ui: &Rc<Ui>, index: usize) {
 
 // A viewport refit preserves an open sidebar. Only explicit page navigation
 // dismisses the collapsed overlay; background layout must not close review tools.
-fn scroll_to_page(ui: &Rc<Ui>, index: usize) {
+pub(super) fn scroll_to_page(ui: &Rc<Ui>, index: usize) {
     let target = {
         let borrowed = ui.current.borrow();
         borrowed

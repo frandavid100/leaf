@@ -2290,3 +2290,36 @@ msgstr "Default language"
 
 msgid "More Styles…"
 msgstr "More Styles…"
+
+msgid "Page Break"
+msgstr "Page Break"
+
+msgid "Column Break"
+msgstr "Column Break"
+
+msgid "Section Break (Next Page)"
+msgstr "Section Break (Next Page)"
+
+msgid "Section Break (Continuous)"
+msgstr "Section Break (Continuous)"
+
+msgid "Section Break (Even Page)"
+msgstr "Section Break (Even Page)"
+
+msgid "Section Break (Odd Page)"
+msgstr "Section Break (Odd Page)"
+
+msgid "Save as DOCX to use this break. The current ODT exporter cannot preserve it."
+msgstr "Save as DOCX to use this break. The current ODT exporter cannot preserve it."
+
+msgid "Breaks"
+msgstr "Breaks"
+
+msgid "Section {number}"
+msgstr "Section {number}"
+
+msgid "Save as DOCX to preserve column breaks and continuous, even-page or odd-page sections."
+msgstr "Save as DOCX to preserve column breaks and continuous, even-page or odd-page sections."
+
+msgid "Place the caret in the body of this even page before editing its header or footer."
+msgstr "Place the caret in the body of this even page before editing its header or footer."

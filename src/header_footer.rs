@@ -21,8 +21,77 @@ pub fn active(s: &Session) -> Option<Region> {
     }
 }
 
+/// An even page can display the odd story until an independent even story exists.
+pub fn shows_odd_fallback(s: &mut Session, page: usize, region: Region) -> bool {
+    let (section, story) = {
+        let layout = s.layout();
+        let Some(page) = layout.pages.get(page) else {
+            return false;
+        };
+        if !matches!(page.hf_slot, wordcraft_engine::layout::HfSlot::Even) {
+            return false;
+        }
+        (
+            page.section,
+            if region == Region::Header {
+                page.header_story
+            } else {
+                page.footer_story
+            },
+        )
+    };
+    story.is_some()
+        && !s
+            .doc
+            .sections()
+            .iter()
+            .take(section + 1)
+            .any(|(_, section)| {
+                let set = if region == Region::Header {
+                    &section.headers
+                } else {
+                    &section.footers
+                };
+                set.even.is_some()
+            })
+}
+
 /// Existing content is navigation, even though upstream touches its layout revision.
 pub fn enter(s: &mut Session, page: usize, region: Region) -> Result<bool, String> {
+    if shows_odd_fallback(s, page, region) {
+        // The public creation command without a page creates the caret's own slot.
+        // Supply a body caret only if it resolves to the intended page and section.
+        let (pos, section) = {
+            let layout = s.layout();
+            let target = &layout.pages[page];
+            let pos = layout
+                .hit(page, target.body.x, target.body.y, StoryRef::Body)
+                .filter(|pos| layout.page_of(pos) == Some(page));
+            (pos, target.section)
+        };
+        let pos = pos
+            .filter(|pos| s.doc.section_index_of(pos.path.0[0] as usize) == section)
+            .ok_or_else(|| {
+                wordcraft_gnome::t!(
+            "Place the caret in the body of this even page before editing its header or footer."
+        ).to_string()
+            })?;
+        let selection = s.sel.clone();
+        let page_hint = s.page_hint;
+        crate::selection::set_caret(s, &pos, false)?;
+        let command = if region == Region::Header {
+            "insert.createHeader"
+        } else {
+            "insert.createFooter"
+        };
+        if let Err(error) = s.run(command, &json!({})) {
+            s.sel = selection;
+            s.page_hint = page_hint;
+            return Err(error.to_string());
+        }
+        s.page_hint = page;
+        return Ok(true);
+    }
     let before = s.doc.clone();
     let dirty = s.dirty;
     s.run(

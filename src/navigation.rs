@@ -221,3 +221,34 @@ mod tests {
         assert_eq!(headings(&s.doc).len(), 2);
     }
 }
+
+/// Each noninitial section starts after the preceding section's final body block.
+pub fn section_starts(doc: &Document) -> Vec<(usize, Pos)> {
+    let sections = doc.sections();
+    if sections.len() < 2 {
+        return Vec::new();
+    }
+    let paths = doc.para_paths(StoryRef::Body);
+    sections
+        .windows(2)
+        .enumerate()
+        .filter_map(|(index, pair)| {
+            let path = paths
+                .iter()
+                .find(|path| {
+                    path.0.first().is_some_and(|block| {
+                        (*block as usize) > pair[0].0 && (*block as usize) <= pair[1].0
+                    })
+                })?
+                .clone();
+            Some((
+                index + 2,
+                Pos {
+                    story: StoryRef::Body,
+                    path,
+                    off: 0,
+                },
+            ))
+        })
+        .collect()
+}

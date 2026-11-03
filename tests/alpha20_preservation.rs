@@ -100,3 +100,22 @@ fn automatic_toc_is_not_silently_saved_as_static_odt_text() {
 fn floating_pictures_are_not_silently_saved_as_inline_odt_images() {
     check("image");
 }
+
+#[test]
+fn incompatible_breaks_preserve_docx_and_are_blocked_for_odt() {
+    for kind in ["column", "continuous", "evenPage", "oddPage"] {
+        let mut s = Session::new(Document::from_text("Before\nAfter"));
+        s.run("layout.break", &json!({"kind": kind})).unwrap();
+        assert!(saving::requires_docx(&s), "{kind}");
+        let name = "breaks.docx";
+        let bytes = wordcraft_engine::io::save_bytes(name, &s.doc).unwrap();
+        let reopened = Session::new(wordcraft_engine::io::open_bytes(name, &bytes).unwrap());
+        assert!(saving::requires_docx(&reopened), "{kind}");
+        if kind != "column" {
+            assert_eq!(
+                wordcraft_gnome::navigation::section_starts(&reopened.doc).len(),
+                1
+            );
+        }
+    }
+}

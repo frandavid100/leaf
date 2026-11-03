@@ -10,6 +10,13 @@ pub(super) fn page_options_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app:
     opened(ui, Session::new(d), "Sections");
     let original = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     let dialog = show_document_properties(ui, parent);
+    let switcher = find_widget(&dialog.window, "document-properties-switcher").unwrap();
+    let expected = if adw::minor_version() >= 7 {
+        "AdwInlineViewSwitcher"
+    } else {
+        "AdwViewSwitcher"
+    };
+    assert_eq!(switcher.type_().name(), expected);
     for (row, value) in dialog.metadata.iter().zip([
         "Tutoría entre iguales",
         "Tutoría",
