@@ -53,7 +53,7 @@ impl Edge {
     }
 }
 
-fn clip_sheet(cr: &gtk::cairo::Context, sheet: gtk::graphene::Rect) {
+fn clip_sheet(cr: &gtk::cairo::Context, sheet: &gtk::graphene::Rect) {
     let (x, y, w, h) = (
         sheet.x() as f64,
         sheet.y() as f64,
@@ -376,7 +376,7 @@ impl Ruler {
         let Some(&(width, height)) = doc.sizes.get(page) else {
             return;
         };
-        clip_sheet(cr, sheet);
+        clip_sheet(cr, &sheet);
         cr.set_source_rgba(0.16, 0.16, 0.16, 0.58);
         cr.set_line_width(1.);
         cr.set_font_size(8.);
@@ -557,10 +557,16 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         let point = gtk::graphene::Point::new(x as f32, y as f32);
         let target = ui.current.try_borrow().ok().and_then(|current| {
             let doc = current.as_ref()?;
-            doc.page_frames
-                .iter()
-                .enumerate()
-                .filter_map(|(page, frame)| {
+            let adjustment = ui.scroll.vadjustment();
+            let top = adjustment.value();
+            doc.arrangement
+                .visible(
+                    top - f64::from(BAND),
+                    top + adjustment.page_size() + f64::from(BAND),
+                )
+                .into_iter()
+                .filter_map(|page| {
+                    let frame = doc.page_frames.get(page)?;
                     if r.focused.get() && page != doc.active {
                         return None;
                     }
@@ -582,6 +588,8 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             r.refresh();
             hits
         } else {
+            r.hovered_page.set(None);
+            r.refresh();
             [false; 4]
         };
         r.hovered.set(hits[0]);

@@ -216,16 +216,17 @@ pub(super) fn show_document_properties(
     // GtkBuilder resolves the native widget on newer libadwaita runtimes.
     // Keep the existing switcher for supported hosts with libadwaita 1.4–1.6.
     let builder = gtk::Builder::new();
-    let switcher = if builder
-        .add_from_string(
-            r#"<interface>
+    let switcher = if adw::minor_version() >= 7
+        && builder
+            .add_from_string(
+                r#"<interface>
                 <object class="AdwInlineViewSwitcher" id="properties-switcher">
                     <property name="display-mode">labels</property>
                     <property name="homogeneous">true</property>
                 </object>
             </interface>"#,
-        )
-        .is_ok()
+            )
+            .is_ok()
     {
         let switcher = builder
             .object::<gtk::Widget>("properties-switcher")
@@ -238,6 +239,7 @@ pub(super) fn show_document_properties(
         switcher.set_policy(adw::ViewSwitcherPolicy::Narrow);
         switcher.upcast()
     };
+    switcher.set_widget_name("document-properties-switcher");
     switcher.set_halign(gtk::Align::Center);
     switcher.set_margin_top(6);
     switcher.set_margin_bottom(6);

@@ -2381,7 +2381,7 @@ msgstr ""
 msgid "The document has changed. Close and reopen Columns."
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:351
+#: src/gnome/document_properties_dialog.rs:353
 msgid "The document has changed. Close and reopen its properties."
 msgstr ""
 
