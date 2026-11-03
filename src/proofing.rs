@@ -228,7 +228,19 @@ pub fn install_dictionary(files: &[std::path::PathBuf]) -> Result<(), String> {
         let _ = std::fs::remove_file(dic_target);
         return Err(error.to_string());
     }
-    wordcraft_engine::proof::hunspell::set_dictionary_dir(Some(dir));
+    wordcraft_engine::proof::set_dictionaries_folder(Some(dir.clone()));
+    let recognised = wordcraft_engine::proof::installed_dictionaries()
+        .iter()
+        .any(|(_, path)| path.as_deref() == Some(dic_target.as_path()));
+    if !recognised {
+        let _ = std::fs::remove_file(&aff_target);
+        let _ = std::fs::remove_file(&dic_target);
+        wordcraft_engine::proof::set_dictionaries_folder(Some(dir));
+        return Err(wordcraft_gnome::t!(
+            "WordCraft does not use a dictionary with this language or filename."
+        )
+        .into());
+    }
     Ok(())
 }
 
@@ -242,7 +254,7 @@ pub fn initialize() {
             bundled_dictionaries()
         };
         if path.is_dir() {
-            wordcraft_engine::proof::hunspell::set_dictionary_dir(Some(path));
+            wordcraft_engine::proof::set_dictionaries_folder(Some(path));
         }
         wordcraft_engine::proof::load_user_dictionary(
             &crate::preferences::config_root().join("custom-dictionary.txt"),

@@ -2336,8 +2336,8 @@ msgstr "Select the matching .aff and .dic files for one Hunspell dictionary."
 msgid "A dictionary with this name is already installed."
 msgstr "A dictionary with this name is already installed."
 
-msgid "Dictionary installed. Reopen Leaf if the language is still unavailable."
-msgstr "Dictionary installed. Reopen Leaf if the language is still unavailable."
+msgid "Dictionary installed."
+msgstr "Dictionary installed."
 
 msgid "Section Properties"
 msgstr "Section Properties"
@@ -2374,3 +2374,6 @@ msgstr "Column Spacing (mm)"
 
 msgid "Column Separator"
 msgstr "Column Separator"
+
+msgid "WordCraft does not use a dictionary with this language or filename."
+msgstr "WordCraft does not use a dictionary with this language or filename."

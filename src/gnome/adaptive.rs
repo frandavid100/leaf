@@ -335,7 +335,9 @@ impl TextTools {
                 install.connect_clicked(move |_| {
                     let Some(tools) = weak.upgrade() else { return };
                     let Some(ui) = tools.ui.upgrade() else { return };
-                    let Some(host) = ui.host.upgrade() else { return };
+                    let Some(host) = ui.host.upgrade() else {
+                        return;
+                    };
                     if let Some(popover) = tools.popover.upgrade() {
                         close_format_popover(&popover);
                     }
@@ -345,16 +347,18 @@ impl TextTools {
                     ));
                     let weak = Rc::downgrade(&ui);
                     chooser.open_multiple(&host.window, None::<&gio::Cancellable>, move |result| {
-                        let Some(ui) = weak.upgrade().filter(|ui| !ui.closed.get()) else { return };
+                        let Some(ui) = weak.upgrade().filter(|ui| !ui.closed.get()) else {
+                            return;
+                        };
                         let Ok(files) = result else { return };
-                        let paths = (0..files.n_items()).filter_map(|i| {
-                            files.item(i)?.downcast::<gio::File>().ok()?.path()
-                        }).collect::<Vec<_>>();
+                        let paths = (0..files.n_items())
+                            .filter_map(|i| files.item(i)?.downcast::<gio::File>().ok()?.path())
+                            .collect::<Vec<_>>();
                         match wordcraft_gnome::proofing::install_dictionary(&paths) {
                             Ok(()) => {
                                 refresh_all_proofing(&ui);
                                 ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
-                                    "Dictionary installed. Reopen Leaf if the language is still unavailable."
+                                    "Dictionary installed."
                                 )));
                             }
                             Err(error) => ui.toasts.add_toast(Toast::new(&error)),
