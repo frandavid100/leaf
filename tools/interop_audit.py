@@ -135,6 +135,69 @@ def compare(before, after, lo, pdf_text):
     return checks
 
 
+def check_writer_authored_docx(desktop, macro_mode):
+    """Open a Writer-authored document in Leaf, edit it, and check both outputs."""
+    folder = OUT / "writer-authored"
+    folder.mkdir(exist_ok=True)
+    original = folder / "writer.docx"
+    options = (prop("Hidden", True), prop("MacroExecutionMode", macro_mode))
+    paragraphs = "Worksheet instructions\nAnswer the questions below.\nResults"
+    cells = {"A1": "Task", "B1": "Points", "A2": "Reading", "B2": "10"}
+    doc = desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, options)
+    if doc is None:
+        raise RuntimeError("LibreOffice could not create the worksheet fixture")
+    try:
+        doc.Text.String = paragraphs
+        first = doc.Text.createTextCursor()
+        first.gotoStart(False)
+        first.ParaBottomMargin = 318  # Nine points, in hundredths of a millimetre.
+        end = doc.Text.createTextCursor()
+        end.gotoEnd(False)
+        table = doc.createInstance("com.sun.star.text.TextTable")
+        table.initialize(2, 2)
+        doc.Text.insertTextContent(end, table, False)
+        for address, value in cells.items():
+            table.getCellByName(address).String = value
+        doc.storeAsURL(original.as_uri(), (prop("FilterName", "Office Open XML Text"), prop("Overwrite", True)))
+    finally:
+        doc.close(True)
+
+    run(WORKER, "edit", original, folder)
+    reopened = desktop.loadComponentFromURL((folder / "leaf-edited.docx").as_uri(), "_blank", 0, options)
+    if reopened is None:
+        raise RuntimeError("LibreOffice could not reopen the Leaf-edited worksheet")
+    try:
+        body = reopened.Text.String
+        tables = reopened.TextTables
+        table_ok = tables.Count == 1 and all(
+            tables.getByIndex(0).getCellByName(address).String == value
+            for address, value in cells.items()
+        )
+        first = reopened.Text.createTextCursor()
+        first.gotoStart(False)
+        spacing_pt = first.ParaBottomMargin * 72 / 2540
+    finally:
+        reopened.close(True)
+
+    geometry = json.loads((folder / "spacing.json").read_text())
+    pdf = run("pdftotext", "-layout", folder / "leaf-edited.pdf", "-")
+    checks = [
+        ("Writer reopens the Leaf edit", body.startswith("LEAF_EDIT " + paragraphs), ""),
+        ("Writer reopens the original table cells", table_ok, ""),
+        ("Writer reads Leaf's 24-point paragraph spacing", abs(spacing_pt - 24) < .2, str(spacing_pt)),
+        ("Leaf reflows an imported 9-point gap to 24 points",
+         abs(geometry["edited"] - geometry["baseline"] - 15) < .4, str(geometry)),
+        ("Leaf retains that geometry after DOCX reopen",
+         abs(geometry["edited"] - geometry["reopened"]) < .2, str(geometry)),
+        ("Leaf PDF contains the edit and table content",
+         all(token in pdf for token in ["LEAF_EDIT", "Answer the questions", *cells.values()]), ""),
+    ]
+    return {
+        "file": "writer-authored.docx",
+        "checks": [{"check": name, "passed": passed, "detail": detail} for name, passed, detail in checks],
+    }
+
+
 def main():
     import uno
     from com.sun.star.document.MacroExecMode import NEVER_EXECUTE
@@ -158,7 +221,7 @@ def main():
                         raise
                     time.sleep(.2)
             desktop = context.ServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", context)
-            results = []
+            results = [check_writer_authored_docx(desktop, NEVER_EXECUTE)]
             for path in sorted((OUT / "input").iterdir()):
                 folder = OUT / (path.stem + "-" + path.suffix[1:])
                 folder.mkdir(exist_ok=True)
@@ -209,7 +272,7 @@ def main():
                 dump(folder / "checks.json", record)
                 print(path.name, sum(c["passed"] for c in checks), "/", len(checks), flush=True)
             dump(OUT / "results.json", {"source_commit": os.environ.get("GITHUB_SHA"), "libreoffice": run("libreoffice", "--version").strip(), "cases": results})
-            lines = ["# Leaf ↔ LibreOffice: focused one-off audit", "", "Synthetic fixtures generated through Leaf; real independent open/edit/save, then Leaf reopen/save/reopen. A completed workflow is not an all-clear for document compatibility.", "", "| File | Check | Result | Detail |", "|---|---|---|---|"]
+            lines = ["# Leaf ↔ LibreOffice: focused one-off audit", "", "Synthetic fixtures generated through Leaf and Writer; each editor opens, edits or reopens files produced by the other. A completed workflow is not an all-clear for document compatibility.", "", "| File | Check | Result | Detail |", "|---|---|---|---|"]
             for case in results:
                 for c in case["checks"]:
                     lines.append(f'| {case["file"]} | {c["check"]} | {"PASS" if c["passed"] else "LOSS / DIFFERENCE"} | {c["detail"].replace("|", "/")} |')

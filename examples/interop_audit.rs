@@ -151,6 +151,40 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
         }
+        "edit" => {
+            let input = Path::new(&args[2]);
+            let out = Path::new(&args[3]);
+            let mut s = wordcraft_gnome::open_document(input)?;
+            let first = Pos::body(0, 0);
+            let second = Pos::body(1, 0);
+            let baseline = s
+                .layout()
+                .caret(&second)
+                .ok_or("missing second paragraph")?
+                .top;
+            selection::set_caret(&mut s, &first, false)?;
+            s.run("para.spacing", &json!({"before": 0, "after": 24}))?;
+            s.run("text.insert", &json!({"text": "LEAF_EDIT "}))?;
+            let edited = s
+                .layout()
+                .caret(&second)
+                .ok_or("missing edited paragraph")?
+                .top;
+            wordcraft_gnome::saving::save(&mut s, &out.join("leaf-edited.docx"))?;
+            wordcraft_gnome::pdf_export::export(&mut s, &out.join("leaf-edited.pdf"))?;
+            let mut reopened = wordcraft_gnome::open_document(&out.join("leaf-edited.docx"))?;
+            let reopened = reopened
+                .layout()
+                .caret(&second)
+                .ok_or("missing reopened paragraph")?
+                .top;
+            fs::write(
+                out.join("spacing.json"),
+                serde_json::to_vec_pretty(&json!({
+                    "baseline": baseline, "edited": edited, "reopened": reopened,
+                }))?,
+            )?;
+        }
         "inspect" => {
             let input = Path::new(&args[2]);
             let out = Path::new(&args[3]);
@@ -169,7 +203,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 wordcraft_engine::io::save_bytes(path.to_str().unwrap(), &s.doc)?,
             )?;
         }
-        _ => return Err("use generate DIRECTORY or inspect FILE DIRECTORY".into()),
+        _ => return Err("use generate DIRECTORY, inspect FILE DIRECTORY, or edit FILE DIRECTORY".into()),
     }
     println!("INTEROP_WORKER_OK");
     Ok(())
