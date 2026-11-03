@@ -23,7 +23,9 @@
   <content_rating type="oars-1.1" />
   <releases>
     <release version="0.1.0-alpha.22" date="2026-11-03" type="development">
-      <description><p>Refine formatting controls, compose and reply to comments in the sidebar, and share the Insert submenu with the context menu.</p></description>
+      <description>
+        <p>Refine formatting controls, compose and reply to comments in the sidebar, and share the Insert submenu with the context menu.</p>
+      </description>
     </release>
     <release version="0.1.0-alpha.21" date="2026-11-02" type="development">
       <description>
