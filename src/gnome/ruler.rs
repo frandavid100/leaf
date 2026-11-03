@@ -146,7 +146,7 @@ impl Ruler {
             }
             let horizontal = matches!(edge, Edge::Top | Edge::Bottom);
             // The top ruler reserves the lower part of its strip for indent and tab markers.
-            if matches!(edge, Edge::Top) && y - f64::from(visible.y()) >= 9.0 {
+            if matches!(edge, Edge::Top) && !(8.0..13.0).contains(&(y - f64::from(visible.y()))) {
                 continue;
             }
             let (position, origin, start, end) = if horizontal {
@@ -158,22 +158,6 @@ impl Ruler {
             let trailing = (position - f64::from(origin) - f64::from(end) * zoom).abs();
             if leading.min(trailing) > 5.0 {
                 continue;
-            }
-            if matches!(edge, Edge::Top) {
-                if let Some(state) = ruler::state(&mut doc.session) {
-                    if state.page == index
-                        && Self::markers(&state).iter().any(|marker| {
-                            *marker == Marker::First
-                                && (position
-                                    - f64::from(sheet.x())
-                                    - f64::from(state.x(state.distance(*marker))) * zoom)
-                                    .abs()
-                                    < 8.0
-                        })
-                    {
-                        continue;
-                    }
-                }
             }
             let props = doc.session.doc.sections().get(section)?.1;
             return Some(MarginDrag {

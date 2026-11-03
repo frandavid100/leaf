@@ -205,20 +205,13 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     for id in [root, reply_id] {
         let message = find_widget(&ui.navigation_pages, &format!("comment-{id}")).unwrap();
         assert!(!message.has_css_class("card"));
-        assert_eq!(
-            message.parent(),
-            Some(thread.clone()),
-            "one bubble per thread"
-        );
+        assert!(message.is_ancestor(&thread), "one bubble per thread");
     }
-    assert!(
-        thread
-            .first_child()
-            .unwrap()
-            .next_sibling()
-            .unwrap()
-            .is::<gtk::Separator>()
-    );
+    let replies = find_widget(&thread, "comment-replies")
+        .unwrap()
+        .downcast::<gtk::Revealer>()
+        .unwrap();
+    assert!(find_widget(&replies, &format!("comment-{reply_id}")).is_some());
     let options =
         find_widget(&ui.navigation_pages, &format!("comment-options-{reply_id}")).unwrap();
     options.activate_action("annotation.edit", None).unwrap();
@@ -304,6 +297,27 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
         let hint = session.page_hint;
         assert_eq!(session.layout().caret_on(&focus, hint).unwrap().page, page);
     }
+
+    {
+        let mut current = ui.current.borrow_mut();
+        let session = &mut current.as_mut().unwrap().session;
+        selection::set_caret(session, &Pos::body(0, 0), false).unwrap();
+    }
+    refresh_selection(ui);
+    assert!(
+        panel.active.borrow().is_empty(),
+        "leaving the anchor collapses the thread"
+    );
+    assert_eq!(
+        ui.navigation_pages.visible_child_name().as_deref(),
+        Some("annotations")
+    );
+    let thread = find_widget(&ui.navigation_pages, &format!("comment-thread-{root}")).unwrap();
+    let replies = find_widget(&thread, "comment-replies")
+        .unwrap()
+        .downcast::<gtk::Revealer>()
+        .unwrap();
+    assert!(!replies.reveals_child());
 
     // Replacing a document invalidates its pending composer.
     compose_comment(ui, None);
