@@ -333,7 +333,7 @@ pub(super) fn layout_pages(ui: &Rc<Ui>) {
     let Some(doc) = value.as_mut() else {
         return;
     };
-    let next = viewer_layout::arrange(&doc.sizes, doc.zoom, width);
+    let next = viewer_layout::arrange_sections(&doc.sizes, &doc.sections, doc.zoom, width);
     for (frame, p) in doc.page_frames.iter().zip(&next.pages) {
         ui.document_box.move_(frame, p.x, p.y);
     }
@@ -425,8 +425,9 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
         )));
         return;
     }
+    let sections: Vec<_> = layout.pages.iter().map(|page| page.section).collect();
     let zoom = 1.0;
-    let arrangement = viewer_layout::arrange(&sizes, zoom, viewport_width(ui));
+    let arrangement = viewer_layout::arrange_sections(&sizes, &sections, zoom, viewport_width(ui));
     ui.caret_motion.borrow_mut().retarget(None, 0, false);
     ui.search_highlights.borrow_mut().clear();
     if let Some(s) = ui.search.borrow().as_ref() {
@@ -592,6 +593,7 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
     ui.current.replace(Some(Current {
         session,
         sizes,
+        sections,
         arrangement,
         zoom,
         fit_to_width: true,

@@ -12,7 +12,29 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## Última versión publicada: alpha.23
+## Última versión publicada: alpha.25
+
+[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.25).
+[CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41649488931)
+superada. Incluye comentarios plegables, vistas previas de estilos y cambios
+en miniaturas y reglas. La integración con los ajustes de idioma del sistema
+(#84) y las comprobaciones específicas de desplazamiento y arrastre de
+márgenes (#83, #87) siguen pendientes.
+
+[Alpha.24](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.24)
+incorporó propiedades de sección, reglas translúcidas e importación de diccionarios.
+
+## Validación de compatibilidad para el MVP
+
+[Auditoría con LibreOffice Writer](https://github.com/frandavid100/leaf/actions/runs/41630136413).
+La ficha DOCX creada en Writer conserva la edición de Leaf, las celdas de tabla
+y el espaciado de 24 puntos al reabrirla. El PDF exportado conserva el texto
+editado y el contenido de la tabla. El informe de CI recoge diferencias
+en los vínculos entre secciones y en la exclusión de texto de la revisión
+ortográfica tras guardar desde Writer. El caso original de espaciado (#9)
+sigue pendiente de reproducción.
+
+## Entrega anterior: alpha.23
 
 [Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.23), fuente `9cda589709aff7d0c21446c9b9b105b0d0750acc`. [CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41606977263) superada y sumas de las descargas verificadas. Cerrados #64, #65, #7 y #37.
 

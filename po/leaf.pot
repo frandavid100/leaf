@@ -1053,7 +1053,7 @@ msgstr ""
 msgid "Formatting at Selection"
 msgstr ""
 
-#: src/gnome/commands.rs:141
+#: src/gnome/commands.rs:146
 msgid "Formatting changed. Save to keep your changes."
 msgstr ""
 

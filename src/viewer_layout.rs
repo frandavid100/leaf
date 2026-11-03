@@ -94,6 +94,70 @@ pub fn arrange(sizes: &[(f32, f32)], zoom: f32, available: f64) -> Arrangement {
         height: if sizes.is_empty() { 0.0 } else { y },
     }
 }
+/// Lay out contiguous sections independently while keeping one global page index.
+pub fn arrange_sections(
+    sizes: &[(f32, f32)],
+    sections: &[usize],
+    zoom: f32,
+    available: f64,
+) -> Arrangement {
+    debug_assert_eq!(sizes.len(), sections.len());
+    let mut result = arrange(&[], zoom, available);
+    let mut first = 0;
+    for (index, section) in sections.chunk_by(|left, right| left == right).enumerate() {
+        let end = first + section.len();
+        let mut group = arrange(&sizes[first..end], zoom, available);
+        let offset = if index == 0 {
+            0.0
+        } else {
+            result.height - PAGE_GAP
+        };
+        for page in &mut group.pages {
+            page.y += offset;
+        }
+        for row in &mut group.rows {
+            row.top += offset;
+            row.first += first;
+        }
+        result.width = result.width.max(group.width);
+        result.height = offset + group.height;
+        result.columns = result.columns.max(group.columns);
+        result.pages.append(&mut group.pages);
+        result.rows.append(&mut group.rows);
+        first = end;
+    }
+    result
+}
+
+#[cfg(test)]
+#[test]
+fn a_new_section_starts_a_new_row_with_its_own_capacity() {
+    let mut sizes = vec![(600., 800.); 7];
+    sizes.extend([(800., 600.); 3]);
+    let sections = [0, 0, 0, 0, 0, 0, 0, 1, 1, 1];
+    let wide = arrange_sections(&sizes, &sections, 1., 2530.);
+    assert_eq!(
+        wide.rows
+            .iter()
+            .map(|r| (r.first, r.count))
+            .collect::<Vec<_>>(),
+        [(0, 4), (4, 3), (7, 3)]
+    );
+    assert_eq!(
+        wide.rows[2].top,
+        wide.rows[1].top + wide.rows[1].height + PAGE_GAP
+    );
+    let narrow = arrange_sections(&sizes, &sections, 1., 1450.);
+    assert_eq!(
+        narrow.rows.iter().map(|r| r.count).collect::<Vec<_>>(),
+        [2, 2, 2, 1, 1, 1, 1]
+    );
+    assert_eq!(
+        narrow.page_at(narrow.pages[7].x + 2., narrow.pages[7].y + 2.),
+        7
+    );
+}
+
 impl Arrangement {
     pub fn visible(&self, first: f64, last: f64) -> Vec<usize> {
         let start = self

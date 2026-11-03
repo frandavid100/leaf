@@ -19,7 +19,12 @@ fn refresh_after_content_change(ui: &Rc<Ui>) {
             doc.session.layout()
         };
         let sizes: Vec<(f32, f32)> = layout.pages.iter().map(|p| (p.w, p.h)).collect();
-        let needs_rebuild = sizes != doc.sizes;
+        let sections_changed = !layout
+            .pages
+            .iter()
+            .map(|p| p.section)
+            .eq(doc.sections.iter().copied());
+        let needs_rebuild = sizes != doc.sizes || sections_changed;
         if !needs_rebuild {
             for index in doc.painted_pages.drain() {
                 doc.pages[index].set_paintable(None::<&gdk::Paintable>);
