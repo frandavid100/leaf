@@ -35,6 +35,13 @@ and replacing a document drops its draft. The thread body opens its anchor,
 with separate Reply and overflow controls. The flat thread fill uses the
 thumbnail selection colour and a stronger fill for the current thread.
 
+## Insert
+
+The document and context menus use the same Insert submenu and window
+actions. Bookmark and Comment availability follows the active selection
+and document protection. The context gesture preserves a selection when
+opened inside it and otherwise places the caret at the click.
+
 ## Remaining reproductions
 
 - #1: in the unequal selected-text fixture, lines continue with the wide

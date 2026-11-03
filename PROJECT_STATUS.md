@@ -1,6 +1,6 @@
 # Estado actual de Leaf
 
-Actualizado: 2 de noviembre de 2026. Esta página describe el presente;
+Actualizado: 3 de noviembre de 2026. Esta página describe el presente;
 el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.
 
 ## Dónde trabajar
@@ -11,6 +11,15 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Integración de historiales y validación](docs/MAIN_MIGRATION.md).
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
+
+## Revisión de formato, comentarios e inserción
+
+La [PR #72](https://github.com/frandavid100/leaf/pull/72) compacta Fuente,
+Tamaño, Texto, Párrafo y Estilos (#66–#71), añade un editor de comentarios y
+respuestas en el panel lateral (#73) y comparte el submenú Insertar entre
+Documento y el menú contextual (#74). El [informe de revisión](docs/FORMAT_POPOVER_REVIEW.md)
+recoge la comparación de prototipos y las reproducciones pendientes de
+columnas (#1, #2), saltos (#65) y diccionarios (#69).
 
 ## Revisión adicional: integración y claridad del código
 

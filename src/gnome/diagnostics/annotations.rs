@@ -135,9 +135,31 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     assert!(!duplicate.error.text().is_empty());
     duplicate.window.close();
 
+    let anchor = {
+        let mut current = ui.current.borrow_mut();
+        let session = &mut current.as_mut().unwrap().session;
+        let paragraph = session.doc.para_at(&Pos::body(0, 0)).unwrap();
+        let start = paragraph.text.find("emoji").unwrap();
+        let anchor = Pos::body(0, start);
+        selection::select_range(session, &anchor, &Pos::body(0, start + 5)).unwrap();
+        assert_eq!(session.sel.anchor, anchor);
+        anchor
+    };
     let pop = show_document_context(ui, parent, 100, 150, DocumentContext::Text);
-    assert!(context_model_row(&pop, wordcraft_gnome::t!("Add Bookmark…")).is_some());
-    context_activate_row(&pop, wordcraft_gnome::t!("Add Comment…"));
+    context_activate_row(&pop, wordcraft_gnome::t!("Insert"));
+    for label in [
+        wordcraft_gnome::t!("Table…"),
+        wordcraft_gnome::t!("Image…"),
+        wordcraft_gnome::t!("Bookmark…"),
+        wordcraft_gnome::t!("Comment…"),
+        wordcraft_gnome::t!("Header"),
+        wordcraft_gnome::t!("Footer"),
+        wordcraft_gnome::t!("Page Number…"),
+    ] {
+        assert!(context_model_row(&pop, label).is_some(), "missing {label}");
+    }
+    context_activate_row(&pop, wordcraft_gnome::t!("Comment…"));
+    assert!(!pop.is_visible());
     let (_, text, submit) = composer(ui);
     assert!(!submit.is_sensitive());
     // Navigating while composing must keep the original first-page anchor.
@@ -152,7 +174,9 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     }
     text.buffer().set_text("Review this café 🦊");
     submit.emit_clicked();
-    let root = model::comments(&ui.current.borrow().as_ref().unwrap().session)[0].id;
+    let comments = model::comments(&ui.current.borrow().as_ref().unwrap().session);
+    let root = comments[0].id;
+    assert_eq!(comments[0].anchor.as_ref(), Some(&anchor));
     let panel = ui.annotations.borrow().as_ref().unwrap().clone();
     panel.refresh();
     let reply = find_widget(&ui.navigation_pages, &format!("comment-reply-{root}"))

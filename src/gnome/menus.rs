@@ -21,7 +21,20 @@ pub(super) fn refresh_main_actions(host: &Workspace) {
                 .map(|d| (d.session.can_undo(), d.session.can_redo()))
         })
         .unwrap_or((false, false));
+    let (can_bookmark, can_comment) = ui
+        .as_ref()
+        .and_then(|u| {
+            u.current.borrow().as_ref().map(|d| {
+                (
+                    wordcraft_gnome::annotations::can_bookmark(&d.session),
+                    wordcraft_gnome::annotations::can_comment(&d.session),
+                )
+            })
+        })
+        .unwrap_or_default();
     for (name, on) in [
+        ("insert-bookmark", can_bookmark),
+        ("insert-comment", can_comment),
         ("undo", undo),
         ("redo", redo),
         ("repeat", ui.as_ref().is_some_and(|u| repeat_available(u))),
@@ -352,24 +365,7 @@ pub(super) fn install_main_menu(button: &gtk::MenuButton) {
         pop.add_child(&theme_selector(), "theme-selector");
     }
 }
-pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
-    let root = gio::Menu::new();
-    let controls = ui.history_controls.borrow().as_ref().unwrap().clone();
-    root.append_section(None, &controls.document_model);
-    let save = gio::Menu::new();
-    menu_item(
-        &save,
-        wordcraft_gnome::t!("Save"),
-        "save",
-        Some("<Control>s"),
-    );
-    menu_item(
-        &save,
-        wordcraft_gnome::t!("Save As…"),
-        "save-as",
-        Some("<Control><Shift>s"),
-    );
-    root.append_section(None, &save);
+pub(super) fn append_insert_menu(root: &gio::Menu) {
     let add = gio::Menu::new();
     menu_item(&add, wordcraft_gnome::t!("Table…"), "insert-table", None);
     menu_item(&add, wordcraft_gnome::t!("Image…"), "insert-picture", None);
@@ -394,6 +390,27 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
         None,
     );
     root.append_submenu(Some(wordcraft_gnome::t!("Insert")), &add);
+}
+
+pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
+    let root = gio::Menu::new();
+    let controls = ui.history_controls.borrow().as_ref().unwrap().clone();
+    root.append_section(None, &controls.document_model);
+    let save = gio::Menu::new();
+    menu_item(
+        &save,
+        wordcraft_gnome::t!("Save"),
+        "save",
+        Some("<Control>s"),
+    );
+    menu_item(
+        &save,
+        wordcraft_gnome::t!("Save As…"),
+        "save-as",
+        Some("<Control><Shift>s"),
+    );
+    root.append_section(None, &save);
+    append_insert_menu(&root);
     let properties = gio::Menu::new();
     menu_item(
         &properties,

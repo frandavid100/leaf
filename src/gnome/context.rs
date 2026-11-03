@@ -442,43 +442,10 @@ pub(super) fn show_document_context(
         |u| selected_command(u, "select-all", false),
     );
     root.append_section(None, &edit);
-    let annotations = gio::Menu::new();
-    let (can_bookmark, can_comment) = ui
-        .current
-        .borrow()
-        .as_ref()
-        .map(|d| {
-            (
-                wordcraft_gnome::annotations::can_bookmark(&d.session),
-                wordcraft_gnome::annotations::can_comment(&d.session),
-            )
-        })
-        .unwrap_or_default();
-    context_item(
-        &annotations,
-        &group,
-        &pop,
-        ui,
-        wordcraft_gnome::t!("Add Bookmark…"),
-        "add-bookmark",
-        can_bookmark,
-        |u| {
-            show_annotation_dialog(u, AnnotationEdit::Bookmark);
-        },
-    );
-    context_item(
-        &annotations,
-        &group,
-        &pop,
-        ui,
-        wordcraft_gnome::t!("Add Comment…"),
-        "add-comment",
-        can_comment,
-        |u| {
-            compose_comment(u, None);
-        },
-    );
-    root.append_section(None, &annotations);
+    if let Some(host) = ui.host.upgrade() {
+        refresh_main_actions(&host);
+    }
+    append_insert_menu(&root);
     let specific = gio::Menu::new();
     match kind {
         DocumentContext::Text => {
