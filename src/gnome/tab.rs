@@ -242,19 +242,20 @@ pub(super) fn build_tab(
         text_selector(&font_input, "text-font-choices");
     selectors.append(&font_selector);
     let size_input = gtk::SpinButton::with_range(1.0, 1638.0, 0.5);
-    size_input.set_hexpand(true);
+    size_input.set_hexpand(false);
     size_input.set_digits(2);
     size_input.set_value(12.0);
-    size_input.set_width_chars(5);
+    size_input.set_width_chars(7);
     size_input.set_widget_name("text-size");
     size_input.set_update_policy(gtk::SpinButtonUpdatePolicy::IfValid);
     accessible_name(&size_input, wordcraft_gnome::t!("Font Size"));
     let (size_selector, size_choices_menu, size_choices) =
         text_selector(&size_input, "text-size-choices");
     size_selector.set_hexpand(false);
+    size_selector.set_halign(gtk::Align::Start);
     selectors.append(&size_selector);
     text_options.append(&selectors);
-    let more_text = gtk::Button::with_label(wordcraft_gnome::t!("More Text Options…"));
+    let more_text = style_menu_button(wordcraft_gnome::t!("More Text Options…"));
     let language_button = gtk::Button::with_label(wordcraft_gnome::t!("Language"));
     language_button.set_widget_name("text-language");
     text_options.append(&language_button);

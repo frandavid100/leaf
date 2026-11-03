@@ -153,10 +153,13 @@ impl TextTools {
         if let Some(d) = ui.current.borrow().as_ref() {
             let value = wordcraft_gnome::proofing_defaults::choice(&d.session);
             self.language_value.set_text(match value.as_str() {
-                "default" => wordcraft_gnome::t!("Default"),
+                "default" => wordcraft_gnome::t!("Default language"),
                 "off" => wordcraft_gnome::t!("Do Not Check"),
                 "mixed" => wordcraft_gnome::t!("Mixed"),
-                _ => &value,
+                _ => TEXT_LANGUAGES
+                    .iter()
+                    .find(|(tag, _)| *tag == value.as_str())
+                    .map_or(value.as_str(), |(_, name)| *name),
             });
         }
         let Some(pop) = self.popover.upgrade().filter(|p| p.is_visible()) else {
@@ -286,7 +289,7 @@ impl TextTools {
         };
         let state = selection_character(&ui);
         let weak = Rc::downgrade(self);
-        let home = matches!(page, "options" | "language" | "case");
+        let home = matches!(page, "options" | "language");
         self.header.back(
             if home {
                 wordcraft_gnome::t!("Text")
@@ -315,6 +318,10 @@ impl TextTools {
                     let b = style_menu_button(label);
                     b.set_widget_name(&format!("language-choice-{choice}"));
                     self.detail.append(&b);
+                    if choice == "default" {
+                        self.detail
+                            .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+                    }
                     let weak = Rc::downgrade(self);
                     b.connect_clicked(move |_| {
                         if let Some(s) = weak.upgrade() {
@@ -347,8 +354,10 @@ impl TextTools {
                     (wordcraft_gnome::t!("Font and Characters"), "character"),
                     (wordcraft_gnome::t!("Color and Effects"), "color"),
                     (wordcraft_gnome::t!("Annotations"), "annotations"),
+                    (wordcraft_gnome::t!("Change Case"), "case"),
                 ] {
                     let b = style_menu_button(label);
+                    b.set_widget_name(&format!("text-options-{page}"));
                     let weak = Rc::downgrade(self);
                     b.connect_clicked(move |_| {
                         if let Some(s) = weak.upgrade() {
@@ -357,6 +366,15 @@ impl TextTools {
                     });
                     self.detail.append(&b);
                 }
+                let clear = style_menu_button(wordcraft_gnome::t!("Clear Text Formatting"));
+                clear.set_widget_name("text-clear-formatting");
+                let weak = Rc::downgrade(self);
+                clear.connect_clicked(move |_| {
+                    if let Some(panel) = weak.upgrade() {
+                        panel.execute("format.clear", serde_json::json!({}));
+                    }
+                });
+                self.detail.append(&clear);
             }
             "character" => {
                 self.heading(wordcraft_gnome::t!("Character Formatting"));
@@ -506,7 +524,7 @@ pub(super) fn install_text_pages(
     stack.set_interpolate_size(true);
     stack.set_vhomogeneous(false);
     stack.set_hhomogeneous(false);
-    let main = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    let main = gtk::Box::new(gtk::Orientation::Vertical, 4);
     let mut child = root
         .first_child()
         .and_then(|w| w.next_sibling())
@@ -525,37 +543,25 @@ pub(super) fn install_text_pages(
     stack.add_named(&main, Some("main"));
     stack.add_named(&scroll, Some("detail"));
     root.append(&stack);
-    root.set_width_request(260);
+    root.set_width_request(240);
     let language_button = find_widget(&main, "text-language")
         .unwrap()
         .downcast::<gtk::Button>()
         .unwrap();
     let language_row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-    let language_title = gtk::Label::new(Some(wordcraft_gnome::t!("Language")));
-    language_title.set_hexpand(true);
-    language_title.set_xalign(0.0);
-    language_row.append(&language_title);
-    let language_value = gtk::Label::new(None);
+    language_button.add_css_class("flat");
+    let language_value = gtk::Label::new(Some(wordcraft_gnome::t!("Default language")));
     language_value.set_widget_name("text-language-value");
+    language_value.set_xalign(0.0);
+    language_value.set_hexpand(true);
     language_value.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    language_value.set_max_width_chars(12);
     language_row.append(&language_value);
-    language_row.append(&format_chevron());
+    language_row.append(&gtk::Image::from_icon_name("go-next-symbolic"));
     language_button.set_child(Some(&language_row));
-    let case = gtk::Button::new();
-    case.set_widget_name("text-change-case");
-    let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-    let l = gtk::Label::new(Some(wordcraft_gnome::t!("Change Case")));
-    l.set_hexpand(true);
-    l.set_xalign(0.0);
-    row.append(&l);
-    row.append(&format_chevron());
-    case.set_child(Some(&row));
-    main.insert_child_after(&case, Some(&language_button));
+    more.set_widget_name("text-more-options");
+    main.remove(more);
     main.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-    let clear = style_menu_button(wordcraft_gnome::t!("Clear Text Formatting"));
-    clear.set_widget_name("text-clear-formatting");
-    main.append(&clear);
+    main.append(more);
     let s = Rc::new(TextTools {
         ui: Rc::downgrade(ui),
         popover: pop.downgrade(),
@@ -575,18 +581,6 @@ pub(super) fn install_text_pages(
     language_button.connect_clicked(move |_| {
         if let Some(s) = weak.upgrade() {
             s.page("language");
-        }
-    });
-    let weak = Rc::downgrade(&s);
-    case.connect_clicked(move |_| {
-        if let Some(s) = weak.upgrade() {
-            s.page("case");
-        }
-    });
-    let weak = Rc::downgrade(&s);
-    clear.connect_clicked(move |_| {
-        if let Some(s) = weak.upgrade() {
-            s.execute("format.clear", serde_json::json!({}));
         }
     });
     let weak = Rc::downgrade(&s);

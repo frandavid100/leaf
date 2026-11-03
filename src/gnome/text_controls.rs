@@ -348,15 +348,9 @@ impl TextControls {
     }
     fn show_fonts(self: &Rc<Self>) {
         clear_box(&self.font_choices);
-        let size = self
-            .ui
-            .upgrade()
-            .and_then(|ui| selection_character(&ui)["size"].as_f64())
-            .unwrap_or(12.0);
         for family in self.family_names() {
             let button = gtk::Button::new();
             button.add_css_class("flat");
-            let body = gtk::Box::new(gtk::Orientation::Vertical, 4);
             let preview = gtk::Label::new(Some(&family));
             preview.set_widget_name("font-preview");
             preview.set_xalign(0.0);
@@ -364,21 +358,10 @@ impl TextControls {
             preview.set_width_chars(1);
             preview.set_max_width_chars(28);
             preview.set_tooltip_text(Some(&family));
-            let mut description = gtk::pango::FontDescription::new();
-            description.set_family(&family);
-            description.set_size((size * gtk::pango::SCALE as f64).round() as i32);
             let attrs = gtk::pango::AttrList::new();
-            attrs.insert(gtk::pango::AttrFontDesc::new(&description));
+            attrs.insert(gtk::pango::AttrString::new_family(&family));
             preview.set_attributes(Some(&attrs));
-            let clip = gtk::ScrolledWindow::new();
-            // Let the allocated row bound even the minimum of a large preview.
-            clip.set_policy(gtk::PolicyType::External, gtk::PolicyType::Never);
-            clip.set_max_content_height(80);
-            clip.set_propagate_natural_height(true);
-            clip.set_propagate_natural_width(false);
-            clip.set_child(Some(&preview));
-            body.append(&clip);
-            button.set_child(Some(&body));
+            button.set_child(Some(&preview));
             accessible_name(&button, &family);
             let weak = Rc::downgrade(self);
             button.connect_clicked(move |_| {

@@ -447,8 +447,8 @@ fn followup_check(t: &Followup, stage: u8) {
                     .unwrap();
                 let selector = menu.parent().unwrap();
                 assert!(
-                    (selector.width() - font.width()).abs() <= 1,
-                    "size must fill the same row as font"
+                    selector.width() < font.width(),
+                    "size selector must be narrower than the font selector"
                 );
                 if stage == 10 {
                     let pop = menu.popover().unwrap();

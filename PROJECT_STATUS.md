@@ -16,8 +16,9 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 
 David autoriza revisar el aprovechamiento de WordCraft 0.14 y limpiar estructura,
 formato y trabajo redundante del cliente. Se integra la API de PDF para impresión,
-se separan controladores/diálogos y se evita recorrer estilos ocultos. La rama de
-revisión está en validación; no es una nueva release. [Investigación y alcance](docs/WORDCRAFT_014_REVIEW.md).
+se separan controladores y diálogos y se evita recorrer estilos ocultos. La
+[PR #63](https://github.com/frandavid100/leaf/pull/63) está integrada tras superar la
+[CI nativa](https://github.com/frandavid100/leaf/actions/runs/41508412922). [Investigación y alcance](docs/WORDCRAFT_014_REVIEW.md).
 
 ## Última versión publicada: alpha.21 — WordCraft 0.14.0
 
