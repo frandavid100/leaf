@@ -198,6 +198,40 @@ fn show_properties(
     );
     let separator = option_switch(&flow, wordcraft_gnome::t!("Column Separator"));
     separator.set_active(original.columns.separator);
+    let custom = option_switch(&flow, wordcraft_gnome::t!("Custom Column Widths"));
+    custom.set_active(!original.columns.widths.is_empty());
+    let mut widths = Vec::new();
+    for index in 0..12 {
+        let (width, spacing) = original.columns.widths.get(index).copied().unwrap_or((
+            original.text_width() / original.columns.count.max(1) as f32,
+            original.columns.space,
+        ));
+        let group = adw::PreferencesGroup::new();
+        group.set_title(&wordcraft_gnome::i18n::interpolate(
+            wordcraft_gnome::t!("Column {number}"),
+            &[("number", (index + 1).to_string())],
+        ));
+        page.add(&group);
+        let width = properties_number(&group, wordcraft_gnome::t!("Width (mm)"), width);
+        let spacing =
+            properties_number(&group, wordcraft_gnome::t!("Column Spacing (mm)"), spacing);
+        group.set_visible(custom.is_active() && index < count.value_as_int() as usize);
+        let group_ref = group.downgrade();
+        let custom_ref = custom.downgrade();
+        count.connect_value_changed(move |count| {
+            if let (Some(group), Some(custom)) = (group_ref.upgrade(), custom_ref.upgrade()) {
+                group.set_visible(custom.is_active() && index < count.value_as_int() as usize);
+            }
+        });
+        let group_ref = group.downgrade();
+        let count_ref = count.downgrade();
+        custom.connect_active_notify(move |custom| {
+            if let (Some(group), Some(count)) = (group_ref.upgrade(), count_ref.upgrade()) {
+                group.set_visible(custom.is_active() && index < count.value_as_int() as usize);
+            }
+        });
+        widths.push((width, spacing));
+    }
     let vertical_modes = [
         PageVAlign::Top,
         PageVAlign::Center,
@@ -574,15 +608,40 @@ fn show_properties(
                             }
                             let new_count = count.value_as_int() as u32;
                             let new_gap = gap.value() as f32 * PT_PER_MM as f32;
+                            let new_widths: Vec<_> = if custom.is_active() {
+                                widths
+                                    .iter()
+                                    .take(new_count as usize)
+                                    .map(|(width, spacing)| {
+                                        (
+                                            width.value() as f32 * PT_PER_MM as f32,
+                                            spacing.value() as f32 * PT_PER_MM as f32,
+                                        )
+                                    })
+                                    .collect()
+                            } else {
+                                Vec::new()
+                            };
+                            let near = |a: f32, b: f32| (a - b).abs() < 0.02;
+                            let widths_changed = new_widths.len() != old.columns.widths.len()
+                                || new_widths
+                                    .iter()
+                                    .zip(&old.columns.widths)
+                                    .any(|((w, g), (x, y))| !near(*w, *x) || !near(*g, *y));
                             if new_count != old.columns.count
-                                || (new_gap - old.columns.space).abs() >= 0.02
+                                || !near(new_gap, old.columns.space)
+                                || widths_changed
                             {
                                 next.columns = ColumnSetup {
                                     count: new_count,
                                     space: new_gap,
                                     separator: separator.is_active(),
-                                    kind: ColumnKind::Equal,
-                                    widths: Vec::new(),
+                                    kind: if custom.is_active() {
+                                        ColumnKind::Custom
+                                    } else {
+                                        ColumnKind::Equal
+                                    },
+                                    widths: new_widths,
                                 }
                                 .resolved(next.text_width())?;
                             } else {

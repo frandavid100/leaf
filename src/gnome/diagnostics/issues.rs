@@ -27,7 +27,7 @@ pub(super) fn issue_sweep_ui_test(
         )),
         "Issues",
     );
-    let props = super::super::document_properties_dialog::show_section_properties(ui, window, 0);
+    let props = show_section_properties(ui, window, 0);
     let pages = find_widget(&props.window, "document-properties-pages")
         .unwrap()
         .downcast::<adw::ViewStack>()

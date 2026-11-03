@@ -347,24 +347,28 @@ impl TextTools {
                         "Select Matching Hunspell .aff and .dic Files"
                     ));
                     let weak = Rc::downgrade(&ui);
-                    chooser.open_multiple(&host.window, None::<&gio::Cancellable>, move |result| {
-                        let Some(ui) = weak.upgrade().filter(|ui| !ui.closed.get()) else {
-                            return;
-                        };
-                        let Ok(files) = result else { return };
-                        let paths = (0..files.n_items())
-                            .filter_map(|i| files.item(i)?.downcast::<gio::File>().ok()?.path())
-                            .collect::<Vec<_>>();
-                        match wordcraft_gnome::proofing::install_dictionary(&paths) {
-                            Ok(()) => {
-                                refresh_all_proofing(&ui);
-                                ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
-                                    "Dictionary installed."
-                                )));
+                    chooser.open_multiple(
+                        Some(&host.window),
+                        None::<&gio::Cancellable>,
+                        move |result| {
+                            let Some(ui) = weak.upgrade().filter(|ui| !ui.closed.get()) else {
+                                return;
+                            };
+                            let Ok(files) = result else { return };
+                            let paths = (0..files.n_items())
+                                .filter_map(|i| files.item(i)?.downcast::<gio::File>().ok()?.path())
+                                .collect::<Vec<_>>();
+                            match wordcraft_gnome::proofing::install_dictionary(&paths) {
+                                Ok(()) => {
+                                    refresh_all_proofing(&ui);
+                                    ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
+                                        "Dictionary installed."
+                                    )));
+                                }
+                                Err(error) => ui.toasts.add_toast(Toast::new(&error)),
                             }
-                            Err(error) => ui.toasts.add_toast(Toast::new(&error)),
-                        }
-                    });
+                        },
+                    );
                 });
                 self.detail.append(&install);
             }

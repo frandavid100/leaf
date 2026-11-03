@@ -22,7 +22,7 @@ pub(super) fn page_options_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app:
     dialog.headers.odd_even.set_active(true);
     dialog.apply.emit_clicked();
     let after_metadata = ui.current.borrow().as_ref().unwrap().session.doc.clone();
-    let dialog = super::super::document_properties_dialog::show_section_properties(ui, parent, 1);
+    let dialog = show_section_properties(ui, parent, 1);
     let switcher = find_widget(&dialog.window, "document-properties-switcher").unwrap();
     let expected = if adw::minor_version() >= 7 {
         "AdwInlineViewSwitcher"

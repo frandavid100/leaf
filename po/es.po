@@ -2419,3 +2419,9 @@ msgstr "En cada sección"
 
 msgid "Save as DOCX to preserve the section gutter, alignment, direction or line numbering."
 msgstr "Guarda como DOCX para conservar la encuadernación, la alineación, la dirección o la numeración de líneas de la sección."
+
+msgid "Custom Column Widths"
+msgstr "Anchuras de columna personalizadas"
+
+msgid "Column {number}"
+msgstr "Columna {number}"
