@@ -615,7 +615,9 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     motion.connect_leave(move |_| {
         if let Some(r) = weak.upgrade() {
             r.hovered.set(false);
-            r.hovered_page.set(None);
+            if r.drag.borrow().is_none() {
+                r.hovered_page.set(None);
+            }
             r.hide_later();
             r.vertical_reveal.set_reveal_child(false);
             r.bottom.set_reveal_child(false);
@@ -671,8 +673,14 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         if let Some(r) = weak.upgrade() {
             if let Some(v) = r.view() {
                 if let Some(d) = r.drag.borrow_mut().as_mut() {
-                    d.distance = (v.distance(d.start_x + dx) * 2.0).round() / 2.0;
-                    d.drop = d.start_y + dy < -18.0 || d.start_y + dy > 42.0;
+                    let x = d.start_x + dx;
+                    let y = d.start_y + dy;
+                    d.distance = (v.distance(x) * 2.0).round() / 2.0;
+                    d.drop = !(-18.0..=42.0).contains(&y);
+                    r.hovered.set(
+                        (-f64::from(BAND)..f64::from(BAND)).contains(&y)
+                            && (0.0..f64::from(r.area.width())).contains(&x),
+                    );
                 }
             }
             r.area.queue_draw();
