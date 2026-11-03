@@ -1,6 +1,10 @@
 //! Document metadata, page geometry and section options in one apply transaction.
 use super::*;
-use wordcraft_gnome::document_properties::DocumentInfo;
+use wordcraft_doc::{
+    props::TextDirection,
+    section::{LineNumberRestart, LineNumbering, PageVAlign, SectionStart},
+};
+use wordcraft_gnome::document_properties::{ColumnKind, ColumnSetup, DocumentInfo};
 
 pub(super) struct DocumentProperties {
     pub(super) window: adw::Window,
@@ -32,10 +36,26 @@ pub(super) fn show_document_properties(
     ui: &Rc<Ui>,
     parent: &ApplicationWindow,
 ) -> DocumentProperties {
+    show_properties(ui, parent, None)
+}
+
+pub(super) fn show_section_properties(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+    section: usize,
+) -> DocumentProperties {
+    show_properties(ui, parent, Some(section))
+}
+
+fn show_properties(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+    target: Option<usize>,
+) -> DocumentProperties {
     let (state, section, info) = {
         let mut value = ui.current.borrow_mut();
         let s = &mut value.as_mut().unwrap().session;
-        let i = page_options::current_section(s);
+        let i = target.unwrap_or_else(|| page_options::current_section(s));
         let p = s.doc.sections()[i].1;
         (
             PageSetup {
@@ -52,7 +72,11 @@ pub(super) fn show_document_properties(
     };
     let identity = document_identity(ui);
     let window = adw::Window::builder()
-        .title(wordcraft_gnome::t!("Document Properties"))
+        .title(if target.is_some() {
+            wordcraft_gnome::t!("Section Properties")
+        } else {
+            wordcraft_gnome::t!("Document Properties")
+        })
         .transient_for(parent)
         .modal(true)
         .default_width(480)
@@ -124,20 +148,179 @@ pub(super) fn show_document_properties(
     let bottom = properties_number(&margins, wordcraft_gnome::t!("Bottom (mm)"), state.bottom);
     let left = properties_number(&margins, wordcraft_gnome::t!("Left (mm)"), state.left);
     let right = properties_number(&margins, wordcraft_gnome::t!("Right (mm)"), state.right);
-    let scope = adw::ComboRow::new();
-    scope.set_title(wordcraft_gnome::t!("Apply To"));
-    scope.set_model(Some(&gtk::StringList::new(&[
-        wordcraft_gnome::t!("Whole Document"),
-        wordcraft_gnome::t!("Current Section"),
-    ])));
-    let multi = ui
-        .current
-        .borrow()
-        .as_ref()
-        .is_some_and(|d| d.session.doc.sections().len() > 1);
-    scope.set_selected(if multi { 1 } else { 0 });
-    scope.set_visible(multi);
-    margins.add(&scope);
+    let original = ui.current.borrow().as_ref().unwrap().session.doc.sections()[section]
+        .1
+        .clone();
+    let flow = adw::PreferencesGroup::new();
+    flow.set_title(wordcraft_gnome::t!("Section Layout"));
+    page.add(&flow);
+    let starts = [
+        SectionStart::NextPage,
+        SectionStart::Continuous,
+        SectionStart::EvenPage,
+        SectionStart::OddPage,
+        SectionStart::NextColumn,
+    ];
+    let start = option_combo(
+        &flow,
+        wordcraft_gnome::t!("Section Start"),
+        &[
+            wordcraft_gnome::t!("Next Page"),
+            wordcraft_gnome::t!("Continuous"),
+            wordcraft_gnome::t!("Even Page"),
+            wordcraft_gnome::t!("Odd Page"),
+            wordcraft_gnome::t!("Next Column"),
+        ],
+    );
+    start.set_selected(
+        starts
+            .iter()
+            .position(|value| *value == original.start)
+            .unwrap() as u32,
+    );
+    start.set_sensitive(section != 0);
+    let gutter = properties_number(
+        &margins,
+        wordcraft_gnome::t!("Gutter (mm)"),
+        original.gutter,
+    );
+    let count = properties_number(
+        &flow,
+        wordcraft_gnome::t!("Number of Columns"),
+        original.columns.count as f32 * PT_PER_MM as f32,
+    );
+    count.set_range(1., 12.);
+    count.set_digits(0);
+    let gap = properties_number(
+        &flow,
+        wordcraft_gnome::t!("Column Spacing (mm)"),
+        original.columns.space,
+    );
+    let separator = option_switch(&flow, wordcraft_gnome::t!("Column Separator"));
+    separator.set_active(original.columns.separator);
+    let custom = option_switch(&flow, wordcraft_gnome::t!("Custom Column Widths"));
+    custom.set_active(!original.columns.widths.is_empty());
+    let mut widths = Vec::new();
+    for index in 0..12 {
+        let (width, spacing) = original.columns.widths.get(index).copied().unwrap_or((
+            original.text_width() / original.columns.count.max(1) as f32,
+            original.columns.space,
+        ));
+        let group = adw::PreferencesGroup::new();
+        group.set_title(&wordcraft_gnome::i18n::interpolate(
+            wordcraft_gnome::t!("Column {number}"),
+            &[("number", (index + 1).to_string())],
+        ));
+        page.add(&group);
+        let width = properties_number(&group, wordcraft_gnome::t!("Width (mm)"), width);
+        let spacing =
+            properties_number(&group, wordcraft_gnome::t!("Column Spacing (mm)"), spacing);
+        group.set_visible(custom.is_active() && index < count.value_as_int() as usize);
+        let group_ref = group.downgrade();
+        let custom_ref = custom.downgrade();
+        count.connect_value_changed(move |count| {
+            if let (Some(group), Some(custom)) = (group_ref.upgrade(), custom_ref.upgrade()) {
+                group.set_visible(custom.is_active() && index < count.value_as_int() as usize);
+            }
+        });
+        let group_ref = group.downgrade();
+        let count_ref = count.downgrade();
+        custom.connect_active_notify(move |custom| {
+            if let (Some(group), Some(count)) = (group_ref.upgrade(), count_ref.upgrade()) {
+                group.set_visible(custom.is_active() && index < count.value_as_int() as usize);
+            }
+        });
+        widths.push((width, spacing));
+    }
+    let vertical_modes = [
+        PageVAlign::Top,
+        PageVAlign::Center,
+        PageVAlign::Justify,
+        PageVAlign::Bottom,
+    ];
+    let vertical = option_combo(
+        &flow,
+        wordcraft_gnome::t!("Vertical Alignment"),
+        &[
+            wordcraft_gnome::t!("Top"),
+            wordcraft_gnome::t!("Center"),
+            wordcraft_gnome::t!("Justify"),
+            wordcraft_gnome::t!("Bottom"),
+        ],
+    );
+    vertical.set_selected(
+        vertical_modes
+            .iter()
+            .position(|mode| *mode == original.valign)
+            .unwrap() as u32,
+    );
+    let directions = [
+        TextDirection::Horizontal,
+        TextDirection::Down,
+        TextDirection::Up,
+    ];
+    let direction = option_combo(
+        &flow,
+        wordcraft_gnome::t!("Section Text Direction"),
+        &[
+            wordcraft_gnome::t!("Horizontal"),
+            wordcraft_gnome::t!("Top to Bottom"),
+            wordcraft_gnome::t!("Bottom to Top"),
+        ],
+    );
+    direction.set_selected(
+        directions
+            .iter()
+            .position(|mode| *mode == original.text_direction)
+            .unwrap() as u32,
+    );
+    let rtl = option_switch(&flow, wordcraft_gnome::t!("Right-to-Left Section"));
+    rtl.set_active(original.rtl);
+    let line_group = adw::PreferencesGroup::new();
+    line_group.set_title(wordcraft_gnome::t!("Line Numbering"));
+    page.add(&line_group);
+    let line_numbers = option_switch(&line_group, wordcraft_gnome::t!("Show Line Numbers"));
+    line_numbers.set_active(original.line_numbers.is_some());
+    let line = original.line_numbers.clone().unwrap_or_default();
+    let count_by = properties_number(
+        &line_group,
+        wordcraft_gnome::t!("Count By"),
+        line.count_by as f32 * PT_PER_MM as f32,
+    );
+    count_by.set_range(1., 10000.);
+    count_by.set_digits(0);
+    let first_line = properties_number(
+        &line_group,
+        wordcraft_gnome::t!("Starting Line Number"),
+        line.start as f32 * PT_PER_MM as f32,
+    );
+    first_line.set_range(0., 100000.);
+    first_line.set_digits(0);
+    let line_distance = properties_number(
+        &line_group,
+        wordcraft_gnome::t!("Distance from Text (mm)"),
+        line.distance,
+    );
+    let restarts = [
+        LineNumberRestart::Page,
+        LineNumberRestart::Section,
+        LineNumberRestart::Continuous,
+    ];
+    let restart = option_combo(
+        &line_group,
+        wordcraft_gnome::t!("Restart Line Numbers"),
+        &[
+            wordcraft_gnome::t!("Each Page"),
+            wordcraft_gnome::t!("Each Section"),
+            wordcraft_gnome::t!("Continuous"),
+        ],
+    );
+    restart.set_selected(
+        restarts
+            .iter()
+            .position(|value| *value == line.restart)
+            .unwrap() as u32,
+    );
     let message = gtk::Label::new(None);
     message.set_wrap(true);
     message.add_css_class("error");
@@ -191,12 +374,25 @@ pub(super) fn show_document_properties(
     );
     stack.add_titled(&page, Some("page"), wordcraft_gnome::t!("Page"));
     let header_page = adw::PreferencesPage::new();
-    let headers = HeaderControls::new(ui, &header_page, section);
+    let odd_even = option_switch(
+        &review_group,
+        wordcraft_gnome::t!("Different Odd and Even Pages"),
+    );
+    let headers = HeaderControls::new(ui, &header_page, section, odd_even);
+    if target.is_some() {
+        headers.section.set_sensitive(false);
+        stack.page(&information).set_visible(false);
+        stack.set_visible_child_name("page");
+    }
     stack.add_titled(
         &header_page,
         Some("headers"),
         wordcraft_gnome::t!("Headers and Footers"),
     );
+    if target.is_none() {
+        stack.page(&page).set_visible(false);
+        stack.page(&header_page).set_visible(false);
+    }
     for (child, icon) in [
         (
             information.upcast_ref::<gtk::Widget>(),
@@ -243,7 +439,9 @@ pub(super) fn show_document_properties(
     switcher.set_halign(gtk::Align::Center);
     switcher.set_margin_top(6);
     switcher.set_margin_bottom(6);
-    toolbar.add_top_bar(&switcher);
+    if target.is_some() {
+        toolbar.add_top_bar(&switcher);
+    }
     let content = gtk::Box::new(gtk::Orientation::Vertical, 6);
     content.append(&stack);
     content.append(&message);
@@ -382,20 +580,87 @@ pub(super) fn show_document_properties(
                     let snapshot = session.edit_snapshot();
                     let pending = session.pending.clone();
                     let mark = session.undo_mark();
-                    let result = apply_properties(
-                        session,
-                        setup,
-                        scope.selected() == 0,
-                        section,
-                        &headers.values(),
-                        &DocumentInfo {
-                            title,
-                            subject,
-                            author,
-                            keywords,
-                            category,
-                        },
-                    )
+                    let metadata = DocumentInfo {
+                        title,
+                        subject,
+                        author,
+                        keywords,
+                        category,
+                    };
+                    let result = if target.is_some() {
+                        document_properties::apply_section_setup(session, false, section, |old| {
+                            let mut next = setup.section(old.clone())?;
+                            next.start = starts[start.selected() as usize];
+                            next.valign = vertical_modes[vertical.selected() as usize];
+                            next.rtl = rtl.is_active();
+                            let text_direction = directions[direction.selected() as usize];
+                            next.text_direction_set |= next.text_direction != text_direction;
+                            next.text_direction = text_direction;
+                            next.line_numbers = line_numbers.is_active().then(|| LineNumbering {
+                                count_by: count_by.value_as_int() as u32,
+                                start: first_line.value_as_int() as u32,
+                                distance: line_distance.value() as f32 * PT_PER_MM as f32,
+                                restart: restarts[restart.selected() as usize],
+                            });
+                            let new_gutter = gutter.value() as f32 * PT_PER_MM as f32;
+                            if (new_gutter - old.gutter).abs() >= 0.02 {
+                                next.gutter = new_gutter;
+                            }
+                            let new_count = count.value_as_int() as u32;
+                            let new_gap = gap.value() as f32 * PT_PER_MM as f32;
+                            let new_widths: Vec<_> = if custom.is_active() {
+                                widths
+                                    .iter()
+                                    .take(new_count as usize)
+                                    .map(|(width, spacing)| {
+                                        (
+                                            width.value() as f32 * PT_PER_MM as f32,
+                                            spacing.value() as f32 * PT_PER_MM as f32,
+                                        )
+                                    })
+                                    .collect()
+                            } else {
+                                Vec::new()
+                            };
+                            let near = |a: f32, b: f32| (a - b).abs() < 0.02;
+                            let widths_changed = new_widths.len() != old.columns.widths.len()
+                                || new_widths
+                                    .iter()
+                                    .zip(&old.columns.widths)
+                                    .any(|((w, g), (x, y))| !near(*w, *x) || !near(*g, *y));
+                            if new_count != old.columns.count
+                                || !near(new_gap, old.columns.space)
+                                || widths_changed
+                            {
+                                next.columns = ColumnSetup {
+                                    count: new_count,
+                                    space: new_gap,
+                                    separator: separator.is_active(),
+                                    kind: if custom.is_active() {
+                                        ColumnKind::Custom
+                                    } else {
+                                        ColumnKind::Equal
+                                    },
+                                    widths: new_widths,
+                                }
+                                .resolved(next.text_width())?;
+                            } else {
+                                next.columns.separator = separator.is_active();
+                            }
+                            Ok(next)
+                        })
+                        .and_then(|changed| {
+                            page_options::apply(session, &headers.values())
+                                .map(|headers| changed || headers)
+                        })
+                    } else {
+                        let mut options =
+                            wordcraft_gnome::page_options::Options::current(session, section);
+                        options.odd_even = headers.odd_even.is_active();
+                        metadata.apply(session).and_then(|changed| {
+                            page_options::apply(session, &options).map(|options| changed || options)
+                        })
+                    }
                     .and_then(|changed| {
                         if language.text().as_str() == initial_language
                             && review.is_active() == initial_review

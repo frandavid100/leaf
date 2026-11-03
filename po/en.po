@@ -2323,3 +2323,105 @@ msgstr "Save as DOCX to preserve column breaks and continuous, even-page or odd-
 
 msgid "Place the caret in the body of this even page before editing its header or footer."
 msgstr "Place the caret in the body of this even page before editing its header or footer."
+
+msgid "Install Additional Languages…"
+msgstr "Install Additional Languages…"
+
+msgid "Select Matching Hunspell .aff and .dic Files"
+msgstr "Select Matching Hunspell .aff and .dic Files"
+
+msgid "Select the matching .aff and .dic files for one Hunspell dictionary."
+msgstr "Select the matching .aff and .dic files for one Hunspell dictionary."
+
+msgid "A dictionary with this name is already installed."
+msgstr "A dictionary with this name is already installed."
+
+msgid "Dictionary installed."
+msgstr "Dictionary installed."
+
+msgid "Section Properties"
+msgstr "Section Properties"
+
+msgid "Section Properties…"
+msgstr "Section Properties…"
+
+msgid "Section Layout"
+msgstr "Section Layout"
+
+msgid "Section Start"
+msgstr "Section Start"
+
+msgid "Next Page"
+msgstr "Next Page"
+
+msgid "Continuous"
+msgstr "Continuous"
+
+msgid "Even Page"
+msgstr "Even Page"
+
+msgid "Odd Page"
+msgstr "Odd Page"
+
+msgid "Next Column"
+msgstr "Next Column"
+
+msgid "Gutter (mm)"
+msgstr "Gutter (mm)"
+
+msgid "Column Spacing (mm)"
+msgstr "Column Spacing (mm)"
+
+msgid "Column Separator"
+msgstr "Column Separator"
+
+msgid "WordCraft does not use a dictionary with this language or filename."
+msgstr "WordCraft does not use a dictionary with this language or filename."
+
+msgid "Vertical Alignment"
+msgstr "Vertical Alignment"
+
+msgid "Section Text Direction"
+msgstr "Section Text Direction"
+
+msgid "Top to Bottom"
+msgstr "Top to Bottom"
+
+msgid "Bottom to Top"
+msgstr "Bottom to Top"
+
+msgid "Right-to-Left Section"
+msgstr "Right-to-Left Section"
+
+msgid "Line Numbering"
+msgstr "Line Numbering"
+
+msgid "Show Line Numbers"
+msgstr "Show Line Numbers"
+
+msgid "Count By"
+msgstr "Count By"
+
+msgid "Starting Line Number"
+msgstr "Starting Line Number"
+
+msgid "Distance from Text (mm)"
+msgstr "Distance from Text (mm)"
+
+msgid "Restart Line Numbers"
+msgstr "Restart Line Numbers"
+
+msgid "Each Page"
+msgstr "Each Page"
+
+msgid "Each Section"
+msgstr "Each Section"
+
+msgid "Save as DOCX to preserve the section gutter, alignment, direction or line numbering."
+msgstr "Save as DOCX to preserve the section gutter, alignment, direction or line numbering."
+
+msgid "Custom Column Widths"
+msgstr "Custom Column Widths"
+
+msgid "Column {number}"
+msgstr "Column {number}"

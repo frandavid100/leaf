@@ -41,10 +41,24 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
         para::{COLUMN_BREAK, Wrap},
         section::SectionStart,
     };
+    if session.doc.sections().iter().any(|(_, section)| {
+        section.gutter != 0.0
+            || section.valign != wordcraft_doc::section::PageVAlign::Top
+            || section.rtl
+            || section.text_direction != wordcraft_doc::props::TextDirection::Horizontal
+            || section.line_numbers.is_some()
+    }) {
+        return Some(wordcraft_gnome::t!(
+            "Save as DOCX to preserve the section gutter, alignment, direction or line numbering."
+        ));
+    }
     if session.doc.sections().iter().skip(1).any(|(_, section)| {
         matches!(
             section.start,
-            SectionStart::Continuous | SectionStart::EvenPage | SectionStart::OddPage
+            SectionStart::Continuous
+                | SectionStart::EvenPage
+                | SectionStart::OddPage
+                | SectionStart::NextColumn
         )
     }) || session
         .doc

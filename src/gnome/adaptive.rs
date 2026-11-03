@@ -329,13 +329,48 @@ impl TextTools {
                         }
                     });
                 }
-                let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
-                    "Languages without an installed dictionary cannot be spell-checked."
-                )));
-                hint.set_wrap(true);
-                hint.set_max_width_chars(30);
-                hint.add_css_class("dim-label");
-                self.detail.append(&hint);
+                let install =
+                    style_menu_button(wordcraft_gnome::t!("Install Additional Languages…"));
+                install.set_widget_name("install-dictionaries");
+                let weak = Rc::downgrade(self);
+                install.connect_clicked(move |_| {
+                    let Some(tools) = weak.upgrade() else { return };
+                    let Some(ui) = tools.ui.upgrade() else { return };
+                    let Some(host) = ui.host.upgrade() else {
+                        return;
+                    };
+                    if let Some(popover) = tools.popover.upgrade() {
+                        close_format_popover(&popover);
+                    }
+                    let chooser = gtk::FileDialog::new();
+                    chooser.set_title(wordcraft_gnome::t!(
+                        "Select Matching Hunspell .aff and .dic Files"
+                    ));
+                    let weak = Rc::downgrade(&ui);
+                    chooser.open_multiple(
+                        Some(&host.window),
+                        None::<&gio::Cancellable>,
+                        move |result| {
+                            let Some(ui) = weak.upgrade().filter(|ui| !ui.closed.get()) else {
+                                return;
+                            };
+                            let Ok(files) = result else { return };
+                            let paths = (0..files.n_items())
+                                .filter_map(|i| files.item(i)?.downcast::<gio::File>().ok()?.path())
+                                .collect::<Vec<_>>();
+                            match wordcraft_gnome::proofing::install_dictionary(&paths) {
+                                Ok(()) => {
+                                    refresh_all_proofing(&ui);
+                                    ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
+                                        "Dictionary installed."
+                                    )));
+                                }
+                                Err(error) => ui.toasts.add_toast(Toast::new(&error)),
+                            }
+                        },
+                    );
+                });
+                self.detail.append(&install);
             }
             "case" => self.choice(
                 wordcraft_gnome::t!("Change Case"),

@@ -38,7 +38,12 @@ pub(super) fn option_switch(group: &adw::PreferencesGroup, title: &str) -> gtk::
     b
 }
 impl HeaderControls {
-    pub(super) fn new(ui: &Rc<Ui>, page: &adw::PreferencesPage, initial: usize) -> Rc<Self> {
+    pub(super) fn new(
+        ui: &Rc<Ui>,
+        page: &adw::PreferencesPage,
+        initial: usize,
+        odd_even: gtk::Switch,
+    ) -> Rc<Self> {
         let snapshots = {
             let v = ui.current.borrow();
             let s = &v.as_ref().unwrap().session;
@@ -76,10 +81,6 @@ impl HeaderControls {
         variants.set_title(wordcraft_gnome::t!("Headers and Footers"));
         page.add(&variants);
         let first = option_switch(&variants, wordcraft_gnome::t!("Different First Page"));
-        let odd_even = option_switch(
-            &variants,
-            wordcraft_gnome::t!("Different Odd and Even Pages"),
-        );
         odd_even.set_active(snapshots[initial].odd_even);
         let header = properties_number(
             &variants,
@@ -238,36 +239,5 @@ impl HeaderControls {
         out.headers = link(self.headers.selected());
         out.footers = link(self.footers.selected());
         out
-    }
-}
-pub(super) fn apply_properties(
-    s: &mut Session,
-    setup: PageSetup,
-    whole: bool,
-    section: usize,
-    headers: &HeaderOptions,
-    metadata: &document_properties::DocumentInfo,
-) -> Result<bool, String> {
-    let snap = s.edit_snapshot();
-    let pending = s.pending.clone();
-    let mark = s.undo_mark();
-    let result = (|| {
-        let a = document_properties::apply_at(s, setup, whole, section)?;
-        let b = page_options::apply(s, headers)?;
-        let c = metadata.apply(s)?;
-        Ok::<_, String>(a || b || c)
-    })();
-    match result {
-        Ok(changed) => {
-            if changed {
-                s.merge_undo_since(mark);
-            }
-            Ok(changed)
-        }
-        Err(e) => {
-            s.restore(snap);
-            s.pending = pending;
-            Err(e)
-        }
     }
 }

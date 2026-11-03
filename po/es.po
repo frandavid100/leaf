@@ -2323,3 +2323,105 @@ msgstr "Guarda como DOCX para conservar los saltos de columna y las secciones co
 
 msgid "Place the caret in the body of this even page before editing its header or footer."
 msgstr "Sitúa el cursor en el cuerpo de esta página par antes de editar su encabezado o pie."
+
+msgid "Install Additional Languages…"
+msgstr "Instalar idiomas adicionales…"
+
+msgid "Select Matching Hunspell .aff and .dic Files"
+msgstr "Selecciona los archivos .aff y .dic del diccionario Hunspell"
+
+msgid "Select the matching .aff and .dic files for one Hunspell dictionary."
+msgstr "Selecciona los archivos .aff y .dic del mismo diccionario Hunspell."
+
+msgid "A dictionary with this name is already installed."
+msgstr "Ya hay un diccionario instalado con ese nombre."
+
+msgid "Dictionary installed."
+msgstr "Diccionario instalado."
+
+msgid "Section Properties"
+msgstr "Propiedades de sección"
+
+msgid "Section Properties…"
+msgstr "Propiedades de sección…"
+
+msgid "Section Layout"
+msgstr "Maquetación de sección"
+
+msgid "Section Start"
+msgstr "Inicio de sección"
+
+msgid "Next Page"
+msgstr "Página siguiente"
+
+msgid "Continuous"
+msgstr "Continuo"
+
+msgid "Even Page"
+msgstr "Página par"
+
+msgid "Odd Page"
+msgstr "Página impar"
+
+msgid "Next Column"
+msgstr "Columna siguiente"
+
+msgid "Gutter (mm)"
+msgstr "Encuadernación (mm)"
+
+msgid "Column Spacing (mm)"
+msgstr "Separación entre columnas (mm)"
+
+msgid "Column Separator"
+msgstr "Separador de columnas"
+
+msgid "WordCraft does not use a dictionary with this language or filename."
+msgstr "WordCraft no usa diccionarios con este idioma o nombre de archivo."
+
+msgid "Vertical Alignment"
+msgstr "Alineación vertical"
+
+msgid "Section Text Direction"
+msgstr "Dirección del texto de la sección"
+
+msgid "Top to Bottom"
+msgstr "De arriba abajo"
+
+msgid "Bottom to Top"
+msgstr "De abajo arriba"
+
+msgid "Right-to-Left Section"
+msgstr "Sección de derecha a izquierda"
+
+msgid "Line Numbering"
+msgstr "Numeración de líneas"
+
+msgid "Show Line Numbers"
+msgstr "Mostrar números de línea"
+
+msgid "Count By"
+msgstr "Intervalo de numeración"
+
+msgid "Starting Line Number"
+msgstr "Número de línea inicial"
+
+msgid "Distance from Text (mm)"
+msgstr "Distancia al texto (mm)"
+
+msgid "Restart Line Numbers"
+msgstr "Reiniciar numeración de líneas"
+
+msgid "Each Page"
+msgstr "En cada página"
+
+msgid "Each Section"
+msgstr "En cada sección"
+
+msgid "Save as DOCX to preserve the section gutter, alignment, direction or line numbering."
+msgstr "Guarda como DOCX para conservar la encuadernación, la alineación, la dirección o la numeración de líneas de la sección."
+
+msgid "Custom Column Widths"
+msgstr "Anchuras de columna personalizadas"
+
+msgid "Column {number}"
+msgstr "Columna {number}"

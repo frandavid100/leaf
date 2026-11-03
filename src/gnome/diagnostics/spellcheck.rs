@@ -22,6 +22,19 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
     let language = format_button(ui, "text-menu").unwrap();
     assert!(find_widget(&language.popover().unwrap(), "language-choice-off").is_some());
     assert!(find_widget(&language.popover().unwrap(), "language-choice-default").is_some());
+    assert!(find_widget(&language.popover().unwrap(), "install-dictionaries").is_some());
+    if let Some(root) = std::env::var_os("LEAF_DICTIONARY_TEST_DIR") {
+        let root = PathBuf::from(root);
+        let aff = root.join("it_IT.aff");
+        let dic = root.join("it_IT.dic");
+        std::fs::write(&aff, "SET UTF-8\n").unwrap();
+        std::fs::write(&dic, "2\nprova\nfoglio\n").unwrap();
+        wordcraft_gnome::proofing::install_dictionary(&[aff, dic]).unwrap();
+        assert!(wordcraft_engine::proof::it::has_dictionary());
+        assert!(wordcraft_engine::proof::it::is_correct("foglio"));
+        assert!(!wordcraft_engine::proof::it::is_correct("qqqgtkwordzz"));
+        eprintln!("DICTIONARY_INSTALL_OK");
+    }
     language.popdown();
     let prefs = show_preferences(parent);
     let live = find_widget(&prefs, "preferences-live-proofing")
