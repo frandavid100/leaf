@@ -267,6 +267,13 @@ impl AnnotationPanel {
                 count += 1;
                 &replies
             };
+            if depth > 0 {
+                let separator = gtk::Separator::new(gtk::Orientation::Horizontal);
+                separator.add_css_class("comment-divider");
+                separator.set_margin_start(12);
+                separator.set_margin_end(12);
+                destination.append(&separator);
+            }
             destination.append(&comment_message(
                 ui,
                 c,
@@ -415,9 +422,8 @@ fn comment_message(
             );
             cr.set_line_width(1.);
             cr.move_to(3.5, 0.);
-            cr.line_to(3.5, f64::from(height));
-            cr.move_to(3.5, 18.5);
-            cr.line_to(9., 18.5);
+            cr.line_to(3.5, 15.5_f64.min(f64::from(height)));
+            cr.curve_to(3.5, 18.5, 6., 18.5, 9., 18.5);
             let _ = cr.stroke();
             cr.arc(9., 18.5, 2., 0., std::f64::consts::TAU);
             let _ = cr.fill();
@@ -466,6 +472,7 @@ fn comment_message(
         summary.append(&annotation_label(wordcraft_gnome::t!("Resolved"), true));
     }
     let text = annotation_label(&c.text, false);
+    text.add_css_class("comment-body");
     if depth == 0 {
         text.set_widget_name("comment-root-text");
         if !expanded {

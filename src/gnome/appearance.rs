@@ -82,8 +82,10 @@ pub(super) fn install_css() {
       .thumbnail-button { padding: 8px 12px; min-width: 0; min-height: 0; }
       .thumbnail-button.selected-thumb { background: alpha(@window_fg_color, 0.09); }
       .sidebar-selector button { border-radius: 10px; }
-      .comment-thread { background: alpha(@window_fg_color, 0.09); border-radius: 8px; }
-      .comment-thread.selected { background: alpha(@window_fg_color, 0.16); }
+      .comment-thread { background: alpha(@window_fg_color, 0.05); border-radius: 8px; }
+      .comment-thread.selected { background: alpha(@window_fg_color, 0.09); }
+      .comment-thread .comment-body { font-weight: normal; }
+      .comment-thread separator.comment-divider { background: alpha(@window_fg_color, 0.16); min-height: 1px; }
       button.mixed { background: alpha(@accent_bg_color, 0.18); }
       .sidebar-selector button:checked { background: alpha(@window_fg_color, 0.12); }
       button.outline-expander { min-width: 18px; min-height: 24px; padding: 0; }

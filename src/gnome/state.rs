@@ -5,6 +5,7 @@ use super::*;
 pub(super) struct Current {
     pub(super) session: Session,
     pub(super) sizes: Vec<(f32, f32)>,
+    pub(super) sections: Vec<usize>,
     pub(super) arrangement: viewer_layout::Arrangement,
     pub(super) zoom: f32,
     pub(super) fit_to_width: bool,

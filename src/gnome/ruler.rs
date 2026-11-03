@@ -96,6 +96,33 @@ struct MarginDrag {
     zoom: f64,
     setup: PageSetup,
     delta: f32,
+    gutter: f32,
+}
+
+impl MarginDrag {
+    fn value(&mut self) -> &mut f32 {
+        match (self.horizontal, self.leading) {
+            (true, true) => &mut self.setup.left,
+            (true, false) => &mut self.setup.right,
+            (false, true) => &mut self.setup.top,
+            (false, false) => &mut self.setup.bottom,
+        }
+    }
+
+    fn update(&mut self, dx: f64, dy: f64) {
+        let (offset, available) = if self.horizontal {
+            (
+                dx,
+                self.setup.width - self.setup.left - self.setup.right - self.gutter,
+            )
+        } else {
+            (dy, self.setup.height - self.setup.top - self.setup.bottom)
+        };
+        let sign = if self.leading { 1. } else { -1. };
+        let minimum = -*self.value();
+        let maximum = (available - wordcraft_engine::cmd::page::MIN_TEXT_ROOM).max(0.);
+        self.delta = ((offset / self.zoom * sign) as f32).clamp(minimum, maximum);
+    }
 }
 
 pub(super) struct Ruler {
@@ -145,8 +172,9 @@ impl Ruler {
                 continue;
             }
             let horizontal = matches!(edge, Edge::Top | Edge::Bottom);
-            // The top ruler reserves the lower part of its strip for indent and tab markers.
-            if matches!(edge, Edge::Top) && !(8.0..13.0).contains(&(y - f64::from(visible.y()))) {
+            // Leave the indent and tab marker lanes on the top ruler available.
+            let local_y = y - f64::from(visible.y());
+            if matches!(edge, Edge::Top) && (local_y < 7.5 || local_y >= 15.0) {
                 continue;
             }
             let (position, origin, start, end) = if horizontal {
@@ -156,7 +184,7 @@ impl Ruler {
             };
             let leading = (position - f64::from(origin) - f64::from(start) * zoom).abs();
             let trailing = (position - f64::from(origin) - f64::from(end) * zoom).abs();
-            if leading.min(trailing) > 5.0 {
+            if leading.min(trailing) > 7.0 {
                 continue;
             }
             let props = doc.session.doc.sections().get(section)?.1;
@@ -175,6 +203,7 @@ impl Ruler {
                     bottom: props.margin_bottom,
                 },
                 delta: 0.,
+                gutter: props.gutter,
             });
         }
         None
@@ -484,7 +513,19 @@ impl Ruler {
         clip_sheet(cr, &sheet);
         cr.set_source_rgba(1., 1., 1., 0.72);
         let _ = cr.paint();
-        let (start, span) = (origin + f64::from(margin) * zoom, f64::from(content) * zoom);
+        let (mut start, mut span) = (origin + f64::from(margin) * zoom, f64::from(content) * zoom);
+        if let Some(drag) = self
+            .margin_drag
+            .borrow()
+            .as_ref()
+            .filter(|drag| drag.horizontal == horizontal)
+        {
+            let change = f64::from(drag.delta) * zoom;
+            if drag.leading {
+                start += change;
+            }
+            span -= change;
+        }
         cr.set_source_rgba(0.30, 0.30, 0.30, 0.10);
         if horizontal {
             cr.rectangle(start, 0., span, depth);
@@ -507,6 +548,8 @@ impl Ruler {
             cr.line_to(boundary, length);
         }
         let _ = cr.stroke();
+        // Paint marks with the same composited grey as the inward separator.
+        cr.set_source_rgba(0.22, 0.22, 0.22, 0.19);
         cr.set_font_size(8.);
         let unit = 72. / 2.54 / 2.;
         let extent = if horizontal { width } else { height };
@@ -784,6 +827,9 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     let weak = Rc::downgrade(&r);
     motion.connect_leave(move |_| {
         if let Some(r) = weak.upgrade() {
+            if r.margin_drag.borrow().is_some() {
+                return;
+            }
             r.hovered.set(false);
             r.hide_later();
             r.vertical_reveal.set_reveal_child(false);
@@ -809,10 +855,9 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     margins.connect_drag_update(move |_, dx, dy| {
         if let Some(r) = weak.upgrade() {
             if let Some(margin) = r.margin_drag.borrow_mut().as_mut() {
-                let offset = if margin.horizontal { dx } else { dy };
-                let sign = if margin.leading { 1. } else { -1. };
-                margin.delta = (offset / margin.zoom * sign) as f32;
+                margin.update(dx, dy);
             }
+            r.refresh();
         }
     });
     let weak = Rc::downgrade(&r);
@@ -821,6 +866,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         let Some(mut margin) = r.margin_drag.borrow_mut().take() else {
             return;
         };
+        r.refresh();
         let Some(ui) =
             r.ui.upgrade()
                 .filter(|ui| document_identity(ui) == Some(margin.document))
@@ -830,13 +876,8 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         if margin.delta.abs() < 0.5 {
             return;
         }
-        let value = match (margin.horizontal, margin.leading) {
-            (true, true) => &mut margin.setup.left,
-            (true, false) => &mut margin.setup.right,
-            (false, true) => &mut margin.setup.top,
-            (false, false) => &mut margin.setup.bottom,
-        };
-        *value = (*value + margin.delta).max(0.);
+        let delta = margin.delta;
+        *margin.value() += delta;
         let result = {
             let mut current = ui.current.borrow_mut();
             let Some(doc) = current.as_mut() else { return };
@@ -852,27 +893,57 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     margins.connect_cancel(move |_, _| {
         if let Some(r) = weak.upgrade() {
             r.margin_drag.borrow_mut().take();
+            r.refresh();
         }
     });
     overlay.add_controller(margins);
 
     let scroll = gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::BOTH_AXES);
-    let weak = Rc::downgrade(ui);
+    scroll.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let weak = Rc::downgrade(&r);
     scroll.connect_scroll(move |controller, dx, dy| {
-        let Some(ui) = weak.upgrade() else {
+        let Some(r) = weak.upgrade() else {
             return glib::Propagation::Proceed;
         };
+        let (Some(ui), Some(overlay)) = (r.ui.upgrade(), r.overlay.upgrade()) else {
+            return glib::Propagation::Proceed;
+        };
+        let over_ruler = controller
+            .current_event()
+            .and_then(|event| event.position())
+            .is_some_and(|(x, y)| {
+                let Some(native) = overlay.native() else {
+                    return false;
+                };
+                let Some(host) = ui.host.upgrade() else {
+                    return false;
+                };
+                let root = &host.window;
+                let (tx, ty) = native.surface_transform();
+                let point = gtk::graphene::Point::new((x - tx) as f32, (y - ty) as f32);
+                [&r.reveal, &r.vertical_reveal, &r.bottom, &r.right]
+                    .iter()
+                    .any(|edge| {
+                        edge.reveals_child()
+                            && edge
+                                .compute_bounds(root)
+                                .is_some_and(|bounds| bounds.contains_point(&point))
+                    })
+            });
+        if !over_ruler {
+            return glib::Propagation::Proceed;
+        }
         for (adjustment, delta) in [(ui.scroll.hadjustment(), dx), (ui.scroll.vadjustment(), dy)] {
             let scale = if controller.unit() == gdk::ScrollUnit::Surface {
                 1.0
             } else {
-                adjustment.step_increment()
+                adjustment.step_increment().max(24.0)
             };
             adjustment.set_value(adjustment.value() + delta * scale);
         }
         glib::Propagation::Stop
     });
-    r.area.add_controller(scroll);
+    overlay.add_controller(scroll);
 
     let drag = gtk::GestureDrag::new();
     drag.set_button(gdk::BUTTON_PRIMARY);
