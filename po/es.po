@@ -2425,3 +2425,18 @@ msgstr "Anchuras de columna personalizadas"
 
 msgid "Column {number}"
 msgstr "Columna {number}"
+
+msgid "Replies: {count}"
+msgstr "Respuestas: {count}"
+
+msgid "{count}Y"
+msgstr "{count}A"
+
+msgid "{count}M"
+msgstr "{count}M"
+
+msgid "{count}D"
+msgstr "{count}D"
+
+msgid "{count}H"
+msgstr "{count}H"

@@ -109,16 +109,33 @@ impl StylePopover {
                 && self.search.text().is_empty()
                 && has_gallery
                 && gallery.len() < all.len();
-            let styles = if expandable {
+            let styles: Vec<_> = if expandable {
                 gallery.into_iter().cloned().collect()
             } else {
                 all
             };
+            let styles = styles
+                .into_iter()
+                .map(|style| {
+                    use wordcraft_doc::{props::CharProps, styles::StyleKind};
+                    let sheet = &d.session.doc.styles;
+                    let resolved = if style.kind == StyleKind::Paragraph {
+                        sheet.resolve_char(Some(&style.id), &CharProps::default())
+                    } else {
+                        let direct = CharProps {
+                            style: Some(style.id.clone()),
+                            ..Default::default()
+                        };
+                        sheet.resolve_char(None, &direct)
+                    };
+                    (style, resolved)
+                })
+                .collect::<Vec<_>>();
             (styles, current, expandable)
         };
         let query = self.search.text().to_lowercase();
         let mut count = 0;
-        for st in styles.into_iter().filter(|s| {
+        for (st, resolved) in styles.into_iter().filter(|(s, _)| {
             s.name.to_lowercase().contains(&query) || s.id.to_lowercase().contains(&query)
         }) {
             count += 1;
@@ -132,6 +149,46 @@ impl StylePopover {
             apply.set_hexpand(true);
             apply.set_widget_name(&format!("style-apply-{}", st.id));
             let label = gtk::Label::new(Some(&st.name));
+            let attributes = gtk::pango::AttrList::new();
+            attributes.insert(gtk::pango::AttrString::new_family(&resolved.font));
+            if resolved.bold {
+                attributes.insert(gtk::pango::AttrInt::new_weight(gtk::pango::Weight::Bold));
+            }
+            if resolved.italic {
+                attributes.insert(gtk::pango::AttrInt::new_style(gtk::pango::Style::Italic));
+            }
+            if resolved.underline != wordcraft_doc::props::Underline::None {
+                attributes.insert(gtk::pango::AttrInt::new_underline(
+                    gtk::pango::Underline::Single,
+                ));
+            }
+            if resolved.strike || resolved.double_strike {
+                attributes.insert(gtk::pango::AttrInt::new_strikethrough(true));
+            }
+            if let wordcraft_doc::props::TextColor::Rgb(color) = resolved.color {
+                let luminance = [color.0, color.1, color.2].map(|channel| {
+                    let value = f64::from(channel) / 255.0;
+                    if value <= 0.04045 {
+                        value / 12.92
+                    } else {
+                        ((value + 0.055) / 1.055).powf(2.4)
+                    }
+                });
+                let light = luminance[0] * 0.2126 + luminance[1] * 0.7152 + luminance[2] * 0.0722;
+                let legible = if adw::StyleManager::default().is_dark() {
+                    light > 0.22
+                } else {
+                    light < 0.18
+                };
+                if legible {
+                    attributes.insert(gtk::pango::AttrColor::new_foreground(
+                        u16::from(color.0) * 257,
+                        u16::from(color.1) * 257,
+                        u16::from(color.2) * 257,
+                    ));
+                }
+            }
+            label.set_attributes(Some(&attributes));
             label.set_xalign(0.0);
             label.set_hexpand(true);
             label.set_ellipsize(gtk::pango::EllipsizeMode::End);
