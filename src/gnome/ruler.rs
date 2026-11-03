@@ -902,41 +902,15 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     });
     overlay.add_controller(margins);
 
+    // The top ruler is interactive and sits beside the scroller in the
+    // overlay. The three passive rulers let the scroller receive input directly.
     let scroll = gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::BOTH_AXES);
     scroll.set_propagation_phase(gtk::PropagationPhase::Capture);
-    let weak = Rc::downgrade(&r);
+    let weak = Rc::downgrade(ui);
     scroll.connect_scroll(move |controller, dx, dy| {
-        let Some(r) = weak.upgrade() else {
+        let Some(ui) = weak.upgrade() else {
             return glib::Propagation::Proceed;
         };
-        let (Some(ui), Some(overlay)) = (r.ui.upgrade(), r.overlay.upgrade()) else {
-            return glib::Propagation::Proceed;
-        };
-        let over_ruler = controller
-            .current_event()
-            .and_then(|event| event.position())
-            .is_some_and(|(x, y)| {
-                let Some(native) = overlay.native() else {
-                    return false;
-                };
-                let Some(host) = ui.host.upgrade() else {
-                    return false;
-                };
-                let root = &host.window;
-                let (tx, ty) = native.surface_transform();
-                let point = gtk::graphene::Point::new((x - tx) as f32, (y - ty) as f32);
-                [&r.reveal, &r.vertical_reveal, &r.bottom, &r.right]
-                    .iter()
-                    .any(|edge| {
-                        edge.reveals_child()
-                            && edge
-                                .compute_bounds(root)
-                                .is_some_and(|bounds| bounds.contains_point(&point))
-                    })
-            });
-        if !over_ruler {
-            return glib::Propagation::Proceed;
-        }
         for (adjustment, delta) in [(ui.scroll.hadjustment(), dx), (ui.scroll.vadjustment(), dy)] {
             let scale = if controller.unit() == gdk::ScrollUnit::Surface {
                 1.0
@@ -947,7 +921,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         }
         glib::Propagation::Stop
     });
-    overlay.add_controller(scroll);
+    r.reveal.add_controller(scroll);
 
     let drag = gtk::GestureDrag::new();
     drag.set_button(gdk::BUTTON_PRIMARY);
