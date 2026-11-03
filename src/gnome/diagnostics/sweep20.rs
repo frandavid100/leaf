@@ -8,6 +8,7 @@ struct Sweep {
     selection: wordcraft_engine::Selection,
     depth: Cell<usize>,
     margins: Cell<[f32; 4]>,
+    margin_zoom: Cell<f32>,
     scroll_before: Cell<f64>,
 }
 fn point(w: &impl IsA<gtk::Widget>, root: &ApplicationWindow, x: f32, y: f32) -> (i32, i32) {
@@ -66,6 +67,7 @@ pub(super) fn sweep20_pointer_test(ui: &Rc<Ui>, window: &ApplicationWindow, app:
         selection,
         depth: Cell::new(0),
         margins: Cell::new([0.; 4]),
+        margin_zoom: Cell::new(1.),
         scroll_before: Cell::new(0.),
     });
     glib::timeout_add_local_once(std::time::Duration::from_millis(400), move || stage(t, 0));
@@ -213,7 +215,11 @@ fn stage(t: Rc<Sweep>, n: u8) {
             };
             ("hover", vec![target])
         }
-        26 | 29 => ("hover", vec![(10, 20)]),
+        26 => ("hover", vec![(10, 20)]),
+        29 => {
+            u.current.borrow_mut().as_mut().unwrap().fit_to_width = false;
+            ("hover", vec![(10, 20)])
+        }
         30..=41 if (n - 30) % 3 == 2 => ("undo", vec![]),
         30..=41 => {
             let side = usize::from((n - 30) / 3);
@@ -234,7 +240,11 @@ fn stage(t: Rc<Sweep>, n: u8) {
                 t.depth.set(doc.session.undo_depth());
                 ("hover", vec![start])
             } else {
-                ("drag", vec![start, point(sheet, &t.window, x + dx, y + dy)])
+                t.margin_zoom.set(z);
+                (
+                    "margin-drag",
+                    vec![start, point(sheet, &t.window, x + dx, y + dy)],
+                )
             }
         }
         42 | 43 => {
@@ -280,7 +290,20 @@ fn stage(t: Rc<Sweep>, n: u8) {
     glib::timeout_add_local(std::time::Duration::from_millis(100), move || {
         attempts.set(attempts.get() + 1);
         assert!(attempts.get() < 200, "pointer stalled at {n}");
-        if !std::path::Path::new(&dir).join(n.to_string()).exists() {
+        let dir = std::path::Path::new(&dir);
+        let preview = dir.join(format!("preview-{n}"));
+        let verified = dir.join(format!("verified-{n}"));
+        if role == "margin-drag" && preview.exists() && !verified.exists() {
+            let current = t.ui.current.borrow();
+            let doc = current.as_ref().unwrap();
+            assert_eq!(margins(&doc.session), t.margins.get());
+            assert_eq!(doc.session.undo_depth(), t.depth.get());
+            let ruler = t.ui.ruler.borrow();
+            let delta = ruler.as_ref().unwrap().margin_preview_delta().unwrap();
+            assert!((delta - 12. / t.margin_zoom.get()).abs() < 1.6);
+            std::fs::write(verified, []).unwrap();
+        }
+        if !dir.join(n.to_string()).exists() {
             return glib::ControlFlow::Continue;
         }
         let t = t.clone();
@@ -363,7 +386,7 @@ fn check(t: &Sweep, n: u8) {
         let changed = (n - 30) % 3 == 1;
         let mut expected = t.margins.get();
         if changed {
-            expected[usize::from((n - 30) / 3)] += 12. / doc.zoom;
+            expected[usize::from((n - 30) / 3)] += 12. / t.margin_zoom.get();
         }
         let actual = margins(&doc.session);
         assert!(

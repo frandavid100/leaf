@@ -227,6 +227,10 @@ impl Ruler {
             zoom: d.zoom as f64,
         })
     }
+    pub(super) fn margin_preview_delta(&self) -> Option<f32> {
+        self.margin_drag.borrow().as_ref().map(|drag| drag.delta)
+    }
+
     pub(super) fn refresh(&self) {
         let (Some(ui), Some(overlay)) = (self.ui.upgrade(), self.overlay.upgrade()) else {
             return;

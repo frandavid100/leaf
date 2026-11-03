@@ -24,6 +24,19 @@ while kill -0 "$pid" 2>/dev/null; do
     wheel) xdotool mousemove --window "$window" "$ax" "$ay" click 5 ;;
     ruler-keyboard) xdotool key ctrl+alt+r ;;
     drag) xdotool mousemove --window "$window" "$ax" "$ay" mousedown 1 mousemove --sync --window "$window" "$bx" "$by"; sleep 0.3; xdotool mouseup 1 ;;
+    margin-drag)
+      xdotool mousemove --window "$window" "$ax" "$ay" mousedown 1 mousemove --sync --window "$window" "$bx" "$by"
+      sleep 0.3
+      scrot "${log%.log}-${stage}-preview.png"
+      touch "$LEAF20_ACK_DIR/preview-$stage"
+      for attempt in $(seq 1 100); do
+        [[ ! -f "$LEAF20_ACK_DIR/verified-$stage" ]] || break
+        kill -0 "$pid" 2>/dev/null || break
+        sleep 0.05
+      done
+      xdotool mouseup 1
+      test -f "$LEAF20_ACK_DIR/verified-$stage" || { cat "$log"; exit 1; }
+      ;;
     cancel-drag) xdotool mousemove --window "$window" "$ax" "$ay" mousedown 1 mousemove --sync --window "$window" "$bx" "$by"; sleep 0.2; xdotool key Escape; xdotool mouseup 1 ;;
     right) xdotool key Right ;;
     undo) xdotool key ctrl+z ;;
