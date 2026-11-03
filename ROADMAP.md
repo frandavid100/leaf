@@ -4,6 +4,13 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## Completado: alpha.22
+
+[Publicada y verificada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.22).
+Incluye la revisión de formato, los comentarios en la barra lateral, Insertar
+compartido y los cambios de impresión y optimización. Columnas (#1, #2),
+reglas interiores (#64), saltos (#65) y diccionarios (#69) siguen pendientes.
+
 ## Completado: integración de WordCraft 0.14 y limpieza del cliente
 
 Autorizada por David tras alpha.21: investigar las novedades y limpiar código,

@@ -12,6 +12,17 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## Última versión publicada: alpha.22 — formato, comentarios e impresión
+
+[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.22).
+Fuente: `1cda6b2df2eeabd46dbc3331c5adb64c452b679f`. GNOME 49 y actualización
+desde alpha.21. [CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41597951947)
+superada. Verificados los ocho archivos públicos, las sumas y la fuente del paquete.
+
+Incluye WordCraft 0.14.0, su API específica para impresión, la optimización del
+panel Estilos y la limpieza del cliente. Siete cierres: #66–#68, #70, #71,
+#73 y #74. #69 sigue abierto para el enlace de instalación de diccionarios.
+
 ## Revisión de formato, comentarios e inserción
 
 La [PR #72](https://github.com/frandavid100/leaf/pull/72) compacta Fuente,
@@ -29,7 +40,7 @@ se separan controladores y diálogos y se evita recorrer estilos ocultos. La
 [PR #63](https://github.com/frandavid100/leaf/pull/63) está integrada tras superar la
 [CI nativa](https://github.com/frandavid100/leaf/actions/runs/41508412922). [Investigación y alcance](docs/WORDCRAFT_014_REVIEW.md).
 
-## Última versión publicada: alpha.21 — WordCraft 0.14.0
+## Entrega anterior: alpha.21 — WordCraft 0.14.0
 
 [Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.21), publicado y verificado el 2 de noviembre de 2026.
 Fuente/tag: `3849d2973670ba05093f178108bab182778579f1`. GNOME 49; actualización desde alpha.20.
