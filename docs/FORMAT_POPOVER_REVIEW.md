@@ -11,13 +11,18 @@ notice remains until an installation route can be verified in Flatpak.
 
 Paragraph offers Columns in the toolbar and opens the existing editor for
 presets and custom values. The compact layout retains direct indent actions
-and access to their detailed settings.
+and access to their detailed settings. A native prototype grouped the indent
+actions into a submenu. It kept the same menu width and added a click to
+increase or decrease indentation, so the direct actions remain.
 
 Styles uses WordCraft's public quick gallery when the document supplies it.
 The current style remains included, search covers all styles, and More Styles
 expands the list. A document without a gallery shows its full list. Labels use
-the existing menu typography and show the paragraph or character kind. The
-normalized styled-label proposal needs a visual comparison across fonts.
+the existing menu typography and show the paragraph or character kind. A
+native prototype applied family, weight and italic at menu size. The fixture
+made the emphasis variants italic but added little distinction among the
+paragraph styles. The list keeps uniform labels and the details retain the
+full preview.
 
 Validation is tracked by the pull request's native workflow.
 

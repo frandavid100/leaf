@@ -24,23 +24,16 @@ while kill -0 "$pid" 2>/dev/null; do
     xdotool windowfocus --sync "$window"
   fi
   case "$role" in
-    open|choices) xdotool mousemove --window "$window" "$ax" "$ay" click 1 ;;
-    pin)
-      xdotool key Escape
-      sleep 0.25
-      xdotool mousemove --sync --window "$window" "$ax" "$ay"
-      sleep 0.2
-      xdotool click 1 ;;
+    open|choices|pin) xdotool mousemove --window "$window" "$ax" "$ay" click 1 ;;
+    escape) xdotool key Escape ;;
     font)
       family=$(sed -n 's/^ISSUE19_FAMILY //p' "$log" | head -n1)
       xdotool mousemove --window "$window" "$ax" "$ay" click 1 key ctrl+a
       xdotool key Delete
       xdotool type --clearmodifiers --delay 80 "$family"
       xdotool key ctrl+k ;;
-    paste)
-      xdotool mousemove --window "$window" "$ax" "$ay" click 1 key ctrl+a ctrl+v
-      sleep 0.15
-      xdotool key BackSpace ;;
+    paste) xdotool mousemove --window "$window" "$ax" "$ay" click 1 key ctrl+a ctrl+v ;;
+    backspace) xdotool key BackSpace ;;
     size|comma)
       xdotool mousemove --window "$window" "$ax" "$ay" click 1 key ctrl+a
       if [[ "$role" = size ]]; then value=17.5; elif [[ -n "${LEAF19_LARGE:-}" ]]; then value=64,5; else value=18,75; fi
