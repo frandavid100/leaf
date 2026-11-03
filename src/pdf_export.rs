@@ -9,6 +9,13 @@ pub fn export(s: &mut Session, path: &Path) -> Result<(), String> {
     {
         return Err("Incluye .pdf en el nombre del archivo".into());
     }
-    s.run("file.exportPdf",&serde_json::json!({"path":path.to_str().ok_or(wordcraft_gnome::t!("The path is not UTF-8"))?,"markup":false})).map_err(|e|e.to_string())?;
+    let path = path
+        .to_str()
+        .ok_or(wordcraft_gnome::t!("The path is not UTF-8"))?;
+    s.run(
+        "file.exportPdf",
+        &serde_json::json!({"path": path, "markup": false}),
+    )
+    .map_err(|e| e.to_string())?;
     Ok(())
 }

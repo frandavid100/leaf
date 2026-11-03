@@ -7,7 +7,9 @@ pub(super) struct PerfMetrics {
     pub(super) spans: std::collections::BTreeMap<&'static str, (u64, u128)>,
     pub(super) counts: std::collections::BTreeMap<&'static str, u64>,
 }
-thread_local! {static PERF_METRICS:RefCell<PerfMetrics>=RefCell::new(PerfMetrics::default());}
+thread_local! {
+    static PERF_METRICS: RefCell<PerfMetrics> = RefCell::new(PerfMetrics::default());
+}
 pub(super) fn perf_enabled() -> bool {
     static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
     *ENABLED.get_or_init(|| {
@@ -48,5 +50,24 @@ pub(super) fn perf_phase(name: &str, work: impl FnOnce()) -> serde_json::Value {
     let start = std::time::Instant::now();
     work();
     let wall = start.elapsed().as_secs_f64() * 1000.0;
-    PERF_METRICS.with(|m|{let m=m.borrow();let spans:std::collections::BTreeMap<_,_>=m.spans.iter().map(|(k,(calls,ns))|(*k,serde_json::json!({"calls":calls,"ms":*ns as f64/1e6}))).collect();serde_json::json!({"phase":name,"wall_ms":wall,"inclusive_spans":spans,"counts":m.counts,"rss_kib":lifecycle_rss()})})
+    PERF_METRICS.with(|metrics| {
+        let metrics = metrics.borrow();
+        let spans: std::collections::BTreeMap<_, _> = metrics
+            .spans
+            .iter()
+            .map(|(name, (calls, ns))| {
+                (
+                    *name,
+                    serde_json::json!({"calls": calls, "ms": *ns as f64 / 1e6}),
+                )
+            })
+            .collect();
+        serde_json::json!({
+            "phase": name,
+            "wall_ms": wall,
+            "inclusive_spans": spans,
+            "counts": metrics.counts,
+            "rss_kib": lifecycle_rss(),
+        })
+    })
 }

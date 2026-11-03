@@ -1,0 +1,202 @@
+{
+  "date": "2026-11-02",
+  "baseline": "5cf599294763a421b62343879da2d4425376850c plus identical opt-in row counter and style-list fixture prefill",
+  "environment": "Same local Xvfb display, GTK 4.14/libadwaita 1.4, GSK cairo, Rust debug profile; 120 synthetic paragraphs, 11 pages, 42 style rows, 80 caret moves, three isolated-config repetitions",
+  "shipping_performance_claim": false,
+  "samples": {
+    "before": [
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "canonical_document_unchanged": true,
+        "cursor_phase": {
+          "counts": {
+            "overlay_queue": 80,
+            "style_rows_visited": 3360
+          },
+          "inclusive_spans": {
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 4.411132
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.595236
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 158.194399
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 181.578248
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 168688,
+          "wall_ms": 187.676973
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "canonical_document_unchanged": true,
+        "cursor_phase": {
+          "counts": {
+            "overlay_queue": 80,
+            "style_rows_visited": 3360
+          },
+          "inclusive_spans": {
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 4.14271
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.519825
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 150.626027
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 171.225848
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 168864,
+          "wall_ms": 177.04456399999998
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "canonical_document_unchanged": true,
+        "cursor_phase": {
+          "counts": {
+            "overlay_queue": 80,
+            "style_rows_visited": 3360
+          },
+          "inclusive_spans": {
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 4.369503
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.615728
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 158.099033
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 180.517705
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 168500,
+          "wall_ms": 187.19127699999999
+        }
+      }
+    ],
+    "after": [
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "canonical_document_unchanged": true,
+        "cursor_phase": {
+          "counts": {
+            "overlay_queue": 80
+          },
+          "inclusive_spans": {
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 5.056432
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.66403
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 159.903528
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 172.916673
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 169160,
+          "wall_ms": 179.60453
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "canonical_document_unchanged": true,
+        "cursor_phase": {
+          "counts": {
+            "overlay_queue": 80
+          },
+          "inclusive_spans": {
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 4.117365
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.498922
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 139.391193
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 150.984627
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 169112,
+          "wall_ms": 156.67921900000002
+        }
+      },
+      {
+        "paragraphs": 120,
+        "pages": 11,
+        "canonical_document_unchanged": true,
+        "cursor_phase": {
+          "counts": {
+            "overlay_queue": 80
+          },
+          "inclusive_spans": {
+            "boundary.move_caret": {
+              "calls": 80,
+              "ms": 4.564647
+            },
+            "boundary.selection_geometry": {
+              "calls": 80,
+              "ms": 0.616236
+            },
+            "leaf.refresh_format_controls": {
+              "calls": 80,
+              "ms": 151.870633
+            },
+            "leaf.refresh_selection": {
+              "calls": 80,
+              "ms": 163.582774
+            }
+          },
+          "phase": "cursor_right_80",
+          "rss_kib": 169324,
+          "wall_ms": 169.83666399999998
+        }
+      }
+    ]
+  },
+  "scope": "Only hidden Styles row traversal is removed. Inclusive spans overlap and debug timings do not establish a general or release speedup."
+}

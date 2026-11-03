@@ -4,6 +4,13 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## En validación: integración de WordCraft 0.14 y limpieza del cliente
+
+Autorizada por David tras alpha.21: investigar las novedades y limpiar código,
+estructura y formato. API de impresión específica, separación de responsabilidades
+y eliminación del recorrido de estilos ocultos; sin nuevas funciones ni release.
+[Investigación y validación](docs/WORDCRAFT_014_REVIEW.md).
+
 ## Completado: sexta revisión y alpha.21 — WordCraft 0.14.0
 
 Publicada y verificada. Motor 0.14.0 con formatos recopiado y los cuatro parches

@@ -70,10 +70,10 @@ pub(super) fn install_css() {
         return;
     }
     let theme_provider = gtk::CssProvider::new();
-    theme_provider.load_from_data(include_str!("../../data/theme-selector.css"));
+    theme_provider.load_from_string(include_str!("../../data/theme-selector.css"));
     let provider = gtk::CssProvider::new();
     // Adwaita suministra color, espaciados y estados; CSS mínimo para papel.
-    provider.load_from_data("
+    provider.load_from_string("
       .leaf-ruler { background: white; color: #292929; border-radius: 2px; box-shadow: 0 0 0 1px alpha(black, 0.12); }
       .document-scroll { background: @window_bg_color; }
       .document-sheet { background: white; border-radius: 6px; box-shadow: 0 1px 4px alpha(black, 0.15); }

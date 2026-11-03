@@ -57,6 +57,9 @@ pub(super) fn performance_ui_test(ui: &Rc<Ui>, app: &Application) {
             refresh_thumbnails(ui);
         }
     }));
+    // Populate the style list once, as after using the popover, then measure
+    // cursor movement with the panel closed. Both comparison builds do this.
+    ui.style.borrow().as_ref().unwrap().main();
     phases.push(perf_phase("cursor_right_80", || {
         for _ in 0..80 {
             selected_command(ui, "right", false);

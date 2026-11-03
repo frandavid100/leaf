@@ -12,6 +12,13 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## Revisión adicional: integración y claridad del código
+
+David autoriza revisar el aprovechamiento de WordCraft 0.14 y limpiar estructura,
+formato y trabajo redundante del cliente. Se integra la API de PDF para impresión,
+se separan controladores/diálogos y se evita recorrer estilos ocultos. La rama de
+revisión está en validación; no es una nueva release. [Investigación y alcance](docs/WORDCRAFT_014_REVIEW.md).
+
 ## Última versión publicada: alpha.21 — WordCraft 0.14.0
 
 [Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.21), publicado y verificado el 2 de noviembre de 2026.

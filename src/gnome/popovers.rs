@@ -155,7 +155,14 @@ impl FormatPopoverGroup {
         }
     }
 }
-thread_local! {pub(super) static EMBEDDED_FORMAT:RefCell<Vec<(glib::WeakRef<gtk::Popover>,glib::WeakRef<gtk::Popover>,glib::WeakRef<gtk::ToggleButton>)>>=const{RefCell::new(Vec::new())};}
+type EmbeddedFormat = (
+    glib::WeakRef<gtk::Popover>,
+    glib::WeakRef<gtk::Popover>,
+    glib::WeakRef<gtk::ToggleButton>,
+);
+thread_local! {
+    pub(super) static EMBEDDED_FORMAT: RefCell<Vec<EmbeddedFormat>> = const { RefCell::new(Vec::new()) };
+}
 pub(super) fn embedded_format(pop: &gtk::Popover) -> Option<(gtk::Popover, gtk::ToggleButton)> {
     EMBEDDED_FORMAT.with(|items| {
         items.borrow().iter().find_map(|(origin, host, pin)| {
