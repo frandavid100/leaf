@@ -241,34 +241,3 @@ impl HeaderControls {
         out
     }
 }
-pub(super) fn apply_properties(
-    s: &mut Session,
-    setup: PageSetup,
-    whole: bool,
-    section: usize,
-    headers: &HeaderOptions,
-    metadata: &document_properties::DocumentInfo,
-) -> Result<bool, String> {
-    let snap = s.edit_snapshot();
-    let pending = s.pending.clone();
-    let mark = s.undo_mark();
-    let result = (|| {
-        let a = document_properties::apply_at(s, setup, whole, section)?;
-        let b = page_options::apply(s, headers)?;
-        let c = metadata.apply(s)?;
-        Ok::<_, String>(a || b || c)
-    })();
-    match result {
-        Ok(changed) => {
-            if changed {
-                s.merge_undo_since(mark);
-            }
-            Ok(changed)
-        }
-        Err(e) => {
-            s.restore(snap);
-            s.pending = pending;
-            Err(e)
-        }
-    }
-}

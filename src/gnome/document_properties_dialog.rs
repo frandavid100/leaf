@@ -1,6 +1,7 @@
 //! Document metadata, page geometry and section options in one apply transaction.
 use super::*;
-use wordcraft_gnome::document_properties::DocumentInfo;
+use wordcraft_doc::section::SectionStart;
+use wordcraft_gnome::document_properties::{ColumnKind, ColumnSetup, DocumentInfo};
 
 pub(super) struct DocumentProperties {
     pub(super) window: adw::Window,
@@ -144,20 +145,56 @@ fn show_properties(
     let bottom = properties_number(&margins, wordcraft_gnome::t!("Bottom (mm)"), state.bottom);
     let left = properties_number(&margins, wordcraft_gnome::t!("Left (mm)"), state.left);
     let right = properties_number(&margins, wordcraft_gnome::t!("Right (mm)"), state.right);
-    let scope = adw::ComboRow::new();
-    scope.set_title(wordcraft_gnome::t!("Apply To"));
-    scope.set_model(Some(&gtk::StringList::new(&[
-        wordcraft_gnome::t!("Whole Document"),
-        wordcraft_gnome::t!("Current Section"),
-    ])));
-    let multi = ui
-        .current
-        .borrow()
-        .as_ref()
-        .is_some_and(|d| d.session.doc.sections().len() > 1);
-    scope.set_selected(if multi || target.is_some() { 1 } else { 0 });
-    scope.set_visible(multi && target.is_none());
-    margins.add(&scope);
+    let original = ui.current.borrow().as_ref().unwrap().session.doc.sections()[section]
+        .1
+        .clone();
+    let flow = adw::PreferencesGroup::new();
+    flow.set_title(wordcraft_gnome::t!("Section Layout"));
+    page.add(&flow);
+    let starts = [
+        SectionStart::NextPage,
+        SectionStart::Continuous,
+        SectionStart::EvenPage,
+        SectionStart::OddPage,
+        SectionStart::NextColumn,
+    ];
+    let start = option_combo(
+        &flow,
+        wordcraft_gnome::t!("Section Start"),
+        &[
+            wordcraft_gnome::t!("Next Page"),
+            wordcraft_gnome::t!("Continuous"),
+            wordcraft_gnome::t!("Even Page"),
+            wordcraft_gnome::t!("Odd Page"),
+            wordcraft_gnome::t!("Next Column"),
+        ],
+    );
+    start.set_selected(
+        starts
+            .iter()
+            .position(|value| *value == original.start)
+            .unwrap() as u32,
+    );
+    start.set_sensitive(section != 0);
+    let gutter = properties_number(
+        &margins,
+        wordcraft_gnome::t!("Gutter (mm)"),
+        original.gutter,
+    );
+    let count = properties_number(
+        &flow,
+        wordcraft_gnome::t!("Number of Columns"),
+        original.columns.count as f32 * PT_PER_MM as f32,
+    );
+    count.set_range(1., 12.);
+    count.set_digits(0);
+    let gap = properties_number(
+        &flow,
+        wordcraft_gnome::t!("Column Spacing (mm)"),
+        original.columns.space,
+    );
+    let separator = option_switch(&flow, wordcraft_gnome::t!("Column Separator"));
+    separator.set_active(original.columns.separator);
     let message = gtk::Label::new(None);
     message.set_wrap(true);
     message.add_css_class("error");
@@ -425,14 +462,35 @@ fn show_properties(
                         category,
                     };
                     let result = if target.is_some() {
-                        apply_properties(
-                            session,
-                            setup,
-                            false,
-                            section,
-                            &headers.values(),
-                            &metadata,
-                        )
+                        document_properties::apply_section_setup(session, false, section, |old| {
+                            let mut next = setup.section(old.clone())?;
+                            next.start = starts[start.selected() as usize];
+                            let new_gutter = gutter.value() as f32 * PT_PER_MM as f32;
+                            if (new_gutter - old.gutter).abs() >= 0.02 {
+                                next.gutter = new_gutter;
+                            }
+                            let new_count = count.value_as_int() as u32;
+                            let new_gap = gap.value() as f32 * PT_PER_MM as f32;
+                            if new_count != old.columns.count
+                                || (new_gap - old.columns.space).abs() >= 0.02
+                            {
+                                next.columns = ColumnSetup {
+                                    count: new_count,
+                                    space: new_gap,
+                                    separator: separator.is_active(),
+                                    kind: ColumnKind::Equal,
+                                    widths: Vec::new(),
+                                }
+                                .resolved(next.text_width())?;
+                            } else {
+                                next.columns.separator = separator.is_active();
+                            }
+                            Ok(next)
+                        })
+                        .and_then(|changed| {
+                            page_options::apply(session, &headers.values())
+                                .map(|headers| changed || headers)
+                        })
                     } else {
                         let mut options =
                             wordcraft_gnome::page_options::Options::current(session, section);

@@ -97,7 +97,7 @@ msgstr ""
 msgid "Appearance"
 msgstr ""
 
-#: src/gnome/columns.rs:108 src/gnome/document_properties_dialog.rs:87 src/gnome/links.rs:72
+#: src/gnome/columns.rs:108 src/gnome/document_properties_dialog.rs:88 src/gnome/links.rs:72
 msgid "Apply"
 msgstr ""
 
@@ -133,7 +133,7 @@ msgstr ""
 msgid "Apply Style {}"
 msgstr ""
 
-#: src/gnome/columns.rs:205 src/gnome/document_properties_dialog.rs:148
+#: src/gnome/columns.rs:205
 msgid "Apply To"
 msgstr ""
 
@@ -153,7 +153,7 @@ msgstr ""
 msgid "Ascending (A–Z)"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:180
+#: src/gnome/document_properties_dialog.rs:217
 msgid "Author"
 msgstr ""
 
@@ -241,7 +241,7 @@ msgstr ""
 msgid "Bottom"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:144
+#: src/gnome/document_properties_dialog.rs:145
 msgid "Bottom (mm)"
 msgstr ""
 
@@ -277,7 +277,7 @@ msgstr ""
 msgid "Bullets"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:72 src/gnome/annotations.rs:470 src/gnome/columns.rs:413 src/gnome/comment_composer.rs:65 src/gnome/document_properties_dialog.rs:85 src/gnome/files.rs:19 src/gnome/headers.rs:124 src/gnome/links.rs:69
+#: src/gnome/annotation_dialog.rs:72 src/gnome/annotations.rs:470 src/gnome/columns.rs:413 src/gnome/comment_composer.rs:65 src/gnome/document_properties_dialog.rs:86 src/gnome/files.rs:19 src/gnome/headers.rs:124 src/gnome/links.rs:69
 msgid "Cancel"
 msgstr ""
 
@@ -293,7 +293,7 @@ msgstr ""
 msgid "Case Sensitive"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:182
+#: src/gnome/document_properties_dialog.rs:219
 msgid "Category"
 msgstr ""
 
@@ -433,6 +433,14 @@ msgstr ""
 msgid "Column Break"
 msgstr ""
 
+#: src/gnome/document_properties_dialog.rs:196
+msgid "Column Separator"
+msgstr ""
+
+#: src/gnome/document_properties_dialog.rs:193
+msgid "Column Spacing (mm)"
+msgstr ""
+
 #: src/gnome/tables.rs:253
 msgid "Column Width"
 msgstr ""
@@ -445,7 +453,7 @@ msgstr ""
 msgid "Column to the Right"
 msgstr ""
 
-#: src/document_properties.rs:363 src/gnome/columns.rs:399 src/gnome/paragraph.rs:331 src/gnome/paragraph.rs:332 src/gnome/paragraph.rs:496 src/gnome/tables.rs:92 src/gnome/tables.rs:333
+#: src/document_properties.rs:372 src/gnome/columns.rs:399 src/gnome/paragraph.rs:331 src/gnome/paragraph.rs:332 src/gnome/paragraph.rs:496 src/gnome/tables.rs:92 src/gnome/tables.rs:333
 msgid "Columns"
 msgstr ""
 
@@ -475,6 +483,10 @@ msgstr ""
 
 #: src/gnome/header_options.rs:114
 msgid "Continue from Previous Section"
+msgstr ""
+
+#: src/gnome/document_properties_dialog.rs:166
+msgid "Continuous"
 msgstr ""
 
 #: src/gnome/context.rs:413 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:252 src/gnome/diagnostics/spellcheck.rs:120
@@ -545,7 +557,7 @@ msgstr ""
 msgid "Current Row Pagination"
 msgstr ""
 
-#: src/gnome/columns.rs:207 src/gnome/document_properties_dialog.rs:151
+#: src/gnome/columns.rs:207
 msgid "Current Section"
 msgstr ""
 
@@ -557,7 +569,7 @@ msgstr ""
 msgid "Current Table"
 msgstr ""
 
-#: src/gnome/columns.rs:125 src/gnome/document_properties_dialog.rs:99
+#: src/gnome/columns.rs:125 src/gnome/document_properties_dialog.rs:100
 msgid "Custom"
 msgstr ""
 
@@ -701,7 +713,7 @@ msgstr ""
 msgid "Different Odd & Even Pages"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:216
+#: src/gnome/document_properties_dialog.rs:253
 msgid "Different Odd and Even Pages"
 msgstr ""
 
@@ -757,7 +769,7 @@ msgstr ""
 msgid "Document Options"
 msgstr ""
 
-#: src/document_properties.rs:148 src/gnome/document_properties_dialog.rs:74
+#: src/document_properties.rs:157 src/gnome/document_properties_dialog.rs:75
 msgid "Document Properties"
 msgstr ""
 
@@ -887,6 +899,10 @@ msgstr ""
 
 #: src/gnome/columns.rs:122
 msgid "Equal"
+msgstr ""
+
+#: src/gnome/document_properties_dialog.rs:167
+msgid "Even Page"
 msgstr ""
 
 #: src/gnome/paragraph.rs:632
@@ -1025,6 +1041,10 @@ msgstr ""
 msgid "Green"
 msgstr ""
 
+#: src/gnome/document_properties_dialog.rs:181
+msgid "Gutter (mm)"
+msgstr ""
+
 #: src/gnome/diagnostics/annotations.rs:155 src/gnome/menus.rs:442
 msgid "Header"
 msgstr ""
@@ -1041,11 +1061,11 @@ msgstr ""
 msgid "Headers"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:227 src/gnome/header_options.rs:81
+#: src/gnome/document_properties_dialog.rs:264 src/gnome/header_options.rs:81
 msgid "Headers and Footers"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:116 src/gnome/picture_controls.rs:171
+#: src/gnome/document_properties_dialog.rs:117 src/gnome/picture_controls.rs:171
 msgid "Height (mm)"
 msgstr ""
 
@@ -1149,7 +1169,7 @@ msgstr ""
 msgid "Independent copies keep the current content. Linking uses the previous section; existing separate content remains available through Undo."
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:210
+#: src/gnome/document_properties_dialog.rs:247
 msgid "Information"
 msgstr ""
 
@@ -1249,19 +1269,19 @@ msgstr ""
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:181
+#: src/gnome/document_properties_dialog.rs:218
 msgid "Keywords"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:111
+#: src/gnome/document_properties_dialog.rs:112
 msgid "Landscape"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:195 src/gnome/tab.rs:259
+#: src/gnome/document_properties_dialog.rs:232 src/gnome/tab.rs:259
 msgid "Language"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:193
+#: src/gnome/document_properties_dialog.rs:230
 msgid "Language and Review"
 msgstr ""
 
@@ -1297,7 +1317,7 @@ msgstr ""
 msgid "Left"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:145
+#: src/gnome/document_properties_dialog.rs:146
 msgid "Left (mm)"
 msgstr ""
 
@@ -1313,7 +1333,7 @@ msgstr ""
 msgid "Left-to-Right Text Direction"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:103
+#: src/gnome/document_properties_dialog.rs:104
 msgid "Letter"
 msgstr ""
 
@@ -1385,7 +1405,7 @@ msgstr ""
 msgid "Make Independent Copies"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:141
+#: src/gnome/document_properties_dialog.rs:142
 msgid "Margins"
 msgstr ""
 
@@ -1473,6 +1493,14 @@ msgstr ""
 msgid "New Window"
 msgstr ""
 
+#: src/gnome/document_properties_dialog.rs:169
+msgid "Next Column"
+msgstr ""
+
+#: src/gnome/document_properties_dialog.rs:165
+msgid "Next Page"
+msgstr ""
+
 #: src/gnome/tables.rs:379
 msgid "No Background Color"
 msgstr ""
@@ -1525,7 +1553,7 @@ msgstr ""
 msgid "Number Format"
 msgstr ""
 
-#: src/gnome/columns.rs:139 src/gnome/columns.rs:142
+#: src/gnome/columns.rs:139 src/gnome/columns.rs:142 src/gnome/document_properties_dialog.rs:186
 msgid "Number of Columns"
 msgstr ""
 
@@ -1539,6 +1567,10 @@ msgstr ""
 
 #: src/saving.rs:23
 msgid "ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."
+msgstr ""
+
+#: src/gnome/document_properties_dialog.rs:168
+msgid "Odd Page"
 msgstr ""
 
 #: src/gnome/adaptive.rs:447
@@ -1569,7 +1601,7 @@ msgstr ""
 msgid "Options for {label}"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:108
+#: src/gnome/document_properties_dialog.rs:109
 msgid "Orientation"
 msgstr ""
 
@@ -1589,7 +1621,7 @@ msgstr ""
 msgid "PDF Exported"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:94 src/gnome/document_properties_dialog.rs:212 src/gnome/search.rs:132
+#: src/gnome/document_properties_dialog.rs:95 src/gnome/document_properties_dialog.rs:249 src/gnome/search.rs:132
 msgid "Page"
 msgstr ""
 
@@ -1633,7 +1665,7 @@ msgstr ""
 msgid "Pages: {current} of {total}"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:97
+#: src/gnome/document_properties_dialog.rs:98
 msgid "Paper Size"
 msgstr ""
 
@@ -1685,11 +1717,11 @@ msgstr ""
 msgid "Place the caret in the body of this even page before editing its header or footer."
 msgstr ""
 
-#: src/document_properties.rs:291
+#: src/document_properties.rs:300
 msgid "Place the cursor in the document body, outside a table."
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:110
+#: src/gnome/document_properties_dialog.rs:111
 msgid "Portrait"
 msgstr ""
 
@@ -1881,7 +1913,7 @@ msgstr ""
 msgid "Restore Original Size"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:197
+#: src/gnome/document_properties_dialog.rs:234
 msgid "Review"
 msgstr ""
 
@@ -1901,7 +1933,7 @@ msgstr ""
 msgid "Right"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:146
+#: src/gnome/document_properties_dialog.rs:147
 msgid "Right (mm)"
 msgstr ""
 
@@ -1989,7 +2021,7 @@ msgstr ""
 msgid "Save as DOCX to preserve the automatic table of contents. The current ODT exporter only keeps static entries."
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:173
+#: src/gnome/document_properties_dialog.rs:210
 msgid "Save as DOCX to preserve the category."
 msgstr ""
 
@@ -2053,16 +2085,24 @@ msgstr ""
 msgid "Section Break (Odd Page)"
 msgstr ""
 
+#: src/gnome/document_properties_dialog.rs:152
+msgid "Section Layout"
+msgstr ""
+
 #: src/gnome/header_options.rs:126
 msgid "Section Links"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:72 src/gnome/navigation.rs:216
+#: src/gnome/document_properties_dialog.rs:73 src/gnome/navigation.rs:216
 msgid "Section Properties"
 msgstr ""
 
 #: src/gnome/navigation.rs:245
 msgid "Section Properties…"
+msgstr ""
+
+#: src/gnome/document_properties_dialog.rs:163
+msgid "Section Start"
 msgstr ""
 
 #: src/gnome/navigation.rs:198
@@ -2109,7 +2149,7 @@ msgstr ""
 msgid "Select an image in the document to edit it."
 msgstr ""
 
-#: src/document_properties.rs:284
+#: src/document_properties.rs:293
 msgid "Select text in the document body, outside tables."
 msgstr ""
 
@@ -2285,7 +2325,7 @@ msgstr ""
 msgid "Styles"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:179
+#: src/gnome/document_properties_dialog.rs:216
 msgid "Subject"
 msgstr ""
 
@@ -2393,7 +2433,7 @@ msgstr ""
 msgid "The cell does not contain a paragraph"
 msgstr ""
 
-#: src/document_properties.rs:219
+#: src/document_properties.rs:228
 msgid "The columns do not fit in the text area. Reduce their number, width or spacing."
 msgstr ""
 
@@ -2405,7 +2445,7 @@ msgstr ""
 msgid "The document has changed. Close and reopen Columns."
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:388
+#: src/gnome/document_properties_dialog.rs:425
 msgid "The document has changed. Close and reopen its properties."
 msgstr ""
 
@@ -2473,7 +2513,7 @@ msgstr ""
 msgid "The row does not exist"
 msgstr ""
 
-#: src/document_properties.rs:122
+#: src/document_properties.rs:131
 msgid "The section does not contain an editable paragraph"
 msgstr ""
 
@@ -2529,7 +2569,7 @@ msgstr ""
 msgid "This selection contains different links. Enter a destination to replace them all."
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:178
+#: src/gnome/document_properties_dialog.rs:215
 msgid "Title"
 msgstr ""
 
@@ -2537,7 +2577,7 @@ msgstr ""
 msgid "Top"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:143
+#: src/gnome/document_properties_dialog.rs:144
 msgid "Top (mm)"
 msgstr ""
 
@@ -2637,7 +2677,7 @@ msgstr ""
 msgid "Update from Selection"
 msgstr ""
 
-#: src/document_properties.rs:228
+#: src/document_properties.rs:237
 msgid "Use 1 to 12 columns with spacing between 0 and 105.83 mm."
 msgstr ""
 
@@ -2673,7 +2713,7 @@ msgstr ""
 msgid "White"
 msgstr ""
 
-#: src/gnome/columns.rs:208 src/gnome/document_properties_dialog.rs:150
+#: src/gnome/columns.rs:208
 msgid "Whole Document"
 msgstr ""
 
@@ -2685,7 +2725,7 @@ msgstr ""
 msgid "Widow/Orphan Control"
 msgstr ""
 
-#: src/gnome/columns.rs:182 src/gnome/document_properties_dialog.rs:115 src/gnome/picture_controls.rs:170
+#: src/gnome/columns.rs:182 src/gnome/document_properties_dialog.rs:116 src/gnome/picture_controls.rs:170
 msgid "Width (mm)"
 msgstr ""
 

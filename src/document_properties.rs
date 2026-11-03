@@ -62,7 +62,7 @@ impl PageSetup {
             right: p.margin_right,
         }
     }
-    fn section(self, mut p: SectionProps) -> Result<SectionProps, String> {
+    pub fn section(self, mut p: SectionProps) -> Result<SectionProps, String> {
         let nums = [
             self.width,
             self.height,
@@ -106,12 +106,21 @@ pub fn apply_at(
     whole: bool,
     current: usize,
 ) -> Result<bool, String> {
+    apply_section_setup(s, whole, current, |old| setup.section(old))
+}
+
+pub fn apply_section_setup(
+    s: &mut Session,
+    whole: bool,
+    current: usize,
+    update: impl Fn(SectionProps) -> Result<SectionProps, String>,
+) -> Result<bool, String> {
     let paths = s.doc.para_paths(StoryRef::Body);
     let mut start = 0;
     let mut changes = Vec::new();
     for (i, (end, old)) in s.doc.sections().into_iter().enumerate() {
         if whole || i == current {
-            let new = setup.section(old.clone())?;
+            let new = update(old.clone())?;
             if new != *old {
                 let path = paths
                     .iter()

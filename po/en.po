@@ -2344,3 +2344,33 @@ msgstr "Section Properties"
 
 msgid "Section Properties…"
 msgstr "Section Properties…"
+
+msgid "Section Layout"
+msgstr "Section Layout"
+
+msgid "Section Start"
+msgstr "Section Start"
+
+msgid "Next Page"
+msgstr "Next Page"
+
+msgid "Continuous"
+msgstr "Continuous"
+
+msgid "Even Page"
+msgstr "Even Page"
+
+msgid "Odd Page"
+msgstr "Odd Page"
+
+msgid "Next Column"
+msgstr "Next Column"
+
+msgid "Gutter (mm)"
+msgstr "Gutter (mm)"
+
+msgid "Column Spacing (mm)"
+msgstr "Column Spacing (mm)"
+
+msgid "Column Separator"
+msgstr "Column Separator"
