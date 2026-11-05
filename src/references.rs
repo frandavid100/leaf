@@ -109,6 +109,9 @@ pub fn update(s: &mut Session) -> Result<(), String> {
         }) {
             s.join_next_undo();
             s.run("references.updateToc", &json!({})).map_err(|e| e.to_string())?;
+            // The regenerated contents can move reference targets onto new pages.
+            s.join_next_undo();
+            s.run("references.updateFields", &json!({"all":true})).map_err(|e| e.to_string())?;
         }
         Ok(())
     })();

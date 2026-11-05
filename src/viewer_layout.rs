@@ -135,10 +135,11 @@ pub fn fitted_scales(sizes: &[(f32, f32)], sections: &[usize], available: f64) -
     let mut first = 0;
     for section in sections.chunk_by(|a, b| a == b) {
         let end = first + section.len();
-        let natural = arrange(&sizes[first..end], 1.0, available);
-        let gaps = PAGE_GAP * (natural.columns + 1) as f64;
-        let paper = (natural.width - gaps).max(1.0);
-        let scale = (((available - gaps - 2.0) / paper) as f32).clamp(0.05, MAX_ZOOM);
+        let paper = sizes[first..end]
+            .iter()
+            .map(|s| s.0)
+            .fold(1.0_f32, f32::max);
+        let scale = ((available - 2.0 * PAGE_GAP - 2.0).max(1.0) / f64::from(paper)) as f32;
         scales.extend(std::iter::repeat_n(scale, section.len()));
         first = end;
     }
@@ -489,7 +490,7 @@ mod ordered_widgets {
 fn mixed_section_fit_and_thumbnails_keep_a_common_width() {
     let sizes = [(600., 800.), (600., 800.), (800., 600.)];
     let sections = [0, 0, 1];
-    for width in [600., 900., 1100.] {
+    for width in [600., 900., 1100., 1500., 2400.] {
         let scales = fitted_scales(&sizes, &sections, width);
         assert_eq!(scales[0], scales[1]);
         assert!((sizes[0].0 * scales[0] - sizes[2].0 * scales[2]).abs() < 1.);
