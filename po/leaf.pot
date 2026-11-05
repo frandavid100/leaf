@@ -989,7 +989,7 @@ msgstr ""
 msgid "Equal"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha29.rs:153 src/gnome/equations.rs:9
+#: src/gnome/diagnostics/alpha29.rs:165 src/gnome/equations.rs:9
 msgid "Equation"
 msgstr ""
 
@@ -2645,7 +2645,7 @@ msgstr ""
 msgid "Table Size"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:86 src/gnome/diagnostics/alpha29.rs:102 src/gnome/references.rs:195
+#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:98 src/gnome/diagnostics/alpha29.rs:114 src/gnome/references.rs:195
 msgid "Table of Contents"
 msgstr ""
 
@@ -2765,7 +2765,7 @@ msgstr ""
 msgid "The file does not exist or is not a regular file"
 msgstr ""
 
-#: src/saving.rs:166
+#: src/saving.rs:184
 msgid "The file name must end in .docx or .odt"
 msgstr ""
 
@@ -3073,7 +3073,7 @@ msgstr ""
 msgid "WordCraft cannot anchor this image on the destination page. Its original position has been kept."
 msgstr ""
 
-#: src/saving.rs:151
+#: src/saving.rs:169
 msgid "WordCraft did not confirm that the document was saved"
 msgstr ""
 

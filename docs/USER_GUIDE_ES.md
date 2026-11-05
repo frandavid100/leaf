@@ -126,12 +126,12 @@ La apariencia de páginas y miniaturas sigue el modo claro/oscuro de GNOME.
 
 ## Insertar y configurar
 
-Insertar, en los tres puntos, contiene tabla, imagen, marcador, comentario,
-encabezado, pie y número de página. Las tablas e imágenes se editan desde su menú
-contextual; no hay botones
-permanentes Tabla/Imagen en la barra. Tab/Mayús+Tab recorren celdas y Tab al final
-puede añadir una fila. Las imágenes son en línea, con tamaño/proporción, sustitución
-y eliminación; no se ofrece posicionamiento flotante.
+Insertar, en los tres puntos y el menú contextual, agrupa tabla, imagen, índice y
+ecuación; marcador, comentario, enlace, leyenda y nota al pie; y los submenús de
+encabezados/pies, campos automáticos y saltos. Las tablas e imágenes se editan
+desde su menú contextual. Tab/Mayús+Tab recorren celdas y Tab al final puede
+añadir una fila. Los campos automáticos incluyen página, total, autor, título,
+nombre de archivo, fecha y hora. Fecha/hora no se recalculan al teclear texto.
 
 Encabezados y pies se editan directamente en la página; clicar fuera de su zona o
 pulsar Escape vuelve al cuerpo. El número de página se inserta en la posición
@@ -180,21 +180,38 @@ puede deshacer. Tras triple clic, arrastrar amplía la selección por párrafos.
 ## Notas al pie, índices y referencias
 
 Insertar → Nota al pie (Ctrl+Alt+F) crea una nota numerada y lleva el cursor a su
-texto. Se edita y formatea en la página. Referencias permite editar la nota,
-pasar a la siguiente, volver a su referencia y configurar la numeración.
-También puedes abrir una nota con doble clic en su referencia.
+texto. Clica su número para ir desde el cuerpo a la nota o desde la nota a la
+referencia. Alt+Intro ofrece la misma navegación con teclado. La numeración,
+el formato y los reinicios están en Propiedades del documento o de la sección;
+los controles que no cambias conservan la configuración heredada.
 
 Insertar → Índice de contenidos crea un índice de los títulos. El diálogo
-permite elegir niveles y números de página. Insertar → Leyenda añade una figura
-o tabla numerada. Insertar → Referencia cruzada enlaza con títulos, leyendas o
-marcadores. Referencias → Actualizar referencias actualiza los campos y el índice
-tras editar. Ctrl+clic sigue las referencias internas.
+permite elegir niveles, números de página y enlaces. Clic derecho sobre el
+índice → Editar índice de contenidos cambia ese mismo índice y conserva las
+opciones importadas que no modificas. Las referencias y el índice se actualizan
+automáticamente tras editar y antes de guardar, exportar PDF o imprimir.
+
+Con una imagen seleccionada o el cursor dentro de una tabla, Insertar → Leyenda
+añade directamente la etiqueta y numeración; puedes escribir la descripción.
+Insertar → Enlace permite elegir una URL o un título, marcador, figura o tabla
+del documento. Ctrl+clic sigue las referencias internas.
 
 En Imagen puedes poner el texto a los lados o arriba y abajo, ajustar el espacio
-y elegir si la imagen se mueve con el texto. Arrastra la imagen para moverla o
-su tirador inferior derecho para cambiar el tamaño conservando las proporciones.
-Esc cancela el arrastre; cada arrastre se deshace en un paso.
+y elegir si la imagen se mueve con el texto. Arrastra la imagen para moverla.
+Los ocho tiradores cambian su tamaño; las esquinas conservan las proporciones y
+los bordes cambian una dimensión. La vista previa muestra el contenido y puede
+pasar entre páginas o desplazar el documento. Esc cancela; cada gesto se deshace
+en un paso. Si el motor no puede colocar una imagen flotante en la página de un
+salto manual, Leaf rechaza el movimiento y conserva su posición original.
+
+Insertar → Ecuación (Alt+=) abre el editor básico UnicodeMath. Admite fracciones,
+superíndices/subíndices, raíces y letras griegas. Doble clic o el menú contextual
+edita una ecuación existente. No interpreta comandos LaTeX. Las ecuaciones
+importadas demasiado complejas para este editor conservan su estructura sin
+permitir una edición que la pierda.
 
 Estas estructuras requieren DOCX. Leaf bloquea el guardado ODT que perdería notas,
-campos automáticos o imágenes flotantes. Ajustar al ancho adapta cada sección a
-su papel; un porcentaje explícito mantiene la misma escala entre secciones.
+campos automáticos, ecuaciones o imágenes flotantes. Ajustar al ancho adapta cada
+sección a su papel; un porcentaje explícito mantiene la misma escala entre
+secciones. Páginas muestra la miniatura activa con su posición física y el total;
+redibujar el documento no interrumpe una consulta manual de otras miniaturas.
