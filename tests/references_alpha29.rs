@@ -37,6 +37,9 @@ fn derived_updates_preserve_dates_caret_and_source_history_including_redo() {
         &json!({"instr":"DATE","result":"unchanged"}),
     )
     .unwrap();
+    references::insert_field(&mut s, r#"AUTHOR "Do not overwrite the user""#).unwrap();
+    s.run("file.properties", &json!({"author":"Actual user metadata"}))
+        .unwrap();
     // Imported dynamic fields keep their cached value while unrelated text changes.
     for path in s.doc.para_paths(StoryRef::Body) {
         let p = s.doc.para_mut(StoryRef::Body, &path).unwrap();
@@ -69,6 +72,7 @@ fn derived_updates_preserve_dates_caret_and_source_history_including_redo() {
     assert_eq!(s.undo_depth(), depth);
     assert!(fields(&s, "REF")[0].contains("New Chapter"));
     assert_eq!(fields(&s, "DATE"), ["frozen date"]);
+    assert_eq!(s.doc.core.creator, "Actual user metadata");
     let rev = s.rev();
     assert!(!references::refresh_derived(&mut s).unwrap());
     assert_eq!(s.rev(), rev);

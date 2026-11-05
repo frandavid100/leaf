@@ -165,10 +165,14 @@ pub fn insert_field(s: &mut Session, instr: &str) -> Result<(), String> {
 }
 
 fn derived_field(instr: &str) -> bool {
+    let field = wordcraft_engine::cmd::references::FieldCode::parse(instr);
+    // AUTHOR/TITLE with a literal argument are setters in the public engine.
+    // Automatic display refresh must not overwrite the user's metadata.
+    if matches!(field.name.as_str(), "AUTHOR" | "TITLE") && !field.args.is_empty() {
+        return false;
+    }
     matches!(
-        wordcraft_engine::cmd::references::FieldCode::parse(instr)
-            .name
-            .as_str(),
+        field.name.as_str(),
         "REF"
             | "PAGEREF"
             | "SEQ"

@@ -2817,7 +2817,7 @@ msgstr ""
 msgid "The style will use the formatting of the current selection."
 msgstr ""
 
-#: src/references.rs:338
+#: src/references.rs:342
 msgid "The table of contents could not be found."
 msgstr ""
 
