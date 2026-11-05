@@ -122,9 +122,10 @@ pub(super) fn alpha28_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
 
 /// Synthetic public showcase, captured from the real application window.
 pub(super) fn alpha28_gallery(ui: &Rc<Ui>, window: &ApplicationWindow) {
-    window.set_default_size(1080, 760);
+    window.set_default_size(1080, 800);
+    let variant = std::env::var("LEAF_GALLERY").unwrap_or_default();
     let mut s = sample_session();
-    selection::set_caret(&mut s, &Pos::body(3, 5), false).unwrap();
+    selection::set_caret(&mut s, &Pos::body(4, 5), false).unwrap();
     wordcraft_gnome::references::insert_footnote(&mut s).unwrap();
     s.run(
         "text.insert",
@@ -132,29 +133,63 @@ pub(super) fn alpha28_gallery(ui: &Rc<Ui>, window: &ApplicationWindow) {
     )
     .unwrap();
     wordcraft_gnome::references::return_to_reference(&mut s).unwrap();
+    let mut comment = None;
+    if variant == "review" {
+        s.run("file.setAuthor", &json!({"name":"Alex Morgan"}))
+            .unwrap();
+        selection::select_range(&mut s, &Pos::body(4, 0), &Pos::body(4, 28)).unwrap();
+        wordcraft_gnome::annotations::add_comment(
+            &mut s,
+            "Could we add an example from the ceramics workshop?",
+        )
+        .unwrap();
+        let id = wordcraft_gnome::annotations::comments(&s)[0].id;
+        s.run("file.setAuthor", &json!({"name":"Sam Taylor"}))
+            .unwrap();
+        wordcraft_gnome::annotations::reply(
+            &mut s,
+            id,
+            "Yes, the shared kiln is a good example. I will add it before Thursday.",
+        )
+        .unwrap();
+        comment = Some(id);
+    }
     opened(ui, s, "The Open Studio Handbook.docx");
+    if let Some(d) = ui.current.borrow_mut().as_mut() {
+        d.session.view.proofing = false;
+    }
+    refresh_document_appearance(ui);
     let u = ui.clone();
     glib::timeout_add_local_once(std::time::Duration::from_millis(700), move || {
-        fit_width(&u);
-        let variant = std::env::var("LEAF_GALLERY").unwrap_or_default();
-        if variant == "format" {
-            if let Some(p) = u.paragraph.borrow().as_ref() {
-                if let Some(pop) = p.popover.upgrade() {
+        if variant == "main" {
+            zoom_to(&u, 0.80);
+        } else {
+            fit_width(&u);
+        }
+        let u = u.clone();
+        glib::timeout_add_local_once(std::time::Duration::from_millis(350), move || {
+            if variant == "format" {
+                if let Some(pop) = u
+                    .paragraph
+                    .borrow()
+                    .as_ref()
+                    .and_then(|p| p.popover.upgrade())
+                {
                     pop.popup();
                 }
+            } else if variant == "notes" {
+                if let Some(d) = u.current.borrow_mut().as_mut() {
+                    wordcraft_gnome::references::open_footnote(&mut d.session, true).unwrap();
+                }
+                refresh_selection(&u);
+                caret_ensure_visible(&u);
+            } else if let Some(id) = comment {
+                if let Some(panel) = u.annotations.borrow().as_ref() {
+                    panel.reveal(vec![id]);
+                }
             }
-        } else if variant == "notes" {
-            if let Some(d) = u.current.borrow_mut().as_mut() {
-                wordcraft_gnome::references::open_footnote(&mut d.session, true).unwrap();
-            }
-            refresh_selection(&u);
-            caret_ensure_visible(&u);
-        } else if variant == "review" {
-            if let Some(panel) = u.annotations.borrow().as_ref() {
-                panel.compose(None);
-            }
-        }
-        eprintln!("ALPHA28_GALLERY_READY");
+            eprintln!("ALPHA28_GALLERY_READY");
+        });
     });
 }
 

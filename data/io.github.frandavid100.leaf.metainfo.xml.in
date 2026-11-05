@@ -17,6 +17,28 @@
   <url type="homepage">https://github.com/frandavid100/leaf</url>
   <url type="bugtracker">https://github.com/frandavid100/leaf/issues</url>
   <url type="help">https://github.com/frandavid100/leaf/blob/main/docs/TESTING.md</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Edit documents with page previews and native formatting tools</caption>
+      <caption xml:lang="es">Edita documentos con miniaturas y controles de formato nativos</caption>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/v0.1.0-alpha.28/docs/screenshots/leaf-alpha28-main.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Edit automatically numbered footnotes on the page</caption>
+      <caption xml:lang="es">Edita notas al pie numeradas en la propia página</caption>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/v0.1.0-alpha.28/docs/screenshots/leaf-alpha28-notes.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Review a document with comment threads</caption>
+      <caption xml:lang="es">Revisa un documento con hilos de comentarios</caption>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/v0.1.0-alpha.28/docs/screenshots/leaf-alpha28-review.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Apply paragraph formatting with native controls</caption>
+      <caption xml:lang="es">Aplica formato de párrafo con controles nativos</caption>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/v0.1.0-alpha.28/docs/screenshots/leaf-alpha28-format.png</image>
+    </screenshot>
+  </screenshots>
   <content_rating type="oars-1.1" />
   <releases>
     <release version="0.1.0-alpha.28" date="2026-11-05" type="development">

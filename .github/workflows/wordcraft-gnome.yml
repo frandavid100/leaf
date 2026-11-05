@@ -33,7 +33,7 @@ jobs:
       - name: Instalar bibliotecas GNOME y pantalla virtual
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xdotool adwaita-icon-theme poppler-utils gettext locales dbus-x11
+          sudo apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11
           sudo locale-gen en_US.UTF-8
       - name: Check Leaf formatting and contributor entry points
         run: |
@@ -85,6 +85,7 @@ jobs:
           mkdir -p alpha28-gallery
           xvfb-run -a -s '-screen 0 1400x1000x24' bash -c '
             set -euo pipefail
+            xcompmgr -a > alpha28-gallery/compositor.log 2>&1 &
             for variant in main notes review format; do
               XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo LEAF_GALLERY=$variant ./target/release/wordcraft-gnome --alpha28-gallery > alpha28-gallery/$variant.log 2>&1 &
               pid=$!

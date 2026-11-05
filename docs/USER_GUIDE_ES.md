@@ -176,3 +176,25 @@ caret. Dentro de un enlace abre su destino completo; también se puede editar
 desde el clic derecho sin seleccionar todo el texto. Pasar el ratón muestra la
 dirección y el gesto Ctrl+clic. Cancelar conserva el contenido; confirmar se
 puede deshacer. Tras triple clic, arrastrar amplía la selección por párrafos.
+
+## Notas al pie, índices y referencias
+
+Insertar → Nota al pie (Ctrl+Alt+F) crea una nota numerada y lleva el cursor a su
+texto. Se edita y formatea en la página. Referencias permite editar la nota,
+pasar a la siguiente, volver a su referencia y configurar la numeración.
+También puedes abrir una nota con doble clic en su referencia.
+
+Insertar → Índice de contenidos crea un índice de los títulos. El diálogo
+permite elegir niveles y números de página. Insertar → Leyenda añade una figura
+o tabla numerada. Insertar → Referencia cruzada enlaza con títulos, leyendas o
+marcadores. Referencias → Actualizar referencias actualiza los campos y el índice
+tras editar. Ctrl+clic sigue las referencias internas.
+
+En Imagen puedes poner el texto a los lados o arriba y abajo, ajustar el espacio
+y elegir si la imagen se mueve con el texto. Arrastra la imagen para moverla o
+su tirador inferior derecho para cambiar el tamaño conservando las proporciones.
+Esc cancela el arrastre; cada arrastre se deshace en un paso.
+
+Estas estructuras requieren DOCX. Leaf bloquea el guardado ODT que perdería notas,
+campos automáticos o imágenes flotantes. Ajustar al ancho adapta cada sección a
+su papel; un porcentaje explícito mantiene la misma escala entre secciones.

@@ -4,6 +4,13 @@ Actualizada: 5 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## En curso: alpha.28
+
+Autorizada por David. Incluye zoom por sección y miniaturas (#89, #94, #95),
+imágenes flotantes (#53), notas al pie (#55), índice automático (#54), leyendas,
+referencias cruzadas y capturas públicas nuevas. Se comprueban DOCX/PDF,
+historial e interacción antes de publicar; se mantienen las guardas ODT.
+
 ## Completado: alpha.27 para FlatPark
 
 Publicados archivo relocatable, checksum y registro de la prueba instalada con
