@@ -95,7 +95,7 @@ jobs:
               done
               grep -q ALPHA28_GALLERY_READY alpha28-gallery/$variant.log
               sleep 1
-              window=$(xdotool search --onlyvisible --class Leaf | head -n1)
+              window=$(xdotool search --onlyvisible --pid "$pid" | head -n1)
               xdotool windowfocus --sync "$window"
               scrot --focused alpha28-gallery/leaf-alpha28-$variant.png
               kill "$pid"

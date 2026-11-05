@@ -2881,7 +2881,7 @@ msgstr ""
 msgid "Unpin"
 msgstr ""
 
-#: src/gnome/menus.rs:513 src/references.rs:100
+#: src/gnome/menus.rs:513 src/references.rs:101
 msgid "Update References"
 msgstr ""
 

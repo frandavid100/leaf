@@ -13,7 +13,7 @@ for phase in 0 1; do
     sleep 0.1
   done
   read -r _ _ ax ay bx by < <(grep "^ALPHA28_POINTER $phase " "$log")
-  window=$(xdotool search --onlyvisible --class Leaf | head -n1)
+  window=$(xdotool search --onlyvisible --pid "$pid" | head -n1)
   xdotool windowfocus --sync "$window"
   xdotool mousemove --window "$window" "$ax" "$ay" mousedown 1 mousemove --sync --window "$window" "$bx" "$by"
   sleep 0.3

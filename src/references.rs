@@ -95,6 +95,7 @@ pub fn return_to_reference(s: &mut Session) -> Result<(), String> {
 }
 
 pub fn update(s: &mut Session) -> Result<(), String> {
+    let before = s.doc.clone();
     let snap = s.edit_snapshot();
     let mark = s.undo_mark();
     s.checkpoint(wordcraft_gnome::t!("Update References"));
@@ -111,7 +112,7 @@ pub fn update(s: &mut Session) -> Result<(), String> {
         }
         Ok(())
     })();
-    if result.is_err() {
+    if result.is_err() || s.doc == before {
         s.restore(snap);
     } else {
         s.merge_undo_since(mark);
