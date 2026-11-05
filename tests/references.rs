@@ -66,20 +66,36 @@ fn toc_and_cross_reference_remain_structured_and_updatable() {
     let path = std::env::temp_dir().join(format!("leaf-references-{}.docx", std::process::id()));
     saving::save(&mut s, &path).unwrap();
     let mut reopened = open_document(&path).unwrap();
-    let (_, mut heading) = wordcraft_engine::cmd::citations::ref_targets(&reopened,"heading").into_iter()
-        .find(|(text,_)|text=="Chapter One").unwrap();
-    heading.off = reopened.doc.para_at(&heading).unwrap().text.find("Chapter One").unwrap();
-    let mut end=heading.clone(); end.off += "Chapter One".len();
-    selection::select_range(&mut reopened,&heading,&end).unwrap();
-    reopened.run("text.insert",&json!({"text":"Renamed heading"})).unwrap();
+    let (_, mut heading) = wordcraft_engine::cmd::citations::ref_targets(&reopened, "heading")
+        .into_iter()
+        .find(|(text, _)| text == "Chapter One")
+        .unwrap();
+    heading.off = reopened
+        .doc
+        .para_at(&heading)
+        .unwrap()
+        .text
+        .find("Chapter One")
+        .unwrap();
+    let mut end = heading.clone();
+    end.off += "Chapter One".len();
+    selection::select_range(&mut reopened, &heading, &end).unwrap();
+    reopened
+        .run("text.insert", &json!({"text":"Renamed heading"}))
+        .unwrap();
     references::update(&mut reopened).unwrap();
     let mut refreshed = false;
     reopened.doc.objects_in_reading_order(&mut |o| {
-        if let wordcraft_doc::para::InlineObject::Field { instr,result,.. }=o {
-            if instr.starts_with("REF ") { refreshed |= result.contains("Renamed heading"); }
+        if let wordcraft_doc::para::InlineObject::Field { instr, result, .. } = o {
+            if instr.starts_with("REF ") {
+                refreshed |= result.contains("Renamed heading");
+            }
         }
     });
-    assert!(refreshed,"cross-reference must update after the target heading is edited");
+    assert!(
+        refreshed,
+        "cross-reference must update after the target heading is edited"
+    );
     let value = serde_json::to_string(&reopened.doc).unwrap();
     assert!(value.contains("TOC "));
     assert!(value.contains("REF _Ref"));
@@ -88,14 +104,14 @@ fn toc_and_cross_reference_remain_structured_and_updatable() {
 
 #[test]
 fn long_notes_paginate_and_export_with_editable_story() {
-    let mut s=Session::new(Document::from_text("An annotated document."));
+    let mut s = Session::new(Document::from_text("An annotated document."));
     references::insert_footnote(&mut s).unwrap();
     s.run("text.insert",&json!({"text":"A long explanatory note with enough text to continue across pages. ".repeat(400)})).unwrap();
-    let layout=s.layout();
-    assert!(layout.pages.len()>1);
-    assert!(layout.caret_on(&s.sel.focus,0).is_some());
-    let pdf=std::env::temp_dir().join(format!("leaf-long-note-{}.pdf",std::process::id()));
-    wordcraft_gnome::pdf_export::export(&mut s,&pdf).unwrap();
-    assert!(std::fs::metadata(&pdf).unwrap().len()>1000);
+    let layout = s.layout();
+    assert!(layout.pages.len() > 1);
+    assert!(layout.caret_on(&s.sel.focus, 0).is_some());
+    let pdf = std::env::temp_dir().join(format!("leaf-long-note-{}.pdf", std::process::id()));
+    wordcraft_gnome::pdf_export::export(&mut s, &pdf).unwrap();
+    assert!(std::fs::metadata(&pdf).unwrap().len() > 1000);
     std::fs::remove_file(pdf).unwrap();
 }
