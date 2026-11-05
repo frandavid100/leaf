@@ -112,6 +112,10 @@ pub(super) fn table_pointer_press(
     let Some(target) = hit(ui, page, px, py) else {
         return false;
     };
+    if let Some(doc) = ui.current.borrow_mut().as_mut() {
+        doc.active = page;
+        doc.session.page_hint = page;
+    }
     stop_document_drag(ui);
     ui.document_box.grab_focus();
     if count == 2

@@ -22,8 +22,8 @@ pub(super) fn refresh_selection(ui: &Rc<Ui>) {
         if let Some(doc) = ui.current.borrow_mut().as_mut() {
             doc.active = page;
         }
-        update_status(ui);
     }
+    update_status(ui);
     let now = ui
         .document_box
         .frame_clock()
@@ -163,7 +163,10 @@ pub(super) fn refresh_format_controls(ui: &Rc<Ui>) {
 
 pub(super) fn pos_at_canvas(ui: &Rc<Ui>, x: f64, y: f64) -> Option<Pos> {
     let (page, pos) = inspect_canvas_point(ui, x, y)?;
-    ui.current.borrow_mut().as_mut()?.session.page_hint = page;
+    if let Some(doc) = ui.current.borrow_mut().as_mut() {
+        doc.session.page_hint = page;
+        doc.active = page;
+    }
     Some(pos)
 }
 
@@ -221,6 +224,7 @@ pub(super) fn select_picture_at_canvas(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
             return false;
         };
         doc.session.page_hint = i;
+        doc.active = i;
         return pictures::select(&mut doc.session, &hit.pos()).is_ok();
     }
     false
