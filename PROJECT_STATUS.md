@@ -1,6 +1,6 @@
 # Estado actual de Leaf
 
-Actualizado: 3 de noviembre de 2026. Esta página describe el presente;
+Actualizado: 5 de noviembre de 2026. Esta página describe el presente;
 el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.
 
 ## Dónde trabajar
@@ -11,6 +11,16 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Integración de historiales y validación](docs/MAIN_MIGRATION.md).
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
+
+## Preparación de distribución en FlatPark
+
+Alpha.27 añade un tarball de los archivos instalados (`bin/` y `share/` en la raíz),
+su checksum y su publicación junto al bundle. Antes de publicar, la CI instala
+ese tarball en `/app/extra/leaf` con GNOME 51 y comprueba idiomas y ortografía.
+El bundle habitual sigue usando GNOME 49. FlatPark ha aceptado la inclusión,
+pendiente de recibir el archivo y completar su empaquetado. La publicación en su
+catálogo debe confirmarse por separado. Comunicarles cambios de desktop/iconos/
+metainfo y futuros requisitos de runtime.
 
 ## Última versión publicada: alpha.25
 
