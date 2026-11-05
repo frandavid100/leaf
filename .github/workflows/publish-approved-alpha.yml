@@ -51,9 +51,25 @@ jobs:
           assert c['source'] == r['head_sha'] == pathlib.Path('dist/source-commit.txt').read_text().strip()
           assert re.fullmatch(r'0\.1\.0-alpha\.[1-9][0-9]*', c['version'])
           assert re.fullmatch(r'[0-9a-f]{40}', c['source'])
+          assert re.fullmatch(r'[0-9a-f]{40}', c['native_source'])
+          assert isinstance(c['native_run_id'], int) and c['native_run_id'] > 0
           with open(os.environ['GITHUB_ENV'], 'a') as f:
               f.write('LEAF_APPROVED_VERSION=' + c['version'] + '\n')
               f.write('LEAF_APPROVED_SOURCE=' + c['source'] + '\n')
+              f.write('LEAF_APPROVED_NATIVE_RUN=' + str(c['native_run_id']) + '\n')
+          PY
+      - name: Recheck native validation before promotion
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LEAF_APPROVED_NATIVE_RUN" > native-run.json
+          python3 - <<'PY'
+          import json
+          c = json.load(open('dist/candidate.json'))
+          r = json.load(open('native-run.json'))
+          assert r['conclusion'] == 'success'
+          assert r['head_sha'] == c['native_source']
+          assert r['path'] == '.github/workflows/wordcraft-gnome.yml'
           PY
       - name: Publish the already tested bytes
         env:

@@ -618,26 +618,29 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Verify reused native build is source-identical and fully validated
+      - name: Verify reused native source and test run identity
         if: contains(github.event.head_commit.message, '[bundle-only]')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/42118901548" > native-run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/42122783838" > native-run.json
           python3 - <<'PY'
           import json
           r = json.load(open('native-run.json'))
-          assert r['conclusion'] == 'success'
-          assert r['head_sha'] == 'abc60f2e0e89a17001c8bcb0ec34126116a8f287'
+          assert r['conclusion'] in (None, 'success')
+          assert r['head_sha'] == 'c99e56fa4ccc3ed1fabc3f02e8e4991a363d0002'
           assert r['path'] == '.github/workflows/wordcraft-gnome.yml'
           PY
-          git diff --exit-code abc60f2e0e89a17001c8bcb0ec34126116a8f287 -- src Cargo.toml Cargo.lock tests vendor po data examples tools patches
+          git diff --exit-code c99e56fa4ccc3ed1fabc3f02e8e4991a363d0002 -- src Cargo.toml Cargo.lock tests vendor po data examples tools patches
       - uses: actions/download-artifact@v4
         with:
-          name: wordcraft-gnome-fase3d-linux
+          name: ${{ contains(github.event.head_commit.message, '[bundle-only]') && 'leaf-native-unvalidated' || 'wordcraft-gnome-fase3d-linux' }}
           path: native-artifact
-          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '42118901548' || github.run_id }}
+          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '42122783838' || github.run_id }}
           github-token: ${{ github.token }}
+      - name: Prepare the same optimized binary while native regressions continue
+        if: contains(github.event.head_commit.message, '[bundle-only]')
+        run: strip --strip-unneeded native-artifact/wordcraft-gnome
       - name: Install Flatpak and desktop validation tools
         run: |
           sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
@@ -811,12 +814,37 @@ jobs:
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.29-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
           grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
+      - name: Require complete success of the parallel native regression run
+        if: contains(github.event.head_commit.message, '[bundle-only]')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for attempt in $(seq 1 100); do
+            state=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/42122783838" --jq '.status + ":" + (.conclusion // "")')
+            case "$state" in
+              completed:success) exit 0 ;;
+              completed:*) echo "Native validation failed: $state" >&2; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo 'Native validation did not finish within the candidate window.' >&2
+          exit 1
+      - uses: actions/download-artifact@v4
+        if: contains(github.event.head_commit.message, '[bundle-only]')
+        with:
+          name: wordcraft-gnome-fase3d-linux
+          path: native-validated
+          run-id: '42122783838'
+          github-token: ${{ github.token }}
+      - name: Compare packaged executable with the fully validated optimized executable
+        if: contains(github.event.head_commit.message, '[bundle-only]')
+        run: cmp native-artifact/wordcraft-gnome native-validated/wordcraft-gnome
       - name: Record immutable candidate identity and release notes
         env:
           LEAF_CANDIDATE_SHA: ${{ github.sha }}
           LEAF_CANDIDATE_RUN: ${{ github.run_id }}
-          LEAF_NATIVE_SHA: ${{ contains(github.event.head_commit.message, '[bundle-only]') && 'abc60f2e0e89a17001c8bcb0ec34126116a8f287' || github.sha }}
-          LEAF_NATIVE_RUN: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '42118901548' || github.run_id }}
+          LEAF_NATIVE_SHA: ${{ contains(github.event.head_commit.message, '[bundle-only]') && 'c99e56fa4ccc3ed1fabc3f02e8e4991a363d0002' || github.sha }}
+          LEAF_NATIVE_RUN: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '42122783838' || github.run_id }}
         run: |
           cp packaging/RELEASE_NOTES.md dist/RELEASE_NOTES.md
           python3 - <<'PYTHON'

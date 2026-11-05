@@ -15,6 +15,15 @@ El commit de integración en `main` lleva `[candidate-alpha]`. La batería nativ
 y las comprobaciones instaladas generan el artefacto `leaf-flatpak-alpha`.
 Los paquetes no se suben automáticamente a Releases.
 
+Una compilación nativa puede ceder su ejecutable al empaquetado después de pasar
+los controles nuevos, mientras continúa las regresiones anteriores. El flujo
+comprueba identidad y equivalencia de fuentes; aplica el mismo strip optimizado,
+valida las instalaciones en paralelo y exige el éxito completo de la ejecución
+nativa antes de aceptar la candidata. Finalmente compara ambos ejecutables byte
+a byte. El manifiesto conserva también la fuente y la ejecución nativas. La
+promoción vuelve a comprobar ese resultado. Una prueba fallida no produce una
+candidata aprobable.
+
 Para instalar el bundle descargado:
 
 ```sh
