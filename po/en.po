@@ -2554,3 +2554,6 @@ msgstr "Update References"
 
 msgid "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text."
 msgstr "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text."
+
+msgid "Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures."
+msgstr "Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures."

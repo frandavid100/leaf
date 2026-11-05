@@ -12,6 +12,7 @@ pub const MESSAGES: &[&str] = &[
     "Add Bookmark",
     "Add Comment",
     "Add Left Tab Stop",
+    "Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures.",
     "Add to Dictionary",
     "After",
     "Align Left",

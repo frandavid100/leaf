@@ -11,6 +11,7 @@
   <description>
     <p>Leaf is an experimental GTK4 and libadwaita document editor powered by WordCraft.</p>
     <p>Edit DOCX and ODT files, use text and paragraph styles, work with tables and inline images, and export PDFs. Browse page thumbnails or headings, search and replace text, and open multiple documents.</p>
+    <p>Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures.</p>
     <p>Leaf follows your system language in English and Spanish. Other languages can be contributed using gettext catalogs. Development, documentation and artwork have used substantial AI assistance.</p>
   </description>
   <launchable type="desktop-id">io.github.frandavid100.leaf.desktop</launchable>
