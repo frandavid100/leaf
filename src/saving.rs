@@ -80,24 +80,35 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
         ));
     }
     let (mut equation, mut toc, mut floating, mut reference) = (false, false, false, false);
-    session.doc.objects_in_reading_order(&mut |o| match o {
-        InlineObject::Equation { .. } => equation = true,
-        InlineObject::FieldStart { instr, .. } | InlineObject::Field { instr, .. } => {
-            reference |= instr.split_whitespace().next().is_some_and(|s| {
-                [
-                    "REF", "PAGEREF", "SEQ", "AUTHOR", "TITLE", "FILENAME", "DATE", "TIME",
-                ]
-                .iter()
-                .any(|name| s.eq_ignore_ascii_case(name))
-            });
-            toc |= instr
-                .split_whitespace()
-                .next()
-                .is_some_and(|s| s.eq_ignore_ascii_case("TOC"));
+    for story in
+        std::iter::once(StoryRef::Body).chain(session.doc.parts.keys().copied().map(StoryRef::Part))
+    {
+        for path in session.doc.para_paths(story) {
+            for o in &session.doc.para(story, &path).unwrap().objects {
+                match o {
+                    InlineObject::Equation { .. } => equation = true,
+                    InlineObject::FieldStart { instr, .. } | InlineObject::Field { instr, .. } => {
+                        reference |= instr.split_whitespace().next().is_some_and(|s| {
+                            [
+                                "REF", "PAGEREF", "SEQ", "AUTHOR", "TITLE", "FILENAME", "DATE",
+                                "TIME",
+                            ]
+                            .iter()
+                            .any(|name| s.eq_ignore_ascii_case(name))
+                        });
+                        toc |= instr
+                            .split_whitespace()
+                            .next()
+                            .is_some_and(|s| s.eq_ignore_ascii_case("TOC"));
+                    }
+                    InlineObject::Image { float, .. } if float.wrap != Wrap::Inline => {
+                        floating = true
+                    }
+                    _ => {}
+                }
+            }
         }
-        InlineObject::Image { float, .. } if float.wrap != Wrap::Inline => floating = true,
-        _ => {}
-    });
+    }
     if equation {
         Some(wordcraft_gnome::t!(
             "Save as DOCX to preserve editable equations. The current ODT exporter cannot keep their structure."

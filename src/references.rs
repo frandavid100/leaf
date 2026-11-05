@@ -204,12 +204,13 @@ pub fn refresh_derived(s: &mut Session) -> Result<bool, String> {
 }
 
 fn refresh_derived_inner(s: &mut Session) -> Result<bool, String> {
-    let mut needed = false;
-    s.doc.objects_in_reading_order(&mut |o| {
-        if let InlineObject::Field { instr, .. } | InlineObject::FieldStart { instr, .. } = o {
-            needed |= derived_field(instr)
-        }
-    });
+    let needed = std::iter::once(StoryRef::Body)
+        .chain(s.doc.parts.keys().copied().map(StoryRef::Part))
+        .any(|story| s.doc.para_paths(story).into_iter().any(|path| {
+            s.doc.para(story, &path).is_some_and(|p| p.objects.iter().any(|o| {
+                matches!(o, InlineObject::Field { instr, .. } | InlineObject::FieldStart { instr, .. } if derived_field(instr))
+            }))
+        }));
     if !needed {
         return Ok(false);
     }

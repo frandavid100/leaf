@@ -208,6 +208,48 @@ fn alpha29_controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
             4
         );
     }
+    // Section Properties must target their section, independently of the caret.
+    let mut s = Session::new(wordcraft_doc::Document::from_text(
+        "First section\nSecond section",
+    ));
+    selection::set_caret(&mut s, &Pos::body(1, 0), false).unwrap();
+    s.run("layout.break", &json!({"kind":"nextPage"})).unwrap();
+    selection::set_caret(&mut s, &Pos::body(0, 0), false).unwrap();
+    let caret = s.sel.clone();
+    let before = s.doc.clone();
+    opened(ui, s, "Section note settings");
+    let properties = show_section_properties(ui, window, 1);
+    find_widget(&properties.window, "properties-footnote-start")
+        .unwrap()
+        .downcast::<gtk::SpinButton>()
+        .unwrap()
+        .set_value(9.);
+    properties.apply.emit_clicked();
+    assert!(!properties.window.is_visible());
+    {
+        let mut c = ui.current.borrow_mut();
+        let s = &mut c.as_mut().unwrap().session;
+        assert_eq!(s.sel, caret);
+        let sections = s.doc.sections();
+        assert_eq!(s.doc.note_options(sections[0].1, false).num_start, 1);
+        assert_eq!(s.doc.note_options(sections[1].1, false).num_start, 9);
+        assert!(
+            sections[1].1.footnote_pr.num_fmt.is_none(),
+            "unchanged format remains inherited"
+        );
+        s.run("edit.undo", &json!({})).unwrap();
+        assert_eq!(s.doc, before);
+        s.run("edit.redo", &json!({})).unwrap();
+        let path = std::env::temp_dir().join("leaf29-section-notes.docx");
+        wordcraft_gnome::saving::save(s, &path).unwrap();
+        let copy = wordcraft_gnome::open_document(&path).unwrap();
+        assert_eq!(
+            copy.doc
+                .note_options(copy.doc.sections()[1].1, false)
+                .num_start,
+            9
+        );
+    }
 }
 
 fn alpha29_image_stage(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application, stage: usize) {

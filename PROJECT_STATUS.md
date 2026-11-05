@@ -23,6 +23,7 @@ La compilación de una candidata ya no publica una release. David debe probarla
 y aprobarla antes de promover los mismos paquetes, sin recompilar. Véase
 [el ciclo de candidatas](docs/CANDIDATES.md). La revisión de código y las pruebas
 están en curso; estos cambios todavía no son una Alpha publicada.
+[Alcance, pruebas y límites por issue](docs/ALPHA29_VALIDATION.md).
 
 ## Última versión publicada: alpha.28
 

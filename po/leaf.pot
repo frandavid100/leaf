@@ -2213,7 +2213,7 @@ msgstr ""
 msgid "Save a Copy — DOCX or ODT"
 msgstr ""
 
-#: src/saving.rs:110
+#: src/saving.rs:121
 msgid "Save as DOCX to preserve automatic fields, cross-references and caption numbering. The current ODT exporter only keeps their text."
 msgstr ""
 
@@ -2221,11 +2221,11 @@ msgstr ""
 msgid "Save as DOCX to preserve column breaks and continuous, even-page or odd-page sections."
 msgstr ""
 
-#: src/saving.rs:102
+#: src/saving.rs:113
 msgid "Save as DOCX to preserve editable equations. The current ODT exporter cannot keep their structure."
 msgstr ""
 
-#: src/saving.rs:114
+#: src/saving.rs:125
 msgid "Save as DOCX to preserve floating image placement and text wrapping. The current ODT exporter makes these images inline."
 msgstr ""
 
@@ -2237,7 +2237,7 @@ msgstr ""
 msgid "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
 msgstr ""
 
-#: src/saving.rs:106
+#: src/saving.rs:117
 msgid "Save as DOCX to preserve the automatic table of contents. The current ODT exporter only keeps static entries."
 msgstr ""
 
@@ -2765,7 +2765,7 @@ msgstr ""
 msgid "The file does not exist or is not a regular file"
 msgstr ""
 
-#: src/saving.rs:184
+#: src/saving.rs:195
 msgid "The file name must end in .docx or .odt"
 msgstr ""
 
@@ -2785,7 +2785,7 @@ msgstr ""
 msgid "The page exceeds the preview size limit"
 msgstr ""
 
-#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:54 src/saving.rs:132
+#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:54 src/saving.rs:143
 msgid "The path is not UTF-8"
 msgstr ""
 
@@ -2817,7 +2817,7 @@ msgstr ""
 msgid "The style will use the formatting of the current selection."
 msgstr ""
 
-#: src/references.rs:337
+#: src/references.rs:338
 msgid "The table of contents could not be found."
 msgstr ""
 
@@ -3001,7 +3001,7 @@ msgstr ""
 msgid "Use UnicodeMath input, up to 4096 characters. LaTeX commands are not supported here."
 msgstr ""
 
-#: src/saving.rs:128
+#: src/saving.rs:139
 msgid "Use a .docx or .odt extension"
 msgstr ""
 
@@ -3073,7 +3073,7 @@ msgstr ""
 msgid "WordCraft cannot anchor this image on the destination page. Its original position has been kept."
 msgstr ""
 
-#: src/saving.rs:169
+#: src/saving.rs:180
 msgid "WordCraft did not confirm that the document was saved"
 msgstr ""
 

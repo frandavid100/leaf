@@ -49,3 +49,25 @@ fn native_equation_subset_edits_structured_math_and_preserves_docx_history() {
     std::fs::remove_file(path.with_extension("pdf")).unwrap();
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn imported_math_with_unrepresentable_properties_is_protected_from_simplification() {
+    use wordcraft_doc::math::{MNode, MRun, MScr};
+    let mut s = Session::new(Document::from_text(
+        "Original equation and surrounding text",
+    ));
+    equations::apply(&mut s, "x", false).unwrap();
+    let (pos, _, _, _) = equations::target(&s).unwrap();
+    let p = s.doc.para_mut(pos.story, &pos.path).unwrap();
+    if let InlineObject::Equation { math, .. } = p.object_at_mut(pos.off).unwrap() {
+        let mut run = MRun::new("x");
+        run.scr = MScr::DoubleStruck;
+        math.nodes = vec![MNode::Run(run)];
+    }
+    p.touch();
+    s.touch();
+    assert!(!equations::target(&s).unwrap().3);
+    let original = s.doc.clone();
+    assert!(equations::apply(&mut s, "x^2", false).is_err());
+    assert_eq!(s.doc, original);
+}
