@@ -153,7 +153,7 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     }
     assert!(menu.popover().unwrap().is::<gtk::PopoverMenu>());
     let model = menu.menu_model().unwrap();
-    assert_eq!(model.n_items(), 6);
+    assert_eq!(model.n_items(), 7);
     let history = model.item_link(1, "section").unwrap();
     assert_eq!(history.n_items(), 2);
     for i in 0..2 {
@@ -191,13 +191,37 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
             "win.insert-picture",
             "win.insert-bookmark",
             "win.insert-comment",
+            "win.insert-footnote",
+            "win.insert-toc",
+            "win.insert-caption",
+            "win.insert-cross-reference",
             "win.insert-header",
             "win.insert-footer",
             "win.insert-page-number",
         ]
     );
-    assert_eq!(add.item_link(7, "submenu").unwrap().n_items(), 7);
-    let extra = model.item_link(4, "section").unwrap();
+    assert_eq!(add.item_link(11, "submenu").unwrap().n_items(), 7);
+    let reference_menu = model.item_link(4, "submenu").unwrap();
+    let reference_actions = (0..reference_menu.n_items())
+        .map(|i| {
+            reference_menu
+                .item_attribute_value(i, "action", None)
+                .unwrap()
+                .get::<String>()
+                .unwrap()
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        reference_actions,
+        [
+            "win.edit-footnote",
+            "win.next-footnote",
+            "win.footnote-reference",
+            "win.footnote-options",
+            "win.update-references"
+        ]
+    );
+    let extra = model.item_link(5, "section").unwrap();
     assert_eq!(extra.n_items(), 3);
     assert_eq!(
         extra

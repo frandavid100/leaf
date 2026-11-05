@@ -81,33 +81,7 @@ jobs:
           XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a timeout 90s bash tools/alpha28-pointer-test.sh
           XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=es GDK_SCALE=2 GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2560x1800x24' timeout 90s bash tools/alpha28-pointer-test.sh
       - name: Capture alpha28 public gallery
-        run: |
-          mkdir -p alpha28-gallery
-          xvfb-run -a -s '-screen 0 1400x1000x24' bash -c '
-            set -euo pipefail
-            xcompmgr -a > alpha28-gallery/compositor.log 2>&1 &
-            for variant in main notes review format; do
-              XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo LEAF_GALLERY=$variant ./target/release/wordcraft-gnome --alpha28-gallery > alpha28-gallery/$variant.log 2>&1 &
-              pid=$!
-              for attempt in $(seq 1 200); do
-                grep -q ALPHA28_GALLERY_READY alpha28-gallery/$variant.log && break
-                kill -0 "$pid"
-                sleep 0.1
-              done
-              grep -q ALPHA28_GALLERY_READY alpha28-gallery/$variant.log
-              sleep 1
-              window=$(xdotool search --onlyvisible --pid "$pid" | head -n1)
-              xdotool windowfocus --sync "$window"
-              leaf_geometry=$(xdotool getwindowgeometry --shell "$window")
-              leaf_x=$(sed -n "s/^X=//p" <<< "$leaf_geometry")
-              leaf_y=$(sed -n "s/^Y=//p" <<< "$leaf_geometry")
-              leaf_width=$(sed -n "s/^WIDTH=//p" <<< "$leaf_geometry")
-              leaf_height=$(sed -n "s/^HEIGHT=//p" <<< "$leaf_geometry")
-              scrot --autoselect="$leaf_x,$leaf_y,$leaf_width,$leaf_height" alpha28-gallery/leaf-alpha28-$variant.png
-              kill "$pid"
-              wait "$pid" || true
-            done
-          '
+        run: xvfb-run -a -s '-screen 0 1400x1000x24' bash packaging/capture-gallery.sh native alpha28-gallery
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -642,7 +616,7 @@ jobs:
       - name: Install Flatpak and desktop validation tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
+          sudo apt-get install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
           # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Validate desktop metadata
@@ -659,6 +633,14 @@ jobs:
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/smoke-test.sh 2>&1 | tee dist/flatpak-smoke.log
+      - name: Capture the installed alpha28 gallery
+        run: xvfb-run -a -s '-screen 0 1400x1000x24' dbus-run-session -- bash packaging/capture-gallery.sh flatpak dist/alpha28-gallery
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alpha28-installed-gallery
+          path: dist/alpha28-gallery/
+          retention-days: 14
       - name: Inspect installed history states and clipped rulers in dark and narrow views
         # The first seven existing sweep stages exercise history; capture both
         # ruler edges before the wide-window-only geometry stage is acknowledged.
