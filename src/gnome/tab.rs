@@ -208,9 +208,6 @@ pub(super) fn build_tab(
     let italic_button = gtk::CheckButton::with_label(wordcraft_gnome::t!("Italic"));
     italic_button.set_tooltip_text(Some(wordcraft_gnome::t!("Italic (Ctrl+I)")));
     italic_button.add_css_class("flat");
-    let underline_button = gtk::CheckButton::with_label(wordcraft_gnome::t!("Underline"));
-    underline_button.set_tooltip_text(Some(wordcraft_gnome::t!("Underline (Ctrl+U)")));
-    underline_button.add_css_class("flat");
     let text_popover = gtk::Popover::new();
     text_popover.add_css_class("format-popover");
     let text_options = gtk::Box::new(gtk::Orientation::Vertical, 12);
@@ -221,7 +218,6 @@ pub(super) fn build_tab(
     let inline_buttons = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     inline_buttons.append(&bold_button);
     inline_buttons.append(&italic_button);
-    inline_buttons.append(&underline_button);
     let text_header = format_popover_header(
         &text_popover,
         &text_options,
@@ -364,7 +360,6 @@ pub(super) fn build_tab(
         _bottom_heights: bottom_heights,
         format_bold: bold_button.clone(),
         format_italic: italic_button.clone(),
-        format_underline: underline_button.clone(),
         format_syncing: Cell::new(false),
         ruler: RefCell::new(None),
         history_controls: RefCell::new(None),
@@ -589,11 +584,7 @@ pub(super) fn build_tab(
     )));
     // All formatting commands preserve the selection and return keyboard
     // focus to the editable document.
-    for (button, action) in [
-        (bold_button, Format::Bold),
-        (italic_button, Format::Italic),
-        (underline_button, Format::Underline),
-    ] {
+    for (button, action) in [(bold_button, Format::Bold), (italic_button, Format::Italic)] {
         let ui = ui.clone();
         let popover = text_popover.clone();
         button.connect_toggled(glib::clone!(

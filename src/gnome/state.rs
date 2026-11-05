@@ -117,7 +117,6 @@ pub(super) struct Ui {
     pub(super) _bottom_heights: gtk::SizeGroup,
     pub(super) format_bold: gtk::CheckButton,
     pub(super) format_italic: gtk::CheckButton,
-    pub(super) format_underline: gtk::CheckButton,
     pub(super) format_syncing: Cell<bool>,
     pub(super) ruler: RefCell<Option<Rc<Ruler>>>,
     pub(super) history_controls: RefCell<Option<Rc<HistoryControls>>>,

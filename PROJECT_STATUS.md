@@ -1,6 +1,6 @@
 # Estado actual de Leaf
 
-Actualizado: 5 de noviembre de 2026. Esta página describe el presente;
+Actualizado: 6 de noviembre de 2026. Esta página describe el presente;
 el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.
 
 ## Dónde trabajar
@@ -16,7 +16,7 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 
 David solicita otra pasada de issues, priorizando los recientes (#99–#109).
 Se preparan referencias directas y automáticas, propiedades de notas, edición de
-índices, controles de imagen completos, miniaturas y menú Insertar agrupado.
+índices, controles de imagen completos, miniaturas y Elementos agrupado.
 Se incluye el editor básico de ecuaciones (#56) mediante las API públicas.
 David amplía la pasada con #111–#121: Revisión unificada, menús de Texto/Párrafo
 por filas, Elementos en la cabecera y ajustes de idioma, iconos, reglas y textos.

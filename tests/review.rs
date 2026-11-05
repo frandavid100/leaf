@@ -72,3 +72,72 @@ fn stale_review_rows_cannot_resolve_another_passage() {
     assert!(review::resolve(&mut s, &change, true).is_err());
     assert_eq!(s.doc, before);
 }
+
+#[test]
+fn deletions_resolve_in_both_editing_modes_and_leave_comments_independent() {
+    for tracking in [false, true] {
+        for accept in [false, true] {
+            let mut s = Session::new(Document::from_text("Keep remove final."));
+            selection::select_range(&mut s, &Pos::body(0, 0), &Pos::body(0, 4)).unwrap();
+            wordcraft_gnome::annotations::add_comment(&mut s, "Separate conversation").unwrap();
+            s.run("review.trackChanges", &json!({"value":true}))
+                .unwrap();
+            let text = s.doc.para_at(&Pos::body(0, 0)).unwrap().text.clone();
+            let start = text.find("remove").unwrap();
+            selection::select_range(&mut s, &Pos::body(0, start), &Pos::body(0, start + 7))
+                .unwrap();
+            editing::apply(&mut s, Edit::Backspace).unwrap();
+            s.run("review.trackChanges", &json!({"value":tracking}))
+                .unwrap();
+            let change = review::changes(&mut s)
+                .unwrap()
+                .into_iter()
+                .find(|c| c.kind == "delete")
+                .unwrap();
+            let before = s.doc.clone();
+            let depth = s.undo_depth();
+            review::resolve(&mut s, &change, accept).unwrap();
+            assert_eq!(s.doc.settings.track_changes, tracking);
+            assert_eq!(s.undo_depth(), depth + 1);
+            assert_eq!(wordcraft_gnome::annotations::comments(&s).len(), 1);
+            assert!(review::changes(&mut s).unwrap().is_empty());
+            assert_eq!(s.doc.plain_text(StoryRef::Body).contains("remove"), !accept);
+            s.run("edit.undo", &json!({})).unwrap();
+            assert_eq!(s.doc, before);
+        }
+    }
+}
+#[test]
+fn formatting_proposals_survive_docx_and_odt_refuses_silent_loss() {
+    let mut s = Session::new(Document::from_text("Bold proposal"));
+    s.run("review.trackingOptions", &json!({"trackFormatting":true}))
+        .unwrap();
+    s.run("review.trackChanges", &json!({"value":true}))
+        .unwrap();
+    selection::select_range(&mut s, &Pos::body(0, 0), &Pos::body(0, 4)).unwrap();
+    s.run("format.bold", &json!({"value":true})).unwrap();
+    assert!(wordcraft_engine::cmd::review::has_format_changes(&s.doc));
+    let change = review::changes(&mut s)
+        .unwrap()
+        .into_iter()
+        .find(|c| c.kind == "format")
+        .unwrap();
+    let path =
+        std::env::temp_dir().join(format!("leaf29-format-review-{}.odt", std::process::id()));
+    let before = s.doc.clone();
+    assert!(saving::save(&mut s, &path).is_err());
+    assert_eq!(s.doc, before);
+    let path = path.with_extension("docx");
+    saving::save(&mut s, &path).unwrap();
+    let mut copy = open_document(&path).unwrap();
+    let reopened = review::changes(&mut copy)
+        .unwrap()
+        .into_iter()
+        .find(|c| c.kind == "format")
+        .unwrap();
+    review::resolve(&mut copy, &reopened, false).unwrap();
+    assert!(review::changes(&mut copy).unwrap().is_empty());
+    review::resolve(&mut s, &change, true).unwrap();
+    assert!(review::changes(&mut s).unwrap().is_empty());
+    std::fs::remove_file(path).unwrap();
+}

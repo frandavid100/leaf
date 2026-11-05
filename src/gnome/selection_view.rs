@@ -58,11 +58,17 @@ pub(super) fn refresh_selection(ui: &Rc<Ui>) {
     if let Some(text) = ui.text_tools.borrow().as_ref() {
         text.sync_selection();
     }
+    if let Some(p) = ui.table_popover.borrow().as_ref() {
+        refresh_table_controls(ui, p);
+    }
     if let Some(p) = ui.picture.borrow().as_ref() {
         p.refresh();
     }
     if let Some(ruler) = ui.ruler.borrow().as_ref() {
         ruler.refresh();
+    }
+    if let Some(elements) = ui.elements.borrow().as_ref() {
+        elements.sync();
     }
     ui.document_box.sync(ui);
 }
@@ -114,11 +120,7 @@ pub(super) fn refresh_format_controls(ui: &Rc<Ui>) {
     refresh_history_controls(ui);
     let effective = &state;
     ui.format_syncing.set(true);
-    for (button, property) in [
-        (&ui.format_bold, "bold"),
-        (&ui.format_italic, "italic"),
-        (&ui.format_underline, "underline"),
-    ] {
+    for (button, property) in [(&ui.format_bold, "bold"), (&ui.format_italic, "italic")] {
         let mixed = effective.get(property).is_some_and(|v| v.is_null());
         let active = if property == "underline" {
             effective[property].as_str().is_some_and(|s| s != "none")

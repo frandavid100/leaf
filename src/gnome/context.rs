@@ -372,10 +372,8 @@ pub(super) fn show_document_context(
             "edit-toc",
             true,
             |ui| {
-                if let Some(host) = ui.host.upgrade() {
-                    if let Some(panel) = ui.elements.borrow().as_ref() {
-                        panel.show("toc");
-                    }
+                if let Some(panel) = ui.elements.borrow().as_ref() {
+                    panel.show("toc");
                 }
             },
         );

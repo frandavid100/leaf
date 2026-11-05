@@ -156,6 +156,14 @@ pub(super) fn review29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
                 );
                 if !std::env::args().any(|a| a == "--review29-demo") {
                     a.quit();
+                } else if let Some(panel) = std::env::args()
+                    .find_map(|a| a.strip_prefix("--review29-show=").map(str::to_owned))
+                {
+                    if panel == "elements" {
+                        u.elements.borrow().as_ref().unwrap().menu.popup();
+                    } else if let Some(menu) = format_button(&u, &format!("{panel}-menu")) {
+                        menu.popup();
+                    }
                 }
                 return glib::ControlFlow::Break;
             }
@@ -200,12 +208,12 @@ fn format_rows_and_elements(ui: &Rc<Ui>) {
     format_button(ui, "paragraph-menu").unwrap().popup();
     paragraph.home();
     assert!(
-        find_widget(&paragraph.main, "paragraph-bullets")
+        find_widget(&paragraph.main, "paragraph-list")
             .unwrap()
-            .is::<gtk::CheckButton>()
+            .is::<gtk::Button>()
     );
     assert!(
-        find_widget(&paragraph.main, "paragraph-more-bullets")
+        find_widget(&paragraph.main, "paragraph-more-borders")
             .unwrap()
             .is::<gtk::Button>()
     );

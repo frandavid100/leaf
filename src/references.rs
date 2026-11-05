@@ -304,6 +304,17 @@ pub fn toc_at(s: &Session, pos: &Pos) -> bool {
     wordcraft_engine::cmd::references::caret_in_toc(&probe)
 }
 
+/// The pinned engine's insertion command replaces the document's existing TOC,
+/// independently of the caret. Never turn an explicit Create operation into Edit.
+pub fn insert_toc(s: &mut Session, args: &serde_json::Value) -> Result<(), String> {
+    if toc_field(s).is_some() {
+        return Err(crate::t!("The current engine supports one table of contents per document. Edit the existing table of contents instead.").into());
+    }
+    s.run("references.toc", args)
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
 pub fn toc_field(s: &Session) -> Option<(Pos, String)> {
     for path in s.doc.para_paths(StoryRef::Body) {
         let p = s.doc.para(StoryRef::Body, &path)?;

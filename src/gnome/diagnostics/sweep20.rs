@@ -130,7 +130,12 @@ fn stage(t: Rc<Sweep>, n: u8) {
                 "drag",
                 vec![
                     point(&r.area, &t.window, x, 19.),
-                    point(&r.area, &t.window, x + 36. * z, 19.),
+                    point(
+                        &r.area,
+                        &t.window,
+                        x + 2. * wordcraft_gnome::ruler::HALF_CM * z,
+                        19.,
+                    ),
                 ],
             )
         }
@@ -194,7 +199,7 @@ fn stage(t: Rc<Sweep>, n: u8) {
                     point(
                         &r.area,
                         &t.window,
-                        x + 36. * z,
+                        x + 2. * wordcraft_gnome::ruler::HALF_CM * z,
                         if n == 19 { 19. } else { 110. },
                     ),
                 ],
@@ -259,6 +264,61 @@ fn stage(t: Rc<Sweep>, n: u8) {
                 ("wheel", vec![target])
             }
         }
+        44 => {
+            selected(u, 0);
+            {
+                let mut c = u.current.borrow_mut();
+                let s = &mut c.as_mut().unwrap().session;
+                s.run(
+                    "para.indents",
+                    &json!({"left":19.25,"right":27.75,"firstLine":3.125}),
+                )
+                .unwrap();
+                s.run(
+                    "para.tabs",
+                    &json!({"set":[{"pos":61.25,"align":"right","leader":"dot"}]}),
+                )
+                .unwrap();
+            }
+            after_content_change(u);
+            zoom_to(u, 0.85);
+            u.scroll.vadjustment().set_value(0.);
+            ("hover", vec![(10, 20)])
+        }
+        45 | 48 | 51 | 54 | 57 => {
+            let strip = find_widget(&t.window, "ruler-activation-strip").unwrap();
+            (
+                "hover",
+                vec![point(&strip, &t.window, strip.width() as f32 / 2., 2.)],
+            )
+        }
+        46 | 49 | 52 | 55 | 58 => {
+            use wordcraft_gnome::ruler::{self, HALF_CM, Marker};
+            let r = u.ruler.borrow().as_ref().unwrap().clone();
+            let mut c = u.current.borrow_mut();
+            let d = c.as_mut().unwrap();
+            let state = ruler::state(&mut d.session).unwrap();
+            t.depth.set(d.session.undo_depth());
+            let frame = d.page_frames[state.page].compute_bounds(&r.area).unwrap();
+            let (from, to, y) = match n {
+                46 | 55 => (state.distance(Marker::First), state.left + HALF_CM * 2., 5.),
+                49 => (
+                    state.distance(Marker::Right),
+                    state.width - HALF_CM * 3.,
+                    19.,
+                ),
+                52 => (state.tabs[0].pos, HALF_CM * 6., 18.),
+                _ => (HALF_CM * 8. + 3.5, HALF_CM * 10., 18.),
+            };
+            let start = point(&r.area, &t.window, frame.x() + state.x(from) * d.zoom, y);
+            let end = point(&r.area, &t.window, frame.x() + state.x(to) * d.zoom, y);
+            (
+                if n == 55 { "cancel-drag" } else { "drag" },
+                vec![start, end],
+            )
+        }
+        47 | 50 | 53 | 59 => ("undo", vec![]),
+        56 => ("hover", vec![(10, 20)]),
         _ => {
             let before = u.current.borrow().as_ref().unwrap().session.doc.clone();
             let settings = u.document_box.settings();
@@ -301,7 +361,18 @@ fn stage(t: Rc<Sweep>, n: u8) {
             assert_eq!(doc.session.undo_depth(), t.depth.get());
             let ruler = t.ui.ruler.borrow();
             let delta = ruler.as_ref().unwrap().margin_preview_delta().unwrap();
-            assert!((delta - 12. / t.margin_zoom.get()).abs() < 1.6);
+            let side = usize::from((n - 30) / 3);
+            let before = t.margins.get()[side];
+            let expected = wordcraft_gnome::ruler::snap_drag(
+                before + 12. / t.margin_zoom.get(),
+                None,
+                0.,
+                1500.,
+            );
+            assert!(
+                (before + delta - expected).abs() < 0.01,
+                "margin preview must show the snapped value"
+            );
             std::fs::write(verified, []).unwrap();
         }
         if !dir.join(n.to_string()).exists() {
@@ -387,7 +458,13 @@ fn check(t: &Sweep, n: u8) {
         let changed = (n - 30) % 3 == 1;
         let mut expected = t.margins.get();
         if changed {
-            expected[usize::from((n - 30) / 3)] += 12. / t.margin_zoom.get();
+            let side = usize::from((n - 30) / 3);
+            expected[side] = wordcraft_gnome::ruler::snap_drag(
+                expected[side] + 12. / t.margin_zoom.get(),
+                None,
+                0.,
+                1500.,
+            );
         }
         let actual = margins(&doc.session);
         assert!(
@@ -415,9 +492,9 @@ fn check(t: &Sweep, n: u8) {
         let mut c = u.current.borrow_mut();
         let s = &mut c.as_mut().unwrap().session;
         let state = wordcraft_gnome::ruler::state(s).unwrap();
-        let expected = if n == 22 { 72. } else { 36. };
+        let expected = if n == 22 { 4. } else { 2. } * wordcraft_gnome::ruler::HALF_CM;
         // One physical pointer pixel maps to more than one document point
-        // below 100%; marker positions also snap to half-point increments.
+        // below 100%; pointer markers now snap to half-centimetre increments.
         let tolerance = if n == 22 {
             let zoom = t.margin_zoom.get();
             0.5 / (t.window.scale_factor() as f32 * zoom) + 0.26
@@ -488,7 +565,7 @@ fn check(t: &Sweep, n: u8) {
         let mut c = u.current.borrow_mut();
         let s = &mut c.as_mut().unwrap().session;
         let state = wordcraft_gnome::ruler::state(s).unwrap();
-        let expected = if n == 10 { 37. } else { 36. };
+        let expected = 2. * wordcraft_gnome::ruler::HALF_CM + if n == 10 { 1. } else { 0. };
         assert!(
             (state.left - expected).abs() < 0.6,
             "indent={} expected={expected}",
@@ -497,6 +574,37 @@ fn check(t: &Sweep, n: u8) {
         assert_eq!(s.sel, t.selection);
         if n == 9 {
             assert_eq!(s.undo_depth(), t.depth.get() + 1);
+        }
+    }
+    if matches!(n, 46 | 47 | 49 | 50 | 52 | 53 | 55 | 58 | 59) {
+        use wordcraft_gnome::ruler::{self, HALF_CM};
+        let mut c = u.current.borrow_mut();
+        let s = &mut c.as_mut().unwrap().session;
+        let state = ruler::state(s).unwrap();
+        let changed = matches!(n, 46 | 49 | 52 | 58);
+        assert_eq!(s.undo_depth(), t.depth.get() + usize::from(changed));
+        assert!(
+            (state.left - 19.25).abs() < 0.001,
+            "an untouched imported-style value must stay exact"
+        );
+        assert!(
+            (state.first - if n == 46 { HALF_CM * 2. } else { 3.125 }).abs() < 0.001,
+            "first-line origin/grid stage {n}: {}",
+            state.first
+        );
+        assert!(
+            (state.right - if n == 49 { HALF_CM * 3. } else { 27.75 }).abs() < 0.001,
+            "opposite-edge origin/grid stage {n}: {}",
+            state.right
+        );
+        assert!(
+            (state.tabs[0].pos - if n == 52 { HALF_CM * 6. } else { 61.25 }).abs() < 0.001,
+            "tab grid stage {n}: {:?}",
+            state.tabs
+        );
+        assert_eq!(state.tabs.len(), if n == 58 { 2 } else { 1 });
+        if n == 58 {
+            assert!((state.tabs[1].pos - HALF_CM * 10.).abs() < 0.001);
         }
     }
     let c = u.current.borrow();

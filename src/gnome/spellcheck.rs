@@ -61,7 +61,7 @@ pub(super) struct SpellReview {
     pub(super) issues: RefCell<Vec<ProofIssue>>,
     choices: RefCell<Vec<Vec<String>>>,
     ignored: RefCell<Vec<ProofIssue>>,
-    ignored_document: Cell<Option<u64>>,
+    ignored_document: Cell<Option<(u64, u64)>>,
     pub(super) identity: Cell<Option<(u64, u64)>>,
     pub(super) source: RefCell<Option<glib::SourceId>>,
     pub(super) debounce: RefCell<Option<glib::SourceId>>,
@@ -125,7 +125,7 @@ impl SpellReview {
             return;
         };
         let identity = document_identity(&ui);
-        let document = identity.map(|(id, _)| id);
+        let document = identity;
         if self.ignored_document.replace(document) != document {
             self.ignored.borrow_mut().clear();
         }
@@ -183,6 +183,10 @@ impl SpellReview {
                     s.source.borrow_mut().take();
                     s.status
                         .set_text(wordcraft_gnome::t!("The spelling check could not finish."));
+                    s.identity.set(identity);
+                    if let Some(review) = ui.review.borrow().as_ref() {
+                        review.schedule();
+                    }
                     glib::ControlFlow::Break
                 }
             }

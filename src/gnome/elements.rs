@@ -10,6 +10,8 @@ pub(super) struct ElementsPanel {
     pub(super) header: Rc<FormatHeader>,
     borrowed: RefCell<Vec<(gtk::Popover, gtk::Widget, Rc<FormatHeader>)>>,
     toc: gtk::Box,
+    active: RefCell<String>,
+    displayed: RefCell<Option<(u64, u64, wordcraft_engine::Selection)>>,
 }
 impl ElementsPanel {
     pub(super) fn body_for(&self, origin: &gtk::Popover) -> Option<gtk::Widget> {
@@ -23,6 +25,12 @@ impl ElementsPanel {
         for (origin, body, header) in self.borrowed.borrow_mut().drain(..) {
             self.stack.remove(&body);
             origin.set_child(Some(&body));
+            if let Some(row) = header.button.parent() {
+                row.set_visible(true);
+                if let Some(separator) = row.next_sibling() {
+                    separator.set_visible(true);
+                }
+            }
             header.parent_back.borrow_mut().take();
             header.home();
             EMBEDDED_FORMAT.with(|items| {
@@ -33,6 +41,7 @@ impl ElementsPanel {
         }
     }
     fn home(&self) {
+        self.active.replace("home".into());
         self.header.home();
         self.stack.set_visible_child_name("home");
     }
@@ -73,6 +82,12 @@ impl ElementsPanel {
                     }
                 })));
                 header.home();
+                if let Some(row) = header.button.parent() {
+                    row.set_visible(false);
+                    if let Some(separator) = row.next_sibling() {
+                        separator.set_visible(false);
+                    }
+                }
                 self.stack.add_named(&body, Some(page));
                 EMBEDDED_FORMAT.with(|items| {
                     items.borrow_mut().push((
@@ -86,6 +101,7 @@ impl ElementsPanel {
         } else if page == "toc" {
             self.toc_page(&ui);
         }
+        self.active.replace(page.into());
         self.stack.set_visible_child_name(page);
         let weak = Rc::downgrade(self);
         self.header.back(wordcraft_gnome::t!("Elements"), move || {
@@ -95,7 +111,48 @@ impl ElementsPanel {
         });
         self.menu.popup();
     }
+    pub(super) fn sync(self: &Rc<Self>) {
+        if !self.pop.is_visible() || self.active.borrow().as_str() != "toc" {
+            return;
+        }
+        let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
+            return;
+        };
+        let state = ui.current.borrow().as_ref().map(|d| {
+            (
+                d.session.document_id(),
+                d.session.rev(),
+                d.session.sel.clone(),
+            )
+        });
+        if *self.displayed.borrow() == state {
+            return;
+        }
+        let editing = ui
+            .host
+            .upgrade()
+            .and_then(|h| gtk::prelude::GtkWindowExt::focus(&h.window))
+            .is_some_and(|w| w.is_ancestor(&self.pop));
+        if editing {
+            if let Some(apply) = find_widget(&self.toc, "elements-toc-apply") {
+                apply.set_sensitive(false);
+            }
+            if let Some(hint) = find_widget(&self.toc, "elements-stale") {
+                hint.set_visible(true);
+            }
+        } else {
+            self.toc_page(&ui);
+        }
+    }
     fn toc_page(self: &Rc<Self>, ui: &Rc<Ui>) {
+        self.displayed
+            .replace(ui.current.borrow().as_ref().map(|d| {
+                (
+                    d.session.document_id(),
+                    d.session.rev(),
+                    d.session.sel.clone(),
+                )
+            }));
         clear_box(&self.toc);
         let insert = style_menu_button(wordcraft_gnome::t!("Insert Table of Contents…"));
         insert.set_widget_name("elements-insert-toc");
@@ -128,6 +185,15 @@ impl ElementsPanel {
         apply.set_widget_name("elements-toc-apply");
         let action = contents_controls(ui, &controls, Some(existing));
         self.toc.append(&apply);
+        let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
+            "The document has changed; open this dialog again."
+        )));
+        hint.set_widget_name("elements-stale");
+        hint.set_wrap(true);
+        hint.set_max_width_chars(30);
+        hint.add_css_class("dim-label");
+        hint.set_visible(false);
+        self.toc.append(&hint);
         let identity = document_identity(ui);
         let selection = ui.current.borrow().as_ref().map(|d| d.session.sel.clone());
         let weak = Rc::downgrade(ui);
@@ -202,7 +268,12 @@ pub(super) fn install_elements(ui: &Rc<Ui>, bar: &gtk::Box) -> Rc<ElementsPanel>
     scroll.set_propagate_natural_height(true);
     scroll.set_child(Some(&toc));
     stack.add_named(&scroll, Some("toc"));
-    root.append(&stack);
+    let pages_scroll = gtk::ScrolledWindow::new();
+    pages_scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+    pages_scroll.set_max_content_height(500);
+    pages_scroll.set_propagate_natural_height(true);
+    pages_scroll.set_child(Some(&stack));
+    root.append(&pages_scroll);
     pop.set_child(Some(&root));
     menu.set_popover(Some(&pop));
     let s = Rc::new(ElementsPanel {
@@ -213,6 +284,8 @@ pub(super) fn install_elements(ui: &Rc<Ui>, bar: &gtk::Box) -> Rc<ElementsPanel>
         header,
         borrowed: RefCell::new(Vec::new()),
         toc,
+        active: RefCell::new("home".into()),
+        displayed: RefCell::new(None),
     });
     s.home();
     let weak = Rc::downgrade(&s);

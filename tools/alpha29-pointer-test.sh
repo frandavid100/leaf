@@ -5,6 +5,9 @@ LEAF29_ACK_DIR=$(mktemp -d "${LEAF29_ACK_PARENT:-/tmp}/leaf29-ack.XXXXXX")
 log=alpha29-pointer-${LANGUAGE:-en}-${GDK_SCALE:-1}.log
 runner=${1:-./target/release/wordcraft-gnome}
 cmd=("$runner"); [[ "$runner" != *.sh ]] || cmd=(bash "$runner")
+review_log=alpha29-review-${LANGUAGE:-en}-${GDK_SCALE:-1}.log
+"${cmd[@]}" --review29-ui-test > "$review_log" 2>&1 || { cat "$review_log"; exit 1; }
+grep -q REVIEW29_UI_OK "$review_log"
 "${cmd[@]}" --alpha29-ui-test > "$log" 2>&1 &
 pid=$!
 trap 'scrot "${log%.log}-final.png" 2>/dev/null || true; kill "$pid" 2>/dev/null || true; rm -rf "$LEAF29_ACK_DIR"' EXIT

@@ -322,6 +322,19 @@ impl TextTools {
                 }
             },
         );
+        if let Some(panel) = self
+            .palette
+            .borrow()
+            .as_ref()
+            .and_then(|p| p.options_page(page))
+        {
+            if let Some(parent) = panel.parent().and_then(|p| p.downcast::<gtk::Box>().ok()) {
+                parent.remove(&panel);
+            }
+            self.detail.append(&panel);
+            self.stack.set_visible_child_name("detail");
+            return;
+        }
         match page {
             "language" => {
                 let dictionaries = wordcraft_engine::proof::installed_dictionaries();
@@ -599,10 +612,15 @@ pub(super) fn install_text_pages(
     scroll.set_max_content_height(420);
     scroll.set_propagate_natural_height(true);
     scroll.set_child(Some(&detail));
-    stack.add_named(&main, Some("main"));
+    let main_scroll = gtk::ScrolledWindow::new();
+    main_scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+    main_scroll.set_max_content_height(430);
+    main_scroll.set_propagate_natural_height(true);
+    main_scroll.set_child(Some(&main));
+    stack.add_named(&main_scroll, Some("main"));
     stack.add_named(&scroll, Some("detail"));
     root.append(&stack);
-    root.set_width_request(240);
+    root.set_width_request(320);
     let language_button = find_widget(&main, "text-language")
         .unwrap()
         .downcast::<gtk::Button>()

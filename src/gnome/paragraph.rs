@@ -107,9 +107,15 @@ impl ParagraphPopover {
                 if rule_ok && old.is_some_and(|old| (old - value).abs() < 0.001) {
                     return;
                 }
-                if let Err(e) = immediate_format(&ui, command, serde_json::json!({key:value})) {
-                    s.message.set_text(&e);
-                    s.message.set_visible(true);
+                let args = serde_json::json!({key:value});
+                match immediate_format(&ui, command, args.clone()) {
+                    Ok(()) => {
+                        s.last_applied.borrow_mut().insert(command.into(), args);
+                    }
+                    Err(e) => {
+                        s.message.set_text(&e);
+                        s.message.set_visible(true);
+                    }
                 }
             }
         };
@@ -153,9 +159,15 @@ impl ParagraphPopover {
         if let Some(ui) = self.ui.upgrade() {
             match format_execute(&ui, command, args.clone()) {
                 Ok(()) => {
-                    self.last_applied
-                        .borrow_mut()
-                        .insert(command.into(), args.clone());
+                    let enabled = args.get("off") != Some(&serde_json::json!(true))
+                        && !(command == "para.shading"
+                            && args.get("color").is_some_and(|v| v.is_null()))
+                        && !(command == "para.borders" && args["kind"] == "none");
+                    if enabled {
+                        self.last_applied
+                            .borrow_mut()
+                            .insert(command.into(), args.clone());
+                    }
                     self.message.set_visible(false);
                     if self.stack.visible_child_name().as_deref() == Some("main") {
                         self.home();
@@ -200,65 +212,16 @@ impl ParagraphPopover {
         row.append(&label);
         row.append(&gtk::Image::from_icon_name("go-next-symbolic"));
         button.set_child(Some(&row));
+        button.set_tooltip_text(Some(title));
+        accessible_name(&button, title);
         self.main.append(&button);
         let weak = Rc::downgrade(self);
         button.connect_clicked(move |_| {
             if let Some(s) = weak.upgrade() {
                 s.page(page);
-            }
-        });
-    }
-    fn feature_row(
-        self: &Rc<Self>,
-        title: &str,
-        name: &str,
-        page: &'static str,
-        active: bool,
-        mixed: bool,
-        command: &'static str,
-        enable: serde_json::Value,
-        disable: serde_json::Value,
-    ) {
-        let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
-        let check = gtk::CheckButton::with_label(title);
-        check.set_widget_name(name);
-        check.set_hexpand(true);
-        check.set_active(active);
-        check.set_inconsistent(mixed);
-        row.append(&check);
-        let more = gtk::Button::from_icon_name("go-next-symbolic");
-        more.add_css_class("flat");
-        more.set_widget_name(&format!("paragraph-more-{page}"));
-        let label = wordcraft_gnome::i18n::interpolate(
-            wordcraft_gnome::t!("Options for {label}"),
-            &[("label", title.to_string())],
-        );
-        more.set_tooltip_text(Some(&label));
-        accessible_name(&more, &label);
-        row.append(&more);
-        self.main.append(&row);
-        let weak = Rc::downgrade(self);
-        check.connect_toggled(move |b| {
-            let on = b.is_active() || b.is_inconsistent();
-            b.set_inconsistent(false);
-            if let Some(s) = weak.upgrade() {
-                let args = if on {
-                    s.last_applied
-                        .borrow()
-                        .get(command)
-                        .filter(|v| *v != &disable)
-                        .cloned()
-                        .unwrap_or_else(|| enable.clone())
-                } else {
-                    disable.clone()
-                };
-                s.execute(command, args);
-            }
-        });
-        let weak = Rc::downgrade(self);
-        more.connect_clicked(move |_| {
-            if let Some(s) = weak.upgrade() {
-                s.page(page);
+                if std::env::args().any(|a| a == "--split-states-demo") {
+                    eprintln!("SPLIT_SUBPAGE_OK");
+                }
             }
         });
     }
@@ -297,30 +260,31 @@ impl ParagraphPopover {
                     .map(|l| format!("{:?}", l.format))
             })
         };
-        let bullet = list_kind
+        let mixed_list = state["_mixed"]
+            .as_array()
+            .is_some_and(|a| a.iter().any(|v| v == "numbering"));
+        let list_label = if mixed_list {
+            wordcraft_gnome::t!("Mixed")
+        } else if list_kind
             .as_ref()
-            .is_some_and(|s| s.to_lowercase().contains("bullet"));
-        let numbered = list_kind.is_some() && !bullet;
-        let mixed_list = state.get("numbering").is_some_and(|v| v.is_null()) && list_kind.is_some();
-        self.feature_row(
-            wordcraft_gnome::t!("Bulleted List"),
-            "paragraph-bullets",
-            "bullets",
-            bullet,
-            mixed_list,
-            "para.bullets",
-            serde_json::json!({"kind":"•"}),
-            serde_json::json!({"off":true}),
-        );
-        self.feature_row(
-            wordcraft_gnome::t!("Numbered List"),
-            "paragraph-numbering",
-            "numbering",
-            numbered,
-            mixed_list,
-            "para.numbering",
-            serde_json::json!({"kind":"numbered"}),
-            serde_json::json!({"off":true}),
+            .is_some_and(|s| s.to_lowercase().contains("bullet"))
+        {
+            wordcraft_gnome::t!("Bulleted List")
+        } else if list_kind.is_some() {
+            wordcraft_gnome::t!("Numbered List")
+        } else {
+            wordcraft_gnome::t!("None")
+        };
+        self.option_row(
+            &wordcraft_gnome::i18n::interpolate(
+                wordcraft_gnome::t!("{label}: {value}"),
+                &[
+                    ("label", wordcraft_gnome::t!("List").into()),
+                    ("value", list_label.into()),
+                ],
+            ),
+            "paragraph-list",
+            "list",
         );
         self.option_row(
             wordcraft_gnome::t!("Indents"),
@@ -342,55 +306,109 @@ impl ParagraphPopover {
             self.main
                 .append(&self.action(title, name, command, serde_json::json!({})));
         }
-        // Reapplication belongs to this feature; inspecting another selection never changes it.
-        let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
-        let last = self
-            .last_applied
-            .borrow()
-            .get("para.lineSpacing")
-            .cloned()
-            .unwrap_or_else(|| serde_json::json!({"value":self.spacing.get()}));
-        let apply = self.action(
-            wordcraft_gnome::t!("Apply Last Line Spacing"),
-            "paragraph-spacing",
-            "para.lineSpacing",
-            last,
-        );
-        apply.set_hexpand(true);
-        row.append(&apply);
-        let more = gtk::Button::from_icon_name("go-next-symbolic");
-        more.set_widget_name("paragraph-more-spacing");
-        more.add_css_class("flat");
-        accessible_name(&more, wordcraft_gnome::t!("Line Spacing Options"));
-        more.set_tooltip_text(Some(wordcraft_gnome::t!("Line Spacing Options")));
-        row.append(&more);
-        let weak = Rc::downgrade(self);
-        more.connect_clicked(move |_| {
-            if let Some(s) = weak.upgrade() {
-                s.page("spacing");
-            }
-        });
-        self.main.append(&row);
-        self.feature_row(
-            wordcraft_gnome::t!("Shading"),
-            "paragraph-shading",
-            "shading",
-            state["shading"].is_array(),
-            state.get("shading").is_some_and(|v| v.is_null()),
-            "para.shading",
-            serde_json::json!({"color":self.shade.borrow().as_str()}),
-            serde_json::json!({"color":null}),
-        );
-        self.feature_row(
-            wordcraft_gnome::t!("Borders"),
-            "paragraph-borders",
-            "borders",
-            state["borders"].is_object(),
-            false,
-            "para.borders",
-            self.border.borrow().clone(),
-            serde_json::json!({"kind":"none"}),
-        );
+        let mixed = |key: &str| {
+            state["_mixed"]
+                .as_array()
+                .is_some_and(|a| a.iter().any(|v| v == key))
+        };
+        let spacing_value = if mixed("lineSpacing") {
+            wordcraft_gnome::t!("Mixed").to_string()
+        } else if state["lineSpacing"]["rule"] == "exact" {
+            format!("{} pt", state["lineSpacing"]["value"])
+        } else {
+            state["lineSpacing"]["value"].to_string()
+        };
+        let shade_value = if mixed("shading") {
+            wordcraft_gnome::t!("Mixed").into()
+        } else if let Some(rgb) = state["shading"].as_array() {
+            format!(
+                "#{:02X}{:02X}{:02X}",
+                rgb[0].as_u64().unwrap_or(0),
+                rgb[1].as_u64().unwrap_or(0),
+                rgb[2].as_u64().unwrap_or(0)
+            )
+        } else {
+            wordcraft_gnome::t!("None").into()
+        };
+        let border_value = if mixed("borders") {
+            wordcraft_gnome::t!("Mixed")
+        } else if state["borders"].is_object()
+            && state["borders"]
+                .as_object()
+                .is_some_and(|o| o.values().any(|v| !v.is_null()))
+        {
+            wordcraft_gnome::t!("Custom")
+        } else {
+            wordcraft_gnome::t!("None")
+        };
+        for (title, value, page, name, command, defaults, tip) in [
+            (
+                wordcraft_gnome::t!("Line Spacing"),
+                spacing_value,
+                "spacing",
+                "paragraph-spacing",
+                "para.lineSpacing",
+                serde_json::json!({"value":self.spacing.get()}),
+                wordcraft_gnome::t!("Apply Last Line Spacing"),
+            ),
+            (
+                wordcraft_gnome::t!("Shading"),
+                shade_value,
+                "shading",
+                "paragraph-shading",
+                "para.shading",
+                serde_json::json!({"color":self.shade.borrow().as_str()}),
+                wordcraft_gnome::t!("Apply Last Shading"),
+            ),
+            (
+                wordcraft_gnome::t!("Borders"),
+                border_value.to_string(),
+                "borders",
+                "paragraph-borders",
+                "para.borders",
+                self.border.borrow().clone(),
+                wordcraft_gnome::t!("Apply Last Border Settings"),
+            ),
+        ] {
+            let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+            let label = wordcraft_gnome::i18n::interpolate(
+                wordcraft_gnome::t!("{label}: {value}"),
+                &[("label", title.into()), ("value", value)],
+            );
+            let open = style_menu_button(&label);
+            open.set_widget_name(&format!("paragraph-more-{page}"));
+            open.set_hexpand(true);
+            let content = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+            let text = gtk::Label::new(Some(&label));
+            text.set_xalign(0.);
+            text.set_hexpand(true);
+            text.set_ellipsize(gtk::pango::EllipsizeMode::End);
+            text.set_max_width_chars(28);
+            content.append(&text);
+            content.append(&gtk::Image::from_icon_name("go-next-symbolic"));
+            open.set_child(Some(&content));
+            open.set_tooltip_text(Some(&label));
+            accessible_name(&open, &label);
+            row.append(&open);
+            let weak = Rc::downgrade(self);
+            open.connect_clicked(move |_| {
+                if let Some(s) = weak.upgrade() {
+                    s.page(page);
+                }
+            });
+            let args = self
+                .last_applied
+                .borrow()
+                .get(command)
+                .cloned()
+                .unwrap_or(defaults);
+            let apply = self.action(tip, name, command, args);
+            apply.set_child(Some(&gtk::Image::from_icon_name("view-refresh-symbolic")));
+            apply.set_tooltip_text(Some(tip));
+            accessible_name(&apply, tip);
+            row.append(&apply);
+            self.main.append(&row);
+        }
         self.option_row(
             wordcraft_gnome::t!("Columns"),
             "paragraph-columns",
@@ -451,6 +469,28 @@ impl ParagraphPopover {
         };
         let state = selection_paragraph(&ui);
         match page {
+            "list" => {
+                for (title, target) in [
+                    (wordcraft_gnome::t!("Bulleted List"), "bullets"),
+                    (wordcraft_gnome::t!("Numbered List"), "numbering"),
+                ] {
+                    let b = style_menu_button(title);
+                    b.set_widget_name(&format!("paragraph-more-{target}"));
+                    self.detail.append(&b);
+                    let weak = Rc::downgrade(self);
+                    b.connect_clicked(move |_| {
+                        if let Some(s) = weak.upgrade() {
+                            s.page(target);
+                        }
+                    });
+                }
+                self.button(
+                    wordcraft_gnome::t!("Remove List"),
+                    "paragraph-list-none",
+                    "para.bullets",
+                    serde_json::json!({"off":true}),
+                );
+            }
             "alignment" => {
                 for (title, value) in [
                     (wordcraft_gnome::t!("Align Left"), "left"),
@@ -910,7 +950,12 @@ pub(super) fn install_paragraph_popover(
     scroll.set_child(Some(&detail));
     let detail_page = gtk::Box::new(gtk::Orientation::Vertical, 6);
     detail_page.append(&scroll);
-    stack.add_named(&main, Some("main"));
+    let main_scroll = gtk::ScrolledWindow::new();
+    main_scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+    main_scroll.set_max_content_height(430);
+    main_scroll.set_propagate_natural_height(true);
+    main_scroll.set_child(Some(&main));
+    stack.add_named(&main_scroll, Some("main"));
     stack.add_named(&detail_page, Some("detail"));
     root.append(&stack);
     let message = gtk::Label::new(None);

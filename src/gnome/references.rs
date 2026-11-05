@@ -313,8 +313,10 @@ pub(super) fn contents_controls(
                 title.is_sensitive().then(|| title.text()).as_deref(),
             )
         } else {
-            s.run("references.toc",&json!({"title":title.text().as_str(),"levels":levels.value_as_int(),"pageNumbers":pages.is_active(),"hyperlinks":hyperlinks.is_active(),"rightAlign":right.is_active()})).map_err(|e|e.to_string())?;
-            Ok(())
+            references::insert_toc(
+                s,
+                &json!({"title":title.text().as_str(),"levels":levels.value_as_int(),"pageNumbers":pages.is_active(),"hyperlinks":hyperlinks.is_active(),"rightAlign":right.is_active()}),
+            )
         }
     })
 }

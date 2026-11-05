@@ -11,7 +11,7 @@ importantes en otro editor. [Instalación Flatpak](../packaging/INSTALL.md).
 - Ctrl+O abre; Ctrl+N/Ctrl+T crean otra pestaña; Ctrl+Mayús+N crea otra ventana;
   Ctrl+W cierra la pestaña. Los documentos conservan sus estados independientes.
 - El menú de tres puntos corresponde al documento: Guardar, Guardar como,
-  Insertar, propiedades, PDF, imprimir, zoom y modo Edición/Revisión.
+  propiedades, PDF, imprimir, zoom y los modos Editar/Sugerir. Elementos está en la cabecera.
 - Ctrl+S guarda y Ctrl+Mayús+S abre Guardar como. DOCX/ODT se eligen por el
   sufijo del archivo. Un documento abierto se guarda sobre su archivo; un documento
   nuevo pide su destino la primera vez. Guardar como elige otra copia. Al cerrar con cambios se
@@ -27,8 +27,7 @@ está en el menú principal. Una operación cancelada o fallida conserva los cam
 Para conservar ecuaciones editables, notas al pie, índice automático e imágenes
 flotantes con ajuste del texto, usa DOCX. Leaf rechaza guardar esas estructuras
 en ODT mientras el exportador actual las pierda o aplane. La recuperación usa
-un formato que las conserve. Las interfaces completas de creación de esas cuatro
-funciones siguen pendientes.
+un formato que las conserve. Los cambios de formato sugeridos, movimientos y comentarios también requieren DOCX; las propuestas ordinarias de inserción/eliminación conservan su estructura en DOCX y ODT.
 
 ## Edición e interfaz
 
@@ -52,21 +51,18 @@ aplica 14 pt a otro fragmento seleccionado. Escritura, archivos y operaciones
 estructurales no se repiten; un cambio nuevo conserva las reglas normales de
 invalidación de Rehacer.
 
-La regla aparece sobre el borde superior del área visible del documento al
-acercar el puntero, o desde «Regla» en el menú del documento. «Mantener abierto»
-la fija sin reservar espacio ni mover páginas. Arrastra los marcadores de sangría
-o tabulación; pulsa en la escala para añadir una tabulación izquierda. Con foco
-en la regla, Arriba/Abajo eligen marcador, Izquierda/Derecha lo ajustan (Mayús:
-10 pt), Insertar añade tabulación, Suprimir la elimina y Escape vuelve al texto.
-La selección se conserva; cada gesto confirmado admite Deshacer. «Página N»
-identifica la página del destino activo, incluso si se ha desplazado fuera de la
-vista. Las pestañas laterales Navegación y Comentarios usan brújula y bocadillo;
-el tooltip de Páginas muestra página actual y total.
+La regla es transitoria: aparece al acercar el puntero a los bordes visibles de
+la página; Ctrl+Alt+R permite enfocarla con el teclado. Sus números tienen más
+contraste y los arrastres de márgenes, sangrías y tabulaciones usan un imán de
+0,5 cm, medido desde el origen correspondiente. La vista previa y el valor
+confirmado coinciden; Escape cancela y cada gesto admite Deshacer. Los valores
+numéricos o importados no se redondean. Con foco en la regla, Arriba/Abajo eligen
+marcador, Izquierda/Derecha lo ajustan (Mayús: 10 pt), Insertar añade tabulación,
+Suprimir la elimina y Escape vuelve al texto.
 
 Estilo muestra los estilos del documento con búsqueda, aplicación y gestión.
-Párrafo reúne alineación, listas, sangría, interlineado, bordes/sombreado y columnas.
-Texto contiene fuente y tamaño editables en una fila, con menús de opciones y
-vistas previas. Los valores válidos de formato se aplican directamente. Los controles principales de los paneles
+Párrafo reúne alineación, listas, sangría, interlineado, bordes/sombreado y columnas en filas con nombre y valor actual.
+Texto conserva fuente y tamaño editables, opciones y vistas previas. Negrita, cursiva y otros interruptores usan casillas nativas: un estado mixto se activa para toda la selección al pulsarlo. Las flechas abren opciones internas con vuelta atrás; los botones de reaplicar usan el último ajuste aplicado de esa propiedad. Leer otra selección o cancelar no cambia ese recuerdo. Idioma muestra «Predeterminado» junto al idioma efectivo heredado. Los valores válidos de formato se aplican directamente. Los controles principales de los paneles
 fijados siguen la selección y muestran valores mixtos. El editor de columnas se
 sincroniza al cambiar de sección. Texto también contiene formato e idioma. Las opciones avanzadas están
 un nivel dentro de sus paneles. Columnas admite el alcance que ofrece su editor;
@@ -77,10 +73,8 @@ propiedades en DOCX no garantiza que esa disposición se dibuje correctamente.
 
 ## Marcadores y comentarios
 
-Se añaden desde Insertar o el clic derecho. Los marcadores aparecen bajo su título
-en Navegación; la tercera pestaña muestra solo comentarios, con una burbuja por
-hilo y separadores entre mensajes. Pulsa un marcador o «Ir al comentario» para
-seleccionar su texto. Clicar el texto anclado abre Comentarios y resalta sus hilos.
+Se añaden desde Elementos o el clic derecho. Los marcadores aparecen bajo su título en Navegación; Revisión reúne comentarios, correcciones y cambios sugeridos, con filtros y una burbuja por hilo. Pulsa un marcador o «Ir al comentario» para
+seleccionar su texto. Clicar el texto anclado abre Revisión y resalta sus hilos.
 Preferencias permite configurar la identidad de nuevos comentarios y revisiones;
 no cambia los autores existentes. Los marcadores requieren un nombre
 único de hasta 40 caracteres, empezando por letra, sin espacios.
@@ -97,22 +91,24 @@ nombre y posición, pero no el intervalo seleccionado. [Alcance](BOOKMARKS_COMME
 
 ## Ortografía y gramática
 
-La cuarta pestaña lateral muestra una lista de errores. Pulsa una fila para ir al
-texto y seleccionar el fragmento. La lista solo navega; las sugerencias y las
-opciones de corrección siguen en el menú contextual del texto.
-F7 abre la pestaña; el botón de volver a revisar actualiza la lista manualmente.
+F7 abre las correcciones en Revisión. Cada tarjeta permite seleccionar el texto,
+aplicar la propuesta disponible o ignorar solo esa aparición. El menú de la
+corrección conserva otras sugerencias, Ignorar todas y Añadir al diccionario.
+Una edición invalida los destinos anteriores antes de volver a comprobar.
+Los idiomas sin diccionario se omiten; la gramática usa las reglas de WordCraft.
+La preferencia de revisión mientras se escribe establece el valor de documentos
+nuevos; un documento ya abierto conserva el suyo.
 
-**Preferencias → Ortografía y gramática** contiene la opción de revisar mientras
-se escribe. Al activarla se actualizan los subrayados y la lista visible tras una
-pausa breve. Al desactivarla puedes seguir revisando manualmente con F7. Una
-edición invalida las posiciones anteriores para impedir correcciones equivocadas.
-Se conservan los idiomas por fragmento y la exclusión de revisión. Los idiomas
-sin diccionario instalado se omiten y la gramática usa las reglas de WordCraft.
+## Cambios sugeridos
+
+El modo Sugerir registra las nuevas ediciones; Editar vuelve a la edición normal.
+Revisión muestra las propuestas existentes en ambos modos, con Aceptar/Rechazar
+y Deshacer/Rehacer. Resolver un comentario es independiente de aceptar cambios.
+Los filtros Todos, Correcciones, Cambios y Comentarios no modifican el documento.
 
 ## Navegar y buscar
 
-El panel lateral se abre por defecto y ofrece cuatro pestañas: Páginas, Navegación,
-Comentarios y Ortografía y gramática. Navegación integra los marcadores bajo su
+El panel lateral ofrece tres vistas: Páginas, Navegación y Revisión. Su título sigue la vista activa; la búsqueda es temporal. F9 muestra u oculta el panel. Navegación integra los marcadores bajo su
 título y los oculta al plegar la sección; los anteriores al primer título se
 muestran al principio. Cada hilo de comentarios comparte una burbuja con
 separadores entre mensajes. La lupa activa
@@ -126,10 +122,10 @@ La apariencia de páginas y miniaturas sigue el modo claro/oscuro de GNOME.
 
 ## Insertar y configurar
 
-Insertar, en los tres puntos y el menú contextual, agrupa tabla, imagen, índice y
+Elementos, en la cabecera adaptable y el menú contextual, agrupa tabla, imagen, índice y
 ecuación; marcador, comentario, enlace, leyenda y nota al pie; y los submenús de
 encabezados/pies, campos automáticos y saltos. Las tablas e imágenes se editan
-desde su menú contextual. Tab/Mayús+Tab recorren celdas y Tab al final puede
+desde el mismo panel compartido de Elementos o su menú contextual. La acción Insertar sigue disponible cuando hay un elemento seleccionado; las propiedades inferiores solo aparecen para el destino real. Tab/Mayús+Tab recorren celdas y Tab al final puede
 añadir una fila. Los campos automáticos incluyen página, total, autor, título,
 nombre de archivo, fecha y hora. Fecha/hora no se recalculan al teclear texto.
 
@@ -215,3 +211,5 @@ campos automáticos, ecuaciones o imágenes flotantes. Ajustar al ancho adapta c
 sección a su papel; un porcentaje explícito mantiene la misma escala entre
 secciones. Páginas muestra la miniatura activa con su posición física y el total;
 redibujar el documento no interrumpe una consulta manual de otras miniaturas.
+
+El motor actual admite un único índice automático por documento. Intentar crear otro muestra esta limitación y conserva el existente; sus propiedades se editan desde Elementos o el clic derecho.

@@ -1,12 +1,12 @@
 # Hoja de ruta de Leaf
 
-Actualizada: 5 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
+Actualizada: 6 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
 ## En curso: candidata de alpha.29
 
-Pasada autorizada de los issues abiertos, priorizando #99–#109. Se añaden
+Pasada autorizada de los issues abiertos, priorizando #99–#109 y la ampliación autorizada #111–#121. Se añaden
 regresiones de interacción reales para los nuevos recorridos. Publicación
 condicionada a la prueba y aprobación de David; promoción del paquete exacto.
 [Proceso](docs/CANDIDATES.md).

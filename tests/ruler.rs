@@ -83,3 +83,29 @@ fn pointer_magnets_use_document_centimetres_and_hold_near_a_boundary() {
     );
     assert!((snap_drag(-19., None, -100., 100.) + HALF_CM).abs() < 0.0001);
 }
+
+#[test]
+fn marker_grid_uses_each_property_origin_and_numeric_edits_keep_exact_values() {
+    let mut s = Session::new(Document::from_text("First line\tTab"));
+    s.run(
+        "para.indents",
+        &json!({"left":19.25,"right":27.75,"firstLine":3.125}),
+    )
+    .unwrap();
+    let state = ruler::state(&mut s).unwrap();
+    assert_eq!(state.left, 19.25);
+    for (marker, input, property) in [
+        (Marker::Left, 29., ruler::HALF_CM * 2.),
+        (Marker::First, state.left + 18., state.left + ruler::HALF_CM),
+        (
+            Marker::Right,
+            state.width - 18.,
+            state.width - ruler::HALF_CM,
+        ),
+        (Marker::NewTab, 29., ruler::HALF_CM * 2.),
+    ] {
+        assert!((ruler::snap_marker(&state, marker, input, None) - property).abs() < 0.001);
+    }
+    assert_eq!(ruler::state(&mut s).unwrap().first, 3.125);
+    assert_eq!(ruler::state(&mut s).unwrap().right, 27.75);
+}

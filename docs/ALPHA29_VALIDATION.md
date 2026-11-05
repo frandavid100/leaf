@@ -13,8 +13,8 @@ su promoción sin recompilar. [Proceso y comandos de instalación](CANDIDATES.md
 | #117/#119 | Revisión unificada con filtros, cambios del motor, correcciones y comentarios, acciones propias e indentación reducida. Pruebas de historial, DOCX/ODT y objetivos obsoletos; pendiente de validación GTK final. |
 | #118 | Imán de 0,5 cm en magnitudes del documento con histéresis para los gestos de regla; valores importados y numéricos intactos. Pendiente de gestos GTK finales. |
 | #120 | Filas de formato con etiquetas y casillas nativas de tres estados, opciones separadas y memoria por propiedad. Pendiente de validación GTK final. |
-| #121 | Elementos en la cabecera adaptable, controles compartidos con el contexto y creación estable de tabla/imagen/índice. Pendiente de validación GTK final. |
-| #109 | Insertar compartido y agrupado, un único Enlace para URL/destinos internos y siete campos automáticos estructurados. Pruebas de encabezado/pie, metadatos, historial, DOCX y PDF. |
+| #121 | Elementos en la cabecera adaptable y herramientas compartidas. Parcial: el motor solo admite un índice por documento; una creación explícita nunca reemplaza silenciosamente el existente. Se conserva el acceso a crear/editar con la limitación explicada. |
+| #109 | Elementos compartido y agrupado (nombre/ubicación actualizados por #121), un único Enlace para URL/destinos internos y siete campos automáticos estructurados. Pruebas de encabezado/pie, metadatos, historial, DOCX y PDF. |
 | #108 | Revelar miniatura activa con desplazamiento mínimo y etiquetas completas localizadas. Redibujar no interrumpe la exploración manual del panel. |
 | #107 | Movimiento hacia la página real, escala/grab offset, vista previa, autoscroll y cancelación. Parcial: el motor no siempre acepta anclar una imagen flotante al párrafo de un salto manual; se rechaza ese destino y se restaura el original. Sigue abierto. |
 | #106 | Ocho tiradores y cursores, bordes de una dimensión/esquinas proporcionales; vista previa, cancelación y un paso de historial. Las imágenes en línea conservan su anclaje al texto. |
@@ -34,9 +34,8 @@ su promoción sin recompilar. [Proceso y comandos de instalación](CANDIDATES.md
 
 ## Pruebas
 
-La ejecución local completa supera 162 pruebas Rust, cuatro Python, formato y
-enlaces; catálogos inglés/español completos con 825 mensajes. La comprobación GUI
-local es de tipos; la ejecución real GTK depende de CI con las bibliotecas GNOME.
+La ejecución local completa supera 171 pruebas Rust, cuatro Python, formato y
+enlaces; catálogos inglés/español completos con 830 mensajes. La comprobación GUI local incluye GTK 4.14/libadwaita 1.5 con Xvfb: revisión unificada, comentarios, correcciones, formato y gestos reales de imagen y reglas. La candidata aún debe superar CI y sus instalaciones.
 
 `tests/references_alpha29.rs` comprueba actualizaciones derivadas, fecha congelada,
 caret, historial/redo, leyendas e índice; Guardar como actualiza FILENAME al destino

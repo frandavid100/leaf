@@ -15,12 +15,7 @@ pub(super) fn paragraph_ui_test(
             .emit_clicked()
     };
     assert!(
-        find_widget(&s.main, "paragraph-bullets")
-            .unwrap()
-            .is::<gtk::CheckButton>()
-    );
-    assert!(
-        find_widget(&s.main, "paragraph-more-bullets")
+        find_widget(&s.main, "paragraph-list")
             .unwrap()
             .is::<gtk::Button>()
     );
@@ -29,6 +24,7 @@ pub(super) fn paragraph_ui_test(
     assert_eq!(selection_paragraph(&ui)["align"], "center");
     click("paragraph-indent");
     assert!(selection_paragraph(&ui)["indentLeft"].as_f64().unwrap() > 0.0);
+    click("paragraph-list");
     click("paragraph-more-bullets");
     assert_eq!(s.stack.visible_child_name().as_deref(), Some("detail"));
     click("paragraph-list-•");

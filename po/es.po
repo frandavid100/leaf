@@ -2815,3 +2815,24 @@ msgstr "Autor desconocido"
 
 msgid "{kind} — {author}"
 msgstr "{kind} — {author}"
+
+msgid "Apply Last Border Settings"
+msgstr "Aplicar los últimos ajustes de borde"
+
+msgid "Apply Last Highlight"
+msgstr "Aplicar el último resaltado"
+
+msgid "Apply Last Text Color"
+msgstr "Aplicar el último color del texto"
+
+msgid "List"
+msgstr "Lista"
+
+msgid "{label}: {value}"
+msgstr "{label}: {value}"
+
+msgid "DOCUMENTS\nOpen DOCX/ODT documents from the main menu. Ctrl+S saves; Ctrl+Shift+S saves a copy. Use DOCX for notes, equations, automatic references, comments and advanced tracked changes.\n\nNAVIGATION AND REVIEW\nF9 shows or hides Pages, Navigation and Review. Ctrl+F searches; Ctrl+H replaces. Review filters corrections, tracked changes and comments. Apply or ignore a correction occurrence, accept/reject changes, and reply to or resolve comments. F7 opens corrections. Edit/Suggest controls whether new edits are tracked.\n\nFORMATTING AND ELEMENTS\nStyle, Paragraph, Text and Elements are in the adaptive header or bottom toolbar. Format rows show current values; mixed checkboxes enable the option across the selection. Arrows open internal options with Back. Reapply remembers that feature’s applied settings. Pins keep panels floating. Elements shares table, image and contents tools with right-click, while keeping Insert available. Ctrl+Z undoes; Ctrl+Shift+Z redoes. Ruler drags snap to 0.5 cm; Escape cancels.\n\nAUTOSAVE\nPreferences can disable autosave, use recovery copies or save directly to the document. Recover Documents is in the main menu."
+msgstr "DOCUMENTOS\nAbre documentos DOCX/ODT desde el menú principal. Ctrl+S guarda; Ctrl+Mayús+S guarda una copia. Usa DOCX para notas, ecuaciones, referencias automáticas, comentarios y cambios sugeridos avanzados.\n\nNAVEGACIÓN Y REVISIÓN\nF9 muestra u oculta Páginas, Navegación y Revisión. Ctrl+F busca; Ctrl+H reemplaza. Revisión filtra correcciones, cambios sugeridos y comentarios. Aplica o ignora una aparición, acepta/rechaza cambios y responde o resuelve comentarios. F7 abre las correcciones. Editar/Sugerir controla si se registran las nuevas ediciones.\n\nFORMATO Y ELEMENTOS\nEstilo, Párrafo, Texto y Elementos están en la cabecera adaptable o la barra inferior. Las filas muestran valores actuales; las casillas mixtas activan la opción en toda la selección. Las flechas abren opciones internas con vuelta atrás. Reaplicar recuerda los ajustes aplicados de esa propiedad. La chincheta mantiene los paneles flotantes. Elementos comparte opciones de tabla, imagen e índice con el clic derecho y conserva Insertar. Ctrl+Z deshace; Ctrl+Mayús+Z rehace. Los arrastres de regla usan un imán de 0,5 cm; Escape cancela.\n\nAUTOGUARDADO\nPreferencias permite desactivar el autoguardado, usar copias de recuperación o guardar en el propio documento. Recuperar documentos está en el menú principal."
+
+msgid "The current engine supports one table of contents per document. Edit the existing table of contents instead."
+msgstr "El motor actual admite un índice por documento. Edita el índice existente."
