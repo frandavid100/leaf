@@ -166,5 +166,6 @@ fn placement_command(s: &mut Session, v: &serde_json::Value) -> wordcraft_engine
     float.dist = distance;
     float.dist_top = distance;
     float.dist_bottom = distance;
+    p.touch();
     Ok(json!({}))
 }

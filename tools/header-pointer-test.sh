@@ -4,6 +4,7 @@ set -euo pipefail
 GSK_RENDERER=cairo ./target/release/wordcraft-gnome --headers-pointer-test 2>headers-pointer.log &
 leaf_pid=$!
 trap 'kill "$leaf_pid" 2>/dev/null || true' EXIT
+leaf_window=
 for marker in HEADER_POINTER_READY HEADER_RETURN_READY; do
   for attempt in $(seq 1 300); do
     if grep -q "$marker" headers-pointer.log; then break; fi
@@ -11,7 +12,10 @@ for marker in HEADER_POINTER_READY HEADER_RETURN_READY; do
     sleep 0.1
   done
   grep -q "$marker" headers-pointer.log || { cat headers-pointer.log; exit 1; }
-  leaf_window=$(xdotool search --onlyvisible --pid "$leaf_pid" | head -n1)
+  if test -z "$leaf_window"; then
+    leaf_window=$(xdotool search --onlyvisible --pid "$leaf_pid" | head -n1)
+  fi
+  xdotool getwindowgeometry --shell "$leaf_window" >&2
   xdotool windowfocus --sync "$leaf_window"
   if test "$marker" = HEADER_POINTER_READY; then
     read -r _ leaf_x leaf_y < <(grep HEADER_POINTER_READY headers-pointer.log | tail -n1)

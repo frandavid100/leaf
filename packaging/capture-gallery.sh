@@ -3,7 +3,7 @@ set -euo pipefail
 mode=${1:-native}
 output=${2:-alpha28-gallery}
 mkdir -p "$output"
-xcompmgr -a > "$output/compositor.log" 2>&1 &
+xcompmgr -c > "$output/compositor.log" 2>&1 &
 compositor=$!
 pid=
 cleanup() {

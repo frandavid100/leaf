@@ -225,3 +225,49 @@ fn floating_picture_wrap_spacing_history_and_docx() {
     assert_eq!(s.doc, before);
     std::fs::remove_dir_all(dir).unwrap();
 }
+
+#[test]
+fn changing_a_laid_out_floating_picture_back_to_inline_reflows_text() {
+    fn lines(s: &mut Session) -> Vec<(usize, usize, u32, u32, u32)> {
+        s.layout()
+            .pages
+            .iter()
+            .enumerate()
+            .flat_map(|(page, p)| {
+                p.items.iter().flat_map(move |item| match item {
+                    wordcraft_engine::layout::Placed::Lines { para, l0, l1, .. } => para.lines
+                        [*l0..*l1]
+                        .iter()
+                        .map(|l| {
+                            (
+                                page,
+                                l.start,
+                                l.height.to_bits(),
+                                l.left.to_bits(),
+                                l.right.to_bits(),
+                            )
+                        })
+                        .collect::<Vec<_>>(),
+                    _ => Vec::new(),
+                })
+            })
+            .collect()
+    }
+    let dir = folder();
+    let image = fixture(&dir);
+    let mut s = Session::new(Document::from_text(
+        &"Text around an imported floating image. ".repeat(60),
+    ));
+    pictures::insert(&mut s, &image).unwrap();
+    s.run("arrange.wrap", &json!({"wrap":"behindText"}))
+        .unwrap();
+    let _ = lines(&mut s);
+    pictures::placement(&mut s, Some("inline"), 0.).unwrap();
+    let mut fresh = Session::new(s.doc.clone());
+    assert_eq!(
+        lines(&mut s),
+        lines(&mut fresh),
+        "cached layout must match a fresh layout after placement changes"
+    );
+    std::fs::remove_dir_all(dir).unwrap();
+}
