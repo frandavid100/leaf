@@ -14,6 +14,9 @@ pub(super) fn header_footer_ui_test(
         Session::new(wordcraft_doc::Document::from_text(&text)),
         "Page stories",
     );
+    // Leave a real canvas gutter outside the transient edge rulers. Fit Width
+    // can make the old four-pixel target an interactive ruler edge.
+    zoom_to(ui, 0.8);
     let body_text = ui
         .current
         .borrow()

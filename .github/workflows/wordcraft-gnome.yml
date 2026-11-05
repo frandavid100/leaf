@@ -76,6 +76,12 @@ jobs:
           fi
       - name: Compilar lector GNOME
         run: cargo build --release --locked --features gui --bin wordcraft-gnome
+      - name: Editable headers, footers and automatic page fields
+        run: |
+          set -o pipefail
+          GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --headers-ui-test 2>&1 | tee headers-ui.log
+          grep -q 'HEADER_FOOTER_UI_OK pointer=false' headers-ui.log
+          xvfb-run -a bash tools/header-pointer-test.sh
       - name: Verify alpha28 section zoom, page activation, notes and image drags
         run: |
           XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a timeout 90s bash tools/alpha28-pointer-test.sh
@@ -169,12 +175,6 @@ jobs:
           grep -q 'LOCALIZATION_UI_OK language=en' localization-en.log
           LANGUAGE=es GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --localization-ui-test 2>&1 | tee localization-es.log
           grep -q 'LOCALIZATION_UI_OK language=es' localization-es.log
-      - name: Editable headers, footers and automatic page fields
-        run: |
-          set -o pipefail
-          GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --headers-ui-test 2>&1 | tee headers-ui.log
-          grep -q 'HEADER_FOOTER_UI_OK pointer=false' headers-ui.log
-          xvfb-run -a bash tools/header-pointer-test.sh
       - name: Section options and native spelling review
         run: |
           set -o pipefail
