@@ -6,6 +6,8 @@
 
 Leaf is a word processor for Linux with a native GNOME interface. Its goal is to make advanced document editing straightforward: everyday tools within reach, detailed options when you need them, and an uncluttered workspace that keeps your document at the centre.
 
+[![Get it on FlatPark](https://flatpark.org/badges/get-it-on-flatpark.svg)](https://flatpark.org/apps/io.github.frandavid100.leaf/)
+
 **[Try the Flatpak alpha](https://github.com/frandavid100/leaf/releases)** · [Installation](docs/INSTALLING.md)
 
 ![Leaf editing an illustrated document, with page thumbnails in the sidebar](docs/screenshots/leaf-showcase.png)
