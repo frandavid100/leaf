@@ -18,7 +18,7 @@ use wordcraft_engine::Session;
 use wordcraft_gnome::editing::{self, Edit};
 use wordcraft_gnome::formatting::{self, Format};
 use wordcraft_gnome::selection::{self, SelectionGeometry};
-use wordcraft_gnome::viewer_layout::{self, THUMB_SCALE};
+use wordcraft_gnome::viewer_layout;
 use wordcraft_gnome::{open_document, render_page_screen as render_page, sample_session};
 
 use wordcraft_gnome::document_properties::ColumnScope;
@@ -87,6 +87,10 @@ mod pdf_dialog;
 use pdf_dialog::*;
 mod performance;
 use performance::*;
+mod references;
+use references::*;
+mod picture_pointer;
+use picture_pointer::*;
 mod picture_controls;
 use picture_controls::*;
 mod pointer_input;
@@ -147,6 +151,9 @@ use columns_checks::*;
 #[path = "diagnostics/context.rs"]
 mod context_checks;
 use context_checks::*;
+#[path = "diagnostics/alpha28.rs"]
+mod alpha28_checks;
+use alpha28_checks::*;
 #[path = "diagnostics/register.rs"]
 mod diagnostic_registration;
 use diagnostic_registration::*;

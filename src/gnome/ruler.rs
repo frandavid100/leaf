@@ -160,7 +160,7 @@ impl Ruler {
             .pages
             .get(index)
             .map(|p| (p.section, p.body))?;
-        let zoom = f64::from(doc.zoom);
+        let zoom = f64::from(doc.page_zoom(index));
         let point = gtk::graphene::Point::new(x as f32, y as f32);
         for (edge, revealer) in [
             (Edge::Top, &self.reveal),
@@ -224,7 +224,7 @@ impl Ruler {
             state,
             lease,
             page_x: rect.x() as f64,
-            zoom: d.zoom as f64,
+            zoom: d.page_zoom(page) as f64,
         })
     }
     pub(super) fn margin_preview_delta(&self) -> Option<f32> {
@@ -497,7 +497,7 @@ impl Ruler {
             return;
         };
         let horizontal = matches!(edge, Edge::Top | Edge::Bottom);
-        let zoom = f64::from(doc.zoom);
+        let zoom = f64::from(doc.page_zoom(page));
         let origin = f64::from(if horizontal { sheet.x() } else { sheet.y() });
         let length = f64::from(if horizontal {
             widget.width()

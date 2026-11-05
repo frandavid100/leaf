@@ -96,7 +96,9 @@ pub(super) fn install_keyboard_input(
             move |_, key, _, modifiers| {
                 let shift = modifiers.contains(gdk::ModifierType::SHIFT_MASK);
                 let control = modifiers.contains(gdk::ModifierType::CONTROL_MASK);
-                if key == gdk::Key::Escape && table_pointer_cancel(&ui) {
+                if key == gdk::Key::Escape
+                    && (picture_drag_cancel(&ui) || table_pointer_cancel(&ui))
+                {
                     return glib::Propagation::Stop;
                 }
                 if ui.document_box.has_focus() {

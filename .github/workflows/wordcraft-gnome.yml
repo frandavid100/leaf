@@ -76,6 +76,41 @@ jobs:
           fi
       - name: Compilar lector GNOME
         run: cargo build --release --locked --features gui --bin wordcraft-gnome
+      - name: Verify alpha28 section zoom, page activation, notes and image drags
+        run: |
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a timeout 90s bash tools/alpha28-pointer-test.sh
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=es GDK_SCALE=2 GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2560x1800x24' timeout 90s bash tools/alpha28-pointer-test.sh
+      - name: Capture alpha28 public gallery
+        run: |
+          mkdir -p alpha28-gallery
+          xvfb-run -a -s '-screen 0 1400x1000x24' bash -c '
+            set -euo pipefail
+            for variant in main notes review format; do
+              XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo LEAF_GALLERY=$variant ./target/release/wordcraft-gnome --alpha28-gallery > alpha28-gallery/$variant.log 2>&1 &
+              pid=$!
+              for attempt in $(seq 1 200); do
+                grep -q ALPHA28_GALLERY_READY alpha28-gallery/$variant.log && break
+                kill -0 "$pid"
+                sleep 0.1
+              done
+              grep -q ALPHA28_GALLERY_READY alpha28-gallery/$variant.log
+              sleep 1
+              window=$(xdotool search --onlyvisible --class Leaf | head -n1)
+              xdotool windowfocus --sync "$window"
+              scrot --focused alpha28-gallery/leaf-alpha28-$variant.png
+              kill "$pid"
+              wait "$pid" || true
+            done
+          '
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alpha28-gallery-and-interactions
+          path: |
+            alpha28-gallery/
+            alpha28-pointer-*.log
+            alpha28-pointer-*.png
+          retention-days: 14
       - uses: actions/upload-artifact@v4
         with:
           name: leaf-native-unvalidated

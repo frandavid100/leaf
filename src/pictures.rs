@@ -95,3 +95,76 @@ pub fn delete(s: &mut Session) -> Result<(), String> {
         .map_err(|e| e.to_string())?;
     Ok(())
 }
+
+pub fn layout(s: &Session) -> Option<wordcraft_doc::para::Float> {
+    let (p, _, _) = selected(s)?;
+    match s.doc.para_at(&p)?.object_at(p.off)? {
+        InlineObject::Image { float, .. } => Some(float.clone()),
+        _ => None,
+    }
+}
+
+/// Register a document command so placement and spacing use engine history/protection.
+pub fn placement(s: &mut Session, mode: Option<&str>, distance: f32) -> Result<(), String> {
+    use wordcraft_engine::{CommandSpec, Registry};
+    if !distance.is_finite() || !(0.0..=144.0).contains(&distance) {
+        return Err(wordcraft_gnome::t!("Image spacing must be between 0 and 144 points.").into());
+    }
+    if s.registry.get("leaf.pictureLayout").is_none() {
+        let mut specs = s.registry.all().to_vec();
+        specs.push(CommandSpec::new(
+            "leaf.pictureLayout",
+            "Image Placement",
+            "Image",
+            placement_command,
+        ));
+        s.registry = std::sync::Arc::new(Registry::new(specs));
+    }
+    s.run(
+        "leaf.pictureLayout",
+        &json!({"mode":mode,"distance":distance}),
+    )
+    .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+fn placement_command(s: &mut Session, v: &serde_json::Value) -> wordcraft_engine::CmdResult {
+    use wordcraft_doc::para::{Anchor, FloatAlign, Wrap};
+    use wordcraft_engine::CmdError;
+    let (pos, _, _) = selected(s).ok_or_else(|| CmdError::Disabled("Select an image".into()))?;
+    let mode = v["mode"].as_str();
+    let distance = v["distance"].as_f64().unwrap_or(0.) as f32;
+    if !distance.is_finite() || !(0.0..=144.0).contains(&distance) {
+        return Err(CmdError::Params("Invalid image spacing".into()));
+    }
+    if mode.is_some_and(|m| !["inline", "left", "right", "topAndBottom"].contains(&m)) {
+        return Err(CmdError::Params("Invalid image placement".into()));
+    }
+    let p = s.doc.para_mut(pos.story, &pos.path)?;
+    let Some(InlineObject::Image { float, .. }) = p.object_at_mut(pos.off) else {
+        return Err(CmdError::Disabled("Select an image".into()));
+    };
+    if let Some(mode) = mode {
+        float.wrap = match mode {
+            "inline" => Wrap::Inline,
+            "topAndBottom" => Wrap::TopAndBottom,
+            _ => Wrap::Square,
+        };
+        if mode != "inline" {
+            float.h_rel = Anchor::Column;
+            float.v_rel = Anchor::Paragraph;
+            float.h_align = Some(if mode == "right" {
+                FloatAlign::End
+            } else {
+                FloatAlign::Start
+            });
+            float.v_align = None;
+            float.x = 0.;
+            float.y = 0.;
+        }
+    }
+    float.dist = distance;
+    float.dist_top = distance;
+    float.dist_bottom = distance;
+    Ok(json!({}))
+}

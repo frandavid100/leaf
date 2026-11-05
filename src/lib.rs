@@ -166,3 +166,5 @@ pub mod selection_ink;
 pub mod history;
 
 pub mod ruler;
+
+pub mod references;

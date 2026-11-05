@@ -214,6 +214,10 @@ pub(super) fn install_pointer_and_view_input(
                     if table_pointer_active(&ui) {
                         return;
                     }
+                    if picture_drag_begin(&ui, x, y) {
+                        gesture.set_state(gtk::EventSequenceState::Claimed);
+                        return;
+                    }
                     *ui.drag_anchor.borrow_mut() = if gesture
                         .current_event_state()
                         .contains(gdk::ModifierType::SHIFT_MASK)
@@ -235,6 +239,9 @@ pub(super) fn install_pointer_and_view_input(
                 #[weak]
                 ui,
                 move |gesture, dx, dy| {
+                    if picture_drag_update(&ui, dx, dy) {
+                        return;
+                    }
                     if let Some((sx, sy)) = gesture.start_point() {
                         if table_pointer_update(
                             &ui,
@@ -271,6 +278,9 @@ pub(super) fn install_pointer_and_view_input(
                 #[weak]
                 ui,
                 move |gesture, _, _| {
+                    if picture_drag_finish(&ui) {
+                        return;
+                    }
                     if table_pointer_finish(&ui) {
                         return;
                     }
@@ -286,6 +296,7 @@ pub(super) fn install_pointer_and_view_input(
         let weak = Rc::downgrade(&ui);
         drag.connect_cancel(move |_, _| {
             if let Some(ui) = weak.upgrade() {
+                picture_drag_cancel(&ui);
                 table_pointer_cancel(&ui);
                 stop_document_drag(&ui);
             }

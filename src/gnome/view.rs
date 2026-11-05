@@ -41,7 +41,7 @@ pub(super) fn update_status(ui: &Rc<Ui>) {
         .unwrap_or_else(|| wordcraft_gnome::t!("Pages").into());
     if let Some(doc) = current.as_mut() {
         ui.zoom_label
-            .set_text(&format!("{:.0} %", doc.zoom * 100.0));
+            .set_text(&format!("{:.0} %", doc.page_zoom(doc.active) * 100.0));
         ui.zoom_out
             .set_sensitive(doc.zoom > viewer_layout::MIN_ZOOM);
         ui.zoom_in.set_sensitive(doc.zoom < viewer_layout::MAX_ZOOM);
@@ -93,10 +93,17 @@ pub(super) fn refresh_pages(ui: &Rc<Ui>) {
     if let Ok(mut borrowed) = ui.current.try_borrow_mut() {
         if let Some(doc) = borrowed.as_mut() {
             let viewport = top + adj.page_size().max(600.0) * 0.3;
-            doc.active = doc.arrangement.page_at(
+            let candidate = doc.arrangement.page_at(
                 ui.scroll.hadjustment().value() + ui.scroll.hadjustment().page_size() * 0.3,
                 viewport,
             );
+            let same_row = doc.arrangement.rows.iter().any(|r| {
+                (r.first..r.first + r.count).contains(&candidate)
+                    && (r.first..r.first + r.count).contains(&doc.active)
+            });
+            if !same_row {
+                doc.active = candidate;
+            }
             let visible = doc.arrangement.visible(top, bottom);
             let keep: HashSet<usize> = visible.iter().copied().collect();
             let old: Vec<usize> = doc.painted_pages.difference(&keep).copied().collect();
@@ -106,20 +113,21 @@ pub(super) fn refresh_pages(ui: &Rc<Ui>) {
             }
             for index in visible {
                 if !doc.painted_pages.contains(&index) {
+                    let zoom = doc.page_zoom(index);
                     match {
                         let _p = perf_scope("boundary.page_raster");
                         render_page(
                             &mut doc.session,
                             index,
-                            doc.zoom * doc.raster_scale as f32,
+                            zoom * doc.raster_scale as f32,
                             adw::StyleManager::default().is_dark(),
                         )
                     } {
                         Ok(img) => {
                             doc.pages[index].set_paintable(Some(&page_paintable::new(
                                 img,
-                                (doc.sizes[index].0 * doc.zoom).ceil() as i32,
-                                (doc.sizes[index].1 * doc.zoom).ceil() as i32,
+                                (doc.sizes[index].0 * zoom).ceil() as i32,
+                                (doc.sizes[index].1 * zoom).ceil() as i32,
                             )));
                             doc.painted_pages.insert(index);
                         }
@@ -189,19 +197,20 @@ pub(super) fn refresh_thumbnails(ui: &Rc<Ui>) {
             }
             for i in visible {
                 if !doc.painted_thumbs.contains(&i) {
+                    let scale = viewer_layout::thumbnail_scale(doc.sizes[i].0);
                     if let Ok(image) = {
                         let _p = perf_scope("boundary.thumbnail_raster");
                         render_page(
                             &mut doc.session,
                             i,
-                            THUMB_SCALE * doc.raster_scale as f32,
+                            scale * doc.raster_scale as f32,
                             adw::StyleManager::default().is_dark(),
                         )
                     } {
                         doc.thumbs[i].set_paintable(Some(&page_paintable::new(
                             image,
-                            (doc.sizes[i].0 * THUMB_SCALE).ceil() as i32,
-                            (doc.sizes[i].1 * THUMB_SCALE).ceil() as i32,
+                            (doc.sizes[i].0 * scale).ceil() as i32,
+                            (doc.sizes[i].1 * scale).ceil() as i32,
                         )));
                         doc.painted_thumbs.insert(i);
                     }
@@ -212,6 +221,25 @@ pub(super) fn refresh_thumbnails(ui: &Rc<Ui>) {
 }
 
 pub(super) fn jump_to(ui: &Rc<Ui>, index: usize) {
+    {
+        let mut current = ui.current.borrow_mut();
+        let Some(doc) = current.as_mut() else { return };
+        let layout = doc.session.layout();
+        let Some(page) = layout.pages.get(index) else {
+            return;
+        };
+        if let Some(pos) = layout.hit(
+            index,
+            page.body.x,
+            page.body.y,
+            wordcraft_doc::StoryRef::Body,
+        ) {
+            let _ = selection::set_caret(&mut doc.session, &pos, false);
+        }
+        doc.active = index;
+        doc.session.page_hint = index;
+    }
+    refresh_selection(ui);
     if ui.sidebar.is_collapsed() {
         ui.sidebar.set_show_sidebar(false);
     }
@@ -236,31 +264,20 @@ pub(super) fn scroll_to_page(ui: &Rc<Ui>, index: usize) {
 }
 
 pub(super) fn zoom_to(ui: &Rc<Ui>, zoom: f32) {
+    if let Some(doc) = ui.current.borrow_mut().as_mut() {
+        doc.fit_to_width = false;
+    }
+    apply_zoom(ui, zoom);
+}
+
+fn apply_zoom(ui: &Rc<Ui>, zoom: f32) {
     let zoom = viewer_layout::zoom_clamped(zoom);
     let current_page;
     {
         let mut borrowed = ui.current.borrow_mut();
         let Some(doc) = borrowed.as_mut() else { return };
         current_page = doc.active;
-        let changed = (zoom - doc.zoom).abs() >= 0.005;
-        if !changed {
-            drop(borrowed);
-            layout_pages(ui);
-            return;
-        }
         doc.zoom = zoom;
-        for (i, picture) in doc.pages.iter().enumerate() {
-            picture.set_paintable(None::<&gdk::Paintable>);
-            doc.page_frames[i].set_size_request(
-                (doc.sizes[i].0 * zoom).ceil() as i32,
-                (doc.sizes[i].1 * zoom).ceil() as i32,
-            );
-            picture.set_size_request(
-                (doc.sizes[i].0 * zoom).ceil() as i32,
-                (doc.sizes[i].1 * zoom).ceil() as i32,
-            );
-        }
-        doc.painted_pages.clear();
     }
     ui.selection_zoom.set(zoom);
     layout_pages(ui);
@@ -333,7 +350,29 @@ pub(super) fn layout_pages(ui: &Rc<Ui>) {
     let Some(doc) = value.as_mut() else {
         return;
     };
-    let next = viewer_layout::arrange_sections(&doc.sizes, &doc.sections, doc.zoom, width);
+    let scales = if doc.fit_to_width {
+        viewer_layout::fitted_scales(&doc.sizes, &doc.sections, width)
+    } else {
+        vec![doc.zoom; doc.sizes.len()]
+    };
+    if scales != doc.page_scales {
+        for (i, picture) in doc.pages.iter().enumerate() {
+            picture.set_paintable(None::<&gdk::Paintable>);
+            let w = (doc.sizes[i].0 * scales[i]).ceil() as i32;
+            let h = (doc.sizes[i].1 * scales[i]).ceil() as i32;
+            doc.page_frames[i].set_size_request(w, h);
+            picture.set_size_request(w, h);
+        }
+        doc.painted_pages.clear();
+        doc.page_scales = scales;
+    }
+    let displayed: Vec<_> = doc
+        .sizes
+        .iter()
+        .zip(&doc.page_scales)
+        .map(|(&(w, h), z)| (w * z, h * z))
+        .collect();
+    let next = viewer_layout::arrange_sections(&displayed, &doc.sections, 1.0, width);
     for (frame, p) in doc.page_frames.iter().zip(&next.pages) {
         ui.document_box.move_(frame, p.x, p.y);
     }
@@ -346,16 +385,14 @@ pub(super) fn fit_width(ui: &Rc<Ui>) {
     let width = viewport_width(ui);
     let zoom = {
         let mut value = ui.current.borrow_mut();
-        let Some(doc) = value.as_mut() else {
-            return;
-        };
+        let Some(doc) = value.as_mut() else { return };
         doc.fit_to_width = true;
-        let natural = viewer_layout::arrange(&doc.sizes, 1.0, width);
-        let maximum =
-            (natural.width - viewer_layout::PAGE_GAP * (natural.columns + 1) as f64).max(1.0);
-        ((width - viewer_layout::PAGE_GAP * (natural.columns + 1) as f64 - 2.0) / maximum) as f32
+        viewer_layout::fitted_scales(&doc.sizes, &doc.sections, width)
+            .get(doc.active)
+            .copied()
+            .unwrap_or(1.0)
     };
-    zoom_to(ui, zoom);
+    apply_zoom(ui, zoom);
 }
 
 pub(super) fn schedule_layout(ui: &Rc<Ui>) {
@@ -394,6 +431,7 @@ pub(super) fn clear_canvas(canvas: &impl IsA<gtk::Fixed>) {
 pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
     let _perf = perf_scope("leaf.opened");
     *ui.table_pointer.borrow_mut() = TablePointer::default();
+    ui.picture_drag.borrow_mut().take();
     ui.selection_rasters.borrow_mut().clear();
     wordcraft_gnome::proofing::configure(&mut session);
     if ui.closed.get() {
@@ -470,13 +508,20 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
         area.set_valign(gtk::Align::Fill);
         {
             let data = ui.selection_data.clone();
-            let scale = ui.selection_zoom.clone();
             let motion = ui.caret_motion.clone();
             let search = ui.search_highlights.clone();
             let weak = Rc::downgrade(ui);
             area.set_draw_func(move |widget, cr, _, _| {
                 let selection = data.borrow();
-                let z = f64::from(scale.get());
+                let Some(ui_for_scale) = weak.upgrade() else {
+                    return;
+                };
+                let z = ui_for_scale
+                    .current
+                    .try_borrow()
+                    .ok()
+                    .and_then(|c| c.as_ref().map(|d| f64::from(d.page_zoom(i))))
+                    .unwrap_or(1.0);
                 if let Some(ui) = weak.upgrade() {
                     if let Ok(mut value) = ui.current.try_borrow_mut() {
                         if let Some(d) = value.as_mut() {
@@ -508,6 +553,7 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
                 if let Some(ui) = weak.upgrade() {
                     paint_selection(&ui, widget, cr, i, z, &selection.highlights);
                     paint_table_pointer(&ui, widget, cr, i, z);
+                    paint_picture_frame(&ui, cr, i, z);
                 }
                 if let Some(ui) = weak.upgrade().filter(caret_is_shown) {
                     let now = widget.frame_clock().map(|c| c.frame_time()).unwrap_or(0);
@@ -538,6 +584,7 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
         page_frames.push(frame);
         selection_areas.push(area);
 
+        let thumb_scale = viewer_layout::thumbnail_scale(width);
         let thumb = gtk::Picture::new();
         thumb.set_can_shrink(false);
         thumb.set_content_fit(gtk::ContentFit::Fill);
@@ -545,8 +592,8 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
         thumb.set_hexpand(false);
         thumb.set_vexpand(false);
         thumb.set_size_request(
-            (width * THUMB_SCALE).ceil() as i32,
-            (height * THUMB_SCALE).ceil() as i32,
+            (width * thumb_scale).ceil() as i32,
+            (height * thumb_scale).ceil() as i32,
         );
         thumb.add_css_class("thumbnail-sheet");
         thumb.set_overflow(gtk::Overflow::Hidden);
@@ -583,14 +630,16 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
     let mut offset = 12.0;
     let thumbnail_fallback = sizes
         .iter()
-        .map(|&(_, h)| {
-            let height = (f64::from(h) * f64::from(THUMB_SCALE)).ceil() + 46.0;
+        .map(|&(w, h)| {
+            let height =
+                (f64::from(h) * f64::from(viewer_layout::thumbnail_scale(w))).ceil() + 46.0;
             let bounds = (offset, offset + height);
             offset += height;
             bounds
         })
         .collect();
     ui.current.replace(Some(Current {
+        page_scales: vec![zoom; sizes.len()],
         session,
         sizes,
         sections,

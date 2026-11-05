@@ -45,7 +45,8 @@ pub(super) fn leave_header_outside_at(ui: &Rc<Ui>, x: f64, y: f64) -> Option<boo
                 continue;
             }
             in_page = true;
-            let py = ((y - r.y() as f64) / d.zoom as f64) as f32;
+            let py = ((y - r.y() as f64) / d.page_scales.get(i).copied().unwrap_or(d.zoom) as f64)
+                as f32;
             if let Some((_, header)) = d.session.layout().header_footer_zone(i, py) {
                 if (header && active == Region::Header) || (!header && active == Region::Footer) {
                     return None;
@@ -77,7 +78,8 @@ pub(super) fn enter_empty_header_at(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
             {
                 return None;
             }
-            let py = ((y - r.y() as f64) / d.zoom as f64) as f32;
+            let py = ((y - r.y() as f64) / d.page_scales.get(i).copied().unwrap_or(d.zoom) as f64)
+                as f32;
             let (story, header) = d.session.layout().header_footer_zone(i, py)?;
             let region = if header {
                 Region::Header

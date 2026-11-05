@@ -125,10 +125,13 @@ pub(super) fn hidpi_assert(ui: &Rc<Ui>, zoom: f32) {
         assert_eq!(
             p.pixels(),
             (
-                (w * THUMB_SCALE * density).ceil() as i32,
-                (h * THUMB_SCALE * density).ceil() as i32
+                (w * viewer_layout::thumbnail_scale(w) * density).ceil() as i32,
+                (h * viewer_layout::thumbnail_scale(w) * density).ceil() as i32
             )
         );
-        assert_eq!(p.intrinsic_width(), (w * THUMB_SCALE).ceil() as i32);
+        assert_eq!(
+            p.intrinsic_width(),
+            (w * viewer_layout::thumbnail_scale(w)).ceil() as i32
+        );
     }
 }

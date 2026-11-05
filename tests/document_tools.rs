@@ -194,3 +194,34 @@ fn page_setup_preserves_pending_character_format() {
     document_properties::apply(&mut s, PageSetup { top: 50.0, ..p }, true).unwrap();
     assert_eq!(s.pending, pending);
 }
+
+#[test]
+fn floating_picture_wrap_spacing_history_and_docx() {
+    let dir = folder();
+    let image = fixture(&dir);
+    let mut s = Session::new(Document::from_text(
+        &"A paragraph flowing around the image. ".repeat(80),
+    ));
+    pictures::insert(&mut s, &image).unwrap();
+    let pos = pictures::selected(&s).unwrap().0;
+    let before = s.doc.clone();
+    let depth = s.undo_depth();
+    pictures::placement(&mut s, Some("right"), 8.).unwrap();
+    assert_eq!(s.undo_depth(), depth + 1);
+    let float = pictures::layout(&s).unwrap();
+    assert_eq!(float.wrap, wordcraft_doc::para::Wrap::Square);
+    assert_eq!(float.dist, 8.);
+    assert!(wordcraft_engine::cmd::objects::moves_with_text(&float));
+    let hit = s.layout().object(&pos, 0).unwrap();
+    assert!(hit.rect.x > 200.);
+    let path = dir.join("floating.docx");
+    saving::save(&mut s, &path).unwrap();
+    let mut copy = open_document(&path).unwrap();
+    copy.run("select.objects", &json!({"index":0})).unwrap();
+    assert_eq!(pictures::layout(&copy).unwrap().wrap, float.wrap);
+    assert!((pictures::layout(&copy).unwrap().dist - 8.).abs() < 0.1);
+    assert!(saving::format_preservation_error(&copy, &path.with_extension("odt")).is_some());
+    s.run("edit.undo", &json!({})).unwrap();
+    assert_eq!(s.doc, before);
+    std::fs::remove_dir_all(dir).unwrap();
+}

@@ -47,8 +47,8 @@ fn page_point(ui: &Ui, x: f64, y: f64, page: Option<usize>) -> Option<(usize, f3
         }
         Some((
             i,
-            ((x - r.x() as f64) / d.zoom as f64) as f32,
-            ((y - r.y() as f64) / d.zoom as f64) as f32,
+            ((x - r.x() as f64) / d.page_zoom(i) as f64) as f32,
+            ((y - r.y() as f64) / d.page_zoom(i) as f64) as f32,
         ))
     })
 }
@@ -57,11 +57,11 @@ fn hit(ui: &Ui, p: usize, x: f32, y: f32) -> Option<Hit> {
     let d = c.as_mut()?;
     let l = d.session.layout();
     let story = d.session.sel.focus.story;
-    if let Some(mut t) = resize::resize_target(&l, &d.session.doc, p, x, y, 3.0 / d.zoom) {
+    if let Some(mut t) = resize::resize_target(&l, &d.session.doc, p, x, y, 3.0 / d.page_zoom(p)) {
         t.limit_to_selection(&d.session, y);
         return (t.story == story).then_some(Hit::Resize(t));
     }
-    mouse::target_at(&l, &d.session.doc, story, p, x, y, 3.0 / d.zoom).map(Hit::Mouse)
+    mouse::target_at(&l, &d.session.doc, story, p, x, y, 3.0 / d.page_zoom(p)).map(Hit::Mouse)
 }
 fn redraw(ui: &Ui) {
     if let Some(d) = ui.current.borrow().as_ref() {
@@ -138,7 +138,7 @@ pub(super) fn table_pointer_press(
         .current
         .borrow()
         .as_ref()
-        .map(|d| 3.0 / d.zoom)
+        .map(|d| 3.0 / d.page_zoom(page))
         .unwrap_or(3.0);
     let anchor_row = match &target {
         Hit::Mouse(t) if mods.contains(gdk::ModifierType::SHIFT_MASK) => match t.spot {
@@ -311,9 +311,11 @@ pub(super) fn install_table_hover(ui: &Rc<Ui>) {
             let d = c.as_mut()?;
             let l = d.session.layout();
             let story = d.session.sel.focus.story;
-            let t = mouse::target_at(&l, &d.session.doc, story, p, x, y, 3.0 / d.zoom);
-            let g = mouse::handle_table(&l, &d.session.doc, story, p, x, y, 3.0 / d.zoom)
-                .or_else(|| resize::table_under(&l, &d.session.doc, p, x, y, 3.0 / d.zoom))?;
+            let t = mouse::target_at(&l, &d.session.doc, story, p, x, y, 3.0 / d.page_zoom(p));
+            let g = mouse::handle_table(&l, &d.session.doc, story, p, x, y, 3.0 / d.page_zoom(p))
+                .or_else(|| {
+                resize::table_under(&l, &d.session.doc, p, x, y, 3.0 / d.page_zoom(p))
+            })?;
             Some((p, g, t))
         });
         let cursor = page_point(&ui, x, y, None)
