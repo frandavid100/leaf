@@ -130,10 +130,40 @@ pub fn save(session: &mut Session, path: &Path) -> Result<(), String> {
     let path = path
         .to_str()
         .ok_or(wordcraft_gnome::t!("The path is not UTF-8"))?;
-    crate::references::refresh_derived(session)?;
-    let result = session
-        .run("file.saveAs", &json!({"path": path}))
-        .map_err(|e| e.to_string())?;
+    // Prepare derived values in a disposable session. A failed write leaves the
+    // live document, source history and revision exactly as they were.
+    let mut prepared = Session::new(session.doc.clone());
+    prepared.sel = session.sel.clone();
+    prepared.page_hint = session.page_hint;
+    prepared.path = Some(path.into());
+    crate::references::refresh_derived(&mut prepared)?;
+    let changed = prepared.doc != session.doc;
+    let old_doc = session.doc.clone();
+    let old_selection = session.sel.clone();
+    let old_path = session.path.clone();
+    let old_dirty = session.dirty;
+    if changed {
+        session.doc = prepared.doc;
+        session.sel = prepared.sel;
+        session.relayout();
+    }
+    let result = match session.run("file.saveAs", &json!({"path":path})) {
+        Ok(value) => value,
+        Err(error) => {
+            if changed {
+                session.doc = old_doc;
+                session.sel = old_selection;
+                session.relayout();
+            }
+            session.path = old_path;
+            session.dirty = old_dirty;
+            return Err(error.to_string());
+        }
+    };
+    if changed {
+        session.touch();
+        session.dirty = false;
+    }
     if result["saved"] != true {
         return Err(
             wordcraft_gnome::t!("WordCraft did not confirm that the document was saved").into(),

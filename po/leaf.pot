@@ -537,7 +537,7 @@ msgstr ""
 msgid "Could Not Encode PNG Image"
 msgstr ""
 
-#: src/gnome/pdf_dialog.rs:56
+#: src/gnome/pdf_dialog.rs:62
 msgid "Could Not Export PDF"
 msgstr ""
 
@@ -553,15 +553,15 @@ msgstr ""
 msgid "Could Not Open Save Dialog: {e}"
 msgstr ""
 
-#: src/gnome/printing.rs:71
+#: src/gnome/printing.rs:77
 msgid "Could Not Prepare Print PDF"
 msgstr ""
 
-#: src/printing.rs:33
+#: src/printing.rs:39
 msgid "Could Not Prepare Printing: {e}"
 msgstr ""
 
-#: src/gnome/printing.rs:108
+#: src/gnome/printing.rs:114
 msgid "Could Not Print: {e}"
 msgstr ""
 
@@ -849,7 +849,7 @@ msgstr ""
 msgid "Document Saved"
 msgstr ""
 
-#: src/gnome/printing.rs:91
+#: src/gnome/printing.rs:97
 msgid "Document Sent to Printer"
 msgstr ""
 
@@ -989,7 +989,7 @@ msgstr ""
 msgid "Equal"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha29.rs:157 src/gnome/equations.rs:9
+#: src/gnome/diagnostics/alpha29.rs:153 src/gnome/equations.rs:9
 msgid "Equation"
 msgstr ""
 
@@ -1025,7 +1025,7 @@ msgstr ""
 msgid "Export to PDF…"
 msgstr ""
 
-#: src/gnome/pdf_dialog.rs:43
+#: src/gnome/pdf_dialog.rs:47
 msgid "Exporting PDF…"
 msgstr ""
 
@@ -1793,7 +1793,7 @@ msgstr ""
 msgid "PDF Document (.pdf)"
 msgstr ""
 
-#: src/gnome/pdf_dialog.rs:53
+#: src/gnome/pdf_dialog.rs:59
 msgid "PDF Exported"
 msgstr ""
 
@@ -1921,7 +1921,7 @@ msgstr ""
 msgid "Preferences"
 msgstr ""
 
-#: src/gnome/printing.rs:43
+#: src/gnome/printing.rs:48
 msgid "Preparing to Print…"
 msgstr ""
 
@@ -2645,7 +2645,7 @@ msgstr ""
 msgid "Table Size"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:90 src/gnome/diagnostics/alpha29.rs:106 src/gnome/references.rs:195
+#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:86 src/gnome/diagnostics/alpha29.rs:102 src/gnome/references.rs:195
 msgid "Table of Contents"
 msgstr ""
 
@@ -2765,7 +2765,7 @@ msgstr ""
 msgid "The file does not exist or is not a regular file"
 msgstr ""
 
-#: src/saving.rs:154
+#: src/saving.rs:166
 msgid "The file name must end in .docx or .odt"
 msgstr ""
 
@@ -3073,7 +3073,7 @@ msgstr ""
 msgid "WordCraft cannot anchor this image on the destination page. Its original position has been kept."
 msgstr ""
 
-#: src/saving.rs:139
+#: src/saving.rs:151
 msgid "WordCraft did not confirm that the document was saved"
 msgstr ""
 

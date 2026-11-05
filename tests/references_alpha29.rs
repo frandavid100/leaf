@@ -129,3 +129,23 @@ fn toc_edit_changes_the_existing_table_and_preserves_custom_switches() {
             .any(|p| p.text.starts_with("Index"))
     );
 }
+
+#[test]
+fn save_as_refreshes_its_actual_filename_and_a_failed_save_preserves_the_session() {
+    let mut s = Session::new(Document::from_text("File: "));
+    references::insert_field(&mut s, "FILENAME").unwrap();
+    let root = std::env::temp_dir().join(format!("leaf29-fields-{}", std::process::id()));
+    std::fs::create_dir_all(&root).unwrap();
+    let path = root.join("a-real-document.docx");
+    wordcraft_gnome::saving::save(&mut s, &path).unwrap();
+    let copy = wordcraft_gnome::open_document(&path).unwrap();
+    assert_eq!(fields(&copy, "FILENAME"), ["a-real-document.docx"]);
+    let before = s.doc.clone();
+    let old_path = s.path.clone();
+    let depth = s.undo_depth();
+    assert!(wordcraft_gnome::saving::save(&mut s, &root.join("missing-dir/other.docx")).is_err());
+    assert_eq!(s.doc, before);
+    assert_eq!(s.path, old_path);
+    assert_eq!(s.undo_depth(), depth);
+    std::fs::remove_dir_all(root).unwrap();
+}

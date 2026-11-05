@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 export LEAF29_ACK_DIR
-LEAF29_ACK_DIR=$(mktemp -d)
+LEAF29_ACK_DIR=$(mktemp -d "${LEAF29_ACK_PARENT:-/tmp}/leaf29-ack.XXXXXX")
 log=alpha29-pointer-${LANGUAGE:-en}-${GDK_SCALE:-1}.log
-./target/release/wordcraft-gnome --alpha29-ui-test > "$log" 2>&1 &
+runner=${1:-./target/release/wordcraft-gnome}
+cmd=("$runner"); [[ "$runner" != *.sh ]] || cmd=(bash "$runner")
+"${cmd[@]}" --alpha29-ui-test > "$log" 2>&1 &
 pid=$!
-trap 'kill "$pid" 2>/dev/null || true; rm -rf "$LEAF29_ACK_DIR"' EXIT
+trap 'scrot "${log%.log}-final.png" 2>/dev/null || true; kill "$pid" 2>/dev/null || true; rm -rf "$LEAF29_ACK_DIR"' EXIT
 for stage in $(seq 0 22); do
   for attempt in $(seq 1 600); do
     grep -q "^ALPHA29_POINTER $stage " "$log" && break
@@ -13,7 +15,7 @@ for stage in $(seq 0 22); do
     sleep 0.1
   done
   read -r _ _ role ax ay bx by < <(grep "^ALPHA29_POINTER $stage " "$log")
-  window=$(xdotool search --onlyvisible --pid "$pid" --name '^Leaf Alpha29 Regression$' | head -n1)
+  window=$(xdotool search --onlyvisible --name '^Leaf Alpha29 Regression$' | head -n1)
   xdotool windowfocus --sync "$window"
   if [[ "$role" == click ]]; then
     xdotool mousemove --window "$window" "$ax" "$ay" click 1

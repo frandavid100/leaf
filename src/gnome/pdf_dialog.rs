@@ -38,13 +38,19 @@ pub(super) fn export_pdf_dialog(ui: &Rc<Ui>, parent: &ApplicationWindow) {
                             .add_toast(Toast::new(wordcraft_gnome::t!("Choose a Local File")));
                         return;
                     };
-                    let doc = ui.current.borrow().as_ref().unwrap().session.doc.clone();
+                    let (doc, document_path) = {
+                        let current = ui.current.borrow();
+                        let s = &current.as_ref().unwrap().session;
+                        (s.doc.clone(), s.path.clone())
+                    };
                     ui.toasts
                         .add_toast(Toast::new(wordcraft_gnome::t!("Exporting PDF…")));
                     let weak = Rc::downgrade(&ui);
                     glib::MainContext::default().spawn_local(async move {
                         let result = gio::spawn_blocking(move || {
-                            pdf_export::export(&mut Session::new(doc), &path)
+                            let mut session = Session::new(doc);
+                            session.path = document_path;
+                            pdf_export::export(&mut session, &path)
                         })
                         .await;
                         if let Some(ui) = weak.upgrade() {

@@ -644,6 +644,17 @@ jobs:
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/smoke-test.sh 2>&1 | tee dist/flatpak-smoke.log
+      - name: Verify Alpha29 controls and pointer gestures in the installed Flatpak
+        run: |
+          mkdir -p "$HOME/.var/app/io.github.frandavid100.leaf/cache" dist/alpha29-installed
+          cat > "$RUNNER_TEMP/leaf29-installed.sh" <<'INSTALLED29'
+          #!/usr/bin/env bash
+          exec flatpak run --user --branch=alpha --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/bin/leaf "$@"' leaf "$@"
+          INSTALLED29
+          export LEAF29_ACK_PARENT="$HOME/.var/app/io.github.frandavid100.leaf/cache"
+          LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 180s bash tools/alpha29-pointer-test.sh "$RUNNER_TEMP/leaf29-installed.sh"
+          LANGUAGE=es GDK_SCALE=2 xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s bash tools/alpha29-pointer-test.sh "$RUNNER_TEMP/leaf29-installed.sh"
+          mv alpha29-pointer-*.log alpha29-pointer-*.png dist/alpha29-installed/
       - name: Capture the installed alpha28 gallery
         run: xvfb-run -a -s '-screen 0 1400x1000x24' dbus-run-session -- bash packaging/capture-gallery.sh flatpak dist/alpha28-gallery
       - uses: actions/upload-artifact@v4

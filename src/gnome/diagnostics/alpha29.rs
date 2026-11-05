@@ -24,6 +24,11 @@ pub(super) fn alpha29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
     glib::timeout_add_local_once(std::time::Duration::from_millis(500), move || {
         let last = u.current.borrow().as_ref().unwrap().sizes.len() - 1;
         jump_to(&u, last);
+        // Page navigation dismisses the collapsed overlay. Reopening Pages
+        // must reveal the active page too, at both desktop raster scales.
+        u.sidebar.set_show_sidebar(true);
+        refresh_thumbnails(&u);
+        reveal_active_thumbnail(&u);
         let (u, w, a) = (u.clone(), w.clone(), a.clone());
         glib::timeout_add_local_once(std::time::Duration::from_millis(450), move || {
             {
@@ -35,7 +40,14 @@ pub(super) fn alpha29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
                 let v = u.thumbnails_scroll.vadjustment();
                 assert!(
                     r.y() as f64 >= v.value() - 1.
-                        && (r.y() + r.height()) as f64 <= v.value() + v.page_size() + 1.
+                        && (r.y() + r.height()) as f64 <= v.value() + v.page_size() + 1.,
+                    "active={} bounds={r:?} scroll={} page={} upper={} sidebar={} collapsed={}",
+                    d.active,
+                    v.value(),
+                    v.page_size(),
+                    v.upper(),
+                    u.sidebar.shows_sidebar(),
+                    u.sidebar.is_collapsed()
                 );
                 let label = d.thumb_buttons[d.active]
                     .child()
@@ -53,11 +65,7 @@ pub(super) fn alpha29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
                 u.thumbnails_scroll.vadjustment().value() < 1.,
                 "redraw must not override manual sidebar browsing"
             );
-            alpha29_controls(&u, &w);
-            eprintln!(
-                "ALPHA29_CONTROLS_OK thumbnails, captions, fields, links, TOC settings, footnotes, equations"
-            );
-            alpha29_image_stage(&u, &w, &a, 0);
+            alpha29_auto_test(&u, &w, &a);
         });
     });
 }
@@ -509,5 +517,82 @@ fn alpha29_autoscroll(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application
             );
             a.quit();
         });
+    });
+}
+
+fn alpha29_auto_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+    let mut s = Session::new(wordcraft_doc::Document::from_text(
+        "Heading\nA paragraph.\nSee: ",
+    ));
+    s.run("para.style", &json!({"style":"Heading1"})).unwrap();
+    selection::set_caret(&mut s, &Pos::body(2, 5), false).unwrap();
+    s.run(
+        "insert.crossReference",
+        &json!({"to":"heading","target":"Heading","show":"text"}),
+    )
+    .unwrap();
+    selection::set_caret(&mut s, &Pos::body(0, 0), false).unwrap();
+    s.run("references.toc", &json!({"title":"Contents","levels":3}))
+        .unwrap();
+    let mut heading = wordcraft_engine::cmd::citations::ref_targets(&s, "heading")
+        .into_iter()
+        .find(|(text, _)| text == "Heading")
+        .unwrap()
+        .1;
+    heading.off = s
+        .doc
+        .para_at(&heading)
+        .unwrap()
+        .text
+        .find("Heading")
+        .unwrap();
+    selection::set_caret(&mut s, &heading, false).unwrap();
+    opened(ui, s, "Automatic references");
+    {
+        let mut c = ui.current.borrow_mut();
+        c.as_mut()
+            .unwrap()
+            .session
+            .run("text.insert", &json!({"text":"New "}))
+            .unwrap();
+    }
+    after_content_change(ui);
+    let caret = ui.current.borrow().as_ref().unwrap().session.sel.clone();
+    let (u, w, a) = (ui.clone(), window.clone(), app.clone());
+    glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        let has_new = |s: &Session| {
+            let mut found = false;
+            s.doc.objects_in_reading_order(&mut |o| {
+                if let wordcraft_doc::InlineObject::Field { instr, result, .. } = o {
+                    if instr.starts_with("REF ") {
+                        found |= result.contains("New Heading");
+                    }
+                }
+            });
+            found
+        };
+        {
+            let c = u.current.borrow();
+            let d = c.as_ref().unwrap();
+            assert_eq!(d.session.sel, caret);
+            assert!(
+                has_new(&d.session),
+                "coalesced reference refresh must run automatically"
+            );
+        }
+        apply_user_edit(&u, Edit::Undo);
+        {
+            let c = u.current.borrow();
+            let s = &c.as_ref().unwrap().session;
+            assert!(!has_new(s));
+            assert!(s.can_redo());
+        }
+        apply_user_edit(&u, Edit::Redo);
+        assert!(has_new(&u.current.borrow().as_ref().unwrap().session));
+        alpha29_controls(&u, &w);
+        eprintln!(
+            "ALPHA29_CONTROLS_OK thumbnails, automatic references/Undo/Redo, captions, fields, links, TOC settings, footnotes, equations"
+        );
+        alpha29_image_stage(&u, &w, &a, 0);
     });
 }

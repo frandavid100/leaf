@@ -12,7 +12,13 @@ pub fn export(s: &mut Session, path: &Path) -> Result<(), String> {
     let path = path
         .to_str()
         .ok_or(wordcraft_gnome::t!("The path is not UTF-8"))?;
-    s.run(
+    let mut copy = Session::new(s.doc.clone());
+    copy.sel = s.sel.clone();
+    copy.page_hint = s.page_hint;
+    copy.path = s.path.clone();
+    copy.view = s.view.clone();
+    crate::references::refresh_derived(&mut copy)?;
+    copy.run(
         "file.exportPdf",
         &serde_json::json!({"path": path, "markup": false}),
     )

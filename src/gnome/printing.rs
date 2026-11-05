@@ -30,7 +30,12 @@ pub(super) fn print_document(ui: &Rc<Ui>, parent: &ApplicationWindow) {
     if ui.closed.get() || ui.printing.pending.borrow().is_some() {
         return;
     }
-    let Some(document) = ui.current.borrow().as_ref().map(|d| d.session.doc.clone()) else {
+    let Some((document, document_path)) = ui
+        .current
+        .borrow()
+        .as_ref()
+        .map(|d| (d.session.doc.clone(), d.session.path.clone()))
+    else {
         return;
     };
     let cancel = gio::Cancellable::new();
@@ -50,9 +55,10 @@ pub(super) fn print_document(ui: &Rc<Ui>, parent: &ApplicationWindow) {
         .and_then(|p| p.application())
         .map(|app| app.hold());
     glib::MainContext::default().spawn_local(async move {
-        let prepared =
-            gio::spawn_blocking(move || wordcraft_gnome::printing::PrintFile::prepare(document))
-                .await;
+        let prepared = gio::spawn_blocking(move || {
+            wordcraft_gnome::printing::PrintFile::prepare_with_path(document, document_path)
+        })
+        .await;
         let Some(ui) = weak.upgrade() else {
             return;
         };
