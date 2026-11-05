@@ -32,7 +32,14 @@ pub(super) fn refresh_main_actions(host: &Workspace) {
             })
         })
         .unwrap_or_default();
+    let can_caption = ui.as_ref().is_some_and(|u| {
+        u.current
+            .borrow()
+            .as_ref()
+            .is_some_and(|d| wordcraft_gnome::references::caption_kind(&d.session).is_some())
+    });
     for (name, on) in [
+        ("insert-caption", can_caption),
         ("insert-bookmark", can_bookmark),
         ("insert-comment", can_comment),
         ("undo", undo),
@@ -427,57 +434,87 @@ fn insert_break(ui: &Rc<Ui>, kind: &str) {
 
 pub(super) fn append_insert_menu(root: &gio::Menu) {
     let add = gio::Menu::new();
-    menu_item(&add, wordcraft_gnome::t!("Table…"), "insert-table", None);
-    menu_item(&add, wordcraft_gnome::t!("Image…"), "insert-picture", None);
+    let content = gio::Menu::new();
+    for (label, action) in [
+        (wordcraft_gnome::t!("Table…"), "insert-table"),
+        (wordcraft_gnome::t!("Image…"), "insert-picture"),
+        (wordcraft_gnome::t!("Table of Contents…"), "insert-toc"),
+    ] {
+        menu_item(&content, label, action, None);
+    }
     menu_item(
-        &add,
+        &content,
+        wordcraft_gnome::t!("Equation…"),
+        "insert-equation",
+        None,
+    );
+    add.append_section(None, &content);
+    let context = gio::Menu::new();
+    menu_item(
+        &context,
         wordcraft_gnome::t!("Bookmark…"),
         "insert-bookmark",
         Some("<Control><Shift>F5"),
     );
     menu_item(
-        &add,
+        &context,
         wordcraft_gnome::t!("Comment…"),
         "insert-comment",
         Some("<Control><Alt>m"),
     );
     menu_item(
-        &add,
-        wordcraft_gnome::t!("Footnote"),
-        "insert-footnote",
-        Some("<Control><Alt>f"),
+        &context,
+        wordcraft_gnome::t!("Link…"),
+        "insert-link",
+        Some("<Control>k"),
     );
     menu_item(
-        &add,
-        wordcraft_gnome::t!("Table of Contents…"),
-        "insert-toc",
-        None,
-    );
-    menu_item(
-        &add,
-        wordcraft_gnome::t!("Caption…"),
+        &context,
+        wordcraft_gnome::t!("Caption"),
         "insert-caption",
         None,
     );
     menu_item(
-        &add,
-        wordcraft_gnome::t!("Cross-reference…"),
-        "insert-cross-reference",
-        None,
+        &context,
+        wordcraft_gnome::t!("Footnote"),
+        "insert-footnote",
+        Some("<Control><Alt>f"),
     );
-    menu_item(&add, wordcraft_gnome::t!("Header"), "insert-header", None);
-    menu_item(&add, wordcraft_gnome::t!("Footer"), "insert-footer", None);
+    add.append_section(None, &context);
+    let sections = gio::Menu::new();
+    let headers = gio::Menu::new();
     menu_item(
-        &add,
-        wordcraft_gnome::t!("Page Number…"),
-        "insert-page-number",
+        &headers,
+        wordcraft_gnome::t!("Header"),
+        "insert-header",
         None,
     );
+    menu_item(
+        &headers,
+        wordcraft_gnome::t!("Footer"),
+        "insert-footer",
+        None,
+    );
+    sections.append_submenu(Some(wordcraft_gnome::t!("Header and Footer")), &headers);
+    let fields = gio::Menu::new();
+    for (label, action) in [
+        (wordcraft_gnome::t!("Page Number"), "field-page"),
+        (wordcraft_gnome::t!("Total Pages"), "field-pages"),
+        (wordcraft_gnome::t!("Author"), "field-author"),
+        (wordcraft_gnome::t!("Document Title"), "field-title"),
+        (wordcraft_gnome::t!("File Name"), "field-filename"),
+        (wordcraft_gnome::t!("Date"), "field-date"),
+        (wordcraft_gnome::t!("Time"), "field-time"),
+    ] {
+        menu_item(&fields, label, action, None);
+    }
+    sections.append_submenu(Some(wordcraft_gnome::t!("Automatic Fields")), &fields);
     let breaks = gio::Menu::new();
     for (kind, label) in break_items() {
         menu_item(&breaks, label, &format!("break-{kind}"), None);
     }
-    add.append_submenu(Some(wordcraft_gnome::t!("Breaks")), &breaks);
+    sections.append_submenu(Some(wordcraft_gnome::t!("Breaks")), &breaks);
+    add.append_section(None, &sections);
     root.append_submenu(Some(wordcraft_gnome::t!("Insert")), &add);
 }
 
@@ -500,23 +537,6 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
     );
     root.append_section(None, &save);
     append_insert_menu(&root);
-    let references = gio::Menu::new();
-    for (label, name) in [
-        (wordcraft_gnome::t!("Edit Footnote"), "edit-footnote"),
-        (wordcraft_gnome::t!("Next Footnote"), "next-footnote"),
-        (
-            wordcraft_gnome::t!("Return to Reference"),
-            "footnote-reference",
-        ),
-        (wordcraft_gnome::t!("Footnote Options…"), "footnote-options"),
-        (
-            wordcraft_gnome::t!("Update References"),
-            "update-references",
-        ),
-    ] {
-        menu_item(&references, label, name, None);
-    }
-    root.append_submenu(Some(wordcraft_gnome::t!("References")), &references);
     let properties = gio::Menu::new();
     menu_item(
         &properties,

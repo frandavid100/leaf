@@ -19,6 +19,22 @@ pub(super) fn install_pointer_and_view_input(
 ) {
     install_table_hover(ui);
     install_link_tooltip(ui);
+    let hover = gtk::EventControllerMotion::new();
+    let weak = Rc::downgrade(ui);
+    let owns_cursor = Cell::new(false);
+    hover.connect_motion(move |_, x, y| {
+        if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
+            if ui.picture_drag.borrow().is_none() {
+                if let Some(cursor) = picture_hover(&ui, x, y) {
+                    ui.document_box.set_cursor_from_name(Some(cursor));
+                    owns_cursor.set(true);
+                } else if owns_cursor.replace(false) {
+                    ui.document_box.set_cursor_from_name(None);
+                }
+            }
+        }
+    });
+    ui.document_box.add_controller(hover);
     // The centered page stack can be narrower than its viewport. Its surrounding
     // background belongs to the scroller, so page-stack gestures never see it.
     let outside = gtk::GestureClick::new();
@@ -80,6 +96,21 @@ pub(super) fn install_pointer_and_view_input(
                     gesture.set_state(gtk::EventSequenceState::Denied);
                     return;
                 }
+                if count == 1
+                    && !gesture
+                        .current_event_state()
+                        .contains(gdk::ModifierType::SHIFT_MASK)
+                    && follow_note_number_at(&ui, x, y)
+                {
+                    gesture.set_state(gtk::EventSequenceState::Claimed);
+                    return;
+                }
+                if count == 1
+                    && picture_hover(&ui, x, y).is_some_and(|cursor| cursor.ends_with("resize"))
+                {
+                    ui.document_box.grab_focus();
+                    return;
+                }
                 if table_pointer_press(&ui, count, x, y, gesture.current_event_state()) {
                     return;
                 }
@@ -108,6 +139,20 @@ pub(super) fn install_pointer_and_view_input(
                 let Some(pos) = pos_at_canvas(&ui, x, y) else {
                     return;
                 };
+                if count == 2 {
+                    let equation = {
+                        let mut c = ui.current.borrow_mut();
+                        let d = c.as_mut().unwrap();
+                        let _ = selection::set_caret(&mut d.session, &pos, false);
+                        wordcraft_gnome::equations::target(&d.session).is_some()
+                    };
+                    if equation {
+                        if let Some(h) = ui.host.upgrade() {
+                            show_equation(&ui, &h.window);
+                        }
+                        return;
+                    }
+                }
                 if count == 2 {
                     let entered = {
                         let mut current = ui.current.borrow_mut();
@@ -351,6 +396,7 @@ pub(super) fn install_pointer_and_view_input(
                     glib::idle_add_local_once(move || {
                         if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
                             refresh_thumbnails(&ui);
+                            reveal_active_thumbnail(&ui);
                         }
                     });
                 }

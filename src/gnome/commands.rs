@@ -3,11 +3,23 @@ use super::*;
 pub(super) fn after_content_change(ui: &Rc<Ui>) {
     remember_repeat(ui);
     refresh_after_content_change(ui);
+    schedule_derived_refresh(ui);
 }
 pub(super) fn after_history_change(ui: &Rc<Ui>) {
+    if let Some(source) = ui.derived_source.borrow_mut().take() {
+        source.remove();
+    }
+    {
+        let mut current = ui.current.borrow_mut();
+        if let Some(d) = current.as_mut() {
+            if let Err(e) = wordcraft_gnome::references::refresh_derived(&mut d.session) {
+                ui.toasts.add_toast(Toast::new(&e));
+            }
+        }
+    }
     refresh_after_content_change(ui);
 }
-fn refresh_after_content_change(ui: &Rc<Ui>) {
+pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
     let _perf = perf_scope("leaf.after_content_change");
     // A formatting entry owns its edit even when pagination rebuilds the canvas.
     let was_canvas_focused = ui.document_box.has_focus();

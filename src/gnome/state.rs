@@ -95,6 +95,7 @@ pub(super) struct Ui {
     pub(super) closing_confirmed: Cell<bool>,
     pub(super) tab_page: RefCell<Option<adw::TabPage>>,
     pub(super) closed: Cell<bool>,
+    pub(super) derived_source: RefCell<Option<glib::SourceId>>,
     pub(super) autosave_source: RefCell<Option<glib::SourceId>>,
     pub(super) theme_signal: RefCell<Option<glib::SignalHandlerId>>,
     pub(super) restoring: Cell<bool>,

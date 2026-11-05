@@ -105,6 +105,16 @@ pub(super) fn context_paste(ui: &Rc<Ui>) {
 }
 pub(super) fn context_prepare(ui: &Rc<Ui>, x: f64, y: f64) -> Option<DocumentContext> {
     let pos = pos_at_canvas(ui, x, y)?;
+    let toc = ui
+        .current
+        .borrow()
+        .as_ref()
+        .is_some_and(|d| wordcraft_gnome::references::toc_at(&d.session, &pos));
+    if toc {
+        let mut c = ui.current.borrow_mut();
+        selection::set_caret(&mut c.as_mut()?.session, &pos, false).ok()?;
+    }
+
     let keep = {
         let value = ui.current.borrow();
         let d = value.as_ref()?;
@@ -347,6 +357,49 @@ pub(super) fn show_document_context(
     }
     let group = gio::SimpleActionGroup::new();
     pop.insert_action_group("context", Some(&group));
+    let toc = ui
+        .current
+        .borrow()
+        .as_ref()
+        .is_some_and(|d| wordcraft_engine::cmd::references::caret_in_toc(&d.session));
+    if toc {
+        context_item(
+            &root,
+            &group,
+            &pop,
+            ui,
+            wordcraft_gnome::t!("Edit Table of Contents…"),
+            "edit-toc",
+            true,
+            |ui| {
+                if let Some(host) = ui.host.upgrade() {
+                    show_contents_dialog(ui, &host.window);
+                }
+            },
+        );
+    }
+
+    if ui
+        .current
+        .borrow()
+        .as_ref()
+        .is_some_and(|d| wordcraft_gnome::equations::target(&d.session).is_some())
+    {
+        context_item(
+            &root,
+            &group,
+            &pop,
+            ui,
+            wordcraft_gnome::t!("Edit Equation…"),
+            "edit-equation",
+            true,
+            |ui| {
+                if let Some(host) = ui.host.upgrade() {
+                    show_equation(ui, &host.window);
+                }
+            },
+        );
+    }
     let (selected, merge) = ui
         .current
         .borrow()

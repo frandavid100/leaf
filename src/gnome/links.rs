@@ -103,6 +103,16 @@ fn show_link_for(ui: &Rc<Ui>, pointer: Option<&Pos>) -> Option<LinkDialog> {
         hint.set_max_width_chars(40);
         body.append(&hint);
     }
+    let kind = gtk::DropDown::from_strings(&[
+        wordcraft_gnome::t!("External Link"),
+        wordcraft_gnome::t!("Heading"),
+        wordcraft_gnome::t!("Bookmark"),
+        wordcraft_gnome::t!("Figure"),
+        wordcraft_gnome::t!("Table"),
+    ]);
+    kind.set_widget_name("link-kind");
+    accessible_name(&kind, wordcraft_gnome::t!("Destination Type"));
+    body.append(&kind);
     let destination = gtk::Entry::new();
     destination.set_widget_name("link-destination");
     destination.set_placeholder_text(Some(wordcraft_gnome::t!("Destination")));
@@ -111,6 +121,59 @@ fn show_link_for(ui: &Rc<Ui>, pointer: Option<&Pos>) -> Option<LinkDialog> {
         destination.set_text(&url);
     }
     body.append(&destination);
+    let targets = gtk::DropDown::from_strings(&[]);
+    targets.set_widget_name("link-internal-target");
+    targets.set_visible(false);
+    accessible_name(&targets, wordcraft_gnome::t!("Target"));
+    body.append(&targets);
+    let page_number = gtk::CheckButton::with_label(wordcraft_gnome::t!("Show Page Number"));
+    page_number.set_visible(false);
+    body.append(&page_number);
+    {
+        let weak = Rc::downgrade(ui);
+        let dest = destination.downgrade();
+        let list = targets.downgrade();
+        let button = apply.downgrade();
+        let page = page_number.downgrade();
+        let display = display_text.as_ref().map(|e| e.downgrade());
+        kind.connect_selected_notify(move |kind| {
+            let (Some(ui), Some(dest), Some(list), Some(button), Some(page)) = (
+                weak.upgrade(),
+                dest.upgrade(),
+                list.upgrade(),
+                button.upgrade(),
+                page.upgrade(),
+            ) else {
+                return;
+            };
+            let external = kind.selected() == 0;
+            dest.set_visible(external);
+            list.set_visible(!external);
+            page.set_visible(!external);
+            if let Some(display) = display.as_ref().and_then(|e| e.upgrade()) {
+                display.set_visible(external);
+            }
+            if external {
+                button.set_sensitive(!dest.text().trim().is_empty());
+                return;
+            }
+            let c = ui.current.borrow();
+            let Some(d) = c.as_ref() else { return };
+            let names = ["heading", "bookmark", "figure", "table"];
+            let values = wordcraft_engine::cmd::citations::ref_targets(
+                &d.session,
+                names[kind.selected() as usize - 1],
+            );
+            let model = gtk::StringList::new(&[]);
+            for (text, _) in values {
+                model.append(&text);
+            }
+            button.set_sensitive(model.n_items() > 0);
+            list.set_model(Some(&model));
+            list.set_selected(0);
+        });
+    }
+
     let error = gtk::Label::new(None);
     error.set_wrap(true);
     error.add_css_class("error");
@@ -173,7 +236,17 @@ fn show_link_for(ui: &Rc<Ui>, pointer: Option<&Pos>) -> Option<LinkDialog> {
             ));
             return;
         }
-        let result = {
+        let result = if kind.selected()!=0 {
+            let name=targets.selected_item().and_then(|v|v.downcast::<gtk::StringObject>().ok());
+            if let Some(name)=name {
+                let mut c=ui.current.borrow_mut();let s=&mut c.as_mut().unwrap().session;
+                let snap=s.edit_snapshot();
+                let result=selection::select_range(s,&target.anchor,&target.focus).and_then(|_| {
+                    s.run("insert.crossReference",&serde_json::json!({"to":(["heading","bookmark","figure","table"][kind.selected() as usize-1]),"target":name.string().as_str(),"show":if page_number.is_active(){"page"}else{"text"}})).map(|_|true).map_err(|e|e.to_string())
+                });
+                if result.is_err(){s.restore(snap)}result
+            } else {Err(wordcraft_gnome::t!("No references of this type are available.").into())}
+        } else {
             let mut v = ui.current.borrow_mut();
             links::apply_to(
                 &mut v.as_mut().unwrap().session,

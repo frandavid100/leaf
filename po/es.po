@@ -2557,3 +2557,108 @@ msgstr "Guarda como DOCX para conservar las referencias cruzadas y la numeració
 
 msgid "Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures."
 msgstr "Añade notas al pie, índices automáticos, leyendas numeradas y referencias cruzadas a documentos DOCX. Coloca imágenes flotantes con ajuste de texto y controles nativos. Leaf bloquea los guardados ODT que perderían estas estructuras."
+
+msgid "Automatic Fields"
+msgstr "Campos automáticos"
+
+msgid "Clickable Entries"
+msgstr "Entradas con enlace"
+
+msgid "Complete the expression and match its brackets."
+msgstr "Completa la expresión y empareja sus paréntesis."
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Destination Type"
+msgstr "Tipo de destino"
+
+msgid "Display on Its Own Line"
+msgstr "Mostrar en una línea propia"
+
+msgid "Document Title"
+msgstr "Título del documento"
+
+msgid "Edit Equation…"
+msgstr "Editar ecuación…"
+
+msgid "Edit Table of Contents…"
+msgstr "Editar índice…"
+
+msgid "Equation"
+msgstr "Ecuación"
+
+msgid "Equation…"
+msgstr "Ecuación…"
+
+msgid "External Link"
+msgstr "Enlace externo"
+
+msgid "File Name"
+msgstr "Nombre del archivo"
+
+msgid "Footnotes"
+msgstr "Notas al pie"
+
+msgid "Fraction"
+msgstr "Fracción"
+
+msgid "Greek Symbols"
+msgstr "Símbolos griegos"
+
+msgid "Header and Footer"
+msgstr "Encabezado y pie"
+
+msgid "Link…"
+msgstr "Enlace…"
+
+msgid "Mathematical Expression"
+msgstr "Expresión matemática"
+
+msgid "Power"
+msgstr "Potencia"
+
+msgid "Quadratic Formula"
+msgstr "Fórmula cuadrática"
+
+msgid "Right-align Page Numbers"
+msgstr "Alinear los números de página a la derecha"
+
+msgid "Save as DOCX to preserve automatic fields, cross-references and caption numbering. The current ODT exporter only keeps their text."
+msgstr "Guarda como DOCX para conservar los campos automáticos, las referencias cruzadas y la numeración de leyendas. El exportador ODT actual solo conserva su texto."
+
+msgid "Select an image or place the caret in a table to insert a caption."
+msgstr "Selecciona una imagen o sitúa el cursor en una tabla para insertar una leyenda."
+
+msgid "Show Page Number"
+msgstr "Mostrar número de página"
+
+msgid "Square Root"
+msgstr "Raíz cuadrada"
+
+msgid "The table of contents could not be found."
+msgstr "No se ha encontrado el índice."
+
+msgid "This imported equation cannot be edited faithfully with the basic editor. Its original structure is preserved."
+msgstr "El editor básico no puede editar fielmente esta ecuación importada. Se conserva su estructura original."
+
+msgid "Time"
+msgstr "Hora"
+
+msgid "Total Pages"
+msgstr "Total de páginas"
+
+msgid "UnicodeMath: (a+b)/(c+d), x^2, x_1, √(x). Use ordinary Unicode symbols; this is not a LaTeX editor."
+msgstr "UnicodeMath: (a+b)/(c+d), x^2, x_1, √(x). Usa símbolos Unicode normales; este editor no admite LaTeX."
+
+msgid "Use UnicodeMath input, up to 4096 characters. LaTeX commands are not supported here."
+msgstr "Usa expresiones UnicodeMath de hasta 4096 caracteres. Este editor no admite órdenes LaTeX."
+
+msgid "{current} of {total}"
+msgstr "{current} de {total}"
+
+msgid "Choose a destination inside the document."
+msgstr "Elige un destino dentro del documento."
+
+msgid "WordCraft cannot anchor this image on the destination page. Its original position has been kept."
+msgstr "WordCraft no puede anclar esta imagen en la página de destino. Se ha conservado su posición original."

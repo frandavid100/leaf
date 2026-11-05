@@ -351,6 +351,7 @@ pub(super) fn build_tab(
         closing_confirmed: Cell::new(false),
         tab_page: RefCell::new(Some(tab_page.clone())),
         closed: Cell::new(false),
+        derived_source: RefCell::new(None),
         autosave_source: RefCell::new(None),
         theme_signal: RefCell::new(None),
         restoring: Cell::new(false),

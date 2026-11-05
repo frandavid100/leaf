@@ -2557,3 +2557,108 @@ msgstr "Save as DOCX to preserve cross-references and caption numbering. The cur
 
 msgid "Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures."
 msgstr "Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures."
+
+msgid "Automatic Fields"
+msgstr "Automatic Fields"
+
+msgid "Clickable Entries"
+msgstr "Clickable Entries"
+
+msgid "Complete the expression and match its brackets."
+msgstr "Complete the expression and match its brackets."
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Destination Type"
+msgstr "Destination Type"
+
+msgid "Display on Its Own Line"
+msgstr "Display on Its Own Line"
+
+msgid "Document Title"
+msgstr "Document Title"
+
+msgid "Edit Equation…"
+msgstr "Edit Equation…"
+
+msgid "Edit Table of Contents…"
+msgstr "Edit Table of Contents…"
+
+msgid "Equation"
+msgstr "Equation"
+
+msgid "Equation…"
+msgstr "Equation…"
+
+msgid "External Link"
+msgstr "External Link"
+
+msgid "File Name"
+msgstr "File Name"
+
+msgid "Footnotes"
+msgstr "Footnotes"
+
+msgid "Fraction"
+msgstr "Fraction"
+
+msgid "Greek Symbols"
+msgstr "Greek Symbols"
+
+msgid "Header and Footer"
+msgstr "Header and Footer"
+
+msgid "Link…"
+msgstr "Link…"
+
+msgid "Mathematical Expression"
+msgstr "Mathematical Expression"
+
+msgid "Power"
+msgstr "Power"
+
+msgid "Quadratic Formula"
+msgstr "Quadratic Formula"
+
+msgid "Right-align Page Numbers"
+msgstr "Right-align Page Numbers"
+
+msgid "Save as DOCX to preserve automatic fields, cross-references and caption numbering. The current ODT exporter only keeps their text."
+msgstr "Save as DOCX to preserve automatic fields, cross-references and caption numbering. The current ODT exporter only keeps their text."
+
+msgid "Select an image or place the caret in a table to insert a caption."
+msgstr "Select an image or place the caret in a table to insert a caption."
+
+msgid "Show Page Number"
+msgstr "Show Page Number"
+
+msgid "Square Root"
+msgstr "Square Root"
+
+msgid "The table of contents could not be found."
+msgstr "The table of contents could not be found."
+
+msgid "This imported equation cannot be edited faithfully with the basic editor. Its original structure is preserved."
+msgstr "This imported equation cannot be edited faithfully with the basic editor. Its original structure is preserved."
+
+msgid "Time"
+msgstr "Time"
+
+msgid "Total Pages"
+msgstr "Total Pages"
+
+msgid "UnicodeMath: (a+b)/(c+d), x^2, x_1, √(x). Use ordinary Unicode symbols; this is not a LaTeX editor."
+msgstr "UnicodeMath: (a+b)/(c+d), x^2, x_1, √(x). Use ordinary Unicode symbols; this is not a LaTeX editor."
+
+msgid "Use UnicodeMath input, up to 4096 characters. LaTeX commands are not supported here."
+msgstr "Use UnicodeMath input, up to 4096 characters. LaTeX commands are not supported here."
+
+msgid "{current} of {total}"
+msgstr "{current} of {total}"
+
+msgid "Choose a destination inside the document."
+msgstr "Choose a destination inside the document."
+
+msgid "WordCraft cannot anchor this image on the destination page. Its original position has been kept."
+msgstr "WordCraft cannot anchor this image on the destination page. Its original position has been kept."

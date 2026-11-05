@@ -41,6 +41,9 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
         dialog.close();
     }
     ui.annotations.borrow_mut().take();
+    if let Some(source) = ui.derived_source.borrow_mut().take() {
+        source.remove();
+    }
     if let Some(source) = ui.autosave_source.borrow_mut().take() {
         source.remove();
     }

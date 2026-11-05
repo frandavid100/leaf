@@ -84,9 +84,11 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
         InlineObject::Equation { .. } => equation = true,
         InlineObject::FieldStart { instr, .. } | InlineObject::Field { instr, .. } => {
             reference |= instr.split_whitespace().next().is_some_and(|s| {
-                ["REF", "PAGEREF", "SEQ"]
-                    .iter()
-                    .any(|name| s.eq_ignore_ascii_case(name))
+                [
+                    "REF", "PAGEREF", "SEQ", "AUTHOR", "TITLE", "FILENAME", "DATE", "TIME",
+                ]
+                .iter()
+                .any(|name| s.eq_ignore_ascii_case(name))
             });
             toc |= instr
                 .split_whitespace()
@@ -106,7 +108,7 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
         ))
     } else if reference {
         Some(wordcraft_gnome::t!(
-            "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text."
+            "Save as DOCX to preserve automatic fields, cross-references and caption numbering. The current ODT exporter only keeps their text."
         ))
     } else if floating {
         Some(wordcraft_gnome::t!(
@@ -128,6 +130,7 @@ pub fn save(session: &mut Session, path: &Path) -> Result<(), String> {
     let path = path
         .to_str()
         .ok_or(wordcraft_gnome::t!("The path is not UTF-8"))?;
+    crate::references::refresh_derived(session)?;
     let result = session
         .run("file.saveAs", &json!({"path": path}))
         .map_err(|e| e.to_string())?;

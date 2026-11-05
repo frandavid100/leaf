@@ -169,3 +169,37 @@ fn placement_command(s: &mut Session, v: &serde_json::Value) -> wordcraft_engine
     p.touch();
     Ok(json!({}))
 }
+
+/// Commit a page-aware drop atomically. A rejected engine anchor must not strand
+/// the object on another page or clip it at the original sheet edge.
+pub fn drop_at(
+    s: &mut Session,
+    page: usize,
+    to: Option<&Pos>,
+    x: f32,
+    y: f32,
+) -> Result<(), String> {
+    let (_, _, _) = selected(s).ok_or(wordcraft_gnome::t!("Select an Image"))?;
+    let inline = layout(s).is_some_and(|f| f.wrap == wordcraft_doc::para::Wrap::Inline);
+    let snapshot = s.edit_snapshot();
+    let hint = s.page_hint;
+    let args = if inline {
+        json!({"to":to.ok_or(wordcraft_gnome::t!("Choose a destination inside the document."))?})
+    } else {
+        json!({"page":page,"x":x,"y":y})
+    };
+    let result=s.run("arrange.bounds",&args).map_err(|e|e.to_string()).and_then(|_|{
+        if !inline{
+            let (pos,_,_)=selected(s).ok_or(wordcraft_gnome::t!("Select an Image"))?;
+            if s.layout().object(&pos,page).is_none_or(|hit|hit.page!=page){
+                return Err(wordcraft_gnome::t!("WordCraft cannot anchor this image on the destination page. Its original position has been kept.").into())
+            }
+        }
+        Ok(())
+    });
+    if result.is_err() {
+        s.restore(snapshot);
+        s.page_hint = hint;
+    }
+    result
+}

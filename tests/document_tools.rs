@@ -271,3 +271,86 @@ fn changing_a_laid_out_floating_picture_back_to_inline_reflows_text() {
     );
     std::fs::remove_dir_all(dir).unwrap();
 }
+
+#[test]
+fn inline_and_floating_pictures_move_to_the_destination_page_with_one_undo() {
+    for floating in [false, true] {
+        let dir = folder();
+        let image = fixture(&dir);
+        let mut s = Session::new(Document::from_text(
+            "Source paragraph.\nDestination paragraph.",
+        ));
+        s.run("caret.set", &json!({"pos":Pos::body(1,0)})).unwrap();
+        s.run("layout.break", &json!({"kind":"nextPage"})).unwrap();
+        s.run("caret.set", &json!({"pos":Pos::body(0,0)})).unwrap();
+        pictures::insert(&mut s, &image).unwrap();
+        if floating {
+            pictures::placement(&mut s, Some("left"), 8.).unwrap();
+        }
+        let pos = pictures::selected(&s).unwrap().0;
+        let before = s.doc.clone();
+        let depth = s.undo_depth();
+        let layout = s.layout();
+        assert!(layout.pages.len() >= 2);
+        let page = &layout.pages[1];
+        let at = layout
+            .hit(
+                1,
+                page.body.x + 50.,
+                page.body.y + 30.,
+                wordcraft_doc::StoryRef::Body,
+            )
+            .unwrap();
+        let args = if floating {
+            json!({"page":1,"x":100.,"y":110.})
+        } else {
+            json!({"to":at.clone()})
+        };
+        pictures::drop_at(&mut s, 1, Some(&at), 100., 110.).unwrap();
+        let moved = pictures::selected(&s).unwrap().0;
+        assert_eq!(
+            s.layout().object(&moved, 1).unwrap().page,
+            1,
+            "floating={floating} args={args} moved={moved:?} target_caret={:?}",
+            layout.caret_on(&at, 1)
+        );
+        assert_eq!(
+            pictures::layout(&s).unwrap().wrap,
+            if floating {
+                wordcraft_doc::para::Wrap::Square
+            } else {
+                wordcraft_doc::para::Wrap::Inline
+            }
+        );
+        assert_eq!(s.undo_depth(), depth + 1);
+        let path = dir.join("moved.docx");
+        saving::save(&mut s, &path).unwrap();
+        let mut copy = open_document(&path).unwrap();
+        copy.run("select.objects", &json!({"index":0})).unwrap();
+        let cp = pictures::selected(&copy).unwrap().0;
+        assert_eq!(copy.layout().object(&cp, 1).unwrap().page, 1);
+        pdf_export::export(&mut copy, &dir.join("moved.pdf")).unwrap();
+        s.run("edit.undo", &json!({})).unwrap();
+        assert_eq!(s.doc, before);
+        assert_eq!(s.layout().object(&pos, 0).unwrap().page, 0);
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+}
+
+#[test]
+fn a_rejected_cross_page_anchor_restores_the_original_picture() {
+    let dir = folder();
+    let image = fixture(&dir);
+    let mut s = Session::new(Document::from_text("Source\nDestination"));
+    s.run("caret.set", &json!({"pos":Pos::body(1,0)})).unwrap();
+    s.run("layout.break", &json!({"kind":"page"})).unwrap();
+    s.run("caret.set", &json!({"pos":Pos::body(0,0)})).unwrap();
+    pictures::insert(&mut s, &image).unwrap();
+    pictures::placement(&mut s, Some("left"), 6.).unwrap();
+    let before = s.doc.clone();
+    let depth = s.undo_depth();
+    assert!(pictures::drop_at(&mut s, 1, None, 100., 110.).is_err());
+    assert_eq!(s.doc, before);
+    assert_eq!(s.undo_depth(), depth);
+    std::fs::remove_dir_all(dir).unwrap();
+}

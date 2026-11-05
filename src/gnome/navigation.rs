@@ -475,6 +475,7 @@ pub(super) fn install_outline(
             if let Some(ui) = weak.upgrade() {
                 ui.navigation_pages.set_visible_child_name("thumbnails");
                 refresh_thumbnails(&ui);
+                reveal_active_thumbnail(&ui);
             }
         }
     });

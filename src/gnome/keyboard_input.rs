@@ -103,6 +103,21 @@ pub(super) fn install_keyboard_input(
                 }
                 if ui.document_box.has_focus() {
                     restart_caret(&ui);
+                    if modifiers.contains(gdk::ModifierType::ALT_MASK) && key == gdk::Key::equal {
+                        if let Some(host) = ui.host.upgrade() {
+                            show_equation(&ui, &host.window);
+                        }
+                        return glib::Propagation::Stop;
+                    }
+                    if modifiers.contains(gdk::ModifierType::ALT_MASK) && key == gdk::Key::Return {
+                        if let Some(h) = ui.host.upgrade() {
+                            h.window
+                                .lookup_action("follow-note")
+                                .unwrap()
+                                .activate(None);
+                        }
+                        return glib::Propagation::Stop;
+                    }
                     if control
                         && !shift
                         && !modifiers.contains(gdk::ModifierType::ALT_MASK)

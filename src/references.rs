@@ -122,3 +122,250 @@ pub fn update(s: &mut Session) -> Result<(), String> {
     }
     result
 }
+
+/// A caption belongs only to an explicitly selected picture or the targeted table.
+pub fn caption_kind(s: &Session) -> Option<&'static str> {
+    if crate::pictures::selected(s).is_some() {
+        Some("Figure")
+    } else if crate::tables::in_table(s) {
+        Some("Table")
+    } else {
+        None
+    }
+}
+pub fn insert_caption(s: &mut Session) -> Result<(), String> {
+    let label = caption_kind(s).ok_or(wordcraft_gnome::t!(
+        "Select an image or place the caret in a table to insert a caption."
+    ))?;
+    let snapshot = s.edit_snapshot();
+    let mark = s.undo_mark();
+    let result = (|| {
+        s.run(
+            "references.caption",
+            &json!({"label":label,"position":"below"}),
+        )
+        .map_err(|e| e.to_string())?;
+        s.join_next_undo();
+        s.run("text.insert", &json!({"text":": "}))
+            .map_err(|e| e.to_string())?;
+        Ok(())
+    })();
+    if result.is_err() {
+        s.restore(snapshot)
+    } else {
+        s.merge_undo_since(mark)
+    }
+    result
+}
+
+pub fn insert_field(s: &mut Session, instr: &str) -> Result<(), String> {
+    s.run("insert.field", &json!({"instr":instr}))
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+fn derived_field(instr: &str) -> bool {
+    matches!(
+        wordcraft_engine::cmd::references::FieldCode::parse(instr)
+            .name
+            .as_str(),
+        "REF"
+            | "PAGEREF"
+            | "SEQ"
+            | "STYLEREF"
+            | "TOC"
+            | "PAGE"
+            | "NUMPAGES"
+            | "AUTHOR"
+            | "TITLE"
+            | "FILENAME"
+    )
+}
+
+/// Refresh only document-derived values. Other fields retain their values and locks.
+/// Generated values are recomputed after source Undo/Redo without adding a history step.
+pub fn refresh_derived(s: &mut Session) -> Result<bool, String> {
+    let mut probe = Session::new(s.doc.clone());
+    probe.sel = s.sel.clone();
+    probe.page_hint = s.page_hint;
+    probe.path = s.path.clone();
+    probe.pending = s.pending.clone();
+    if !refresh_derived_inner(&mut probe)? {
+        return Ok(false);
+    }
+    // Derived values are recomputable document data, not a separate user edit.
+    // Keep the engine's source undo/redo stacks intact, including redo after Undo.
+    let dirty = s.dirty;
+    s.doc = probe.doc;
+    s.sel = probe.sel;
+    s.touch();
+    s.dirty = dirty;
+    Ok(true)
+}
+
+fn refresh_derived_inner(s: &mut Session) -> Result<bool, String> {
+    let mut needed = false;
+    s.doc.objects_in_reading_order(&mut |o| {
+        if let InlineObject::Field { instr, .. } | InlineObject::FieldStart { instr, .. } = o {
+            needed |= derived_field(instr)
+        }
+    });
+    if !needed {
+        return Ok(false);
+    }
+    let snapshot = s.edit_snapshot();
+    let before = s.doc.clone();
+    let selection = s.sel.clone();
+    let mark = s.undo_mark().saturating_sub(1);
+    let pending = s.pending.clone();
+    let hint = s.page_hint;
+    // Lock non-derived fields while invoking the canonical public update command.
+    let stories: Vec<_> = std::iter::once(StoryRef::Body)
+        .chain(s.doc.parts.keys().copied().map(StoryRef::Part))
+        .collect();
+    let mut locks = Vec::new();
+    for story in &stories {
+        for path in s.doc.para_paths(*story) {
+            let p = s.doc.para_mut(*story, &path).map_err(|e| e.to_string())?;
+            for o in &mut p.objects {
+                if let InlineObject::Field { instr, locked, .. }
+                | InlineObject::FieldStart { instr, locked, .. } = o
+                {
+                    if !derived_field(instr) {
+                        locks.push(*locked);
+                        *locked = true;
+                    }
+                }
+            }
+        }
+    }
+    let result = update(s);
+    if result.is_err() {
+        s.restore(snapshot);
+        s.pending = pending;
+        s.page_hint = hint;
+        return result.map(|_| false);
+    }
+    let mut locks = locks.into_iter();
+    for story in &stories {
+        for path in s.doc.para_paths(*story) {
+            let p = s.doc.para_mut(*story, &path).map_err(|e| e.to_string())?;
+            for o in &mut p.objects {
+                if let InlineObject::Field { instr, locked, .. }
+                | InlineObject::FieldStart { instr, locked, .. } = o
+                {
+                    if !derived_field(instr) {
+                        *locked = locks.next().unwrap_or(*locked);
+                    }
+                }
+            }
+        }
+    }
+    if s.doc == before {
+        s.restore(snapshot);
+        s.pending = pending;
+        s.page_hint = hint;
+        return Ok(false);
+    }
+    // TOC regeneration can insert/remove top-level entry paragraphs ahead of the caret.
+    let delta = s.doc.body.len() as isize - before.body.len() as isize;
+    let toc_end=before.body.iter().enumerate().filter(|(_,b)|b.as_para().is_some_and(|p|
+        p.props.style.as_deref().is_some_and(|st|st.starts_with("TOC"))
+        || p.objects.iter().any(|o|matches!(o,InlineObject::Field{instr,..}|InlineObject::FieldStart{instr,..} if instr.trim_start().starts_with("TOC ")))))
+        .map(|(i,_)|i).max();
+    let shift = |mut p: Pos| {
+        if p.story == StoryRef::Body
+            && let Some(i) = p.path.0.first_mut()
+        {
+            if toc_end.is_some_and(|end| *i as usize > end) {
+                *i = (*i as isize + delta).max(0) as u32;
+            }
+        }
+        s.doc.clamp(&p)
+    };
+    s.sel = wordcraft_engine::Selection {
+        anchor: shift(selection.anchor),
+        focus: shift(selection.focus),
+    };
+    s.pending = pending;
+    s.page_hint = hint;
+    s.merge_undo_since(mark);
+    Ok(true)
+}
+
+pub fn toc_at(s: &Session, pos: &Pos) -> bool {
+    let mut probe = Session::new(s.doc.clone());
+    probe.sel = wordcraft_engine::Selection::caret(pos.clone());
+    wordcraft_engine::cmd::references::caret_in_toc(&probe)
+}
+
+pub fn toc_field(s: &Session) -> Option<(Pos, String)> {
+    for path in s.doc.para_paths(StoryRef::Body) {
+        let p = s.doc.para(StoryRef::Body, &path)?;
+        for off in p.object_offsets() {
+            if let Some(
+                InlineObject::Field {
+                    instr,
+                    locked: false,
+                    ..
+                }
+                | InlineObject::FieldStart {
+                    instr,
+                    locked: false,
+                    ..
+                },
+            ) = p.object_at(off)
+            {
+                let f = wordcraft_engine::cmd::references::FieldCode::parse(instr);
+                if f.name == "TOC" && !f.has('c') {
+                    return Some((
+                        Pos {
+                            story: StoryRef::Body,
+                            path,
+                            off,
+                        },
+                        instr.clone(),
+                    ));
+                }
+            }
+        }
+    }
+    None
+}
+
+pub fn edit_toc(s: &mut Session, code: &str, title: Option<&str>) -> Result<(), String> {
+    let (at, _) = toc_field(s).ok_or(wordcraft_gnome::t!(
+        "The table of contents could not be found."
+    ))?;
+    let snapshot = s.edit_snapshot();
+    let mark = s.undo_mark();
+    let result = (|| {
+        crate::selection::set_caret(s, &at, false)?;
+        s.run("fields.setCode", &json!({"code":code}))
+            .map_err(|e| e.to_string())?;
+        if let Some(title) = title {
+            if let Some((at, _)) = toc_field(s) {
+                if s.doc
+                    .para_at(&at)
+                    .is_some_and(|p| p.props.style.as_deref() == Some("TOCHeading"))
+                {
+                    let start = Pos {
+                        off: 0,
+                        ..at.clone()
+                    };
+                    crate::selection::select_range(s, &start, &at)?;
+                    s.join_next_undo();
+                    s.run("text.insert", &json!({"text":title}))
+                        .map_err(|e| e.to_string())?;
+                }
+            }
+        }
+        Ok(())
+    })();
+    if result.is_err() {
+        s.restore(snapshot)
+    } else {
+        s.merge_undo_since(mark)
+    }
+    result
+}
