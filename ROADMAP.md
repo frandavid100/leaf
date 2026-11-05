@@ -1,12 +1,14 @@
 # Hoja de ruta de Leaf
 
-Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
+Actualizada: 5 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En preparación: alpha.27 para FlatPark
+## Completado: alpha.27 para FlatPark
 
-Archivo relocatable, checksum, publicación y prueba instalada con GNOME 51.
+Publicados archivo relocatable, checksum y registro de la prueba instalada con
+GNOME 51, con traducciones y revisión ortográfica verificadas. El bundle GNOME 49
+y la batería nativa también superaron sus comprobaciones. [Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.27).
 La inclusión en el catálogo queda pendiente del empaquetado de FlatPark.
 
 ## Completado: alpha.23

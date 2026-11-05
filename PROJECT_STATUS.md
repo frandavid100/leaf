@@ -12,17 +12,29 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## Preparación de distribución en FlatPark
+## Última versión publicada: alpha.27
 
-Alpha.27 añade un tarball de los archivos instalados (`bin/` y `share/` en la raíz),
-su checksum y su publicación junto al bundle. Antes de publicar, la CI instala
-ese tarball en `/app/extra/leaf` con GNOME 51 y comprueba idiomas y ortografía.
-El bundle habitual sigue usando GNOME 49. FlatPark ha aceptado la inclusión,
-pendiente de recibir el archivo y completar su empaquetado. La publicación en su
-catálogo debe confirmarse por separado. Comunicarles cambios de desktop/iconos/
-metainfo y futuros requisitos de runtime.
+[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.27).
+[CI nativa completa](https://github.com/frandavid100/leaf/actions/runs/41995941521)
+y [empaquetado e instalaciones GNOME 49/51](https://github.com/frandavid100/leaf/actions/runs/42000544951)
+superados. Fuente de la release `1259aa95fbde9650fe17d5a9476cb4d1e73685cc`;
+el ejecutable reutiliza la compilación validada de `74865717f99d63bab8000f1470db7b42718ba761`,
+con equivalencia de fuentes comprobada por CI.
 
-## Última versión publicada: alpha.25
+Incluye el tarball solicitado por FlatPark, con `bin/` y `share/` en la raíz,
+su checksum y `flatpark-smoke.log`. La prueba instala el archivo mediante
+extra-data en `/app/extra/leaf` con GNOME 51 y verifica traducciones inglés/español
+y revisión ortográfica. El bundle habitual usa GNOME 49 y verifica actualización
+desde alpha.26, interacción, guardado mediante portal, impresión y Orca/AT-SPI.
+La primera prueba del tarball falló por omitir Flatpak el directorio reservado
+`extra` al exportar el paquete de prueba. El comprobador corregido usa descarga
+HTTP local con checksum y `apply_extra` durante la instalación.
+
+FlatPark ha aceptado la inclusión; su publicación en el catálogo queda pendiente
+del empaquetado de sus responsables. Avisarles de cambios de desktop/iconos/
+metainfo y futuros requisitos de runtime. Las pruebas anteriores son automáticas.
+
+## Entrega anterior: alpha.25
 
 [Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.25).
 [CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41649488931)
