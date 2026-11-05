@@ -36,6 +36,7 @@ propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funcion
 | Capturas | Usar capturas públicas reales proporcionadas por David; la principal ya está incorporada al README. | Conservar procedencia; no sustituirlas por capturas de CI. Las capturas internas son solo validación. |
 | Traducciones | Inglés/español disponibles; colaboración por PO. Weblate preparado para `main`; alta/autorización pendientes de David. | No repetir el acceso remoto; conservar mensajes/placeholders y herramientas gettext. |
 | Corpus | Comprobaciones extensas manuales cuando se justifiquen. | No imponer el corpus completo por versión; usar regresiones pequeñas para fallos concretos. |
+| FlatPark | Publicar el árbol `/app` en `Leaf-<version>-flatpark-x86_64.tar.xz`, sin carpeta contenedora. | Recursos relativos al ejecutable; validar extracción bajo `/app/extra/leaf` con GNOME 51 antes de publicar. Avisar a FlatPark de cambios de desktop/iconos/metainfo y nuevos requisitos de runtime. Confirmar por separado la publicación en su catálogo. |
 | Distribución | GitHub Flatpak experimental, GNOME 49, permisos mínimos y portales. | Una nueva release exige fuentes identificables y pruebas instaladas. No iniciar Flathub automáticamente. |
 | Licencia y autoría | GPL-3.0-or-later y desarrollo con IA declarado. | No cambiar licencia, atribuciones ni prometer revisión humana inexistente. |
 

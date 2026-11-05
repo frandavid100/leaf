@@ -4,6 +4,11 @@ Actualizada: 2 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## En preparación: alpha.27 para FlatPark
+
+Archivo relocatable, checksum, publicación y prueba instalada con GNOME 51.
+La inclusión en el catálogo queda pendiente del empaquetado de FlatPark.
+
 ## Completado: alpha.23
 
 Reglas dentro de los cuatro bordes, menú de saltos y navegación por secciones, encabezados y pies pares independientes y pestañas nativas de Propiedades.
