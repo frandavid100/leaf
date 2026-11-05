@@ -213,6 +213,13 @@ fn show_link_for(ui: &Rc<Ui>, pointer: Option<&Pos>) -> Option<LinkDialog> {
 }
 
 pub(super) fn launch_document_link(ui: &Rc<Ui>, url: &str) {
+    if let Some(name) = url.strip_prefix('#') {
+        if tools_change(ui, |s| wordcraft_gnome::annotations::goto_bookmark(s, name)) {
+            ui.document_box.grab_focus();
+            caret_ensure_visible(ui);
+        }
+        return;
+    }
     let Some(host) = ui.host.upgrade() else {
         return;
     };
@@ -276,12 +283,12 @@ pub(super) fn document_link_at_point(ui: &Rc<Ui>, x: f64, y: f64) -> Option<Stri
     let layout = d.session.layout();
     for (page, rect) in layout.selection_rects(&d.session.doc, &a, &b, hover_page) {
         let frame = d.page_frames.get(page)?.compute_bounds(&ui.document_box)?;
-        let left = frame.x() as f64 + rect.x as f64 * d.zoom as f64;
-        let top = frame.y() as f64 + rect.y as f64 * d.zoom as f64;
+        let left = frame.x() as f64 + rect.x as f64 * d.page_zoom(page) as f64;
+        let top = frame.y() as f64 + rect.y as f64 * d.page_zoom(page) as f64;
         if x >= left
-            && x <= left + rect.w as f64 * d.zoom as f64
+            && x <= left + rect.w as f64 * d.page_zoom(page) as f64
             && y >= top
-            && y <= top + rect.h as f64 * d.zoom as f64
+            && y <= top + rect.h as f64 * d.page_zoom(page) as f64
         {
             return Some(url);
         }

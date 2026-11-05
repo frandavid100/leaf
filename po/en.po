@@ -2440,3 +2440,117 @@ msgstr "{count}D"
 
 msgid "{count}H"
 msgstr "{count}H"
+
+msgid "Caption"
+msgstr "Caption"
+
+msgid "Caption…"
+msgstr "Caption…"
+
+msgid "Contents"
+msgstr "Contents"
+
+msgid "Cross-reference"
+msgstr "Cross-reference"
+
+msgid "Cross-reference…"
+msgstr "Cross-reference…"
+
+msgid "Edit Footnote"
+msgstr "Edit Footnote"
+
+msgid "Figure"
+msgstr "Figure"
+
+msgid "Footnote"
+msgstr "Footnote"
+
+msgid "Footnote Options"
+msgstr "Footnote Options"
+
+msgid "Footnote Options…"
+msgstr "Footnote Options…"
+
+msgid "Heading"
+msgstr "Heading"
+
+msgid "Heading Levels"
+msgstr "Heading Levels"
+
+msgid "Image on Left, Text on Right"
+msgstr "Image on Left, Text on Right"
+
+msgid "Image on Right, Text on Left"
+msgstr "Image on Right, Text on Left"
+
+msgid "Image spacing must be between 0 and 144 points."
+msgstr "Image spacing must be between 0 and 144 points."
+
+msgid "In Line with Text"
+msgstr "In Line with Text"
+
+msgid "Label"
+msgstr "Label"
+
+msgid "Move with Text"
+msgstr "Move with Text"
+
+msgid "Next Footnote"
+msgstr "Next Footnote"
+
+msgid "No references of this type are available."
+msgstr "No references of this type are available."
+
+msgid "Place the caret in a footnote first."
+msgstr "Place the caret in a footnote first."
+
+msgid "Place the caret in the document body to insert a footnote."
+msgstr "Place the caret in the document body to insert a footnote."
+
+msgid "Reference Type"
+msgstr "Reference Type"
+
+msgid "References"
+msgstr "References"
+
+msgid "Restart Numbering"
+msgstr "Restart Numbering"
+
+msgid "Return to Reference"
+msgstr "Return to Reference"
+
+msgid "Select a footnote reference, or use Next Footnote."
+msgstr "Select a footnote reference, or use Next Footnote."
+
+msgid "Show"
+msgstr "Show"
+
+msgid "Show Page Numbers"
+msgstr "Show Page Numbers"
+
+msgid "Space Around Image (mm)"
+msgstr "Space Around Image (mm)"
+
+msgid "Table of Contents"
+msgstr "Table of Contents"
+
+msgid "Table of Contents…"
+msgstr "Table of Contents…"
+
+msgid "Target"
+msgstr "Target"
+
+msgid "Text Above and Below"
+msgstr "Text Above and Below"
+
+msgid "The footnote reference could not be found."
+msgstr "The footnote reference could not be found."
+
+msgid "This Section"
+msgstr "This Section"
+
+msgid "Update References"
+msgstr "Update References"
+
+msgid "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text."
+msgstr "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text."

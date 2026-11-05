@@ -8,6 +8,7 @@ pub(super) struct Current {
     pub(super) sections: Vec<usize>,
     pub(super) arrangement: viewer_layout::Arrangement,
     pub(super) zoom: f32,
+    pub(super) page_scales: Vec<f32>,
     pub(super) fit_to_width: bool,
     pub(super) pages: Vec<gtk::Picture>,
     pub(super) page_frames: Vec<gtk::Overlay>,
@@ -24,11 +25,18 @@ pub(super) struct Current {
     pub(super) status_active: Option<usize>,
 }
 
+impl Current {
+    pub(super) fn page_zoom(&self, page: usize) -> f32 {
+        self.page_scales.get(page).copied().unwrap_or(self.zoom)
+    }
+}
+
 /// Handles and lifecycle state for one tab. Workspace owns Rc<Ui>; callbacks
 /// and back references to Workspace stay weak. release_document tears down
 /// timers, controllers, popovers and workers before the tab owner is removed.
 pub(super) struct Ui {
     pub(super) table_pointer: RefCell<TablePointer>,
+    pub(super) picture_drag: RefCell<Option<PictureDrag>>,
     pub(super) current: RefCell<Option<Current>>,
     pub(super) printing: PrintState,
     pub(super) spelling: RefCell<Option<Rc<SpellReview>>>,

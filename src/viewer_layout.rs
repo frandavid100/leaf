@@ -129,6 +129,27 @@ pub fn arrange_sections(
     result
 }
 
+/// Fit each contiguous section independently. Percentage zoom uses arrange_sections.
+pub fn fitted_scales(sizes: &[(f32, f32)], sections: &[usize], available: f64) -> Vec<f32> {
+    let mut scales = Vec::with_capacity(sizes.len());
+    let mut first = 0;
+    for section in sections.chunk_by(|a, b| a == b) {
+        let end = first + section.len();
+        let paper = sizes[first..end]
+            .iter()
+            .map(|s| s.0)
+            .fold(1.0_f32, f32::max);
+        let scale = ((available - 2.0 * PAGE_GAP - 2.0).max(1.0) / f64::from(paper)) as f32;
+        scales.extend(std::iter::repeat_n(scale, section.len()));
+        first = end;
+    }
+    scales
+}
+
+pub fn thumbnail_scale(width: f32) -> f32 {
+    168.0 / width.max(1.0)
+}
+
 #[cfg(test)]
 #[test]
 fn a_new_section_starts_a_new_row_with_its_own_capacity() {
@@ -461,5 +482,23 @@ mod ordered_widgets {
         });
         assert_eq!(range, 1666..1670);
         assert!(calls < 30, "{calls} allocation queries");
+    }
+}
+
+#[cfg(test)]
+#[test]
+fn mixed_section_fit_and_thumbnails_keep_a_common_width() {
+    let sizes = [(600., 800.), (600., 800.), (800., 600.)];
+    let sections = [0, 0, 1];
+    for width in [600., 900., 1100., 1500., 2400.] {
+        let scales = fitted_scales(&sizes, &sections, width);
+        assert_eq!(scales[0], scales[1]);
+        assert!((sizes[0].0 * scales[0] - sizes[2].0 * scales[2]).abs() < 1.);
+        let thumbs: Vec<_> = sizes
+            .iter()
+            .map(|&(w, h)| (w * thumbnail_scale(w), h * thumbnail_scale(w)))
+            .collect();
+        assert_eq!(thumbs[0].0, thumbs[2].0);
+        assert!(thumbs[0].1 > thumbs[2].1);
     }
 }

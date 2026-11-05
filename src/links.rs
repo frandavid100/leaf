@@ -42,6 +42,28 @@ pub fn range_at(
     pos: &wordcraft_doc::Pos,
 ) -> Option<(wordcraft_doc::Pos, wordcraft_doc::Pos, String)> {
     let p = s.doc.para_at(pos)?;
+    for off in [
+        Some(pos.off),
+        p.text
+            .get(..pos.off)
+            .and_then(|t| t.char_indices().next_back().map(|(o, _)| o)),
+    ]
+    .into_iter()
+    .flatten()
+    {
+        if let Some(wordcraft_doc::para::InlineObject::Field { instr, .. }) = p.object_at(off) {
+            let field = wordcraft_engine::cmd::references::FieldCode::parse(instr);
+            if ["REF", "PAGEREF"].contains(&field.name.as_str()) && field.has('h') {
+                if let Some(name) = field.args.first() {
+                    let mut start = pos.clone();
+                    start.off = off;
+                    let mut end = start.clone();
+                    end.off += wordcraft_doc::para::OBJ.len_utf8();
+                    return Some((start, end, format!("#{name}")));
+                }
+            }
+        }
+    }
     let url = at(s, pos)?;
     let mut groups: Vec<(usize, usize, String)> = Vec::new();
     for (range, props) in p.run_ranges() {

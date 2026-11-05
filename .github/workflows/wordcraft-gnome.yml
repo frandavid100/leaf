@@ -33,7 +33,7 @@ jobs:
       - name: Instalar bibliotecas GNOME y pantalla virtual
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xdotool adwaita-icon-theme poppler-utils gettext locales dbus-x11
+          sudo apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11
           sudo locale-gen en_US.UTF-8
       - name: Check Leaf formatting and contributor entry points
         run: |
@@ -76,6 +76,21 @@ jobs:
           fi
       - name: Compilar lector GNOME
         run: cargo build --release --locked --features gui --bin wordcraft-gnome
+      - name: Verify alpha28 section zoom, page activation, notes and image drags
+        run: |
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a timeout 90s bash tools/alpha28-pointer-test.sh
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=es GDK_SCALE=2 GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2560x1800x24' timeout 90s bash tools/alpha28-pointer-test.sh
+      - name: Capture alpha28 public gallery
+        run: xvfb-run -a -s '-screen 0 1400x1000x24' bash packaging/capture-gallery.sh native alpha28-gallery
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alpha28-gallery-and-interactions
+          path: |
+            alpha28-gallery/
+            alpha28-pointer-*.log
+            alpha28-pointer-*.png
+          retention-days: 14
       - uses: actions/upload-artifact@v4
         with:
           name: leaf-native-unvalidated
@@ -226,7 +241,7 @@ jobs:
       - name: Identificar versión de prueba
         run: |
           ./target/release/wordcraft-gnome --version | tee version.txt
-          grep -q "Leaf 0.1.0-alpha.27" version.txt
+          grep -q "Leaf 0.1.0-alpha.28" version.txt
       - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
         run: |
           python -m pip install --disable-pip-version-check pillow==11.3.0
@@ -601,7 +616,7 @@ jobs:
       - name: Install Flatpak and desktop validation tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
+          sudo apt-get install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
           # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Validate desktop metadata
@@ -611,13 +626,21 @@ jobs:
       - name: Download previous alpha for upgrade verification
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release download v0.1.0-alpha.26 --pattern 'Leaf-0.1.0-alpha.26-x86_64.flatpak' --dir prior-release
+        run: gh release download v0.1.0-alpha.27 --pattern 'Leaf-0.1.0-alpha.27-x86_64.flatpak' --dir prior-release
       - name: Build and install the bundle
         run: bash packaging/build-bundle.sh native-artifact/wordcraft-gnome
       - name: Exercise the installed sandbox and desktop launcher
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/smoke-test.sh 2>&1 | tee dist/flatpak-smoke.log
+      - name: Capture the installed alpha28 gallery
+        run: xvfb-run -a -s '-screen 0 1400x1000x24' dbus-run-session -- bash packaging/capture-gallery.sh flatpak dist/alpha28-gallery
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alpha28-installed-gallery
+          path: dist/alpha28-gallery/
+          retention-days: 14
       - name: Inspect installed history states and clipped rulers in dark and narrow views
         # The first seven existing sweep stages exercise history; capture both
         # ruler edges before the wide-window-only geometry stage is acknowledged.
@@ -750,7 +773,7 @@ jobs:
       - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
         run: |
           set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.27-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.28-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
           grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
       - name: Checksums
         working-directory: dist
@@ -770,7 +793,7 @@ jobs:
             echo 'Source superseded; publication skipped.'
             exit 0
           fi
-          gh release create v0.1.0-alpha.27 dist/Leaf-0.1.0-alpha.27-x86_64.flatpak dist/Leaf-0.1.0-alpha.27-flatpark-x86_64.tar.xz dist/SHA256SUMS dist/INSTALL.md dist/source-commit.txt dist/runtime.txt dist/runtime-commit.txt dist/flatpak-metadata.txt dist/flatpak-smoke.log dist/flatpark-smoke.log --target "$GITHUB_SHA" --title 'Leaf 0.1.0-alpha.27' --prerelease --notes-file packaging/RELEASE_NOTES.md
+          gh release create v0.1.0-alpha.28 dist/Leaf-0.1.0-alpha.28-x86_64.flatpak dist/Leaf-0.1.0-alpha.28-flatpark-x86_64.tar.xz dist/SHA256SUMS dist/INSTALL.md dist/source-commit.txt dist/runtime.txt dist/runtime-commit.txt dist/flatpak-metadata.txt dist/flatpak-smoke.log dist/flatpark-smoke.log --target "$GITHUB_SHA" --title 'Leaf 0.1.0-alpha.28' --prerelease --notes-file packaging/RELEASE_NOTES.md
 
   lifecycle-baseline:
     if: contains(github.event.head_commit.message, '[lifecycle-baseline]')

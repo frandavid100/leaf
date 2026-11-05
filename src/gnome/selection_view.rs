@@ -12,6 +12,18 @@ pub(super) fn refresh_selection(ui: &Rc<Ui>) {
             selection::geometry(&mut doc.session)
         }
     };
+    let caret_changed = snapshot.caret != ui.selection_data.borrow().caret;
+    if let Some(page) = snapshot
+        .caret
+        .as_ref()
+        .filter(|_| caret_changed)
+        .map(|c| c.page)
+    {
+        if let Some(doc) = ui.current.borrow_mut().as_mut() {
+            doc.active = page;
+        }
+    }
+    update_status(ui);
     let now = ui
         .document_box
         .frame_clock()
@@ -151,7 +163,10 @@ pub(super) fn refresh_format_controls(ui: &Rc<Ui>) {
 
 pub(super) fn pos_at_canvas(ui: &Rc<Ui>, x: f64, y: f64) -> Option<Pos> {
     let (page, pos) = inspect_canvas_point(ui, x, y)?;
-    ui.current.borrow_mut().as_mut()?.session.page_hint = page;
+    if let Some(doc) = ui.current.borrow_mut().as_mut() {
+        doc.session.page_hint = page;
+        doc.active = page;
+    }
     Some(pos)
 }
 
@@ -174,7 +189,7 @@ pub(super) fn inspect_canvas_point(ui: &Rc<Ui>, x: f64, y: f64) -> Option<(usize
             Some((i, rect, (dx * dx + dy * dy).sqrt()))
         })
         .min_by(|a, b| a.2.total_cmp(&b.2))?;
-    let z = f64::from(doc.zoom);
+    let z = f64::from(doc.page_zoom(page));
     let (w, h) = doc.sizes[page];
     let px = ((x - f64::from(rect.x())) / z).clamp(0.0, f64::from(w)) as f32;
     let py = ((y - f64::from(rect.y())) / z).clamp(0.0, f64::from(h)) as f32;
@@ -197,7 +212,7 @@ pub(super) fn select_picture_at_canvas(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
         {
             continue;
         }
-        let z = doc.zoom as f64;
+        let z = doc.page_zoom(i) as f64;
         let px = ((x - r.x() as f64) / z) as f32;
         let py = ((y - r.y() as f64) / z) as f32;
         let layout = doc.session.layout();
@@ -209,6 +224,7 @@ pub(super) fn select_picture_at_canvas(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
             return false;
         };
         doc.session.page_hint = i;
+        doc.active = i;
         return pictures::select(&mut doc.session, &hit.pos()).is_ok();
     }
     false
@@ -227,7 +243,7 @@ pub(super) fn caret_ensure_visible(ui: &Rc<Ui>) {
                 doc.page_frames
                     .get(c.page)
                     .and_then(|frame| frame.compute_bounds(&ui.document_box))
-                    .map(|r| f64::from(r.y()) + f64::from(c.top * doc.zoom))
+                    .map(|r| f64::from(r.y()) + f64::from(c.top * doc.page_zoom(c.page)))
             })
     };
     if let Some(y) = target {

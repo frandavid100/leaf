@@ -9,6 +9,8 @@ pub(super) struct PicturePopover {
     pub(super) width: gtk::SpinButton,
     pub(super) height: gtk::SpinButton,
     pub(super) lock: gtk::CheckButton,
+    spacing: gtk::SpinButton,
+    move_with_text: gtk::CheckButton,
     pub(super) syncing: Cell<bool>,
     pub(super) width_changed: Cell<bool>,
     pub(super) target: RefCell<Option<(Pos, f32, f32)>>,
@@ -23,13 +25,24 @@ impl PicturePopover {
         });
         self.context.set_visible(target.is_some());
         self.hint.set_visible(target.is_none());
-        if *self.target.borrow() == target {
-            return;
-        }
         self.syncing.set(true);
         if let Some((_, w, h)) = &target {
             self.width.set_value(*w as f64 / PT_PER_MM);
             self.height.set_value(*h as f64 / PT_PER_MM);
+        }
+        if let Some(ui) = self.ui.upgrade() {
+            if let Some(float) = ui
+                .current
+                .borrow()
+                .as_ref()
+                .and_then(|d| pictures::layout(&d.session))
+            {
+                self.spacing.set_value(float.dist as f64 / PT_PER_MM);
+                self.move_with_text
+                    .set_active(wordcraft_engine::cmd::objects::moves_with_text(&float));
+                self.move_with_text
+                    .set_sensitive(float.wrap != wordcraft_doc::para::Wrap::Inline);
+            }
         }
         self.syncing.set(false);
         self.target.replace(target);
@@ -184,6 +197,31 @@ pub(super) fn install_picture_controls(
     let apply = style_menu_button(wordcraft_gnome::t!("Apply Size"));
     apply.set_widget_name("picture-apply");
     context.append(&apply);
+    context.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+    let spacing = mm_input(2.0, 0.0, 144.0 / PT_PER_MM);
+    let spacing_row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    let label = gtk::Label::new(Some(wordcraft_gnome::t!("Space Around Image (mm)")));
+    label.set_hexpand(true);
+    label.set_xalign(0.0);
+    spacing_row.append(&label);
+    spacing_row.append(&spacing);
+    context.append(&spacing_row);
+    let apply_spacing = style_menu_button(wordcraft_gnome::t!("Apply Spacing"));
+    context.append(&apply_spacing);
+    let mut placement_buttons = Vec::new();
+    for (label, mode) in [
+        (wordcraft_gnome::t!("In Line with Text"), "inline"),
+        (wordcraft_gnome::t!("Image on Left, Text on Right"), "left"),
+        (wordcraft_gnome::t!("Image on Right, Text on Left"), "right"),
+        (wordcraft_gnome::t!("Text Above and Below"), "topAndBottom"),
+    ] {
+        let button = style_menu_button(label);
+        context.append(&button);
+        button.set_widget_name(&format!("picture-placement-{mode}"));
+        placement_buttons.push((button, mode));
+    }
+    let move_with_text = gtk::CheckButton::with_label(wordcraft_gnome::t!("Move with Text"));
+    context.append(&move_with_text);
     let original = style_menu_button(wordcraft_gnome::t!("Restore Original Size"));
     original.set_widget_name("picture-original");
     context.append(&original);
@@ -217,10 +255,47 @@ pub(super) fn install_picture_controls(
         width,
         height,
         lock,
+        spacing,
+        move_with_text,
         syncing: Cell::new(false),
         width_changed: Cell::new(true),
         target: RefCell::new(None),
     });
+    for (button, mode) in placement_buttons {
+        let weak = Rc::downgrade(&state);
+        button.connect_clicked(move |_| {
+            if let Some(p) = weak.upgrade() {
+                p.spacing.update();
+                let distance = p.spacing.value() as f32 * PT_PER_MM as f32;
+                p.execute(move |s| pictures::placement(s, Some(mode), distance));
+            }
+        });
+    }
+    {
+        let weak = Rc::downgrade(&state);
+        apply_spacing.connect_clicked(move |_| {
+            if let Some(p) = weak.upgrade() {
+                p.spacing.update();
+                let distance = p.spacing.value() as f32 * PT_PER_MM as f32;
+                p.execute(move |s| pictures::placement(s, None, distance));
+            }
+        });
+    }
+    {
+        let weak = Rc::downgrade(&state);
+        state.move_with_text.connect_toggled(move |button| {
+            let Some(p) = weak.upgrade() else { return };
+            if p.syncing.get() {
+                return;
+            }
+            let active = button.is_active();
+            p.execute(move |s| {
+                s.run("arrange.moveWithText", &serde_json::json!({"value":active}))
+                    .map_err(|e| e.to_string())?;
+                Ok(())
+            });
+        });
+    }
     for (is_width, n) in [(true, &state.width), (false, &state.height)] {
         let weak = Rc::downgrade(&state);
         n.connect_value_changed(move |n| {

@@ -79,10 +79,15 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
             "Save as DOCX to preserve footnotes. The current ODT exporter cannot keep their structure."
         ));
     }
-    let (mut equation, mut toc, mut floating) = (false, false, false);
+    let (mut equation, mut toc, mut floating, mut reference) = (false, false, false, false);
     session.doc.objects_in_reading_order(&mut |o| match o {
         InlineObject::Equation { .. } => equation = true,
         InlineObject::FieldStart { instr, .. } | InlineObject::Field { instr, .. } => {
+            reference |= instr.split_whitespace().next().is_some_and(|s| {
+                ["REF", "PAGEREF", "SEQ"]
+                    .iter()
+                    .any(|name| s.eq_ignore_ascii_case(name))
+            });
             toc |= instr
                 .split_whitespace()
                 .next()
@@ -98,6 +103,10 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
     } else if toc {
         Some(wordcraft_gnome::t!(
             "Save as DOCX to preserve the automatic table of contents. The current ODT exporter only keeps static entries."
+        ))
+    } else if reference {
+        Some(wordcraft_gnome::t!(
+            "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text."
         ))
     } else if floating {
         Some(wordcraft_gnome::t!(

@@ -25,6 +25,12 @@ pub(super) fn install_diagnostics(
     app: &Application,
     controls: DiagnosticControls<'_>,
 ) {
+    if std::env::args().any(|a| a == "--alpha28-ui-test") {
+        alpha28_ui_test(ui, window, app);
+    }
+    if std::env::args().any(|a| a == "--alpha28-gallery") {
+        alpha28_gallery(ui, window);
+    }
     if std::env::args().any(|a| a == "--sweep20-pointer-test") {
         let (u, w, a) = (ui.clone(), window.clone(), app.clone());
         glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {

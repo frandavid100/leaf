@@ -395,13 +395,14 @@ impl OutlinePanel {
                 wordcraft_gnome::navigation::heading_view_target(&mut d.session, &target).and_then(
                     |(page, top)| {
                         let caret = d.session.layout().caret_on(&target, d.session.page_hint)?;
-                        let max_context =
-                            (ui.scroll.vadjustment().page_size() * 0.25 / d.zoom as f64) as f32;
+                        let max_context = (ui.scroll.vadjustment().page_size() * 0.25
+                            / d.page_zoom(page) as f64)
+                            as f32;
                         let top = top.max(caret.top - max_context);
                         d.page_frames
                             .get(page)
                             .and_then(|f| f.compute_bounds(&ui.document_box))
-                            .map(|r| r.y() as f64 + top as f64 * d.zoom as f64)
+                            .map(|r| r.y() as f64 + top as f64 * d.page_zoom(page) as f64)
                     },
                 )
             };

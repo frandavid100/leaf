@@ -108,6 +108,21 @@ pub(super) fn install_pointer_and_view_input(
                 let Some(pos) = pos_at_canvas(&ui, x, y) else {
                     return;
                 };
+                if count == 2 {
+                    let entered = {
+                        let mut current = ui.current.borrow_mut();
+                        current.as_mut().is_some_and(|d| {
+                            selection::set_caret(&mut d.session, &pos, false).is_ok()
+                                && wordcraft_gnome::references::open_footnote(&mut d.session, false)
+                                    .is_ok()
+                        })
+                    };
+                    if entered {
+                        refresh_selection(&ui);
+                        caret_ensure_visible(&ui);
+                        return;
+                    }
+                }
                 if count == 1
                     && gesture
                         .current_event_state()
@@ -214,6 +229,10 @@ pub(super) fn install_pointer_and_view_input(
                     if table_pointer_active(&ui) {
                         return;
                     }
+                    if picture_drag_begin(&ui, x, y) {
+                        gesture.set_state(gtk::EventSequenceState::Claimed);
+                        return;
+                    }
                     *ui.drag_anchor.borrow_mut() = if gesture
                         .current_event_state()
                         .contains(gdk::ModifierType::SHIFT_MASK)
@@ -235,6 +254,9 @@ pub(super) fn install_pointer_and_view_input(
                 #[weak]
                 ui,
                 move |gesture, dx, dy| {
+                    if picture_drag_update(&ui, dx, dy) {
+                        return;
+                    }
                     if let Some((sx, sy)) = gesture.start_point() {
                         if table_pointer_update(
                             &ui,
@@ -271,6 +293,9 @@ pub(super) fn install_pointer_and_view_input(
                 #[weak]
                 ui,
                 move |gesture, _, _| {
+                    if picture_drag_finish(&ui) {
+                        return;
+                    }
                     if table_pointer_finish(&ui) {
                         return;
                     }
@@ -286,6 +311,7 @@ pub(super) fn install_pointer_and_view_input(
         let weak = Rc::downgrade(&ui);
         drag.connect_cancel(move |_, _| {
             if let Some(ui) = weak.upgrade() {
+                picture_drag_cancel(&ui);
                 table_pointer_cancel(&ui);
                 stop_document_drag(&ui);
             }

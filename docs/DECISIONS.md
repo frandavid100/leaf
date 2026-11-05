@@ -5,6 +5,7 @@ propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funcion
 
 | Tema | Decisión | Consecuencia al modificar código |
 | --- | --- | --- |
+| Alpha.28 | David autoriza el 5/11/2026 notas al pie, índice, referencias cruzadas, imágenes flotantes, zoom/navegación y galería pública. | Reutilizar historias, campos y comandos de WordCraft, verificar DOCX/PDF e historial y conservar las guardas ODT. La autorización de galería sustituye el aplazamiento anterior para esta entrega. |
 | Rama de desarrollo | `main` para desarrollo, compilación y PR; ambos historiales integrados. | ApexDesk archivado en `archive/apexdesk-main-2026-11-02`; conservar `wordcraft-saving` y releases/tags existentes. [Revisión](MAIN_MIGRATION.md). |
 | Modelo del documento | WordCraft es la fuente de verdad. | Usar Session, layout y comandos públicos; sin editor oculto ni historial paralelo. |
 | Frontera con upstream | Optimizar Leaf; proponer en WordCraft los cambios de su motor. | No modificar engine/render ni dependencias para un ajuste del cliente. Conservar las excepciones ODT ya registradas en [patches](../patches/README.md). |

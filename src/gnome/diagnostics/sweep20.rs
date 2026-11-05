@@ -186,6 +186,7 @@ fn stage(t: Rc<Sweep>, n: u8) {
             };
             t.depth
                 .set(u.current.borrow().as_ref().unwrap().session.undo_depth());
+            t.margin_zoom.set(z);
             (
                 if n == 19 { "cancel-drag" } else { "drag" },
                 vec![
@@ -415,8 +416,16 @@ fn check(t: &Sweep, n: u8) {
         let s = &mut c.as_mut().unwrap().session;
         let state = wordcraft_gnome::ruler::state(s).unwrap();
         let expected = if n == 22 { 72. } else { 36. };
+        // One physical pointer pixel maps to more than one document point
+        // below 100%; marker positions also snap to half-point increments.
+        let tolerance = if n == 22 {
+            let zoom = t.margin_zoom.get();
+            0.5 / (t.window.scale_factor() as f32 * zoom) + 0.26
+        } else {
+            0.6
+        };
         assert!(
-            (state.left - expected).abs() < 0.6,
+            (state.left - expected).abs() < tolerance,
             "cancel/outside drag: indent={} expected={expected}",
             state.left
         );

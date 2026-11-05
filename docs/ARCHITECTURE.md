@@ -72,6 +72,7 @@ session while inspecting it.
 | Paragraph/text panels | [paragraph.rs](../src/gnome/paragraph.rs), [format_controls.rs](../src/gnome/format_controls.rs), [adaptive.rs](../src/gnome/adaptive.rs), [text_palette.rs](../src/gnome/text_palette.rs) | [formatting.rs](../src/formatting.rs); formatting tests, `--paragraph-ui-test`. |
 | Context, pinning and contained pages | [context.rs](../src/gnome/context.rs), [popovers.rs](../src/gnome/popovers.rs) | Context pointer, `--pin-ui-test`, `--adaptive-ui-test` in CI. |
 | Tables | [tables.rs](../src/gnome/tables.rs), [table_pointer.rs](../src/gnome/table_pointer.rs) | [tables.rs](../src/tables.rs); tables tests, real Tab/Shift+Tab input and tools/table-pointer-test.sh (public engine hit targets, one edit per drag). |
+| Footnotes, contents, captions and cross-references | [references.rs](../src/gnome/references.rs) and [adapter](../src/references.rs) | Canonical engine stories/fields, section-aware note options, note/reference navigation and DOCX/history regressions. |
 | Images, page properties/metadata, PDF | [picture_controls.rs](../src/gnome/picture_controls.rs), [document_properties_dialog.rs](../src/gnome/document_properties_dialog.rs), [pdf_dialog.rs](../src/gnome/pdf_dialog.rs); [shared operations](../src/gnome/document_tools.rs) | [pictures.rs](../src/pictures.rs), [document_properties.rs](../src/document_properties.rs), [pdf_export.rs](../src/pdf_export.rs); document_tools tests. |
 | Headers, numbering, columns | [headers.rs](../src/gnome/headers.rs), [header_options.rs](../src/gnome/header_options.rs), [columns.rs](../src/gnome/columns.rs) | [header_footer.rs](../src/header_footer.rs), [page_options.rs](../src/page_options.rs); headers/page_options/columns tests. |
 | Local spelling and languages | [spellcheck.rs](../src/gnome/spellcheck.rs) | [proofing.rs](../src/proofing.rs), [proofing_defaults.rs](../src/proofing_defaults.rs); inheritance and proofing tests and `--proofing-ui-test` (sidebar, Preferences and stale worker rejection). |
@@ -121,3 +122,5 @@ Historical reports refer to the source paths of their own commit. Use this map
 for current locations. A later cleanup can further reduce the shared Ui/facade,
 but should be done in tested, feature-sized changes rather than replacing the
 host or altering engine semantics during unrelated work.
+
+Fit Width stores an effective scale per page, shared within each section. Current::page_zoom is the coordinate conversion used by rendering, overlays, pointer hit testing, rulers and navigation. Percentage zoom remains uniform. Thumbnails use their own fixed-width scale and cannot change the sidebar width. Picture drags preview in the overlay and commit one arrange.bounds command.

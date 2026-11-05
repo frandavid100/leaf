@@ -199,6 +199,7 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
             show_insert_table(&ui, &h.window);
         }
     });
+    install_reference_actions(host);
     window_action(host, "insert-picture", |h| {
         if let Some(ui) = selected_ui(h) {
             choose_picture(&ui, &h.window, false);
@@ -291,6 +292,7 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
         ("preferences", vec!["<Control>comma"]),
         ("shortcuts", vec!["<Control>question"]),
         ("help", vec!["F1"]),
+        ("insert-footnote", vec!["<Control><Alt>f"]),
         ("print", vec!["<Control>p"]),
         ("check-spelling", vec!["F7"]),
     ] {
@@ -439,6 +441,30 @@ pub(super) fn append_insert_menu(root: &gio::Menu) {
         "insert-comment",
         Some("<Control><Alt>m"),
     );
+    menu_item(
+        &add,
+        wordcraft_gnome::t!("Footnote"),
+        "insert-footnote",
+        Some("<Control><Alt>f"),
+    );
+    menu_item(
+        &add,
+        wordcraft_gnome::t!("Table of Contents…"),
+        "insert-toc",
+        None,
+    );
+    menu_item(
+        &add,
+        wordcraft_gnome::t!("Caption…"),
+        "insert-caption",
+        None,
+    );
+    menu_item(
+        &add,
+        wordcraft_gnome::t!("Cross-reference…"),
+        "insert-cross-reference",
+        None,
+    );
     menu_item(&add, wordcraft_gnome::t!("Header"), "insert-header", None);
     menu_item(&add, wordcraft_gnome::t!("Footer"), "insert-footer", None);
     menu_item(
@@ -474,6 +500,23 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
     );
     root.append_section(None, &save);
     append_insert_menu(&root);
+    let references = gio::Menu::new();
+    for (label, name) in [
+        (wordcraft_gnome::t!("Edit Footnote"), "edit-footnote"),
+        (wordcraft_gnome::t!("Next Footnote"), "next-footnote"),
+        (
+            wordcraft_gnome::t!("Return to Reference"),
+            "footnote-reference",
+        ),
+        (wordcraft_gnome::t!("Footnote Options…"), "footnote-options"),
+        (
+            wordcraft_gnome::t!("Update References"),
+            "update-references",
+        ),
+    ] {
+        menu_item(&references, label, name, None);
+    }
+    root.append_submenu(Some(wordcraft_gnome::t!("References")), &references);
     let properties = gio::Menu::new();
     menu_item(
         &properties,

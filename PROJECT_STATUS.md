@@ -12,6 +12,18 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## Alpha.28 en validación
+
+David autoriza navegación y zoom por sección (#89, #94, #95), imágenes flotantes
+(#53), notas al pie (#55), índice automático (#54), leyendas y referencias cruzadas,
+y una galería nueva para la distribución pública. La [PR #98](https://github.com/frandavid100/leaf/pull/98)
+integra sus controles nativos mediante las API públicas de WordCraft. El guardado
+ODT sigue protegido frente a las estructuras que el exportador pierde.
+
+Las regresiones locales cubren DOCX, historial, actualización de referencias,
+notas largas y PDF. La CI añade interacción real, variantes de idioma/escalado
+y capturas de la ventana. Publicación y validación instalada pendientes.
+
 ## Última versión publicada: alpha.27
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.27).

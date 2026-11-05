@@ -2440,3 +2440,117 @@ msgstr "{count}D"
 
 msgid "{count}H"
 msgstr "{count}H"
+
+msgid "Caption"
+msgstr "Leyenda"
+
+msgid "Caption…"
+msgstr "Leyenda…"
+
+msgid "Contents"
+msgstr "Contenido"
+
+msgid "Cross-reference"
+msgstr "Referencia cruzada"
+
+msgid "Cross-reference…"
+msgstr "Referencia cruzada…"
+
+msgid "Edit Footnote"
+msgstr "Editar nota al pie"
+
+msgid "Figure"
+msgstr "Figura"
+
+msgid "Footnote"
+msgstr "Nota al pie"
+
+msgid "Footnote Options"
+msgstr "Opciones de notas al pie"
+
+msgid "Footnote Options…"
+msgstr "Opciones de notas al pie…"
+
+msgid "Heading"
+msgstr "Título"
+
+msgid "Heading Levels"
+msgstr "Niveles de títulos"
+
+msgid "Image on Left, Text on Right"
+msgstr "Imagen a la izquierda, texto a la derecha"
+
+msgid "Image on Right, Text on Left"
+msgstr "Imagen a la derecha, texto a la izquierda"
+
+msgid "Image spacing must be between 0 and 144 points."
+msgstr "El espacio de la imagen debe estar entre 0 y 144 puntos."
+
+msgid "In Line with Text"
+msgstr "En línea con el texto"
+
+msgid "Label"
+msgstr "Etiqueta"
+
+msgid "Move with Text"
+msgstr "Mover con el texto"
+
+msgid "Next Footnote"
+msgstr "Nota al pie siguiente"
+
+msgid "No references of this type are available."
+msgstr "No hay referencias de este tipo disponibles."
+
+msgid "Place the caret in a footnote first."
+msgstr "Sitúa primero el cursor en una nota al pie."
+
+msgid "Place the caret in the document body to insert a footnote."
+msgstr "Sitúa el cursor en el cuerpo del documento para insertar una nota al pie."
+
+msgid "Reference Type"
+msgstr "Tipo de referencia"
+
+msgid "References"
+msgstr "Referencias"
+
+msgid "Restart Numbering"
+msgstr "Reiniciar numeración"
+
+msgid "Return to Reference"
+msgstr "Volver a la referencia"
+
+msgid "Select a footnote reference, or use Next Footnote."
+msgstr "Selecciona una referencia a una nota o usa Nota al pie siguiente."
+
+msgid "Show"
+msgstr "Mostrar"
+
+msgid "Show Page Numbers"
+msgstr "Mostrar números de página"
+
+msgid "Space Around Image (mm)"
+msgstr "Espacio alrededor de la imagen (mm)"
+
+msgid "Table of Contents"
+msgstr "Índice de contenidos"
+
+msgid "Table of Contents…"
+msgstr "Índice de contenidos…"
+
+msgid "Target"
+msgstr "Destino"
+
+msgid "Text Above and Below"
+msgstr "Texto arriba y abajo"
+
+msgid "The footnote reference could not be found."
+msgstr "No se ha encontrado la referencia de la nota al pie."
+
+msgid "This Section"
+msgstr "Esta sección"
+
+msgid "Update References"
+msgstr "Actualizar referencias"
+
+msgid "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text."
+msgstr "Guarda como DOCX para conservar las referencias cruzadas y la numeración de leyendas. El exportador ODT actual solo conserva su texto."
