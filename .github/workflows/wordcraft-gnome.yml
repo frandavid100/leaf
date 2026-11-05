@@ -98,7 +98,12 @@ jobs:
               sleep 1
               window=$(xdotool search --onlyvisible --pid "$pid" | head -n1)
               xdotool windowfocus --sync "$window"
-              scrot --focused alpha28-gallery/leaf-alpha28-$variant.png
+              leaf_geometry=$(xdotool getwindowgeometry --shell "$window")
+              leaf_x=$(sed -n "s/^X=//p" <<< "$leaf_geometry")
+              leaf_y=$(sed -n "s/^Y=//p" <<< "$leaf_geometry")
+              leaf_width=$(sed -n "s/^WIDTH=//p" <<< "$leaf_geometry")
+              leaf_height=$(sed -n "s/^HEIGHT=//p" <<< "$leaf_geometry")
+              scrot --autoselect="$leaf_x,$leaf_y,$leaf_width,$leaf_height" alpha28-gallery/leaf-alpha28-$variant.png
               kill "$pid"
               wait "$pid" || true
             done

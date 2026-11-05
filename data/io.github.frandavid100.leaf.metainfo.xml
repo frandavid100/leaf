@@ -24,22 +24,22 @@
     <screenshot type="default">
       <caption>Edit documents with page previews and native formatting tools</caption>
       <caption xml:lang="es">Edita documentos con miniaturas y controles de formato nativos</caption>
-      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/v0.1.0-alpha.28/docs/screenshots/leaf-alpha28-main.png</image>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/main/docs/screenshots/leaf-alpha28-main.png</image>
     </screenshot>
     <screenshot>
       <caption>Edit automatically numbered footnotes on the page</caption>
       <caption xml:lang="es">Edita notas al pie numeradas en la propia página</caption>
-      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/v0.1.0-alpha.28/docs/screenshots/leaf-alpha28-notes.png</image>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/main/docs/screenshots/leaf-alpha28-notes.png</image>
     </screenshot>
     <screenshot>
       <caption>Review a document with comment threads</caption>
       <caption xml:lang="es">Revisa un documento con hilos de comentarios</caption>
-      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/v0.1.0-alpha.28/docs/screenshots/leaf-alpha28-review.png</image>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/main/docs/screenshots/leaf-alpha28-review.png</image>
     </screenshot>
     <screenshot>
       <caption>Apply paragraph formatting with native controls</caption>
       <caption xml:lang="es">Aplica formato de párrafo con controles nativos</caption>
-      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/v0.1.0-alpha.28/docs/screenshots/leaf-alpha28-format.png</image>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/main/docs/screenshots/leaf-alpha28-format.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1" />
