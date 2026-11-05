@@ -1,5 +1,5 @@
 use serde_json::json;
-use wordcraft_doc::{Document, Pos};
+use wordcraft_doc::Document;
 use wordcraft_engine::Session;
 use wordcraft_gnome::{open_document, references, saving, selection};
 #[test]
@@ -26,6 +26,5 @@ fn imported_toc_edits_the_existing_automatic_index_with_undo_and_docx() {
     saving::save(&mut s, &file).unwrap();
     let copy = open_document(&file).unwrap();
     assert!(references::toc_field(&copy).unwrap().1.contains("\\n"));
-    let _ = Pos::body(0, 0);
     std::fs::remove_file(file).unwrap();
 }

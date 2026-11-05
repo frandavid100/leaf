@@ -29,13 +29,14 @@ su promoción sin recompilar. [Proceso y comandos de instalación](CANDIDATES.md
 
 ## Pruebas
 
-La ejecución local completa supera 161 pruebas Rust, cuatro Python, formato y
-enlaces; catálogos inglés/español completos con 792 mensajes. La comprobación GUI
+La ejecución local completa supera 162 pruebas Rust, cuatro Python, formato y
+enlaces; catálogos inglés/español completos con 791 mensajes. La comprobación GUI
 local es de tipos; la ejecución real GTK depende de CI con las bibliotecas GNOME.
 
 `tests/references_alpha29.rs` comprueba actualizaciones derivadas, fecha congelada,
 caret, historial/redo, leyendas e índice; Guardar como actualiza FILENAME al destino
-real y un fallo de escritura conserva la sesión. Los siete campos conservan su
+real y un fallo de escritura conserva la sesión. La regresión de índice importado también comprueba edición del mismo campo,
+historial y nueva reapertura DOCX. Los siete campos conservan su
 historia/documento al guardar/reabrir, incluidos PAGE/NUMPAGES en encabezado/pie y
 metadatos presentes únicamente en un encabezado. La guarda ODT recorre todas las
 historias. PDF/impresión usan una copia y conservan la ruta del documento.
@@ -50,7 +51,7 @@ controles GTK y eventos reales: actualización automática, miniaturas, enlaces,
 índice, leyendas, ecuaciones, notas, Propiedades, los ocho tiradores en línea y
 flotantes, movimiento entre páginas, cancelación, huecos inválidos, clic de ida y
 vuelta en los números y autoscroll. Inglés/escala 1 y español/escala 2, nativo y
-dentro del Flatpak. Se conserva la batería de regresiones anterior.
+dentro del Flatpak GNOME 49 y del archivo relocatable GNOME 51. Se conserva la batería de regresiones anterior.
 
 La primera ejecución gráfica pasó los controles/gestos en inglés. La revisión
 HiDPI aisló una miniatura dos píxeles fuera del área visible: el borde CSS de la
