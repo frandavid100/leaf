@@ -737,6 +737,40 @@ pub(super) fn schedule_thumbnail_refresh(ui: &Rc<Ui>) {
 /// Only called for an active-page change or when the Pages panel is revealed.
 /// Ordinary sidebar browsing and redraws never snap back to this entry.
 pub(super) fn reveal_active_thumbnail(ui: &Rc<Ui>) {
+    reveal_active_thumbnail_now(ui);
+    let target = ui
+        .current
+        .borrow()
+        .as_ref()
+        .map(|d| (d.session.document_id(), d.active));
+    let weak = Rc::downgrade(ui);
+    let frames = Cell::new(0);
+    // The selected CSS border and lazy paintable can change allocation after
+    // the idle callback. Follow only this active-page event through layout;
+    // ordinary redraws/manual browsing never schedule this correction.
+    ui.thumbnails_box.add_tick_callback(move |_, _| {
+        let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+            return glib::ControlFlow::Break;
+        };
+        let current = ui
+            .current
+            .borrow()
+            .as_ref()
+            .map(|d| (d.session.document_id(), d.active));
+        if current != target || !ui.sidebar.shows_sidebar() {
+            return glib::ControlFlow::Break;
+        }
+        reveal_active_thumbnail_now(&ui);
+        frames.set(frames.get() + 1);
+        if frames.get() >= 2 {
+            glib::ControlFlow::Break
+        } else {
+            glib::ControlFlow::Continue
+        }
+    });
+}
+
+fn reveal_active_thumbnail_now(ui: &Rc<Ui>) {
     if !ui.sidebar.shows_sidebar()
         || ui.sidebar_pages.visible_child_name().as_deref() != Some("navigation")
         || ui.navigation_pages.visible_child_name().as_deref() != Some("thumbnails")

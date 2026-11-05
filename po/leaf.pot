@@ -389,7 +389,7 @@ msgstr ""
 msgid "Choose Columns × Rows"
 msgstr ""
 
-#: src/gnome/files.rs:179 src/gnome/pdf_dialog.rs:38 src/gnome/picture_controls.rs:109
+#: src/gnome/files.rs:184 src/gnome/pdf_dialog.rs:38 src/gnome/picture_controls.rs:109
 msgid "Choose a Local File"
 msgstr ""
 
@@ -541,7 +541,7 @@ msgstr ""
 msgid "Could Not Export PDF"
 msgstr ""
 
-#: src/gnome/workspace.rs:584
+#: src/gnome/workspace.rs:590
 msgid "Could Not Load Recovery List"
 msgstr ""
 
@@ -549,7 +549,7 @@ msgstr ""
 msgid "Could Not Open Document"
 msgstr ""
 
-#: src/gnome/files.rs:206
+#: src/gnome/files.rs:211
 msgid "Could Not Open Save Dialog: {e}"
 msgstr ""
 
@@ -569,7 +569,7 @@ msgstr ""
 msgid "Could Not Save Preferences: {e}"
 msgstr ""
 
-#: src/gnome/files.rs:96
+#: src/gnome/files.rs:101
 msgid "Could Not Save: {e}"
 msgstr ""
 
@@ -817,7 +817,7 @@ msgstr ""
 msgid "Do Not Check"
 msgstr ""
 
-#: src/gnome/application.rs:74 src/gnome/files.rs:153 src/gnome/tab.rs:695
+#: src/gnome/application.rs:74 src/gnome/files.rs:158 src/gnome/tab.rs:695
 msgid "Document"
 msgstr ""
 
@@ -845,7 +845,7 @@ msgstr ""
 msgid "Document Properties…"
 msgstr ""
 
-#: src/gnome/files.rs:90
+#: src/gnome/files.rs:95
 msgid "Document Saved"
 msgstr ""
 
@@ -869,7 +869,7 @@ msgstr ""
 msgid "Documents"
 msgstr ""
 
-#: src/gnome/files.rs:142
+#: src/gnome/files.rs:147
 msgid "Documents (.docx, .odt)"
 msgstr ""
 
@@ -1289,7 +1289,7 @@ msgstr ""
 msgid "In Line with Text"
 msgstr ""
 
-#: src/gnome/files.rs:185
+#: src/gnome/files.rs:190
 msgid "Include .docx or .odt in the file name"
 msgstr ""
 
@@ -1957,7 +1957,7 @@ msgstr ""
 msgid "Recover"
 msgstr ""
 
-#: src/gnome/workspace.rs:529
+#: src/gnome/workspace.rs:535
 msgid "Recover Documents"
 msgstr ""
 
@@ -1965,7 +1965,7 @@ msgstr ""
 msgid "Recover Documents…"
 msgstr ""
 
-#: src/gnome/workspace.rs:477
+#: src/gnome/workspace.rs:480
 msgid "Recovered Document"
 msgstr ""
 
@@ -2209,7 +2209,7 @@ msgstr ""
 msgid "Save Changes?"
 msgstr ""
 
-#: src/gnome/files.rs:139
+#: src/gnome/files.rs:144
 msgid "Save a Copy — DOCX or ODT"
 msgstr ""
 
@@ -2829,7 +2829,7 @@ msgstr ""
 msgid "There Are Documents to Recover"
 msgstr ""
 
-#: src/gnome/workspace.rs:541
+#: src/gnome/workspace.rs:547
 msgid "There are no documents to recover."
 msgstr ""
 

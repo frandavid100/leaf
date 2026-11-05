@@ -65,16 +65,21 @@ pub(super) fn ask_discard(
 }
 
 pub(super) fn save_to(ui: &Rc<Ui>, path: &Path) -> bool {
-    let result = {
+    let (result, derived_changed) = {
         let mut state = ui.current.borrow_mut();
         let Some(doc) = state.as_mut() else {
             return false;
         };
-        wordcraft_gnome::saving::save(&mut doc.session, path)
+        let revision = doc.session.rev();
+        let result = wordcraft_gnome::saving::save(&mut doc.session, path);
+        (result, doc.session.rev() != revision)
     };
     match result {
         Ok(()) => {
             ui.save_path.replace(Some(path.to_path_buf()));
+            if derived_changed {
+                refresh_after_content_change(ui);
+            }
             ui.dirty.set(false);
             ui.document_name.replace(
                 path.file_name()

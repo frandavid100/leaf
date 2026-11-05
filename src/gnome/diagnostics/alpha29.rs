@@ -208,6 +208,23 @@ fn alpha29_controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
             4
         );
     }
+    let mut s = Session::new(wordcraft_doc::Document::from_text("Current filename: "));
+    wordcraft_gnome::references::insert_field(&mut s, "FILENAME").unwrap();
+    opened(ui, s, "File name field");
+    let old_raster = ui.current.borrow().as_ref().unwrap().pages[0]
+        .paintable()
+        .unwrap();
+    let path = std::env::temp_dir().join("leaf29-filename-display.docx");
+    assert!(save_to(ui, &path));
+    assert!(!ui.dirty.get());
+    assert!(!ui.current.borrow().as_ref().unwrap().session.dirty);
+    assert_ne!(
+        ui.current.borrow().as_ref().unwrap().pages[0]
+            .paintable()
+            .as_ref(),
+        Some(&old_raster),
+        "Save As must repaint the changed filename field"
+    );
     // Section Properties must target their section, independently of the caret.
     let mut s = Session::new(wordcraft_doc::Document::from_text(
         "First section\nSecond section",

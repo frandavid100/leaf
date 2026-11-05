@@ -52,10 +52,12 @@ flotantes, movimiento entre páginas, cancelación, huecos inválidos, clic de i
 vuelta en los números y autoscroll. Inglés/escala 1 y español/escala 2, nativo y
 dentro del Flatpak. Se conserva la batería de regresiones anterior.
 
-La primera ejecución gráfica pasó los controles/gestos en inglés y detectó que
-la prueba asumía abierto el panel tras navegar desde una vista colapsada. Ahora
-se abre explícitamente el panel para comprobar también ese recorrido; no se
-presenta ese fallo de preparación del test como una corrección de maquetación.
+La primera ejecución gráfica pasó los controles/gestos en inglés. La revisión
+HiDPI aisló una miniatura dos píxeles fuera del área visible: el borde CSS de la
+selección cambiaba su tamaño después del ajuste inicial. La corrección sigue ese
+cambio de página durante dos frames de maquetación, con identidad/página guardadas;
+los redibujados ordinarios no la programan. La prueba también abre explícitamente
+el panel tras una navegación que cierre su variante colapsada.
 
 ## Identidad y límites
 
