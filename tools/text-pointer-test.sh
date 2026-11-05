@@ -5,7 +5,7 @@ leaf_cmd=("$leaf_runner")
 if [[ "$leaf_runner" = *.sh ]]; then leaf_cmd=(bash "$leaf_runner"); fi
 "${leaf_cmd[@]}" --text18-pointer-test 2>text18-pointer.log &
 leaf_pid=$!
-trap 'kill "$leaf_pid" 2>/dev/null || true' EXIT
+trap 'scrot /tmp/leaf29-text-last-state.png 2>/dev/null || true; kill "$leaf_pid" 2>/dev/null || true' EXIT
 for marker in TEXT18_INK_ARROW TEXT18_BLUE TEXT18_INK_BODY TEXT18_UNDERLINE_ARROW TEXT18_DOUBLE TEXT18_UNDERLINE_OFF TEXT18_UNDERLINE_ON; do
   for attempt in $(seq 1 250); do
     grep -q "^$marker " text18-pointer.log && break

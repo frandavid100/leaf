@@ -365,7 +365,8 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
     });
 }
 
-fn text_pointer_target(marker: &str, pop: &gtk::Popover, widget: &impl IsA<gtk::Widget>) {
+thread_local! { static TEXT_POINTER_GEOMETRY: RefCell<std::collections::HashMap<String, ([f64;4],u8)>> = RefCell::new(std::collections::HashMap::new()); }
+fn text_pointer_target(marker: &str, pop: &gtk::Popover, widget: &impl IsA<gtk::Widget>) -> bool {
     use gdk::prelude::PopupExt;
     let r = widget.as_ref().compute_bounds(pop).unwrap();
     let (tx, ty) = pop.surface_transform();
@@ -379,11 +380,32 @@ fn text_pointer_target(marker: &str, pop: &gtk::Popover, widget: &impl IsA<gtk::
         y += p.position_y() as f64;
         surface = gdk::prelude::PopupExt::parent(&p);
     }
+    let scale = pop.scale_factor() as f64;
+    let geometry = [
+        (x + r.x() as f64 + r.width() as f64 / 2.) * scale,
+        (y + r.y() as f64 + r.height() as f64 / 2.) * scale,
+        r.width() as f64,
+        r.height() as f64,
+    ];
+    let stable = TEXT_POINTER_GEOMETRY.with(|cache| {
+        let mut c = cache.borrow_mut();
+        let last = c.entry(marker.into()).or_insert((geometry, 0));
+        if last.0 == geometry {
+            last.1 += 1;
+        } else {
+            *last = (geometry, 0);
+        }
+        last.1 >= 3
+    });
+    if !stable {
+        return false;
+    }
     eprintln!(
         "{marker} {} {}",
-        (x + r.x() as f64 + r.width() as f64 / 2.0).round() as i32,
-        (y + r.y() as f64 + r.height() as f64 / 2.0).round() as i32
+        geometry[0].round() as i32,
+        geometry[1].round() as i32
     );
+    true
 }
 pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
     ui.host
@@ -422,7 +444,9 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
         match phase.get() {
             0 if pop.is_mapped() => {
                 let arrow = palette.ink.clone().upcast::<gtk::Widget>();
-                text_pointer_target("TEXT18_INK_ARROW", &pop, &arrow);
+                if !text_pointer_target("TEXT18_INK_ARROW", &pop, &arrow) {
+                    return glib::ControlFlow::Continue;
+                }
                 phase.set(1);
             }
             1 if tools.stack.visible_child_name().as_deref() == Some("detail") => {
@@ -433,7 +457,9 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 settled.set(0);
                 let child = pop.clone();
                 let blue = find_widget(&child, "ink-choice-1C71D8").unwrap();
-                text_pointer_target("TEXT18_BLUE", &child, &blue);
+                if !text_pointer_target("TEXT18_BLUE", &child, &blue) {
+                    return glib::ControlFlow::Continue;
+                }
                 phase.set(2);
             }
             2 if palette.last_ink.borrow().as_str() == "1C71D8" => {
@@ -452,13 +478,17 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 }
                 settled.set(0);
                 let body = palette.ink_apply.clone().upcast::<gtk::Widget>();
-                text_pointer_target("TEXT18_INK_BODY", &pop, &body);
+                if !text_pointer_target("TEXT18_INK_BODY", &pop, &body) {
+                    return glib::ControlFlow::Continue;
+                }
                 phase.set(3);
             }
             3 if selection_character(&u)["color"] == json!({"Rgb":[28,113,216]}) => {
                 assert_eq!(tools.stack.visible_child_name().as_deref(), Some("main"));
                 let arrow = palette.underline.clone().upcast::<gtk::Widget>();
-                text_pointer_target("TEXT18_UNDERLINE_ARROW", &pop, &arrow);
+                if !text_pointer_target("TEXT18_UNDERLINE_ARROW", &pop, &arrow) {
+                    return glib::ControlFlow::Continue;
+                }
                 phase.set(4);
             }
             4 if tools.stack.visible_child_name().as_deref() == Some("detail") => {
@@ -469,7 +499,9 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 settled.set(0);
                 let child = pop.clone();
                 let double = find_widget(&child, "underline-choice-double").unwrap();
-                text_pointer_target("TEXT18_DOUBLE", &child, &double);
+                if !text_pointer_target("TEXT18_DOUBLE", &child, &double) {
+                    return glib::ControlFlow::Continue;
+                }
                 phase.set(5);
             }
             5 if palette.last_underline.borrow().as_str() == "double" => {
@@ -480,7 +512,9 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 settled.set(0);
                 assert_eq!(selection_character(&u)["underline"], "double");
                 let body = palette.underline_check.clone().upcast::<gtk::Widget>();
-                text_pointer_target("TEXT18_UNDERLINE_OFF", &pop, &body);
+                if !text_pointer_target("TEXT18_UNDERLINE_OFF", &pop, &body) {
+                    return glib::ControlFlow::Continue;
+                }
                 phase.set(6);
             }
             6 if selection_character(&u)["underline"] == "none" => {
@@ -492,7 +526,9 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 }
                 settled.set(0);
                 let body = palette.underline_check.clone().upcast::<gtk::Widget>();
-                text_pointer_target("TEXT18_UNDERLINE_ON", &pop, &body);
+                if !text_pointer_target("TEXT18_UNDERLINE_ON", &pop, &body) {
+                    return glib::ControlFlow::Continue;
+                }
                 phase.set(7);
             }
             7 if selection_character(&u)["underline"] == "double" => {
