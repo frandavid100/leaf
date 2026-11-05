@@ -152,12 +152,34 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
         wordcraft_gnome::t!("Image…"),
         wordcraft_gnome::t!("Bookmark…"),
         wordcraft_gnome::t!("Comment…"),
-        wordcraft_gnome::t!("Header"),
-        wordcraft_gnome::t!("Footer"),
-        wordcraft_gnome::t!("Page Number…"),
+        wordcraft_gnome::t!("Header and Footer"),
+        wordcraft_gnome::t!("Automatic Fields"),
+        wordcraft_gnome::t!("Breaks"),
     ] {
         assert!(context_model_row(&pop, label).is_some(), "missing {label}");
     }
+    context_activate_row(&pop, wordcraft_gnome::t!("Header and Footer"));
+    for label in [wordcraft_gnome::t!("Header"), wordcraft_gnome::t!("Footer")] {
+        assert!(context_model_row(&pop, label).is_some(), "missing {label}");
+    }
+    pop.popdown();
+    let pop = show_document_context(ui, parent, 100, 150, DocumentContext::Text);
+    context_activate_row(&pop, wordcraft_gnome::t!("Insert"));
+    context_activate_row(&pop, wordcraft_gnome::t!("Automatic Fields"));
+    for label in [
+        wordcraft_gnome::t!("Page Number"),
+        wordcraft_gnome::t!("Total Pages"),
+        wordcraft_gnome::t!("Author"),
+        wordcraft_gnome::t!("Document Title"),
+        wordcraft_gnome::t!("File Name"),
+        wordcraft_gnome::t!("Date"),
+        wordcraft_gnome::t!("Time"),
+    ] {
+        assert!(context_model_row(&pop, label).is_some(), "missing {label}");
+    }
+    pop.popdown();
+    let pop = show_document_context(ui, parent, 100, 150, DocumentContext::Text);
+    context_activate_row(&pop, wordcraft_gnome::t!("Insert"));
     context_activate_row(&pop, wordcraft_gnome::t!("Comment…"));
     assert!(!pop.is_visible());
     let (_, text, submit) = composer(ui);

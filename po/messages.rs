@@ -453,7 +453,6 @@ pub const MESSAGES: &[&str] = &[
     "Page Break Before",
     "Page Number",
     "Page Numbering",
-    "Page Number…",
     "Page Setup",
     "Page Width",
     "Page numbers update automatically. Existing header and footer content is kept.",

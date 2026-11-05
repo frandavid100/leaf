@@ -161,7 +161,7 @@ msgstr ""
 msgid "Ascending (A–Z)"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:343 src/gnome/menus.rs:503
+#: src/gnome/diagnostics/annotations.rs:172 src/gnome/document_properties_dialog.rs:343 src/gnome/menus.rs:503
 msgid "Author"
 msgstr ""
 
@@ -181,7 +181,7 @@ msgstr ""
 msgid "Automatic Color"
 msgstr ""
 
-#: src/gnome/menus.rs:511
+#: src/gnome/diagnostics/annotations.rs:156 src/gnome/diagnostics/annotations.rs:168 src/gnome/menus.rs:511
 msgid "Automatic Fields"
 msgstr ""
 
@@ -273,7 +273,7 @@ msgstr ""
 msgid "Bottom · Right"
 msgstr ""
 
-#: src/gnome/menus.rs:516
+#: src/gnome/diagnostics/annotations.rs:157 src/gnome/menus.rs:516
 msgid "Breaks"
 msgstr ""
 
@@ -501,7 +501,7 @@ msgstr ""
 msgid "Comments"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:154 src/gnome/diagnostics/annotations.rs:161 src/gnome/menus.rs:461
+#: src/gnome/diagnostics/annotations.rs:154 src/gnome/diagnostics/annotations.rs:183 src/gnome/menus.rs:461
 msgid "Comment…"
 msgstr ""
 
@@ -673,7 +673,7 @@ msgstr ""
 msgid "Dashed"
 msgstr ""
 
-#: src/gnome/menus.rs:506
+#: src/gnome/diagnostics/annotations.rs:175 src/gnome/menus.rs:506
 msgid "Date"
 msgstr ""
 
@@ -853,7 +853,7 @@ msgstr ""
 msgid "Document Sent to Printer"
 msgstr ""
 
-#: src/gnome/menus.rs:504
+#: src/gnome/diagnostics/annotations.rs:173 src/gnome/menus.rs:504
 msgid "Document Title"
 msgstr ""
 
@@ -1045,7 +1045,7 @@ msgstr ""
 msgid "Figure"
 msgstr ""
 
-#: src/gnome/menus.rs:505
+#: src/gnome/diagnostics/annotations.rs:174 src/gnome/menus.rs:505
 msgid "File Name"
 msgstr ""
 
@@ -1117,7 +1117,7 @@ msgstr ""
 msgid "Font size must be between 6 and 96 points"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:156 src/gnome/menus.rs:494
+#: src/gnome/diagnostics/annotations.rs:162 src/gnome/menus.rs:494
 msgid "Footer"
 msgstr ""
 
@@ -1173,11 +1173,11 @@ msgstr ""
 msgid "Gutter (mm)"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:155 src/gnome/menus.rs:488
+#: src/gnome/diagnostics/annotations.rs:162 src/gnome/menus.rs:488
 msgid "Header"
 msgstr ""
 
-#: src/gnome/menus.rs:498
+#: src/gnome/diagnostics/annotations.rs:155 src/gnome/diagnostics/annotations.rs:161 src/gnome/menus.rs:498
 msgid "Header and Footer"
 msgstr ""
 
@@ -1329,7 +1329,7 @@ msgstr ""
 msgid "Information"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:149 src/gnome/headers.rs:128 src/gnome/menus.rs:518
+#: src/gnome/diagnostics/annotations.rs:149 src/gnome/diagnostics/annotations.rs:167 src/gnome/diagnostics/annotations.rs:182 src/gnome/headers.rs:128 src/gnome/menus.rs:518
 msgid "Insert"
 msgstr ""
 
@@ -1809,16 +1809,12 @@ msgstr ""
 msgid "Page Break Before"
 msgstr ""
 
-#: src/gnome/headers.rs:116 src/gnome/menus.rs:501 src/gnome/references.rs:309 src/header_footer.rs:175
+#: src/gnome/diagnostics/annotations.rs:170 src/gnome/headers.rs:116 src/gnome/menus.rs:501 src/gnome/references.rs:309 src/header_footer.rs:175
 msgid "Page Number"
 msgstr ""
 
 #: src/gnome/header_options.rs:96
 msgid "Page Numbering"
-msgstr ""
-
-#: src/gnome/diagnostics/annotations.rs:157
-msgid "Page Number…"
 msgstr ""
 
 #: src/history.rs:203
@@ -2865,7 +2861,7 @@ msgstr ""
 msgid "This selection contains different links. Enter a destination to replace them all."
 msgstr ""
 
-#: src/gnome/menus.rs:507
+#: src/gnome/diagnostics/annotations.rs:176 src/gnome/menus.rs:507
 msgid "Time"
 msgstr ""
 
@@ -2897,7 +2893,7 @@ msgstr ""
 msgid "Top · Right"
 msgstr ""
 
-#: src/gnome/menus.rs:502
+#: src/gnome/diagnostics/annotations.rs:171 src/gnome/menus.rs:502
 msgid "Total Pages"
 msgstr ""
 

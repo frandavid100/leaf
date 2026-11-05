@@ -76,6 +76,13 @@ jobs:
           fi
       - name: Compilar lector GNOME
         run: cargo build --release --locked --features gui --bin wordcraft-gnome
+      - name: Validate grouped Insert and annotation workflows
+        run: |
+          set -o pipefail
+          for language in en es; do
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --annotations-ui-test 2>&1 | tee annotations-$language.log
+            grep -q ANNOTATIONS_UI_OK annotations-$language.log
+          done
       - name: Editable headers, footers and automatic page fields
         run: |
           set -o pipefail
@@ -200,10 +207,6 @@ jobs:
         run: |
           set -o pipefail
           git diff --exit-code 4707d77882afb6432d2ba521ad551985324d11cb -- Cargo.toml Cargo.lock vendor patches
-          for language in en es; do
-            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --annotations-ui-test 2>&1 | tee annotations-$language.log
-            grep -q ANNOTATIONS_UI_OK annotations-$language.log
-          done
           xvfb-run -a -s '-screen 0 1280x900x24' bash -c '
             set -e
             for panel in annotations proofing; do
@@ -609,20 +612,31 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
-      contents: write
+      contents: read
       actions: read
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Verify reused native build is source-identical
+      - name: Verify reused native build is source-identical and fully validated
         if: contains(github.event.head_commit.message, '[bundle-only]')
-        run: git diff --exit-code 74865717f99d63bab8000f1470db7b42718ba761 -- src Cargo.toml Cargo.lock tests vendor po data examples tools patches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/42118901548" > native-run.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open('native-run.json'))
+          assert r['conclusion'] == 'success'
+          assert r['head_sha'] == 'abc60f2e0e89a17001c8bcb0ec34126116a8f287'
+          assert r['path'] == '.github/workflows/wordcraft-gnome.yml'
+          PY
+          git diff --exit-code abc60f2e0e89a17001c8bcb0ec34126116a8f287 -- src Cargo.toml Cargo.lock tests vendor po data examples tools patches
       - uses: actions/download-artifact@v4
         with:
           name: wordcraft-gnome-fase3d-linux
           path: native-artifact
-          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '41995941521' || github.run_id }}
+          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '42118901548' || github.run_id }}
           github-token: ${{ github.token }}
       - name: Install Flatpak and desktop validation tools
         run: |
@@ -801,6 +815,8 @@ jobs:
         env:
           LEAF_CANDIDATE_SHA: ${{ github.sha }}
           LEAF_CANDIDATE_RUN: ${{ github.run_id }}
+          LEAF_NATIVE_SHA: ${{ contains(github.event.head_commit.message, '[bundle-only]') && 'abc60f2e0e89a17001c8bcb0ec34126116a8f287' || github.sha }}
+          LEAF_NATIVE_RUN: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '42118901548' || github.run_id }}
         run: |
           cp packaging/RELEASE_NOTES.md dist/RELEASE_NOTES.md
           python3 - <<'PYTHON'
@@ -808,6 +824,8 @@ jobs:
           pathlib.Path('dist/candidate.json').write_text(json.dumps({
               'version': '0.1.0-alpha.29', 'source': os.environ['LEAF_CANDIDATE_SHA'],
               'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
+              'native_source': os.environ['LEAF_NATIVE_SHA'],
+              'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
               'publication': 'requires maintainer approval; promote these exact files without rebuilding'
           }, indent=2) + '\n')
           PYTHON
