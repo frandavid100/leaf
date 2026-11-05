@@ -749,7 +749,7 @@ jobs:
           cp -R a11y-results dist/accessibility-audit
       - name: Checksums
         working-directory: dist
-        run: sha256sum Leaf-*.flatpak INSTALL.md source-commit.txt runtime.txt runtime-commit.txt flatpak-metadata.txt flatpak-smoke.log > SHA256SUMS
+        run: sha256sum Leaf-*.flatpak Leaf-*-flatpark-x86_64.tar.xz INSTALL.md source-commit.txt runtime.txt runtime-commit.txt flatpak-metadata.txt flatpak-smoke.log > SHA256SUMS
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -765,7 +765,7 @@ jobs:
             echo 'Source superseded; publication skipped.'
             exit 0
           fi
-          gh release create v0.1.0-alpha.26 dist/Leaf-0.1.0-alpha.26-x86_64.flatpak dist/SHA256SUMS dist/INSTALL.md dist/source-commit.txt dist/runtime.txt dist/runtime-commit.txt dist/flatpak-metadata.txt dist/flatpak-smoke.log --target "$GITHUB_SHA" --title 'Leaf 0.1.0-alpha.26' --prerelease --notes-file packaging/RELEASE_NOTES.md
+          gh release create v0.1.0-alpha.26 dist/Leaf-0.1.0-alpha.26-x86_64.flatpak dist/Leaf-0.1.0-alpha.26-flatpark-x86_64.tar.xz dist/SHA256SUMS dist/INSTALL.md dist/source-commit.txt dist/runtime.txt dist/runtime-commit.txt dist/flatpak-metadata.txt dist/flatpak-smoke.log --target "$GITHUB_SHA" --title 'Leaf 0.1.0-alpha.26' --prerelease --notes-file packaging/RELEASE_NOTES.md
 
   lifecycle-baseline:
     if: contains(github.event.head_commit.message, '[lifecycle-baseline]')

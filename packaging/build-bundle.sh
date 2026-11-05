@@ -35,6 +35,9 @@ install -Dm0644 vendor/wordcraft-formats/LICENSE-MIT "$work/files/share/licenses
 install -Dm0644 vendor/wordcraft-formats/LICENSE-APACHE "$work/files/share/licenses/wordcraft-formats/LICENSE-APACHE"
 # Portals grant individual documents; no home/host filesystem or network access.
 flatpak build-finish --command=leaf --share=ipc --socket=wayland --socket=fallback-x11 --device=dri "$work"
+# FlatPark extracts these /app contents at /app/extra/leaf; keep the archive root
+# at bin/ and share/. Resource lookup must remain relative to the executable.
+tar -C "$work/files" -cJf "$out/Leaf-$version-flatpark-x86_64.tar.xz" .
 flatpak build-export "$repo" "$work" alpha
 flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo "$repo" "$out/Leaf-$version-x86_64.flatpak" "$app_id" alpha
 if test -f prior-release/Leaf-0.1.0-alpha.25-x86_64.flatpak; then
