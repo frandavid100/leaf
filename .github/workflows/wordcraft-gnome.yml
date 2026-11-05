@@ -32,8 +32,8 @@ jobs:
           python-version: '3.12'
       - name: Instalar bibliotecas GNOME y pantalla virtual
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11
+          sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11
           sudo locale-gen en_US.UTF-8
       - name: Check Leaf formatting and contributor entry points
         run: |
@@ -610,7 +610,7 @@ jobs:
     needs: test
     if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[candidate-alpha]') && (needs.test.result == 'success' || (needs.test.result == 'skipped' && contains(github.event.head_commit.message, '[bundle-only]')))
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     permissions:
       contents: read
       actions: read
@@ -640,8 +640,8 @@ jobs:
           github-token: ${{ github.token }}
       - name: Install Flatpak and desktop validation tools
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
+          sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
           # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Validate desktop metadata
