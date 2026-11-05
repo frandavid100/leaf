@@ -213,6 +213,13 @@ fn show_link_for(ui: &Rc<Ui>, pointer: Option<&Pos>) -> Option<LinkDialog> {
 }
 
 pub(super) fn launch_document_link(ui: &Rc<Ui>, url: &str) {
+    if let Some(name) = url.strip_prefix('#') {
+        if tools_change(ui, |s| wordcraft_gnome::annotations::goto_bookmark(s, name)) {
+            ui.document_box.grab_focus();
+            caret_ensure_visible(ui);
+        }
+        return;
+    }
     let Some(host) = ui.host.upgrade() else {
         return;
     };

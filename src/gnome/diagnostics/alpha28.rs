@@ -8,6 +8,7 @@ pub(super) fn alpha28_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
             .map(|i| format!("Paragraph {i}. Section layout and reference checks.\n"))
             .collect::<String>(),
     ));
+    s.run("para.style", &json!({"style":"Heading1"})).unwrap();
     selection::set_caret(&mut s, &Pos::body(55, 0), false).unwrap();
     s.run("layout.break", &json!({"kind":"nextPage"})).unwrap();
     let mut setup = PageSetup::current(&s);
@@ -79,6 +80,40 @@ pub(super) fn alpha28_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
                     wordcraft_doc::StoryRef::Part(_)
                 ));
                 eprintln!("ALPHA28_UI_OK sections, fit, thumbnails, active page, note actions");
+                host.window
+                    .lookup_action("footnote-reference")
+                    .unwrap()
+                    .activate(None);
+                for (action, title) in [
+                    ("insert-toc", wordcraft_gnome::t!("Table of Contents")),
+                    (
+                        "insert-cross-reference",
+                        wordcraft_gnome::t!("Cross-reference"),
+                    ),
+                    ("insert-caption", wordcraft_gnome::t!("Caption")),
+                    ("footnote-options", wordcraft_gnome::t!("Footnote Options")),
+                ] {
+                    host.window.lookup_action(action).unwrap().activate(None);
+                    let window = gtk::Window::list_toplevels()
+                        .into_iter()
+                        .filter_map(|w| w.downcast::<gtk::Window>().ok())
+                        .find(|w| w.is_visible() && w.title().as_deref() == Some(title))
+                        .unwrap();
+                    find_widget(&window, "reference-apply")
+                        .unwrap()
+                        .downcast::<gtk::Button>()
+                        .unwrap()
+                        .emit_clicked();
+                    assert!(
+                        !window.is_visible(),
+                        "reference dialog must commit without an error"
+                    );
+                }
+                host.window
+                    .lookup_action("update-references")
+                    .unwrap()
+                    .activate(None);
+                eprintln!("ALPHA28_REFERENCE_DIALOGS_OK");
                 alpha28_image_probe(&u, &a, 0);
             });
         });

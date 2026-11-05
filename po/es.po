@@ -2551,3 +2551,6 @@ msgstr "Esta sección"
 
 msgid "Update References"
 msgstr "Actualizar referencias"
+
+msgid "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text."
+msgstr "Guarda como DOCX para conservar las referencias cruzadas y la numeración de leyendas. El exportador ODT actual solo conserva su texto."

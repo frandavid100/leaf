@@ -69,6 +69,7 @@ fn reference_window(
     let cancel = gtk::Button::with_label(wordcraft_gnome::t!("Cancel"));
     let apply = gtk::Button::with_label(wordcraft_gnome::t!("Apply"));
     apply.add_css_class("suggested-action");
+    apply.set_widget_name("reference-apply");
     header.pack_start(&cancel);
     header.pack_end(&apply);
     view.add_top_bar(&header);

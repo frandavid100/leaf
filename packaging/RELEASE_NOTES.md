@@ -1,9 +1,12 @@
-Leaf 0.1.0-alpha.27 adds the release archive requested by FlatPark.
+Leaf 0.1.0-alpha.28 adds document references and floating picture controls.
 
-- Publishes `Leaf-0.1.0-alpha.27-flatpark-x86_64.tar.xz` containing the application files, with `bin/` and `share/` at the archive root.
-- Includes the archive in `SHA256SUMS` and attaches it to the GitHub release.
-- Checks the archive installed at `/app/extra/leaf` on GNOME Platform 51, including English/Spanish translations and spelling review. Results are recorded in `flatpark-smoke.log`.
+- Insert and edit footnotes on the document canvas, navigate between notes and their references, and configure numbering. Ctrl+Alt+F inserts a footnote.
+- Insert an automatic table of contents from document headings, choose its levels and page numbers, and update it from References.
+- Add numbered figure/table captions and cross-references to headings, captions or bookmarks. References → Update References refreshes fields and contents. Ctrl+click an internal reference to follow it.
+- Place images beside text or above/below it, set spacing and move-with-text behavior, and move or resize pictures with the pointer. Each drag has a preview and a single undo step.
+- Fit portrait and landscape sections independently. Explicit percentage zoom uses the same scale throughout the document.
+- Keep page thumbnails at a common width and highlight the actual active page in multi-page rows.
 
-FlatPark has agreed to list Leaf once a release provides this archive. Catalog publication is handled by FlatPark. The archive is for packaging, and the regular installation instructions use `Leaf-0.1.0-alpha.27-x86_64.flatpak` with GNOME 49. Install it over alpha.26 to update.
+Use DOCX for notes, automatic contents, cross-references, captions and floating images. The current ODT exporter loses those structures, so Leaf blocks saves that would discard them.
 
-Leaf is experimental and its development has used substantial AI assistance.
+The regular GitHub Flatpak uses GNOME 49 and updates alpha.27. The FlatPark archive is checked with GNOME 51. Leaf is experimental and its development has used substantial AI assistance.

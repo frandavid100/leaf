@@ -137,7 +137,7 @@ msgstr ""
 msgid "Apply Style {}"
 msgstr ""
 
-#: src/gnome/columns.rs:205 src/gnome/references.rs:280
+#: src/gnome/columns.rs:205 src/gnome/references.rs:281
 msgid "Apply To"
 msgstr ""
 
@@ -161,7 +161,7 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
-#: src/gnome/workspace.rs:320
+#: src/gnome/workspace.rs:321
 msgid "Author Name"
 msgstr ""
 
@@ -177,7 +177,7 @@ msgstr ""
 msgid "Automatic Color"
 msgstr ""
 
-#: src/gnome/workspace.rs:352 src/gnome/workspace.rs:355
+#: src/gnome/workspace.rs:353 src/gnome/workspace.rs:356
 msgid "Autosave"
 msgstr ""
 
@@ -213,7 +213,7 @@ msgstr ""
 msgid "Bold, Italic, Underline and Font Size"
 msgstr ""
 
-#: src/gnome/references.rs:175 src/history.rs:165
+#: src/gnome/references.rs:176 src/history.rs:165
 msgid "Bookmark"
 msgstr ""
 
@@ -297,7 +297,7 @@ msgstr ""
 msgid "Capitalize Each Word"
 msgstr ""
 
-#: src/gnome/references.rs:223
+#: src/gnome/diagnostics/alpha28.rs:93 src/gnome/references.rs:224
 msgid "Caption"
 msgstr ""
 
@@ -497,7 +497,7 @@ msgstr ""
 msgid "Content Alignment"
 msgstr ""
 
-#: src/gnome/references.rs:149
+#: src/gnome/references.rs:150
 msgid "Contents"
 msgstr ""
 
@@ -509,7 +509,7 @@ msgstr ""
 msgid "Continue from Previous Section"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:169 src/gnome/document_properties_dialog.rs:315 src/gnome/references.rs:244
+#: src/gnome/document_properties_dialog.rs:169 src/gnome/document_properties_dialog.rs:315 src/gnome/references.rs:245
 msgid "Continuous"
 msgstr ""
 
@@ -525,7 +525,7 @@ msgstr ""
 msgid "Could Not Export PDF"
 msgstr ""
 
-#: src/gnome/workspace.rs:580
+#: src/gnome/workspace.rs:581
 msgid "Could Not Load Recovery List"
 msgstr ""
 
@@ -549,7 +549,7 @@ msgstr ""
 msgid "Could Not Print: {e}"
 msgstr ""
 
-#: src/gnome/workspace.rs:369
+#: src/gnome/workspace.rs:370
 msgid "Could Not Save Preferences: {e}"
 msgstr ""
 
@@ -577,7 +577,7 @@ msgstr ""
 msgid "Creates continuous sections around the selected text, leaving the rest of the document unchanged."
 msgstr ""
 
-#: src/gnome/references.rs:169
+#: src/gnome/diagnostics/alpha28.rs:91 src/gnome/references.rs:170
 msgid "Cross-reference"
 msgstr ""
 
@@ -585,7 +585,7 @@ msgstr ""
 msgid "Cross-reference…"
 msgstr ""
 
-#: src/gnome/links.rs:259
+#: src/gnome/links.rs:266
 msgid "Ctrl+click to open a link"
 msgstr ""
 
@@ -677,7 +677,7 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
-#: src/gnome/workspace.rs:380
+#: src/gnome/workspace.rs:381
 msgid "Default Language for New Documents"
 msgstr ""
 
@@ -761,7 +761,7 @@ msgstr ""
 msgid "Direction and Formatting"
 msgstr ""
 
-#: src/gnome/workspace.rs:357
+#: src/gnome/workspace.rs:358
 msgid "Disabled"
 msgstr ""
 
@@ -805,7 +805,7 @@ msgstr ""
 msgid "Document Editor"
 msgstr ""
 
-#: src/gnome/workspace.rs:359
+#: src/gnome/workspace.rs:360
 msgid "Document File"
 msgstr ""
 
@@ -865,11 +865,11 @@ msgstr ""
 msgid "Double Strikethrough"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:313 src/gnome/references.rs:246
+#: src/gnome/document_properties_dialog.rs:313 src/gnome/references.rs:247
 msgid "Each Page"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:314 src/gnome/references.rs:245
+#: src/gnome/document_properties_dialog.rs:314 src/gnome/references.rs:246
 msgid "Each Section"
 msgstr ""
 
@@ -997,7 +997,7 @@ msgstr ""
 msgid "Field"
 msgstr ""
 
-#: src/gnome/references.rs:173 src/gnome/references.rs:225
+#: src/gnome/references.rs:174 src/gnome/references.rs:226
 msgid "Figure"
 msgstr ""
 
@@ -1085,7 +1085,7 @@ msgstr ""
 msgid "Footnote"
 msgstr ""
 
-#: src/gnome/references.rs:241
+#: src/gnome/diagnostics/alpha28.rs:94 src/gnome/references.rs:242
 msgid "Footnote Options"
 msgstr ""
 
@@ -1137,11 +1137,11 @@ msgstr ""
 msgid "Headers and Footers"
 msgstr ""
 
-#: src/gnome/references.rs:172
+#: src/gnome/references.rs:173
 msgid "Heading"
 msgstr ""
 
-#: src/gnome/references.rs:155
+#: src/gnome/references.rs:156
 msgid "Heading Levels"
 msgstr ""
 
@@ -1369,7 +1369,7 @@ msgstr ""
 msgid "Keywords"
 msgstr ""
 
-#: src/gnome/references.rs:227
+#: src/gnome/references.rs:228
 msgid "Label"
 msgstr ""
 
@@ -1577,7 +1577,7 @@ msgstr ""
 msgid "New Comment"
 msgstr ""
 
-#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:141 src/gnome/tab.rs:735 src/gnome/workspace.rs:307
+#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:141 src/gnome/tab.rs:735 src/gnome/workspace.rs:308
 msgid "New Document"
 msgstr ""
 
@@ -1653,7 +1653,7 @@ msgstr ""
 msgid "No issues found in text with available proofing tools."
 msgstr ""
 
-#: src/gnome/references.rs:208
+#: src/gnome/references.rs:209
 msgid "No references of this type are available."
 msgstr ""
 
@@ -1665,7 +1665,7 @@ msgstr ""
 msgid "Normal Style"
 msgstr ""
 
-#: src/gnome/header_options.rs:100 src/gnome/references.rs:281
+#: src/gnome/header_options.rs:100 src/gnome/references.rs:282
 msgid "Number Format"
 msgstr ""
 
@@ -1749,7 +1749,7 @@ msgstr ""
 msgid "Page Break Before"
 msgstr ""
 
-#: src/gnome/headers.rs:116 src/gnome/references.rs:180 src/header_footer.rs:175
+#: src/gnome/headers.rs:116 src/gnome/references.rs:181 src/header_footer.rs:175
 msgid "Page Number"
 msgstr ""
 
@@ -1853,7 +1853,7 @@ msgstr ""
 msgid "Position (pt)"
 msgstr ""
 
-#: src/gnome/menus.rs:353 src/gnome/menus.rs:636 src/gnome/workspace.rs:316
+#: src/gnome/menus.rs:353 src/gnome/menus.rs:636 src/gnome/workspace.rs:317
 msgid "Preferences"
 msgstr ""
 
@@ -1889,7 +1889,7 @@ msgstr ""
 msgid "Recover"
 msgstr ""
 
-#: src/gnome/workspace.rs:525
+#: src/gnome/workspace.rs:526
 msgid "Recover Documents"
 msgstr ""
 
@@ -1897,15 +1897,15 @@ msgstr ""
 msgid "Recover Documents…"
 msgstr ""
 
-#: src/gnome/workspace.rs:473
+#: src/gnome/workspace.rs:474
 msgid "Recovered Document"
 msgstr ""
 
-#: src/gnome/workspace.rs:358
+#: src/gnome/workspace.rs:359
 msgid "Recovery File"
 msgstr ""
 
-#: src/gnome/workspace.rs:353
+#: src/gnome/workspace.rs:354
 msgid "Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved."
 msgstr ""
 
@@ -1929,7 +1929,7 @@ msgstr ""
 msgid "Redo History"
 msgstr ""
 
-#: src/gnome/references.rs:182
+#: src/gnome/references.rs:183
 msgid "Reference Type"
 msgstr ""
 
@@ -2037,7 +2037,7 @@ msgstr ""
 msgid "Restart Line Numbers"
 msgstr ""
 
-#: src/gnome/references.rs:282
+#: src/gnome/references.rs:283
 msgid "Restart Numbering"
 msgstr ""
 
@@ -2065,7 +2065,7 @@ msgstr ""
 msgid "Review"
 msgstr ""
 
-#: src/gnome/workspace.rs:390 src/gnome/workspace.rs:392
+#: src/gnome/workspace.rs:391 src/gnome/workspace.rs:393
 msgid "Review New Documents"
 msgstr ""
 
@@ -2153,11 +2153,15 @@ msgstr ""
 msgid "Save as DOCX to preserve column breaks and continuous, even-page or odd-page sections."
 msgstr ""
 
-#: src/saving.rs:95
+#: src/saving.rs:108
+msgid "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text."
+msgstr ""
+
+#: src/saving.rs:100
 msgid "Save as DOCX to preserve editable equations. The current ODT exporter cannot keep their structure."
 msgstr ""
 
-#: src/saving.rs:103
+#: src/saving.rs:112
 msgid "Save as DOCX to preserve floating image placement and text wrapping. The current ODT exporter makes these images inline."
 msgstr ""
 
@@ -2169,7 +2173,7 @@ msgstr ""
 msgid "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
 msgstr ""
 
-#: src/saving.rs:99
+#: src/saving.rs:104
 msgid "Save as DOCX to preserve the automatic table of contents. The current ODT exporter only keeps static entries."
 msgstr ""
 
@@ -2321,7 +2325,7 @@ msgstr ""
 msgid "Select the matching .aff and .dic files for one Hunspell dictionary."
 msgstr ""
 
-#: src/links.rs:145
+#: src/links.rs:167
 msgid "Select the text to link."
 msgstr ""
 
@@ -2357,7 +2361,7 @@ msgstr ""
 msgid "Shift+Tab"
 msgstr ""
 
-#: src/gnome/references.rs:184
+#: src/gnome/references.rs:185
 msgid "Show"
 msgstr ""
 
@@ -2373,7 +2377,7 @@ msgstr ""
 msgid "Show Line Numbers"
 msgstr ""
 
-#: src/gnome/references.rs:152
+#: src/gnome/references.rs:153
 msgid "Show Page Numbers"
 msgstr ""
 
@@ -2445,7 +2449,7 @@ msgstr ""
 msgid "Spelling actions"
 msgstr ""
 
-#: src/gnome/spellcheck.rs:294 src/gnome/tab.rs:158 src/gnome/tab.rs:161 src/gnome/workspace.rs:378
+#: src/gnome/spellcheck.rs:294 src/gnome/tab.rs:158 src/gnome/tab.rs:161 src/gnome/workspace.rs:379
 msgid "Spelling and Grammar"
 msgstr ""
 
@@ -2465,7 +2469,7 @@ msgstr ""
 msgid "Square"
 msgstr ""
 
-#: src/gnome/header_options.rs:115 src/gnome/references.rs:283
+#: src/gnome/header_options.rs:115 src/gnome/references.rs:284
 msgid "Start At"
 msgstr ""
 
@@ -2541,7 +2545,7 @@ msgstr ""
 msgid "Tab stop"
 msgstr ""
 
-#: src/gnome/context.rs:540 src/gnome/context.rs:549 src/gnome/references.rs:174 src/gnome/references.rs:225 src/gnome/tables.rs:38 src/gnome/tables.rs:207 src/gnome/tables.rs:450 src/gnome/tables.rs:463
+#: src/gnome/context.rs:540 src/gnome/context.rs:549 src/gnome/references.rs:175 src/gnome/references.rs:226 src/gnome/tables.rs:38 src/gnome/tables.rs:207 src/gnome/tables.rs:450 src/gnome/tables.rs:463
 msgid "Table"
 msgstr ""
 
@@ -2565,7 +2569,7 @@ msgstr ""
 msgid "Table Size"
 msgstr ""
 
-#: src/gnome/references.rs:147
+#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/references.rs:148
 msgid "Table of Contents"
 msgstr ""
 
@@ -2581,7 +2585,7 @@ msgstr ""
 msgid "Tabs"
 msgstr ""
 
-#: src/gnome/references.rs:183
+#: src/gnome/references.rs:184
 msgid "Target"
 msgstr ""
 
@@ -2589,7 +2593,7 @@ msgstr ""
 msgid "Teal"
 msgstr ""
 
-#: src/gnome/adaptive.rs:295 src/gnome/context.rs:219 src/gnome/context.rs:455 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:160 src/gnome/diagnostics/spellcheck.rs:134 src/gnome/references.rs:179 src/gnome/references.rs:228 src/gnome/tab.rs:235 src/gnome/tab.rs:270 src/gnome/tab.rs:517
+#: src/gnome/adaptive.rs:295 src/gnome/context.rs:219 src/gnome/context.rs:455 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:160 src/gnome/diagnostics/spellcheck.rs:134 src/gnome/references.rs:180 src/gnome/references.rs:229 src/gnome/tab.rs:235 src/gnome/tab.rs:270 src/gnome/tab.rs:517
 msgid "Text"
 msgstr ""
 
@@ -2657,7 +2661,7 @@ msgstr ""
 msgid "The document has changed; export it again"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:168 src/gnome/headers.rs:172 src/gnome/links.rs:171 src/gnome/references.rs:123 src/history.rs:131
+#: src/gnome/annotation_dialog.rs:168 src/gnome/headers.rs:172 src/gnome/links.rs:171 src/gnome/references.rs:124 src/history.rs:131
 msgid "The document has changed; open this dialog again."
 msgstr ""
 
@@ -2685,7 +2689,7 @@ msgstr ""
 msgid "The file does not exist or is not a regular file"
 msgstr ""
 
-#: src/saving.rs:142
+#: src/saving.rs:151
 msgid "The file name must end in .docx or .odt"
 msgstr ""
 
@@ -2705,7 +2709,7 @@ msgstr ""
 msgid "The page exceeds the preview size limit"
 msgstr ""
 
-#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:54 src/saving.rs:121
+#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:54 src/saving.rs:130
 msgid "The path is not UTF-8"
 msgstr ""
 
@@ -2745,7 +2749,7 @@ msgstr ""
 msgid "There Are Documents to Recover"
 msgstr ""
 
-#: src/gnome/workspace.rs:537
+#: src/gnome/workspace.rs:538
 msgid "There are no documents to recover."
 msgstr ""
 
@@ -2757,7 +2761,7 @@ msgstr ""
 msgid "Thick"
 msgstr ""
 
-#: src/gnome/references.rs:277
+#: src/gnome/references.rs:278
 msgid "This Section"
 msgstr ""
 
@@ -2777,7 +2781,7 @@ msgstr ""
 msgid "This selection contains different links. Enter a destination to replace them all."
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:341 src/gnome/references.rs:154
+#: src/gnome/document_properties_dialog.rs:341 src/gnome/references.rs:155
 msgid "Title"
 msgstr ""
 
@@ -2897,7 +2901,7 @@ msgstr ""
 msgid "Use 1 to 12 columns with spacing between 0 and 105.83 mm."
 msgstr ""
 
-#: src/saving.rs:117
+#: src/saving.rs:126
 msgid "Use a .docx or .odt extension"
 msgstr ""
 
@@ -2933,7 +2937,7 @@ msgstr ""
 msgid "White"
 msgstr ""
 
-#: src/gnome/columns.rs:208 src/gnome/references.rs:278
+#: src/gnome/columns.rs:208 src/gnome/references.rs:279
 msgid "Whole Document"
 msgstr ""
 
@@ -2965,7 +2969,7 @@ msgstr ""
 msgid "WordCraft Could Not Open the File: {e}"
 msgstr ""
 
-#: src/saving.rs:127
+#: src/saving.rs:136
 msgid "WordCraft did not confirm that the document was saved"
 msgstr ""
 

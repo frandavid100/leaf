@@ -537,6 +537,7 @@ pub const MESSAGES: &[&str] = &[
     "Save Changes?",
     "Save a Copy — DOCX or ODT",
     "Save as DOCX to preserve column breaks and continuous, even-page or odd-page sections.",
+    "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text.",
     "Save as DOCX to preserve editable equations. The current ODT exporter cannot keep their structure.",
     "Save as DOCX to preserve floating image placement and text wrapping. The current ODT exporter makes these images inline.",
     "Save as DOCX to preserve footnotes. The current ODT exporter cannot keep their structure.",

@@ -108,6 +108,21 @@ pub(super) fn install_pointer_and_view_input(
                 let Some(pos) = pos_at_canvas(&ui, x, y) else {
                     return;
                 };
+                if count == 2 {
+                    let entered = {
+                        let mut current = ui.current.borrow_mut();
+                        current.as_mut().is_some_and(|d| {
+                            selection::set_caret(&mut d.session, &pos, false).is_ok()
+                                && wordcraft_gnome::references::open_footnote(&mut d.session, false)
+                                    .is_ok()
+                        })
+                    };
+                    if entered {
+                        refresh_selection(&ui);
+                        caret_ensure_visible(&ui);
+                        return;
+                    }
+                }
                 if count == 1
                     && gesture
                         .current_event_state()
