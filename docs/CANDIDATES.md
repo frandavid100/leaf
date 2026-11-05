@@ -15,6 +15,10 @@ El commit de integración en `main` lleva `[candidate-alpha]`. La batería nativ
 y las comprobaciones instaladas generan el artefacto `leaf-flatpak-alpha`.
 Los paquetes no se suben automáticamente a Releases.
 
+El commit de integración puede añadir `[bundle-only] [native-run:ID]`, con el
+identificador real de una ejecución nativa del mismo repositorio/flujo. No se
+cambian constantes de fuentes en el flujo para cada candidata.
+
 Una compilación nativa puede ceder su ejecutable al empaquetado después de pasar
 los controles nuevos, mientras continúa las regresiones anteriores. El flujo
 comprueba identidad y equivalencia de fuentes; aplica el mismo strip optimizado,

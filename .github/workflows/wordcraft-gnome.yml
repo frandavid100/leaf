@@ -622,21 +622,35 @@ jobs:
         if: contains(github.event.head_commit.message, '[bundle-only]')
         env:
           GH_TOKEN: ${{ github.token }}
+          LEAF_CANDIDATE_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/42122783838" > native-run.json
+          native_run=$(python3 - <<'PY'
+          import os, re
+          runs = re.findall(r'\[native-run:([0-9]+)\]', os.environ['LEAF_CANDIDATE_MESSAGE'])
+          assert len(runs) == 1, 'A reused candidate needs exactly one [native-run:ID] marker'
+          print(runs[0])
+          PY
+          )
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$native_run" > native-run.json
           python3 - <<'PY'
-          import json
+          import json, os, re
           r = json.load(open('native-run.json'))
           assert r['conclusion'] in (None, 'success')
-          assert r['head_sha'] == 'c99e56fa4ccc3ed1fabc3f02e8e4991a363d0002'
+          assert r['repository']['full_name'] == os.environ['GITHUB_REPOSITORY']
           assert r['path'] == '.github/workflows/wordcraft-gnome.yml'
+          assert re.fullmatch(r'[0-9a-f]{40}', r['head_sha'])
+          with open(os.environ['GITHUB_ENV'], 'a') as f:
+              f.write('LEAF_NATIVE_SOURCE=' + r['head_sha'] + '\n')
+              f.write('LEAF_NATIVE_RUN=' + str(r['id']) + '\n')
           PY
-          git diff --exit-code c99e56fa4ccc3ed1fabc3f02e8e4991a363d0002 -- src Cargo.toml Cargo.lock tests vendor po data examples tools patches
+          native_source=$(python3 -c "import json; print(json.load(open('native-run.json'))['head_sha'])")
+          git cat-file -e "$native_source^{commit}" || git fetch origin "$native_source"
+          git diff --exit-code "$native_source" -- src Cargo.toml Cargo.lock tests vendor po data examples tools patches
       - uses: actions/download-artifact@v4
         with:
           name: ${{ contains(github.event.head_commit.message, '[bundle-only]') && 'leaf-native-unvalidated' || 'wordcraft-gnome-fase3d-linux' }}
           path: native-artifact
-          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '42122783838' || github.run_id }}
+          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && env.LEAF_NATIVE_RUN || github.run_id }}
           github-token: ${{ github.token }}
       - name: Prepare the same optimized binary while native regressions continue
         if: contains(github.event.head_commit.message, '[bundle-only]')
@@ -820,7 +834,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           for attempt in $(seq 1 100); do
-            state=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/42122783838" --jq '.status + ":" + (.conclusion // "")')
+            state=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LEAF_NATIVE_RUN" --jq '.status + ":" + (.conclusion // "")')
             case "$state" in
               completed:success) exit 0 ;;
               completed:*) echo "Native validation failed: $state" >&2; exit 1 ;;
@@ -834,7 +848,7 @@ jobs:
         with:
           name: wordcraft-gnome-fase3d-linux
           path: native-validated
-          run-id: '42122783838'
+          run-id: ${{ env.LEAF_NATIVE_RUN }}
           github-token: ${{ github.token }}
       - name: Compare packaged executable with the fully validated optimized executable
         if: contains(github.event.head_commit.message, '[bundle-only]')
@@ -843,8 +857,8 @@ jobs:
         env:
           LEAF_CANDIDATE_SHA: ${{ github.sha }}
           LEAF_CANDIDATE_RUN: ${{ github.run_id }}
-          LEAF_NATIVE_SHA: ${{ contains(github.event.head_commit.message, '[bundle-only]') && 'c99e56fa4ccc3ed1fabc3f02e8e4991a363d0002' || github.sha }}
-          LEAF_NATIVE_RUN: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '42122783838' || github.run_id }}
+          LEAF_NATIVE_SHA: ${{ env.LEAF_NATIVE_SOURCE || github.sha }}
+          LEAF_NATIVE_RUN: ${{ env.LEAF_NATIVE_RUN || github.run_id }}
         run: |
           cp packaging/RELEASE_NOTES.md dist/RELEASE_NOTES.md
           python3 - <<'PYTHON'
