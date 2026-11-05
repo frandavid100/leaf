@@ -1,6 +1,6 @@
 # Alpha.29: candidata y alcance
 
-La candidata continúa la pasada autorizada de issues con prioridad #99–#109.
+La candidata continúa la pasada autorizada de issues con prioridad #99–#109 y los nuevos #111–#121.
 La [PR #110](https://github.com/frandavid100/leaf/pull/110) contiene los cambios.
 Todavía no se ha publicado una release: David debe probar el paquete y aprobar
 su promoción sin recompilar. [Proceso y comandos de instalación](CANDIDATES.md).
@@ -9,6 +9,11 @@ su promoción sin recompilar. [Proceso y comandos de instalación](CANDIDATES.md
 
 | Issue | Implementación y comprobación prevista en la candidata |
 | --- | --- |
+| #111–#116 | Cabecera contextual del panel, iconos simbólicos de 16 px y ¶, idioma heredado resuelto en la misma fila, traducciones y verbos Insertar/Aplicar. Pendiente de validación GTK final. |
+| #117/#119 | Revisión unificada con filtros, cambios del motor, correcciones y comentarios, acciones propias e indentación reducida. Pruebas de historial, DOCX/ODT y objetivos obsoletos; pendiente de validación GTK final. |
+| #118 | Imán de 0,5 cm en magnitudes del documento con histéresis para los gestos de regla; valores importados y numéricos intactos. Pendiente de gestos GTK finales. |
+| #120 | Filas de formato con etiquetas y casillas nativas de tres estados, opciones separadas y memoria por propiedad. Pendiente de validación GTK final. |
+| #121 | Elementos en la cabecera adaptable, controles compartidos con el contexto y creación estable de tabla/imagen/índice. Pendiente de validación GTK final. |
 | #109 | Insertar compartido y agrupado, un único Enlace para URL/destinos internos y siete campos automáticos estructurados. Pruebas de encabezado/pie, metadatos, historial, DOCX y PDF. |
 | #108 | Revelar miniatura activa con desplazamiento mínimo y etiquetas completas localizadas. Redibujar no interrumpe la exploración manual del panel. |
 | #107 | Movimiento hacia la página real, escala/grab offset, vista previa, autoscroll y cancelación. Parcial: el motor no siempre acepta anclar una imagen flotante al párrafo de un salto manual; se rechaza ese destino y se restaura el original. Sigue abierto. |
@@ -30,7 +35,7 @@ su promoción sin recompilar. [Proceso y comandos de instalación](CANDIDATES.md
 ## Pruebas
 
 La ejecución local completa supera 162 pruebas Rust, cuatro Python, formato y
-enlaces; catálogos inglés/español completos con 791 mensajes. La comprobación GUI
+enlaces; catálogos inglés/español completos con 825 mensajes. La comprobación GUI
 local es de tipos; la ejecución real GTK depende de CI con las bibliotecas GNOME.
 
 `tests/references_alpha29.rs` comprueba actualizaciones derivadas, fecha congelada,

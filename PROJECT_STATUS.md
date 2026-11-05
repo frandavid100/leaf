@@ -18,6 +18,9 @@ David solicita otra pasada de issues, priorizando los recientes (#99–#109).
 Se preparan referencias directas y automáticas, propiedades de notas, edición de
 índices, controles de imagen completos, miniaturas y menú Insertar agrupado.
 Se incluye el editor básico de ecuaciones (#56) mediante las API públicas.
+David amplía la pasada con #111–#121: Revisión unificada, menús de Texto/Párrafo
+por filas, Elementos en la cabecera y ajustes de idioma, iconos, reglas y textos.
+Estas decisiones sustituyen la organización anterior donde entren en conflicto.
 
 La compilación de una candidata ya no publica una release. David debe probarla
 y aprobarla antes de promover los mismos paquetes, sin recompilar. Véase

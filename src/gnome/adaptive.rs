@@ -82,41 +82,19 @@ impl AdaptiveTools {
         });
     }
 }
-pub(super) fn history_icon(redo: bool) -> gtk::DrawingArea {
-    let a = gtk::DrawingArea::new();
-    a.set_content_width(18);
-    a.set_content_height(18);
-    a.set_halign(gtk::Align::Center);
-    a.set_valign(gtk::Align::Center);
-    a.set_draw_func(move |w, c, _, _| {
-        let f = w.color();
-        c.set_source_rgba(
-            f.red() as f64,
-            f.green() as f64,
-            f.blue() as f64,
-            f.alpha() as f64,
-        );
-        if redo {
-            c.translate(18.0, 0.0);
-            c.scale(-1.0, 1.0);
-        }
-        c.set_line_width(1.6);
-        c.set_line_cap(gtk::cairo::LineCap::Round);
-        c.set_line_join(gtk::cairo::LineJoin::Round);
-        c.move_to(6.0, 3.0);
-        c.line_to(2.0, 7.0);
-        c.line_to(6.0, 11.0);
-        c.move_to(2.0, 7.0);
-        c.line_to(11.0, 7.0);
-        c.curve_to(17.0, 7.0, 17.0, 15.0, 11.0, 15.0);
-        let _ = c.stroke();
+pub(super) fn history_icon(redo: bool) -> gtk::Image {
+    let icon = gtk::Image::from_icon_name(if redo {
+        "edit-redo-symbolic"
+    } else {
+        "edit-undo-symbolic"
     });
-    a
+    icon.set_pixel_size(16);
+    icon
 }
 pub(super) fn format_icon_button(menu: &gtk::MenuButton, label: &str, kind: &str) {
     let name = match kind {
         "style" => "headings-allcap-symbolic",
-        "paragraph" => "format-justify-left-symbolic",
+        "paragraph" => "paragraph-symbolic",
         _ => "font-symbolic",
     };
     menu.set_icon_name(name);
@@ -145,6 +123,9 @@ pub(super) struct TextTools {
     language_value: gtk::Label,
 }
 impl TextTools {
+    pub(super) fn language_value_text(&self) -> glib::GString {
+        self.language_value.text()
+    }
     pub(super) fn sync_selection(self: &Rc<Self>) {
         let Some(ui) = self.ui.upgrade() else { return };
         if let Some(palette) = self.palette.borrow().as_ref() {
@@ -152,15 +133,50 @@ impl TextTools {
         }
         if let Some(d) = ui.current.borrow().as_ref() {
             let value = wordcraft_gnome::proofing_defaults::choice(&d.session);
-            self.language_value.set_text(match value.as_str() {
-                "default" => wordcraft_gnome::t!("Default language"),
-                "off" => wordcraft_gnome::t!("Do Not Check"),
-                "mixed" => wordcraft_gnome::t!("Mixed"),
-                _ => TEXT_LANGUAGES
-                    .iter()
-                    .find(|(tag, _)| *tag == value.as_str())
-                    .map_or(value.as_str(), |(_, name)| *name),
-            });
+            let name = |value: &str| -> String {
+                match value {
+                    "off" => wordcraft_gnome::t!("Do Not Check").into(),
+                    "mixed" => wordcraft_gnome::t!("Mixed").into(),
+                    "en-US" => wordcraft_gnome::t!("English (United States)").into(),
+                    "en-GB" => wordcraft_gnome::t!("English (United Kingdom)").into(),
+                    "es-ES" => wordcraft_gnome::t!("Spanish (Spain)").into(),
+                    "es-MX" => wordcraft_gnome::t!("Spanish (Mexico)").into(),
+                    "es-AR" => wordcraft_gnome::t!("Spanish (Argentina)").into(),
+                    _ => TEXT_LANGUAGES
+                        .iter()
+                        .find(|(tag, _)| *tag == value)
+                        .map_or(value, |(_, label)| *label)
+                        .into(),
+                }
+            };
+            let label = if value == "default" {
+                wordcraft_gnome::i18n::interpolate(
+                    wordcraft_gnome::t!("Default — {language}"),
+                    &[(
+                        "language",
+                        name(&wordcraft_gnome::proofing_defaults::effective_choice(
+                            &d.session,
+                        )),
+                    )],
+                )
+            } else {
+                name(&value)
+            };
+            self.language_value.set_text(&label);
+            self.language_value.set_tooltip_text(Some(&label));
+            if let Some(button) = self
+                .language_value
+                .ancestor(gtk::Button::static_type())
+                .and_then(|w| w.downcast::<gtk::Button>().ok())
+            {
+                accessible_name(
+                    &button,
+                    &wordcraft_gnome::i18n::interpolate(
+                        wordcraft_gnome::t!("Text Language: {language}"),
+                        &[("language", label)],
+                    ),
+                );
+            }
         }
         let Some(pop) = self.popover.upgrade().filter(|p| p.is_visible()) else {
             return;

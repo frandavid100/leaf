@@ -226,9 +226,13 @@ impl StylePopover {
             let manage = gtk::Button::new();
             manage.set_icon_name("go-next-symbolic");
             manage.add_css_class("flat");
-            manage.set_tooltip_text(Some(&format!("Gestionar «{}»", st.name)));
+            let manage_name = wordcraft_gnome::i18n::interpolate(
+                wordcraft_gnome::t!("Manage “{style}”"),
+                &[("style", st.name.clone())],
+            );
+            manage.set_tooltip_text(Some(&manage_name));
             manage.set_widget_name(&format!("style-manage-{}", st.id));
-            accessible_name(&manage, &format!("Gestionar {}", st.name));
+            accessible_name(&manage, &manage_name);
             row.append(&manage);
             let weak = Rc::downgrade(self);
             let id = st.id.clone();

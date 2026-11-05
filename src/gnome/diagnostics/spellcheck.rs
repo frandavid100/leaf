@@ -53,7 +53,7 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
     show_spelling(ui, parent);
     assert_eq!(
         ui.navigation_pages.visible_child_name().as_deref(),
-        Some("proofing")
+        Some("review")
     );
     let weak = Rc::downgrade(ui);
     let app = app.clone();
@@ -77,13 +77,8 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                 );
                 assert!(s.issues.borrow().len() >= 2);
                 assert!(!s.status.is_visible(), "no introductory text above issues");
-                assert_eq!(
-                    find_widget(&ui.navigation_pages, "proofing-panel")
-                        .unwrap()
-                        .last_child(),
-                    find_widget(&ui.navigation_pages, "proofing-scroll"),
-                    "no correction menu below the issue list"
-                );
+                assert!(find_widget(&ui.navigation_pages, "review-filter").is_some());
+                assert!(find_widget(&ui.navigation_pages, "proofing-panel").is_none());
                 let rev = ui.current.borrow().as_ref().unwrap().session.rev();
                 let dirty = ui.dirty.get();
                 let index = s
@@ -92,10 +87,11 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                     .iter()
                     .position(|i| i.text == "qqqgtkwordzz")
                     .unwrap();
-                s.list
-                    .row_at_index(index as i32)
+                find_widget(&ui.navigation_pages, &format!("proofing-go-{index}"))
                     .unwrap()
-                    .emit_by_name::<()>("activate", &[]);
+                    .downcast::<gtk::Button>()
+                    .unwrap()
+                    .emit_clicked();
                 assert_eq!(s.item().unwrap().text, "qqqgtkwordzz");
                 assert_eq!(ui.current.borrow().as_ref().unwrap().session.rev(), rev);
                 assert_eq!(ui.dirty.get(), dirty);
@@ -111,14 +107,13 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                     .unwrap()
                     .downcast::<gtk::MenuButton>()
                     .unwrap();
-                assert_eq!(menu.valign(), gtk::Align::Center);
-                let row = s.list.row_at_index(index as i32).unwrap();
-                let bounds = menu.compute_bounds(&row).unwrap();
                 assert!(
-                    (bounds.y() + bounds.height() / 2.0 - row.height() as f32 / 2.0).abs() < 2.0,
-                    "proofing action must be centered in the complete row"
+                    find_widget(&ui.navigation_pages, &format!("proofing-apply-{index}")).is_some()
                 );
-                assert!(menu.margin_end() >= 8);
+                assert!(
+                    find_widget(&ui.navigation_pages, &format!("proofing-ignore-{index}"))
+                        .is_some()
+                );
                 menu.popup();
                 let pop = menu
                     .popover()
@@ -166,10 +161,11 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                     .iter()
                     .position(|i| i.text == "qqqotherzz")
                     .unwrap();
-                s.list
-                    .row_at_index(index as i32)
+                find_widget(&ui.navigation_pages, &format!("proofing-go-{index}"))
                     .unwrap()
-                    .emit_by_name::<()>("activate", &[]);
+                    .downcast::<gtk::Button>()
+                    .unwrap()
+                    .emit_clicked();
                 let old = s.item().unwrap();
                 apply_user_edit(&ui, Edit::Insert("otro".into()));
                 assert!(s.issues.borrow().is_empty());

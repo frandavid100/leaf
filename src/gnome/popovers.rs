@@ -2,28 +2,9 @@ use super::*;
 
 // Shared chrome for the four editing popovers. No document state is stored here.
 pub(super) fn format_chevron() -> gtk::Widget {
-    let a = gtk::DrawingArea::new();
-    a.set_content_width(16);
-    a.set_content_height(16);
-    a.set_halign(gtk::Align::Center);
-    a.set_valign(gtk::Align::Center);
-    a.set_draw_func(|w, c, _, _| {
-        let f = w.color();
-        c.set_source_rgba(
-            f.red() as f64,
-            f.green() as f64,
-            f.blue() as f64,
-            f.alpha() as f64,
-        );
-        c.set_line_width(1.6);
-        c.set_line_cap(gtk::cairo::LineCap::Round);
-        c.set_line_join(gtk::cairo::LineJoin::Round);
-        c.move_to(4.5, 6.5);
-        c.line_to(8.0, 10.0);
-        c.line_to(11.5, 6.5);
-        let _ = c.stroke();
-    });
-    a.upcast()
+    let icon = gtk::Image::from_icon_name("go-down-symbolic");
+    icon.set_pixel_size(16);
+    icon.upcast()
 }
 pub(super) fn format_menu_label(menu: &gtk::MenuButton, name: &str) {
     menu.add_css_class("flat");
@@ -214,11 +195,12 @@ pub(super) fn format_popover_header(
     pin.set_tooltip_text(Some(wordcraft_gnome::t!("Pin")));
     accessible_name(&pin, wordcraft_gnome::t!("Pin"));
     let icon = gtk::DrawingArea::new();
-    icon.set_content_width(18);
-    icon.set_content_height(18);
+    icon.set_content_width(16);
+    icon.set_content_height(16);
     icon.set_halign(gtk::Align::Center);
     icon.set_valign(gtk::Align::Center);
     icon.set_draw_func(|w, c, _, _| {
+        c.scale(16. / 18., 16. / 18.);
         let f = w.color();
         c.set_source_rgba(
             f.red() as f64,

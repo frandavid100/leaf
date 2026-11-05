@@ -107,14 +107,13 @@ fn alpha29_controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     }
     let pop = show_document_context(ui, window, 100, 100, DocumentContext::Text);
     assert!(pop.activate_action("context.edit-toc", None).is_ok());
-    let toc = gtk::Window::list_toplevels()
-        .into_iter()
-        .filter_map(|w| w.downcast::<gtk::Window>().ok())
-        .find(|w| {
-            w.is_visible() && w.title().as_deref() == Some(wordcraft_gnome::t!("Table of Contents"))
-        })
-        .unwrap();
-    apply_reference_dialog(&toc);
+    let elements = ui.elements.borrow().as_ref().unwrap().clone();
+    find_widget(&elements.pop, "elements-toc-apply")
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap()
+        .emit_clicked();
+    elements.pop.popdown();
     pop.popdown();
     opened(
         ui,

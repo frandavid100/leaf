@@ -2,6 +2,47 @@
 use serde_json::json;
 use wordcraft_doc::props::{TabAlign, TabLeader, TabStop};
 use wordcraft_engine::{Selection, Session, layout::Placed};
+/// Pointer magnet in document points: half a centimetre, with a small hold band.
+/// Numeric properties and imported values never pass through this function.
+pub const HALF_CM: f32 = 72.0 / 2.54 / 2.0;
+pub fn snap_drag(value: f32, previous: Option<f32>, min: f32, max: f32) -> f32 {
+    let low = (min / HALF_CM).ceil() * HALF_CM;
+    let high = (max / HALF_CM).floor() * HALF_CM;
+    if low > high {
+        return value.clamp(min, max);
+    }
+    let snapped = if let Some(old) = previous.filter(|old| (value - *old).abs() <= HALF_CM * 0.58) {
+        old
+    } else {
+        (value / HALF_CM).round() * HALF_CM
+    };
+    snapped.clamp(low, high)
+}
+pub fn snap_marker(state: &State, marker: Marker, value: f32, previous: Option<f32>) -> f32 {
+    match marker {
+        Marker::Left => snap_drag(value, previous, -1584., state.width - 18.),
+        Marker::First => {
+            state.left
+                + snap_drag(
+                    value - state.left,
+                    previous.map(|p| p - state.left),
+                    -1584.,
+                    1584.,
+                )
+        }
+        Marker::Right => {
+            state.width
+                - snap_drag(
+                    state.width - value,
+                    previous.map(|p| state.width - p),
+                    -1584.,
+                    state.width - 18.,
+                )
+        }
+        Marker::Tab(_) | Marker::NewTab => snap_drag(value, previous, 0., state.width.min(1584.)),
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct State {
     pub page: usize,
@@ -166,21 +207,21 @@ pub fn edit(
     let (command, args) = match marker {
         Marker::Left => {
             let value = distance.clamp(-1584.0, state.width - 18.0);
-            if (value - state.left).abs() < 0.1 {
+            if (value - state.left).abs() < 0.0001 {
                 return Ok(false);
             }
             ("para.indents", json!({"left":value}))
         }
         Marker::First => {
             let value = (distance - state.left).clamp(-1584.0, 1584.0);
-            if (value - state.first).abs() < 0.1 {
+            if (value - state.first).abs() < 0.0001 {
                 return Ok(false);
             }
             ("para.indents", json!({"firstLine":value}))
         }
         Marker::Right => {
             let value = (state.width - distance).clamp(-1584.0, state.width - 18.0);
-            if (value - state.right).abs() < 0.1 {
+            if (value - state.right).abs() < 0.0001 {
                 return Ok(false);
             }
             ("para.indents", json!({"right":value}))

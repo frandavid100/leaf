@@ -126,18 +126,7 @@ pub(super) fn refresh_format_controls(ui: &Rc<Ui>) {
             effective[property].as_bool().unwrap_or(false)
         };
         button.set_active(active);
-        button.update_state(&[gtk::accessible::State::Pressed(if mixed {
-            gtk::AccessibleTristate::Mixed
-        } else if active {
-            gtk::AccessibleTristate::True
-        } else {
-            gtk::AccessibleTristate::False
-        })]);
-        if mixed {
-            button.add_css_class("mixed");
-        } else {
-            button.remove_css_class("mixed");
-        }
+        button.set_inconsistent(mixed);
     }
     if !control_has_focus(&ui.font_input) {
         if let Some(font) = state["font"].as_str() {

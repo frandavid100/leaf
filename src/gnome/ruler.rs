@@ -8,6 +8,7 @@ struct Drag {
     start_x: f64,
     start_y: f64,
     distance: f32,
+    snapped: Option<f32>,
     drop: bool,
 }
 struct View {
@@ -96,6 +97,7 @@ struct MarginDrag {
     zoom: f64,
     setup: PageSetup,
     delta: f32,
+    snapped: Option<f32>,
     gutter: f32,
 }
 
@@ -119,9 +121,16 @@ impl MarginDrag {
             (dy, self.setup.height - self.setup.top - self.setup.bottom)
         };
         let sign = if self.leading { 1. } else { -1. };
-        let minimum = -*self.value();
-        let maximum = (available - wordcraft_engine::cmd::page::MIN_TEXT_ROOM).max(0.);
-        self.delta = ((offset / self.zoom * sign) as f32).clamp(minimum, maximum);
+        let initial = *self.value();
+        let maximum = initial + (available - wordcraft_engine::cmd::page::MIN_TEXT_ROOM).max(0.);
+        let target = ruler::snap_drag(
+            initial + (offset / self.zoom * sign) as f32,
+            self.snapped,
+            0.,
+            maximum,
+        );
+        self.snapped = Some(target);
+        self.delta = target - initial;
     }
 }
 
@@ -203,6 +212,7 @@ impl Ruler {
                     bottom: props.margin_bottom,
                 },
                 delta: 0.,
+                snapped: None,
                 gutter: props.gutter,
             });
         }
@@ -594,6 +604,7 @@ impl Ruler {
                 -metrics.x_bearing() - metrics.width() / 2.,
                 -metrics.y_bearing() - metrics.height() / 2.,
             );
+            cr.set_source_rgba(0.16, 0.16, 0.16, 0.88);
             let _ = cr.show_text(&label);
             let _ = cr.restore();
         }
@@ -877,7 +888,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         else {
             return;
         };
-        if margin.delta.abs() < 0.5 {
+        if margin.delta.abs() < 0.0001 {
             return;
         }
         let delta = margin.delta;
@@ -959,6 +970,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             start_x: x,
             start_y: y,
             distance,
+            snapped: None,
             drop: false,
         }));
         r.area.grab_focus();
@@ -973,7 +985,8 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
                 if let Some(d) = r.drag.borrow_mut().as_mut() {
                     let x = d.start_x + dx;
                     let y = d.start_y + dy;
-                    d.distance = (v.distance(x) * 2.0).round() / 2.0;
+                    d.distance = ruler::snap_marker(&d.state, d.marker, v.distance(x), d.snapped);
+                    d.snapped = Some(d.distance);
                     d.drop = !(-18.0..=42.0).contains(&y);
                     r.hovered.set(
                         (-f64::from(BAND)..f64::from(BAND)).contains(&y)

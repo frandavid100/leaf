@@ -2662,3 +2662,156 @@ msgstr "Elige un destino dentro del documento."
 
 msgid "WordCraft cannot anchor this image on the destination page. Its original position has been kept."
 msgstr "WordCraft no puede anclar esta imagen en la página de destino. Se ha conservado su posición original."
+
+msgid "Accept"
+msgstr "Aceptar"
+
+msgid "Alignment: {value}"
+msgstr "Alineación: {value}"
+
+msgid "Apply Last Line Spacing"
+msgstr "Aplicar el último interlineado"
+
+msgid "Changes"
+msgstr "Cambios"
+
+msgid "Comment"
+msgstr "Comentario"
+
+msgid "Correction"
+msgstr "Corrección"
+
+msgid "Correction Options"
+msgstr "Opciones de corrección"
+
+msgid "Corrections"
+msgstr "Correcciones"
+
+msgid "Current Table of Contents"
+msgstr "Índice actual"
+
+msgid "Default — {language}"
+msgstr "Predeterminado — {language}"
+
+msgid "Deletion"
+msgstr "Eliminación"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "Edit DOCX and ODT documents"
+msgstr "Editar documentos DOCX y ODT"
+
+msgid "Elements"
+msgstr "Elementos"
+
+msgid "English (United Kingdom)"
+msgstr "Inglés (Reino Unido)"
+
+msgid "English (United States)"
+msgstr "Inglés (Estados Unidos)"
+
+msgid "Formatting"
+msgstr "Formato"
+
+msgid "Go to Change"
+msgstr "Ir al cambio"
+
+msgid "Grammar Correction"
+msgstr "Corrección gramatical"
+
+msgid "Ignore"
+msgstr "Ignorar"
+
+msgid "Ignore This Occurrence"
+msgstr "Ignorar esta aparición"
+
+msgid "Insert Table of Contents…"
+msgstr "Insertar índice…"
+
+msgid "Insertion"
+msgstr "Inserción"
+
+msgid "Line Spacing Options"
+msgstr "Opciones de interlineado"
+
+msgid "Manage “{style}”"
+msgstr "Gestionar «{style}»"
+
+msgid "More Paragraph Options"
+msgstr "Más opciones de párrafo"
+
+msgid "Moved From"
+msgstr "Movido desde"
+
+msgid "Moved To"
+msgstr "Movido a"
+
+msgid "No Review Items"
+msgstr "No hay elementos para revisar"
+
+msgid "No Tracked Changes"
+msgstr "No hay cambios sugeridos"
+
+msgid "No corrections found in text with available proofing tools."
+msgstr "No se han encontrado correcciones en el texto con herramientas de revisión disponibles."
+
+msgid "Open a Document"
+msgstr "Abrir un documento"
+
+msgid "Reject"
+msgstr "Rechazar"
+
+msgid "Remove"
+msgstr "Eliminar"
+
+msgid "Review Filter"
+msgstr "Filtro de revisión"
+
+msgid "Save as DOCX to preserve tracked formatting changes. The current ODT exporter cannot keep them."
+msgstr "Guarda como DOCX para conservar los cambios de formato sugeridos. El exportador ODT actual no puede conservarlos."
+
+msgid "Save as DOCX to preserve tracked moves. The current ODT exporter cannot keep their association."
+msgstr "Guarda como DOCX para conservar los movimientos sugeridos. El exportador ODT actual no puede conservar su asociación."
+
+msgid "Selected Image"
+msgstr "Imagen seleccionada"
+
+msgid "Show or Hide Sidebar (F9)"
+msgstr "Mostrar u ocultar el panel lateral (F9)"
+
+msgid "Spanish (Argentina)"
+msgstr "Español (Argentina)"
+
+msgid "Spanish (Mexico)"
+msgstr "Español (México)"
+
+msgid "Spanish (Spain)"
+msgstr "Español (España)"
+
+msgid "Spelling Correction"
+msgstr "Corrección ortográfica"
+
+msgid "Suggest"
+msgstr "Sugerir"
+
+msgid "Suggestion: {text}"
+msgstr "Sugerencia: {text}"
+
+msgid "Text Language: {language}"
+msgstr "Idioma del texto: {language}"
+
+msgid "This change is out of date. Refresh Review."
+msgstr "Este cambio está desactualizado. Actualiza Revisión."
+
+msgid "This type of change cannot be resolved here."
+msgstr "Este tipo de cambio no se puede resolver aquí."
+
+msgid "Tracked Change"
+msgstr "Cambio sugerido"
+
+msgid "Unknown Author"
+msgstr "Autor desconocido"
+
+msgid "{kind} — {author}"
+msgstr "{kind} — {author}"

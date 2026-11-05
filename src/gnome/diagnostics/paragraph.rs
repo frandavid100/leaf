@@ -14,19 +14,17 @@ pub(super) fn paragraph_ui_test(
             .unwrap()
             .emit_clicked()
     };
-    let body = find_widget(&s.main, "paragraph-indent").unwrap();
-    let split = body
-        .parent()
-        .unwrap()
-        .downcast::<adw::SplitButton>()
-        .expect("native split button");
-    assert!(split.has_css_class("flat"));
-    let arrow = find_widget(&s.main, "paragraph-more-indents").unwrap();
-    assert!(arrow.parent().unwrap().is::<gtk::MenuButton>());
-    assert_eq!(
-        arrow.parent().unwrap().parent().unwrap(),
-        split.clone().upcast::<gtk::Widget>()
+    assert!(
+        find_widget(&s.main, "paragraph-bullets")
+            .unwrap()
+            .is::<gtk::CheckButton>()
     );
+    assert!(
+        find_widget(&s.main, "paragraph-more-bullets")
+            .unwrap()
+            .is::<gtk::Button>()
+    );
+    click("paragraph-alignment");
     click("paragraph-align-center");
     assert_eq!(selection_paragraph(&ui)["align"], "center");
     click("paragraph-indent");

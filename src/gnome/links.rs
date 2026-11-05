@@ -69,7 +69,11 @@ fn show_link_for(ui: &Rc<Ui>, pointer: Option<&Pos>) -> Option<LinkDialog> {
     let cancel = gtk::Button::with_label(wordcraft_gnome::t!("Cancel"));
     cancel.set_widget_name("link-cancel");
     header.pack_start(&cancel);
-    let apply = gtk::Button::with_label(wordcraft_gnome::t!("Apply"));
+    let apply = gtk::Button::with_label(if state == LinkState::None {
+        wordcraft_gnome::t!("Insert")
+    } else {
+        wordcraft_gnome::t!("Apply")
+    });
     apply.set_widget_name("link-apply");
     apply.add_css_class("suggested-action");
     header.pack_end(&apply);

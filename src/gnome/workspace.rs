@@ -84,6 +84,11 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
             }
         }
     }
+    if let Some(elements) = ui.elements.borrow_mut().take() {
+        elements.restore();
+        elements.pop.popdown();
+    }
+    ui.review.borrow_mut().take();
     for menu in ui.format_buttons.borrow().iter() {
         if let Some(pop) = menu.popover() {
             pop.popdown();

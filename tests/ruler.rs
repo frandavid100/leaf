@@ -67,3 +67,19 @@ fn gestures_reject_changed_selection_and_revision_without_mutation() {
     assert!(ruler::edit(&mut s, &lease, &state, Marker::Left, 24.0, false).is_err());
     assert_eq!(s.doc, before);
 }
+
+#[test]
+fn pointer_magnets_use_document_centimetres_and_hold_near_a_boundary() {
+    use wordcraft_gnome::ruler::{HALF_CM, snap_drag};
+    assert!((snap_drag(18.0, None, 0., 500.) - HALF_CM).abs() < 0.0001);
+    assert!((snap_drag(29.0, None, 0., 500.) - HALF_CM * 2.).abs() < 0.0001);
+    let first = snap_drag(HALF_CM * 1.49, None, 0., 500.);
+    assert_eq!(snap_drag(HALF_CM * 1.54, Some(first), 0., 500.), first);
+    assert!((snap_drag(HALF_CM * 1.60, Some(first), 0., 500.) - HALF_CM * 2.).abs() < 0.0001);
+    let constrained = snap_drag(95., None, 0., 93.);
+    assert!(
+        constrained <= 93.
+            && (constrained / HALF_CM - (constrained / HALF_CM).round()).abs() < 0.0001
+    );
+    assert!((snap_drag(-19., None, -100., 100.) + HALF_CM).abs() < 0.0001);
+}

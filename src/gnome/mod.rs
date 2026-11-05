@@ -87,7 +87,9 @@ mod pdf_dialog;
 use pdf_dialog::*;
 mod performance;
 use performance::*;
+mod elements;
 mod equations;
+use elements::*;
 use equations::*;
 mod references;
 use references::*;
@@ -101,6 +103,8 @@ mod popovers;
 use popovers::*;
 mod printing;
 use printing::*;
+mod review;
+use review::*;
 mod ruler;
 use ruler::*;
 mod search;
@@ -153,6 +157,9 @@ use columns_checks::*;
 #[path = "diagnostics/context.rs"]
 mod context_checks;
 use context_checks::*;
+#[path = "diagnostics/review29.rs"]
+mod review29_checks;
+use review29_checks::*;
 #[path = "diagnostics/alpha29.rs"]
 mod alpha29_checks;
 use alpha29_checks::*;

@@ -51,7 +51,13 @@ pub(super) fn view_pointer_test(
                     .downcast::<gtk::Label>()
                     .unwrap()
                     .text()
-                    == "1"
+                    == wordcraft_gnome::i18n::interpolate(
+                        wordcraft_gnome::t!("{current} of {total}"),
+                        &[
+                            ("current", "1".into()),
+                            ("total", d.sizes.len().to_string())
+                        ]
+                    )
             );
             let left = image.x() - button.x();
             let right = button.x() + button.width() - image.x() - image.width();

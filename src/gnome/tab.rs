@@ -21,7 +21,8 @@ pub(super) fn build_tab(
     let window = host.window.clone();
     // Composición oficial: panel adaptable y dos páginas de barras nativas.
     let side_header = HeaderBar::new();
-    let side_title = gtk::Label::new(Some(wordcraft_gnome::t!("Document Editor")));
+    let side_title = gtk::Label::new(Some(wordcraft_gnome::t!("Pages")));
+    side_title.set_widget_name("sidebar-title");
     side_title.add_css_class("heading");
     side_title.set_ellipsize(gtk::pango::EllipsizeMode::End);
     side_title.set_max_width_chars(16);
@@ -43,7 +44,11 @@ pub(super) fn build_tab(
 
     let sidebar_button = gtk::ToggleButton::new();
     sidebar_button.set_icon_name("sidebar-show-symbolic");
-    sidebar_button.set_tooltip_text(Some(wordcraft_gnome::t!("Show or Hide Thumbnails (F9)")));
+    sidebar_button.set_tooltip_text(Some(wordcraft_gnome::t!("Show or Hide Sidebar (F9)")));
+    accessible_name(
+        &sidebar_button,
+        wordcraft_gnome::t!("Show or Hide Sidebar (F9)"),
+    );
     header.pack_start(&sidebar_button);
     let compact_search = gtk::Button::from_icon_name("edit-find-symbolic");
     accessible_name(&compact_search, wordcraft_gnome::t!("Search Document"));
@@ -77,8 +82,8 @@ pub(super) fn build_tab(
     let stack = gtk::Stack::new();
     let empty = StatusPage::builder()
         .icon_name("x-office-document-symbolic")
-        .title("Abre un documento")
-        .description("DOCX y ODT con desplazamiento continuo y miniaturas")
+        .title(wordcraft_gnome::t!("Open a Document"))
+        .description(wordcraft_gnome::t!("Edit DOCX and ODT documents"))
         .build();
     stack.add_named(&empty, Some("empty"));
 
@@ -145,29 +150,17 @@ pub(super) fn build_tab(
     titles_toggle.set_widget_name("sidebar-outline");
     titles_toggle.set_group(Some(&pages_toggle));
     let annotations_toggle = gtk::ToggleButton::new();
-    accessible_name(&annotations_toggle, wordcraft_gnome::t!("Comments"));
-    annotations_toggle.set_icon_name("comment-symbolic");
-    annotations_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Comments")));
+    accessible_name(&annotations_toggle, wordcraft_gnome::t!("Review"));
+    annotations_toggle.set_icon_name("document-edit-symbolic");
+    annotations_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Review")));
     annotations_toggle.set_hexpand(true);
     annotations_toggle.add_css_class("flat");
-    annotations_toggle.set_widget_name("sidebar-annotations");
+    annotations_toggle.set_widget_name("sidebar-review");
     annotations_toggle.set_group(Some(&pages_toggle));
-    let proofing_toggle = gtk::ToggleButton::new();
-    accessible_name(
-        &proofing_toggle,
-        wordcraft_gnome::t!("Spelling and Grammar"),
-    );
-    proofing_toggle.set_icon_name("tools-check-spelling-symbolic");
-    proofing_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Spelling and Grammar")));
-    proofing_toggle.set_hexpand(true);
-    proofing_toggle.add_css_class("flat");
-    proofing_toggle.set_widget_name("sidebar-proofing");
-    proofing_toggle.set_group(Some(&pages_toggle));
     pages_toggle.set_active(true);
     selector.append(&pages_toggle);
     selector.append(&titles_toggle);
     selector.append(&annotations_toggle);
-    selector.append(&proofing_toggle);
     let selector_bar = gtk::Box::new(gtk::Orientation::Vertical, 0);
     selector_bar.add_css_class("toolbar");
     selector_bar.append(&selector);
@@ -209,13 +202,13 @@ pub(super) fn build_tab(
     format_bar.append(&history_separator);
     let format_tools = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     format_bar.append(&format_tools);
-    let bold_button = gtk::ToggleButton::with_label("B");
+    let bold_button = gtk::CheckButton::with_label(wordcraft_gnome::t!("Bold"));
     bold_button.set_tooltip_text(Some(wordcraft_gnome::t!("Bold (Ctrl+B)")));
     bold_button.add_css_class("flat");
-    let italic_button = gtk::ToggleButton::with_label("I");
+    let italic_button = gtk::CheckButton::with_label(wordcraft_gnome::t!("Italic"));
     italic_button.set_tooltip_text(Some(wordcraft_gnome::t!("Italic (Ctrl+I)")));
     italic_button.add_css_class("flat");
-    let underline_button = gtk::ToggleButton::with_label("U");
+    let underline_button = gtk::CheckButton::with_label(wordcraft_gnome::t!("Underline"));
     underline_button.set_tooltip_text(Some(wordcraft_gnome::t!("Underline (Ctrl+U)")));
     underline_button.add_css_class("flat");
     let text_popover = gtk::Popover::new();
@@ -390,10 +383,13 @@ pub(super) fn build_tab(
         thumbnails_scroll,
         sidebar,
         sidebar_button,
+        sidebar_title: side_title,
         sidebar_pages,
         navigation_pages,
         outline: RefCell::new(None),
         annotations: RefCell::new(None),
+        elements: RefCell::new(None),
+        review: RefCell::new(None),
         annotation_dialog: RefCell::new(None),
         link_dialog: RefCell::new(None),
         host: Rc::downgrade(host),
@@ -417,6 +413,15 @@ pub(super) fn build_tab(
         title,
         toasts,
     });
+    for stack in [&ui.sidebar_pages, &ui.navigation_pages] {
+        let weak = Rc::downgrade(&ui);
+        stack.connect_visible_child_name_notify(move |_| {
+            if let Some(ui) = weak.upgrade() {
+                refresh_sidebar_title(&ui);
+            }
+        });
+    }
+    refresh_sidebar_title(&ui);
     ui.history_controls
         .replace(Some(install_history_controls(&ui, &history_tools)));
     ui.ruler.replace(Some(install_ruler(&ui, &canvas_overlay)));
@@ -488,7 +493,9 @@ pub(super) fn build_tab(
     ui.annotations
         .replace(Some(install_annotations(&ui, &annotations_toggle)));
     ui.spelling
-        .replace(Some(install_spelling(&ui, &proofing_toggle)));
+        .replace(Some(install_spelling(&ui, &annotations_toggle)));
+    ui.review
+        .replace(Some(install_review(&ui, &annotations_toggle)));
     let search_panel = install_search_panel(&ui, &search_toggle, &compact_search);
     ui.search.replace(Some(search_panel.clone()));
     style_menu.set_widget_name("style-menu");
@@ -537,6 +544,9 @@ pub(super) fn build_tab(
         format_bar.remove(&picture_menu);
         picture_panel.pop.set_parent(&ui.document_box);
     }
+    let elements = install_elements(&ui, &adaptive.formats);
+    ui.format_buttons.borrow_mut().push(elements.menu.clone());
+    ui.elements.replace(Some(elements));
     host.docs.borrow_mut().push((tab_page, ui.clone()));
     install_main_menu(&app_menu);
     install_main_menu(&compact_app_menu);
@@ -591,10 +601,19 @@ pub(super) fn build_tab(
             ui,
             #[weak]
             popover,
-            move |_| {
+            move |button| {
                 if !ui.format_syncing.get() {
+                    let on = button.is_active() || button.is_inconsistent();
+                    button.set_inconsistent(false);
                     close_format_popover(&popover);
-                    apply_user_format(&ui, action);
+                    let command = match action {
+                        Format::Bold => "format.bold",
+                        Format::Italic => "format.italic",
+                        _ => "format.underline",
+                    };
+                    if let Err(e) = format_execute(&ui, command, serde_json::json!({"value":on})) {
+                        ui.toasts.add_toast(Toast::new(&e));
+                    }
                 }
             }
         ));

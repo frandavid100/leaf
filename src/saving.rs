@@ -79,6 +79,16 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
             "Save as DOCX to preserve footnotes. The current ODT exporter cannot keep their structure."
         ));
     }
+    if wordcraft_engine::cmd::review::has_format_changes(&session.doc) {
+        return Some(wordcraft_gnome::t!(
+            "Save as DOCX to preserve tracked formatting changes. The current ODT exporter cannot keep them."
+        ));
+    }
+    if !wordcraft_engine::cmd::review::move_changes(session).is_empty() {
+        return Some(wordcraft_gnome::t!(
+            "Save as DOCX to preserve tracked moves. The current ODT exporter cannot keep their association."
+        ));
+    }
     let (mut equation, mut toc, mut floating, mut reference) = (false, false, false, false);
     for story in
         std::iter::once(StoryRef::Body).chain(session.doc.parts.keys().copied().map(StoryRef::Part))

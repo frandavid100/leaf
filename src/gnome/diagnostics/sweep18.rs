@@ -35,26 +35,17 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
     menu.popup();
     let tools = ui.text_tools.borrow().as_ref().unwrap().clone();
     let palette = tools.palette.borrow().as_ref().unwrap().clone();
-    for (n, count) in [(1, 3), (2, 2), (3, 2)] {
-        let row = find_widget(&palette.root, &format!("text-tools-row-{n}")).unwrap();
-        let mut c = row.first_child();
-        let mut actual = 0;
-        while let Some(w) = c {
-            actual += 1;
-            c = w.next_sibling();
-        }
-        assert_eq!(actual, count);
-    }
+    assert!(ui.format_bold.is::<gtk::CheckButton>());
+    assert!(palette.underline_check.is::<gtk::CheckButton>());
     let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
-    for b in [
-        &palette.underline,
-        &palette.strike,
-        &palette.ink,
-        &palette.highlight,
+    for p in [
+        palette.underline.popover().unwrap(),
+        palette.strike.popover().unwrap(),
+        palette.ink.popover().unwrap(),
+        palette.highlight.popover().unwrap(),
     ] {
-        assert!(b.popover().is_some());
-        b.popover().unwrap().popup();
-        b.popover().unwrap().popdown();
+        p.popup();
+        p.popdown();
     }
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, before);
     button(&palette.ink.popover().unwrap(), "ink-choice-1C71D8");
@@ -81,13 +72,19 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
         "underline-choice-double",
     );
     assert_eq!(selection_character(ui)["underline"], "double");
-    palette.underline.emit_by_name::<()>("clicked", &[]);
+    palette
+        .underline_check
+        .set_active(!palette.underline_check.is_active());
     assert_eq!(selection_character(ui)["underline"], "none");
-    palette.underline.emit_by_name::<()>("clicked", &[]);
+    palette
+        .underline_check
+        .set_active(!palette.underline_check.is_active());
     assert_eq!(selection_character(ui)["underline"], "double");
     button(&palette.strike.popover().unwrap(), "strike-double");
     assert_eq!(selection_character(ui)["doubleStrike"], true);
-    palette.strike.emit_by_name::<()>("clicked", &[]);
+    palette
+        .strike_check
+        .set_active(!palette.strike_check.is_active());
     assert_eq!(selection_character(ui)["doubleStrike"], false);
     palette.superscript.set_active(true);
     assert_eq!(selection_character(ui)["vertAlign"], "superscript");
@@ -465,7 +462,7 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
             }
             3 if selection_character(&u)["color"] == json!({"Rgb":[28,113,216]}) => {
                 assert!(!palette.ink.popover().unwrap().is_visible());
-                let arrow = menu_descendant(palette.underline.upcast_ref()).unwrap();
+                let arrow = palette.underline.clone().upcast::<gtk::Widget>();
                 text_pointer_target("TEXT18_UNDERLINE_ARROW", &pop, &arrow);
                 phase.set(4);
             }
@@ -482,22 +479,12 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
             }
             5 if palette.last_underline.borrow().as_str() == "double" => {
                 assert_eq!(selection_character(&u)["underline"], "double");
-                let body = palette
-                    .underline
-                    .first_child()
-                    .unwrap()
-                    .first_child()
-                    .unwrap();
+                let body = palette.underline_check.clone().upcast::<gtk::Widget>();
                 text_pointer_target("TEXT18_UNDERLINE_OFF", &pop, &body);
                 phase.set(6);
             }
             6 if selection_character(&u)["underline"] == "none" => {
-                let body = palette
-                    .underline
-                    .first_child()
-                    .unwrap()
-                    .first_child()
-                    .unwrap();
+                let body = palette.underline_check.clone().upcast::<gtk::Widget>();
                 text_pointer_target("TEXT18_UNDERLINE_ON", &pop, &body);
                 phase.set(7);
             }

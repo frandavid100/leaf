@@ -373,7 +373,9 @@ pub(super) fn show_document_context(
             true,
             |ui| {
                 if let Some(host) = ui.host.upgrade() {
-                    show_contents_dialog(ui, &host.window);
+                    if let Some(panel) = ui.elements.borrow().as_ref() {
+                        panel.show("toc");
+                    }
                 }
             },
         );
@@ -767,12 +769,20 @@ pub(super) fn context_activate_row(pop: &gtk::PopoverMenu, label: &str) {
     assert!(row.activate(), "native menu row must activate");
 }
 pub(super) fn context_picture_editor(ui: &Rc<Ui>) {
+    if let Some(panel) = ui.elements.borrow().as_ref() {
+        panel.show("image");
+        return;
+    }
     if let Some(s) = ui.picture.borrow().as_ref() {
         s.refresh();
         s.pop.popup();
     }
 }
 pub(super) fn context_table_editor(ui: &Rc<Ui>) {
+    if let Some(panel) = ui.elements.borrow().as_ref() {
+        panel.show("table");
+        return;
+    }
     if let Some(p) = ui.table_popover.borrow().as_ref() {
         refresh_table_controls(ui, p);
         p.popup();

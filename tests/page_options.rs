@@ -173,3 +173,21 @@ fn page_setup_keeps_header_return_position() {
     header_footer::close(&mut s).unwrap();
     assert_eq!(s.sel, body);
 }
+
+#[test]
+fn inherited_language_display_reads_effective_values_without_editing_the_document() {
+    use wordcraft_gnome::proofing_defaults as defaults;
+    let mut s =
+        wordcraft_engine::Session::new(wordcraft_doc::Document::from_text("Inherited language"));
+    defaults::apply(&mut s, "es-ES", true).unwrap();
+    let before = s.doc.clone();
+    let rev = s.rev();
+    let depth = s.undo_depth();
+    assert_eq!(defaults::choice(&s), "default");
+    assert_eq!(defaults::effective_choice(&s), "es-ES");
+    assert_eq!(s.doc, before);
+    assert_eq!(s.rev(), rev);
+    assert_eq!(s.undo_depth(), depth);
+    defaults::apply(&mut s, "en-GB", false).unwrap();
+    assert_eq!(defaults::effective_choice(&s), "off");
+}

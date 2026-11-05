@@ -126,8 +126,7 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
         };
         match result {
             Ok(()) => {
-                ui.dirty.set(true);
-                sync_tab(&ui);
+                after_content_change(&ui);
                 let scroll = (
                     ui.scroll.hadjustment().value(),
                     ui.scroll.vadjustment().value(),
@@ -207,6 +206,15 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
         }
     });
     install_reference_actions(host);
+    for page in ["table", "image", "toc"] {
+        window_action(host, &format!("elements-{page}"), move |h| {
+            if let Some(ui) = selected_ui(h) {
+                if let Some(panel) = ui.elements.borrow().as_ref() {
+                    panel.show(page);
+                }
+            }
+        });
+    }
     window_action(host, "insert-picture", |h| {
         if let Some(ui) = selected_ui(h) {
             choose_picture(&ui, &h.window, false);
@@ -432,13 +440,13 @@ fn insert_break(ui: &Rc<Ui>, kind: &str) {
     }
 }
 
-pub(super) fn append_insert_menu(root: &gio::Menu) {
+pub(super) fn elements_menu() -> gio::Menu {
     let add = gio::Menu::new();
     let content = gio::Menu::new();
     for (label, action) in [
-        (wordcraft_gnome::t!("Table…"), "insert-table"),
-        (wordcraft_gnome::t!("Image…"), "insert-picture"),
-        (wordcraft_gnome::t!("Table of Contents…"), "insert-toc"),
+        (wordcraft_gnome::t!("Table"), "elements-table"),
+        (wordcraft_gnome::t!("Image"), "elements-image"),
+        (wordcraft_gnome::t!("Table of Contents"), "elements-toc"),
     ] {
         menu_item(&content, label, action, None);
     }
@@ -515,7 +523,10 @@ pub(super) fn append_insert_menu(root: &gio::Menu) {
     }
     sections.append_submenu(Some(wordcraft_gnome::t!("Breaks")), &breaks);
     add.append_section(None, &sections);
-    root.append_submenu(Some(wordcraft_gnome::t!("Insert")), &add);
+    add
+}
+pub(super) fn append_insert_menu(root: &gio::Menu) {
+    root.append_submenu(Some(wordcraft_gnome::t!("Elements")), &elements_menu());
 }
 
 pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
@@ -536,11 +547,10 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
         Some("<Control><Shift>s"),
     );
     root.append_section(None, &save);
-    append_insert_menu(&root);
     let properties = gio::Menu::new();
     menu_item(
         &properties,
-        wordcraft_gnome::t!("Document Properties…"),
+        wordcraft_gnome::t!("Document Properties"),
         "document-properties",
         None,
     );
@@ -564,8 +574,8 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
     root.prepend_section(None, &zoom_section);
     let modes = gio::Menu::new();
     for (label, mode) in [
-        (wordcraft_gnome::t!("Editing"), "editing"),
-        (wordcraft_gnome::t!("Reviewing"), "reviewing"),
+        (wordcraft_gnome::t!("Edit"), "editing"),
+        (wordcraft_gnome::t!("Suggest"), "reviewing"),
     ] {
         let item = gio::MenuItem::new(Some(label), None);
         item.set_action_and_target_value(Some("win.editing-mode"), Some(&mode.to_variant()));

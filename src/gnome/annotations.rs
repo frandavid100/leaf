@@ -5,8 +5,8 @@ use wordcraft_gnome::annotations as model;
 pub(super) struct AnnotationPanel {
     ui: std::rc::Weak<Ui>,
     toggle: gtk::ToggleButton,
-    content: gtk::Box,
-    scroll: gtk::ScrolledWindow,
+    pub(super) content: gtk::Box,
+    pub(super) scroll: gtk::ScrolledWindow,
     pub(super) active: RefCell<HashSet<u32>>,
     document: Cell<Option<u64>>,
     pending: Cell<bool>,
@@ -46,6 +46,10 @@ impl AnnotationPanel {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
+        if let Some(review) = ui.review.borrow().as_ref() {
+            review.show(Some(ReviewKind::Comment));
+            return;
+        }
         if let Some(search) = ui.search.borrow().as_ref() {
             search.toggle.set_active(false);
         }
@@ -57,6 +61,12 @@ impl AnnotationPanel {
     }
 
     pub(super) fn schedule(self: &Rc<Self>) {
+        if let Some(ui) = self.ui.upgrade() {
+            if let Some(review) = ui.review.borrow().as_ref() {
+                review.schedule();
+                return;
+            }
+        }
         if !self.toggle.is_active() || self.pending.replace(true) {
             return;
         }
@@ -73,6 +83,12 @@ impl AnnotationPanel {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
+        if let Some(review) = ui.review.borrow().as_ref() {
+            if !review.rebuilding.get() {
+                review.refresh();
+                return;
+            }
+        }
         if !self.toggle.is_active() {
             return;
         }
@@ -106,7 +122,14 @@ impl AnnotationPanel {
             self.content.append(&draft.root);
         }
         drop(draft);
-        accessible_name(&self.content, wordcraft_gnome::t!("Comments"));
+        accessible_name(
+            &self.content,
+            if ui.review.borrow().is_some() {
+                wordcraft_gnome::t!("Review")
+            } else {
+                wordcraft_gnome::t!("Comments")
+            },
+        );
         if comments.is_empty() {
             self.content
                 .append(&annotation_label(wordcraft_gnome::t!("No Comments"), true));
@@ -270,8 +293,8 @@ impl AnnotationPanel {
             if depth > 0 {
                 let separator = gtk::Separator::new(gtk::Orientation::Horizontal);
                 separator.add_css_class("comment-divider");
-                separator.set_margin_start(12);
-                separator.set_margin_end(12);
+                separator.set_margin_start(8);
+                separator.set_margin_end(8);
                 destination.append(&separator);
             }
             destination.append(&comment_message(
@@ -408,10 +431,10 @@ fn comment_message(
 ) -> gtk::Box {
     let message = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     message.set_widget_name(&format!("comment-{}", c.id));
-    message.set_margin_start((depth.min(2) * 10) as i32);
+    message.set_margin_start((depth.min(2) * 6) as i32);
     if depth > 0 {
         let branch = gtk::DrawingArea::new();
-        branch.set_content_width(12);
+        branch.set_content_width(10);
         branch.set_draw_func(|widget, cr, _, height| {
             let color = widget.color();
             cr.set_source_rgba(
@@ -421,21 +444,21 @@ fn comment_message(
                 0.38,
             );
             cr.set_line_width(1.);
-            cr.move_to(3.5, 0.);
-            cr.line_to(3.5, 15.5_f64.min(f64::from(height)));
-            cr.curve_to(3.5, 18.5, 6., 18.5, 9., 18.5);
+            cr.move_to(2.5, 0.);
+            cr.line_to(2.5, 13.5_f64.min(f64::from(height)));
+            cr.curve_to(2.5, 16.5, 5., 16.5, 7.5, 16.5);
             let _ = cr.stroke();
-            cr.arc(9., 18.5, 2., 0., std::f64::consts::TAU);
+            cr.arc(7.5, 16.5, 2., 0., std::f64::consts::TAU);
             let _ = cr.fill();
         });
         message.append(&branch);
     }
     let body = gtk::Box::new(gtk::Orientation::Vertical, 6);
     body.set_hexpand(true);
-    body.set_margin_start(10);
-    body.set_margin_end(10);
-    body.set_margin_top(10);
-    body.set_margin_bottom(10);
+    body.set_margin_start(6);
+    body.set_margin_end(6);
+    body.set_margin_top(8);
+    body.set_margin_bottom(8);
     let summary = gtk::Box::new(gtk::Orientation::Vertical, 4);
     // Plain labels deliberately avoid interpreting document content as markup.
     let heading = gtk::Box::new(gtk::Orientation::Horizontal, 6);
@@ -444,6 +467,9 @@ fn comment_message(
     author.set_wrap(false);
     author.set_ellipsize(gtk::pango::EllipsizeMode::End);
     author.add_css_class("heading");
+    if depth == 0 {
+        heading.append(&review_type_icon(ReviewKind::Comment));
+    }
     heading.append(&author);
     if let Ok(date) = glib::DateTime::from_iso8601(&c.date, None).and_then(|date| date.to_local()) {
         let age =
@@ -619,8 +645,8 @@ fn confirm_delete_comment(ui: &Rc<Ui>, id: u32) {
 
 pub(super) fn install_annotations(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<AnnotationPanel> {
     let content = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    content.set_margin_start(10);
-    content.set_margin_end(10);
+    content.set_margin_start(6);
+    content.set_margin_end(6);
     content.set_margin_bottom(12);
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_widget_name("comments-panel");
@@ -636,14 +662,6 @@ pub(super) fn install_annotations(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc
         document: Cell::new(None),
         pending: Cell::new(false),
         draft: RefCell::new(None),
-    });
-    let weak = Rc::downgrade(&panel);
-    toggle.connect_toggled(move |b| {
-        if b.is_active() {
-            if let Some(panel) = weak.upgrade() {
-                panel.show();
-            }
-        }
     });
     panel
 }

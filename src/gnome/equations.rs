@@ -6,7 +6,8 @@ pub(super) fn show_equation(ui: &Rc<Ui>, parent: &ApplicationWindow) {
         .borrow()
         .as_ref()
         .and_then(|d| equations::target(&d.session));
-    let (window, root, apply) = reference_window(parent, wordcraft_gnome::t!("Equation"));
+    let (window, root, apply) =
+        reference_window(parent, wordcraft_gnome::t!("Equation"), existing.is_none());
     let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
         "UnicodeMath: (a+b)/(c+d), x^2, x_1, √(x). Use ordinary Unicode symbols; this is not a LaTeX editor."
     )));

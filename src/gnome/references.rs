@@ -55,7 +55,7 @@ pub(super) fn install_reference_actions(host: &Rc<Workspace>) {
     }
     window_action(host, "insert-toc", |h| {
         if let Some(ui) = selected_ui(h) {
-            show_contents_dialog(&ui, &h.window);
+            show_insert_contents_dialog(&ui, &h.window);
         }
     });
     window_action(host, "insert-cross-reference", |h| {
@@ -93,6 +93,7 @@ pub(super) fn install_reference_actions(host: &Rc<Workspace>) {
 pub(super) fn reference_window(
     parent: &ApplicationWindow,
     title: &str,
+    inserting: bool,
 ) -> (adw::Window, gtk::Box, gtk::Button) {
     let window = adw::Window::builder()
         .transient_for(parent)
@@ -105,7 +106,11 @@ pub(super) fn reference_window(
     let header = HeaderBar::new();
     header.set_show_end_title_buttons(false);
     let cancel = gtk::Button::with_label(wordcraft_gnome::t!("Cancel"));
-    let apply = gtk::Button::with_label(wordcraft_gnome::t!("Apply"));
+    let apply = gtk::Button::with_label(if inserting {
+        wordcraft_gnome::t!("Insert")
+    } else {
+        wordcraft_gnome::t!("Apply")
+    });
     apply.add_css_class("suggested-action");
     apply.set_widget_name("reference-apply");
     header.pack_start(&cancel);
@@ -192,7 +197,27 @@ pub(super) fn show_contents_dialog(ui: &Rc<Ui>, parent: &ApplicationWindow) {
             None
         }
     };
-    let (w, root, apply) = reference_window(parent, wordcraft_gnome::t!("Table of Contents"));
+    contents_window(ui, parent, existing);
+}
+
+pub(super) fn show_insert_contents_dialog(ui: &Rc<Ui>, parent: &ApplicationWindow) {
+    contents_window(ui, parent, None);
+}
+fn contents_window(ui: &Rc<Ui>, parent: &ApplicationWindow, existing: Option<(Pos, String)>) {
+    let (w, root, apply) = reference_window(
+        parent,
+        wordcraft_gnome::t!("Table of Contents"),
+        existing.is_none(),
+    );
+    let action = contents_controls(ui, &root, existing);
+    reference_apply(ui, &w, &root, &apply, move |s| action(s));
+}
+pub(super) type ContentsAction = Box<dyn Fn(&mut Session) -> Result<(), String>>;
+pub(super) fn contents_controls(
+    ui: &Rc<Ui>,
+    root: &gtk::Box,
+    existing: Option<(Pos, String)>,
+) -> ContentsAction {
     let title = gtk::Entry::new();
     title.set_text(wordcraft_gnome::t!("Contents"));
     let levels = gtk::SpinButton::with_range(1., 9., 1.);
@@ -231,7 +256,7 @@ pub(super) fn show_contents_dialog(ui: &Rc<Ui>, parent: &ApplicationWindow) {
     root.append(&pages);
     root.append(&hyperlinks);
     root.append(&right);
-    reference_apply(ui, &w, &root, &apply, move |s| {
+    Box::new(move |s| {
         if let Some((_, code)) = &existing {
             let mut f = wordcraft_engine::cmd::references::FieldCode::parse(code);
             let mut set = |key: char, value: Option<Option<String>>| {
@@ -291,11 +316,11 @@ pub(super) fn show_contents_dialog(ui: &Rc<Ui>, parent: &ApplicationWindow) {
             s.run("references.toc",&json!({"title":title.text().as_str(),"levels":levels.value_as_int(),"pageNumbers":pages.is_active(),"hyperlinks":hyperlinks.is_active(),"rightAlign":right.is_active()})).map_err(|e|e.to_string())?;
             Ok(())
         }
-    });
+    })
 }
 
 fn show_cross_reference_dialog(ui: &Rc<Ui>, parent: &ApplicationWindow) {
-    let (w, root, apply) = reference_window(parent, wordcraft_gnome::t!("Cross-reference"));
+    let (w, root, apply) = reference_window(parent, wordcraft_gnome::t!("Cross-reference"), true);
     let kinds = ["heading", "figure", "table", "bookmark"];
     let kind = gtk::DropDown::from_strings(&[
         wordcraft_gnome::t!("Heading"),
@@ -349,7 +374,7 @@ fn show_cross_reference_dialog(ui: &Rc<Ui>, parent: &ApplicationWindow) {
 }
 
 fn show_footnote_options(ui: &Rc<Ui>, parent: &ApplicationWindow) {
-    let (w, root, apply) = reference_window(parent, wordcraft_gnome::t!("Footnote Options"));
+    let (w, root, apply) = reference_window(parent, wordcraft_gnome::t!("Footnote Options"), false);
     let format = gtk::DropDown::from_strings(&["1, 2, 3", "i, ii, iii", "I, II, III", "a, b, c"]);
     let restart = gtk::DropDown::from_strings(&[
         wordcraft_gnome::t!("Continuous"),

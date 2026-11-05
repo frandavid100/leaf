@@ -3,7 +3,7 @@ use serde_json::{Value, json};
 use wordcraft_doc::{Pos, StoryRef};
 use wordcraft_engine::Session;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Issue {
     pub start: Pos,
     pub end: Pos,
