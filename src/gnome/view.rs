@@ -40,6 +40,9 @@ pub(super) fn update_status(ui: &Rc<Ui>) {
         })
         .unwrap_or_else(|| wordcraft_gnome::t!("Pages").into());
     if let Some(doc) = current.as_mut() {
+        if doc.fit_to_width {
+            doc.zoom = doc.page_zoom(doc.active);
+        }
         ui.zoom_label
             .set_text(&format!("{:.0} %", doc.page_zoom(doc.active) * 100.0));
         ui.zoom_out
@@ -365,6 +368,9 @@ pub(super) fn layout_pages(ui: &Rc<Ui>) {
         }
         doc.painted_pages.clear();
         doc.page_scales = scales;
+    }
+    if doc.fit_to_width {
+        doc.zoom = doc.page_zoom(doc.active);
     }
     let displayed: Vec<_> = doc
         .sizes

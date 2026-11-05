@@ -1909,7 +1909,7 @@ msgstr ""
 msgid "Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved."
 msgstr ""
 
-#: src/gnome/view.rs:450
+#: src/gnome/view.rs:456
 msgid "Recovery: {e}"
 msgstr ""
 
@@ -2641,7 +2641,7 @@ msgstr ""
 msgid "The columns do not fit in the text area. Reduce their number, width or spacing."
 msgstr ""
 
-#: src/gnome/view.rs:461
+#: src/gnome/view.rs:467
 msgid "The document contains no pages"
 msgstr ""
 

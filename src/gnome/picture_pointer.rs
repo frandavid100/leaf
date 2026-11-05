@@ -59,8 +59,13 @@ pub(super) fn picture_drag_update(ui: &Rc<Ui>, dx: f64, dy: f64) -> bool {
     let (x, y, w, h) = drag.rect;
     let (dx, dy) = (dx as f32 / drag.zoom, dy as f32 / drag.zoom);
     drag.preview = if drag.resize {
-        let width = (w + dx).clamp(1., 4000.);
-        (x, y, width, (width * h / w).clamp(1., 4000.))
+        let change = if dx.abs() / w >= dy.abs() / h {
+            dx / w
+        } else {
+            dy / h
+        };
+        let scale = (1. + change).clamp((1. / w).max(1. / h), (4000. / w).min(4000. / h));
+        (x, y, w * scale, h * scale)
     } else {
         (x + dx, y + dy, w, h)
     };
