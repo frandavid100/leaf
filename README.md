@@ -10,13 +10,15 @@ Leaf is a word processor for Linux with a native GNOME interface. Its goal is to
 
 **[Try the Flatpak alpha](https://github.com/frandavid100/leaf/releases)** · [Installation](docs/INSTALLING.md)
 
-![Leaf editing an illustrated document, with page thumbnails in the sidebar](docs/screenshots/leaf-showcase.png)
+![Leaf editing a document with a footnote and page thumbnails](docs/screenshots/leaf-alpha28-main.png)
 
-*[Screenshot details and photograph credit](docs/screenshots/README.md).*
+*[Public gallery and capture details](docs/screenshots/README.md).*
 
 ## Write and organise
 
-- Edit DOCX and ODT files with styles, tables and inline images.
+- Edit DOCX and ODT files with styles, tables and images.
+- Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents.
+- Position and resize floating pictures, control text wrapping and adjust spacing.
 - Arrange pages with columns, headers, footers and page numbers.
 - Navigate by thumbnails, headings and bookmarks; search, replace, review spelling and add comments.
 - Work across tabs and windows, configure autosave and recovery, then export to PDF or print.
@@ -33,7 +35,7 @@ The aim is to bring more of that power into GNOME while keeping the interface si
 
 Download the x86_64 `.flatpak` from [Releases](https://github.com/frandavid100/leaf/releases) and open it with GNOME Software. Updates are currently installed manually.
 
-**Leaf is in alpha.** Test with copies of important files: complex document compatibility is still being tested, and comments and category metadata require DOCX.
+**Leaf is in alpha.** Test with copies of important files: complex document compatibility is still being tested. Notes, automatic contents, captions, cross-references, floating images, comments and category metadata require DOCX. Leaf blocks ODT saves that would lose supported document structures.
 
 Community translations are managed with [Weblate](https://hosted.weblate.org/projects/leaf/application/). Approval for free Libre hosting is pending.
 

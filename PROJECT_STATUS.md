@@ -12,19 +12,34 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## Alpha.28 en validación
+## Última versión publicada: alpha.28
 
-David autoriza navegación y zoom por sección (#89, #94, #95), imágenes flotantes
-(#53), notas al pie (#55), índice automático (#54), leyendas y referencias cruzadas,
-y una galería nueva para la distribución pública. La [PR #98](https://github.com/frandavid100/leaf/pull/98)
-integra sus controles nativos mediante las API públicas de WordCraft. El guardado
-ODT sigue protegido frente a las estructuras que el exportador pierde.
+[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.28).
+[CI nativa, Flatpak GNOME 49 y archivo FlatPark GNOME 51](https://github.com/frandavid100/leaf/actions/runs/42057994674)
+completas. Fuente `d2ba113d9ed2bc0dbb4794732c6035a195cba755`.
 
-Las regresiones locales cubren DOCX, historial, actualización de referencias,
-notas largas y PDF. La CI añade interacción real, variantes de idioma/escalado
-y capturas de la ventana. Publicación y validación instalada pendientes.
+Incluye zoom por sección y navegación/miniaturas (#89, #94, #95), imágenes
+flotantes con ajuste, separación y gestos de ratón (#53), notas al pie (#55),
+índice automático (#54), leyendas y referencias cruzadas. La [PR #98](https://github.com/frandavid100/leaf/pull/98)
+integra controles nativos mediante las API públicas de WordCraft. Se corrigió
+además la invalidación de maquetación al cambiar el ajuste de una imagen.
 
-## Última versión publicada: alpha.27
+151 pruebas Rust, cuatro Python y 766 mensajes completos inglés/español.
+Verificados historial, interfaz, idiomas, HiDPI, actualización desde alpha.27,
+portales de archivos e impresión, reinstalación, texto AT-SPI y salida Orca.
+Son comprobaciones automáticas; no sustituyen pruebas humanas de dispositivos.
+
+La edición/guardado/reapertura y el PDF se comprobaron con muestras externas de
+Word y Writer, incluida una nota importada de Word. [Evidencia y límites](docs/ALPHA28_VALIDATION.md).
+Estas estructuras avanzadas requieren DOCX: las guardas ODT siguen evitando
+pérdidas. No se modificaron motor, renderer, dependencias ni parches.
+
+La [galería pública](docs/screenshots/README.md) usa cuatro capturas reales del
+Flatpak instalado, expresamente autorizadas por David. La ficha AppStream de
+Leaf está actualizada; FlatPark mantiene otra copia que sus responsables deben
+actualizar para incorporar la galería y la descripción nuevas.
+
+## Entrega anterior: alpha.27
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.27).
 [CI nativa completa](https://github.com/frandavid100/leaf/actions/runs/41995941521)

@@ -4,6 +4,32 @@ La entrega incorpora #53, #54, #55, #89, #94 y #95, más leyendas numeradas y
 referencias cruzadas. Se usa el modelo y las API públicas de WordCraft 0.14.0;
 no se cambian dependencias, motor, renderer ni parches de formatos.
 
+## Fuente y validación nativa
+
+Fuente publicada: `d2ba113d9ed2bc0dbb4794732c6035a195cba755`.
+[CI](https://github.com/frandavid100/leaf/actions/runs/42057994674): batería nativa
+completa superada, con 151 pruebas Rust, cuatro Python y 766 mensajes completos
+en inglés y español. Incluye controles GTK, puntero, historial, reglas,
+liberación de ventanas, teclado, impresión, vistas estrechas/oscuras y HiDPI.
+
+La prueba de retorno desde un encabezado fija zoom de 80 % para que su clic
+caiga en un fondo real, fuera de las reglas transitorias del borde. El ajuste
+por sección sigue comprobándose por separado en el diagnóstico de alpha28.
+
+## Paquetes publicados
+
+[Release alpha.28](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.28),
+publicada el 5 de noviembre de 2026 a las 16:18 UTC. La misma CI pasa actualización
+desde alpha.27, instalación y reinstalación, interacciones y apariencia dentro
+del sandbox, portales de archivos/impresión, texto AT-SPI y salida Orca. El
+archivo relocatable pasa con GNOME 51 bajo `/app/extra/leaf`. No son pruebas
+humanas de accesibilidad, Wayland, IME ni impresoras físicas.
+
+Se descargaron de la release el bundle, el archivo FlatPark, `source-commit.txt`
+y `SHA256SUMS`; sus sumas coinciden. La etiqueta y el archivo de fuente señalan
+la revisión indicada. La [galería y su procedencia](screenshots/README.md)
+corresponden al Flatpak instalado de esa misma revisión.
+
 ## Documentos externos
 
 Se descargaron estas muestras públicas independientes el 5 de noviembre de 2026.

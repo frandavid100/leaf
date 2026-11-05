@@ -4,12 +4,14 @@ Actualizada: 5 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En curso: alpha.28
+## Completado: alpha.28
 
 Autorizada por David. Incluye zoom por sección y miniaturas (#89, #94, #95),
 imágenes flotantes (#53), notas al pie (#55), índice automático (#54), leyendas,
 referencias cruzadas y capturas públicas nuevas. Se comprueban DOCX/PDF,
-historial e interacción antes de publicar; se mantienen las guardas ODT.
+historial e interacción. [Publicada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.28)
+y verificada en Flatpak GNOME 49 y archivo FlatPark GNOME 51. Se mantienen las
+guardas ODT; la ficha independiente de FlatPark requiere actualización externa.
 
 ## Completado: alpha.27 para FlatPark
 
