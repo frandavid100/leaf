@@ -32,6 +32,18 @@ jobs:
           python-version: '3.12'
       - name: Instalar bibliotecas GNOME y pantalla virtual
         run: |
+          # Azure's HTTP package mirror stalled on the runner; use Ubuntu HTTPS.
+          sudo python3 - <<'PY'
+          from pathlib import Path
+          for path in [Path('/etc/apt/sources.list'), *Path('/etc/apt/sources.list.d').glob('*.list'), *Path('/etc/apt/sources.list.d').glob('*.sources')]:
+              if path.is_file():
+                  text = path.read_text().replace('http://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu').replace('https://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu')
+                  path.write_text(text)
+          for name, uri in [('apt-mirrors.txt', 'https://archive.ubuntu.com/ubuntu'), ('apt-security-mirrors.txt', 'https://security.ubuntu.com/ubuntu')]:
+              path = Path('/etc/apt') / name
+              if path.is_file():
+                  path.write_text(uri + '\n')
+          PY
           sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
           sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11
           sudo locale-gen en_US.UTF-8
@@ -657,6 +669,18 @@ jobs:
         run: strip --strip-unneeded native-artifact/wordcraft-gnome
       - name: Install Flatpak and desktop validation tools
         run: |
+          # Azure's HTTP package mirror stalled on the runner; use Ubuntu HTTPS.
+          sudo python3 - <<'PY'
+          from pathlib import Path
+          for path in [Path('/etc/apt/sources.list'), *Path('/etc/apt/sources.list.d').glob('*.list'), *Path('/etc/apt/sources.list.d').glob('*.sources')]:
+              if path.is_file():
+                  text = path.read_text().replace('http://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu').replace('https://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu')
+                  path.write_text(text)
+          for name, uri in [('apt-mirrors.txt', 'https://archive.ubuntu.com/ubuntu'), ('apt-security-mirrors.txt', 'https://security.ubuntu.com/ubuntu')]:
+              path = Path('/etc/apt') / name
+              if path.is_file():
+                  path.write_text(uri + '\n')
+          PY
           sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
           sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
           # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
