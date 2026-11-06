@@ -39,3 +39,20 @@ La CI optimizada y las instalaciones GNOME 49/51 deben terminar correctamente
 antes de la promoción; sus identificadores se registran al finalizar.
 
 Las capturas diagnósticas no sustituyen la galería pública ni una prueba humana.
+
+## Identidad de la revisión final
+
+Fuente nativa: `810bee2d2f9e4b4bfc33a639199bd3b0d62d8afa`.
+[Validación nativa completa en curso](https://github.com/frandavid100/leaf/actions/runs/42176611882).
+La candidata reutiliza su ejecutable optimizado y exige éxito completo y
+comparación byte a byte antes de aceptar los paquetes.
+
+La CI inicial detectó dos supuestos antiguos del conductor de ratón: coordenadas
+sin escala 2× y un clic en la primera página fuera del viewport después de
+reformatear un rango largo. Las pruebas corregidas usan coordenadas físicas y
+revelan el destino sin alterar la selección antes del clic real. Los resultados
+fallidos no cuentan como validación de una candidata publicable.
+
+La regresión de reglas detectó además su dependencia de la antigua página activa
+por viewport. La regla usa ahora geometría visible independiente y mantiene la
+miniatura ligada al caret; la prueba exige ambos comportamientos por separado.
