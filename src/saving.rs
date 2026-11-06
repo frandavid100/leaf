@@ -41,6 +41,11 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
         para::{COLUMN_BREAK, Wrap},
         section::SectionStart,
     };
+    if crate::captions::requires_docx(&session.doc) {
+        return Some(wordcraft_gnome::t!(
+            "Save as DOCX to preserve automatic fields, cross-references and caption numbering. The current ODT exporter only keeps their text."
+        ));
+    }
     if session.doc.sections().iter().any(|(_, section)| {
         section.gutter != 0.0
             || section.valign != wordcraft_doc::section::PageVAlign::Top

@@ -215,7 +215,6 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
             "win.insert-bookmark",
             "win.insert-comment",
             "win.insert-link",
-            "win.insert-caption",
             "win.insert-footnote"
         ]
     );

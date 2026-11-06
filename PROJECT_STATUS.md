@@ -12,6 +12,22 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## En curso: leyendas, navegación y revisión de #132
+
+David autoriza resolver #132 y completar conjuntamente #121/#124/#126/#127.
+Las asociaciones explícitas de leyendas, su ocultación sin pérdida, propiedades
+compartidas, navegación tipada y decoración temporal están implementadas bajo
+validación. Nueve regresiones específicas sin GUI pasan, junto con controles
+GTK por clic/teclado en inglés y español, tema claro/oscuro y escala 1×/2×.
+Faltan la batería gráfica completa, la instalación y la revisión final antes
+de cualquier cierre.
+[Modelo, comprobaciones y límites](docs/CAPTION_OWNERSHIP.md).
+
+El documento original de #132 no reproduce el solapamiento en los controles
+Alpha.30/Alpha.31 de este entorno, con emoji en color; sus baselines y exportación
+también están separados. El issue sigue abierto, sin atribuirle una corrección.
+La segunda candidata ya entregada se conserva intacta; no hay nueva publicación.
+
 ## Preparada: segunda candidata alpha.31 — Interfaz nativa
 
 [Candidata para probar](https://github.com/frandavid100/leaf/actions/runs/42265503961/artifacts/13527444066), sin publicación automática.

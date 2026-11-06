@@ -47,6 +47,8 @@ mod appearance;
 use appearance::*;
 mod canvas;
 use canvas::*;
+mod caption_cues;
+use caption_cues::*;
 mod columns;
 use columns::*;
 mod comment_composer;
@@ -139,6 +141,9 @@ mod workspace;
 use workspace::*;
 
 // Opt-in diagnostics and synthetic fixtures; no normal startup work.
+#[path = "diagnostics/captions.rs"]
+mod caption_checks;
+use caption_checks::*;
 #[path = "diagnostics/alpha31.rs"]
 mod alpha31_checks;
 use alpha31_checks::*;

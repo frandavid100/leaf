@@ -150,7 +150,13 @@ fn alpha29_controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     {
         let c = ui.current.borrow();
         let s = &c.as_ref().unwrap().session;
-        assert!(s.doc.para_at(&s.sel.focus).unwrap().text.ends_with(": "));
+        assert!(
+            s.doc
+                .para_at(&s.sel.focus)
+                .unwrap()
+                .plain_text()
+                .ends_with(": ")
+        );
     }
     opened(
         ui,

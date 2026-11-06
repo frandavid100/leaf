@@ -370,6 +370,8 @@ pub(super) fn build_tab(
         table_pointer: RefCell::new(TablePointer::default()),
         picture_drag: RefCell::new(None),
         reference_hover: RefCell::new(None),
+        caption_hover: RefCell::new(None),
+        caption_cues: RefCell::new(None),
         current: RefCell::new(None),
         input_context: gtk::IMMulticontext::new(),
         selection_rasters: RefCell::new(Vec::new()),

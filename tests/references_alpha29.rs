@@ -97,14 +97,20 @@ fn captions_require_actual_targets_and_start_with_an_editable_description() {
     let depth = s.undo_depth();
     references::insert_caption(&mut s).unwrap();
     assert_eq!(s.undo_depth(), depth + 1);
-    assert!(s.doc.para_at(&s.sel.focus).unwrap().text.ends_with(": "));
+    assert!(
+        s.doc
+            .para_at(&s.sel.focus)
+            .unwrap()
+            .plain_text()
+            .ends_with(": ")
+    );
     s.run("text.insert", &json!({"text":"A table description"}))
         .unwrap();
     assert!(
         s.doc
             .para_at(&s.sel.focus)
             .unwrap()
-            .text
+            .plain_text()
             .ends_with("A table description")
     );
     s.run("edit.undo", &json!({})).unwrap();

@@ -47,6 +47,13 @@ propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funcion
 | Distribución | GitHub Flatpak experimental, GNOME 49, permisos mínimos y portales. | Una nueva release exige fuentes identificables y pruebas instaladas. No iniciar Flathub automáticamente. |
 | Licencia y autoría | GPL-3.0-or-later y desarrollo con IA declarado. | No cambiar licencia, atribuciones ni prometer revisión humana inexistente. |
 
+Las leyendas usan propiedad explícita en el documento canónico: marcadores para
+imágenes y leyendas, controles OOXML desbloqueados para tablas. Mostrar/ocultar
+retiene el texto y el historial nativo; no se atribuyen leyendas por proximidad.
+Navegación y decoración derivan de esos datos. #132 permanece abierto mientras
+el documento original no reproduzca su estado de edición afectado.
+[Implementación y límites](CAPTION_OWNERSHIP.md).
+
 El [historial](history/README.md) conserva el razonamiento y las entregas anteriores.
 Las propuestas del [plan](../ROADMAP.md) pueden elegirse en una conversación
 posterior; las decisiones de esta página deben seguir visibles al hacerlo.

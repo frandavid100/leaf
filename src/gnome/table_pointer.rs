@@ -29,7 +29,12 @@ pub(super) struct TablePointer {
     hover: Option<(usize, resize::ResizeTarget, Option<mouse::Target>)>,
     cancelled: bool,
 }
-fn page_point(ui: &Ui, x: f64, y: f64, page: Option<usize>) -> Option<(usize, f32, f32)> {
+pub(super) fn page_point(
+    ui: &Ui,
+    x: f64,
+    y: f64,
+    page: Option<usize>,
+) -> Option<(usize, f32, f32)> {
     let current = ui.current.borrow();
     let d = current.as_ref()?;
     d.page_frames.iter().enumerate().find_map(|(i, f)| {
@@ -311,6 +316,7 @@ pub(super) fn install_table_hover(ui: &Rc<Ui>) {
             return;
         }
         update_reference_hover(&ui, Some((x, y)));
+        update_caption_hover(&ui, Some((x, y)));
         let hover = page_point(&ui, x, y, None).and_then(|(p, x, y)| {
             let mut c = ui.current.borrow_mut();
             let d = c.as_mut()?;
@@ -351,6 +357,7 @@ pub(super) fn install_table_hover(ui: &Rc<Ui>) {
     motion.connect_leave(move |_| {
         if let Some(ui) = weak.upgrade() {
             update_reference_hover(&ui, None);
+            update_caption_hover(&ui, None);
             ui.table_pointer.borrow_mut().hover = None;
             if ui.picture_drag.borrow().is_none() {
                 ui.document_box.set_cursor_from_name(None);

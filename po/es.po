@@ -2908,3 +2908,9 @@ msgstr "Tablas"
 
 msgid "Structure"
 msgstr "Estructura"
+
+msgid "Show Caption"
+msgstr "Mostrar leyenda"
+
+msgid "Captions are available in the document body."
+msgstr "Las leyendas están disponibles en el cuerpo del documento."

@@ -2,6 +2,7 @@
 //! La lógica de apertura, paginación y renderizado no utiliza GTK ni egui.
 
 extern crate self as wordcraft_gnome;
+pub mod captions;
 pub mod highlight;
 pub mod i18n;
 

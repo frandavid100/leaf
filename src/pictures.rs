@@ -188,7 +188,7 @@ pub fn drop_at(
     } else {
         json!({"page":page,"x":x,"y":y})
     };
-    let result=s.run("arrange.bounds",&args).map_err(|e|e.to_string()).and_then(|_|{
+    let result=crate::captions::image_bounds(s,&args).and_then(|_|{
         if !inline{
             let (pos,_,_)=selected(s).ok_or(wordcraft_gnome::t!("Select an Image"))?;
             if s.layout().object(&pos,page).is_none_or(|hit|hit.page!=page){

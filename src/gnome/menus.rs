@@ -478,12 +478,6 @@ pub(super) fn elements_menu() -> gio::Menu {
     );
     menu_item(
         &context,
-        wordcraft_gnome::t!("Caption"),
-        "insert-caption",
-        None,
-    );
-    menu_item(
-        &context,
         wordcraft_gnome::t!("Footnote"),
         "insert-footnote",
         Some("<Control><Alt>f"),

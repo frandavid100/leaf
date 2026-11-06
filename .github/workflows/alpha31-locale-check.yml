@@ -42,7 +42,7 @@ jobs:
           flatpak --user install -y --noninteractive flathub org.gnome.Platform//49
           flatpak --user install -y --noninteractive candidate/Leaf-0.1.0-alpha.31-x86_64.flatpak
           mkdir -p "$HOME/.var/app/io.github.frandavid100.leaf/cache" out/tools
-          cp tools/alpha30-pointer-test.sh tools/alpha31-pointer-test.sh tools/format136-pointer-test.sh out/tools/
+          cp tools/alpha30-pointer-test.sh tools/alpha31-pointer-test.sh tools/format136-pointer-test.sh tools/caption-pointer-test.sh out/tools/
           cat > "$RUNNER_TEMP/locale-run.sh" <<'RUNNER'
           #!/usr/bin/env bash
           exec flatpak run --user --branch=alpha --socket=x11 --nosocket=wayland --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/bin/leaf "$@"' leaf "$@"

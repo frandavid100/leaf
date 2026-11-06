@@ -38,6 +38,8 @@ pub(super) struct Ui {
     pub(super) table_pointer: RefCell<TablePointer>,
     pub(super) picture_drag: RefCell<Option<PictureDrag>>,
     pub(super) reference_hover: RefCell<Option<Pos>>,
+    pub(super) caption_hover: RefCell<Option<String>>,
+    pub(super) caption_cues: RefCell<Option<(u64, u64, Vec<wordcraft_gnome::captions::Cue>)>>,
     pub(super) current: RefCell<Option<Current>>,
     pub(super) printing: PrintState,
     pub(super) spelling: RefCell<Option<Rc<SpellReview>>>,

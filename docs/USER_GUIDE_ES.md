@@ -108,9 +108,14 @@ Los filtros Todos, Correcciones, Cambios y Comentarios no modifican el documento
 
 ## Navegar y buscar
 
-El panel lateral ofrece tres vistas: Páginas, Navegación y Revisión. Su título sigue la vista activa; la búsqueda es temporal. F9 muestra u oculta el panel. Navegación integra los marcadores bajo su
-título y los oculta al plegar la sección; los anteriores al primer título se
-muestran al principio. Cada hilo de comentarios comparte una burbuja con
+El panel lateral ofrece Navegación y Revisión. En Navegación, el selector permite
+alternar entre Páginas y Estructura; la búsqueda es temporal. F9 muestra u oculta
+el panel. Estructura permite filtrar por tipo de elemento y mantiene los títulos
+y secciones como contexto. Las imágenes y tablas muestran su leyenda cuando
+está disponible; la leyenda también tiene una entrada diferenciada debajo.
+Seleccionar una tabla activa esa tabla, y seleccionar una imagen activa la imagen.
+Navegación integra los marcadores bajo su título y los oculta al plegar la sección;
+los anteriores al primer título se muestran al principio. Cada hilo de comentarios comparte una burbuja con
 separadores entre mensajes. La lupa activa
 la búsqueda (Ctrl+F); Ctrl+H muestra reemplazo. Las opciones incluyen distinguir
 mayúsculas y reemplazar. Cada resultado muestra contexto y página; se puede
@@ -123,9 +128,12 @@ La apariencia de páginas y miniaturas sigue el modo claro/oscuro de GNOME.
 ## Insertar y configurar
 
 Elementos, en la cabecera adaptable y el menú contextual, agrupa tabla, imagen, índice y
-ecuación; marcador, comentario, enlace, leyenda y nota al pie; y los submenús de
+ecuación; marcador, comentario, enlace y nota al pie; y los submenús de
 encabezados/pies, campos automáticos y saltos. Las tablas e imágenes se editan
-desde el mismo panel compartido de Elementos o su menú contextual. La acción Insertar sigue disponible cuando hay un elemento seleccionado; las propiedades inferiores solo aparecen para el destino real. Tab/Mayús+Tab recorren celdas y Tab al final puede
+desde el mismo panel compartido de Elementos o su menú contextual. Las propiedades
+aparecen primero y la acción Insertar permanece al final, también cuando hay un
+elemento seleccionado. Sin un destino válido, las propiedades siguen visibles
+pero desactivadas. Tab/Mayús+Tab recorren celdas y Tab al final puede
 añadir una fila. Los campos automáticos incluyen página, total, autor, título,
 nombre de archivo, fecha y hora. Fecha/hora no se recalculan al teclear texto.
 
@@ -175,21 +183,28 @@ puede deshacer. Tras triple clic, arrastrar amplía la selección por párrafos.
 
 ## Notas al pie, índices y referencias
 
-Insertar → Nota al pie (Ctrl+Alt+F) crea una nota numerada y lleva el cursor a su
+Elementos → Nota al pie (Ctrl+Alt+F) crea una nota numerada y lleva el cursor a su
 texto. Clica su número para ir desde el cuerpo a la nota o desde la nota a la
 referencia. Alt+Intro ofrece la misma navegación con teclado. La numeración,
 el formato y los reinicios están en Propiedades del documento o de la sección;
 los controles que no cambias conservan la configuración heredada.
 
-Insertar → Índice de contenidos crea un índice de los títulos. El diálogo
+Elementos → Índice de contenidos crea un índice de los títulos. El diálogo
 permite elegir niveles, números de página y enlaces. Clic derecho sobre el
 índice → Editar índice de contenidos cambia ese mismo índice y conserva las
 opciones importadas que no modificas. Las referencias y el índice se actualizan
 automáticamente tras editar y antes de guardar, exportar PDF o imprimir.
 
-Con una imagen seleccionada o el cursor dentro de una tabla, Insertar → Leyenda
-añade directamente la etiqueta y numeración; puedes escribir la descripción.
-Insertar → Enlace permite elegir una URL o un título, marcador, figura o tabla
+Selecciona una imagen y activa **Mostrar leyenda** en sus propiedades de Imagen.
+Para una tabla, coloca el cursor en ella y usa la misma casilla en Tabla.
+La etiqueta y numeración aparecen directamente debajo; escribe allí la descripción.
+Desactivar la casilla oculta la leyenda y conserva su texto para recuperarlo al
+reactivarla. Puedes deshacer estos cambios. Al pasar el ratón por el objeto o su
+leyenda, o situar el cursor en esta, un fondo tenue indica su relación. Esta ayuda
+visual no aparece en el PDF. Las leyendas numeradas requieren DOCX y objetos en
+el cuerpo del documento; las leyendas importadas sin una asociación reconocible
+siguen siendo texto editable.
+Elementos → Enlace permite elegir una URL o un título, marcador, figura o tabla
 del documento. Ctrl+clic sigue las referencias internas.
 
 En Imagen puedes poner el texto a los lados o arriba y abajo, ajustar el espacio
@@ -200,7 +215,7 @@ pasar entre páginas o desplazar el documento. Esc cancela; cada gesto se deshac
 en un paso. Si el motor no puede colocar una imagen flotante en la página de un
 salto manual, Leaf rechaza el movimiento y conserva su posición original.
 
-Insertar → Ecuación (Alt+=) abre el editor básico UnicodeMath. Admite fracciones,
+Elementos → Ecuación (Alt+=) abre el editor básico UnicodeMath. Admite fracciones,
 superíndices/subíndices, raíces y letras griegas. Doble clic o el menú contextual
 edita una ecuación existente. No interpreta comandos LaTeX. Las ecuaciones
 importadas demasiado complejas para este editor conservan su estructura sin
