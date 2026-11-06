@@ -4,13 +4,16 @@ Actualizada: 6 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En curso: candidata alpha.31 — Revisión
+## Preparada para David: candidata alpha.31 — Revisión
 
-Preparar una candidata de #133 sobre la interfaz publicada en Alpha.30.
-Los intentos de #134–#136 quedan fuera de esta candidata: una regresión de
-entrada instalada obliga a continuar su investigación sin darlos por cerrados.
-#132 sigue pendiente de reproducción en el entorno afectado. Los pendientes
-anteriores conservan sus límites. [Validación](docs/ALPHA31_VALIDATION.md).
+Cerrado #133 sobre la interfaz publicada en Alpha.30. Candidata comprobada en
+GNOME 49 y FlatPark/GNOME 51, con batería nativa completa, descarga y sumas
+verificadas. [Candidata y evidencia](docs/ALPHA31_VALIDATION.md).
+Pendiente de las pruebas de David y su aprobación para publicar los mismos archivos.
+
+Los intentos de #134–#136 quedan fuera: fallaron la regresión de entrada instalada
+y conservan sus issues abiertos. #132 sigue pendiente de reproducción en el
+entorno afectado. Los otros doce informes conservan sus requisitos y límites.
 
 ## Completado: alpha.30
 

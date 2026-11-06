@@ -12,16 +12,21 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En curso: candidata alpha.31 — Revisión
+## Preparada: candidata alpha.31 — Revisión
 
-La candidata final se limita a #133: actualización incremental de Revisión,
-con destinos revalidados y conservación de tarjetas válidas. Los experimentos
-de cabeceras, selector y formato (#134–#136) se retiran tras fallar una regresión
-de entrada instalada; conservan sus issues abiertos y la interfaz publicada en
-Alpha.30. #132 se investigó sin reproducir el solapamiento en el entorno local.
-Hay 17 issues abiertos antes de cerrar la validación.
-[Alcance, pruebas y límites](docs/ALPHA31_VALIDATION.md).
-El motor y la última versión pública no cambian.
+[Candidata para probar](https://github.com/frandavid100/leaf/actions/runs/42230422027/artifacts/13510771784), sin publicación automática.
+Cerrado #133: el panel Revisión conserva las entradas válidas mientras vuelve
+a comprobar el texto, con destinos revalidados y continuidad de tarjetas,
+filtro, scroll y foco. 175 pruebas Rust, cuatro Python y 855 mensajes completos.
+[CI nativa](https://github.com/frandavid100/leaf/actions/runs/42229072026) e
+[instalaciones GNOME 49 / FlatPark GNOME 51](https://github.com/frandavid100/leaf/actions/runs/42230422027) superadas.
+Descarga final, todas las sumas y capturas instaladas comprobadas.
+
+Los experimentos de cabeceras, selector y formato (#134–#136) se retiraron tras
+fallar una regresión de entrada instalada y siguen abiertos. #132 no se reprodujo
+en el entorno comprobado. Permanecen 16 issues abiertos.
+[Alcance, identidad, sumas y límites](docs/ALPHA31_VALIDATION.md).
+Alpha.30 sigue siendo la última versión pública; pendiente de las pruebas de David.
 
 ## Última versión publicada: alpha.30
 

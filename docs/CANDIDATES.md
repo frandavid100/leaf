@@ -36,11 +36,11 @@ candidata aprobable.
 Para instalar el bundle descargado:
 
 ```sh
-flatpak install --user ./Leaf-0.1.0-alpha.30-x86_64.flatpak
+flatpak install --user ./Leaf-0.1.0-alpha.31-x86_64.flatpak
 flatpak run --user --branch=alpha io.github.frandavid100.leaf
 ```
 
-Al probarla, confirma que «Acerca de Leaf» muestra `0.1.0-alpha.30`, especialmente
+Al probarla, confirma que «Acerca de Leaf» muestra `0.1.0-alpha.31`, especialmente
 si tienes abiertas ventanas de varias versiones. El paquete completo incluye
 `SHA256SUMS`; `sha256sum -c SHA256SUMS` verifica los archivos descargados.
 

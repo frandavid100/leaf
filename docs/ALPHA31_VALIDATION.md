@@ -6,7 +6,7 @@ WordCraft remains at 0.14.0, commit
 `5cd53f184aab11def13b7fced18727159b9bc96a`; renderer, dependencies and existing
 format patches are unchanged.
 
-## Changes being validated (final candidate scope)
+## Final candidate scope
 
 | Issue | Result |
 | --- | --- |
@@ -64,64 +64,27 @@ context/provider or document to isolate their unresolved symptoms. #84 requires
 specific native/Flatpak platform integration and end-to-end dictionary access.
 No partial issue is closed by this candidate.
 
-## Verification record
+## Verification history and final source
 
-The first candidate run `42212447711` failed the installed font paste regression;
-the same interaction passed locally and in native run `42211043826`. The pointer
-driver now waits for actual native Entry paste delivery before Backspace instead
-of assuming a fixed 250ms clipboard latency. Assertions on document text,
-selection and the resulting font remain intact.
+Experimental candidates failed the mandatory installed font-paste regression
+while the published Alpha30 control passed on the same GNOME 49 runtime.
+Formatting rollback alone and both header-parenting alternatives still failed.
+Runs `42218301357`, `42223264771` and `42226216072` are rejected builds,
+not validated candidates. #134–#136 were therefore withdrawn together.
 
-Native run `42211043826` subsequently failed an outdated proofing diagnostic that
-searched for Review's filter inside the content stack. The filter now belongs to
-the complete sidebar header (#134); the diagnostic checks that actual header and
-requires the filter to be mapped. This is a test-location update, not a product
-workaround. Neither failed run constitutes an approved candidate.
+The final source restores `tab.rs`, `state.rs`, `navigation.rs`, `view.rs`
+and the four formatting modules to the published Alpha30 implementation.
+Review's filter occupies its published content row. Both
+`diagnostics/interactions.rs` and `tools/interaction-pointer-test.sh` match
+Alpha30 byte for byte; their font, paste, document and selection assertions
+remain mandatory. Intermediate clipboard acknowledgements, preflight reads,
+key tracing and timing changes are not shipped.
 
-The later proofing demo also still activated the private ListBox after its cards
-had moved to unified Review. It now activates the actual visible Review target.
-The font interaction keeps its current Font page while pinning, instead of
-artificially removing/reparenting the focused Entry by reopening the same page.
-Clipboard preflight is logged and each input stage retains its own screenshot;
-neither the font nor document/selection assertions are weakened.
-
-The final CI and candidate identity are recorded after completion. Diagnostic
-captures remain internal validation and do not replace the public screenshot gallery.
-
-## Withdrawal of experimental formatting changes
-
-Installed run `42218301357` failed Alpha31 font paste, while its published
-Alpha30 control and original driver passed on the same GNOME 49 runtime
-(`ALPHA30_FONT_CONTROL_EXIT=0`). Clipboard preflight could read `monospacex`, but
-the native Entry did not receive the pasted value. This is a confirmed regression
-in the experimental source, not evidence that the clipboard test may be ignored.
-The final scope restores the four formatting modules and their Alpha30 controls
-regression to published source `868ac18`; #133–#135 remain. No partial #136
-acceptance or formatting improvement is claimed. Full native and installed checks
-remain required for the final package.
-
-## Published font regression restored without modifications
-
-The formatting rollback alone did not make the modified font diagnostic pass.
-To remove test-side confounding, the final candidate restores both
-`diagnostics/interactions.rs` and `tools/interaction-pointer-test.sh` exactly to
-published Alpha30 source. Its font, document, selection, pinned-input and canvas
-assertions remain mandatory and unchanged. The intermediate paste acknowledgement,
-clipboard preflight, key tracing and stage timing changes are not shipped.
-The same `[candidate-alpha]` marker in the preflight PR title skips only the
-optional performance comparison, as it already does on a candidate push; native
-functional and installed checks remain mandatory.
-
-## Native HeaderBar parenting
-
-Run `42223264771` still failed font paste with the exact published input
-regression, while its Alpha30 control passed. The experiment is now limited to
-header placement: primary HeaderBars return to direct ToolbarView top bars,
-with native SizeGroups for primary and secondary rows independently. The
-geometry diagnostic checks equal primary starts/heights and the complete lower
-boundary of the secondary rows. This preserves #134 without wrapping the native
-HeaderBars in generic boxes. Installed focus/paste remains a required check;
-its result must be confirmed before accepting this candidate.
+The proofing demo was corrected to activate the actual unified Review target,
+rather than its unused former private ListBox. The filter diagnostic checks
+its final content-stack location. The candidate PR marker skips only the
+optional performance comparison; functional native and installed tests remain
+mandatory. Diagnostic captures do not replace the public screenshot gallery.
 
 ## Final scope: Review on the published interface
 
@@ -136,6 +99,43 @@ The 40-finding native XTest check corrected paragraphs 1, 2 and 25. Saving and
 reading the DOCX confirmed those exact targets and 37 remaining misspellings.
 Three native toolbar Undo operations restored all 40 original misspellings;
 Redo restored exactly paragraphs 1, 2 and 25. The filter and visible list position
-were retained and the list stayed populated. This evidence was completed before
-the local executor became unavailable. Full native and installed CI remains
-required for the final package.
+were retained and the list stayed populated. This is an automated native-input check, not human validation of every desktop
+or document.
+
+## Accepted unpublished candidate — 6 November 2026
+
+| Identity | Value |
+| --- | --- |
+| Version | `0.1.0-alpha.31` |
+| Candidate source | `78c9650f8abd8f7adf69ebf57930fda8980d3597` |
+| Native source | `2130568e08d618fbce30ffbac9f4aa498d66a7c4` |
+| Native validation | [42229072026](https://github.com/frandavid100/leaf/actions/runs/42229072026), success |
+| Package and installed validation | [42230422027](https://github.com/frandavid100/leaf/actions/runs/42230422027), success |
+| Download | [Complete candidate ZIP](https://github.com/frandavid100/leaf/actions/runs/42230422027/artifacts/13510771784) |
+| ZIP SHA-256 | `5e51c69827c19daac34ff05464926e13bd478adbee16c9c3bf69db478c236952` |
+| Flatpak size | 11,222,672 bytes |
+| Flatpak SHA-256 | `5e727bf688f902b185fe8799e2cfcff45929064b3fb2664c0021079ce068ab41` |
+| FlatPark SHA-256 | `3101d946903db6ac5158d6555bcceb7e897b0a22bf9bdc67e7e75f98571a7b24` |
+
+Passed 175 Rust tests, four Python tests, formatting/docs checks and all 855
+English/Spanish source messages. The complete native graphical battery and
+installed GNOME 49 and relocated FlatPark/GNOME 51 checks succeeded. This
+includes the unchanged published font/paste regression, incremental Review,
+history, document portals, printing, existing AT-SPI/Orca, lifecycle and geometry
+checks. The validated native binary and packaged binary compare byte for byte.
+
+The final ZIP was independently downloaded, its GitHub artifact digest matched,
+and every file in `SHA256SUMS` was recomputed successfully. `candidate.json`
+matches both source commits and run IDs. Installed Review frames from GNOME 49
+at 1× and FlatPark/GNOME 51 at 2× were visually inspected; the populated mixed
+Review list, document text and controls render correctly. These diagnostic
+fixtures are not public gallery replacements.
+
+**#133 is closed.** Sixteen reports remain open: #1, #2, #9, #52, #84, #99,
+#100, #107, #121, #124, #126, #127, #132 and #134–#136. The candidate does not
+resolve the withdrawn interface requests or the original-document/font issue.
+This is automated validation plus inspection of captured frames; human testing
+of the maintainer's affected document and desktop remains useful.
+
+No release or tag was created. Alpha.30 remains public; promotion of these exact
+candidate files requires David's approval.
