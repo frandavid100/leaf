@@ -21,7 +21,7 @@ msgstr ""
 msgid "A bookmark with this name already exists."
 msgstr ""
 
-#: src/proofing.rs:222
+#: src/proofing.rs:258
 msgid "A dictionary with this name is already installed."
 msgstr ""
 
@@ -319,6 +319,10 @@ msgstr ""
 
 #: src/gnome/adaptive.rs:418
 msgid "Capitalize Each Word"
+msgstr ""
+
+#: src/proofing.rs:33
+msgid "Capitalize the first word of a sentence"
 msgstr ""
 
 #: src/gnome/menus.rs:481
@@ -1091,6 +1095,10 @@ msgstr ""
 
 #: src/gnome/links.rs:111
 msgid "External Link"
+msgstr ""
+
+#: src/proofing.rs:31
+msgid "Extra space"
 msgstr ""
 
 #: src/gnome/accessibility.rs:81
@@ -2021,6 +2029,10 @@ msgstr ""
 msgid "Position (pt)"
 msgstr ""
 
+#: src/proofing.rs:19
+msgid "Possible spelling mistake"
+msgstr ""
+
 #: src/gnome/equations.rs:38
 msgid "Power"
 msgstr ""
@@ -2129,6 +2141,10 @@ msgstr ""
 msgid "Remove Shape"
 msgstr ""
 
+#: src/proofing.rs:29
+msgid "Remove the space before the punctuation"
+msgstr ""
+
 #: src/gnome/styles.rs:452
 msgid "Rename"
 msgstr ""
@@ -2155,6 +2171,10 @@ msgstr ""
 
 #: src/gnome/tables.rs:284
 msgid "Repeat as Header"
+msgstr ""
+
+#: src/proofing.rs:41
+msgid "Repeated word: {word}"
 msgstr ""
 
 #: src/gnome/menus.rs:656 src/gnome/search.rs:264
@@ -2509,7 +2529,7 @@ msgstr ""
 msgid "Select text in the document body, outside tables."
 msgstr ""
 
-#: src/proofing.rs:176
+#: src/proofing.rs:212
 msgid "Select the matching .aff and .dic files for one Hunspell dictionary."
 msgstr ""
 
@@ -2833,7 +2853,7 @@ msgstr ""
 msgid "Text Highlight Color"
 msgstr ""
 
-#: src/proofing.rs:120
+#: src/proofing.rs:156
 msgid "Text Language"
 msgstr ""
 
@@ -2965,7 +2985,7 @@ msgstr ""
 msgid "The table of contents could not be found."
 msgstr ""
 
-#: src/gnome/context.rs:832 src/proofing.rs:80 src/proofing.rs:90 src/proofing.rs:98
+#: src/gnome/context.rs:832 src/proofing.rs:116 src/proofing.rs:126 src/proofing.rs:134
 msgid "The text has changed. Check it again."
 msgstr ""
 
@@ -3149,6 +3169,14 @@ msgstr ""
 msgid "Update from Selection"
 msgstr ""
 
+#: src/proofing.rs:26
+msgid "Use \"a\" before a consonant sound"
+msgstr ""
+
+#: src/proofing.rs:23
+msgid "Use \"an\" before a vowel sound"
+msgstr ""
+
 #: src/document_properties.rs:237
 msgid "Use 1 to 12 columns with spacing between 0 and 105.83 mm."
 msgstr ""
@@ -3161,7 +3189,7 @@ msgstr ""
 msgid "Use a .docx or .odt extension"
 msgstr ""
 
-#: src/preferences.rs:59 src/proofing.rs:106
+#: src/preferences.rs:59 src/proofing.rs:142
 msgid "Use a language tag such as es-ES or en-GB."
 msgstr ""
 
@@ -3233,7 +3261,7 @@ msgstr ""
 msgid "WordCraft did not confirm that the document was saved"
 msgstr ""
 
-#: src/proofing.rs:239
+#: src/proofing.rs:275
 msgid "WordCraft does not use a dictionary with this language or filename."
 msgstr ""
 

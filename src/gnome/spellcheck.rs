@@ -253,7 +253,7 @@ impl SpellReview {
                 }
             });
             body.append(&go);
-            let message = gtk::Label::new(Some(&issue.message));
+            let message = gtk::Label::new(Some(&wordcraft_gnome::proofing::description(issue)));
             message.set_xalign(0.);
             message.set_wrap(true);
             message.set_wrap_mode(gtk::pango::WrapMode::WordChar);

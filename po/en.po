@@ -2836,3 +2836,24 @@ msgstr "DOCUMENTS\nOpen DOCX/ODT documents from the main menu. Ctrl+S saves; Ctr
 
 msgid "The current engine supports one table of contents per document. Edit the existing table of contents instead."
 msgstr "The current engine supports one table of contents per document. Edit the existing table of contents instead."
+
+msgid "Possible spelling mistake"
+msgstr "Possible spelling mistake"
+
+msgid "Use \"an\" before a vowel sound"
+msgstr "Use \"an\" before a vowel sound"
+
+msgid "Use \"a\" before a consonant sound"
+msgstr "Use \"a\" before a consonant sound"
+
+msgid "Remove the space before the punctuation"
+msgstr "Remove the space before the punctuation"
+
+msgid "Extra space"
+msgstr "Extra space"
+
+msgid "Capitalize the first word of a sentence"
+msgstr "Capitalize the first word of a sentence"
+
+msgid "Repeated word: {word}"
+msgstr "Repeated word: {word}"

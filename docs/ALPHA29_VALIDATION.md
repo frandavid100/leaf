@@ -35,7 +35,7 @@ su promoción sin recompilar. [Proceso y comandos de instalación](CANDIDATES.md
 ## Pruebas
 
 La ejecución local completa supera 171 pruebas Rust, cuatro Python, formato y
-enlaces; catálogos inglés/español completos con 830 mensajes. La comprobación GUI local incluye GTK 4.14/libadwaita 1.5 con Xvfb: revisión unificada, comentarios, correcciones, formato y gestos reales de imagen y reglas. La candidata aún debe superar CI y sus instalaciones.
+enlaces; catálogos inglés/español completos con 837 mensajes. La comprobación GUI local incluye GTK 4.14/libadwaita 1.5 con Xvfb: revisión unificada, comentarios, correcciones, formato y gestos reales de imagen y reglas. La candidata aún debe superar CI y sus instalaciones.
 
 `tests/references_alpha29.rs` comprueba actualizaciones derivadas, fecha congelada,
 caret, historial/redo, leyendas e índice; Guardar como actualiza FILENAME al destino
@@ -83,3 +83,8 @@ la ventana padre. Una reproducción mínima independiente confirma el efecto; el
 segundo movimiento reproduce la entrada normal en el panel sin cambiar su
 modalidad ni sustituir el clic por activación programática. Las etiquetas actuales
 se actualizan en su widget existente para conservar el foco durante refrescos.
+
+La revisión visual en español también corrige el nombre «Revisión» y localiza
+las explicaciones ortográficas y las reglas inglesas comunes del motor en el
+idioma de la interfaz. Los mensajes desconocidos se conservan íntegros. El
+interlineado actual muestra decimales legibles sin redondear el valor guardado.

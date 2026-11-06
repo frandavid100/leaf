@@ -2001,7 +2001,7 @@ msgid "Language and Review"
 msgstr "Idioma y revisión"
 
 msgid "Review"
-msgstr "Revisar"
+msgstr "Revisión"
 
 msgid "Underline Color…"
 msgstr "Color del subrayado…"
@@ -2836,3 +2836,24 @@ msgstr "DOCUMENTOS\nAbre documentos DOCX/ODT desde el menú principal. Ctrl+S gu
 
 msgid "The current engine supports one table of contents per document. Edit the existing table of contents instead."
 msgstr "El motor actual admite un índice por documento. Edita el índice existente."
+
+msgid "Possible spelling mistake"
+msgstr "Posible error ortográfico"
+
+msgid "Use \"an\" before a vowel sound"
+msgstr "Usa «an» antes de un sonido vocálico"
+
+msgid "Use \"a\" before a consonant sound"
+msgstr "Usa «a» antes de un sonido consonántico"
+
+msgid "Remove the space before the punctuation"
+msgstr "Elimina el espacio antes del signo de puntuación"
+
+msgid "Extra space"
+msgstr "Espacio adicional"
+
+msgid "Capitalize the first word of a sentence"
+msgstr "Escribe con mayúscula la primera palabra de la oración"
+
+msgid "Repeated word: {word}"
+msgstr "Palabra repetida: {word}"
