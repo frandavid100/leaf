@@ -1,0 +1,84 @@
+name: Compare installed control delivery
+on:
+  push:
+    branches: [verify/caption-installed-controls]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [accepted, current]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install native test tools
+        run: |
+          sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|http://security.ubuntu.com/ubuntu|https://security.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
+          sudo timeout 120s apt-get -o Acquire::Retries=1 update
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 180s apt-get install -y --no-install-recommends flatpak xvfb xauth xdotool scrot dbus-x11 locales x11-utils
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          sudo locale-gen en_US.UTF-8
+          flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak --user config --set languages 'en;es'
+      - uses: actions/download-artifact@v4
+        with:
+          name: leaf-flatpak-alpha
+          run-id: ${{ matrix.build == 'accepted' && '42265503961' || '42286444338' }}
+          github-token: ${{ github.token }}
+          path: candidate
+      - name: Install exact comparison binary
+        run: |
+          sha256sum candidate/Leaf-0.1.0-alpha.31-x86_64.flatpak
+          flatpak --user install -y --noninteractive flathub org.gnome.Platform//49
+          flatpak --user install -y --noninteractive candidate/Leaf-0.1.0-alpha.31-x86_64.flatpak
+          flatpak --user info --show-commit org.gnome.Platform//49
+          mkdir -p out "$HOME/.var/app/io.github.frandavid100.leaf/cache"
+          cat > "$RUNNER_TEMP/installed.sh" <<'RUNNER'
+          #!/usr/bin/env bash
+          exec flatpak run --user --branch=alpha --socket=x11 --nosocket=wayland --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/bin/leaf "$@"' leaf "$@"
+          RUNNER
+      - name: Add observation without changing pointer actions
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ['format136-pointer-test.sh','caption-pointer-test.sh']:
+              s=Path('tools',name).read_text()
+              needle='  xdotool windowfocus --sync "$window"'
+              assert needle in s
+              s=s.replace(needle,'''  echo "FOCUS_BEFORE stage=$stage window=$window focused=$(xdotool getwindowfocus) xy=$x,$y" 
+            xwininfo -root -tree
+            scrot "probe-before-focus-$stage.png"
+            xdotool windowfocus --sync "$window"
+            echo "FOCUS_AFTER stage=$stage focused=$(xdotool getwindowfocus)"
+            scrot "probe-after-focus-$stage.png"''')
+              # New artifacts must survive failure too, including the original
+              # driver's otherwise temporary final screen.
+              s=s.replace('trap \'kill "$pid"', 'trap \'scrot "probe-final.png" 2>/dev/null || true; kill "$pid"')
+              Path('out',name).write_text(s)
+          PY
+      - name: Compare controls with complete failure evidence
+        env:
+          BUILD: ${{ matrix.build }}
+        run: |
+          export LEAF29_ACK_PARENT="$HOME/.var/app/io.github.frandavid100.leaf/cache"
+          export LEAF29_ACK_DIR
+          LEAF29_ACK_DIR=$(mktemp -d "$LEAF29_ACK_PARENT/probe.XXXXXX")
+          export LEAF_PROBE_RUNNER="$RUNNER_TEMP/installed.sh"
+          cd out
+          set +e
+          LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 150s bash format136-pointer-test.sh "$LEAF_PROBE_RUNNER" >format-probe.log 2>&1
+          echo "FORMAT_PROBE_EXIT=$?" | tee format-result.log
+          if test "$BUILD" = current; then
+            LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 100s bash caption-pointer-test.sh "$LEAF_PROBE_RUNNER" >caption-probe.log 2>&1
+            echo "CAPTION_PROBE_EXIT=$?" | tee caption-result.log
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: caption-controls-${{ matrix.build }}
+          path: out/
+          retention-days: 7
