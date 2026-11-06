@@ -20,23 +20,26 @@ while kill -0 "$pid" 2>/dev/null; do
   sleep 0.35
   # Let GTK/X11 consume popup entry and the following in-surface motion before
   # pressing, as in the existing text-pointer regression.
-  xdotool mousemove --sync "$x" "$y"
+  # GTK acknowledges entry below; XTest --sync can stall on unchanged coordinates.
+  xdotool mousemove "$x" "$y"
   sleep 0.08
-  xdotool mousemove --sync "$((x+1))" "$((y+1))"
+  xdotool mousemove "$((x+1))" "$((y+1))"
   sleep 0.08
   # Require actual GTK entry into this exact control on its popup surface.
   # Repeat only motion while mapping settles; activate it exactly once.
   for attempt in $(seq 1 60); do
     grep -q "^POINTER_TARGET_ENTERED FORMAT136_READY $stage " "$log" && break
     kill -0 "$pid" || { cat "$log"; exit 1; }
-    xdotool mousemove --sync "$x" "$y"
+    xdotool mousemove "$x" "$y"
     sleep 0.04
-    xdotool mousemove --sync "$((x+1))" "$((y+1))"
+    xdotool mousemove "$((x+1))" "$((y+1))"
     sleep 0.04
   done
   grep -q "^POINTER_TARGET_ENTERED FORMAT136_READY $stage " "$log" || { cat "$log"; exit 1; }
   scrot "${log%.log}-$stage-before.png"
-  xdotool mousedown 1
+  # Keep the final native target motion adjacent to the single press.
+  # Screenshot/client round trips must not separate these two events.
+  xdotool mousemove "$x" "$y" mousedown 1
   sleep 0.12
   xdotool mouseup 1
   if [[ "$role" == hex ]]; then
