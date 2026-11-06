@@ -310,6 +310,7 @@ pub(super) fn format136_ui_test(
                 )
                 .unwrap();
                 if let Some(entry) = editable_child(&picker) {
+                    scroll_to_control(&entry);
                     if text_pointer_target(
                         &format!("FORMAT136_READY {} hex", ticket.get()),
                         &pop,

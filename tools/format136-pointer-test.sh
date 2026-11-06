@@ -21,9 +21,7 @@ while kill -0 "$pid" 2>/dev/null; do
     xdotool key Return
   fi
   sleep 0.35
-  if [[ "$role" == hex || $((stage % 4)) == 0 ]]; then
-    scrot "${log%.log}-$stage-$role.png"
-  fi
+  scrot "${log%.log}-$stage-$role.png"
   touch "$LEAF29_ACK_DIR/format136-$stage"
   stage=$((stage+1))
 done

@@ -340,7 +340,7 @@ impl StylePopover {
         };
         self.report("");
         clear_box(&self.detail);
-        self.back(&self.detail, wordcraft_gnome::t!("Styles"), None);
+        self.back(&self.detail, &st.name, None);
         let title = gtk::Label::new(Some(&st.name));
         title.set_xalign(0.0);
         title.set_wrap(true);
@@ -416,10 +416,11 @@ impl StylePopover {
         let style = id.and_then(|id| self.style(id));
         self.back(
             &self.form,
-            style
-                .as_ref()
-                .map(|s| s.name.as_str())
-                .unwrap_or(wordcraft_gnome::t!("Styles")),
+            if style.is_some() {
+                wordcraft_gnome::t!("Rename Style")
+            } else {
+                wordcraft_gnome::t!("New Style")
+            },
             style.as_ref().map(|s| s.id.clone()),
         );
         let title = gtk::Label::new(Some(if style.is_some() {

@@ -453,6 +453,10 @@ fn followup_check(t: &Followup, stage: u8) {
                     "one visible name per family"
                 );
                 let preview = previews.into_iter().find(|l| l.text() == t.family).unwrap();
+                assert!(
+                    preview.parent().unwrap().has_css_class("current-style"),
+                    "the direct list marks the effective current font"
+                );
                 let selector = u.font_input.clone();
                 eprintln!(
                     "ISSUE19_FONT_GEOMETRY list={} preview={} ellipsized={}",

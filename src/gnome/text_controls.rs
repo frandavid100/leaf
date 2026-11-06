@@ -406,6 +406,21 @@ impl TextControls {
         }
         self.filter_fonts();
     }
+    pub(super) fn mark_current_font(&self, current: Option<&str>) {
+        let mut child = self.font_choices.first_child();
+        while let Some(row) = child {
+            child = row.next_sibling();
+            let selected = row
+                .first_child()
+                .and_then(|w| w.downcast::<gtk::Label>().ok())
+                .is_some_and(|l| current.is_some_and(|name| l.text().eq_ignore_ascii_case(name)));
+            if selected {
+                row.add_css_class("current-style");
+            } else {
+                row.remove_css_class("current-style");
+            }
+        }
+    }
     fn filter_fonts(&self) {
         let query = self.font.text().trim().to_lowercase();
         let mut child = self.font_choices.first_child();

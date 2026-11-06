@@ -676,7 +676,6 @@ pub const MESSAGES: &[&str] = &[
     "Style Name",
     "Style Saved",
     "Style Updated",
-    "Styles",
     "Subject",
     "Subscript",
     "Suggest",
