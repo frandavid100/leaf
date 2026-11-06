@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build: [atomic-one, atomic-two]
+        build: [continuous-one, continuous-two]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -61,7 +61,7 @@ jobs:
               p=Path('out/tools',name)
               s=p.read_text()
               assert 'xdotool mousedown 1' in s
-              p.write_text(s.replace('xdotool mousedown 1', 'xdotool mousemove --sync "$x" "$y" mousedown 1'))
+              p.write_text(s.replace('xdotool mousemove --sync ', 'xdotool mousemove ').replace('xdotool mousedown 1', 'xdotool mousemove "$x" "$y" mousedown 1'))
           PYDRIVER
           cat > "$RUNNER_TEMP/probe-session.sh" <<'PROBE'
           #!/usr/bin/env bash
