@@ -54,6 +54,12 @@ pub(super) fn update_status(ui: &Rc<Ui>) {
             }
             doc.thumb_buttons[doc.active].add_css_class("selected-thumb");
             doc.status_active = Some(doc.active);
+            let weak = Rc::downgrade(ui);
+            glib::idle_add_local_once(move || {
+                if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
+                    reveal_active_thumbnail(&ui);
+                }
+            });
         }
     } else {
         ui.zoom_label.set_text("100 %");
@@ -603,7 +609,13 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
         );
         thumb.add_css_class("thumbnail-sheet");
         thumb.set_overflow(gtk::Overflow::Hidden);
-        let number = gtk::Label::new(Some(&(i + 1).to_string()));
+        let number = gtk::Label::new(Some(&wordcraft_gnome::i18n::interpolate(
+            wordcraft_gnome::t!("{current} of {total}"),
+            &[
+                ("current", (i + 1).to_string()),
+                ("total", sizes.len().to_string()),
+            ],
+        )));
         number.add_css_class("dim-label");
         let content = gtk::Box::new(gtk::Orientation::Vertical, 5);
         content.set_halign(gtk::Align::Center);
@@ -720,4 +732,68 @@ pub(super) fn schedule_thumbnail_refresh(ui: &Rc<Ui>) {
         }
         refresh_thumbnails(&ui);
     });
+}
+
+/// Only called for an active-page change or when the Pages panel is revealed.
+/// Ordinary sidebar browsing and redraws never snap back to this entry.
+pub(super) fn reveal_active_thumbnail(ui: &Rc<Ui>) {
+    reveal_active_thumbnail_now(ui);
+    let target = ui
+        .current
+        .borrow()
+        .as_ref()
+        .map(|d| (d.session.document_id(), d.active));
+    let weak = Rc::downgrade(ui);
+    let frames = Cell::new(0);
+    // The selected CSS border and lazy paintable can change allocation after
+    // the idle callback. Follow only this active-page event through layout;
+    // ordinary redraws/manual browsing never schedule this correction.
+    ui.thumbnails_box.add_tick_callback(move |_, _| {
+        let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+            return glib::ControlFlow::Break;
+        };
+        let current = ui
+            .current
+            .borrow()
+            .as_ref()
+            .map(|d| (d.session.document_id(), d.active));
+        if current != target || !ui.sidebar.shows_sidebar() {
+            return glib::ControlFlow::Break;
+        }
+        reveal_active_thumbnail_now(&ui);
+        frames.set(frames.get() + 1);
+        if frames.get() >= 2 {
+            glib::ControlFlow::Break
+        } else {
+            glib::ControlFlow::Continue
+        }
+    });
+}
+
+fn reveal_active_thumbnail_now(ui: &Rc<Ui>) {
+    if !ui.sidebar.shows_sidebar()
+        || ui.sidebar_pages.visible_child_name().as_deref() != Some("navigation")
+        || ui.navigation_pages.visible_child_name().as_deref() != Some("thumbnails")
+    {
+        return;
+    }
+    let target = ui.current.try_borrow().ok().and_then(|c| {
+        let d = c.as_ref()?;
+        d.thumb_buttons
+            .get(d.active)?
+            .compute_bounds(&ui.thumbnails_box)
+    });
+    if let Some(r) = target {
+        let a = ui.thumbnails_scroll.vadjustment();
+        let top = r.y() as f64;
+        let bottom = (r.y() + r.height()) as f64;
+        let value = if top < a.value() {
+            top
+        } else if bottom > a.value() + a.page_size() {
+            bottom - a.page_size()
+        } else {
+            return;
+        };
+        a.set_value(value.clamp(a.lower(), (a.upper() - a.page_size()).max(a.lower())));
+    }
 }

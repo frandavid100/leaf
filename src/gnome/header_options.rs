@@ -1,6 +1,6 @@
 use super::*;
 
-use wordcraft_gnome::page_options::{self, Links, Options as HeaderOptions};
+use wordcraft_gnome::page_options::{Links, Options as HeaderOptions};
 pub(super) struct HeaderControls {
     pub(super) section: adw::ComboRow,
     pub(super) first: gtk::Switch,

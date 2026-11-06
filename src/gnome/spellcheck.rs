@@ -1,4 +1,8 @@
 use super::*;
+use std::sync::{
+    Arc,
+    atomic::{AtomicBool, Ordering},
+};
 use wordcraft_gnome::proofing::{self, Issue as ProofIssue};
 
 pub(super) fn refresh_all_proofing(ui: &Rc<Ui>) {
@@ -59,14 +63,21 @@ pub(super) struct SpellReview {
     pub(super) status: gtk::Label,
     pub(super) index: Cell<Option<usize>>,
     pub(super) issues: RefCell<Vec<ProofIssue>>,
+    choices: RefCell<Vec<Vec<String>>>,
+    ignored: RefCell<Vec<ProofIssue>>,
+    ignored_document: Cell<Option<(u64, u64)>>,
     pub(super) identity: Cell<Option<(u64, u64)>>,
     pub(super) source: RefCell<Option<glib::SourceId>>,
     pub(super) debounce: RefCell<Option<glib::SourceId>>,
     pub(super) generation: Cell<u64>,
     pub(super) queued: Cell<bool>,
+    worker_cancel: RefCell<Option<Arc<AtomicBool>>>,
 }
 impl SpellReview {
     pub(super) fn stop(&self) {
+        if let Some(cancel) = self.worker_cancel.borrow_mut().take() {
+            cancel.store(true, Ordering::Release);
+        }
         if let Some(id) = self.source.borrow_mut().take() {
             id.remove();
         }
@@ -122,6 +133,10 @@ impl SpellReview {
             return;
         };
         let identity = document_identity(&ui);
+        let document = identity;
+        if self.ignored_document.replace(document) != document {
+            self.ignored.borrow_mut().clear();
+        }
         let generation = self.generation.get();
         self.identity.set(None);
         self.index.set(None);
@@ -131,10 +146,28 @@ impl SpellReview {
         self.status.set_visible(true);
         self.status.set_text(wordcraft_gnome::t!("Checking…"));
         let (tx, rx) = std::sync::mpsc::channel();
+        let cancel = Arc::new(AtomicBool::new(false));
+        self.worker_cancel.replace(Some(cancel.clone()));
         std::thread::spawn(move || {
+            if cancel.load(Ordering::Acquire) {
+                return;
+            }
             let mut session = Session::new(doc);
             session.prefs = prefs;
-            let _ = tx.send(proofing::issues(&session));
+            let issues = proofing::issues(&session);
+            let mut entries = Vec::with_capacity(issues.len());
+            for issue in issues {
+                // Closing a tab also releases its worker's immutable snapshot;
+                // there is no reason to compute hundreds of obsolete choices.
+                if cancel.load(Ordering::Acquire) {
+                    return;
+                }
+                let choices = proofing::suggestions(&mut session, &issue);
+                entries.push((issue, choices));
+            }
+            if !cancel.load(Ordering::Acquire) {
+                let _ = tx.send(entries);
+            }
         });
         let weak = Rc::downgrade(self);
         let id = glib::timeout_add_local(std::time::Duration::from_millis(25), move || {
@@ -148,9 +181,15 @@ impl SpellReview {
             match rx.try_recv() {
                 Ok(issues) => {
                     s.source.borrow_mut().take();
+                    s.worker_cancel.borrow_mut().take();
                     if document_identity(&ui) == identity && s.generation.get() == generation {
                         s.identity.set(identity);
+                        let (issues, choices): (Vec<_>, Vec<_>) = issues
+                            .into_iter()
+                            .filter(|(i, _)| !s.ignored.borrow().contains(i))
+                            .unzip();
                         s.issues.replace(issues);
+                        s.choices.replace(choices);
                         s.render_list();
                     }
                     if s.queued.replace(false) {
@@ -161,22 +200,33 @@ impl SpellReview {
                 Err(std::sync::mpsc::TryRecvError::Empty) => glib::ControlFlow::Continue,
                 Err(_) => {
                     s.source.borrow_mut().take();
+                    s.worker_cancel.borrow_mut().take();
                     s.status
                         .set_text(wordcraft_gnome::t!("The spelling check could not finish."));
+                    s.identity.set(identity);
+                    if let Some(review) = ui.review.borrow().as_ref() {
+                        review.schedule();
+                    }
                     glib::ControlFlow::Break
                 }
             }
         });
         self.source.replace(Some(id));
+        if let Some(review) = ui.review.borrow().as_ref() {
+            review.schedule();
+        }
     }
-    fn render_list(self: &Rc<Self>) {
+    pub(super) fn render_list(self: &Rc<Self>) {
         while let Some(child) = self.list.first_child() {
             self.list.remove(&child);
+        }
+        if self.identity.get().is_none() {
+            return;
         }
         let issues = self.issues.borrow();
         self.status.set_visible(issues.is_empty());
         self.status.set_text(wordcraft_gnome::t!(
-            "No issues found in text with available proofing tools."
+            "No corrections found in text with available proofing tools."
         ));
         self.status.set_tooltip_text(Some(wordcraft_gnome::t!(
             "Languages without installed dictionaries are skipped."
@@ -184,49 +234,138 @@ impl SpellReview {
         for (n, issue) in issues.iter().enumerate() {
             let row = gtk::ListBoxRow::new();
             row.set_widget_name(&format!("proofing-issue-{n}"));
-            let content = gtk::Box::new(gtk::Orientation::Vertical, 3);
-            content.set_margin_start(10);
-            content.set_margin_end(10);
-            content.set_margin_top(8);
-            content.set_margin_bottom(8);
+            let line = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+            line.add_css_class("card");
+            let body = gtk::Box::new(gtk::Orientation::Vertical, 5);
+            body.set_hexpand(true);
+            body.set_margin_start(6);
+            body.set_margin_end(6);
+            body.set_margin_top(8);
+            body.set_margin_bottom(8);
+            let go = gtk::Button::new();
+            go.add_css_class("flat");
+            go.set_widget_name(&format!("proofing-go-{n}"));
+            let heading = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+            heading.append(&review_type_icon(ReviewKind::Correction));
             let text = gtk::Label::new(Some(&issue.text));
-            text.set_xalign(0.0);
+            text.set_xalign(0.);
             text.set_wrap(true);
             text.set_wrap_mode(gtk::pango::WrapMode::WordChar);
             text.set_max_width_chars(1);
+            text.set_hexpand(true);
             text.add_css_class("heading");
-            content.append(&text);
-            let message = gtk::Label::new(Some(&issue.message));
-            message.set_xalign(0.0);
+            heading.append(&text);
+            go.set_child(Some(&heading));
+            accessible_name(
+                &go,
+                if issue.spelling {
+                    wordcraft_gnome::t!("Spelling Correction")
+                } else {
+                    wordcraft_gnome::t!("Grammar Correction")
+                },
+            );
+            let weak = Rc::downgrade(self);
+            let target = issue.clone();
+            let identity = self.identity.get();
+            go.connect_clicked(move |_| {
+                if let Some(s) = weak.upgrade() {
+                    s.select_issue(&target, identity);
+                }
+            });
+            body.append(&go);
+            let message = gtk::Label::new(Some(&wordcraft_gnome::proofing::description(issue)));
+            message.set_xalign(0.);
             message.set_wrap(true);
             message.set_wrap_mode(gtk::pango::WrapMode::WordChar);
             message.set_max_width_chars(1);
-            message.add_css_class("dim-label");
-            content.append(&message);
-            content.set_hexpand(true);
-            let line = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-            line.append(&content);
+            body.append(&message);
+            let proposal = self
+                .choices
+                .borrow()
+                .get(n)
+                .and_then(|c| c.first())
+                .cloned();
+            if let Some(proposal) = proposal.as_ref() {
+                let shown = if proposal.is_empty() {
+                    wordcraft_gnome::t!("Remove").to_owned()
+                } else {
+                    proposal.clone()
+                };
+                let label = gtk::Label::new(Some(&wordcraft_gnome::i18n::interpolate(
+                    wordcraft_gnome::t!("Suggestion: {text}"),
+                    &[("text", shown)],
+                )));
+                label.set_xalign(0.);
+                label.set_wrap(true);
+                label.set_max_width_chars(1);
+                label.add_css_class("dim-label");
+                body.append(&label);
+            }
+            let actions = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+            let apply = gtk::Button::with_label(wordcraft_gnome::t!("Apply"));
+            apply.set_widget_name(&format!("proofing-apply-{n}"));
+            apply.set_hexpand(true);
+            apply.set_sensitive(proposal.is_some());
+            let weak = Rc::downgrade(self);
+            let target = issue.clone();
+            let identity = self.identity.get();
+            apply.connect_clicked(move |_| {
+                let Some(s) = weak
+                    .upgrade()
+                    .filter(|s| s.current_issue(&target, identity))
+                else {
+                    return;
+                };
+                let Some(ui) = s.ui.upgrade() else { return };
+                if let Some(text) = proposal.as_deref() {
+                    proof_replace(&ui, &target, text);
+                }
+            });
+            actions.append(&apply);
+            let ignore = gtk::Button::with_label(wordcraft_gnome::t!("Ignore"));
+            ignore.set_widget_name(&format!("proofing-ignore-{n}"));
+            ignore.set_hexpand(true);
+            accessible_name(&ignore, wordcraft_gnome::t!("Ignore This Occurrence"));
+            let weak = Rc::downgrade(self);
+            let target = issue.clone();
+            let identity = self.identity.get();
+            ignore.connect_clicked(move |_| {
+                let Some(s) = weak
+                    .upgrade()
+                    .filter(|s| s.current_issue(&target, identity))
+                else {
+                    return;
+                };
+                s.ignored.borrow_mut().push(target.clone());
+                let index = s.issues.borrow().iter().position(|i| i == &target);
+                if let Some(n) = index {
+                    s.issues.borrow_mut().remove(n);
+                    let choice_len = s.choices.borrow().len();
+                    if n < choice_len {
+                        s.choices.borrow_mut().remove(n);
+                    }
+                    s.index.set(None);
+                    s.render_list();
+                }
+            });
+            actions.append(&ignore);
+            body.append(&actions);
+            line.append(&body);
             let menu = gtk::MenuButton::new();
             menu.set_icon_name("view-more-symbolic");
             menu.add_css_class("flat");
+            menu.set_valign(gtk::Align::Start);
+            menu.set_margin_top(6);
             menu.set_widget_name(&format!("proofing-menu-{n}"));
-            menu.set_valign(gtk::Align::Center);
-            menu.set_margin_end(8);
-            menu.set_margin_top(8);
-            menu.set_margin_bottom(8);
-            accessible_name(&menu, wordcraft_gnome::t!("Spelling actions"));
+            accessible_name(&menu, wordcraft_gnome::t!("Correction Options"));
             let weak = Rc::downgrade(self);
             let issue = issue.clone();
             let identity = self.identity.get();
             menu.set_create_popup_func(move |button| {
-                let Some(panel) = weak.upgrade() else { return };
-                let Some(ui) = panel
-                    .ui
-                    .upgrade()
-                    .filter(|u| !u.closed.get() && document_identity(u) == identity)
-                else {
+                let Some(s) = weak.upgrade().filter(|s| s.current_issue(&issue, identity)) else {
                     return;
                 };
+                let Some(ui) = s.ui.upgrade() else { return };
                 let root = gio::Menu::new();
                 let group = gio::SimpleActionGroup::new();
                 let pop = gtk::PopoverMenu::from_model(Some(&root));
@@ -237,6 +376,28 @@ impl SpellReview {
             line.append(&menu);
             row.set_child(Some(&line));
             self.list.append(&row);
+        }
+        if let Some(ui) = self.ui.upgrade() {
+            if let Some(review) = ui.review.borrow().as_ref() {
+                review.schedule();
+            }
+        }
+    }
+    fn current_issue(&self, issue: &ProofIssue, identity: Option<(u64, u64)>) -> bool {
+        self.identity.get() == identity
+            && self
+                .ui
+                .upgrade()
+                .is_some_and(|ui| !ui.closed.get() && document_identity(&ui) == identity)
+            && self.issues.borrow().contains(issue)
+    }
+    fn select_issue(self: &Rc<Self>, issue: &ProofIssue, identity: Option<(u64, u64)>) {
+        if !self.current_issue(issue, identity) {
+            return;
+        }
+        let index = self.issues.borrow().iter().position(|i| i == issue);
+        if let Some(n) = index {
+            self.select(n);
         }
     }
     pub(super) fn item(&self) -> Option<ProofIssue> {
@@ -249,6 +410,9 @@ impl SpellReview {
         if document_identity(&ui) != self.identity.get() {
             self.invalidate();
             return;
+        }
+        if let Some(review) = ui.review.borrow().as_ref() {
+            review.show(Some(ReviewKind::Correction));
         }
         self.index.set(Some(index));
         let Some(issue) = self.item() else { return };
@@ -270,6 +434,10 @@ impl SpellReview {
         };
         if let Some(search) = ui.search.borrow().as_ref() {
             search.toggle.set_active(false);
+        }
+        if let Some(review) = ui.review.borrow().as_ref() {
+            review.show(Some(ReviewKind::Correction));
+            return;
         }
         let already_active = self.toggle.is_active();
         self.toggle.set_active(true);
@@ -321,19 +489,15 @@ pub(super) fn install_spelling(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Sp
         status,
         index: Cell::new(None),
         issues: RefCell::new(Vec::new()),
+        choices: RefCell::new(Vec::new()),
+        ignored: RefCell::new(Vec::new()),
+        ignored_document: Cell::new(None),
         identity: Cell::new(None),
         source: RefCell::new(None),
         debounce: RefCell::new(None),
         generation: Cell::new(0),
         queued: Cell::new(false),
-    });
-    let weak = Rc::downgrade(&s);
-    toggle.connect_toggled(move |b| {
-        if b.is_active() {
-            if let Some(s) = weak.upgrade() {
-                s.show();
-            }
-        }
+        worker_cancel: RefCell::new(None),
     });
     let weak = Rc::downgrade(&s);
     s.list.connect_row_activated(move |_, row| {

@@ -1,10 +1,10 @@
-# Symbolic action icons
+# UI icon sources
 
-`headings-allcap-symbolic.svg` and `font-symbolic.svg` are copied from GNOME Icon Development Kit (`icons/headings-allcap.svg`, `icons/font.svg`), revision `3136fc599bf9de668045553d480a700d50b21dca`.
+`headings-allcap-symbolic`, `font-symbolic`, `compass-symbolic` and
+`comment-symbolic` retain the existing GNOME Icon Development Kit assets and
+CC0 license in `ICON_DEV_KIT_LICENSE.md`.
 
-Source: https://gitlab.gnome.org/Teams/Design/icon-development-kit
-License: CC0 1.0 Universal; see ICON_DEV_KIT_LICENSE.md. Their icon identities are preserved; filenames carry GTK’s symbolic suffix. Leaf app icons have their existing provenance.
-
-`compass-symbolic.svg` and `comment-symbolic.svg` use `icons/compass.svg` and
-`icons/comment.svg` from the same pinned Icon Development Kit revision and CC0
-license. They retain their requested GNOME icon identities.
+`paragraph-symbolic.svg` is an original 16-pixel symbolic pilcrow created for
+Leaf, under the repository GPL-3.0-or-later license and its declared AI-assisted
+development process. It is bundled so Paragraph uses the same glyph on each
+supported runtime. Other standard symbols are supplied by GTK/Adwaita.

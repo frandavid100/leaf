@@ -252,15 +252,20 @@ pub(super) fn selection_paragraph(ui: &Rc<Ui>) -> serde_json::Value {
     let Some(mut state) = states.next() else {
         return serde_json::json!({});
     };
+    let mut mixed = Vec::<String>::new();
     for next in states {
         if let Some(fields) = state.as_object_mut() {
             for (key, value) in fields {
                 if next.get(key) != Some(value) {
+                    if !mixed.contains(key) {
+                        mixed.push(key.clone());
+                    }
                     *value = serde_json::Value::Null;
                 }
             }
         }
     }
+    state["_mixed"] = serde_json::json!(mixed);
     state
 }
 pub(super) fn show_text_options(ui: &Rc<Ui>, _parent: &ApplicationWindow) {

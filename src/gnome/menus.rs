@@ -32,7 +32,14 @@ pub(super) fn refresh_main_actions(host: &Workspace) {
             })
         })
         .unwrap_or_default();
+    let can_caption = ui.as_ref().is_some_and(|u| {
+        u.current
+            .borrow()
+            .as_ref()
+            .is_some_and(|d| wordcraft_gnome::references::caption_kind(&d.session).is_some())
+    });
     for (name, on) in [
+        ("insert-caption", can_caption),
         ("insert-bookmark", can_bookmark),
         ("insert-comment", can_comment),
         ("undo", undo),
@@ -119,8 +126,7 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
         };
         match result {
             Ok(()) => {
-                ui.dirty.set(true);
-                sync_tab(&ui);
+                after_content_change(&ui);
                 let scroll = (
                     ui.scroll.hadjustment().value(),
                     ui.scroll.vadjustment().value(),
@@ -200,6 +206,15 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
         }
     });
     install_reference_actions(host);
+    for page in ["table", "image", "toc"] {
+        window_action(host, &format!("elements-{page}"), move |h| {
+            if let Some(ui) = selected_ui(h) {
+                if let Some(panel) = ui.elements.borrow().as_ref() {
+                    panel.show(page);
+                }
+            }
+        });
+    }
     window_action(host, "insert-picture", |h| {
         if let Some(ui) = selected_ui(h) {
             choose_picture(&ui, &h.window, false);
@@ -425,60 +440,93 @@ fn insert_break(ui: &Rc<Ui>, kind: &str) {
     }
 }
 
-pub(super) fn append_insert_menu(root: &gio::Menu) {
+pub(super) fn elements_menu() -> gio::Menu {
     let add = gio::Menu::new();
-    menu_item(&add, wordcraft_gnome::t!("Table…"), "insert-table", None);
-    menu_item(&add, wordcraft_gnome::t!("Image…"), "insert-picture", None);
+    let content = gio::Menu::new();
+    for (label, action) in [
+        (wordcraft_gnome::t!("Table"), "elements-table"),
+        (wordcraft_gnome::t!("Image"), "elements-image"),
+        (wordcraft_gnome::t!("Table of Contents"), "elements-toc"),
+    ] {
+        menu_item(&content, label, action, None);
+    }
     menu_item(
-        &add,
+        &content,
+        wordcraft_gnome::t!("Equation…"),
+        "insert-equation",
+        None,
+    );
+    add.append_section(None, &content);
+    let context = gio::Menu::new();
+    menu_item(
+        &context,
         wordcraft_gnome::t!("Bookmark…"),
         "insert-bookmark",
         Some("<Control><Shift>F5"),
     );
     menu_item(
-        &add,
+        &context,
         wordcraft_gnome::t!("Comment…"),
         "insert-comment",
         Some("<Control><Alt>m"),
     );
     menu_item(
-        &add,
-        wordcraft_gnome::t!("Footnote"),
-        "insert-footnote",
-        Some("<Control><Alt>f"),
+        &context,
+        wordcraft_gnome::t!("Link…"),
+        "insert-link",
+        Some("<Control>k"),
     );
     menu_item(
-        &add,
-        wordcraft_gnome::t!("Table of Contents…"),
-        "insert-toc",
-        None,
-    );
-    menu_item(
-        &add,
-        wordcraft_gnome::t!("Caption…"),
+        &context,
+        wordcraft_gnome::t!("Caption"),
         "insert-caption",
         None,
     );
     menu_item(
-        &add,
-        wordcraft_gnome::t!("Cross-reference…"),
-        "insert-cross-reference",
-        None,
+        &context,
+        wordcraft_gnome::t!("Footnote"),
+        "insert-footnote",
+        Some("<Control><Alt>f"),
     );
-    menu_item(&add, wordcraft_gnome::t!("Header"), "insert-header", None);
-    menu_item(&add, wordcraft_gnome::t!("Footer"), "insert-footer", None);
+    add.append_section(None, &context);
+    let sections = gio::Menu::new();
+    let headers = gio::Menu::new();
     menu_item(
-        &add,
-        wordcraft_gnome::t!("Page Number…"),
-        "insert-page-number",
+        &headers,
+        wordcraft_gnome::t!("Header"),
+        "insert-header",
         None,
     );
+    menu_item(
+        &headers,
+        wordcraft_gnome::t!("Footer"),
+        "insert-footer",
+        None,
+    );
+    sections.append_submenu(Some(wordcraft_gnome::t!("Header and Footer")), &headers);
+    let fields = gio::Menu::new();
+    for (label, action) in [
+        (wordcraft_gnome::t!("Page Number"), "field-page"),
+        (wordcraft_gnome::t!("Total Pages"), "field-pages"),
+        (wordcraft_gnome::t!("Author"), "field-author"),
+        (wordcraft_gnome::t!("Document Title"), "field-title"),
+        (wordcraft_gnome::t!("File Name"), "field-filename"),
+        (wordcraft_gnome::t!("Date"), "field-date"),
+        (wordcraft_gnome::t!("Time"), "field-time"),
+    ] {
+        menu_item(&fields, label, action, None);
+    }
+    sections.append_submenu(Some(wordcraft_gnome::t!("Automatic Fields")), &fields);
     let breaks = gio::Menu::new();
     for (kind, label) in break_items() {
         menu_item(&breaks, label, &format!("break-{kind}"), None);
     }
-    add.append_submenu(Some(wordcraft_gnome::t!("Breaks")), &breaks);
-    root.append_submenu(Some(wordcraft_gnome::t!("Insert")), &add);
+    sections.append_submenu(Some(wordcraft_gnome::t!("Breaks")), &breaks);
+    add.append_section(None, &sections);
+    add
+}
+pub(super) fn append_insert_menu(root: &gio::Menu) {
+    root.append_submenu(Some(wordcraft_gnome::t!("Elements")), &elements_menu());
 }
 
 pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
@@ -499,28 +547,10 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
         Some("<Control><Shift>s"),
     );
     root.append_section(None, &save);
-    append_insert_menu(&root);
-    let references = gio::Menu::new();
-    for (label, name) in [
-        (wordcraft_gnome::t!("Edit Footnote"), "edit-footnote"),
-        (wordcraft_gnome::t!("Next Footnote"), "next-footnote"),
-        (
-            wordcraft_gnome::t!("Return to Reference"),
-            "footnote-reference",
-        ),
-        (wordcraft_gnome::t!("Footnote Options…"), "footnote-options"),
-        (
-            wordcraft_gnome::t!("Update References"),
-            "update-references",
-        ),
-    ] {
-        menu_item(&references, label, name, None);
-    }
-    root.append_submenu(Some(wordcraft_gnome::t!("References")), &references);
     let properties = gio::Menu::new();
     menu_item(
         &properties,
-        wordcraft_gnome::t!("Document Properties…"),
+        wordcraft_gnome::t!("Document Properties"),
         "document-properties",
         None,
     );
@@ -544,8 +574,8 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
     root.prepend_section(None, &zoom_section);
     let modes = gio::Menu::new();
     for (label, mode) in [
-        (wordcraft_gnome::t!("Editing"), "editing"),
-        (wordcraft_gnome::t!("Reviewing"), "reviewing"),
+        (wordcraft_gnome::t!("Edit"), "editing"),
+        (wordcraft_gnome::t!("Suggest"), "reviewing"),
     ] {
         let item = gio::MenuItem::new(Some(label), None);
         item.set_action_and_target_value(Some("win.editing-mode"), Some(&mode.to_variant()));
@@ -585,7 +615,7 @@ pub(super) fn show_editor_help(parent: &ApplicationWindow) {
     let toolbar = ToolbarView::new();
     toolbar.add_top_bar(&HeaderBar::new());
     let text = wordcraft_gnome::t!(
-        "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Navigation, Comments, and Spelling and Grammar. Navigation groups bookmarks under their headings. Select a thumbnail, heading or bookmark to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks appear in Navigation; each comment thread shares one bubble in Comments. Spelling issues only select their text; corrections remain in the document context menu. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
+        "DOCUMENTS\nOpen DOCX/ODT documents from the main menu. Ctrl+S saves; Ctrl+Shift+S saves a copy. Use DOCX for notes, equations, automatic references, comments and advanced tracked changes.\n\nNAVIGATION AND REVIEW\nF9 shows or hides Pages, Navigation and Review. Ctrl+F searches; Ctrl+H replaces. Review filters corrections, tracked changes and comments. Apply or ignore a correction occurrence, accept/reject changes, and reply to or resolve comments. F7 opens corrections. Edit/Suggest controls whether new edits are tracked.\n\nFORMATTING AND ELEMENTS\nStyle, Paragraph, Text and Elements are in the adaptive header or bottom toolbar. Format rows show current values; mixed checkboxes enable the option across the selection. Arrows open internal options with Back. Reapply remembers that feature’s applied settings. Pins keep panels floating. Elements shares table, image and contents tools with right-click, while keeping Insert available. Ctrl+Z undoes; Ctrl+Shift+Z redoes. Ruler drags snap to 0.5 cm; Escape cancels.\n\nAUTOSAVE\nPreferences can disable autosave, use recovery copies or save directly to the document. Recover Documents is in the main menu."
     );
     let l = gtk::Label::new(Some(text));
     l.set_wrap(true);

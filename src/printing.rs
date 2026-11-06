@@ -13,6 +13,12 @@ pub struct PrintFile {
 }
 impl PrintFile {
     pub fn prepare(document: Document) -> Result<Self, String> {
+        Self::prepare_with_path(document, None)
+    }
+    pub fn prepare_with_path(
+        document: Document,
+        document_path: Option<PathBuf>,
+    ) -> Result<Self, String> {
         let tick = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map_err(|e| e.to_string())?
@@ -37,7 +43,10 @@ impl PrintFile {
         let file = Self { directory };
         // WordCraft 0.14 separates printer jobs from exported PDFs: links stay
         // clickable in exports, but their annotations can break printer fitting.
-        let (bytes, _) = Session::new(document)
+        let mut session = Session::new(document);
+        session.path = document_path;
+        crate::references::refresh_derived(&mut session)?;
+        let (bytes, _) = session
             .print_job_pdf(&serde_json::json!({"markup": false}))
             .map_err(|e| e.to_string())?;
         std::fs::write(file.path(), bytes).map_err(|e| e.to_string())?;

@@ -1,12 +1,17 @@
-Leaf 0.1.0-alpha.28 adds document references and floating picture controls.
+Leaf 0.1.0-alpha.29 unifies document review and element tools, improves formatting and picture interaction, and adds a basic equation editor.
 
-- Insert and edit footnotes on the document canvas, navigate between notes and their references, and configure numbering. Ctrl+Alt+F inserts a footnote.
-- Insert an automatic table of contents from document headings, choose its levels and page numbers, and update it from References.
-- Add numbered figure/table captions and cross-references to headings, captions or bookmarks. References → Update References refreshes fields and contents. Ctrl+click an internal reference to follow it.
-- Place images beside text or above/below it, set spacing and move-with-text behavior, and move or resize pictures with the pointer. Each drag has a preview and a single undo step.
-- Fit portrait and landscape sections independently. Explicit percentage zoom uses the same scale throughout the document.
-- Keep page thumbnails at a common width and highlight the actual active page in multi-page rows.
+- References and the table of contents update automatically after edits and before saving, PDF export and printing. Undo/redo retains the source edit. Unrelated date/time fields keep their cached values while typing.
+- Click a footnote number to move between its reference and note, or use Alt+Return. Footnote numbering is configured in document/section Properties, preserving unchanged inherited settings.
+- Edit the existing table of contents from its context menu. Add a numbered caption directly to the selected image or current table, ready to type its description.
+- Elements in the adaptive header shares table, image and table-of-contents controls with their context menus. Creation stays available alongside current-target properties. Groups retain references, headers/footers, automatic fields and breaks; Link handles URLs and structured internal references.
+- Review combines spelling/grammar corrections, tracked changes and comment threads in document order. Filter by type; apply or ignore a correction occurrence, accept/reject a change, and reply to or resolve comments. Edit/Suggest selects whether new edits are tracked; existing proposals remain reviewable in either mode.
+- Text and Paragraph use labeled rows, native mixed checkboxes, current selection values and internal option pages. Reapply controls remember each feature’s applied settings; pinned panels remain floating.
+- The sidebar title follows Pages, Navigation, Review and transient Search. Text Language shows inherited defaults with the resolved language. Symbolic icons use a consistent 16 px size, including the new pilcrow paragraph launcher.
+- Ruler numerals have stronger normal-state contrast. Margin, indent and tab drags snap to 0.5 cm in document coordinates, with matching live previews, cancellation and one-step Undo. Numeric/imported values retain their precision.
+- Picture selection is translucent. All eight resize handles work; corners preserve proportions, edges adjust one dimension. Drag previews show the image, support scrolling and valid page targets, cancel with Escape, and undo in one step.
+- Pages reveals the active thumbnail and labels physical positions with the document total, without overriding manual sidebar browsing on redraw.
+- Insert and edit basic UnicodeMath equations with Alt+=, including fractions, scripts, roots and Greek letters. Complex imported equations that cannot round-trip through this editor remain protected.
 
-Use DOCX for notes, automatic contents, cross-references, captions and floating images. The current ODT exporter loses those structures, so Leaf blocks saves that would discard them.
+Known limits: the pinned engine supports one automatic table of contents per document. Explicit insertion never silently replaces an existing index. The reported original footnote placement/missing-number cases still need their source document to reproduce. Moving a floating image onto a paragraph beginning with a manual page break can fail in the pinned engine; Leaf now rejects that placement and preserves the original image instead of silently putting it on the wrong page. Unequal columns and selected-text continuous sections retain their documented engine limitations. Equations, notes, references, automatic fields, comments, tracked formatting/moves and floating images require DOCX to preserve their structure. Ordinary insertion/deletion proposals also round-trip through ODT.
 
-The regular GitHub Flatpak uses GNOME 49 and updates alpha.27. The FlatPark archive is checked with GNOME 51. Leaf is experimental and its development has used substantial AI assistance.
+Prepared through Leaf’s candidate process: David tests the package before approving publication. Its manifest identifies the source and workflow; SHA256SUMS identifies the exact packages. Approval promotes these files without rebuilding. The regular bundle uses GNOME 49; the FlatPark archive is checked under GNOME 51. Leaf is experimental and its development has used substantial AI assistance.

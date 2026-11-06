@@ -2,38 +2,28 @@ use super::*;
 
 // Papers-like bottom selector and a heading hierarchy sourced from WordCraft.
 pub(super) fn sidebar_icon(kind: &str) -> gtk::Widget {
-    let area = gtk::DrawingArea::new();
-    area.set_content_width(18);
-    area.set_content_height(18);
-    area.set_halign(gtk::Align::Center);
-    area.set_valign(gtk::Align::Center);
-    let kind = kind.to_string();
-    area.set_draw_func(move |w, cr, _, _| {
-        let c = w.color();
-        cr.set_source_rgba(
-            c.red() as f64,
-            c.green() as f64,
-            c.blue() as f64,
-            c.alpha() as f64,
-        );
-        cr.set_line_width(1.4);
-        if kind == "pages" {
-            for (x, y) in [(2.0, 2.0), (10.0, 2.0), (2.0, 10.0), (10.0, 10.0)] {
-                cr.rectangle(x, y, 5.0, 5.0);
-            }
-            let _ = cr.stroke();
-        } else {
-            for (x, y, end) in [(2.0, 3.0, 16.0), (6.0, 8.0, 16.0), (6.0, 13.0, 13.0)] {
-                cr.move_to(x, y);
-                cr.line_to(end, y);
-            }
-            cr.move_to(2.0, 6.0);
-            cr.line_to(2.0, 15.0);
-            let _ = cr.stroke();
-        }
+    let icon = gtk::Image::from_icon_name(if kind == "pages" {
+        "view-grid-symbolic"
+    } else {
+        "compass-symbolic"
     });
-    area.upcast()
+    icon.set_pixel_size(16);
+    icon.upcast()
 }
+
+pub(super) fn refresh_sidebar_title(ui: &Ui) {
+    let label = if ui.sidebar_pages.visible_child_name().as_deref() == Some("search") {
+        wordcraft_gnome::t!("Search")
+    } else {
+        match ui.navigation_pages.visible_child_name().as_deref() {
+            Some("outline") => wordcraft_gnome::t!("Navigation"),
+            Some("annotations" | "proofing" | "review") => wordcraft_gnome::t!("Review"),
+            _ => wordcraft_gnome::t!("Pages"),
+        }
+    };
+    ui.sidebar_title.set_text(label);
+}
+
 pub(super) struct OutlinePanel {
     pub(super) ui: std::rc::Weak<Ui>,
     toggle: gtk::ToggleButton,
@@ -244,7 +234,7 @@ impl OutlinePanel {
             menu.insert_action_group("section", Some(&actions));
             let model = gio::Menu::new();
             model.append(
-                Some(wordcraft_gnome::t!("Section Properties…")),
+                Some(wordcraft_gnome::t!("Section Properties")),
                 Some("section.properties"),
             );
             menu.set_menu_model(Some(&model));
@@ -475,6 +465,7 @@ pub(super) fn install_outline(
             if let Some(ui) = weak.upgrade() {
                 ui.navigation_pages.set_visible_child_name("thumbnails");
                 refresh_thumbnails(&ui);
+                reveal_active_thumbnail(&ui);
             }
         }
     });

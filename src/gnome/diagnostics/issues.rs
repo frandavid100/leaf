@@ -546,7 +546,7 @@ pub(super) fn comment_pointer_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, a
             assert_eq!(panel.active.borrow().len(), 2, "overlaps reveal both roots");
             assert_eq!(
                 u.navigation_pages.visible_child_name().as_deref(),
-                Some("annotations")
+                Some("review")
             );
             assert_eq!(u.current.borrow().as_ref().unwrap().session.rev(), rev);
             assert_eq!(u.current.borrow().as_ref().unwrap().session.doc, document);

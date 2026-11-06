@@ -32,8 +32,20 @@ jobs:
           python-version: '3.12'
       - name: Instalar bibliotecas GNOME y pantalla virtual
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11
+          # Azure's HTTP package mirror stalled on the runner; use Ubuntu HTTPS.
+          sudo python3 - <<'PY'
+          from pathlib import Path
+          for path in [Path('/etc/apt/sources.list'), *Path('/etc/apt/sources.list.d').glob('*.list'), *Path('/etc/apt/sources.list.d').glob('*.sources')]:
+              if path.is_file():
+                  text = path.read_text().replace('http://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu').replace('https://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu')
+                  path.write_text(text)
+          for name, uri in [('apt-mirrors.txt', 'https://archive.ubuntu.com/ubuntu'), ('apt-security-mirrors.txt', 'https://security.ubuntu.com/ubuntu')]:
+              path = Path('/etc/apt') / name
+              if path.is_file():
+                  path.write_text(uri + '\n')
+          PY
+          sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11
           sudo locale-gen en_US.UTF-8
       - name: Check Leaf formatting and contributor entry points
         run: |
@@ -76,12 +88,38 @@ jobs:
           fi
       - name: Compilar lector GNOME
         run: cargo build --release --locked --features gui --bin wordcraft-gnome
+      - name: Verify unified Review and shared formatting and Elements panels
+        run: |
+          set -o pipefail
+          for language in en es; do
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 1400x1100x24' timeout 90s ./target/release/wordcraft-gnome --review29-ui-test 2>&1 | tee review29-$language.log
+            grep -q REVIEW29_UI_OK review29-$language.log
+          done
+      - name: Validate grouped Insert and annotation workflows
+        run: |
+          set -o pipefail
+          for language in en es; do
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --annotations-ui-test 2>&1 | tee annotations-$language.log
+            grep -q ANNOTATIONS_UI_OK annotations-$language.log
+          done
       - name: Editable headers, footers and automatic page fields
         run: |
           set -o pipefail
           GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --headers-ui-test 2>&1 | tee headers-ui.log
           grep -q 'HEADER_FOOTER_UI_OK pointer=false' headers-ui.log
           xvfb-run -a bash tools/header-pointer-test.sh
+      - name: Verify alpha29 document controls and all picture gestures
+        run: |
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 1400x1100x24' timeout 180s bash tools/alpha29-pointer-test.sh
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=es GDK_SCALE=2 GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 180s bash tools/alpha29-pointer-test.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alpha29-interactions
+          path: |
+            review29-*.log
+            alpha29-pointer-*.log
+            alpha29-pointer-*.png
       - name: Verify alpha28 section zoom, page activation, notes and image drags
         run: |
           XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a timeout 90s bash tools/alpha28-pointer-test.sh
@@ -189,10 +227,6 @@ jobs:
         run: |
           set -o pipefail
           git diff --exit-code 4707d77882afb6432d2ba521ad551985324d11cb -- Cargo.toml Cargo.lock vendor patches
-          for language in en es; do
-            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --annotations-ui-test 2>&1 | tee annotations-$language.log
-            grep -q ANNOTATIONS_UI_OK annotations-$language.log
-          done
           xvfb-run -a -s '-screen 0 1280x900x24' bash -c '
             set -e
             for panel in annotations proofing; do
@@ -232,7 +266,7 @@ jobs:
           cargo run -- --png muestra-wordcraft.png
           test -s muestra-wordcraft.png
       - name: Comparar rendimiento reproducible
-        if: ${{ !contains(github.event.head_commit.message, '[release-alpha]') && !contains(github.event.head_commit.message, '[a11y-candidate]') && !contains(github.event.head_commit.message, '[perf-candidate]') && !contains(github.event.head_commit.message, '[refactor-candidate]') }}
+        if: ${{ !contains(github.event.head_commit.message, '[release-alpha]') && !contains(github.event.head_commit.message, '[candidate-alpha]') && !contains(github.event.head_commit.message, '[a11y-candidate]') && !contains(github.event.head_commit.message, '[perf-candidate]') && !contains(github.event.head_commit.message, '[refactor-candidate]') }}
         run: |
           cargo run --locked --example performance > performance-debug.txt
           cargo run --release --locked --example performance > performance-release.txt
@@ -241,7 +275,7 @@ jobs:
       - name: Identificar versión de prueba
         run: |
           ./target/release/wordcraft-gnome --version | tee version.txt
-          grep -q "Leaf 0.1.0-alpha.28" version.txt
+          grep -q "Leaf 0.1.0-alpha.29" version.txt
       - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
         run: |
           python -m pip install --disable-pip-version-check pillow==11.3.0
@@ -592,31 +626,71 @@ jobs:
 
 
   flatpak-alpha:
-    name: Package and publish GitHub Flatpak alpha
+    name: Build and validate unpublished Alpha candidate
     needs: test
-    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[release-alpha]') && (needs.test.result == 'success' || (needs.test.result == 'skipped' && contains(github.event.head_commit.message, '[bundle-only]')))
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[candidate-alpha]') && (needs.test.result == 'success' || (needs.test.result == 'skipped' && contains(github.event.head_commit.message, '[bundle-only]')))
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     permissions:
-      contents: write
+      contents: read
       actions: read
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Verify reused native build is source-identical
+      - name: Verify reused native source and test run identity
         if: contains(github.event.head_commit.message, '[bundle-only]')
-        run: git diff --exit-code 74865717f99d63bab8000f1470db7b42718ba761 -- src Cargo.toml Cargo.lock tests vendor po data examples tools patches
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LEAF_CANDIDATE_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          native_run=$(python3 - <<'PY'
+          import os, re
+          runs = re.findall(r'\[native-run:([0-9]+)\]', os.environ['LEAF_CANDIDATE_MESSAGE'])
+          assert len(runs) == 1, 'A reused candidate needs exactly one [native-run:ID] marker'
+          print(runs[0])
+          PY
+          )
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$native_run" > native-run.json
+          python3 - <<'PY'
+          import json, os, re
+          r = json.load(open('native-run.json'))
+          assert r['conclusion'] in (None, 'success')
+          assert r['repository']['full_name'] == os.environ['GITHUB_REPOSITORY']
+          assert r['path'] == '.github/workflows/wordcraft-gnome.yml'
+          assert re.fullmatch(r'[0-9a-f]{40}', r['head_sha'])
+          with open(os.environ['GITHUB_ENV'], 'a') as f:
+              f.write('LEAF_NATIVE_SOURCE=' + r['head_sha'] + '\n')
+              f.write('LEAF_NATIVE_RUN=' + str(r['id']) + '\n')
+          PY
+          native_source=$(python3 -c "import json; print(json.load(open('native-run.json'))['head_sha'])")
+          git cat-file -e "$native_source^{commit}" || git fetch origin "$native_source"
+          git diff --exit-code "$native_source" -- src Cargo.toml Cargo.lock tests vendor po data examples tools patches
       - uses: actions/download-artifact@v4
         with:
-          name: wordcraft-gnome-fase3d-linux
+          name: ${{ contains(github.event.head_commit.message, '[bundle-only]') && 'leaf-native-unvalidated' || 'wordcraft-gnome-fase3d-linux' }}
           path: native-artifact
-          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && '41995941521' || github.run_id }}
+          run-id: ${{ contains(github.event.head_commit.message, '[bundle-only]') && env.LEAF_NATIVE_RUN || github.run_id }}
           github-token: ${{ github.token }}
+      - name: Prepare the same optimized binary while native regressions continue
+        if: contains(github.event.head_commit.message, '[bundle-only]')
+        run: strip --strip-unneeded native-artifact/wordcraft-gnome
       - name: Install Flatpak and desktop validation tools
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
+          # Azure's HTTP package mirror stalled on the runner; use Ubuntu HTTPS.
+          sudo python3 - <<'PY'
+          from pathlib import Path
+          for path in [Path('/etc/apt/sources.list'), *Path('/etc/apt/sources.list.d').glob('*.list'), *Path('/etc/apt/sources.list.d').glob('*.sources')]:
+              if path.is_file():
+                  text = path.read_text().replace('http://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu').replace('https://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu')
+                  path.write_text(text)
+          for name, uri in [('apt-mirrors.txt', 'https://archive.ubuntu.com/ubuntu'), ('apt-security-mirrors.txt', 'https://security.ubuntu.com/ubuntu')]:
+              path = Path('/etc/apt') / name
+              if path.is_file():
+                  path.write_text(uri + '\n')
+          PY
+          sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
           # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Validate desktop metadata
@@ -626,13 +700,24 @@ jobs:
       - name: Download previous alpha for upgrade verification
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release download v0.1.0-alpha.27 --pattern 'Leaf-0.1.0-alpha.27-x86_64.flatpak' --dir prior-release
+        run: gh release download v0.1.0-alpha.28 --pattern 'Leaf-0.1.0-alpha.28-x86_64.flatpak' --dir prior-release
       - name: Build and install the bundle
         run: bash packaging/build-bundle.sh native-artifact/wordcraft-gnome
       - name: Exercise the installed sandbox and desktop launcher
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/smoke-test.sh 2>&1 | tee dist/flatpak-smoke.log
+      - name: Verify Alpha29 controls and pointer gestures in the installed Flatpak
+        run: |
+          mkdir -p "$HOME/.var/app/io.github.frandavid100.leaf/cache" dist/alpha29-installed
+          cat > "$RUNNER_TEMP/leaf29-installed.sh" <<'INSTALLED29'
+          #!/usr/bin/env bash
+          exec flatpak run --user --branch=alpha --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/bin/leaf "$@"' leaf "$@"
+          INSTALLED29
+          export LEAF29_ACK_PARENT="$HOME/.var/app/io.github.frandavid100.leaf/cache"
+          LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 180s bash tools/alpha29-pointer-test.sh "$RUNNER_TEMP/leaf29-installed.sh"
+          LANGUAGE=es GDK_SCALE=2 xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s bash tools/alpha29-pointer-test.sh "$RUNNER_TEMP/leaf29-installed.sh"
+          mv alpha29-pointer-*.log alpha29-pointer-*.png dist/alpha29-installed/
       - name: Capture the installed alpha28 gallery
         run: xvfb-run -a -s '-screen 0 1400x1000x24' dbus-run-session -- bash packaging/capture-gallery.sh flatpak dist/alpha28-gallery
       - uses: actions/upload-artifact@v4
@@ -773,27 +858,60 @@ jobs:
       - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
         run: |
           set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.28-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.29-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
           grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
+      - name: Require complete success of the parallel native regression run
+        if: contains(github.event.head_commit.message, '[bundle-only]')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for attempt in $(seq 1 100); do
+            state=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LEAF_NATIVE_RUN" --jq '.status + ":" + (.conclusion // "")')
+            case "$state" in
+              completed:success) exit 0 ;;
+              completed:*) echo "Native validation failed: $state" >&2; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo 'Native validation did not finish within the candidate window.' >&2
+          exit 1
+      - uses: actions/download-artifact@v4
+        if: contains(github.event.head_commit.message, '[bundle-only]')
+        with:
+          name: wordcraft-gnome-fase3d-linux
+          path: native-validated
+          run-id: ${{ env.LEAF_NATIVE_RUN }}
+          github-token: ${{ github.token }}
+      - name: Compare packaged executable with the fully validated optimized executable
+        if: contains(github.event.head_commit.message, '[bundle-only]')
+        run: cmp native-artifact/wordcraft-gnome native-validated/wordcraft-gnome
+      - name: Record immutable candidate identity and release notes
+        env:
+          LEAF_CANDIDATE_SHA: ${{ github.sha }}
+          LEAF_CANDIDATE_RUN: ${{ github.run_id }}
+          LEAF_NATIVE_SHA: ${{ env.LEAF_NATIVE_SOURCE || github.sha }}
+          LEAF_NATIVE_RUN: ${{ env.LEAF_NATIVE_RUN || github.run_id }}
+        run: |
+          cp packaging/RELEASE_NOTES.md dist/RELEASE_NOTES.md
+          python3 - <<'PYTHON'
+          import json, os, pathlib
+          pathlib.Path('dist/candidate.json').write_text(json.dumps({
+              'version': '0.1.0-alpha.29', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+              'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
+              'native_source': os.environ['LEAF_NATIVE_SHA'],
+              'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
+              'publication': 'requires maintainer approval; promote these exact files without rebuilding'
+          }, indent=2) + '\n')
+          PYTHON
       - name: Checksums
         working-directory: dist
-        run: sha256sum Leaf-*.flatpak Leaf-*-flatpark-x86_64.tar.xz INSTALL.md source-commit.txt runtime.txt runtime-commit.txt flatpak-metadata.txt flatpak-smoke.log flatpark-smoke.log > SHA256SUMS
+        run: sha256sum Leaf-*.flatpak Leaf-*-flatpark-x86_64.tar.xz INSTALL.md source-commit.txt runtime.txt runtime-commit.txt flatpak-metadata.txt flatpak-smoke.log flatpark-smoke.log candidate.json RELEASE_NOTES.md > SHA256SUMS
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: leaf-flatpak-alpha
           path: dist/
           if-no-files-found: warn
-      - name: Publish prerelease only after validation
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          current_head=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
-          if test "$current_head" != "$GITHUB_SHA"; then
-            echo 'Source superseded; publication skipped.'
-            exit 0
-          fi
-          gh release create v0.1.0-alpha.28 dist/Leaf-0.1.0-alpha.28-x86_64.flatpak dist/Leaf-0.1.0-alpha.28-flatpark-x86_64.tar.xz dist/SHA256SUMS dist/INSTALL.md dist/source-commit.txt dist/runtime.txt dist/runtime-commit.txt dist/flatpak-metadata.txt dist/flatpak-smoke.log dist/flatpark-smoke.log --target "$GITHUB_SHA" --title 'Leaf 0.1.0-alpha.28' --prerelease --notes-file packaging/RELEASE_NOTES.md
 
   lifecycle-baseline:
     if: contains(github.event.head_commit.message, '[lifecycle-baseline]')

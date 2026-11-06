@@ -379,6 +379,23 @@ fn show_properties(
         wordcraft_gnome::t!("Different Odd and Even Pages"),
     );
     let headers = HeaderControls::new(ui, &header_page, section, odd_even);
+    let note_group = adw::PreferencesGroup::new();
+    note_group.set_title(wordcraft_gnome::t!("Footnotes"));
+    let notes = {
+        let current = ui.current.borrow();
+        NoteControls::new(
+            &note_group,
+            &current.as_ref().unwrap().session,
+            section,
+            target.is_none(),
+        )
+    };
+    if target.is_some() {
+        page.add(&note_group)
+    } else {
+        information.add(&note_group)
+    }
+
     if target.is_some() {
         headers.section.set_sensitive(false);
         stack.page(&information).set_visible(false);
@@ -661,6 +678,7 @@ fn show_properties(
                             page_options::apply(session, &options).map(|options| changed || options)
                         })
                     }
+                    .and_then(|changed| notes.apply(session).map(|n| changed || n))
                     .and_then(|changed| {
                         if language.text().as_str() == initial_language
                             && review.is_active() == initial_review
@@ -712,5 +730,147 @@ fn show_properties(
         right,
         apply,
         headers,
+    }
+}
+
+struct NoteControls {
+    format: adw::ComboRow,
+    restart: adw::ComboRow,
+    start: gtk::SpinButton,
+    formats: Vec<String>,
+    initial: (u32, u32, i32),
+    section: usize,
+    whole: bool,
+}
+impl NoteControls {
+    fn new(group: &adw::PreferencesGroup, s: &Session, section: usize, whole: bool) -> Self {
+        let mut sect = s.doc.sections()[section].1.clone();
+        if whole {
+            sect.footnote_pr = Default::default();
+        }
+        let options = s.doc.note_options(&sect, false);
+        let mut formats = vec![
+            "decimal".to_string(),
+            "lowerRoman".into(),
+            "upperRoman".into(),
+            "lowerLetter".into(),
+            "upperLetter".into(),
+        ];
+        let mut labels = vec![
+            "1, 2, 3".to_string(),
+            "i, ii, iii".into(),
+            "I, II, III".into(),
+            "a, b, c".into(),
+            "A, B, C".into(),
+        ];
+        if !formats.iter().any(|f| f == options.num_fmt.ooxml()) {
+            formats.push(options.num_fmt.ooxml().into());
+            labels.push(options.num_fmt.ooxml().into());
+        }
+        let label_refs: Vec<_> = labels.iter().map(String::as_str).collect();
+        let format = option_combo(group, wordcraft_gnome::t!("Number Format"), &label_refs);
+        format.set_widget_name("properties-footnote-format");
+        format.set_selected(
+            formats
+                .iter()
+                .position(|f| f == options.num_fmt.ooxml())
+                .unwrap() as u32,
+        );
+        let restart = option_combo(
+            group,
+            wordcraft_gnome::t!("Restart Numbering"),
+            &[
+                wordcraft_gnome::t!("Continuous"),
+                wordcraft_gnome::t!("Each Section"),
+                wordcraft_gnome::t!("Each Page"),
+            ],
+        );
+        restart.set_selected(match options.num_restart {
+            wordcraft_doc::section::NoteRestart::EachSect => 1,
+            wordcraft_doc::section::NoteRestart::EachPage => 2,
+            _ => 0,
+        });
+        let row = adw::ActionRow::new();
+        row.set_title(wordcraft_gnome::t!("Start At"));
+        let start = gtk::SpinButton::with_range(1., 32767., 1.);
+        start.set_value(options.num_start as f64);
+        start.set_valign(gtk::Align::Center);
+        start.set_widget_name("properties-footnote-start");
+        accessible_name(&start, wordcraft_gnome::t!("Start At"));
+        row.add_suffix(&start);
+        row.set_activatable_widget(Some(&start));
+        group.add(&row);
+        let initial = (format.selected(), restart.selected(), start.value_as_int());
+        Self {
+            format,
+            restart,
+            start,
+            formats,
+            initial,
+            section,
+            whole,
+        }
+    }
+    fn apply(&self, s: &mut Session) -> Result<bool, String> {
+        self.start.update();
+        let now = (
+            self.format.selected(),
+            self.restart.selected(),
+            self.start.value_as_int(),
+        );
+        if now == self.initial {
+            return Ok(false);
+        }
+        let mut args =
+            serde_json::json!({"kind":"footnote","scope":if self.whole{"document"}else{"section"}});
+        if now.0 != self.initial.0 {
+            args["numFmt"] = serde_json::json!(self.formats[now.0 as usize]);
+        }
+        if now.1 != self.initial.1 {
+            args["numRestart"] =
+                serde_json::json!(["continuous", "eachSect", "eachPage"][now.1 as usize]);
+        }
+        if now.2 != self.initial.2 {
+            args["numStart"] = serde_json::json!(now.2);
+        }
+        let selection = s.sel.clone();
+        let hint = s.page_hint;
+        let pending = s.pending.clone();
+        if !self.whole {
+            let ends = s.doc.sections();
+            let start = if self.section == 0 {
+                0
+            } else {
+                ends[self.section - 1].0 + 1
+            };
+            let end = ends[self.section].0;
+            let path = s
+                .doc
+                .para_paths(wordcraft_doc::StoryRef::Body)
+                .into_iter()
+                .find(|p| {
+                    p.0.first()
+                        .is_some_and(|i| (*i as usize) >= start && (*i as usize) <= end)
+                })
+                .ok_or(wordcraft_gnome::t!(
+                    "The section does not contain an editable paragraph"
+                ))?;
+            selection::set_caret(
+                s,
+                &Pos {
+                    story: wordcraft_doc::StoryRef::Body,
+                    path,
+                    off: 0,
+                },
+                false,
+            )?;
+        }
+        let result = s
+            .run("references.noteOptions", &args)
+            .map_err(|e| e.to_string());
+        let _ = selection::select_range(s, &selection.anchor, &selection.focus);
+        s.page_hint = hint;
+        s.pending = pending;
+        result.map(|_| true)
     }
 }

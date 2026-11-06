@@ -51,7 +51,13 @@ pub(super) fn view_pointer_test(
                     .downcast::<gtk::Label>()
                     .unwrap()
                     .text()
-                    == "1"
+                    == wordcraft_gnome::i18n::interpolate(
+                        wordcraft_gnome::t!("{current} of {total}"),
+                        &[
+                            ("current", "1".into()),
+                            ("total", d.sizes.len().to_string())
+                        ]
+                    )
             );
             let left = image.x() - button.x();
             let right = button.x() + button.width() - image.x() - image.width();
@@ -153,7 +159,7 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     }
     assert!(menu.popover().unwrap().is::<gtk::PopoverMenu>());
     let model = menu.menu_model().unwrap();
-    assert_eq!(model.n_items(), 7);
+    assert_eq!(model.n_items(), 6);
     let history = model.item_link(1, "section").unwrap();
     assert_eq!(history.n_items(), 2);
     for i in 0..2 {
@@ -176,52 +182,56 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     assert!(find_widget(&ui.format_toolbar, "table-menu").is_none());
     assert!(find_widget(&ui.format_toolbar, "picture-menu").is_none());
     let add = model.item_link(3, "submenu").unwrap();
-    let actions = (0..add.n_items() - 1)
-        .map(|i| {
-            add.item_attribute_value(i, "action", None)
-                .unwrap()
-                .get::<String>()
-                .unwrap()
-        })
-        .collect::<Vec<_>>();
+    let actions = |m: gio::MenuModel| {
+        (0..m.n_items())
+            .map(|i| {
+                m.item_attribute_value(i, "action", None)
+                    .unwrap()
+                    .get::<String>()
+                    .unwrap()
+            })
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(add.n_items(), 3);
     assert_eq!(
-        actions,
+        actions(add.item_link(0, "section").unwrap()),
         [
             "win.insert-table",
             "win.insert-picture",
+            "win.insert-toc",
+            "win.insert-equation"
+        ]
+    );
+    assert_eq!(
+        actions(add.item_link(1, "section").unwrap()),
+        [
             "win.insert-bookmark",
             "win.insert-comment",
-            "win.insert-footnote",
-            "win.insert-toc",
+            "win.insert-link",
             "win.insert-caption",
-            "win.insert-cross-reference",
-            "win.insert-header",
-            "win.insert-footer",
-            "win.insert-page-number",
+            "win.insert-footnote"
         ]
     );
-    assert_eq!(add.item_link(11, "submenu").unwrap().n_items(), 7);
-    let reference_menu = model.item_link(4, "submenu").unwrap();
-    let reference_actions = (0..reference_menu.n_items())
-        .map(|i| {
-            reference_menu
-                .item_attribute_value(i, "action", None)
-                .unwrap()
-                .get::<String>()
-                .unwrap()
-        })
-        .collect::<Vec<_>>();
+    let sections = add.item_link(2, "section").unwrap();
+    assert_eq!(sections.n_items(), 3);
     assert_eq!(
-        reference_actions,
+        actions(sections.item_link(0, "submenu").unwrap()),
+        ["win.insert-header", "win.insert-footer"]
+    );
+    assert_eq!(
+        actions(sections.item_link(1, "submenu").unwrap()),
         [
-            "win.edit-footnote",
-            "win.next-footnote",
-            "win.footnote-reference",
-            "win.footnote-options",
-            "win.update-references"
+            "win.field-page",
+            "win.field-pages",
+            "win.field-author",
+            "win.field-title",
+            "win.field-filename",
+            "win.field-date",
+            "win.field-time"
         ]
     );
-    let extra = model.item_link(5, "section").unwrap();
+    assert_eq!(sections.item_link(2, "submenu").unwrap().n_items(), 7);
+    let extra = model.item_link(4, "section").unwrap();
     assert_eq!(extra.n_items(), 3);
     assert_eq!(
         extra

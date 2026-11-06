@@ -162,7 +162,7 @@ pub(super) fn install_picture_controls(
     format_popover_header(&pop, &root, wordcraft_gnome::t!("Image"), &ui.format_group);
     let insert = style_menu_button(wordcraft_gnome::t!("Insert Image…"));
     insert.set_widget_name("picture-insert");
-    insert.set_visible(tool_diagnostics());
+
     root.append(&insert);
     let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
         "Select an image in the document to edit it."
@@ -174,6 +174,10 @@ pub(super) fn install_picture_controls(
     let context = gtk::Box::new(gtk::Orientation::Vertical, 8);
     context.set_widget_name("picture-context");
     root.append(&context);
+    let selected = gtk::Label::new(Some(wordcraft_gnome::t!("Selected Image")));
+    selected.set_xalign(0.);
+    selected.add_css_class("heading");
+    context.append(&selected);
     context.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     let width = mm_input(30.0, 1.0 / PT_PER_MM, 4000.0 / PT_PER_MM);
     width.set_widget_name("picture-width");

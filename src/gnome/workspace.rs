@@ -41,6 +41,9 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
         dialog.close();
     }
     ui.annotations.borrow_mut().take();
+    if let Some(source) = ui.derived_source.borrow_mut().take() {
+        source.remove();
+    }
     if let Some(source) = ui.autosave_source.borrow_mut().take() {
         source.remove();
     }
@@ -81,6 +84,11 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
             }
         }
     }
+    if let Some(elements) = ui.elements.borrow_mut().take() {
+        elements.restore();
+        elements.pop.popdown();
+    }
+    ui.review.borrow_mut().take();
     for menu in ui.format_buttons.borrow().iter() {
         if let Some(pop) = menu.popover() {
             pop.popdown();
@@ -419,6 +427,7 @@ pub(super) fn install_autosave(ui: &Rc<Ui>) {
         let mode = wordcraft_gnome::preferences::autosave_mode();
         let mut reloaded = false;
         let mut saved = false;
+        let mut saved_derived = false;
         let mut error = None;
         {
             let mut state = ui.current.borrow_mut();
@@ -453,11 +462,13 @@ pub(super) fn install_autosave(ui: &Rc<Ui>) {
                 }
                 if mode == 2 && ui.dirty.get() && blocked.is_none() && ticks.get() % 30 == 0 {
                     if let Some(path) = path {
+                        let revision = doc.session.rev();
                         match wordcraft_gnome::saving::save(&mut doc.session, &path) {
                             Ok(()) => {
                                 ui.save_path.replace(Some(path));
                                 doc.session.finish_recovery();
                                 saved = true;
+                                saved_derived = doc.session.rev() != revision;
                             }
                             Err(e) => error = Some(e),
                         }
@@ -477,6 +488,9 @@ pub(super) fn install_autosave(ui: &Rc<Ui>) {
             ui.save_path.replace(None);
         }
         if saved {
+            if saved_derived {
+                refresh_after_content_change(&ui);
+            }
             ui.source_path.replace(None);
             ui.dirty.set(false);
             sync_tab(&ui);

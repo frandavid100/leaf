@@ -465,7 +465,7 @@ pub(super) fn install_table_controls(
     );
     let insert = gtk::Button::with_label(wordcraft_gnome::t!("Insert Table…"));
     insert.add_css_class("flat");
-    insert.set_visible(tool_diagnostics());
+    insert.set_widget_name("table-insert");
     content.append(&insert);
     {
         let ui = ui.clone();
@@ -597,7 +597,10 @@ pub(super) fn install_table_controls(
 }
 
 pub(super) fn refresh_table_controls(ui: &Rc<Ui>, pop: &gtk::Popover) {
-    let Some(root) = pop.child() else {
+    let root = pop
+        .child()
+        .or_else(|| ui.elements.borrow().as_ref().and_then(|e| e.body_for(pop)));
+    let Some(root) = root else {
         return;
     };
     let value = ui.current.borrow();

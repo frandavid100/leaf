@@ -43,6 +43,26 @@ pub(super) fn paint_selection(
     let focused =
         ui.document_box.has_focus() && ui.host.upgrade().is_some_and(|h| h.window.is_active());
     let (bg, fg) = selection_colors(widget, focused);
+    let selected_picture = ui.current.try_borrow().ok().is_some_and(|c| {
+        c.as_ref()
+            .is_some_and(|d| pictures::selected(&d.session).is_some())
+    });
+    if selected_picture {
+        let _ = cr.save();
+        cr.set_source_rgba(
+            bg.red() as f64,
+            bg.green() as f64,
+            bg.blue() as f64,
+            (bg.alpha() as f64 * 0.22).min(0.28),
+        );
+        for r in rects.iter().filter(|r| r.page == page) {
+            cr.rectangle(r.x * z, r.y * z, r.width * z, r.height * z);
+            let _ = cr.fill();
+        }
+        let _ = cr.restore();
+        return;
+    }
+
     let _ = cr.save();
     for r in rects.iter().filter(|r| r.page == page) {
         cr.rectangle(r.x * z, r.y * z, r.width * z, r.height * z);

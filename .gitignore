@@ -25,3 +25,9 @@ text18-*.log
 # Native alpha20 interaction evidence
 /sweep20-pointer-*.log
 /sweep20-pointer-*.png
+
+# Local/CI Alpha29 interaction evidence is an artifact, not source.
+/alpha29-pointer-*
+/alpha29-review-*
+/interactions-pointer.log
+/vista-texto.png

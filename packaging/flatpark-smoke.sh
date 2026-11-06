@@ -72,4 +72,20 @@ timeout 90s flatpak run --socket=x11 --nosocket=wayland \
   "$app_id" --proofing-ui-test >"$log" 2>&1 || { cat "$log"; exit 1; }
 cat "$log"
 grep -q PROOFING_UI_OK "$log"
+# Exercise the new candidate interactions in the relocated GNOME 51 build too.
+leaf29_root=$PWD
+leaf29_output=${2:-dist/alpha29-flatpark}
+mkdir -p "$leaf29_output" "$HOME/.var/app/$app_id/cache"
+leaf29_output=$(realpath "$leaf29_output")
+cat > "$temporary/leaf29-flatpark.sh" <<'FLATPARK29'
+#!/usr/bin/env bash
+exec flatpak run --socket=x11 --nosocket=wayland --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf.FlatparkTest -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/extra/leaf/bin/leaf "$@"' leaf "$@"
+FLATPARK29
+(
+  cd "$leaf29_output"
+  export LEAF29_ACK_PARENT="$HOME/.var/app/$app_id/cache"
+  LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' timeout 180s bash "$leaf29_root/tools/alpha29-pointer-test.sh" "$temporary/leaf29-flatpark.sh"
+  LANGUAGE=es GDK_SCALE=2 xvfb-run -a -s '-screen 0 2800x2200x24' timeout 180s bash "$leaf29_root/tools/alpha29-pointer-test.sh" "$temporary/leaf29-flatpark.sh"
+)
+echo FLATPARK_ALPHA29_INTERACTIONS_OK
 echo FLATPARK_GNOME51_RELOCATION_OK

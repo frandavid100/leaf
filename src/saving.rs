@@ -79,23 +79,46 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
             "Save as DOCX to preserve footnotes. The current ODT exporter cannot keep their structure."
         ));
     }
+    if wordcraft_engine::cmd::review::has_format_changes(&session.doc) {
+        return Some(wordcraft_gnome::t!(
+            "Save as DOCX to preserve tracked formatting changes. The current ODT exporter cannot keep them."
+        ));
+    }
+    if !wordcraft_engine::cmd::review::move_changes(session).is_empty() {
+        return Some(wordcraft_gnome::t!(
+            "Save as DOCX to preserve tracked moves. The current ODT exporter cannot keep their association."
+        ));
+    }
     let (mut equation, mut toc, mut floating, mut reference) = (false, false, false, false);
-    session.doc.objects_in_reading_order(&mut |o| match o {
-        InlineObject::Equation { .. } => equation = true,
-        InlineObject::FieldStart { instr, .. } | InlineObject::Field { instr, .. } => {
-            reference |= instr.split_whitespace().next().is_some_and(|s| {
-                ["REF", "PAGEREF", "SEQ"]
-                    .iter()
-                    .any(|name| s.eq_ignore_ascii_case(name))
-            });
-            toc |= instr
-                .split_whitespace()
-                .next()
-                .is_some_and(|s| s.eq_ignore_ascii_case("TOC"));
+    for story in
+        std::iter::once(StoryRef::Body).chain(session.doc.parts.keys().copied().map(StoryRef::Part))
+    {
+        for path in session.doc.para_paths(story) {
+            for o in &session.doc.para(story, &path).unwrap().objects {
+                match o {
+                    InlineObject::Equation { .. } => equation = true,
+                    InlineObject::FieldStart { instr, .. } | InlineObject::Field { instr, .. } => {
+                        reference |= instr.split_whitespace().next().is_some_and(|s| {
+                            [
+                                "REF", "PAGEREF", "SEQ", "AUTHOR", "TITLE", "FILENAME", "DATE",
+                                "TIME",
+                            ]
+                            .iter()
+                            .any(|name| s.eq_ignore_ascii_case(name))
+                        });
+                        toc |= instr
+                            .split_whitespace()
+                            .next()
+                            .is_some_and(|s| s.eq_ignore_ascii_case("TOC"));
+                    }
+                    InlineObject::Image { float, .. } if float.wrap != Wrap::Inline => {
+                        floating = true
+                    }
+                    _ => {}
+                }
+            }
         }
-        InlineObject::Image { float, .. } if float.wrap != Wrap::Inline => floating = true,
-        _ => {}
-    });
+    }
     if equation {
         Some(wordcraft_gnome::t!(
             "Save as DOCX to preserve editable equations. The current ODT exporter cannot keep their structure."
@@ -106,7 +129,7 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
         ))
     } else if reference {
         Some(wordcraft_gnome::t!(
-            "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text."
+            "Save as DOCX to preserve automatic fields, cross-references and caption numbering. The current ODT exporter only keeps their text."
         ))
     } else if floating {
         Some(wordcraft_gnome::t!(
@@ -128,9 +151,40 @@ pub fn save(session: &mut Session, path: &Path) -> Result<(), String> {
     let path = path
         .to_str()
         .ok_or(wordcraft_gnome::t!("The path is not UTF-8"))?;
-    let result = session
-        .run("file.saveAs", &json!({"path": path}))
-        .map_err(|e| e.to_string())?;
+    // Prepare derived values in a disposable session. A failed write leaves the
+    // live document, source history and revision exactly as they were.
+    let mut prepared = Session::new(session.doc.clone());
+    prepared.sel = session.sel.clone();
+    prepared.page_hint = session.page_hint;
+    prepared.path = Some(path.into());
+    crate::references::refresh_derived(&mut prepared)?;
+    let changed = prepared.doc != session.doc;
+    let old_doc = session.doc.clone();
+    let old_selection = session.sel.clone();
+    let old_path = session.path.clone();
+    let old_dirty = session.dirty;
+    if changed {
+        session.doc = prepared.doc;
+        session.sel = prepared.sel;
+        session.relayout();
+    }
+    let result = match session.run("file.saveAs", &json!({"path":path})) {
+        Ok(value) => value,
+        Err(error) => {
+            if changed {
+                session.doc = old_doc;
+                session.sel = old_selection;
+                session.relayout();
+            }
+            session.path = old_path;
+            session.dirty = old_dirty;
+            return Err(error.to_string());
+        }
+    };
+    if changed {
+        session.touch();
+        session.dirty = false;
+    }
     if result["saved"] != true {
         return Err(
             wordcraft_gnome::t!("WordCraft did not confirm that the document was saved").into(),

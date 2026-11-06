@@ -90,7 +90,6 @@ pub(super) fn alpha28_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
                         "insert-cross-reference",
                         wordcraft_gnome::t!("Cross-reference"),
                     ),
-                    ("insert-caption", wordcraft_gnome::t!("Caption")),
                     ("footnote-options", wordcraft_gnome::t!("Footnote Options")),
                 ] {
                     host.window.lookup_action(action).unwrap().activate(None);

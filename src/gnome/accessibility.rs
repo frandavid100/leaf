@@ -105,7 +105,6 @@ pub(super) fn install_accessibility(
     for (w, name) in [
         (&ui.format_bold, wordcraft_gnome::t!("Bold")),
         (&ui.format_italic, wordcraft_gnome::t!("Italic")),
-        (&ui.format_underline, wordcraft_gnome::t!("Underline")),
     ] {
         accessible_name(w, name);
     }

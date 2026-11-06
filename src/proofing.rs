@@ -3,13 +3,49 @@ use serde_json::{Value, json};
 use wordcraft_doc::{Pos, StoryRef};
 use wordcraft_engine::Session;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Issue {
     pub start: Pos,
     pub end: Pos,
     pub text: String,
     pub message: String,
     pub spelling: bool,
+}
+
+/// Explain built-in findings in the interface language. Keep unknown engine
+/// messages intact rather than guessing a translation of document content.
+pub fn description(issue: &Issue) -> String {
+    if issue.spelling {
+        return wordcraft_gnome::t!("Possible spelling mistake").into();
+    }
+    match issue.message.as_str() {
+        "Use \"an\" before a vowel sound" => {
+            wordcraft_gnome::t!("Use \"an\" before a vowel sound").into()
+        }
+        "Use \"a\" before a consonant sound" => {
+            wordcraft_gnome::t!("Use \"a\" before a consonant sound").into()
+        }
+        "Remove the space before the punctuation" => {
+            wordcraft_gnome::t!("Remove the space before the punctuation").into()
+        }
+        "Extra space" => wordcraft_gnome::t!("Extra space").into(),
+        "Capitalize the first word of a sentence" => {
+            wordcraft_gnome::t!("Capitalize the first word of a sentence").into()
+        }
+        text => {
+            if let Some(word) = text
+                .strip_prefix("Repeated word: \"")
+                .and_then(|s| s.strip_suffix('"'))
+            {
+                crate::i18n::interpolate(
+                    wordcraft_gnome::t!("Repeated word: {word}"),
+                    &[("word", word.to_owned())],
+                )
+            } else {
+                text.into()
+            }
+        }
+    }
 }
 
 pub fn issues(s: &Session) -> Vec<Issue> {

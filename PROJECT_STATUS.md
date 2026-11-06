@@ -1,6 +1,6 @@
 # Estado actual de Leaf
 
-Actualizado: 5 de noviembre de 2026. Esta página describe el presente;
+Actualizado: 6 de noviembre de 2026. Esta página describe el presente;
 el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.
 
 ## Dónde trabajar
@@ -11,6 +11,22 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Integración de historiales y validación](docs/MAIN_MIGRATION.md).
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
+
+## En curso: candidata de alpha.29
+
+David solicita otra pasada de issues, priorizando los recientes (#99–#109).
+Se preparan referencias directas y automáticas, propiedades de notas, edición de
+índices, controles de imagen completos, miniaturas y Elementos agrupado.
+Se incluye el editor básico de ecuaciones (#56) mediante las API públicas.
+David amplía la pasada con #111–#121: Revisión unificada, menús de Texto/Párrafo
+por filas, Elementos en la cabecera y ajustes de idioma, iconos, reglas y textos.
+Estas decisiones sustituyen la organización anterior donde entren en conflicto.
+
+La compilación de una candidata ya no publica una release. David debe probarla
+y aprobarla antes de promover los mismos paquetes, sin recompilar. Véase
+[el ciclo de candidatas](docs/CANDIDATES.md). La revisión de código y las pruebas
+están en curso; estos cambios todavía no son una Alpha publicada.
+[Alcance, pruebas y límites por issue](docs/ALPHA29_VALIDATION.md).
 
 ## Última versión publicada: alpha.28
 

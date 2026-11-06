@@ -105,6 +105,16 @@ pub(super) fn context_paste(ui: &Rc<Ui>) {
 }
 pub(super) fn context_prepare(ui: &Rc<Ui>, x: f64, y: f64) -> Option<DocumentContext> {
     let pos = pos_at_canvas(ui, x, y)?;
+    let toc = ui
+        .current
+        .borrow()
+        .as_ref()
+        .is_some_and(|d| wordcraft_gnome::references::toc_at(&d.session, &pos));
+    if toc {
+        let mut c = ui.current.borrow_mut();
+        selection::set_caret(&mut c.as_mut()?.session, &pos, false).ok()?;
+    }
+
     let keep = {
         let value = ui.current.borrow();
         let d = value.as_ref()?;
@@ -347,6 +357,49 @@ pub(super) fn show_document_context(
     }
     let group = gio::SimpleActionGroup::new();
     pop.insert_action_group("context", Some(&group));
+    let toc = ui
+        .current
+        .borrow()
+        .as_ref()
+        .is_some_and(|d| wordcraft_engine::cmd::references::caret_in_toc(&d.session));
+    if toc {
+        context_item(
+            &root,
+            &group,
+            &pop,
+            ui,
+            wordcraft_gnome::t!("Edit Table of Contents…"),
+            "edit-toc",
+            true,
+            |ui| {
+                if let Some(panel) = ui.elements.borrow().as_ref() {
+                    panel.show("toc");
+                }
+            },
+        );
+    }
+
+    if ui
+        .current
+        .borrow()
+        .as_ref()
+        .is_some_and(|d| wordcraft_gnome::equations::target(&d.session).is_some())
+    {
+        context_item(
+            &root,
+            &group,
+            &pop,
+            ui,
+            wordcraft_gnome::t!("Edit Equation…"),
+            "edit-equation",
+            true,
+            |ui| {
+                if let Some(host) = ui.host.upgrade() {
+                    show_equation(ui, &host.window);
+                }
+            },
+        );
+    }
     let (selected, merge) = ui
         .current
         .borrow()
@@ -714,12 +767,20 @@ pub(super) fn context_activate_row(pop: &gtk::PopoverMenu, label: &str) {
     assert!(row.activate(), "native menu row must activate");
 }
 pub(super) fn context_picture_editor(ui: &Rc<Ui>) {
+    if let Some(panel) = ui.elements.borrow().as_ref() {
+        panel.show("image");
+        return;
+    }
     if let Some(s) = ui.picture.borrow().as_ref() {
         s.refresh();
         s.pop.popup();
     }
 }
 pub(super) fn context_table_editor(ui: &Rc<Ui>) {
+    if let Some(panel) = ui.elements.borrow().as_ref() {
+        panel.show("table");
+        return;
+    }
     if let Some(p) = ui.table_popover.borrow().as_ref() {
         refresh_table_controls(ui, p);
         p.popup();

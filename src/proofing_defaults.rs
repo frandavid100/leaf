@@ -185,6 +185,25 @@ pub fn choice(s: &Session) -> String {
     }
     "mixed".into()
 }
+/// Read the current selection's resolved proofing semantics without changing inheritance.
+pub fn effective_choice(s: &Session) -> String {
+    let values = crate::text_properties::selected_resolved(s);
+    if !values.is_empty() && values.iter().all(|v| v.no_proof) {
+        return "off".into();
+    }
+    let Some(first) = values.first() else {
+        return "mixed".into();
+    };
+    if values
+        .iter()
+        .all(|v| v.lang == first.lang && v.no_proof == first.no_proof)
+    {
+        first.lang.clone().unwrap_or_else(|| language(s))
+    } else {
+        "mixed".into()
+    }
+}
+
 /// The pinned ODT exporter resolves runs and drops false/absent proofing overrides.
 /// Such a save would destroy future inheritance; DOCX preserves the native props.
 pub fn odt_loses_inheritance(s: &Session) -> bool {

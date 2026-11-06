@@ -2001,7 +2001,7 @@ msgid "Language and Review"
 msgstr "Idioma y revisión"
 
 msgid "Review"
-msgstr "Revisar"
+msgstr "Revisión"
 
 msgid "Underline Color…"
 msgstr "Color del subrayado…"
@@ -2557,3 +2557,303 @@ msgstr "Guarda como DOCX para conservar las referencias cruzadas y la numeració
 
 msgid "Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures."
 msgstr "Añade notas al pie, índices automáticos, leyendas numeradas y referencias cruzadas a documentos DOCX. Coloca imágenes flotantes con ajuste de texto y controles nativos. Leaf bloquea los guardados ODT que perderían estas estructuras."
+
+msgid "Automatic Fields"
+msgstr "Campos automáticos"
+
+msgid "Clickable Entries"
+msgstr "Entradas con enlace"
+
+msgid "Complete the expression and match its brackets."
+msgstr "Completa la expresión y empareja sus paréntesis."
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Destination Type"
+msgstr "Tipo de destino"
+
+msgid "Display on Its Own Line"
+msgstr "Mostrar en una línea propia"
+
+msgid "Document Title"
+msgstr "Título del documento"
+
+msgid "Edit Equation…"
+msgstr "Editar ecuación…"
+
+msgid "Edit Table of Contents…"
+msgstr "Editar índice…"
+
+msgid "Equation"
+msgstr "Ecuación"
+
+msgid "Equation…"
+msgstr "Ecuación…"
+
+msgid "External Link"
+msgstr "Enlace externo"
+
+msgid "File Name"
+msgstr "Nombre del archivo"
+
+msgid "Footnotes"
+msgstr "Notas al pie"
+
+msgid "Fraction"
+msgstr "Fracción"
+
+msgid "Greek Symbols"
+msgstr "Símbolos griegos"
+
+msgid "Header and Footer"
+msgstr "Encabezado y pie"
+
+msgid "Link…"
+msgstr "Enlace…"
+
+msgid "Mathematical Expression"
+msgstr "Expresión matemática"
+
+msgid "Power"
+msgstr "Potencia"
+
+msgid "Quadratic Formula"
+msgstr "Fórmula cuadrática"
+
+msgid "Right-align Page Numbers"
+msgstr "Alinear los números de página a la derecha"
+
+msgid "Save as DOCX to preserve automatic fields, cross-references and caption numbering. The current ODT exporter only keeps their text."
+msgstr "Guarda como DOCX para conservar los campos automáticos, las referencias cruzadas y la numeración de leyendas. El exportador ODT actual solo conserva su texto."
+
+msgid "Select an image or place the caret in a table to insert a caption."
+msgstr "Selecciona una imagen o sitúa el cursor en una tabla para insertar una leyenda."
+
+msgid "Show Page Number"
+msgstr "Mostrar número de página"
+
+msgid "Square Root"
+msgstr "Raíz cuadrada"
+
+msgid "The table of contents could not be found."
+msgstr "No se ha encontrado el índice."
+
+msgid "This imported equation cannot be edited faithfully with the basic editor. Its original structure is preserved."
+msgstr "El editor básico no puede editar fielmente esta ecuación importada. Se conserva su estructura original."
+
+msgid "Time"
+msgstr "Hora"
+
+msgid "Total Pages"
+msgstr "Total de páginas"
+
+msgid "UnicodeMath: (a+b)/(c+d), x^2, x_1, √(x). Use ordinary Unicode symbols; this is not a LaTeX editor."
+msgstr "UnicodeMath: (a+b)/(c+d), x^2, x_1, √(x). Usa símbolos Unicode normales; este editor no admite LaTeX."
+
+msgid "Use UnicodeMath input, up to 4096 characters. LaTeX commands are not supported here."
+msgstr "Usa expresiones UnicodeMath de hasta 4096 caracteres. Este editor no admite órdenes LaTeX."
+
+msgid "{current} of {total}"
+msgstr "{current} de {total}"
+
+msgid "Choose a destination inside the document."
+msgstr "Elige un destino dentro del documento."
+
+msgid "WordCraft cannot anchor this image on the destination page. Its original position has been kept."
+msgstr "WordCraft no puede anclar esta imagen en la página de destino. Se ha conservado su posición original."
+
+msgid "Accept"
+msgstr "Aceptar"
+
+msgid "Alignment: {value}"
+msgstr "Alineación: {value}"
+
+msgid "Apply Last Line Spacing"
+msgstr "Aplicar el último interlineado"
+
+msgid "Changes"
+msgstr "Cambios"
+
+msgid "Comment"
+msgstr "Comentario"
+
+msgid "Correction"
+msgstr "Corrección"
+
+msgid "Correction Options"
+msgstr "Opciones de corrección"
+
+msgid "Corrections"
+msgstr "Correcciones"
+
+msgid "Current Table of Contents"
+msgstr "Índice actual"
+
+msgid "Default — {language}"
+msgstr "Predeterminado — {language}"
+
+msgid "Deletion"
+msgstr "Eliminación"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "Edit DOCX and ODT documents"
+msgstr "Editar documentos DOCX y ODT"
+
+msgid "Elements"
+msgstr "Elementos"
+
+msgid "English (United Kingdom)"
+msgstr "Inglés (Reino Unido)"
+
+msgid "English (United States)"
+msgstr "Inglés (Estados Unidos)"
+
+msgid "Formatting"
+msgstr "Formato"
+
+msgid "Go to Change"
+msgstr "Ir al cambio"
+
+msgid "Grammar Correction"
+msgstr "Corrección gramatical"
+
+msgid "Ignore"
+msgstr "Ignorar"
+
+msgid "Ignore This Occurrence"
+msgstr "Ignorar esta aparición"
+
+msgid "Insert Table of Contents…"
+msgstr "Insertar índice…"
+
+msgid "Insertion"
+msgstr "Inserción"
+
+msgid "Line Spacing Options"
+msgstr "Opciones de interlineado"
+
+msgid "Manage “{style}”"
+msgstr "Gestionar «{style}»"
+
+msgid "More Paragraph Options"
+msgstr "Más opciones de párrafo"
+
+msgid "Moved From"
+msgstr "Movido desde"
+
+msgid "Moved To"
+msgstr "Movido a"
+
+msgid "No Review Items"
+msgstr "No hay elementos para revisar"
+
+msgid "No Tracked Changes"
+msgstr "No hay cambios sugeridos"
+
+msgid "No corrections found in text with available proofing tools."
+msgstr "No se han encontrado correcciones en el texto con herramientas de revisión disponibles."
+
+msgid "Open a Document"
+msgstr "Abrir un documento"
+
+msgid "Reject"
+msgstr "Rechazar"
+
+msgid "Remove"
+msgstr "Eliminar"
+
+msgid "Review Filter"
+msgstr "Filtro de revisión"
+
+msgid "Save as DOCX to preserve tracked formatting changes. The current ODT exporter cannot keep them."
+msgstr "Guarda como DOCX para conservar los cambios de formato sugeridos. El exportador ODT actual no puede conservarlos."
+
+msgid "Save as DOCX to preserve tracked moves. The current ODT exporter cannot keep their association."
+msgstr "Guarda como DOCX para conservar los movimientos sugeridos. El exportador ODT actual no puede conservar su asociación."
+
+msgid "Selected Image"
+msgstr "Imagen seleccionada"
+
+msgid "Show or Hide Sidebar (F9)"
+msgstr "Mostrar u ocultar el panel lateral (F9)"
+
+msgid "Spanish (Argentina)"
+msgstr "Español (Argentina)"
+
+msgid "Spanish (Mexico)"
+msgstr "Español (México)"
+
+msgid "Spanish (Spain)"
+msgstr "Español (España)"
+
+msgid "Spelling Correction"
+msgstr "Corrección ortográfica"
+
+msgid "Suggest"
+msgstr "Sugerir"
+
+msgid "Suggestion: {text}"
+msgstr "Sugerencia: {text}"
+
+msgid "Text Language: {language}"
+msgstr "Idioma del texto: {language}"
+
+msgid "This change is out of date. Refresh Review."
+msgstr "Este cambio está desactualizado. Actualiza Revisión."
+
+msgid "This type of change cannot be resolved here."
+msgstr "Este tipo de cambio no se puede resolver aquí."
+
+msgid "Tracked Change"
+msgstr "Cambio sugerido"
+
+msgid "Unknown Author"
+msgstr "Autor desconocido"
+
+msgid "{kind} — {author}"
+msgstr "{kind} — {author}"
+
+msgid "Apply Last Border Settings"
+msgstr "Aplicar los últimos ajustes de borde"
+
+msgid "Apply Last Highlight"
+msgstr "Aplicar el último resaltado"
+
+msgid "Apply Last Text Color"
+msgstr "Aplicar el último color del texto"
+
+msgid "List"
+msgstr "Lista"
+
+msgid "{label}: {value}"
+msgstr "{label}: {value}"
+
+msgid "DOCUMENTS\nOpen DOCX/ODT documents from the main menu. Ctrl+S saves; Ctrl+Shift+S saves a copy. Use DOCX for notes, equations, automatic references, comments and advanced tracked changes.\n\nNAVIGATION AND REVIEW\nF9 shows or hides Pages, Navigation and Review. Ctrl+F searches; Ctrl+H replaces. Review filters corrections, tracked changes and comments. Apply or ignore a correction occurrence, accept/reject changes, and reply to or resolve comments. F7 opens corrections. Edit/Suggest controls whether new edits are tracked.\n\nFORMATTING AND ELEMENTS\nStyle, Paragraph, Text and Elements are in the adaptive header or bottom toolbar. Format rows show current values; mixed checkboxes enable the option across the selection. Arrows open internal options with Back. Reapply remembers that feature’s applied settings. Pins keep panels floating. Elements shares table, image and contents tools with right-click, while keeping Insert available. Ctrl+Z undoes; Ctrl+Shift+Z redoes. Ruler drags snap to 0.5 cm; Escape cancels.\n\nAUTOSAVE\nPreferences can disable autosave, use recovery copies or save directly to the document. Recover Documents is in the main menu."
+msgstr "DOCUMENTOS\nAbre documentos DOCX/ODT desde el menú principal. Ctrl+S guarda; Ctrl+Mayús+S guarda una copia. Usa DOCX para notas, ecuaciones, referencias automáticas, comentarios y cambios sugeridos avanzados.\n\nNAVEGACIÓN Y REVISIÓN\nF9 muestra u oculta Páginas, Navegación y Revisión. Ctrl+F busca; Ctrl+H reemplaza. Revisión filtra correcciones, cambios sugeridos y comentarios. Aplica o ignora una aparición, acepta/rechaza cambios y responde o resuelve comentarios. F7 abre las correcciones. Editar/Sugerir controla si se registran las nuevas ediciones.\n\nFORMATO Y ELEMENTOS\nEstilo, Párrafo, Texto y Elementos están en la cabecera adaptable o la barra inferior. Las filas muestran valores actuales; las casillas mixtas activan la opción en toda la selección. Las flechas abren opciones internas con vuelta atrás. Reaplicar recuerda los ajustes aplicados de esa propiedad. La chincheta mantiene los paneles flotantes. Elementos comparte opciones de tabla, imagen e índice con el clic derecho y conserva Insertar. Ctrl+Z deshace; Ctrl+Mayús+Z rehace. Los arrastres de regla usan un imán de 0,5 cm; Escape cancela.\n\nAUTOGUARDADO\nPreferencias permite desactivar el autoguardado, usar copias de recuperación o guardar en el propio documento. Recuperar documentos está en el menú principal."
+
+msgid "The current engine supports one table of contents per document. Edit the existing table of contents instead."
+msgstr "El motor actual admite un índice por documento. Edita el índice existente."
+
+msgid "Possible spelling mistake"
+msgstr "Posible error ortográfico"
+
+msgid "Use \"an\" before a vowel sound"
+msgstr "Usa «an» antes de un sonido vocálico"
+
+msgid "Use \"a\" before a consonant sound"
+msgstr "Usa «a» antes de un sonido consonántico"
+
+msgid "Remove the space before the punctuation"
+msgstr "Elimina el espacio antes del signo de puntuación"
+
+msgid "Extra space"
+msgstr "Espacio adicional"
+
+msgid "Capitalize the first word of a sentence"
+msgstr "Escribe con mayúscula la primera palabra de la oración"
+
+msgid "Repeated word: {word}"
+msgstr "Palabra repetida: {word}"

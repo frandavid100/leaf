@@ -45,7 +45,8 @@ The normal edit path is:
    context or a panel.
 2. A top-level adapter invokes the public engine command on the current Session.
 3. `after_content_change` updates geometry, invalidates the necessary view caches,
-   schedules coalesced thumbnails/search/outline updates and updates the tab state.
+   schedules coalesced thumbnails/search/outline and derived-reference updates,
+   and updates the tab state.
 4. [selection_view.rs](../src/gnome/selection_view.rs) updates overlays and controls;
    [canvas.rs](../src/gnome/canvas.rs) synchronizes the derived accessible text.
 
@@ -68,6 +69,8 @@ session while inspecting it.
 | Pages, zoom, thumbnails, HiDPI | [view.rs](../src/gnome/view.rs), [paintable.rs](../src/gnome/paintable.rs) | [viewer_layout.rs](../src/viewer_layout.rs); hidpi tests and `--host-cache-ui-test`. |
 | Search and headings | [search.rs](../src/gnome/search.rs), [navigation.rs](../src/gnome/navigation.rs) | [search.rs](../src/search.rs), [navigation.rs](../src/navigation.rs); `--search-ui-test`, `--nav-ui-test`. |
 | Bookmarks and comments | Bookmarks in [navigation.rs](../src/gnome/navigation.rs); comment threads in [annotations.rs](../src/gnome/annotations.rs), [annotation_dialog.rs](../src/gnome/annotation_dialog.rs) | [annotations.rs](../src/annotations.rs); annotations tests and `--annotations-ui-test`. Save guard in saving.rs, recovery fallback in workspace.rs. |
+| Unified Review | [review.rs](../src/gnome/review.rs), [annotations.rs](../src/gnome/annotations.rs), [spellcheck.rs](../src/gnome/spellcheck.rs) | [review.rs](../src/review.rs) and public revision snapshots/commands; filters and source leases; `--review29-ui-test`. |
+| Shared Elements | [elements.rs](../src/gnome/elements.rs), [references.rs](../src/gnome/references.rs) | Shared native table/image bodies, contextual TOC controls and stable creation; restoration on close/teardown. |
 | Styles | [styles.rs](../src/gnome/styles.rs) | [styles.rs](../src/styles.rs); styles tests and `--styles-ui-test`. |
 | Paragraph/text panels | [paragraph.rs](../src/gnome/paragraph.rs), [format_controls.rs](../src/gnome/format_controls.rs), [adaptive.rs](../src/gnome/adaptive.rs), [text_palette.rs](../src/gnome/text_palette.rs) | [formatting.rs](../src/formatting.rs); formatting tests, `--paragraph-ui-test`. |
 | Context, pinning and contained pages | [context.rs](../src/gnome/context.rs), [popovers.rs](../src/gnome/popovers.rs) | Context pointer, `--pin-ui-test`, `--adaptive-ui-test` in CI. |
@@ -124,3 +127,26 @@ but should be done in tested, feature-sized changes rather than replacing the
 host or altering engine semantics during unrelated work.
 
 Fit Width stores an effective scale per page, shared within each section. Current::page_zoom is the coordinate conversion used by rendering, overlays, pointer hit testing, rulers and navigation. Percentage zoom remains uniform. Thumbnails use their own fixed-width scale and cannot change the sidebar width. Picture drags preview in the overlay and commit one arrange.bounds command.
+
+## Derived document fields and Alpha29 controls
+
+`src/references.rs` invokes public reference commands on a disposable Session
+copy, temporarily protecting non-derived fields. Only computed document values
+are transferred back; source history is preserved. The native coalesced timer
+in `src/gnome/references.rs` defers while a dialog or drag is active and is
+cancelled on tab cleanup. Source undo/redo recomputes these values. Save As
+prepares fields using its destination filename and restores the live document
+on write failure. PDF and printing prepare isolated copies using the document
+path. They never write back to the live session.
+
+`src/gnome/picture_pointer.rs` owns a disposable drag preview and all eight
+handles. Shared autoscroll updates the target using current page geometry.
+`src/pictures.rs::drop_at` verifies that the public arrange command really
+placed a floating image on the requested page, restoring the original snapshot
+if the pinned engine cannot honor it. No engine/layout fork is introduced.
+
+`src/equations.rs` and `src/gnome/equations.rs` expose basic UnicodeMath through
+public equation commands. Imported math must survive a linear round-trip before
+editing is enabled. The Alpha29 diagnostic and pointer driver exercise these
+controls in English/Spanish and normal/HiDPI, including the installed Flatpak.
+See [candidates](CANDIDATES.md) for the separate human approval/publication step.

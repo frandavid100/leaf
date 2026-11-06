@@ -36,7 +36,7 @@ fn composer(ui: &Rc<Ui>) -> (gtk::Widget, gtk::TextView, gtk::Button) {
 }
 
 pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
-    let toggle = find_widget(&ui.sidebar_pages, "sidebar-annotations")
+    let toggle = find_widget(&ui.sidebar_pages, "sidebar-review")
         .unwrap()
         .downcast::<gtk::ToggleButton>()
         .unwrap();
@@ -146,18 +146,40 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
         anchor
     };
     let pop = show_document_context(ui, parent, 100, 150, DocumentContext::Text);
-    context_activate_row(&pop, wordcraft_gnome::t!("Insert"));
+    context_activate_row(&pop, wordcraft_gnome::t!("Elements"));
     for label in [
-        wordcraft_gnome::t!("Table…"),
-        wordcraft_gnome::t!("Image…"),
+        wordcraft_gnome::t!("Table"),
+        wordcraft_gnome::t!("Image"),
         wordcraft_gnome::t!("Bookmark…"),
         wordcraft_gnome::t!("Comment…"),
-        wordcraft_gnome::t!("Header"),
-        wordcraft_gnome::t!("Footer"),
-        wordcraft_gnome::t!("Page Number…"),
+        wordcraft_gnome::t!("Header and Footer"),
+        wordcraft_gnome::t!("Automatic Fields"),
+        wordcraft_gnome::t!("Breaks"),
     ] {
         assert!(context_model_row(&pop, label).is_some(), "missing {label}");
     }
+    context_activate_row(&pop, wordcraft_gnome::t!("Header and Footer"));
+    for label in [wordcraft_gnome::t!("Header"), wordcraft_gnome::t!("Footer")] {
+        assert!(context_model_row(&pop, label).is_some(), "missing {label}");
+    }
+    pop.popdown();
+    let pop = show_document_context(ui, parent, 100, 150, DocumentContext::Text);
+    context_activate_row(&pop, wordcraft_gnome::t!("Elements"));
+    context_activate_row(&pop, wordcraft_gnome::t!("Automatic Fields"));
+    for label in [
+        wordcraft_gnome::t!("Page Number"),
+        wordcraft_gnome::t!("Total Pages"),
+        wordcraft_gnome::t!("Author"),
+        wordcraft_gnome::t!("Document Title"),
+        wordcraft_gnome::t!("File Name"),
+        wordcraft_gnome::t!("Date"),
+        wordcraft_gnome::t!("Time"),
+    ] {
+        assert!(context_model_row(&pop, label).is_some(), "missing {label}");
+    }
+    pop.popdown();
+    let pop = show_document_context(ui, parent, 100, 150, DocumentContext::Text);
+    context_activate_row(&pop, wordcraft_gnome::t!("Elements"));
     context_activate_row(&pop, wordcraft_gnome::t!("Comment…"));
     assert!(!pop.is_visible());
     let (_, text, submit) = composer(ui);
@@ -197,7 +219,7 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
         .unwrap()
         .id;
     panel.refresh();
-    let comments_view = find_widget(&ui.navigation_pages, "comments-panel").unwrap();
+    let comments_view = find_widget(&ui.navigation_pages, "review-panel").unwrap();
     assert!(find_widget(&comments_view, "bookmark-go-Café_1").is_none());
     let thread = find_widget(&ui.navigation_pages, &format!("comment-thread-{root}")).unwrap();
     assert!(thread.has_css_class("comment-thread"));
@@ -243,7 +265,7 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     assert!(!search.toggle.is_active());
     assert_eq!(
         ui.navigation_pages.visible_child_name().as_deref(),
-        Some("annotations")
+        Some("review")
     );
 
     // Replies have their own inline position and retain their parent.
@@ -310,7 +332,7 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     );
     assert_eq!(
         ui.navigation_pages.visible_child_name().as_deref(),
-        Some("annotations")
+        Some("review")
     );
     let thread = find_widget(&ui.navigation_pages, &format!("comment-thread-{root}")).unwrap();
     let replies = find_widget(&thread, "comment-replies")
