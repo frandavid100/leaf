@@ -64,10 +64,6 @@ pub(super) fn alpha30_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
         tools_change(&u, |s| pictures::resize(s, 190., 110., false, true));
         let (u, w, a) = (u.clone(), w.clone(), a.clone());
         glib::timeout_add_local_once(std::time::Duration::from_millis(450), move || {
-            eprintln!(
-                "ALPHA30_VIEWPORT old={old} current={}",
-                u.scroll.vadjustment().value()
-            );
             assert!(
                 (u.scroll.vadjustment().value() - old).abs() < 80.,
                 "image edit must preserve its viewport"
@@ -135,19 +131,11 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
         selection::set_caret(&mut c.as_mut().unwrap().session, &Pos::body(3, 0), false).unwrap();
     }
     refresh_selection(ui);
-    find_widget(&pop, "text-font-apply")
-        .unwrap()
-        .downcast::<gtk::MenuButton>()
-        .unwrap()
-        .popup();
+    button(&pop, "text-font-apply").emit_clicked();
     assert_eq!(selection_character(ui)["font"], "serif");
     text.popup();
     tools.home();
-    find_widget(&pop, "text-language-apply")
-        .unwrap()
-        .downcast::<gtk::MenuButton>()
-        .unwrap()
-        .popup();
+    button(&pop, "text-language-apply").emit_clicked();
     assert_eq!(
         wordcraft_gnome::proofing_defaults::choice(&ui.current.borrow().as_ref().unwrap().session),
         "es-ES"
@@ -173,11 +161,7 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
     refresh_selection(ui);
     para.home();
     let undo = ui.current.borrow().as_ref().unwrap().session.undo_depth();
-    find_widget(&para.main, "paragraph-borders")
-        .unwrap()
-        .downcast::<gtk::MenuButton>()
-        .unwrap()
-        .popup();
+    button(&para.main, "paragraph-borders").emit_clicked();
     assert_eq!(selection_paragraph(ui)["borders"], props["borders"]);
     assert_eq!(selection_paragraph(ui)["shading"], props["shading"]);
     assert_eq!(
@@ -325,22 +309,14 @@ fn alpha30_all_repeats(ui: &Rc<Ui>) {
     p.execute("para.align", json!({"value":"center"}));
     target(1);
     p.home();
-    find_widget(&p.main, "paragraph-alignment-apply")
-        .unwrap()
-        .downcast::<gtk::MenuButton>()
-        .unwrap()
-        .popup();
+    button(&p.main, "paragraph-alignment-apply").emit_clicked();
     assert_eq!(selection_paragraph(ui)["align"], "center");
     p.execute("para.multilevel", json!({"kind":"outline"}));
     p.execute("para.listLevel", json!({"level":1}));
     target(2);
     p.home();
     let before = ui.current.borrow().as_ref().unwrap().session.undo_depth();
-    find_widget(&p.main, "paragraph-list-apply")
-        .unwrap()
-        .downcast::<gtk::MenuButton>()
-        .unwrap()
-        .popup();
+    button(&p.main, "paragraph-list-apply").emit_clicked();
     assert_eq!(
         selection_paragraph(ui)["numbering"]["level"],
         1,
@@ -356,11 +332,7 @@ fn alpha30_all_repeats(ui: &Rc<Ui>) {
     );
     target(0);
     p.home();
-    find_widget(&p.main, "paragraph-more-indents-apply")
-        .unwrap()
-        .downcast::<gtk::MenuButton>()
-        .unwrap()
-        .popup();
+    button(&p.main, "paragraph-more-indents-apply").emit_clicked();
     let state = selection_paragraph(ui);
     assert_eq!(state["indentLeft"], 24.);
     assert_eq!(state["indentRight"], 12.);
@@ -368,11 +340,7 @@ fn alpha30_all_repeats(ui: &Rc<Ui>) {
     p.execute("para.lineSpacing", json!({"value":1.5}));
     target(1);
     p.home();
-    find_widget(&p.main, "paragraph-spacing")
-        .unwrap()
-        .downcast::<gtk::MenuButton>()
-        .unwrap()
-        .popup();
+    button(&p.main, "paragraph-spacing").emit_clicked();
     assert_eq!(selection_paragraph(ui)["lineSpacing"]["value"], 1.5);
     let editor = columns_editor(ui, || {});
     editor.controls.count.set_value(2.);
@@ -390,11 +358,7 @@ fn alpha30_all_repeats(ui: &Rc<Ui>) {
         "Column repeat",
     );
     p.home();
-    find_widget(&p.main, "paragraph-columns-apply")
-        .unwrap()
-        .downcast::<gtk::MenuButton>()
-        .unwrap()
-        .popup();
+    button(&p.main, "paragraph-columns-apply").emit_clicked();
     assert_eq!(
         document_properties::ColumnSetup::current(&ui.current.borrow().as_ref().unwrap().session)
             .count,
