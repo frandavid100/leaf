@@ -18,7 +18,11 @@ fn use_table_target(s: &mut Session) -> Result<(), String> {
 }
 pub(super) fn table_command(ui: &Rc<Ui>, command: &str, args: serde_json::Value) {
     tools_change(ui, |s| {
-        use_table_target(s)?;
+        // Creation remains available without an existing table. Only commands
+        // that operate on an existing table resolve a caption's owner first.
+        if command.starts_with("table.") {
+            use_table_target(s)?;
+        }
         s.run(command, &args).map_err(|e| e.to_string())?;
         Ok(())
     });
