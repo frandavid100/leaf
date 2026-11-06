@@ -927,7 +927,11 @@ jobs:
           PYTHON
       - name: Checksums
         working-directory: dist
-        run: sha256sum Leaf-*.flatpak Leaf-*-flatpark-x86_64.tar.xz INSTALL.md source-commit.txt runtime.txt runtime-commit.txt flatpak-metadata.txt flatpak-smoke.log flatpark-smoke.log candidate.json RELEASE_NOTES.md > SHA256SUMS
+        run: |
+          sha256sum Leaf-*.flatpak Leaf-*-flatpark-x86_64.tar.xz INSTALL.md source-commit.txt runtime.txt runtime-commit.txt flatpak-metadata.txt flatpak-smoke.log flatpark-smoke.log candidate.json RELEASE_NOTES.md > SHA256SUMS
+          sha256sum -c SHA256SUMS
+          cat candidate.json
+          cat SHA256SUMS
       - uses: actions/upload-artifact@v4
         if: always()
         with:
