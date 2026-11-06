@@ -179,9 +179,13 @@ pub(super) fn followup_pointer_test(
     });
 }
 fn followup_stage(t: Rc<Followup>, stage: u8) {
-    if t.mode == "font" && matches!(stage, 1 | 2 | 3 | 6 | 8 | 9 | 11) {
+    if t.mode == "font" && matches!(stage, 1 | 2 | 3 | 6 | 8 | 9 | 10 | 11) {
         let tools = t.ui.text_tools.borrow().as_ref().unwrap().clone();
-        if matches!(stage, 1 | 3 | 6 | 9) {
+        if stage == 10 {
+            // The active caret can be at the end of the repaginated range.
+            // Reveal the first-page pointer target without changing selection.
+            scroll_to_page(&t.ui, 0);
+        } else if matches!(stage, 1 | 3 | 6 | 9) {
             tools.page("font");
         } else {
             tools.home();
