@@ -35,6 +35,10 @@ flatpak install --user ./Leaf-0.1.0-alpha.29-x86_64.flatpak
 flatpak run --user --branch=alpha io.github.frandavid100.leaf
 ```
 
+Al probarla, confirma que «Acerca de Leaf» muestra `0.1.0-alpha.29`, especialmente
+si tienes abiertas ventanas de varias versiones. El paquete completo incluye
+`SHA256SUMS`; `sha256sum -c SHA256SUMS` verifica los archivos descargados.
+
 Se conserva el mismo identificador de aplicación y sus datos. Una candidata
 reemplaza la versión de esa misma rama instalada desde un bundle. La rama de
 FlatPark puede estar instalada también; usar `--branch=alpha` elige explícitamente
