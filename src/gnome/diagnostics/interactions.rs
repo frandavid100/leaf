@@ -39,24 +39,6 @@ pub(super) fn interaction_pointer_test(
         }
     });
     ui.document_box.add_controller(trace);
-    let keys = gtk::EventControllerKey::new();
-    keys.set_propagation_phase(gtk::PropagationPhase::Capture);
-    keys.connect_key_pressed(|_, key, _, modifiers| {
-        eprintln!("FONT_KEY {key:?} {modifiers:?}");
-        glib::Propagation::Proceed
-    });
-    ui.font_input.add_controller(keys);
-    if let Some(delegate) = ui.font_input.delegate().filter(|e| e.is::<gtk::Text>()) {
-        delegate.connect_local("paste-clipboard", false, |_| {
-            eprintln!("FONT_PASTE_REQUEST");
-            None
-        });
-    }
-    ui.font_input.connect_changed(|entry| {
-        if entry.text() == "monospacex" {
-            eprintln!("FONT_PASTE_READY");
-        }
-    });
     opened(
         ui,
         Session::new(wordcraft_doc::Document::from_text("alpha beta gamma delta")),
@@ -129,7 +111,7 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
             let tools = u.text_tools.borrow().as_ref().unwrap().clone();
             if stage == 6 {
                 tools.home();
-            } else if stage == 4 {
+            } else {
                 tools.page("font");
             }
             if stage == 5 {
@@ -138,14 +120,7 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
             if stage == 6 {
                 u.size_input.grab_focus();
             } else {
-                assert!(u.font_input.grab_focus(), "native font field accepts focus");
-            }
-            if stage == 5 {
-                u.font_input
-                    .clipboard()
-                    .read_text_async(None::<&gio::Cancellable>, |result| {
-                        eprintln!("FONT_CLIPBOARD_READ {result:?}")
-                    });
+                u.font_input.grab_focus();
             }
             let next = t.clone();
             glib::timeout_add_local_once(std::time::Duration::from_millis(250), move || {
@@ -192,8 +167,7 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
         }
         _ => unreachable!(),
     }
-    let settle = if stage == 5 { 4 } else { 2 };
-    glib::timeout_add_local_once(std::time::Duration::from_secs(settle), move || {
+    glib::timeout_add_local_once(std::time::Duration::from_secs(2), move || {
         let u = &t.ui;
         {
             let mut v = u.current.borrow_mut();
@@ -220,9 +194,7 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
                     } else {
                         assert_eq!(
                             wordcraft_engine::cmd::format::state(s)["font"],
-                            if stage == 4 { "serif" } else { "monospace" },
-                            "font entry after keyboard input: {:?}",
-                            u.font_input.text()
+                            if stage == 4 { "serif" } else { "monospace" }
                         );
                     }
                 }

@@ -12,7 +12,9 @@ por su ejecución y hash, sin cambiar el paquete antes de publicarlo.
 
 ## Generar y probar
 
-El commit de integración en `main` lleva `[candidate-alpha]`. La batería nativa
+El commit de integración en `main` lleva `[candidate-alpha]`. El mismo marcador
+en el título de su PR omite solo la comparación opcional de rendimiento; no
+omite pruebas funcionales nativas ni instaladas. La batería nativa
 y las comprobaciones instaladas generan el artefacto `leaf-flatpak-alpha`.
 Sin otra autorización, los paquetes no se suben automáticamente a Releases.
 Un commit de candidata que añade `[auto-publish-alpha]`, dentro de una publicación
