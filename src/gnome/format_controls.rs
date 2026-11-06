@@ -9,6 +9,9 @@ pub(super) fn format_execute(
     let changed = {
         let mut value = ui.current.borrow_mut();
         let doc = value.as_mut().ok_or(wordcraft_gnome::t!("No document"))?;
+        if command == "leaf.highlight" {
+            wordcraft_gnome::highlight::register(&mut doc.session);
+        }
         let rev = doc.session.rev();
         doc.session.run(command, &args).map_err(|e| e.to_string())?;
         doc.session.rev() != rev
@@ -160,67 +163,47 @@ pub(super) fn panel_color(
     w: &adw::PreferencesWindow,
     command: &'static str,
 ) {
-    let row = adw::ActionRow::new();
-    row.set_title(label);
-    let b = gtk::Button::with_label(wordcraft_gnome::t!("Choose…"));
-    b.set_valign(gtk::Align::Center);
-    accessible_name(
-        &b,
-        &wordcraft_gnome::i18n::interpolate(
-            wordcraft_gnome::t!("Apply {label}"),
-            &[("label", format!("{}", label))],
-        ),
+    let title = gtk::Label::new(Some(label));
+    title.set_xalign(0.0);
+    g.add(&title);
+    let initial = if command == "table.shading" {
+        let mut current = ui.current.borrow_mut();
+        current
+            .as_mut()
+            .and_then(|d| {
+                d.session
+                    .run("table.properties", &serde_json::json!({}))
+                    .ok()
+            })
+            .and_then(|v| rgb_value_hex(&v["cell"]["shading"]))
+    } else {
+        None
+    };
+    let weak_ui = Rc::downgrade(ui);
+    let weak_window = w.downgrade();
+    let picker = embedded_color_chooser(
+        "element-background-chooser",
+        initial.as_deref(),
+        move |hex| {
+            let Some(ui) = weak_ui.upgrade().filter(|u| !u.closed.get()) else {
+                return false;
+            };
+            let Some(window) = weak_window.upgrade().filter(|w| w.is_visible()) else {
+                return false;
+            };
+            match immediate_format(&ui, command, serde_json::json!({"color":hex})) {
+                Ok(()) => true,
+                Err(e) => {
+                    window.add_toast(Toast::new(&e));
+                    false
+                }
+            }
+        },
     );
-    row.add_suffix(&b);
-    g.add(&row);
-    let ui = ui.clone();
-    let w = w.clone();
-    b.connect_clicked(glib::clone!(
-        #[weak]
-        ui,
-        #[weak]
-        w,
-        move |_| {
-            let dialog = gtk::ColorDialog::new();
-            dialog.set_title(wordcraft_gnome::t!("Choose Color"));
-            dialog.set_with_alpha(false);
-            let ui = ui.clone();
-            let w2 = w.clone();
-            dialog.choose_rgba(
-                Some(&w),
-                None::<&gdk::RGBA>,
-                None::<&gio::Cancellable>,
-                glib::clone!(
-                    #[weak]
-                    ui,
-                    #[weak]
-                    w2,
-                    move |result| {
-                        match result {
-                            Ok(c) => {
-                                let hex = format!(
-                                    "{:02X}{:02X}{:02X}",
-                                    (c.red() * 255.0).round() as u8,
-                                    (c.green() * 255.0).round() as u8,
-                                    (c.blue() * 255.0).round() as u8
-                                );
-                                if let Err(e) =
-                                    format_execute(&ui, command, serde_json::json!({"color":hex}))
-                                {
-                                    w2.add_toast(Toast::new(&e));
-                                }
-                            }
-                            Err(e)
-                                if e.matches(gtk::DialogError::Dismissed)
-                                    || e.matches(gtk::DialogError::Cancelled) => {}
-                            Err(e) => w2.add_toast(Toast::new(&e.to_string())),
-                        }
-                    }
-                ),
-            );
-        }
-    ));
+    accessible_name(&picker.widget, label);
+    g.add(&picker.widget);
 }
+
 pub(super) fn selection_character(ui: &Rc<Ui>) -> serde_json::Value {
     let value = ui.current.borrow();
     let Some(doc) = value.as_ref() else {

@@ -430,8 +430,9 @@ pub(super) fn install_review(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Revi
     filter.set_margin_start(6);
     filter.set_margin_end(6);
     filter.set_margin_top(6);
+    filter.set_margin_bottom(6);
     accessible_name(&filter, wordcraft_gnome::t!("Review Filter"));
-    body.append(&filter);
+    ui.sidebar_filters.add_named(&filter, Some("review"));
     let status = gtk::Label::new(None);
     status.set_widget_name("review-status");
     status.set_wrap(true);

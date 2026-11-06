@@ -74,7 +74,7 @@ impl RepeatAction {
                 "format.set" => vec!["props"],
                 "format.font" => vec!["name"],
                 "format.size" => vec!["size"],
-                "format.color" | "format.highlight" => vec!["color"],
+                "format.color" | "format.highlight" | "leaf.highlight" => vec!["color"],
                 "para.spacing" => vec!["before", "after"],
                 "para.indents" => vec!["left", "right", "firstLine"],
                 "para.lineSpacing" => vec!["rule", "value"],

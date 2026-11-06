@@ -142,6 +142,9 @@ use workspace::*;
 #[path = "diagnostics/alpha31.rs"]
 mod alpha31_checks;
 use alpha31_checks::*;
+#[path = "diagnostics/format136.rs"]
+mod format136_checks;
+use format136_checks::*;
 #[path = "diagnostics/accessibility.rs"]
 mod accessibility_checks;
 use accessibility_checks::*;

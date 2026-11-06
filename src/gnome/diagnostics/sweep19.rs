@@ -222,8 +222,16 @@ fn followup_stage_ready(t: Rc<Followup>, stage: u8) {
                 );
             }
             3 | 9 => {
-                let menu = find_widget(&t.menu.popover().unwrap(), "text-font-choices").unwrap();
-                followup_emit(stage, "choices", &[followup_point(&menu, &t.window)]);
+                assert!(
+                    find_widget(&t.menu.popover().unwrap(), "text-font-list")
+                        .unwrap()
+                        .is_mapped()
+                );
+                followup_emit(
+                    stage,
+                    "choices",
+                    &[followup_point(&u.font_input, &t.window)],
+                );
             }
             4 => followup_emit(stage, "escape", &[]),
             5 => {
@@ -435,12 +443,8 @@ fn followup_check(t: &Followup, stage: u8) {
                 );
             }
             if stage == 3 || stage == 9 {
-                let menu = find_widget(&t.menu.popover().unwrap(), "text-font-choices")
-                    .unwrap()
-                    .downcast::<gtk::MenuButton>()
-                    .unwrap();
-                let pop = menu.popover().unwrap();
-                assert!(pop.is_visible());
+                let pop = find_widget(&t.menu.popover().unwrap(), "text-font-list").unwrap();
+                assert!(pop.is_mapped(), "direct font list remains mapped");
                 let mut previews = Vec::new();
                 followup_font_labels(&pop, &mut previews);
                 assert_eq!(
@@ -449,18 +453,20 @@ fn followup_check(t: &Followup, stage: u8) {
                     "one visible name per family"
                 );
                 let preview = previews.into_iter().find(|l| l.text() == t.family).unwrap();
+                assert!(
+                    preview.parent().unwrap().has_css_class("current-style"),
+                    "the direct list marks the effective current font"
+                );
+                let selector = u.font_input.clone();
                 eprintln!(
-                    "ISSUE19_FONT_GEOMETRY popup={} preview={} ellipsized={}",
+                    "ISSUE19_FONT_GEOMETRY list={} preview={} ellipsized={}",
                     pop.width(),
                     preview.width(),
                     preview.layout().is_ellipsized()
                 );
-                let selector = menu.parent().unwrap();
                 assert!(
                     (pop.width() - selector.width()).abs() <= 4,
-                    "font popup={} selector={}",
-                    pop.width(),
-                    selector.width()
+                    "direct font list uses the field width"
                 );
                 assert!(
                     preview.width() * 10 >= selector.width() * 6,

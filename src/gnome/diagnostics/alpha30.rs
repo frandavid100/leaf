@@ -1,11 +1,13 @@
 use super::*;
 use serde_json::json;
 
-fn button(root: &impl IsA<gtk::Widget>, name: &str) -> gtk::Button {
-    find_widget(root, name)
-        .unwrap_or_else(|| panic!("missing {name}"))
-        .downcast()
-        .unwrap()
+fn click(root: &impl IsA<gtk::Widget>, name: &str) {
+    let widget = find_widget(root, name).unwrap_or_else(|| panic!("missing {name}"));
+    if let Some(button) = widget.downcast_ref::<gtk::Button>() {
+        button.emit_clicked();
+    } else {
+        widget.downcast_ref::<gtk::MenuButton>().unwrap().popup();
+    }
 }
 pub(super) fn alpha30_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     window.set_default_size(1200, 950);
@@ -103,7 +105,7 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
     let pop = text.popover().unwrap();
     assert!(find_widget(&pop, "text-font-property").unwrap().is_mapped());
     assert!(!ui.font_input.is_mapped());
-    button(&pop, "text-font-property").emit_clicked();
+    click(&pop, "text-font-property");
     assert!(gtk::prelude::WidgetExt::is_visible(&ui.font_input));
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, before);
     assert_eq!(
@@ -131,11 +133,11 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
         selection::set_caret(&mut c.as_mut().unwrap().session, &Pos::body(3, 0), false).unwrap();
     }
     refresh_selection(ui);
-    button(&pop, "text-font-apply").emit_clicked();
+    click(&pop, "text-font-apply");
     assert_eq!(selection_character(ui)["font"], "serif");
     text.popup();
     tools.home();
-    button(&pop, "text-language-apply").emit_clicked();
+    click(&pop, "text-language-apply");
     assert_eq!(
         wordcraft_gnome::proofing_defaults::choice(&ui.current.borrow().as_ref().unwrap().session),
         "es-ES"
@@ -161,7 +163,7 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
     refresh_selection(ui);
     para.home();
     let undo = ui.current.borrow().as_ref().unwrap().session.undo_depth();
-    button(&para.main, "paragraph-borders").emit_clicked();
+    click(&para.main, "paragraph-borders");
     assert_eq!(selection_paragraph(ui)["borders"], props["borders"]);
     assert_eq!(selection_paragraph(ui)["shading"], props["shading"]);
     assert_eq!(
@@ -309,14 +311,14 @@ fn alpha30_all_repeats(ui: &Rc<Ui>) {
     p.execute("para.align", json!({"value":"center"}));
     target(1);
     p.home();
-    button(&p.main, "paragraph-alignment-apply").emit_clicked();
+    click(&p.main, "paragraph-alignment-apply");
     assert_eq!(selection_paragraph(ui)["align"], "center");
     p.execute("para.multilevel", json!({"kind":"outline"}));
     p.execute("para.listLevel", json!({"level":1}));
     target(2);
     p.home();
     let before = ui.current.borrow().as_ref().unwrap().session.undo_depth();
-    button(&p.main, "paragraph-list-apply").emit_clicked();
+    click(&p.main, "paragraph-list-apply");
     assert_eq!(
         selection_paragraph(ui)["numbering"]["level"],
         1,
@@ -332,7 +334,7 @@ fn alpha30_all_repeats(ui: &Rc<Ui>) {
     );
     target(0);
     p.home();
-    button(&p.main, "paragraph-more-indents-apply").emit_clicked();
+    click(&p.main, "paragraph-more-indents-apply");
     let state = selection_paragraph(ui);
     assert_eq!(state["indentLeft"], 24.);
     assert_eq!(state["indentRight"], 12.);
@@ -340,7 +342,7 @@ fn alpha30_all_repeats(ui: &Rc<Ui>) {
     p.execute("para.lineSpacing", json!({"value":1.5}));
     target(1);
     p.home();
-    button(&p.main, "paragraph-spacing").emit_clicked();
+    click(&p.main, "paragraph-spacing");
     assert_eq!(selection_paragraph(ui)["lineSpacing"]["value"], 1.5);
     let editor = columns_editor(ui, || {});
     editor.controls.count.set_value(2.);
@@ -358,7 +360,7 @@ fn alpha30_all_repeats(ui: &Rc<Ui>) {
         "Column repeat",
     );
     p.home();
-    button(&p.main, "paragraph-columns-apply").emit_clicked();
+    click(&p.main, "paragraph-columns-apply");
     assert_eq!(
         document_properties::ColumnSetup::current(&ui.current.borrow().as_ref().unwrap().session)
             .count,

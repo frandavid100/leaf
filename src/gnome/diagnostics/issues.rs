@@ -428,12 +428,9 @@ pub(super) fn issue_sweep_ui_test(
     assert!(find_widget(&choices.popover().unwrap(), "size-choice-13.25").is_some());
     choices.popdown();
     tools.page("font");
-    let fonts = find_widget(&text_popover, "text-font-choices")
-        .unwrap()
-        .downcast::<gtk::MenuButton>()
-        .unwrap();
-    fonts.popup();
-    let preview = find_widget(&fonts.popover().unwrap(), "font-preview")
+    let fonts = find_widget(&text_popover, "text-font-list").unwrap();
+    assert!(fonts.is_mapped(), "Font opens the list immediately");
+    let preview = find_widget(&fonts, "font-preview")
         .unwrap()
         .downcast::<gtk::Label>()
         .unwrap();
@@ -443,7 +440,6 @@ pub(super) fn issue_sweep_ui_test(
         !attributes.contains("size"),
         "preview inherits the menu size"
     );
-    fonts.popdown();
     tools.home();
 
     let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();

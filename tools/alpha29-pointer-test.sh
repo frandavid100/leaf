@@ -10,6 +10,7 @@ review_log=alpha29-review-${LANGUAGE:-en}-${GDK_SCALE:-1}.log
 grep -q REVIEW29_UI_OK "$review_log"
 bash tools/alpha30-pointer-test.sh "$runner"
 bash tools/alpha31-pointer-test.sh "$runner"
+bash tools/format136-pointer-test.sh "$runner"
 "${cmd[@]}" --alpha29-ui-test > "$log" 2>&1 &
 pid=$!
 trap 'scrot "${log%.log}-final.png" 2>/dev/null || true; kill "$pid" 2>/dev/null || true; rm -rf "$LEAF29_ACK_DIR"' EXIT

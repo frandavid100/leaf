@@ -44,7 +44,9 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
         tools.home();
     }
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, before);
-    button(&palette.options_page("ink").unwrap(), "ink-choice-1C71D8");
+    tools.page("ink");
+    test_choose_color(&menu.popover().unwrap(), "text-ink-chooser", "1C71D8");
+    tools.home();
     assert_eq!(*palette.last_ink.borrow(), "1C71D8");
     for n in [1, 2] {
         select_paragraph(ui, n);
@@ -55,10 +57,9 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
         );
         assert_eq!(tools.stack.visible_child_name().as_deref(), Some("main"));
     }
-    button(
-        &palette.options_page("highlight").unwrap(),
-        "highlight-choice-yellow",
-    );
+    tools.page("highlight");
+    test_choose_color(&menu.popover().unwrap(), "text-highlight-chooser", "FFFF00");
+    tools.home();
     select_paragraph(ui, 0);
     palette.highlight_apply.emit_clicked();
     assert_eq!(selection_character(ui)["highlight"], json!([255, 255, 0]));
@@ -368,7 +369,11 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
 }
 
 thread_local! { static TEXT_POINTER_GEOMETRY: RefCell<std::collections::HashMap<String, ([f64;4],u8)>> = RefCell::new(std::collections::HashMap::new()); }
-fn text_pointer_target(marker: &str, pop: &gtk::Popover, widget: &impl IsA<gtk::Widget>) -> bool {
+pub(super) fn text_pointer_target(
+    marker: &str,
+    pop: &gtk::Popover,
+    widget: &impl IsA<gtk::Widget>,
+) -> bool {
     use gdk::prelude::PopupExt;
     let r = widget.as_ref().compute_bounds(pop).unwrap();
     let (tx, ty) = pop.surface_transform();
@@ -418,7 +423,7 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
     opened(
         ui,
         Session::new(wordcraft_doc::Document::from_text(
-            "First target\nSecond target",
+            "First target\nSecond target\nThird target",
         )),
         "Text pointer",
     );
@@ -459,7 +464,9 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 }
                 settled.set(0);
                 let child = pop.clone();
-                let blue = find_widget(&child, "ink-choice-1C71D8").unwrap();
+                let picker = find_widget(&child, "text-ink-chooser").unwrap();
+                let blue =
+                    native_color_swatch(&picker, &gdk::RGBA::parse("#1C71D8").unwrap()).unwrap();
                 if !text_pointer_target("TEXT18_BLUE", &child, &blue) {
                     return glib::ControlFlow::Continue;
                 }
@@ -470,6 +477,12 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                     selection_character(&u)["color"],
                     json!({"Rgb":[28,113,216]})
                 );
+                if !text_pointer_target("TEXT18_INK_BACK", &pop, &tools.header.button) {
+                    return glib::ControlFlow::Continue;
+                }
+                phase.set(11);
+            }
+            11 if tools.stack.visible_child_name().as_deref() == Some("main") => {
                 select_paragraph(&u, 1);
                 settled.set(0);
                 phase.set(8);
@@ -488,6 +501,22 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
             }
             3 if selection_character(&u)["color"] == json!({"Rgb":[28,113,216]}) => {
                 assert_eq!(tools.stack.visible_child_name().as_deref(), Some("main"));
+                select_paragraph(&u, 2);
+                settled.set(0);
+                phase.set(9);
+            }
+            9 => {
+                settled.set(settled.get() + 1);
+                if settled.get() < 5 {
+                    return glib::ControlFlow::Continue;
+                }
+                let repeat = find_widget(&pop, "text-ink-apply").unwrap();
+                if !text_pointer_target("TEXT18_INK_AGAIN", &pop, &repeat) {
+                    return glib::ControlFlow::Continue;
+                }
+                phase.set(10);
+            }
+            10 if selection_character(&u)["color"] == json!({"Rgb":[28,113,216]}) => {
                 let arrow = palette.underline.clone().upcast::<gtk::Widget>();
                 if !text_pointer_target("TEXT18_UNDERLINE_ARROW", &pop, &arrow) {
                     return glib::ControlFlow::Continue;
@@ -545,4 +574,35 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
         }
         glib::ControlFlow::Continue
     });
+}
+
+#[allow(deprecated)]
+pub(super) fn test_choose_color(root: &impl IsA<gtk::Widget>, name: &str, hex: &str) {
+    let picker = find_widget(root, name)
+        .unwrap()
+        .downcast::<gtk::ColorChooserWidget>()
+        .unwrap();
+    assert!(
+        picker.is_mapped(),
+        "native chooser must actually be shown: {name}"
+    );
+    let rgba = gdk::RGBA::parse(format!("#{hex}")).unwrap();
+    picker.set_rgba(&rgba);
+    picker.emit_by_name::<()>("color-activated", &[&rgba]);
+}
+pub(super) fn native_color_swatch(root: &gtk::Widget, color: &gdk::RGBA) -> Option<gtk::Widget> {
+    if root.type_().name() == "GtkColorSwatch"
+        && root.find_property("rgba").is_some()
+        && root.property::<Option<gdk::RGBA>>("rgba").as_ref() == Some(color)
+    {
+        return Some(root.clone());
+    }
+    let mut child = root.first_child();
+    while let Some(w) = child {
+        child = w.next_sibling();
+        if let Some(found) = native_color_swatch(&w, color) {
+            return Some(found);
+        }
+    }
+    None
 }

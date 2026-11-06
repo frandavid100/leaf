@@ -5,6 +5,7 @@ pub(super) fn paragraph_ui_test(
     menu: &gtk::MenuButton,
     app: &Application,
 ) {
+    s.header.pin.set_active(true);
     menu.popup();
     let ui = s.ui.upgrade().unwrap();
     let click = |name: &str| {
@@ -33,12 +34,18 @@ pub(super) fn paragraph_ui_test(
     click("paragraph-list-•");
     assert!(selection_paragraph(&ui)["numbering"].is_object());
     click("paragraph-back");
+    assert_eq!(s.header.label.text(), wordcraft_gnome::t!("List"));
+    click("paragraph-back");
     click("paragraph-more-spacing");
     click("paragraph-line-1.5");
     assert_eq!(selection_paragraph(&ui)["lineSpacing"]["value"], 1.5);
     click("paragraph-back");
     click("paragraph-more-borders");
-    click("paragraph-shade-FFF2CC");
+    test_choose_color(
+        &s.popover.upgrade().unwrap(),
+        "paragraph-shading-chooser",
+        "FFF2CC",
+    );
     assert!(selection_paragraph(&ui)["shading"].is_array());
     click("paragraph-back");
     click("paragraph-more-borders");

@@ -40,7 +40,7 @@ impl ElementsPanel {
             });
         }
     }
-    fn home(&self) {
+    pub(super) fn home(&self) {
         self.active.replace("home".into());
         self.header.home();
         self.stack.set_visible_child_name("home");
@@ -104,7 +104,13 @@ impl ElementsPanel {
         self.active.replace(page.into());
         self.stack.set_visible_child_name(page);
         let weak = Rc::downgrade(self);
-        self.header.back(wordcraft_gnome::t!("Elements"), move || {
+        let title = match page {
+            "table" => wordcraft_gnome::t!("Table"),
+            "image" => wordcraft_gnome::t!("Image"),
+            "toc" => wordcraft_gnome::t!("Table of Contents"),
+            _ => wordcraft_gnome::t!("Elements"),
+        };
+        self.header.back(title, move || {
             if let Some(s) = weak.upgrade() {
                 s.home();
             }

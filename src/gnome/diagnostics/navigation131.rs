@@ -29,10 +29,6 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
             .unwrap()
             .downcast::<gtk::ScrolledWindow>()
             .unwrap();
-        let structure_button = find_widget(&u.sidebar, "sidebar-outline")
-            .unwrap()
-            .downcast::<gtk::ToggleButton>()
-            .unwrap();
         let filter = find_widget(&outline, "navigation-filter")
             .unwrap()
             .downcast::<gtk::DropDown>()
@@ -40,12 +36,12 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
         match phase.get() {
             0 => {
                 u.navigation_button.set_active(true);
-                u.pages_button.set_active(true);
+                u.representation.set_selected(0);
                 let a = u.thumbnails_scroll.vadjustment();
                 a.set_value((a.upper() - a.page_size()) * 0.35);
                 thumbs.set(a.value());
                 assert!(thumbs.get() > 20.);
-                structure_button.set_active(true);
+                u.representation.set_selected(1);
             }
             1 => {
                 filter.set_selected(2);
@@ -55,7 +51,7 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                 a.set_value((a.upper() - a.page_size()) * 0.45);
                 structure.set(a.value());
                 assert!(structure.get() > 20.);
-                u.pages_button.set_active(true);
+                u.representation.set_selected(0);
             }
             3 => {
                 assert!(
@@ -73,7 +69,7 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                     Some("thumbnails")
                 );
                 assert_eq!(u.sidebar_title.text(), wordcraft_gnome::t!("Navigation"));
-                structure_button.set_active(true);
+                u.representation.set_selected(1);
             }
             5 => {
                 assert_eq!(filter.selected(), 2);
@@ -97,7 +93,12 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                 u.search.borrow().as_ref().unwrap().show(false);
             }
             6 => {
+                assert!(
+                    !u.sidebar_filters.is_visible(),
+                    "Search does not show Navigation/Review filters"
+                );
                 u.search.borrow().as_ref().unwrap().toggle.set_active(false);
+                assert!(u.sidebar_filters.is_visible());
                 assert_eq!(
                     u.navigation_pages.visible_child_name().as_deref(),
                     Some("outline")
@@ -113,7 +114,9 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                 );
                 assert!(
                     (outline.vadjustment().value() - structure.get()).abs() < 1.,
-                    "reopening preserves browsing when the target is unchanged"
+                    "reopening preserves browsing: actual={} expected={}",
+                    outline.vadjustment().value(),
+                    structure.get()
                 );
                 let h = u.host.upgrade().unwrap();
                 gio::prelude::ActionGroupExt::activate_action(&h.window, "new-tab", None);
@@ -125,11 +128,13 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
             }
             9 => {
                 let h = u.host.upgrade().unwrap();
+                check_headers(&selected_ui(&h).unwrap(), &h.window);
                 h.tabs
                     .set_selected_page(u.tab_page.borrow().as_ref().unwrap());
             }
             10 => {
                 let h = u.host.upgrade().unwrap();
+                check_headers(&u, &h.window);
                 if let Some((page, _)) = other.borrow_mut().take() {
                     h.tabs.close_page(&page);
                 }
@@ -137,7 +142,9 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                 assert_eq!(u.last_navigation.get(), "outline");
                 assert!(
                     (outline.vadjustment().value() - structure.get()).abs() < 1.,
-                    "document tabs retain their own sidebar state"
+                    "document tabs retain their own sidebar state: actual={} expected={}",
+                    outline.vadjustment().value(),
+                    structure.get()
                 );
                 assert!(
                     u.pages_button
@@ -148,6 +155,7 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                 filter.set_selected(0);
             }
             11 => {
+                check_headers(&u, &u.host.upgrade().unwrap().window);
                 u.review.borrow().as_ref().unwrap().show(None);
                 {
                     let mut c = u.current.borrow_mut();

@@ -408,6 +408,16 @@ pub(super) fn show_table_properties(ui: &Rc<Ui>, parent: &ApplicationWindow) {
         12.0,
     );
     let color = panel_entry(&g, wordcraft_gnome::t!("Border Color (RRGGBB)"), "808080");
+    let border_entry = color.downgrade();
+    let picker = embedded_color_chooser("element-border-chooser", Some("#808080"), move |hex| {
+        if let Some(entry) = border_entry.upgrade() {
+            entry.set_text(hex);
+            true
+        } else {
+            false
+        }
+    });
+    g.add(&picker.widget);
     let b = gtk::Button::with_label(wordcraft_gnome::t!("Apply to All Borders"));
     g.add(&b);
     {

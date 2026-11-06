@@ -340,7 +340,7 @@ impl StylePopover {
         };
         self.report("");
         clear_box(&self.detail);
-        self.back(&self.detail, wordcraft_gnome::t!("Styles"), None);
+        self.back(&self.detail, &st.name, None);
         let title = gtk::Label::new(Some(&st.name));
         title.set_xalign(0.0);
         title.set_wrap(true);
@@ -416,10 +416,11 @@ impl StylePopover {
         let style = id.and_then(|id| self.style(id));
         self.back(
             &self.form,
-            style
-                .as_ref()
-                .map(|s| s.name.as_str())
-                .unwrap_or(wordcraft_gnome::t!("Styles")),
+            if style.is_some() {
+                wordcraft_gnome::t!("Rename Style")
+            } else {
+                wordcraft_gnome::t!("New Style")
+            },
             style.as_ref().map(|s| s.id.clone()),
         );
         let title = gtk::Label::new(Some(if style.is_some() {
@@ -522,9 +523,15 @@ pub(super) fn install_style_popover(ui: &Rc<Ui>, menu: &gtk::MenuButton) -> Rc<S
     main.append(&create);
     let detail = gtk::Box::new(gtk::Orientation::Vertical, 6);
     let form = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    stack.add_named(&main, Some("list"));
-    stack.add_named(&detail, Some("detail"));
-    stack.add_named(&form, Some("form"));
+    for (body, name) in [(&main, "list"), (&detail, "detail"), (&form, "form")] {
+        body.set_margin_bottom(8);
+        let page = gtk::ScrolledWindow::new();
+        page.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+        page.set_propagate_natural_height(true);
+        page.set_max_content_height(420);
+        page.set_child(Some(body));
+        stack.add_named(&page, Some(name));
+    }
     root.append(&stack);
     let message = gtk::Label::new(None);
     message.set_wrap(true);

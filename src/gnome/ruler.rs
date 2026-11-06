@@ -764,11 +764,16 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     motion.set_propagation_phase(gtk::PropagationPhase::Capture);
     let weak = Rc::downgrade(&r);
     let canvas = overlay.downgrade();
-    motion.connect_motion(move |_, x, y| {
+    motion.connect_motion(move |controller, x, y| {
         let (Some(r), Some(canvas)) = (weak.upgrade(), canvas.upgrade()) else {
             return;
         };
         let Some(ui) = r.ui.upgrade() else { return };
+        // GTK can propagate events from an anchored popover through this
+        // logical tree. Popup coordinates must never activate document rulers.
+        if !document_pointer_surface(&ui, controller) {
+            return;
+        }
         if r.drag.borrow().is_some()
             || r.margin_drag.borrow().is_some()
             || ui.drag_anchor.borrow().is_some()
@@ -878,6 +883,14 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     let weak = Rc::downgrade(&r);
     margins.connect_drag_begin(move |gesture, x, y| {
         let Some(r) = weak.upgrade() else { return };
+        if !r
+            .ui
+            .upgrade()
+            .is_some_and(|u| document_pointer_surface(&u, gesture))
+        {
+            gesture.set_state(gtk::EventSequenceState::Denied);
+            return;
+        }
         let Some(margin) = r.margin_at(x, y) else {
             gesture.set_state(gtk::EventSequenceState::Denied);
             return;
@@ -941,6 +954,9 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         let Some(ui) = weak.upgrade() else {
             return glib::Propagation::Proceed;
         };
+        if !document_pointer_surface(&ui, controller) {
+            return glib::Propagation::Proceed;
+        }
         for (adjustment, delta) in [(ui.scroll.hadjustment(), dx), (ui.scroll.vadjustment(), dy)] {
             let scale = if controller.unit() == gdk::ScrollUnit::Surface {
                 1.0
@@ -955,8 +971,15 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
 
     let marker_motion = gtk::EventControllerMotion::new();
     let weak = Rc::downgrade(&r);
-    marker_motion.connect_motion(move |_, x, y| {
+    marker_motion.connect_motion(move |controller, x, y| {
         if let Some(r) = weak.upgrade() {
+            if !r
+                .ui
+                .upgrade()
+                .is_some_and(|u| document_pointer_surface(&u, controller))
+            {
+                return;
+            }
             if r.drag.borrow().is_none() {
                 let cursor = r
                     .view()
@@ -989,6 +1012,14 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         let Some(r) = weak.upgrade() else {
             return;
         };
+        if !r
+            .ui
+            .upgrade()
+            .is_some_and(|u| document_pointer_surface(&u, g))
+        {
+            g.set_state(gtk::EventSequenceState::Denied);
+            return;
+        }
         let Some(v) = r.view() else {
             return;
         };
