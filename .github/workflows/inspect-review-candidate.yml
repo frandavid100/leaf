@@ -1,0 +1,34 @@
+name: Inspect final Review candidate frames
+on:
+  workflow_run:
+    workflows: ["Leaf — build, test and package"]
+    types: [completed]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    if: github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'success' && contains(github.event.workflow_run.display_title, 'Prepare Alpha31 incremental Review candidate')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: leaf-flatpak-alpha
+          path: candidate
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Expose exact installed frames for visual inspection
+        run: |
+          python3 - <<'PY'
+          import base64
+          from pathlib import Path
+          frames = sorted(Path('candidate').rglob('alpha31-*-review.png'))
+          assert frames, 'No installed Review frames'
+          for path in frames:
+              print('LEAF_FRAME_BEGIN ' + str(path))
+              data = base64.b64encode(path.read_bytes()).decode('ascii')
+              for i in range(0, len(data), 16000):
+                  print('LEAF_FRAME_DATA ' + data[i:i+16000])
+              print('LEAF_FRAME_END')
+          PY
