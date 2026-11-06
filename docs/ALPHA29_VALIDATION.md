@@ -94,3 +94,10 @@ Texto antes de pulsar el caret: las filas nuevas pueden cubrir ese punto en una
 ventana estrecha. La escritura, los decimales con coma, el pegado y la selección
 con panel fijado siguen comprobándose con entrada real; el panel conserva su pin
 al volver a abrirlo.
+
+La revisión unificada permite arrancar el corrector con documentos más grandes;
+la prueba estricta de cierre detectó snapshots conservados por trabajadores de
+sugerencias después de cerrar la pestaña. El cierre ahora cancela el trabajo
+entre sugerencias. Las tres rondas locales (15 pestañas/ventanas) terminan con
+cero documentos, controles, diálogos y ventanas retenidos; se conserva la
+regresión estricta existente.

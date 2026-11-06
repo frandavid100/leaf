@@ -109,7 +109,7 @@ msgstr ""
 msgid "Appearance"
 msgstr ""
 
-#: src/gnome/columns.rs:108 src/gnome/document_properties_dialog.rs:91 src/gnome/elements.rs:184 src/gnome/links.rs:75 src/gnome/references.rs:112 src/gnome/spellcheck.rs:285
+#: src/gnome/columns.rs:108 src/gnome/document_properties_dialog.rs:91 src/gnome/elements.rs:184 src/gnome/links.rs:75 src/gnome/references.rs:112 src/gnome/spellcheck.rs:305
 msgid "Apply"
 msgstr ""
 
@@ -397,7 +397,7 @@ msgstr ""
 msgid "Check the page size and margins"
 msgstr ""
 
-#: src/gnome/review.rs:221 src/gnome/spellcheck.rs:90 src/gnome/spellcheck.rs:139
+#: src/gnome/review.rs:221 src/gnome/spellcheck.rs:98 src/gnome/spellcheck.rs:147
 msgid "Checking…"
 msgstr ""
 
@@ -565,7 +565,7 @@ msgstr ""
 msgid "Correction"
 msgstr ""
 
-#: src/gnome/spellcheck.rs:340
+#: src/gnome/spellcheck.rs:360
 msgid "Correction Options"
 msgstr ""
 
@@ -1237,7 +1237,7 @@ msgstr ""
 msgid "Go to Comment"
 msgstr ""
 
-#: src/gnome/spellcheck.rs:244
+#: src/gnome/spellcheck.rs:264
 msgid "Grammar Correction"
 msgstr ""
 
@@ -1329,7 +1329,7 @@ msgstr ""
 msgid "If you continue without saving, your changes will be lost."
 msgstr ""
 
-#: src/gnome/spellcheck.rs:305
+#: src/gnome/spellcheck.rs:325
 msgid "Ignore"
 msgstr ""
 
@@ -1337,7 +1337,7 @@ msgstr ""
 msgid "Ignore All"
 msgstr ""
 
-#: src/gnome/spellcheck.rs:308
+#: src/gnome/spellcheck.rs:328
 msgid "Ignore This Occurrence"
 msgstr ""
 
@@ -1533,7 +1533,7 @@ msgstr ""
 msgid "Language and Review"
 msgstr ""
 
-#: src/gnome/spellcheck.rs:211
+#: src/gnome/spellcheck.rs:231
 msgid "Languages without installed dictionaries are skipped."
 msgstr ""
 
@@ -1821,7 +1821,7 @@ msgstr ""
 msgid "No Tracked Changes"
 msgstr ""
 
-#: src/gnome/review.rs:224 src/gnome/spellcheck.rs:208
+#: src/gnome/review.rs:224 src/gnome/spellcheck.rs:228
 msgid "No corrections found in text with available proofing tools."
 msgstr ""
 
@@ -2125,7 +2125,7 @@ msgstr ""
 msgid "Reject"
 msgstr ""
 
-#: src/gnome/spellcheck.rs:270
+#: src/gnome/spellcheck.rs:290
 msgid "Remove"
 msgstr ""
 
@@ -2669,7 +2669,7 @@ msgstr ""
 msgid "Spanish (Spain)"
 msgstr ""
 
-#: src/gnome/spellcheck.rs:242
+#: src/gnome/spellcheck.rs:262
 msgid "Spelling Correction"
 msgstr ""
 
@@ -2677,7 +2677,7 @@ msgstr ""
 msgid "Spelling Suggestions"
 msgstr ""
 
-#: src/gnome/spellcheck.rs:442 src/gnome/workspace.rs:387
+#: src/gnome/spellcheck.rs:462 src/gnome/workspace.rs:387
 msgid "Spelling and Grammar"
 msgstr ""
 
@@ -2757,7 +2757,7 @@ msgstr ""
 msgid "Suggest"
 msgstr ""
 
-#: src/gnome/spellcheck.rs:275
+#: src/gnome/spellcheck.rs:295
 msgid "Suggestion: {text}"
 msgstr ""
 
@@ -2969,7 +2969,7 @@ msgstr ""
 msgid "The selection has changed; open this dialog again."
 msgstr ""
 
-#: src/gnome/spellcheck.rs:185
+#: src/gnome/spellcheck.rs:205
 msgid "The spelling check could not finish."
 msgstr ""
 

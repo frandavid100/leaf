@@ -1,4 +1,8 @@
 use super::*;
+use std::sync::{
+    Arc,
+    atomic::{AtomicBool, Ordering},
+};
 use wordcraft_gnome::proofing::{self, Issue as ProofIssue};
 
 pub(super) fn refresh_all_proofing(ui: &Rc<Ui>) {
@@ -67,9 +71,13 @@ pub(super) struct SpellReview {
     pub(super) debounce: RefCell<Option<glib::SourceId>>,
     pub(super) generation: Cell<u64>,
     pub(super) queued: Cell<bool>,
+    worker_cancel: RefCell<Option<Arc<AtomicBool>>>,
 }
 impl SpellReview {
     pub(super) fn stop(&self) {
+        if let Some(cancel) = self.worker_cancel.borrow_mut().take() {
+            cancel.store(true, Ordering::Release);
+        }
         if let Some(id) = self.source.borrow_mut().take() {
             id.remove();
         }
@@ -138,18 +146,28 @@ impl SpellReview {
         self.status.set_visible(true);
         self.status.set_text(wordcraft_gnome::t!("Checking…"));
         let (tx, rx) = std::sync::mpsc::channel();
+        let cancel = Arc::new(AtomicBool::new(false));
+        self.worker_cancel.replace(Some(cancel.clone()));
         std::thread::spawn(move || {
+            if cancel.load(Ordering::Acquire) {
+                return;
+            }
             let mut session = Session::new(doc);
             session.prefs = prefs;
             let issues = proofing::issues(&session);
-            let entries = issues
-                .into_iter()
-                .map(|issue| {
-                    let choices = proofing::suggestions(&mut session, &issue);
-                    (issue, choices)
-                })
-                .collect::<Vec<_>>();
-            let _ = tx.send(entries);
+            let mut entries = Vec::with_capacity(issues.len());
+            for issue in issues {
+                // Closing a tab also releases its worker's immutable snapshot;
+                // there is no reason to compute hundreds of obsolete choices.
+                if cancel.load(Ordering::Acquire) {
+                    return;
+                }
+                let choices = proofing::suggestions(&mut session, &issue);
+                entries.push((issue, choices));
+            }
+            if !cancel.load(Ordering::Acquire) {
+                let _ = tx.send(entries);
+            }
         });
         let weak = Rc::downgrade(self);
         let id = glib::timeout_add_local(std::time::Duration::from_millis(25), move || {
@@ -163,6 +181,7 @@ impl SpellReview {
             match rx.try_recv() {
                 Ok(issues) => {
                     s.source.borrow_mut().take();
+                    s.worker_cancel.borrow_mut().take();
                     if document_identity(&ui) == identity && s.generation.get() == generation {
                         s.identity.set(identity);
                         let (issues, choices): (Vec<_>, Vec<_>) = issues
@@ -181,6 +200,7 @@ impl SpellReview {
                 Err(std::sync::mpsc::TryRecvError::Empty) => glib::ControlFlow::Continue,
                 Err(_) => {
                     s.source.borrow_mut().take();
+                    s.worker_cancel.borrow_mut().take();
                     s.status
                         .set_text(wordcraft_gnome::t!("The spelling check could not finish."));
                     s.identity.set(identity);
@@ -477,6 +497,7 @@ pub(super) fn install_spelling(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Sp
         debounce: RefCell::new(None),
         generation: Cell::new(0),
         queued: Cell::new(false),
+        worker_cancel: RefCell::new(None),
     });
     let weak = Rc::downgrade(&s);
     s.list.connect_row_activated(move |_, row| {
