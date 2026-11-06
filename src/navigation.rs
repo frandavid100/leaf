@@ -425,6 +425,15 @@ pub fn elements(doc: &Document) -> Vec<Element> {
     out.sort_by(|a, b| {
         a.pos
             .cmp(&b.pos)
+            // A table and the first inline object in its first cell can share
+            // a position. List containers before their children at that anchor.
+            .then_with(|| b.table.is_some().cmp(&a.table.is_some()))
+            .then_with(|| {
+                a.table
+                    .as_ref()
+                    .map(|p| p.0.len())
+                    .cmp(&b.table.as_ref().map(|p| p.0.len()))
+            })
             .then(a.kind.cmp(&b.kind))
             .then(a.table.cmp(&b.table))
     });

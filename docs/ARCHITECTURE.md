@@ -163,7 +163,17 @@ Their actions validate the live document id and the revalidated finding; cached
 comments/revisions resolve their canonical targets without weakening asynchronous
 dialog revision guards. Worker generations/revisions guard both success and error.
 
-The final Alpha31 candidate retains the published Alpha30 header, Navigation
-and formatting interface. The header/dropdown experiments remain in Git history,
-outside the accepted candidate scope. Review cards and findings are derived
-state; no parallel editable document model is introduced.
+The accepted second Alpha31 candidate aligns sidebar/document headers, uses a
+native Pages/Structure dropdown, and shares the Text/Paragraph/Style/Elements
+submenu framework. The first candidate's Alpha30 interface is historical.
+Review cards and findings are derived state; no parallel editable document
+model is introduced.
+
+## Explicit caption ownership
+
+`src/captions.rs` uses canonical picture bookmark ranges, whole-table content
+controls and caption paragraph bookmarks. Native hidden properties retain
+authored caption text; the public Session command owns history and protection.
+`src/gnome/caption_cues.rs` draws disposable theme-aware backing from native
+layout, cached by document identity/revision. Navigation uses typed targets to
+distinguish tables and their nested pictures. See [ownership and validation](CAPTION_OWNERSHIP.md).

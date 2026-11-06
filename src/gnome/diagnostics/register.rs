@@ -25,6 +25,9 @@ pub(super) fn install_diagnostics(
     app: &Application,
     controls: DiagnosticControls<'_>,
 ) {
+    if std::env::args().any(|a| a == "--captions-ui-test") && host.tabs.n_pages() == 1 {
+        captions_ui_test(ui, window, app);
+    }
     if std::env::args().any(|a| a == "--format136-ui-test") && host.tabs.n_pages() == 1 {
         format136_ui_test(
             ui,

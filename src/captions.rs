@@ -150,10 +150,22 @@ pub fn table_target(s: &Session) -> Option<Target> {
             path: cells.table.clone(),
         });
     }
-    s.sel.focus.path.cell().map(|(path, _, _)| Target::Table {
-        story: s.sel.focus.story,
-        path,
-    })
+    s.sel
+        .focus
+        .path
+        .cell()
+        .map(|(path, _, _)| Target::Table {
+            story: s.sel.focus.story,
+            path,
+        })
+        .or_else(|| {
+            all(&s.doc).into_iter().find_map(|c| {
+                (c.pos.story == s.sel.focus.story
+                    && c.pos.path == s.sel.focus.path
+                    && matches!(c.owner, Target::Table { .. }))
+                .then_some(c.owner)
+            })
+        })
 }
 pub fn for_target(doc: &Document, owner: &Target) -> Option<Caption> {
     all(doc).into_iter().find(|c| &c.owner == owner)

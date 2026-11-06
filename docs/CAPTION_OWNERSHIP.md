@@ -41,13 +41,22 @@ clear object/caption geometry on the same page.
 
 ## Validation so far
 
-Eight focused headless regressions pass: Show/Hide with authored text and native
+Nine focused headless regressions pass: Show/Hide with authored text and native
 Undo/Redo after DOCX; two identical images and drag/reopen; whole-table ownership
 after deleting the first row; no-target/deleted-object safety; protection with no
 partial anchors/history; nested-table placement; typed read-only navigation; and
-read-only cue geometry with hidden-caption exclusion. The prior full headless
-suite also passed at the preceding checkpoint. Native GUI/installed interaction
-and screenshot acceptance are pending. No issue is closed by this checkpoint.
+read-only cue geometry with hidden-caption exclusion; cross-references after
+toggle/reopen and identical exported raster pixels before/after reading cues.
+Real GTK pointer/keyboard checks pass in English light/1× and Spanish dark/2×,
+including native typing, pinned off/on, Undo/Redo, switching identical images,
+table-caption caret context, DOCX reopening, typed navigation and hover/caret
+discovery. Full native/installed CI acceptance is pending. No issue is closed by
+this checkpoint.
+
+Existing imported or earlier captions without explicit object anchors remain
+ordinary editable caption paragraphs. They are not silently assigned to nearby
+objects. Numbered caption creation remains limited to the document body by the
+pinned public engine API.
 
 ## #132 investigation
 

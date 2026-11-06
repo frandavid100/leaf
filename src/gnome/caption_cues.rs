@@ -41,7 +41,7 @@ pub(super) fn caption_cue_pages(ui: &Rc<Ui>, d: &mut Current) -> Vec<usize> {
 }
 pub(super) fn update_caption_hover(ui: &Rc<Ui>, point: Option<(f64, f64)>) {
     let id = point.and_then(|(x, y)| {
-        let (page, px, py) = page_point(ui, x, y, None)?;
+        let (page, px, py) = table_pointer::page_point(ui, x, y, None)?;
         let mut current = ui.current.try_borrow_mut().ok()?;
         let d = current.as_mut()?;
         let cues = cached_caption_cues(ui, d);
@@ -91,7 +91,7 @@ pub(super) fn paint_caption_cue(
     let Some(cue) = cues.iter().find(|c| Some(&c.caption.id) == id.as_ref()) else {
         return;
     };
-    let color = widget.style_context().color();
+    let color = widget.color();
     let _ = cr.save();
     cr.set_source_rgba(
         color.red() as f64,

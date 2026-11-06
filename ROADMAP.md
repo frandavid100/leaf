@@ -6,6 +6,12 @@ Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
 ## Preparada para David: segunda candidata alpha.31
 
+En curso por petición de David: completar #121/#124/#126/#127 con asociación
+explícita de objetos y leyendas, propiedades compartidas, navegación y decoración
+temporal. [Implementación, pruebas y límites](docs/CAPTION_OWNERSHIP.md).
+La nueva fuente está bajo validación; los issues no se cierran aún.
+El documento original de #132 no reproduce el fallo aquí, por lo que sigue abierto.
+
 Cerrados #134–#136 tras corregir la captura de eventos de la regla, alinear
 cabeceras, introducir el selector Páginas/Estructura y refinar los cuatro menús.
 Conserva la corrección de Revisión #133. Batería nativa completa, instalaciones

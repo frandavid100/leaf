@@ -212,6 +212,7 @@ fn typed_navigation_selects_the_exact_table_or_picture_without_an_edit() {
     let entries = wordcraft_gnome::navigation::elements(&s.doc);
     let image = entries.iter().find(|e| e.kind == 3).unwrap();
     let table = entries.iter().find(|e| e.kind == 4).unwrap();
+    assert!(entries.iter().position(|e| e.kind == 4) < entries.iter().position(|e| e.kind == 3));
     wordcraft_gnome::navigation::activate_element(&mut s, table).unwrap();
     assert_eq!(s.cell_range().unwrap().table, table.table.clone().unwrap());
     assert!(wordcraft_gnome::navigation::element_contains(
@@ -259,4 +260,46 @@ fn caption_cues_are_read_only_and_hidden_captions_have_no_visual_geometry() {
     assert!(captions::cues(&mut s).is_empty());
     let mut reopened = roundtrip(&s);
     assert!(captions::cues(&mut reopened).is_empty());
+}
+
+#[test]
+fn cross_references_survive_caption_toggles_reopen_and_readonly_cue_rendering() {
+    let mut s = Session::new(Document::from_text("\nSee: "));
+    picture(&mut s);
+    captions::set_visible(&mut s, true).unwrap();
+    s.run("text.insert", &json!({"text":"Recognizable description"}))
+        .unwrap();
+    let end = s.doc.end_of(StoryRef::Body);
+    selection::set_caret(&mut s, &end, false).unwrap();
+    s.run(
+        "insert.crossReference",
+        &json!({"to":"figure","target":"Figure 1","show":"text"}),
+    )
+    .unwrap();
+    let p = owner(&s);
+    pictures::select(&mut s, &p).unwrap();
+    captions::set_visible(&mut s, false).unwrap();
+    let mut s = roundtrip(&s);
+    let p = owner(&s);
+    pictures::select(&mut s, &p).unwrap();
+    captions::set_visible(&mut s, true).unwrap();
+    wordcraft_gnome::references::refresh_derived(&mut s).unwrap();
+    assert!(
+        s.doc
+            .para_at(&s.doc.end_of(StoryRef::Body))
+            .unwrap()
+            .plain_text()
+            .contains("Recognizable description")
+    );
+    let before = s.doc.clone();
+    let depth = s.undo_depth();
+    let first = wordcraft_gnome::render_page(&mut s, 0, 0.6).unwrap();
+    assert!(!captions::cues(&mut s).is_empty());
+    let after = wordcraft_gnome::render_page(&mut s, 0, 0.6).unwrap();
+    assert_eq!(
+        first.rgba, after.rgba,
+        "ownership decoration does not enter saved/printed pixels"
+    );
+    assert_eq!(s.doc, before);
+    assert_eq!(s.undo_depth(), depth);
 }

@@ -325,7 +325,7 @@ msgstr ""
 msgid "Captions"
 msgstr ""
 
-#: src/gnome/picture_controls.rs:76 src/gnome/tables.rs:691
+#: src/gnome/picture_controls.rs:76 src/gnome/tables.rs:704
 msgid "Captions are available in the document body."
 msgstr ""
 
@@ -725,7 +725,7 @@ msgstr ""
 msgid "Delete Bookmark"
 msgstr ""
 
-#: src/gnome/tables.rs:565
+#: src/gnome/tables.rs:577
 msgid "Delete Column"
 msgstr ""
 
@@ -745,7 +745,7 @@ msgstr ""
 msgid "Delete Image"
 msgstr ""
 
-#: src/gnome/tables.rs:564
+#: src/gnome/tables.rs:576
 msgid "Delete Row"
 msgstr ""
 
@@ -757,7 +757,7 @@ msgstr ""
 msgid "Delete Style"
 msgstr ""
 
-#: src/gnome/tables.rs:613
+#: src/gnome/tables.rs:625
 msgid "Delete Table"
 msgstr ""
 
@@ -1029,7 +1029,7 @@ msgstr ""
 msgid "Equal"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha29.rs:164 src/gnome/equations.rs:10 src/navigation.rs:315
+#: src/gnome/diagnostics/alpha29.rs:170 src/gnome/equations.rs:10 src/navigation.rs:315
 msgid "Equation"
 msgstr ""
 
@@ -1553,7 +1553,7 @@ msgstr ""
 msgid "Left (mm)"
 msgstr ""
 
-#: src/gnome/tables.rs:553
+#: src/gnome/tables.rs:565
 msgid "Left Column"
 msgstr ""
 
@@ -1645,7 +1645,7 @@ msgstr ""
 msgid "Mathematical Expression"
 msgstr ""
 
-#: src/gnome/context.rs:636 src/gnome/tables.rs:560
+#: src/gnome/context.rs:636 src/gnome/tables.rs:572
 msgid "Merge Cells"
 msgstr ""
 
@@ -1933,7 +1933,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:226 src/gnome/context.rs:507 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/format136.rs:415 src/gnome/diagnostics/register.rs:182 src/gnome/paragraph.rs:1224 src/gnome/tab.rs:311 src/gnome/tab.rs:581
+#: src/gnome/context.rs:226 src/gnome/context.rs:507 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/format136.rs:415 src/gnome/diagnostics/register.rs:185 src/gnome/paragraph.rs:1224 src/gnome/tab.rs:311 src/gnome/tab.rs:581
 msgid "Paragraph"
 msgstr ""
 
@@ -1981,7 +1981,7 @@ msgstr ""
 msgid "Place the caret in a table of contents."
 msgstr ""
 
-#: src/gnome/tables.rs:669
+#: src/gnome/tables.rs:529 src/gnome/tables.rs:531 src/gnome/tables.rs:536 src/gnome/tables.rs:682
 msgid "Place the caret in a table."
 msgstr ""
 
@@ -2033,7 +2033,7 @@ msgstr ""
 msgid "Properties"
 msgstr ""
 
-#: src/gnome/context.rs:647 src/gnome/tables.rs:593
+#: src/gnome/context.rs:647 src/gnome/tables.rs:605
 msgid "Properties and Split Cells…"
 msgstr ""
 
@@ -2249,7 +2249,7 @@ msgstr ""
 msgid "Right (mm)"
 msgstr ""
 
-#: src/gnome/tables.rs:555
+#: src/gnome/tables.rs:567
 msgid "Right Column"
 msgstr ""
 
@@ -2273,11 +2273,11 @@ msgstr ""
 msgid "Row"
 msgstr ""
 
-#: src/gnome/context.rs:574 src/gnome/tables.rs:549
+#: src/gnome/context.rs:574 src/gnome/tables.rs:561
 msgid "Row Above"
 msgstr ""
 
-#: src/gnome/context.rs:575 src/gnome/tables.rs:550
+#: src/gnome/context.rs:575 src/gnome/tables.rs:562
 msgid "Row Below"
 msgstr ""
 
@@ -2453,11 +2453,11 @@ msgstr ""
 msgid "Select All"
 msgstr ""
 
-#: src/gnome/tables.rs:545
+#: src/gnome/tables.rs:557
 msgid "Select Cell"
 msgstr ""
 
-#: src/gnome/tables.rs:542
+#: src/gnome/tables.rs:554
 msgid "Select Column"
 msgstr ""
 
@@ -2465,11 +2465,11 @@ msgstr ""
 msgid "Select Matching Hunspell .aff and .dic Files"
 msgstr ""
 
-#: src/gnome/tables.rs:541
+#: src/gnome/tables.rs:553
 msgid "Select Row"
 msgstr ""
 
-#: src/gnome/tables.rs:546
+#: src/gnome/tables.rs:558
 msgid "Select Table"
 msgstr ""
 
@@ -2489,7 +2489,7 @@ msgstr ""
 msgid "Select an image in the document to edit it."
 msgstr ""
 
-#: src/captions.rs:667
+#: src/captions.rs:679
 msgid "Select an image or place the caret in a table to insert a caption."
 msgstr ""
 
@@ -2661,7 +2661,7 @@ msgstr ""
 msgid "Split Selected Cells"
 msgstr ""
 
-#: src/gnome/tables.rs:561
+#: src/gnome/tables.rs:573
 msgid "Split Table"
 msgstr ""
 
@@ -2697,7 +2697,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:223 src/gnome/context.rs:506 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/format136.rs:416 src/gnome/diagnostics/performance_checks.rs:68 src/gnome/diagnostics/register.rs:181 src/gnome/styles.rs:499 src/gnome/tab.rs:307 src/gnome/tab.rs:580
+#: src/gnome/context.rs:223 src/gnome/context.rs:506 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/format136.rs:416 src/gnome/diagnostics/performance_checks.rs:68 src/gnome/diagnostics/register.rs:184 src/gnome/styles.rs:499 src/gnome/tab.rs:307 src/gnome/tab.rs:580
 msgid "Style"
 msgstr ""
 
@@ -2801,7 +2801,7 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
-#: src/gnome/context.rs:229 src/gnome/context.rs:508 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/format136.rs:414 src/gnome/diagnostics/register.rs:183 src/gnome/diagnostics/spellcheck.rs:133 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:582
+#: src/gnome/context.rs:229 src/gnome/context.rs:508 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/format136.rs:414 src/gnome/diagnostics/register.rs:186 src/gnome/diagnostics/spellcheck.rs:133 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:582
 msgid "Text"
 msgstr ""
 
@@ -2969,7 +2969,7 @@ msgstr ""
 msgid "There are no documents to recover."
 msgstr ""
 
-#: src/navigation.rs:483 src/tables.rs:19
+#: src/navigation.rs:492 src/tables.rs:19
 msgid "There is no table at this position"
 msgstr ""
 

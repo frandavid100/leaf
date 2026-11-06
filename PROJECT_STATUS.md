@@ -17,8 +17,10 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 David autoriza resolver #132 y completar conjuntamente #121/#124/#126/#127.
 Las asociaciones explícitas de leyendas, su ocultación sin pérdida, propiedades
 compartidas, navegación tipada y decoración temporal están implementadas bajo
-validación. Ocho regresiones específicas sin GUI pasan; faltan la validación
-gráfica completa e instalada y la revisión final antes de cualquier cierre.
+validación. Nueve regresiones específicas sin GUI pasan, junto con controles
+GTK por clic/teclado en inglés y español, tema claro/oscuro y escala 1×/2×.
+Faltan la batería gráfica completa, la instalación y la revisión final antes
+de cualquier cierre.
 [Modelo, comprobaciones y límites](docs/CAPTION_OWNERSHIP.md).
 
 El documento original de #132 no reproduce el solapamiento en los controles

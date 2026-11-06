@@ -141,6 +141,9 @@ mod workspace;
 use workspace::*;
 
 // Opt-in diagnostics and synthetic fixtures; no normal startup work.
+#[path = "diagnostics/captions.rs"]
+mod caption_checks;
+use caption_checks::*;
 #[path = "diagnostics/alpha31.rs"]
 mod alpha31_checks;
 use alpha31_checks::*;
