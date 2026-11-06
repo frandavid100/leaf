@@ -13,7 +13,7 @@ Motor, renderer, dependencias y parches permanecen en la revisión fijada de Wor
 | #129 | Clic ordinario sobre el enlace estructurado del índice, puntero y decoración temporal localizada por páginas; sin inferir destino por título o página impresa. |
 | #130 | Iconos, propiedades enlazadas, Fuente interna con entrada/previsualizaciones, tamaño expandido, repetición propia de fuente/idioma, Superíndice en Más, Sangrías internas y Bordes/Sombreado compartidos. |
 | #121 | Parcial: propiedades visibles/insensibles, explicación mediante tooltip, inserción inferior, transición nativa y herramientas compartidas. La dependencia de #127 sigue pendiente. |
-| #124 | Parcial: índice canónico de todos los tipos disponibles, lectura de tablas anidadas y filtro nativo. Faltan asociación de leyendas y completar sincronización/hierarquía con todos los filtros. |
+| #124 | Parcial: índice canónico de todos los tipos disponibles, lectura de tablas anidadas y filtro nativo. Filtros con contexto de sección/títulos y selección activa por extensión real de enlaces, objetos y notas. Falta la asociación de leyendas. |
 | #126/#127 | Sin cierre. Los objetos imagen no tienen una identidad persistente de leyenda; `references.caption` inserta un párrafo Caption/SEQ contiguo, sin propietario. No se dibujan asociaciones adivinadas ni se oculta/elimina texto para simular una propiedad reversible. |
 | #107 | Reproducido de nuevo: el objeto queda en página 0 al moverlo a un párrafo cuyo primer carácter es U+000C. Reinsertarlo después del salto mediante las API públicas conserva el fallo. Se mantiene rollback atómico y el issue abierto. |
 | #1/#2 | Los casos fijados del motor y sus reproducciones anteriores siguen vigentes; no se modifica ni actualiza el motor en esta pasada. |
@@ -32,7 +32,7 @@ bookmarks reales e invariancia de documento/historial durante navegación.
 Las regresiones anteriores adaptan explícitamente los requisitos sustituidos
 (Fuente interna, tamaño expandido, Sangrías internas y controles insensibles).
 
-172 pruebas Rust y cuatro Python; 854 mensajes completos inglés/español.
+173 pruebas Rust y cuatro Python; 854 mensajes completos inglés/español.
 Formato, catálogos y enlaces locales comprobados. Pruebas GTK locales con Xvfb,
 interacción de Texto y Fuente, revisión, Párrafo y la nueva pasada superadas.
 La CI optimizada y las instalaciones GNOME 49/51 deben terminar correctamente

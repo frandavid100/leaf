@@ -85,7 +85,7 @@ msgstr ""
 msgid "Alignment: {value}"
 msgstr ""
 
-#: src/gnome/navigation.rs:534 src/gnome/paragraph.rs:874 src/gnome/review.rs:390 src/gnome/tables.rs:389
+#: src/gnome/navigation.rs:624 src/gnome/paragraph.rs:874 src/gnome/review.rs:390 src/gnome/tables.rs:389
 msgid "All"
 msgstr ""
 
@@ -205,7 +205,7 @@ msgstr ""
 msgid "Automatic Color"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:156 src/gnome/diagnostics/annotations.rs:168 src/gnome/menus.rs:519 src/gnome/navigation.rs:545 src/navigation.rs:319
+#: src/gnome/diagnostics/annotations.rs:156 src/gnome/diagnostics/annotations.rs:168 src/gnome/menus.rs:519 src/gnome/navigation.rs:635 src/navigation.rs:319
 msgid "Automatic Fields"
 msgstr ""
 
@@ -253,7 +253,7 @@ msgstr ""
 msgid "Bookmark Name"
 msgstr ""
 
-#: src/gnome/navigation.rs:536
+#: src/gnome/navigation.rs:626
 msgid "Bookmarks"
 msgstr ""
 
@@ -345,7 +345,7 @@ msgstr ""
 msgid "Caption"
 msgstr ""
 
-#: src/gnome/navigation.rs:540
+#: src/gnome/navigation.rs:630
 msgid "Captions"
 msgstr ""
 
@@ -485,11 +485,11 @@ msgstr ""
 msgid "Close Tab"
 msgstr ""
 
-#: src/gnome/navigation.rs:156
+#: src/gnome/navigation.rs:205
 msgid "Collapse"
 msgstr ""
 
-#: src/gnome/navigation.rs:147
+#: src/gnome/navigation.rs:196
 msgid "Collapse Section"
 msgstr ""
 
@@ -1037,7 +1037,7 @@ msgstr ""
 msgid "Endnote"
 msgstr ""
 
-#: src/gnome/navigation.rs:542
+#: src/gnome/navigation.rs:632
 msgid "Endnotes"
 msgstr ""
 
@@ -1085,7 +1085,7 @@ msgstr ""
 msgid "Equation"
 msgstr ""
 
-#: src/gnome/navigation.rs:543
+#: src/gnome/navigation.rs:633
 msgid "Equations"
 msgstr ""
 
@@ -1105,11 +1105,11 @@ msgstr ""
 msgid "Existing Format"
 msgstr ""
 
-#: src/gnome/navigation.rs:154
+#: src/gnome/navigation.rs:203
 msgid "Expand"
 msgstr ""
 
-#: src/gnome/navigation.rs:145
+#: src/gnome/navigation.rs:194
 msgid "Expand Section"
 msgstr ""
 
@@ -1149,7 +1149,7 @@ msgstr ""
 msgid "File Name"
 msgstr ""
 
-#: src/gnome/navigation.rs:548
+#: src/gnome/navigation.rs:638
 msgid "Filter Navigation"
 msgstr ""
 
@@ -1241,7 +1241,7 @@ msgstr ""
 msgid "Footnote Options"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:383 src/gnome/navigation.rs:541
+#: src/gnome/document_properties_dialog.rs:383 src/gnome/navigation.rs:631
 msgid "Footnotes"
 msgstr ""
 
@@ -1321,7 +1321,7 @@ msgstr ""
 msgid "Heading Levels"
 msgstr ""
 
-#: src/gnome/navigation.rs:535
+#: src/gnome/navigation.rs:625
 msgid "Headings"
 msgstr ""
 
@@ -1401,7 +1401,7 @@ msgstr ""
 msgid "Image spacing must be between 0 and 144 points."
 msgstr ""
 
-#: src/gnome/navigation.rs:537
+#: src/gnome/navigation.rs:627
 msgid "Images"
 msgstr ""
 
@@ -1693,7 +1693,7 @@ msgstr ""
 msgid "Linked to Previous Section"
 msgstr ""
 
-#: src/gnome/navigation.rs:544
+#: src/gnome/navigation.rs:634
 msgid "Links"
 msgstr ""
 
@@ -1841,7 +1841,7 @@ msgstr ""
 msgid "No Comments"
 msgstr ""
 
-#: src/gnome/navigation.rs:527
+#: src/gnome/navigation.rs:617
 msgid "No Headings in This Document"
 msgstr ""
 
@@ -1877,7 +1877,7 @@ msgstr ""
 msgid "No document"
 msgstr ""
 
-#: src/gnome/navigation.rs:247
+#: src/gnome/navigation.rs:303
 msgid "No elements of this type in the document."
 msgstr ""
 
@@ -2521,7 +2521,7 @@ msgstr ""
 msgid "Section Links"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:76 src/gnome/navigation.rs:280 src/gnome/navigation.rs:309
+#: src/gnome/document_properties_dialog.rs:76 src/gnome/navigation.rs:350 src/gnome/navigation.rs:379
 msgid "Section Properties"
 msgstr ""
 
@@ -2533,7 +2533,7 @@ msgstr ""
 msgid "Section Text Direction"
 msgstr ""
 
-#: src/gnome/navigation.rs:260
+#: src/gnome/navigation.rs:329
 msgid "Section {number}"
 msgstr ""
 
@@ -2869,7 +2869,7 @@ msgstr ""
 msgid "Table Size"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:98 src/gnome/menus.rs:449 src/gnome/navigation.rs:539 src/gnome/references.rs:209 src/navigation.rs:315
+#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:98 src/gnome/menus.rs:449 src/gnome/navigation.rs:629 src/gnome/references.rs:209 src/navigation.rs:315
 msgid "Table of Contents"
 msgstr ""
 
@@ -2877,7 +2877,7 @@ msgstr ""
 msgid "Table {number}"
 msgstr ""
 
-#: src/gnome/navigation.rs:538
+#: src/gnome/navigation.rs:628
 msgid "Tables"
 msgstr ""
 

@@ -178,7 +178,9 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
                 .list
                 .selected_row()
                 .map(|r| r.widget_name().to_string()),
-            index.map(|i| format!("outline-heading-{i}"))
+            index
+                .map(|i| format!("outline-heading-{i}"))
+                .or_else(|| (p == 0).then(|| "outline-section-1".into()))
         );
         let c = ui.current.borrow();
         let s = &c.as_ref().unwrap().session;

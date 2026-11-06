@@ -383,3 +383,39 @@ pub fn elements(doc: &Document) -> Vec<Element> {
     out.sort_by(|a, b| a.pos.cmp(&b.pos).then(a.kind.cmp(&b.kind)));
     out
 }
+
+/// Active navigation targets use their actual canonical extent, not merely the
+/// nearest paragraph. A table is a fallback container for its nested objects.
+pub fn element_contains(s: &wordcraft_engine::Session, e: &Element, focus: &Pos) -> bool {
+    match e.kind {
+        4 => e.pos.path.cell().is_some_and(|(table, _, _)| {
+            focus.story == e.pos.story && focus.path.0.starts_with(&table.0)
+        }),
+        5 => crate::references::toc_span_at(s, focus).is_some_and(|(a, _)| a.path == e.pos.path),
+        6 => focus.story == e.pos.story && focus.path == e.pos.path,
+        7 | 8 => match s.doc.para_at(&e.pos).and_then(|p| p.object_at(e.pos.off)) {
+            Some(wordcraft_doc::para::InlineObject::NoteRef { id, .. })
+                if focus.story == StoryRef::Part(*id) =>
+            {
+                true
+            }
+            _ => {
+                focus.story == e.pos.story
+                    && focus.path == e.pos.path
+                    && (e.pos.off..=e.pos.off + wordcraft_doc::para::OBJ.len_utf8())
+                        .contains(&focus.off)
+            }
+        },
+        10 => {
+            focus.story == e.pos.story
+                && focus.path == e.pos.path
+                && crate::links::range_at(s, focus).is_some_and(|(a, _, _)| a == e.pos)
+        }
+        _ => {
+            focus.story == e.pos.story
+                && focus.path == e.pos.path
+                && (e.pos.off..=e.pos.off + wordcraft_doc::para::OBJ.len_utf8())
+                    .contains(&focus.off)
+        }
+    }
+}

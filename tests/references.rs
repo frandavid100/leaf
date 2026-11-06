@@ -174,3 +174,27 @@ fn toc_destinations_use_distinct_stored_bookmarks_and_navigation_is_read_only() 
     assert!(index.iter().any(|e| e.kind == 10));
     assert!(index.windows(2).all(|p| p[0].pos <= p[1].pos));
 }
+
+#[test]
+fn navigation_active_elements_use_link_extent_and_note_story() {
+    use wordcraft_gnome::{links, navigation};
+    let mut s = Session::new(Document::from_text(
+        "linked ordinary text\nA note reference",
+    ));
+    selection::select_range(&mut s, &Pos::body(0, 0), &Pos::body(0, 6)).unwrap();
+    links::apply(&mut s, "https://example.org/").unwrap();
+    selection::set_caret(&mut s, &Pos::body(1, 3), false).unwrap();
+    references::insert_footnote(&mut s).unwrap();
+    let note_pos = s.sel.focus.clone();
+    let before = s.doc.clone();
+    let depth = s.undo_depth();
+    let index = navigation::elements(&s.doc);
+    let link = index.iter().find(|e| e.kind == 10).unwrap();
+    assert!(navigation::element_contains(&s, link, &Pos::body(0, 2)));
+    assert!(!navigation::element_contains(&s, link, &Pos::body(0, 12)));
+    let note = index.iter().find(|e| e.kind == 7).unwrap();
+    assert!(navigation::element_contains(&s, note, &note_pos));
+    assert!(!navigation::element_contains(&s, note, &Pos::body(0, 2)));
+    assert_eq!(s.doc, before);
+    assert_eq!(s.undo_depth(), depth);
+}

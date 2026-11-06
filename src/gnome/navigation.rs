@@ -74,7 +74,7 @@ impl OutlinePanel {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
-        let (headings, bookmarks, sections, focus, elements) = {
+        let (headings, mut bookmarks, mut sections, focus, elements) = {
             let value = ui.current.borrow();
             let Some(d) = value.as_ref() else {
                 return;
@@ -94,6 +94,47 @@ impl OutlinePanel {
                 wordcraft_gnome::navigation::elements(&d.session.doc),
             )
         };
+        let section_of = |p: &Pos| {
+            sections
+                .iter()
+                .rposition(|(_, start)| start <= p)
+                .unwrap_or(0)
+        };
+        let owner_of = |p: &Pos| {
+            headings
+                .iter()
+                .rposition(|h| h.pos <= *p && section_of(&h.pos) == section_of(p))
+        };
+        for mark in &mut bookmarks {
+            mark.heading = owner_of(&mark.pos);
+        }
+        let filter = self.filter.selected();
+        let matches = if filter == 1 {
+            headings.iter().map(|h| h.pos.clone()).collect::<Vec<_>>()
+        } else if filter == 2 {
+            bookmarks.iter().map(|m| m.pos.clone()).collect()
+        } else {
+            elements
+                .iter()
+                .filter(|e| filter == 0 || filter == e.kind)
+                .map(|e| e.pos.clone())
+                .collect()
+        };
+        let mut context = HashSet::new();
+        for pos in &matches {
+            if let Some(owner) = owner_of(pos) {
+                let mut level = 10;
+                for (i, h) in headings[..=owner].iter().enumerate().rev() {
+                    if section_of(&h.pos) != section_of(pos) {
+                        break;
+                    }
+                    if h.level < level {
+                        context.insert(i);
+                        level = h.level;
+                    }
+                }
+            }
+        }
         while let Some(child) = self.list.first_child() {
             self.list.remove(&child);
         }
@@ -104,14 +145,22 @@ impl OutlinePanel {
         let current = wordcraft_gnome::navigation::containing_heading(&headings, &focus);
         self.headings.replace(headings.clone());
         let mut selected = None;
-        let filter = self.filter.selected();
         for mark in bookmarks
             .iter()
             .filter(|b| (filter == 0 || filter == 2) && b.heading.is_none())
         {
             self.append_bookmark(&ui, mark, 0);
         }
+        let mut previous_section = None;
         for (i, h) in headings.iter().enumerate() {
+            let section = section_of(&h.pos);
+            if previous_section != Some(section) {
+                hidden = None;
+                previous_section = Some(section);
+            }
+            if filter > 1 && !context.contains(&i) {
+                continue;
+            }
             if let Some(level) = hidden {
                 if h.level > level {
                     continue;
@@ -124,7 +173,7 @@ impl OutlinePanel {
                     wordcraft_gnome::navigation::containing_heading(&headings, &e.pos) == Some(i)
                 });
             let key = format!("{:?}:{}", h.pos.path, h.text);
-            let collapsed = self.collapsed.borrow().contains(&key);
+            let collapsed = filter == 0 && self.collapsed.borrow().contains(&key);
             if collapsed && has_children {
                 hidden = Some(h.level);
             }
@@ -201,19 +250,26 @@ impl OutlinePanel {
             .enumerate()
             .filter(|(_, e)| filter == 0 || filter == e.kind)
         {
-            let owner = wordcraft_gnome::navigation::containing_heading(&headings, &element.pos);
+            let owner = owner_of(&element.pos);
             if filter == 0
                 && owner.is_some_and(|i| {
-                    let level = headings[i].level;
-                    headings[..=i]
-                        .iter()
-                        .rev()
-                        .filter(|h| h.level <= level)
-                        .any(|h| {
-                            self.collapsed
+                    let mut level = 10;
+                    for h in headings[..=i].iter().rev() {
+                        if section_of(&h.pos) != section_of(&element.pos) {
+                            break;
+                        }
+                        if h.level < level {
+                            level = h.level;
+                            if self
+                                .collapsed
                                 .borrow()
                                 .contains(&format!("{:?}:{}", h.pos.path, h.text))
-                        })
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    false
                 })
             {
                 continue;
@@ -243,11 +299,24 @@ impl OutlinePanel {
             count += 1;
         }
         self.elements.replace(elements);
-        if filter >= 3 {
+        if filter > 0 {
             self.status.set_text(wordcraft_gnome::t!(
                 "No elements of this type in the document."
             ));
-            self.status.set_visible(count == 0);
+            self.status.set_visible(if filter < 3 {
+                matches.is_empty()
+            } else {
+                count == 0
+            });
+        }
+        let wanted_sections = matches.iter().map(section_of).collect::<HashSet<_>>();
+        if filter > 0 {
+            sections = sections
+                .into_iter()
+                .enumerate()
+                .filter(|(i, _)| wanted_sections.contains(i))
+                .map(|(_, v)| v)
+                .collect();
         }
         for (number, pos) in sections {
             let index = self
@@ -261,6 +330,7 @@ impl OutlinePanel {
                 &[("number", number.to_string())],
             );
             let row = gtk::ListBoxRow::new();
+            row.set_widget_name(&format!("outline-section-{number}"));
             let text = gtk::Label::new(Some(&label));
             text.set_xalign(0.0);
             text.set_margin_start(12);
@@ -342,31 +412,48 @@ impl OutlinePanel {
         };
         let moved = self.caret.borrow().as_ref() != Some(&key);
         self.caret.replace(Some(key.clone()));
-        let element = self
-            .elements
-            .borrow()
-            .iter()
-            .enumerate()
-            .find(|(_, e)| {
-                e.pos.story == key.2.story
-                    && e.pos.path == key.2.path
-                    && (!e.object
-                        || e.kind == 6
-                        || (e.pos.off <= key.2.off
-                            && key.2.off <= e.pos.off + wordcraft_doc::para::OBJ.len_utf8()))
-            })
-            .and_then(|(n, _)| {
-                find_widget(&self.list, &format!("outline-element-{n}"))
-                    .and_then(|w| w.downcast::<gtk::ListBoxRow>().ok())
-            });
+        let element = {
+            let current = ui.current.borrow();
+            let d = current.as_ref().unwrap();
+            self.elements
+                .borrow()
+                .iter()
+                .enumerate()
+                .filter(|(_, e)| {
+                    wordcraft_gnome::navigation::element_contains(&d.session, e, &key.2)
+                })
+                .max_by_key(|(_, e)| if e.kind == 4 { 0 } else { 1 })
+                .and_then(|(n, _)| {
+                    find_widget(&self.list, &format!("outline-element-{n}"))
+                        .and_then(|w| w.downcast::<gtk::ListBoxRow>().ok())
+                })
+        };
         if let Some(row) = element {
-            self.list.select_row(Some(&row));
+            self.select_outline_row(&row);
             return;
         }
         let headings = self.headings.borrow();
-        let owner = wordcraft_gnome::navigation::containing_heading(&headings, &key.2);
+        let boundary = ui.current.borrow().as_ref().and_then(|d| {
+            wordcraft_gnome::navigation::section_starts(&d.session.doc)
+                .into_iter()
+                .filter(|(_, p)| p <= &key.2)
+                .last()
+        });
+        let owner =
+            wordcraft_gnome::navigation::containing_heading(&headings, &key.2).filter(|i| {
+                boundary
+                    .as_ref()
+                    .is_none_or(|(_, start)| headings[*i].pos >= *start)
+            });
         let Some(owner) = owner else {
-            self.list.unselect_all();
+            let number = boundary.map_or(1, |(n, _)| n);
+            if let Some(row) = find_widget(&self.list, &format!("outline-section-{number}"))
+                .and_then(|w| w.downcast::<gtk::ListBoxRow>().ok())
+            {
+                self.select_outline_row(&row);
+            } else {
+                self.list.unselect_all();
+            }
             return;
         };
         let find = |i: usize| {
@@ -396,31 +483,34 @@ impl OutlinePanel {
         }
         drop(headings);
         if let Some(row) = row {
-            self.list.select_row(Some(&row));
-            let weak = row.downgrade();
-            glib::idle_add_local_once(move || {
-                let Some(row) = weak.upgrade() else { return };
-                let Some(scroll) = row
-                    .ancestor(gtk::ScrolledWindow::static_type())
-                    .and_then(|w| w.downcast::<gtk::ScrolledWindow>().ok())
-                else {
-                    return;
-                };
-                let Some(bounds) = scroll.child().and_then(|c| row.compute_bounds(&c)) else {
-                    return;
-                };
-                let adj = scroll.vadjustment();
-                let top = bounds.y() as f64;
-                let bottom = top + bounds.height() as f64;
-                if top < adj.value() {
-                    adj.set_value(top);
-                } else if bottom > adj.value() + adj.page_size() {
-                    adj.set_value(bottom - adj.page_size());
-                }
-            });
+            self.select_outline_row(&row);
         } else {
             self.list.unselect_all();
         }
+    }
+    fn select_outline_row(&self, row: &gtk::ListBoxRow) {
+        self.list.select_row(Some(row));
+        let weak = row.downgrade();
+        glib::idle_add_local_once(move || {
+            let Some(row) = weak.upgrade() else { return };
+            let Some(scroll) = row
+                .ancestor(gtk::ScrolledWindow::static_type())
+                .and_then(|w| w.downcast::<gtk::ScrolledWindow>().ok())
+            else {
+                return;
+            };
+            let Some(bounds) = scroll.child().and_then(|c| row.compute_bounds(&c)) else {
+                return;
+            };
+            let adj = scroll.vadjustment();
+            let top = bounds.y() as f64;
+            let bottom = top + bounds.height() as f64;
+            if top < adj.value() {
+                adj.set_value(top);
+            } else if bottom > adj.value() + adj.page_size() {
+                adj.set_value(bottom - adj.page_size());
+            }
+        });
     }
     fn append_bookmark(
         &self,
