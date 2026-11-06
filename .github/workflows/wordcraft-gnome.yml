@@ -709,6 +709,25 @@ jobs:
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/smoke-test.sh 2>&1 | tee dist/flatpak-smoke.log
+      - name: Compare failed font input with the published Alpha30 control
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p dist/alpha30-font-control
+          gh release download v0.1.0-alpha.30 --pattern 'Leaf-0.1.0-alpha.30-x86_64.flatpak' --dir "$RUNNER_TEMP/alpha30-font-control"
+          git show v0.1.0-alpha.30:tools/interaction-pointer-test.sh > "$RUNNER_TEMP/alpha30-font-control/driver.sh"
+          flatpak --user install -y --noninteractive "$RUNNER_TEMP/alpha30-font-control/Leaf-0.1.0-alpha.30-x86_64.flatpak"
+          set +e
+          (
+            cd dist/alpha30-font-control
+            export LEAF_CONTROL_DRIVER="$RUNNER_TEMP/alpha30-font-control/driver.sh"
+            export LEAF_CONTROL_RUNNER="$GITHUB_WORKSPACE/tools/flatpak_print_run.sh"
+            xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash -c 'bash "$LEAF_CONTROL_DRIVER" "$LEAF_CONTROL_RUNNER"' > driver.log 2>&1
+          )
+          status=$?
+          printf 'ALPHA30_FONT_CONTROL_EXIT=%s\n' "$status" | tee dist/alpha30-font-control/result.log
+          cat dist/alpha30-font-control/interactions-pointer.log || true
       - name: Verify Alpha29 controls and pointer gestures in the installed Flatpak
         run: |
           mkdir -p "$HOME/.var/app/io.github.frandavid100.leaf/cache" dist/alpha29-installed
