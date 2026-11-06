@@ -1,10 +1,27 @@
 use super::*;
 
 // Native table controls. Document changes remain upstream commands.
-pub(super) fn table_command(ui: &Rc<Ui>, command: &str, args: serde_json::Value) {
-    if let Err(e) = format_execute(ui, command, args) {
-        ui.toasts.add_toast(Toast::new(&e));
+fn use_table_target(s: &mut Session) -> Result<(), String> {
+    if wordcraft_gnome::tables::in_table(s) {
+        return Ok(());
     }
+    let target = wordcraft_gnome::captions::table_target(s)
+        .ok_or(wordcraft_gnome::t!("Place the caret in a table."))?;
+    let wordcraft_gnome::captions::Target::Table { path, .. } = target else {
+        return Err(wordcraft_gnome::t!("Place the caret in a table.").into());
+    };
+    let element = wordcraft_gnome::navigation::elements(&s.doc)
+        .into_iter()
+        .find(|e| e.table.as_ref() == Some(&path))
+        .ok_or(wordcraft_gnome::t!("Place the caret in a table."))?;
+    wordcraft_gnome::navigation::activate_element(s, &element)
+}
+pub(super) fn table_command(ui: &Rc<Ui>, command: &str, args: serde_json::Value) {
+    tools_change(ui, |s| {
+        use_table_target(s)?;
+        s.run(command, &args).map_err(|e| e.to_string())?;
+        Ok(())
+    });
     caret_ensure_visible(ui);
     ui.document_box.grab_focus();
     if let Some(menu) = find_widget(&ui.format_toolbar, "table-menu")
@@ -193,6 +210,10 @@ pub(super) fn show_table_properties(ui: &Rc<Ui>, parent: &ApplicationWindow) {
     let state = {
         let mut state = ui.current.borrow_mut();
         let Some(doc) = state.as_mut() else { return };
+        if let Err(e) = use_table_target(&mut doc.session) {
+            ui.toasts.add_toast(Toast::new(&e));
+            return;
+        }
         match doc.session.run("table.properties", &serde_json::json!({})) {
             Ok(v) => v,
             Err(e) => {
@@ -524,18 +545,7 @@ pub(super) fn install_table_controls(
                 return;
             }
             if tools_change(&ui, |s| {
-                if !wordcraft_gnome::tables::in_table(s) {
-                    let target = wordcraft_gnome::captions::table_target(s)
-                        .ok_or(wordcraft_gnome::t!("Place the caret in a table."))?;
-                    let wordcraft_gnome::captions::Target::Table { path, .. } = target else {
-                        return Err(wordcraft_gnome::t!("Place the caret in a table.").into());
-                    };
-                    let element = wordcraft_gnome::navigation::elements(&s.doc)
-                        .into_iter()
-                        .find(|e| e.table.as_ref() == Some(&path))
-                        .ok_or(wordcraft_gnome::t!("Place the caret in a table."))?;
-                    wordcraft_gnome::navigation::activate_element(s, &element)?;
-                }
+                use_table_target(s)?;
                 s.run("table.selectTable", &serde_json::json!({}))
                     .map_err(|e| e.to_string())?;
                 wordcraft_gnome::captions::set_visible(s, show)
@@ -675,8 +685,10 @@ pub(super) fn refresh_table_controls(ui: &Rc<Ui>, pop: &gtk::Popover) {
     let value = ui.current.borrow();
     let doc = value.as_ref();
     if let Some(w) = find_widget(&root, "table-context") {
-        let targeted =
-            doc.is_some_and(|d| wordcraft_gnome::captions::table_target(&d.session).is_some());
+        let targeted = doc.is_some_and(|d| {
+            wordcraft_gnome::tables::in_table(&d.session)
+                || wordcraft_gnome::captions::table_target(&d.session).is_some()
+        });
         w.set_sensitive(targeted);
         root.set_tooltip_text(
             (!targeted).then_some(wordcraft_gnome::t!("Place the caret in a table.")),

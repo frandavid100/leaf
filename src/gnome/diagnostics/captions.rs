@@ -227,6 +227,24 @@ pub(super) fn captions_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
                 elements.show("table");
             }
             12 => {
+                let (pos, original, depth) = {
+                    let c = u.current.borrow();
+                    let s = &c.as_ref().unwrap().session;
+                    (s.sel.focus.clone(), s.doc.clone(), s.undo_depth())
+                };
+                table_command(&u, "table.selectTable", json!({}));
+                {
+                    let mut c = u.current.borrow_mut();
+                    let s = &mut c.as_mut().unwrap().session;
+                    assert!(
+                        s.cell_range().is_some(),
+                        "table actions resolve caption owner"
+                    );
+                    assert_eq!(s.doc, original);
+                    assert_eq!(s.undo_depth(), depth);
+                    selection::set_caret(s, &pos, false).unwrap();
+                }
+                refresh_selection(&u);
                 let button = check(&elements.pop, "table-show-caption");
                 assert!(
                     button.is_sensitive() && button.is_active(),
