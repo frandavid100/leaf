@@ -68,3 +68,7 @@ viewport y la antigua ubicación de Fuente) y la dependencia de la regla respect
 a la página activa por viewport. Las regresiones se actualizaron a los requisitos
 vigentes y la regla conserva geometría visible independiente de la miniatura/caret.
 La prueba local completa de reglas supera sus 60 pasos.
+
+La primera candidata detectó que el conductor FlatPark cambiaba de directorio
+sin llevar consigo el nuevo script auxiliar de Alpha.30. Se incorpora al entorno
+de diagnóstico y se exige repetir la instalación GNOME 51 antes de publicar.
