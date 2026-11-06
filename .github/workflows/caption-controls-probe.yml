@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build: [default-sockets, signals]
+        build: [atomic-one, atomic-two]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,7 +21,7 @@ jobs:
         run: |
           sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|http://security.ubuntu.com/ubuntu|https://security.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
           sudo timeout 120s apt-get -o Acquire::Retries=1 update
-          sudo env DEBIAN_FRONTEND=noninteractive timeout 180s apt-get install -y --no-install-recommends flatpak xvfb xauth xdotool scrot dbus-x11 locales x11-utils xinput libgtk-4-dev gcc pkg-config
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 180s apt-get install -y --no-install-recommends flatpak xvfb xauth xdotool scrot dbus-x11 locales x11-utils xinput
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           sudo locale-gen en_US.UTF-8
           flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -32,50 +32,6 @@ jobs:
           run-id: 42296908566
           github-token: ${{ github.token }}
           path: candidate
-      - name: Compile read-only signal observer
-        run: |
-          mkdir -p out
-          cat > out/input-trace.c <<'CTRACE'
-          /* Temporary read-only signal tracing for the installed GTK control comparison. */
-          #include <gtk/gtk.h>
-          #include <stdio.h>
-          static gboolean trace(GSignalInvocationHint *hint, guint n, const GValue *v, gpointer unused) {
-            GObject *object = g_value_get_object(v);
-            const char *signal = g_signal_name(hint->signal_id);
-            if (GTK_IS_EVENT_CONTROLLER(object)) {
-              GtkEventController *c = GTK_EVENT_CONTROLLER(object);
-              GtkWidget *w = gtk_event_controller_get_widget(c);
-              GdkEvent *e = gtk_event_controller_get_current_event(c);
-              double ex=0,ey=0,tx=0,ty=0;
-              GtkNative *native=e?gtk_native_get_for_surface(gdk_event_get_surface(e)):NULL;
-              if(e)gdk_event_get_position(e,&ex,&ey);
-              if(native)gtk_native_get_surface_transform(native,&tx,&ty);
-              GtkWidget *pick=native?gtk_widget_pick(GTK_WIDGET(native),ex+tx,ey+ty,GTK_PICK_DEFAULT):NULL;
-              fprintf(stderr,"INPUT_PICK native=%s eventxy=%.1f,%.1f transform=%.1f,%.1f pick=%s/%s event-target-xy=%.1f,%.1f\n",native?G_OBJECT_TYPE_NAME(native):"null",ex,ey,tx,ty,pick?G_OBJECT_TYPE_NAME(pick):"null",pick?gtk_widget_get_name(pick):"null",n>3 && G_VALUE_HOLDS_DOUBLE(v+2)?g_value_get_double(v+2):-1.,n>3 && G_VALUE_HOLDS_DOUBLE(v+3)?g_value_get_double(v+3):-1.);
-              fprintf(stderr,"INPUT_TRACE time=%lld signal=%s controller=%s widget=%s/%s event=%d surface=%p state=%d\n",(long long)g_get_monotonic_time(),signal,G_OBJECT_TYPE_NAME(c),w?G_OBJECT_TYPE_NAME(w):"null",w?gtk_widget_get_name(w):"null",e?gdk_event_get_event_type(e):-1,e?(void*)gdk_event_get_surface(e):NULL,GTK_IS_GESTURE(c)?gtk_gesture_get_sequence_state(GTK_GESTURE(c),NULL):-1);
-            } else if (GTK_IS_BUTTON(object)) {
-              fprintf(stderr,"INPUT_TRACE time=%lld signal=%s widget=%s/%s\n",(long long)g_get_monotonic_time(),signal,G_OBJECT_TYPE_NAME(object),gtk_widget_get_name(GTK_WIDGET(object)));
-            }
-            return TRUE;
-          }
-          static void watch(GType t,const char *s) {
-            gpointer c = g_type_class_ref(t);
-            guint id=g_signal_lookup(s,t);
-            if(id)g_signal_add_emission_hook(id,0,trace,NULL,NULL);
-            g_type_class_unref(c);
-          }
-          static gboolean install(gpointer unused) {
-            watch(GTK_TYPE_GESTURE_CLICK,"pressed");
-            watch(GTK_TYPE_GESTURE_CLICK,"released");
-            watch(GTK_TYPE_GESTURE,"cancel");
-            watch(GTK_TYPE_GESTURE,"sequence-state-changed");
-            watch(GTK_TYPE_BUTTON,"clicked");
-            fprintf(stderr,"INPUT_TRACE installed\n");
-            return G_SOURCE_REMOVE;
-          }
-          __attribute__((constructor)) static void init(void) { g_idle_add(install,NULL); }
-          CTRACE
-          gcc -shared -fPIC $(pkg-config --cflags gtk4) out/input-trace.c -o out/input-trace.so
       - name: Install exact comparison binary
         run: |
           sha256sum candidate/Leaf-0.1.0-alpha.31-x86_64.flatpak
@@ -99,6 +55,14 @@ jobs:
           export LEAF_PROBE_RUNNER="$RUNNER_TEMP/installed.sh"
           mkdir -p out/tools
           cp tools/*pointer-test.sh out/tools/
+          python3 - <<'PYDRIVER'
+          from pathlib import Path
+          for name in ['format136-pointer-test.sh','caption-pointer-test.sh']:
+              p=Path('out/tools',name)
+              s=p.read_text()
+              assert 'xdotool mousedown 1' in s
+              p.write_text(s.replace('xdotool mousedown 1', 'xdotool mousemove --sync "$x" "$y" mousedown 1'))
+          PYDRIVER
           cat > "$RUNNER_TEMP/probe-session.sh" <<'PROBE'
           #!/usr/bin/env bash
           set +e
@@ -110,13 +74,17 @@ jobs:
             bash tools/alpha31-pointer-test.sh "$LEAF_PROBE_RUNNER" >alpha31-driver.log 2>&1
             echo "ALPHA31_EXIT=$?"
           fi
-          bash tools/format136-pointer-test.sh "$LEAF_PROBE_RUNNER" >format-driver.log 2>&1
-          echo "FORMAT_EXIT=$?" | tee format-result.log
+          for trial in 1 2; do
+            bash tools/format136-pointer-test.sh "$LEAF_PROBE_RUNNER" >"format-driver-$trial.log" 2>&1
+            status=$?
+            echo "FORMAT_EXIT_$trial=$status" | tee -a format-result.log
+            if test "$status" != 0; then break; fi
+          done
           bash tools/caption-pointer-test.sh "$LEAF_PROBE_RUNNER" >caption-driver.log 2>&1
           echo "CAPTION_EXIT=$?" | tee caption-result.log
           PROBE
           cd out
-          LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 230s bash "$RUNNER_TEMP/probe-session.sh"
+          LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 290s bash "$RUNNER_TEMP/probe-session.sh"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
