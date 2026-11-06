@@ -848,7 +848,9 @@ jobs:
         run: |
           shopt -s nullglob
           evidence=(followup19-*.log followup19-*.png sweep20-pointer-*.log sweep20-pointer-*.png interactions-pointer.log interaction-*.png vista-texto*.png)
-          if (( ${#evidence[@]} )); then cp "${evidence[@]}" dist/; fi
+          for file in "${evidence[@]}"; do
+            if [[ -f "$file" ]]; then cp "$file" dist/; fi
+          done
       - name: Verify installed Flatpak print portal handoff
         run: |
           cat > print-sandbox-runner <<'SH'
