@@ -7,12 +7,12 @@ su promoción sin recompilar. [Proceso y comandos de instalación](CANDIDATES.md
 
 ## Resultado por issue
 
-| Issue | Implementación y comprobación prevista en la candidata |
+| Issue | Resultado comprobado en la candidata |
 | --- | --- |
-| #111–#116 | Cabecera contextual del panel, iconos simbólicos de 16 px y ¶, idioma heredado resuelto en la misma fila, traducciones y verbos Insertar/Aplicar. Pendiente de validación GTK final. |
-| #117/#119 | Revisión unificada con filtros, cambios del motor, correcciones y comentarios, acciones propias e indentación reducida. Pruebas de historial, DOCX/ODT y objetivos obsoletos; pendiente de validación GTK final. |
-| #118 | Imán de 0,5 cm en magnitudes del documento con histéresis para los gestos de regla; valores importados y numéricos intactos. Pendiente de gestos GTK finales. |
-| #120 | Filas de formato con etiquetas y casillas nativas de tres estados, opciones separadas y memoria por propiedad. Pendiente de validación GTK final. |
+| #111–#116 | Cabecera contextual del panel, iconos simbólicos de 16 px y ¶, idioma heredado resuelto en la misma fila, traducciones y verbos Insertar/Aplicar. Comprobado en CI nativa e instalada. |
+| #117/#119 | Revisión unificada con filtros, cambios del motor, correcciones y comentarios, acciones propias e indentación reducida. Pruebas de historial, DOCX/ODT y objetivos obsoletos; comprobado en CI nativa e instalada. |
+| #118 | Imán de 0,5 cm en magnitudes del documento con histéresis para los gestos de regla; valores importados y numéricos intactos. Gestos nativos comprobados en inglés/español y escala 1/2. |
+| #120 | Filas de formato con etiquetas y casillas nativas de tres estados, opciones separadas y memoria por propiedad. Comprobado en CI nativa e instalada. |
 | #121 | Elementos en la cabecera adaptable y herramientas compartidas. Parcial: el motor solo admite un índice por documento; una creación explícita nunca reemplaza silenciosamente el existente. Se conserva el acceso a crear/editar con la limitación explicada. |
 | #109 | Elementos compartido y agrupado (nombre/ubicación actualizados por #121), un único Enlace para URL/destinos internos y siete campos automáticos estructurados. Pruebas de encabezado/pie, metadatos, historial, DOCX y PDF. |
 | #108 | Revelar miniatura activa con desplazamiento mínimo y etiquetas completas localizadas. Redibujar no interrumpe la exploración manual del panel. |
@@ -35,7 +35,7 @@ su promoción sin recompilar. [Proceso y comandos de instalación](CANDIDATES.md
 ## Pruebas
 
 La ejecución local completa supera 171 pruebas Rust, cuatro Python, formato y
-enlaces; catálogos inglés/español completos con 837 mensajes. La comprobación GUI local incluye GTK 4.14/libadwaita 1.5 con Xvfb: revisión unificada, comentarios, correcciones, formato y gestos reales de imagen y reglas. La candidata aún debe superar CI y sus instalaciones.
+enlaces; catálogos inglés/español completos con 837 mensajes. La comprobación GUI local incluye GTK 4.14/libadwaita 1.5 con Xvfb: revisión unificada, comentarios, correcciones, formato y gestos reales de imagen y reglas. La [CI nativa](https://github.com/frandavid100/leaf/actions/runs/42142299796) y las [instalaciones GNOME 49/51](https://github.com/frandavid100/leaf/actions/runs/42143216380) han terminado correctamente.
 
 `tests/references_alpha29.rs` comprueba actualizaciones derivadas, fecha congelada,
 caret, historial/redo, leyendas e índice; Guardar como actualiza FILENAME al destino
@@ -64,13 +64,22 @@ cambio de página durante dos frames de maquetación, con identidad/página guar
 los redibujados ordinarios no la programan. La prueba también abre explícitamente
 el panel tras una navegación que cierre su variante colapsada.
 
+## Candidata 1 verificada
+
+Fuente `361a25c286a1a06f6c007b9abdf23d7d1d36b8e3`, ejecución de empaquetado 42143216380; ejecutable optimizado
+de `25ae0ba569bc374e84ad78d0a314fe7b9c611b5b`, ejecución nativa 42142299796.
+Ambas ejecuciones han terminado correctamente y los ejecutables coinciden byte
+a byte. Se comprueban actualización desde alpha.28, apertura/guardado por
+portales, impresión, texto AT-SPI/Orca y relocalización del archivo FlatPark con
+GNOME 51, además de los controles nuevos en ambas instalaciones. Son pruebas
+automáticas. No se ha creado una release: falta la prueba y aprobación de David.
+
 ## Identidad y límites
 
 El manifiesto `candidate.json`, `source-commit.txt`, las notas congeladas y
-`SHA256SUMS` identifican el paquete final. La ejecución de empaquetado debe pasar
-actualización desde alpha.28, portales y pruebas instaladas GNOME 49/FlatPark 51
-antes de presentar la candidata como verificada. El éxito local descrito arriba
-no afirma por sí solo éxito instalado ni publicación.
+`SHA256SUMS` identifican el paquete final. La ejecución de empaquetado supera actualización desde alpha.28, portales y
+pruebas instaladas GNOME 49/FlatPark 51. El paquete permanece como candidata;
+el éxito automático no constituye aprobación humana ni publicación.
 
 No cambian WordCraft, las dependencias ni los parches. No se sustituyen capturas
 públicas ni se amplían Orca, Weblate o Flathub. DOCX sigue siendo necesario para

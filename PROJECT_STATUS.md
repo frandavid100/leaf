@@ -12,21 +12,27 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En curso: candidata de alpha.29
+## Candidata alpha.29: pendiente de prueba y aprobación
 
-David solicita otra pasada de issues, priorizando los recientes (#99–#109).
-Se preparan referencias directas y automáticas, propiedades de notas, edición de
-índices, controles de imagen completos, miniaturas y Elementos agrupado.
-Se incluye el editor básico de ecuaciones (#56) mediante las API públicas.
-David amplía la pasada con #111–#121: Revisión unificada, menús de Texto/Párrafo
-por filas, Elementos en la cabecera y ajustes de idioma, iconos, reglas y textos.
-Estas decisiones sustituyen la organización anterior donde entren en conflicto.
+La [PR #110](https://github.com/frandavid100/leaf/pull/110) integra la pasada
+#99–#109 y #111–#121, además del editor básico de ecuaciones (#56).
+[Validación nativa completa](https://github.com/frandavid100/leaf/actions/runs/42142299796) y
+[empaquetado e instalaciones GNOME 49/FlatPark 51](https://github.com/frandavid100/leaf/actions/runs/42143216380) superados.
+Fuente de la candidata `361a25c286a1a06f6c007b9abdf23d7d1d36b8e3`; fuente del ejecutable
+`25ae0ba569bc374e84ad78d0a314fe7b9c611b5b`, con equivalencia comprobada.
+171 pruebas Rust, cuatro Python y 837 mensajes completos inglés/español.
 
-La compilación de una candidata ya no publica una release. David debe probarla
-y aprobarla antes de promover los mismos paquetes, sin recompilar. Véase
-[el ciclo de candidatas](docs/CANDIDATES.md). La revisión de código y las pruebas
-están en curso; estos cambios todavía no son una Alpha publicada.
-[Alcance, pruebas y límites por issue](docs/ALPHA29_VALIDATION.md).
+Resueltos 19 issues: #56, #101–#106, #108–#109 y #111–#120. Revisión reúne
+correcciones, cambios sugeridos y comentarios; Texto/Párrafo usan filas y
+Elementos comparte las herramientas del objeto. Incluye reglas con imán de
+0,5 cm, referencias automáticas, notas, imágenes y miniaturas mejoradas.
+Los casos #99, #100, #107 y #121 conservan trabajo pendiente o limitaciones;
+#1, #2, #9, #52 y #84 siguen abiertos. [Evidencia y límites](docs/ALPHA29_VALIDATION.md).
+
+Todavía no hay release alpha.29. David debe probar la candidata y aprobar su
+promoción: se publicarán esos mismos paquetes, sin recompilar. El manifiesto y
+SHA256SUMS identifican los archivos. [Proceso de candidatas](docs/CANDIDATES.md).
+La última versión publicada continúa siendo alpha.28.
 
 ## Última versión publicada: alpha.28
 

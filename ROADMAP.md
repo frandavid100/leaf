@@ -4,12 +4,12 @@ Actualizada: 6 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En curso: candidata de alpha.29
+## Pendiente: prueba y aprobación de la candidata alpha.29
 
-Pasada autorizada de los issues abiertos, priorizando #99–#109 y la ampliación autorizada #111–#121. Se añaden
-regresiones de interacción reales para los nuevos recorridos. Publicación
-condicionada a la prueba y aprobación de David; promoción del paquete exacto.
-[Proceso](docs/CANDIDATES.md).
+Candidata generada y [verificada](https://github.com/frandavid100/leaf/actions/runs/42143216380), con 19 issues resueltos.
+Incluye los cambios recientes y conserva abiertos los casos parciales de
+[la revisión](docs/ALPHA29_VALIDATION.md). David debe probarla antes de publicar;
+la promoción usa los paquetes exactos, sin recompilar. [Proceso](docs/CANDIDATES.md).
 
 ## Completado: alpha.28
 
