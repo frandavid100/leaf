@@ -77,7 +77,11 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                 );
                 assert!(s.issues.borrow().len() >= 2);
                 assert!(!s.status.is_visible(), "no introductory text above issues");
-                assert!(find_widget(&ui.navigation_pages, "review-filter").is_some());
+                let filter = find_widget(&ui.sidebar_filters, "review-filter").unwrap();
+                assert!(
+                    filter.is_mapped(),
+                    "Review filter remains in the visible header"
+                );
                 assert!(find_widget(&ui.navigation_pages, "proofing-panel").is_none());
                 let rev = ui.current.borrow().as_ref().unwrap().session.rev();
                 let dirty = ui.dirty.get();

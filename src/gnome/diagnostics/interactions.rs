@@ -39,6 +39,11 @@ pub(super) fn interaction_pointer_test(
         }
     });
     ui.document_box.add_controller(trace);
+    ui.font_input.connect_changed(|entry| {
+        if entry.text() == "monospacex" {
+            eprintln!("FONT_PASTE_READY");
+        }
+    });
     opened(
         ui,
         Session::new(wordcraft_doc::Document::from_text("alpha beta gamma delta")),
@@ -167,7 +172,8 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
         }
         _ => unreachable!(),
     }
-    glib::timeout_add_local_once(std::time::Duration::from_secs(2), move || {
+    let settle = if stage == 5 { 4 } else { 2 };
+    glib::timeout_add_local_once(std::time::Duration::from_secs(settle), move || {
         let u = &t.ui;
         {
             let mut v = u.current.borrow_mut();
@@ -194,7 +200,9 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
                     } else {
                         assert_eq!(
                             wordcraft_engine::cmd::format::state(s)["font"],
-                            if stage == 4 { "serif" } else { "monospace" }
+                            if stage == 4 { "serif" } else { "monospace" },
+                            "font entry after keyboard input: {:?}",
+                            u.font_input.text()
                         );
                     }
                 }
