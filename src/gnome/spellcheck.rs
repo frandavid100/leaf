@@ -67,11 +67,15 @@ pub(super) struct SpellReview {
     ignored: RefCell<Vec<ProofIssue>>,
     ignored_document: Cell<Option<(u64, u64)>>,
     pub(super) identity: Cell<Option<(u64, u64)>>,
+    // Retained actions may have a current lease while the complete scan is dirty.
+    pub(super) checked: Cell<Option<(u64, u64)>>,
     pub(super) source: RefCell<Option<glib::SourceId>>,
     pub(super) debounce: RefCell<Option<glib::SourceId>>,
     pub(super) generation: Cell<u64>,
     pub(super) queued: Cell<bool>,
     worker_cancel: RefCell<Option<Arc<AtomicBool>>>,
+    snapshot: RefCell<Option<wordcraft_doc::Document>>,
+    cards: RefCell<Vec<(ProofIssue, Vec<String>, gtk::Widget)>>,
 }
 impl SpellReview {
     pub(super) fn stop(&self) {
@@ -87,15 +91,84 @@ impl SpellReview {
         self.queued.set(false);
     }
     pub(super) fn invalidate(self: &Rc<Self>) {
+        self.checked.set(None);
         self.generation.set(self.generation.get().wrapping_add(1));
-        self.identity.set(None);
         self.index.set(None);
-        self.issues.borrow_mut().clear();
-        while let Some(child) = self.list.first_child() {
-            self.list.remove(&child);
+        // Keep only findings that can be remapped unambiguously and are still
+        // reported by the current paragraph. Retained callbacks use this lease.
+        if let Some(ui) = self.ui.upgrade() {
+            let mut c = ui.current.borrow_mut();
+            if let Some(d) = c.as_mut() {
+                let same_doc = self.identity.get().map(|id| id.0) == Some(d.session.document_id());
+                if !same_doc {
+                    self.cards.borrow_mut().clear();
+                }
+                let old = self.snapshot.borrow();
+                let mut retained = Vec::new();
+                let mut choices = Vec::new();
+                let mut paragraphs: Vec<(Pos, Vec<ProofIssue>)> = Vec::new();
+                if let Some(old) = old.as_ref().filter(|_| same_doc) {
+                    for (index, issue) in self.issues.borrow().iter().enumerate() {
+                        let Some(next) = proofing::remap_issue(old, &d.session.doc, issue) else {
+                            continue;
+                        };
+                        let key = Pos {
+                            off: 0,
+                            ..next.start.clone()
+                        };
+                        if !paragraphs.iter().any(|(p, _)| p == &key) {
+                            paragraphs
+                                .push((key.clone(), proofing::paragraph_issues(&d.session, &key)));
+                        }
+                        if paragraphs
+                            .iter()
+                            .find(|(p, _)| p == &key)
+                            .unwrap()
+                            .1
+                            .contains(&next)
+                        {
+                            let changed =
+                                old.para_at(&issue.start) != d.session.doc.para_at(&next.start);
+                            choices.push(if changed {
+                                proofing::suggestions(&mut d.session, &next)
+                            } else {
+                                self.choices
+                                    .borrow()
+                                    .get(index)
+                                    .cloned()
+                                    .unwrap_or_default()
+                            });
+                            retained.push(next);
+                        }
+                    }
+                }
+                let ignored = old
+                    .as_ref()
+                    .filter(|_| same_doc)
+                    .map(|old| {
+                        self.ignored
+                            .borrow()
+                            .iter()
+                            .filter_map(|i| proofing::remap_issue(old, &d.session.doc, i))
+                            .collect()
+                    })
+                    .unwrap_or_default();
+                drop(old);
+                self.ignored.replace(ignored);
+                self.issues.replace(retained);
+                self.choices.replace(choices);
+                self.snapshot.replace(Some(d.session.doc.clone()));
+                self.identity
+                    .set(Some((d.session.document_id(), d.session.rev())));
+            }
         }
-        self.status.set_visible(true);
+        self.status.set_visible(self.issues.borrow().is_empty());
         self.status.set_text(wordcraft_gnome::t!("Checking…"));
+        if let Some(ui) = self.ui.upgrade() {
+            if let Some(review) = ui.review.borrow().as_ref() {
+                review.schedule();
+            }
+        }
         if let Some(id) = self.debounce.borrow_mut().take() {
             id.remove();
         }
@@ -134,16 +207,11 @@ impl SpellReview {
         };
         let identity = document_identity(&ui);
         let document = identity;
-        if self.ignored_document.replace(document) != document {
+        if self.ignored_document.replace(document).map(|id| id.0) != document.map(|id| id.0) {
             self.ignored.borrow_mut().clear();
         }
         let generation = self.generation.get();
-        self.identity.set(None);
-        self.index.set(None);
-        while let Some(child) = self.list.first_child() {
-            self.list.remove(&child);
-        }
-        self.status.set_visible(true);
+        self.status.set_visible(self.issues.borrow().is_empty());
         self.status.set_text(wordcraft_gnome::t!("Checking…"));
         let (tx, rx) = std::sync::mpsc::channel();
         let cancel = Arc::new(AtomicBool::new(false));
@@ -184,6 +252,9 @@ impl SpellReview {
                     s.worker_cancel.borrow_mut().take();
                     if document_identity(&ui) == identity && s.generation.get() == generation {
                         s.identity.set(identity);
+                        s.checked.set(identity);
+                        s.snapshot
+                            .replace(ui.current.borrow().as_ref().map(|d| d.session.doc.clone()));
                         let (issues, choices): (Vec<_>, Vec<_>) = issues
                             .into_iter()
                             .filter(|(i, _)| !s.ignored.borrow().contains(i))
@@ -201,9 +272,16 @@ impl SpellReview {
                 Err(_) => {
                     s.source.borrow_mut().take();
                     s.worker_cancel.borrow_mut().take();
+                    if document_identity(&ui) != identity || s.generation.get() != generation {
+                        if s.queued.replace(false) {
+                            s.scan();
+                        }
+                        return glib::ControlFlow::Break;
+                    }
                     s.status
                         .set_text(wordcraft_gnome::t!("The spelling check could not finish."));
                     s.identity.set(identity);
+                    s.checked.set(identity);
                     if let Some(review) = ui.review.borrow().as_ref() {
                         review.schedule();
                     }
@@ -231,7 +309,25 @@ impl SpellReview {
         self.status.set_tooltip_text(Some(wordcraft_gnome::t!(
             "Languages without installed dictionaries are skipped."
         )));
+        let old_cards = self.cards.take();
+        let mut cards = Vec::new();
         for (n, issue) in issues.iter().enumerate() {
+            let options = self.choices.borrow().get(n).cloned().unwrap_or_default();
+            if let Some((_, _, card)) = old_cards
+                .iter()
+                .find(|(i, c, _)| i == issue && c == &options)
+            {
+                for prefix in [
+                    "proofing-go-",
+                    "proofing-apply-",
+                    "proofing-ignore-",
+                    "proofing-menu-",
+                ] {
+                    rename_finding_control(card, prefix, n);
+                }
+                cards.push((issue.clone(), options, card.clone()));
+                continue;
+            }
             let row = gtk::ListBoxRow::new();
             row.set_widget_name(&format!("proofing-issue-{n}"));
             let line = gtk::Box::new(gtk::Orientation::Horizontal, 0);
@@ -360,10 +456,13 @@ impl SpellReview {
             menu.set_widget_name(&format!("proofing-menu-{n}"));
             accessible_name(&menu, wordcraft_gnome::t!("Correction Options"));
             let weak = Rc::downgrade(self);
-            let issue = issue.clone();
+            let menu_issue = issue.clone();
             let identity = self.identity.get();
             menu.set_create_popup_func(move |button| {
-                let Some(s) = weak.upgrade().filter(|s| s.current_issue(&issue, identity)) else {
+                let Some(s) = weak
+                    .upgrade()
+                    .filter(|s| s.current_issue(&menu_issue, identity))
+                else {
                     return;
                 };
                 let Some(ui) = s.ui.upgrade() else { return };
@@ -371,25 +470,34 @@ impl SpellReview {
                 let group = gio::SimpleActionGroup::new();
                 let pop = gtk::PopoverMenu::from_model(Some(&root));
                 pop.insert_action_group("context", Some(&group));
-                append_proofing_actions(&root, &group, &pop, &ui, issue.clone());
+                append_proofing_actions(&root, &group, &pop, &ui, menu_issue.clone());
                 button.set_popover(Some(&pop));
             });
             line.append(&menu);
+            cards.push((issue.clone(), options, line.clone().upcast()));
             row.set_child(Some(&line));
             self.list.append(&row);
         }
+        self.cards.replace(cards);
         if let Some(ui) = self.ui.upgrade() {
             if let Some(review) = ui.review.borrow().as_ref() {
                 review.schedule();
             }
         }
     }
+    pub(super) fn review_cards(&self) -> Vec<(Pos, gtk::Widget)> {
+        self.cards
+            .borrow()
+            .iter()
+            .map(|(i, _, w)| (i.start.clone(), w.clone()))
+            .collect()
+    }
     fn current_issue(&self, issue: &ProofIssue, identity: Option<(u64, u64)>) -> bool {
-        self.identity.get() == identity
+        self.identity.get().map(|id| id.0) == identity.map(|id| id.0)
             && self
                 .ui
                 .upgrade()
-                .is_some_and(|ui| !ui.closed.get() && document_identity(&ui) == identity)
+                .is_some_and(|ui| !ui.closed.get() && document_identity(&ui) == self.identity.get())
             && self.issues.borrow().contains(issue)
     }
     fn select_issue(self: &Rc<Self>, issue: &ProofIssue, identity: Option<(u64, u64)>) {
@@ -494,11 +602,14 @@ pub(super) fn install_spelling(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Sp
         ignored: RefCell::new(Vec::new()),
         ignored_document: Cell::new(None),
         identity: Cell::new(None),
+        checked: Cell::new(None),
         source: RefCell::new(None),
         debounce: RefCell::new(None),
         generation: Cell::new(0),
         queued: Cell::new(false),
         worker_cancel: RefCell::new(None),
+        snapshot: RefCell::new(None),
+        cards: RefCell::new(Vec::new()),
     });
     let weak = Rc::downgrade(&s);
     s.list.connect_row_activated(move |_, row| {
@@ -531,5 +642,16 @@ pub(super) fn show_text_language(ui: &Rc<Ui>, _parent: &ApplicationWindow) {
     }
     if let Some(tools) = ui.text_tools.borrow().as_ref() {
         tools.page("language");
+    }
+}
+
+fn rename_finding_control(root: &gtk::Widget, prefix: &str, index: usize) {
+    if root.widget_name().starts_with(prefix) {
+        root.set_widget_name(&format!("{prefix}{index}"));
+    }
+    let mut child = root.first_child();
+    while let Some(w) = child {
+        child = w.next_sibling();
+        rename_finding_control(&w, prefix, index);
     }
 }

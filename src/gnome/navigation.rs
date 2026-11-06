@@ -807,15 +807,22 @@ pub(super) fn install_navigation_switching(ui: &Rc<Ui>) {
             match stack.visible_child_name().as_deref() {
                 Some("thumbnails") => {
                     ui.last_navigation.set("thumbnails");
+                    ui.representation.set_selected(0);
+                    ui.sidebar_filters.set_visible_child_name("navigation");
                     ui.navigation_button.set_active(true);
                     ui.navigation_selector.set_visible(true);
                 }
                 Some("outline") => {
                     ui.last_navigation.set("outline");
+                    ui.representation.set_selected(1);
+                    ui.sidebar_filters.set_visible_child_name("navigation");
                     ui.navigation_button.set_active(true);
                     ui.navigation_selector.set_visible(true);
                 }
-                Some("review") => ui.navigation_selector.set_visible(false),
+                Some("review") => {
+                    ui.navigation_selector.set_visible(false);
+                    ui.sidebar_filters.set_visible_child_name("review");
+                }
                 _ => {}
             }
             refresh_sidebar_title(&ui);
@@ -836,13 +843,76 @@ pub(super) fn install_navigation_switching(ui: &Rc<Ui>) {
     });
     let weak = Rc::downgrade(ui);
     ui.sidebar.connect_show_sidebar_notify(move |s| {
+        let Some(ui) = weak.upgrade() else { return };
         if s.shows_sidebar() {
-            if let Some(ui) = weak.upgrade() {
-                sync_navigation_representation(&ui);
-            }
+            sync_navigation_representation(&ui);
+            restore_navigation_browsing(&ui);
+        } else {
+            save_navigation_browsing(&ui);
+        }
+    });
+    let weak = Rc::downgrade(ui);
+    ui.sidebar.connect_unmap(move |_| {
+        if let Some(ui) = weak.upgrade() {
+            save_navigation_browsing(&ui);
+        }
+    });
+    let weak = Rc::downgrade(ui);
+    ui.sidebar.connect_map(move |_| {
+        if let Some(ui) = weak.upgrade() {
+            restore_navigation_browsing(&ui);
         }
     });
 }
+fn save_navigation_browsing(ui: &Rc<Ui>) {
+    if ui.hidden_navigation_scroll.borrow().is_some() {
+        return;
+    }
+    let state = ui.current.borrow().as_ref().map(|d| {
+        (
+            (d.session.document_id(), d.session.rev()),
+            d.session.sel.focus.clone(),
+            ui.thumbnails_scroll.vadjustment().value(),
+            ui.navigation_pages
+                .child_by_name("outline")
+                .and_then(|w| w.downcast::<gtk::ScrolledWindow>().ok())
+                .map_or(0., |w| w.vadjustment().value()),
+        )
+    });
+    ui.hidden_navigation_scroll.replace(state);
+}
+fn restore_navigation_browsing(ui: &Rc<Ui>) {
+    let Some((identity, focus, pages, outline)) = ui.hidden_navigation_scroll.borrow_mut().take()
+    else {
+        return;
+    };
+    let weak = Rc::downgrade(ui);
+    // Mapping a tab or the split view can clamp adjustments during allocation.
+    // Restore only an unchanged editing target after the native transition.
+    glib::timeout_add_local_once(std::time::Duration::from_millis(220), move || {
+        let Some(ui) = weak
+            .upgrade()
+            .filter(|u| !u.closed.get() && u.sidebar.shows_sidebar() && u.sidebar.is_mapped())
+        else {
+            return;
+        };
+        let same = ui.current.borrow().as_ref().is_some_and(|d| {
+            (d.session.document_id(), d.session.rev()) == identity && d.session.sel.focus == focus
+        });
+        if !same {
+            return;
+        }
+        ui.thumbnails_scroll.vadjustment().set_value(pages);
+        if let Some(scroll) = ui
+            .navigation_pages
+            .child_by_name("outline")
+            .and_then(|w| w.downcast::<gtk::ScrolledWindow>().ok())
+        {
+            scroll.vadjustment().set_value(outline);
+        }
+    });
+}
+
 fn show_navigation(ui: &Rc<Ui>) {
     if let Some(search) = ui.search.borrow().as_ref() {
         search.toggle.set_active(false);

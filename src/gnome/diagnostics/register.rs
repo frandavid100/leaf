@@ -25,6 +25,9 @@ pub(super) fn install_diagnostics(
     app: &Application,
     controls: DiagnosticControls<'_>,
 ) {
+    if std::env::args().any(|a| a == "--alpha31-ui-test") && host.tabs.n_pages() == 1 {
+        alpha31_ui_test(ui, window, app);
+    }
     if std::env::args().any(|a| a == "--alpha30-ui-test") && host.tabs.n_pages() == 1 {
         alpha30_ui_test(ui, window, app);
     }

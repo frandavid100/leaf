@@ -30,7 +30,7 @@ use wordcraft_gnome::{
     pdf_export, pictures,
 };
 
-const APP_VERSION: &str = "0.1.0-alpha.30";
+const APP_VERSION: &str = "0.1.0-alpha.31";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -139,6 +139,9 @@ mod workspace;
 use workspace::*;
 
 // Opt-in diagnostics and synthetic fixtures; no normal startup work.
+#[path = "diagnostics/alpha31.rs"]
+mod alpha31_checks;
+use alpha31_checks::*;
 #[path = "diagnostics/accessibility.rs"]
 mod accessibility_checks;
 use accessibility_checks::*;

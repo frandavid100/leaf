@@ -36,6 +36,7 @@ pub(super) struct ReviewPanel {
     pub(super) rebuilding: Cell<bool>,
     pending: Cell<bool>,
     document: Cell<Option<u64>>,
+    changes: RefCell<Vec<(revisions::Change, gtk::Widget)>>,
 }
 impl ReviewPanel {
     fn includes(&self, kind: ReviewKind) -> bool {
@@ -69,7 +70,7 @@ impl ReviewPanel {
         ui.navigation_pages.set_visible_child_name("review");
         ui.sidebar_button.set_active(true);
         if let Some(spell) = ui.spelling.borrow().as_ref() {
-            if spell.identity.get() != document_identity(&ui)
+            if spell.checked.get() != document_identity(&ui)
                 && spell.source.borrow().is_none()
                 && spell.debounce.borrow().is_none()
             {
@@ -105,13 +106,16 @@ impl ReviewPanel {
         let old_y = if self.document.replace(id) == id {
             self.scroll.vadjustment().value()
         } else {
+            self.changes.borrow_mut().clear();
             0.
         };
         let Some(annotations) = ui.annotations.borrow().as_ref().cloned() else {
             self.rebuilding.set(false);
             return;
         };
-        annotations.refresh();
+        if self.includes(ReviewKind::Comment) {
+            annotations.refresh();
+        }
         let (comments, changes) = {
             let mut c = ui.current.borrow_mut();
             if let Some(d) = c.as_mut() {
@@ -144,34 +148,59 @@ impl ReviewPanel {
                     })
                     .unwrap_or_else(|| Pos::body(0, 0));
                 rows.push((pos, ReviewKind::Comment, w));
-            } else {
+            } else if !name.starts_with("review-correction-") && !name.starts_with("review-change-")
+            {
                 self.content.remove(&w);
             }
         }
         if self.includes(ReviewKind::Correction) {
             if let Some(spell) = ui.spelling.borrow().as_ref() {
                 spell.render_list();
-                let items = spell.issues.borrow();
-                for (n, issue) in items.iter().enumerate() {
-                    if let Some(row) = spell.list.row_at_index(n as i32) {
-                        if let Some(card) = row.child() {
-                            row.set_child(None::<&gtk::Widget>);
-                            card.set_widget_name(&format!("review-correction-{n}"));
-                            rows.push((issue.start.clone(), ReviewKind::Correction, card));
-                        }
+                for (n, (pos, card)) in spell.review_cards().into_iter().enumerate() {
+                    if let Some(row) = card
+                        .parent()
+                        .and_then(|p| p.downcast::<gtk::ListBoxRow>().ok())
+                    {
+                        row.set_child(None::<&gtk::Widget>);
                     }
+                    card.set_widget_name(&format!("review-correction-{n}"));
+                    rows.push((pos, ReviewKind::Correction, card));
                 }
             }
         }
         if self.includes(ReviewKind::Change) {
             let identity = document_identity(&ui);
+            let previous = self.changes.take();
+            let mut cache = Vec::new();
             for (n, change) in changes.into_iter().enumerate() {
-                rows.push((
-                    change.start.clone(),
-                    ReviewKind::Change,
-                    revision_card(&ui, &change, n, identity).upcast(),
-                ));
+                let card = previous
+                    .iter()
+                    .find(|(c, _)| c == &change)
+                    .map(|(_, w)| w.clone())
+                    .unwrap_or_else(|| revision_card(&ui, &change, n, identity).upcast());
+                rows.push((change.start.clone(), ReviewKind::Change, card.clone()));
+                cache.push((change, card));
             }
+            self.changes.replace(cache);
+        } else {
+            self.changes.borrow_mut().clear();
+        }
+
+        let mut removed_focus = None;
+        let mut old_index = 0usize;
+        let mut child = self.content.first_child();
+        while let Some(w) = child {
+            child = w.next_sibling();
+            if (w.widget_name().starts_with("review-correction-")
+                || w.widget_name().starts_with("review-change-"))
+                && !rows.iter().any(|(_, _, card)| card == &w)
+            {
+                if control_has_focus(&w) {
+                    removed_focus = Some(old_index);
+                }
+                self.content.remove(&w);
+            }
+            old_index += 1;
         }
         rows.sort_by_cached_key(|(at, kind, _)| {
             let mut c = ui.current.borrow_mut();
@@ -210,12 +239,19 @@ impl ReviewPanel {
             self.content.reorder_child_after(widget, previous.as_ref());
             previous = Some(widget.clone());
         }
+        if let Some(index) = removed_focus {
+            if let Some((_, _, card)) = rows.get(index.min(rows.len().saturating_sub(1))) {
+                card.child_focus(gtk::DirectionType::TabForward);
+            } else {
+                self.filter.grab_focus();
+            }
+        }
         self.status.set_visible(rows.is_empty());
         let checking = ui
             .spelling
             .borrow()
             .as_ref()
-            .is_some_and(|s| s.identity.get() != document_identity(&ui));
+            .is_some_and(|s| s.checked.get() != document_identity(&ui));
         self.status
             .set_text(if checking && self.includes(ReviewKind::Correction) {
                 wordcraft_gnome::t!("Checking…")
@@ -312,10 +348,9 @@ fn revision_card(
     let weak = Rc::downgrade(ui);
     let target = change.clone();
     go.connect_clicked(move |_| {
-        let Some(ui) = weak
-            .upgrade()
-            .filter(|u| !u.closed.get() && document_identity(u) == identity)
-        else {
+        let Some(ui) = weak.upgrade().filter(|u| {
+            !u.closed.get() && document_identity(u).map(|id| id.0) == identity.map(|id| id.0)
+        }) else {
             return;
         };
         let result = ui
@@ -352,10 +387,9 @@ fn revision_card(
         let weak = Rc::downgrade(ui);
         let target = change.clone();
         button.connect_clicked(move |_| {
-            let Some(ui) = weak
-                .upgrade()
-                .filter(|u| !u.closed.get() && document_identity(u) == identity)
-            else {
+            let Some(ui) = weak.upgrade().filter(|u| {
+                !u.closed.get() && document_identity(u).map(|id| id.0) == identity.map(|id| id.0)
+            }) else {
                 return;
             };
             let result = ui
@@ -396,8 +430,9 @@ pub(super) fn install_review(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Revi
     filter.set_margin_start(6);
     filter.set_margin_end(6);
     filter.set_margin_top(6);
+    filter.set_margin_bottom(6);
     accessible_name(&filter, wordcraft_gnome::t!("Review Filter"));
-    body.append(&filter);
+    ui.sidebar_filters.add_named(&filter, Some("review"));
     let status = gtk::Label::new(None);
     status.set_widget_name("review-status");
     status.set_wrap(true);
@@ -417,6 +452,7 @@ pub(super) fn install_review(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Revi
         rebuilding: Cell::new(false),
         pending: Cell::new(false),
         document: Cell::new(None),
+        changes: RefCell::new(Vec::new()),
     });
     let weak = Rc::downgrade(&s);
     toggle.connect_toggled(move |b| {

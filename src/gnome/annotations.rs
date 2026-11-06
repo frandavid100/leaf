@@ -11,6 +11,15 @@ pub(super) struct AnnotationPanel {
     document: Cell<Option<u64>>,
     pending: Cell<bool>,
     draft: RefCell<Option<CommentComposer>>,
+    rendered: RefCell<
+        Option<(
+            u64,
+            Vec<model::Comment>,
+            bool,
+            HashSet<u32>,
+            Option<gtk::Widget>,
+        )>,
+    >,
 }
 
 impl AnnotationPanel {
@@ -108,6 +117,24 @@ impl AnnotationPanel {
         self.active
             .borrow_mut()
             .retain(|id| comments.iter().any(|c| c.id == *id));
+        let signature = (
+            id,
+            comments.clone(),
+            writable,
+            self.active.borrow().clone(),
+            self.draft
+                .borrow()
+                .as_ref()
+                .map(|d| d.root.clone().upcast::<gtk::Widget>()),
+        );
+        let roots_present = comments.is_empty()
+            || comments
+                .iter()
+                .any(|c| find_widget(&self.content, &format!("comment-thread-{}", c.id)).is_some());
+        if roots_present && self.rendered.borrow().as_ref() == Some(&signature) {
+            return;
+        }
+        self.rendered.replace(Some(signature));
         let draft = self.draft.borrow();
         let had_focus = draft.as_ref().is_some_and(|draft| draft.text.has_focus());
         if let Some(draft) = draft.as_ref() {
@@ -551,8 +578,9 @@ fn comment_message(
         action.set_enabled(writable);
         let weak = Rc::downgrade(ui);
         let resolved = c.resolved;
+        let expected = c.clone();
         action.connect_activate(move |_, _| {
-            let Some(ui) = annotation_target(&weak, identity) else {
+            let Some(ui) = comment_target(&weak, identity, &expected) else {
                 return;
             };
             match name {
@@ -578,8 +606,9 @@ fn comment_message(
     body.append(&actions);
     message.append(&body);
     let weak = Rc::downgrade(ui);
+    let expected = c.clone();
     go.connect_clicked(move |_| {
-        if let Some(ui) = annotation_target(&weak, identity) {
+        if let Some(ui) = comment_target(&weak, identity, &expected) {
             if let Some(panel) = ui.annotations.borrow().as_ref() {
                 panel.select_thread(Some(root));
             }
@@ -587,12 +616,28 @@ fn comment_message(
         }
     });
     let weak = Rc::downgrade(ui);
+    let expected = c.clone();
     reply.connect_clicked(move |_| {
-        if let Some(ui) = annotation_target(&weak, identity) {
+        if let Some(ui) = comment_target(&weak, identity, &expected) {
             compose_comment(&ui, Some(id));
         }
     });
     message
+}
+
+// A retained comment card can outlive unrelated edits. Resolve its id against
+// current canonical comments, without weakening revision leases on dialogs.
+fn comment_target(
+    weak: &std::rc::Weak<Ui>,
+    identity: Option<(u64, u64)>,
+    expected: &model::Comment,
+) -> Option<Rc<Ui>> {
+    let ui = weak.upgrade().filter(|u| !u.closed.get())?;
+    let valid = ui.current.borrow().as_ref().is_some_and(|d| {
+        Some(d.session.document_id()) == identity.map(|i| i.0)
+            && model::comments(&d.session).contains(expected)
+    });
+    valid.then_some(ui)
 }
 
 pub(super) fn annotation_target(
@@ -660,6 +705,7 @@ pub(super) fn install_annotations(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc
         scroll,
         active: RefCell::new(HashSet::new()),
         document: Cell::new(None),
+        rendered: RefCell::new(None),
         pending: Cell::new(false),
         draft: RefCell::new(None),
     });

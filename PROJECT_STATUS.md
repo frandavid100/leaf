@@ -12,6 +12,16 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## En curso: candidata alpha.31
+
+David solicita una pasada de issues y una candidata para probar, sin publicación
+automática. #133–#135 están implementados y en validación; #136 tiene mejoras
+parciales y conserva sus requisitos restantes. #132 se investigó con el DOCX
+original sin reproducir el solapamiento en este entorno; permanece abierto.
+Hay 17 issues abiertos antes de completar la validación y registrar cierres.
+[Alcance, reproducción y límites](docs/ALPHA31_VALIDATION.md).
+El motor y la última versión pública no cambian.
+
 ## Última versión publicada: alpha.30
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.30).

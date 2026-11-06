@@ -288,3 +288,50 @@ pub(super) fn popover_pin(pop: &gtk::Popover) -> gtk::ToggleButton {
         .downcast()
         .unwrap()
 }
+
+// Same AdwSplitButton and native child presentation as history_button. A
+// create-popup callback is the public MenuButton activation hook: this secondary
+// action reapplies a property and deliberately creates no menu.
+pub(super) fn property_split(open: &gtk::Button, repeat: &gtk::Button) -> adw::SplitButton {
+    let split = adw::SplitButton::new();
+    split.add_css_class("flat");
+    split.add_css_class("image-button");
+    split.set_hexpand(true);
+    let native = split
+        .first_child()
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap();
+    let arrow = native
+        .next_sibling()
+        .unwrap()
+        .next_sibling()
+        .unwrap()
+        .downcast::<gtk::MenuButton>()
+        .unwrap();
+    if let Some(child) = open.child() {
+        open.set_child(None::<&gtk::Widget>);
+        split.set_child(Some(&child));
+    }
+    native.set_widget_name(&open.widget_name());
+    native.set_tooltip_text(open.tooltip_text().as_deref());
+    native.set_sensitive(open.is_sensitive());
+    let source = open.clone();
+    native.connect_clicked(move |_| source.emit_clicked());
+    // Forward activation through a public callback, retaining the original
+    // secondary action object so each caller owns its weak target callback.
+    arrow.add_css_class("flat");
+    arrow.set_icon_name("view-refresh-symbolic");
+    arrow.set_widget_name(&repeat.widget_name());
+    arrow.set_tooltip_text(repeat.tooltip_text().as_deref());
+    arrow.set_sensitive(repeat.is_sensitive());
+    let action = repeat.clone();
+    arrow.set_create_popup_func(move |_| action.emit_clicked());
+    let target = arrow.downgrade();
+    repeat.connect_sensitive_notify(move |source| {
+        if let Some(target) = target.upgrade() {
+            target.set_sensitive(source.is_sensitive());
+        }
+    });
+    split
+}
