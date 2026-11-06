@@ -77,9 +77,34 @@ impl ParagraphPopover {
         property: &'static str,
     ) {
         validate_numeric_input(n);
+        // GTK outputs an adjustment's number again while mapping a SpinButton.
+        // An unset/mixed field must stay blank, and that initial output is not
+        // a user edit (notably when the current line spacing is proportional).
+        let ready = Rc::new(Cell::new(n.is_mapped()));
+        let blank = n.text().trim().is_empty();
+        let mapped = ready.clone();
+        n.connect_map(move |n| {
+            mapped.set(false);
+            let weak = n.downgrade();
+            let mapped = mapped.clone();
+            glib::idle_add_local_once(move || {
+                if let Some(n) = weak.upgrade().filter(|n| n.is_mapped()) {
+                    if blank {
+                        n.set_text("");
+                    }
+                    mapped.set(true);
+                }
+            });
+        });
+        let unmapped = ready.clone();
+        n.connect_unmap(move |_| unmapped.set(false));
         let apply = {
             let weak = Rc::downgrade(self);
+            let ready = ready.clone();
             move |n: &gtk::SpinButton| {
+                if !ready.get() || !n.is_mapped() {
+                    return;
+                }
                 let Some(s) = weak.upgrade() else { return };
                 let Some(ui) = s.ui.upgrade().filter(|u| !u.closed.get()) else {
                     return;
@@ -133,6 +158,9 @@ impl ParagraphPopover {
         let weak_ui = self.ui.clone();
         let weak_n = n.downgrade();
         n.connect_changed(move |_| {
+            if !ready.get() {
+                return;
+            }
             let Some(ui) = weak_ui.upgrade() else { return };
             if ui.format_syncing.get() {
                 return;
@@ -877,7 +905,11 @@ impl ParagraphPopover {
                 }
                 let exact = self.number(
                     wordcraft_gnome::t!("Exactly (pt)"),
-                    state["lineSpacing"]["value"].as_f64().unwrap_or(14.0),
+                    if state["lineSpacing"]["rule"] == "exact" {
+                        state["lineSpacing"]["value"].as_f64().unwrap_or(14.0)
+                    } else {
+                        14.0
+                    },
                     1.0,
                     500.0,
                 );
