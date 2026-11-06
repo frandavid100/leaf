@@ -16,7 +16,7 @@ jobs:
           cargo fmt --package wordcraft-gnome
           mkdir -p formatter/bin formatter/lib
           cp "$(rustup which rustfmt)" formatter/bin/rustfmt
-          cp "$(rustc --print sysroot)"/lib/*.so formatter/lib/
+          cp "$(rustc --print sysroot)"/lib/*.so* formatter/lib/
           printf '%s\n' "$GITHUB_SHA" > source-commit.txt
           tar -cJf normalized-source.tar.xz src tests examples po
       - uses: actions/upload-artifact@v4
