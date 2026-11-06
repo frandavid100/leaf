@@ -12,24 +12,31 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En curso: leyendas, navegación y revisión de #132
+## Preparada: tercera candidata alpha.31 — Leyendas y navegación
 
-David autoriza resolver #132 y completar conjuntamente #121/#124/#126/#127.
-Las asociaciones explícitas de leyendas, su ocultación sin pérdida, propiedades
-compartidas, navegación tipada y decoración temporal están implementadas bajo
-validación. Nueve regresiones específicas sin GUI pasan, junto con controles
-GTK por clic/teclado en inglés y español, tema claro/oscuro y escala 1×/2×.
-La batería nativa completa ha pasado (187 pruebas Rust y controles gráficos).
-La validación del Flatpak instalado sigue bloqueada por la activación del primer
-control de formato; falta resolverla y completar la instalación antes de cerrar.
-[Modelo, comprobaciones y límites](docs/CAPTION_OWNERSHIP.md).
+Completados #121, #124, #126 y #127: propiedades compartidas de Elementos,
+asociación explícita de imágenes/tablas y leyendas, Mostrar leyenda reversible,
+navegación con destinos tipados y decoración temporal de la relación.
 
-El documento original de #132 no reproduce el solapamiento en los controles
-Alpha.30/Alpha.31 de este entorno, con emoji en color; sus baselines y exportación
-también están separados. El issue sigue abierto, sin atribuirle una corrección.
-La segunda candidata ya entregada se conserva intacta; no hay nueva publicación.
+[La candidata verificada](https://github.com/frandavid100/leaf/actions/runs/42304211527/artifacts/13547105434)
+supera la batería nativa completa (187 pruebas Rust, cuatro Python y controles
+GTK), instalación GNOME 49 y archivo FlatPark reubicado en GNOME 51. Incluye
+clics/teclado, DOCX, historial y comprobaciones en inglés/español, claro/oscuro y
+escala 1×/2×. Se conserva la regresión original de fuente/pegado/canvas sin cambios.
+Se han verificado las once sumas de la descarga. [Fuente, sumas y límites](docs/CAPTION_OWNERSHIP.md).
 
-## Preparada: segunda candidata alpha.31 — Interfaz nativa
+Fuente del paquete `da5b3f96c672eceb41218855e73ffba0897c126d`; ejecutable nativo de
+`486a8b2c2050f09a6ffd31ce47cacab48e5051f8`. No hay publicación automática:
+David debe probar y aprobar estos mismos archivos antes de promoverlos a Releases.
+
+#132 sigue abierto: el documento original no reproduce aquí el solapamiento,
+incluidos los controles Alpha.30/Alpha.31 con emoji en color. No se le atribuye
+una corrección. La creación de leyendas numeradas se limita al cuerpo y DOCX;
+las leyendas importadas sin asociación explícita no se asignan por proximidad.
+#135 está reabierto; los nuevos #149–#152 y los restantes issues no forman parte
+de estos cuatro cierres.
+
+## Histórica: segunda candidata alpha.31 — Interfaz nativa
 
 [Candidata para probar](https://github.com/frandavid100/leaf/actions/runs/42265503961/artifacts/13527444066), sin publicación automática.
 Cerrados #134, #135 y #136: cabeceras alineadas, selector nativo Páginas/Estructura
@@ -47,7 +54,7 @@ original de fuente/pegado mantiene su secuencia y aserciones.
 Fuente del paquete `79292491050943559df21d9082657fe38ee46254`; ejecutable de
 `179ef4bec1609c355c3dae325c3358fd6bb948a8`, con equivalencia y bytes comprobados.
 [Alcance, identidad, sumas y límites](docs/ALPHA31_UI_VALIDATION.md).
-Quedan 13 issues: #1, #2, #9, #52, #84, #99, #100, #107, #121, #124, #126, #127 y #132.
+En aquella entrega quedaban 13 issues: #1, #2, #9, #52, #84, #99, #100, #107, #121, #124, #126, #127 y #132.
 Alpha.30 sigue siendo la última versión pública. David debe probar la candidata
 y aprobar la promoción de estos mismos archivos, sin recompilar.
 

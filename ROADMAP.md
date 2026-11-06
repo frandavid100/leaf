@@ -4,27 +4,22 @@ Actualizada: 6 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## Preparada para David: segunda candidata alpha.31
+## Preparada para David: tercera candidata alpha.31
 
-En curso por petición de David: completar #121/#124/#126/#127 con asociación
-explícita de objetos y leyendas, propiedades compartidas, navegación y decoración
-temporal. [Implementación, pruebas y límites](docs/CAPTION_OWNERSHIP.md).
-La nueva fuente está bajo validación; los issues no se cierran aún.
-El documento original de #132 no reproduce el fallo aquí, por lo que sigue abierto.
+Completados #121/#124/#126/#127 con asociaciones explícitas de objetos y leyendas,
+Mostrar leyenda reversible, propiedades compartidas, navegación y decoración
+temporal. Batería nativa completa e instalaciones GNOME 49/51 comprobadas;
+inglés/español, claro/oscuro y escala 1×/2×. Las once sumas de la descarga están
+verificadas. [Implementación, identidad y límites](docs/CAPTION_OWNERSHIP.md).
 
-Cerrados #134–#136 tras corregir la captura de eventos de la regla, alinear
-cabeceras, introducir el selector Páginas/Estructura y refinar los cuatro menús.
-Conserva la corrección de Revisión #133. Batería nativa completa, instalaciones
-GNOME 49/51, comprobación explícita de los menús en inglés/español y descarga con
-once sumas verificadas. [Candidata, evidencia y límites](docs/ALPHA31_UI_VALIDATION.md).
+David debe probar y aprobar los mismos archivos antes de publicar. No hay
+publicación automática. #132 sigue abierto porque su disparador no se reproduce
+con el documento original. #135 está reabierto y los nuevos #149–#152 siguen
+pendientes; no quedan resueltos por estos cuatro cierres.
 
-David debe probar y aprobar estos mismos archivos antes de publicar. No hay
-publicación automática. Quedan 13 issues; #132 sigue pendiente de reproducción
-fiable en el entorno afectado y las leyendas conservan sus requisitos canónicos.
-
-La primera candidata, que solo cerraba #133, queda como
-[registro histórico](docs/ALPHA31_VALIDATION.md); sus intentos de interfaz
-retirados no describen el estado actual.
+La segunda candidata de interfaz queda como [evidencia histórica](docs/ALPHA31_UI_VALIDATION.md).
+La primera, que solo cerraba #133, conserva su [registro histórico](docs/ALPHA31_VALIDATION.md).
+Sus listas de issues describen aquellas entregas y no sustituyen el estado actual.
 
 ## Completado: alpha.30
 

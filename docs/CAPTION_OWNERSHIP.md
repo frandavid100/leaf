@@ -1,4 +1,4 @@
-# Caption ownership and native element tools — in validation
+# Caption ownership and native element tools — validated candidate
 
 Authorized scope: #121, #124, #126 and #127; investigate the original overlap #132.
 No engine, renderer, dependency or existing formats-patch changes.
@@ -50,47 +50,71 @@ toggle/reopen and identical exported raster pixels before/after reading cues.
 Real GTK pointer/keyboard checks pass in English light/1× and Spanish dark/2×,
 including native typing, pinned off/on, Undo/Redo, switching identical images,
 table-caption caret context, DOCX reopening, typed navigation and hover/caret
-discovery. Full native CI passes; installed acceptance is pending. No issue is closed by
-this checkpoint.
+discovery. Full native and installed CI pass. This delivery completes #121, #124,
+#126 and #127; #132 remains open.
 
 Existing imported or earlier captions without explicit object anchors remain
 ordinary editable caption paragraphs. They are not silently assigned to nearby
 objects. Numbered caption creation remains limited to the document body by the
 pinned public engine API.
 
-### Validation attempts and delivery gate
+### Accepted candidate and provenance
 
-The full native run [42287362018](https://github.com/frandavid100/leaf/actions/runs/42287362018)
-passes against `f17c7b4a38979eaaac30d91fff37e8af0f1d2f8f`. It includes the
-independent Insert Table correction from PR #148; the preceding native run
-42283745462 had failed its unchanged contextual table-creation/column-selection
-test. Packages from sources `97194123d1658b920d8feefc2261c892960c63f1`
-and `fc5e51e94c482317a97c7dbd1277c7c1407ad3cd` are **not accepted**.
+- Candidate source: `da5b3f96c672eceb41218855e73ffba0897c126d`.
+- Native source: `486a8b2c2050f09a6ffd31ce47cacab48e5051f8`.
+- [Full native success](https://github.com/frandavid100/leaf/actions/runs/42302407273):
+  187 Rust tests, four Python tests, gettext and complete GTK regressions.
+- [Installed candidate success](https://github.com/frandavid100/leaf/actions/runs/42304211527):
+  GNOME 49 Flatpak, desktop/file/print portal and data-preserving upgrade checks,
+  existing AT-SPI/Orca checks, and the exact FlatPark archive relocated under
+  GNOME 51. Formatting and caption controls pass in English light/1× and Spanish
+  dark/2× on both runtimes. Original font/clipboard/canvas assertions are unchanged.
+- [Downloaded artifact](https://github.com/frandavid100/leaf/actions/runs/42304211527/artifacts/13547105434):
+  ZIP SHA-256 `c965f39d7fb83400fd72d8672a6cfdc29c84e10510c291ff6d6737dbcd233a37`.
+  All eleven entries in `SHA256SUMS` verify after download; `candidate.json`
+  identifies the above sources and runs and requires maintainer approval.
 
-Those installed attempts also exposed pointer-test delivery races: one caption
-check ran before its expected edit, and one formatting control did not activate.
-Canvas focus in the assertion does not establish where that click was delivered.
-The isolated [accepted/current control comparison](https://github.com/frandavid100/leaf/actions/runs/42288854217)
-passes with extra focus/screenshot observations in both builds. Those observations
-change timing, so they do not establish a product fix by themselves.
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `Leaf-0.1.0-alpha.31-x86_64.flatpak` | 11,467,528 | `b192c00f400682984fd9a64893bf1c2e6f6cd512f087cc124d335af609f68644` |
+| `Leaf-0.1.0-alpha.31-flatpark-x86_64.tar.xz` | 11,550,064 | `7f265cbba09a65df648ce5f5d95fed7f4db2f646a80d0b91e55269037105c129` |
 
-The next diagnostic waits for a real GTK motion event inside the exact target
-on its popup surface before the single click. Only motion is repeated while
-waiting; semantic assertions and the original font-input regression remain intact.
-Typing assertions wait for the complete native edit. Failure captures are retained
-by installed CI as well. Hidden ownership anchors are excluded from the user
-bookmark chooser while named bookmarks remain selectable. Final native/installed
-acceptance of this diagnostic source is still required before closure or delivery.
+The final stripped executable is 37,649,248 bytes, SHA-256
+`c57552a532472f9ee922d6be9323d679b9711379e88b4e56fe44a673e8ad28bb`.
+CI compares the packaged native input with the fully validated optimized binary.
+Independent extraction of the FlatPark archive matches the same stripped binary.
+The early native artifact has SHA-256
+`4956e19a4fd97b8d9d74380060065150bb9287d89bfc802284b378bb15964f44`;
+applying the existing final `strip --strip-unneeded` reproduces the final hash.
+No rebuild is needed or authorized when promoting these accepted files.
 
-The full native run [42295229994](https://github.com/frandavid100/leaf/actions/runs/42295229994)
-passes against `a7fbb14a592ee53088af1d536335b3e351dc196a` (187 Rust tests).
-Installed run [42296908566](https://github.com/frandavid100/leaf/actions/runs/42296908566)
-still fails at the first formatting control even after GTK confirms pointer entry
-into that exact control on its popup surface. Its before/after screenshots show
-the parent Text menu still visible, so the motion handshake is not a fix.
-The unmodified optimized executable also passes the local formatting sequence.
-Further installed event traces are investigative controls, not delivery acceptance;
-the previously delivered candidate remains unchanged.
+### Earlier attempts and input-driver correction
+
+Native run 42283745462 exposed the table-helper regression that required an
+existing table even for Insert Table; PR #148 restores independent creation and
+the unchanged context/column-selection test. Native runs 42287362018 and
+42295229994 then passed their complete suites. Earlier packages from sources
+`97194123d1658b920d8feefc2261c892960c63f1`,
+`fc5e51e94c482317a97c7dbd1277c7c1407ad3cd` and
+`0153cd23368778f5065a2e9d0864f8c5f2ffe830` were not accepted for delivery.
+
+A real GTK motion handshake alone did not make the first installed formatting
+click reliable. Captures showed the Text menu still visible; canvas focus in an
+assertion did not establish where a click was delivered. Extra logging made
+isolated controls pass and was therefore investigative evidence, not acceptance.
+
+PR #154 keeps final target motion adjacent to the single press, with no repeated
+clicks or additional waits. A shell trace separately located a no-op `mousemove
+--sync` stall before a caption click; removing that redundant XTest wait retains
+the stronger actual GTK entry acknowledgment. Native typing, selection, history
+and header assertions remain intact. Installed comparison 42302372784 passes two
+independent workers, four full formatting sequences and two caption regressions
+without input logging. The final full native and installed runs above also pass.
+Hidden canonical ownership anchors stay out of the user bookmark chooser, while
+an authored bookmark remains selectable after DOCX reopening.
+
+This is an unpublished candidate for David to test. Automated X11 checks are not
+human Wayland/IME validation. Existing publication approval requirements remain.
 
 ## #132 investigation
 

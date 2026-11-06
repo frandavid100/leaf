@@ -163,9 +163,9 @@ Their actions validate the live document id and the revalidated finding; cached
 comments/revisions resolve their canonical targets without weakening asynchronous
 dialog revision guards. Worker generations/revisions guard both success and error.
 
-The accepted second Alpha31 candidate aligns sidebar/document headers, uses a
+The current Alpha31 candidate retains aligned sidebar/document headers, uses a
 native Pages/Structure dropdown, and shares the Text/Paragraph/Style/Elements
-submenu framework. The first candidate's Alpha30 interface is historical.
+submenu framework. Earlier candidates and their issue lists are historical.
 Review cards and findings are derived state; no parallel editable document
 model is introduced.
 
