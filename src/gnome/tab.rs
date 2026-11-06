@@ -118,14 +118,13 @@ pub(super) fn build_tab(
     thumbnails_scroll.set_child(Some(&thumbnail_column));
 
     let sidebar_toolbar = ToolbarView::new();
-    let sidebar_header = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    sidebar_header.set_widget_name("sidebar-header-region");
-    sidebar_header.append(&side_header);
-    sidebar_toolbar.add_top_bar(&sidebar_header);
+    side_header.set_widget_name("sidebar-primary-header");
+    sidebar_toolbar.add_top_bar(&side_header);
     let sidebar_filters = gtk::Stack::new();
     sidebar_filters.set_vhomogeneous(false);
     sidebar_filters.set_hhomogeneous(false);
-    sidebar_header.append(&sidebar_filters);
+    sidebar_filters.set_widget_name("sidebar-header-secondary");
+    sidebar_toolbar.add_top_bar(&sidebar_filters);
     let sidebar_pages = gtk::Stack::new();
     sidebar_pages.set_transition_type(gtk::StackTransitionType::Crossfade);
     sidebar_pages.set_transition_duration(180);
@@ -326,17 +325,21 @@ pub(super) fn build_tab(
     bottom_heights.add_widget(&format_toolbar);
     let document_toolbar = ToolbarView::new();
     document_toolbar.set_bottom_bar_style(adw::ToolbarStyle::Flat);
-    let document_header = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    document_header.set_widget_name("document-header-region");
-    document_header.append(&header);
-    document_toolbar.add_top_bar(&document_header);
+    header.set_widget_name("document-primary-header");
+    document_toolbar.add_top_bar(&header);
     let tab_bar = adw::TabBar::new();
     tab_bar.set_view(Some(&host.tabs));
     tab_bar.set_autohide(true);
-    document_header.append(&tab_bar);
+    let tab_row = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    tab_row.set_widget_name("document-header-secondary");
+    tab_row.append(&tab_bar);
+    document_toolbar.add_top_bar(&tab_row);
     let header_heights = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
-    header_heights.add_widget(&sidebar_header);
-    header_heights.add_widget(&document_header);
+    header_heights.add_widget(&side_header);
+    header_heights.add_widget(&header);
+    let secondary_header_heights = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
+    secondary_header_heights.add_widget(&sidebar_filters);
+    secondary_header_heights.add_widget(&tab_row);
     document_toolbar.add_bottom_bar(&format_toolbar);
     document_toolbar.set_content(Some(&toasts));
 
@@ -406,6 +409,7 @@ pub(super) fn build_tab(
         sidebar_selector: selector_bar.clone(),
         _bottom_heights: bottom_heights,
         _header_heights: header_heights,
+        _secondary_header_heights: secondary_header_heights,
         format_bold: bold_button.clone(),
         format_italic: italic_button.clone(),
         format_syncing: Cell::new(false),

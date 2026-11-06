@@ -11,7 +11,7 @@ format patches are unchanged.
 | Issue | Result |
 | --- | --- |
 | #133 | Retain and reconcile proofing findings during rescans. Remap only unchanged text outside the changed span, revalidate against current paragraph proofing and update suggestions for changed paragraphs. Reuse unaffected correction, comment and change cards; preserve scroll/focus. Every retained action verifies document identity and current targets. Async success and failure reject stale generations/revisions. |
-| #134 | A native vertical SizeGroup synchronizes the complete sidebar and editor header regions, including the Review filter, Navigation dropdown and document tabs. No screenshot-specific pixel offset. |
+| #134 | Native vertical SizeGroups synchronize the primary HeaderBars and the secondary filter/tab rows separately. HeaderBars keep their original direct ToolbarView parenting; complete header bounds remain aligned without pixel offsets. |
 | #135 | Pages/Structure uses one full-width native DropDown matching Review. Existing representation controllers keep per-document state and filters; hidden private toggle state is not presented as duplicate controls. Sidebar/tab remapping restores browsing only for an unchanged document revision and editing target. |
 | #136 | Not included: the experimental formatting changes were withdrawn after the installed font-paste regression failed while published Alpha30 passed on the same GNOME 49 runtime. Text/Paragraph controls return to the published implementation; the issue remains open in full. |
 
@@ -111,3 +111,14 @@ clipboard preflight, key tracing and stage timing changes are not shipped.
 The same `[candidate-alpha]` marker in the preflight PR title skips only the
 optional performance comparison, as it already does on a candidate push; native
 functional and installed checks remain mandatory.
+
+## Native HeaderBar parenting
+
+Run `42223264771` still failed font paste with the exact published input
+regression, while its Alpha30 control passed. The experiment is now limited to
+header placement: primary HeaderBars return to direct ToolbarView top bars,
+with native SizeGroups for primary and secondary rows independently. The
+geometry diagnostic checks equal primary starts/heights and the complete lower
+boundary of the secondary rows. This preserves #134 without wrapping the native
+HeaderBars in generic boxes. Installed focus/paste remains a required check;
+its result must be confirmed before accepting this candidate.

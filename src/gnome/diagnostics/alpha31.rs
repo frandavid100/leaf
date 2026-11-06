@@ -234,11 +234,11 @@ I recieve text.",
     });
 }
 fn check_headers(ui: &Rc<Ui>, window: &ApplicationWindow) {
-    let a = find_widget(&ui.sidebar, "sidebar-header-region")
+    let a = find_widget(&ui.sidebar, "sidebar-header-secondary")
         .unwrap()
         .compute_bounds(window)
         .unwrap();
-    let b = find_widget(&ui.sidebar, "document-header-region")
+    let b = find_widget(&ui.sidebar, "document-header-secondary")
         .unwrap()
         .compute_bounds(window)
         .unwrap();
@@ -246,4 +246,13 @@ fn check_headers(ui: &Rc<Ui>, window: &ApplicationWindow) {
         (a.y() + a.height() - b.y() - b.height()).abs() < 1.1,
         "header bounds: {a:?} vs {b:?}"
     );
+    let a = find_widget(&ui.sidebar, "sidebar-primary-header")
+        .unwrap()
+        .compute_bounds(window)
+        .unwrap();
+    let b = find_widget(&ui.sidebar, "document-primary-header")
+        .unwrap()
+        .compute_bounds(window)
+        .unwrap();
+    assert!((a.y() - b.y()).abs() < 1.1 && (a.height() - b.height()).abs() < 1.1);
 }
