@@ -342,6 +342,14 @@ impl TextTools {
         n
     }
     pub(super) fn page(self: &Rc<Self>, page: &str) {
+        // Reopening the current page must preserve its mapped native editable.
+        if page == "font"
+            && self.active_page.borrow().as_deref() == Some("font")
+            && self.stack.visible_child_name().as_deref() == Some("detail")
+            && self.font_page.parent().as_ref() == Some(self.detail.upcast_ref())
+        {
+            return;
+        }
         self.active_page.replace(Some(page.into()));
         clear_box(&self.detail);
         let Some(ui) = self.ui.upgrade() else {

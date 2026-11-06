@@ -118,7 +118,13 @@ pub(super) fn build_tab(
     thumbnails_scroll.set_child(Some(&thumbnail_column));
 
     let sidebar_toolbar = ToolbarView::new();
+    side_header.set_widget_name("sidebar-primary-header");
     sidebar_toolbar.add_top_bar(&side_header);
+    let sidebar_filters = gtk::Stack::new();
+    sidebar_filters.set_vhomogeneous(false);
+    sidebar_filters.set_hhomogeneous(false);
+    sidebar_filters.set_widget_name("sidebar-header-secondary");
+    sidebar_toolbar.add_top_bar(&sidebar_filters);
     let sidebar_pages = gtk::Stack::new();
     sidebar_pages.set_transition_type(gtk::StackTransitionType::Crossfade);
     sidebar_pages.set_transition_duration(180);
@@ -157,11 +163,14 @@ pub(super) fn build_tab(
     accessible_name(&navigation_toggle, wordcraft_gnome::t!("Navigation"));
     navigation_toggle.set_active(true);
     let navigation_selector = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+
     navigation_selector.set_widget_name("navigation-representation");
-    navigation_selector.set_margin_start(8);
-    navigation_selector.set_margin_end(8);
+    navigation_selector.set_margin_start(6);
+    navigation_selector.set_margin_end(6);
     navigation_selector.set_margin_top(6);
     navigation_selector.set_margin_bottom(6);
+    // The old toggle state remains private to the existing outline controller;
+    // only this native dropdown is presented, including keyboard/a11y access.
     let representation = gtk::DropDown::from_strings(&[
         wordcraft_gnome::t!("Pages"),
         wordcraft_gnome::t!("Structure"),
@@ -170,16 +179,16 @@ pub(super) fn build_tab(
     representation.set_hexpand(true);
     accessible_name(&representation, wordcraft_gnome::t!("Navigation"));
     navigation_selector.append(&representation);
+    sidebar_filters.add_named(&navigation_selector, Some("navigation"));
     let pages = pages_toggle.clone();
     let titles = titles_toggle.clone();
-    representation.connect_selected_notify(move |choice| {
-        if choice.selected() == 0 {
+    representation.connect_selected_notify(move |d| {
+        if d.selected() == 0 {
             pages.set_active(true);
         } else {
             titles.set_active(true);
         }
     });
-    navigation.add_top_bar(&navigation_selector);
     let annotations_toggle = gtk::ToggleButton::new();
     accessible_name(&annotations_toggle, wordcraft_gnome::t!("Review"));
     annotations_toggle.set_icon_name("document-edit-symbolic");
@@ -316,11 +325,21 @@ pub(super) fn build_tab(
     bottom_heights.add_widget(&format_toolbar);
     let document_toolbar = ToolbarView::new();
     document_toolbar.set_bottom_bar_style(adw::ToolbarStyle::Flat);
+    header.set_widget_name("document-primary-header");
     document_toolbar.add_top_bar(&header);
     let tab_bar = adw::TabBar::new();
     tab_bar.set_view(Some(&host.tabs));
     tab_bar.set_autohide(true);
-    document_toolbar.add_top_bar(&tab_bar);
+    let tab_row = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    tab_row.set_widget_name("document-header-secondary");
+    tab_row.append(&tab_bar);
+    document_toolbar.add_top_bar(&tab_row);
+    let header_heights = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
+    header_heights.add_widget(&side_header);
+    header_heights.add_widget(&header);
+    let secondary_header_heights = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
+    secondary_header_heights.add_widget(&sidebar_filters);
+    secondary_header_heights.add_widget(&tab_row);
     document_toolbar.add_bottom_bar(&format_toolbar);
     document_toolbar.set_content(Some(&toasts));
 
@@ -389,6 +408,8 @@ pub(super) fn build_tab(
         pages_button: pages_toggle.clone(),
         sidebar_selector: selector_bar.clone(),
         _bottom_heights: bottom_heights,
+        _header_heights: header_heights,
+        _secondary_header_heights: secondary_header_heights,
         format_bold: bold_button.clone(),
         format_italic: italic_button.clone(),
         format_syncing: Cell::new(false),
@@ -415,7 +436,9 @@ pub(super) fn build_tab(
         navigation_button: navigation_toggle.clone(),
         navigation_selector,
         representation,
+        sidebar_filters,
         last_navigation: Cell::new("thumbnails"),
+        hidden_navigation_scroll: RefCell::new(None),
         thumbnail_reveal_pending: Cell::new(true),
         outline: RefCell::new(None),
         annotations: RefCell::new(None),
