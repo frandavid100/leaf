@@ -220,36 +220,7 @@ I recieve text.",
                     "reopening Review must scan edits made while hidden"
                 );
                 check_headers(&u, &w);
-                let text = format_button(&u, "text-menu").unwrap();
-                text.popup();
-                let tools = u.text_tools.borrow().as_ref().unwrap().clone();
-                let before = u.current.borrow().as_ref().unwrap().session.doc.clone();
-                for page in [
-                    "underline",
-                    "strike",
-                    "ink",
-                    "highlight",
-                    "font",
-                    "language",
-                ] {
-                    tools.page(page);
-                    assert!(tools.header.arrow.is_visible());
-                    tools.header.button.emit_clicked();
-                    assert_eq!(
-                        tools.stack.visible_child_name().as_deref(),
-                        Some("main"),
-                        "Back from {page}"
-                    );
-                }
-                assert_eq!(u.current.borrow().as_ref().unwrap().session.doc, before);
-                tools.home();
-                assert!(
-                    find_widget(&text.popover().unwrap(), "text-font-property")
-                        .unwrap()
-                        .ancestor(adw::SplitButton::static_type())
-                        .is_some()
-                );
-                eprintln!("ALPHA31_FORMAT_READY");
+                eprintln!("ALPHA31_REVIEW_READY");
             }
             6..=25 => {} // Leave time for diagnostic capture/input driver.
             _ => {

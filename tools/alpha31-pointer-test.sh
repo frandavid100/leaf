@@ -26,12 +26,12 @@ sleep 0.15
 scrot "${log%.log}-pages.png"
 touch "$LEAF29_ACK_DIR/alpha31-navigation"
 for attempt in $(seq 1 200); do
-  grep -q '^ALPHA31_FORMAT_READY' "$log" && break
+  grep -q '^ALPHA31_REVIEW_READY' "$log" && break
   kill -0 "$pid" || { cat "$log"; exit 1; }
   sleep 0.05
 done
 sleep 0.8
-scrot "${log%.log}-format.png"
+scrot "${log%.log}-review.png"
 wait "$pid" || { cat "$log"; exit 1; }
 grep -q ALPHA31_UI_OK "$log"
 trap - EXIT

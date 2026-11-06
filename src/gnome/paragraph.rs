@@ -343,6 +343,9 @@ impl ParagraphPopover {
         if page == "options" {
             self.main.append(&button);
         } else {
+            let linked = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+            linked.add_css_class("linked");
+            linked.append(&button);
             let repeat = gtk::Button::from_icon_name("view-refresh-symbolic");
 
             repeat.set_widget_name(&format!("{name}-apply"));
@@ -368,7 +371,8 @@ impl ParagraphPopover {
                     s.repeat_group(page);
                 }
             });
-            self.main.append(&property_split(&button, &repeat));
+            linked.append(&repeat);
+            self.main.append(&linked);
         }
         let weak = Rc::downgrade(self);
         button.connect_clicked(move |_| {
@@ -512,6 +516,8 @@ impl ParagraphPopover {
                 wordcraft_gnome::t!("Apply Last Border Settings"),
             ),
         ] {
+            let row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+            row.add_css_class("linked");
             let label = wordcraft_gnome::i18n::interpolate(
                 wordcraft_gnome::t!("{label}: {value}"),
                 &[("label", title.into()), ("value", value)],
@@ -535,7 +541,7 @@ impl ParagraphPopover {
             open.set_child(Some(&content));
             open.set_tooltip_text(Some(&label));
             accessible_name(&open, &label);
-
+            row.append(&open);
             let weak = Rc::downgrade(self);
             open.connect_clicked(move |_| {
                 if let Some(s) = weak.upgrade() {
@@ -561,7 +567,8 @@ impl ParagraphPopover {
             apply.set_child(Some(&gtk::Image::from_icon_name("view-refresh-symbolic")));
             apply.set_tooltip_text(Some(tip));
             accessible_name(&apply, tip);
-            self.main.append(&property_split(&open, &apply));
+            row.append(&apply);
+            self.main.append(&row);
         }
         self.option_row(
             wordcraft_gnome::t!("Columns"),
@@ -654,23 +661,9 @@ impl ParagraphPopover {
     pub(super) fn page(self: &Rc<Self>, page: &str) {
         self.active_page.replace(Some(page.to_string()));
         let weak = Rc::downgrade(self);
-        let title = match page {
-            "alignment" => wordcraft_gnome::t!("Alignment"),
-            "list" | "bullets" | "numbering" => wordcraft_gnome::t!("List"),
-            "indents" => wordcraft_gnome::t!("Indents"),
-            "spacing" => wordcraft_gnome::t!("Line Spacing"),
-            "borders" => wordcraft_gnome::t!("Borders and Shading"),
-            "columns" => wordcraft_gnome::t!("Columns"),
-            _ => wordcraft_gnome::t!("More Paragraph Options"),
-        };
-        let nested = matches!(page, "bullets" | "numbering");
-        self.header.back(title, move || {
+        self.header.back(wordcraft_gnome::t!("Paragraph"), move || {
             if let Some(s) = weak.upgrade() {
-                if nested {
-                    s.page("list");
-                } else {
-                    s.home();
-                }
+                s.home();
             }
         });
         clear_box(&self.detail);

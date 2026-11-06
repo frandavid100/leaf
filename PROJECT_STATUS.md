@@ -15,8 +15,8 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 ## En curso: candidata alpha.31
 
 David solicita una pasada de issues y una candidata para probar, sin publicación
-automática. #133–#135 están implementados y en validación; #136 tiene mejoras
-parciales y conserva sus requisitos restantes. #132 se investigó con el DOCX
+automática. #133–#135 están implementados y en validación; #136 queda fuera de esta candidata tras detectar una regresión de pegado en
+los controles experimentales; se conserva el formato publicado en Alpha.30. #132 se investigó con el DOCX
 original sin reproducir el solapamiento en este entorno; permanece abierto.
 Hay 17 issues abiertos antes de completar la validación y registrar cierres.
 [Alcance, reproducción y límites](docs/ALPHA31_VALIDATION.md).

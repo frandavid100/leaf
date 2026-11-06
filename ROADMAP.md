@@ -8,7 +8,7 @@ Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
 Pasada autorizada de issues; preparar candidata para la prueba de David, sin
 promoción automática. Prioridad: continuidad de Revisión (#133), cabeceras y
-selector de Navegación (#134/#135). #136 se mantiene parcial; #132 necesita
+selector de Navegación (#134/#135). #136 se retira de esta candidata y permanece abierto; #132 necesita
 reproducción en el entorno afectado. Los pendientes anteriores conservan sus
 límites y no se cierran por aproximación. [Validación](docs/ALPHA31_VALIDATION.md).
 

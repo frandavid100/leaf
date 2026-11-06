@@ -6,22 +6,19 @@ WordCraft remains at 0.14.0, commit
 `5cd53f184aab11def13b7fced18727159b9bc96a`; renderer, dependencies and existing
 format patches are unchanged.
 
-## Changes being validated
+## Changes being validated (final candidate scope)
 
 | Issue | Result |
 | --- | --- |
 | #133 | Retain and reconcile proofing findings during rescans. Remap only unchanged text outside the changed span, revalidate against current paragraph proofing and update suggestions for changed paragraphs. Reuse unaffected correction, comment and change cards; preserve scroll/focus. Every retained action verifies document identity and current targets. Async success and failure reject stale generations/revisions. |
 | #134 | A native vertical SizeGroup synchronizes the complete sidebar and editor header regions, including the Review filter, Navigation dropdown and document tabs. No screenshot-specific pixel offset. |
 | #135 | Pages/Structure uses one full-width native DropDown matching Review. Existing representation controllers keep per-document state and filters; hidden private toggle state is not presented as duplicate controls. Sidebar/tab remapping restores browsing only for an unchanged document revision and editing target. |
-| #136 | Partial: actual AdwSplitButton component/presentation shared with history, independent options/reapply targets, specific Text/Paragraph titles and corrected Back ancestry, Size icon/label within one field, searchable Language choices and selected-state indication. The full cross-menu request is not complete and remains open. |
+| #136 | Not included: the experimental formatting changes were withdrawn after the installed font-paste regression failed while published Alpha30 passed on the same GNOME 49 runtime. Text/Paragraph controls return to the published implementation; the issue remains open in full. |
 
 The focused GTK diagnostic verifies incremental pending results, canonical
 offsets after unequal-length Unicode replacement, unaffected card identity,
-Undo, header allocation, native dropdown mouse/keyboard input and Text Back
-paths. Previous Alpha.30 checks continue to cover per-document representation,
-scroll/filter/expansion, navigation and property reapply behavior. Native
-SplitButton activation uses its public MenuButton create-popup hook for the
-independent repeat action; it does not manufacture a fake menu or perform Redo.
+Undo, header allocation and native dropdown mouse/keyboard input. Previous Alpha.30 checks continue to cover per-document representation,
+scroll/filter/expansion, navigation and property reapply behavior.
 
 ## #132 investigation
 
@@ -46,15 +43,11 @@ with/without emoji, renders three scales and checks text after DOCX reopening.
 
 ## Remaining requirements
 
-#136 still requires visual background parity in the shared split controls,
-the direct searchable Font page, embedded native color
-choosers throughout applicable menus, and completion of the Style/Elements
-cross-menu audit and short-window/color interaction cases. GTK's public
-ColorChooserWidget remains available but deprecated since 4.10; the replacement
-ColorDialog is modal rather than embeddable. The pinned document Highlight type
-also represents Word's fixed palette, not arbitrary RGB. These are investigation
-constraints, not a reason to claim the requested chooser has been delivered or
-to change the engine without authorization.
+#136 remains open in full. Its former partial implementation is preserved in Git
+history for investigation, but is not shipped by the final candidate. Native
+format controls, titles/Back paths, direct searchable Font/Language lists, embedded
+color choosers and the Style/Elements audit require a later verified pass. The
+public Alpha30 formatting implementation is retained.
 
 #121/#124 retain their caption dependency. #126/#127 require canonical persistent
 object/caption ownership; adjacency is not a safe replacement.
@@ -94,3 +87,15 @@ neither the font nor document/selection assertions are weakened.
 
 The final CI and candidate identity are recorded after completion. Diagnostic
 captures remain internal validation and do not replace the public screenshot gallery.
+
+## Withdrawal of experimental formatting changes
+
+Installed run `42218301357` failed Alpha31 font paste, while its published
+Alpha30 control and original driver passed on the same GNOME 49 runtime
+(`ALPHA30_FONT_CONTROL_EXIT=0`). Clipboard preflight could read `monospacex`, but
+the native Entry did not receive the pasted value. This is a confirmed regression
+in the experimental source, not evidence that the clipboard test may be ignored.
+The final scope restores the four formatting modules and their Alpha30 controls
+regression to published source `868ac18`; #133–#135 remain. No partial #136
+acceptance or formatting improvement is claimed. Full native and installed checks
+remain required for the final package.
