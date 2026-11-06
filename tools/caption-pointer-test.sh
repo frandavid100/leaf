@@ -34,7 +34,9 @@ for stage in $(seq 0 6); do
     done
     grep -q "^POINTER_TARGET_ENTERED CAPTION_INPUT $stage " "$log" || { cat "$log"; exit 1; }
     scrot "${log%.log}-$stage-before.png"
-    xdotool mousedown 1
+    # Keep the final native target motion adjacent to the single press.
+    # Screenshot/client round trips must not separate these two events.
+    xdotool mousemove --sync "$x" "$y" mousedown 1
     sleep 0.12
     xdotool mouseup 1
   fi
