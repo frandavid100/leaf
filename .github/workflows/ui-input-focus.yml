@@ -88,7 +88,7 @@ jobs:
             target/release/wordcraft-gnome
 
   normalize:
-    if: contains(github.event.head_commit.message, '[focus-input]')
+    if: contains(github.event.head_commit.message, '[focus-input]') || contains(github.event.head_commit.message, '[normalize-only]')
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -99,7 +99,6 @@ jobs:
       - name: Format exactly this source for review
         run: |
           cargo fmt --package wordcraft-gnome
-          python tools/update_translations.py
           printf '%s\n' "$GITHUB_SHA" > source-commit.txt
           tar -cJf normalized-source.tar.xz src tests examples po
       - uses: actions/upload-artifact@v4
