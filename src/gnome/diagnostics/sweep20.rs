@@ -158,7 +158,7 @@ fn stage(t: Rc<Sweep>, n: u8) {
         14 => {
             let current = u.current.borrow();
             let doc = current.as_ref().unwrap();
-            let sheet = &doc.page_frames[doc.active];
+            let sheet = &doc.page_frames[viewport_page(u, doc)];
             let frame = sheet.compute_bounds(&t.window).unwrap();
             let viewport = u.scroll.compute_bounds(&t.window).unwrap();
             let top = frame.y().max(viewport.y());
@@ -540,13 +540,15 @@ fn check(t: &Sweep, n: u8) {
         let r = u.ruler.borrow().as_ref().unwrap().clone();
         let c = u.current.borrow();
         let d = c.as_ref().unwrap();
-        assert!(d.active > 0, "the scroll probe must reach another page");
+        let visible = viewport_page(u, d);
+        assert!(visible > 0, "the scroll probe must reach another page");
+        assert_eq!(d.active, 0, "scrolling must preserve the caret page");
         let strip = find_widget(&t.window, "vertical-ruler-activation-strip").unwrap();
         assert!(
             strip.is_visible() && strip.height() > 0,
             "vertical scale follows the visible page, not the offscreen caret"
         );
-        let frame = d.page_frames[d.active].compute_bounds(&t.window).unwrap();
+        let frame = d.page_frames[visible].compute_bounds(&t.window).unwrap();
         let area = r.vertical_reveal.compute_bounds(&t.window).unwrap();
         assert!((area.x() - frame.x()).abs() < 2.);
     }

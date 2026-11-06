@@ -1161,7 +1161,7 @@ msgstr ""
 msgid "First Section"
 msgstr ""
 
-#: src/gnome/ruler.rs:399
+#: src/gnome/ruler.rs:412
 msgid "First line indent"
 msgstr ""
 
@@ -1585,7 +1585,7 @@ msgstr ""
 msgid "Layout"
 msgstr ""
 
-#: src/gnome/ruler.rs:398
+#: src/gnome/ruler.rs:411
 msgid "Leading indent"
 msgstr ""
 
@@ -2005,7 +2005,7 @@ msgstr ""
 msgid "Pages"
 msgstr ""
 
-#: src/gnome/diagnostics/sweep20.rs:613 src/gnome/view.rs:34
+#: src/gnome/diagnostics/sweep20.rs:615 src/gnome/view.rs:34
 msgid "Pages: {current} of {total}"
 msgstr ""
 
@@ -2157,7 +2157,7 @@ msgstr ""
 msgid "Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved."
 msgstr ""
 
-#: src/gnome/view.rs:452
+#: src/gnome/view.rs:460
 msgid "Recovery: {e}"
 msgstr ""
 
@@ -2377,15 +2377,15 @@ msgstr ""
 msgid "Rows"
 msgstr ""
 
-#: src/gnome/ruler.rs:625 src/gnome/ruler.rs:626
+#: src/gnome/ruler.rs:638 src/gnome/ruler.rs:639
 msgid "Ruler"
 msgstr ""
 
-#: src/gnome/ruler.rs:627
+#: src/gnome/ruler.rs:640
 msgid "Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it."
 msgstr ""
 
-#: src/gnome/ruler.rs:404
+#: src/gnome/ruler.rs:417
 msgid "Ruler: {marker}, {value} pt, page {page}"
 msgstr ""
 
@@ -2841,7 +2841,7 @@ msgstr ""
 msgid "Tab Stops"
 msgstr ""
 
-#: src/gnome/ruler.rs:401
+#: src/gnome/ruler.rs:414
 msgid "Tab stop"
 msgstr ""
 
@@ -2949,7 +2949,7 @@ msgstr ""
 msgid "The current engine supports one table of contents per document. Edit the existing table of contents instead."
 msgstr ""
 
-#: src/gnome/view.rs:463
+#: src/gnome/view.rs:471
 msgid "The document contains no pages"
 msgstr ""
 
@@ -3149,7 +3149,7 @@ msgstr ""
 msgid "Tracked Change"
 msgstr ""
 
-#: src/gnome/ruler.rs:400
+#: src/gnome/ruler.rs:413
 msgid "Trailing indent"
 msgstr ""
 
@@ -3277,7 +3277,7 @@ msgstr ""
 msgid "Vertical Upwards"
 msgstr ""
 
-#: src/gnome/ruler.rs:634
+#: src/gnome/ruler.rs:647
 msgid "Vertical ruler (cm)"
 msgstr ""
 
@@ -3389,7 +3389,7 @@ msgstr ""
 msgid "{count}Y"
 msgstr ""
 
-#: src/gnome/diagnostics/view_tests.rs:55 src/gnome/view.rs:604
+#: src/gnome/diagnostics/view_tests.rs:55 src/gnome/view.rs:612
 msgid "{current} of {total}"
 msgstr ""
 

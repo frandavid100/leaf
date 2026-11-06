@@ -219,13 +219,26 @@ impl Ruler {
         None
     }
 
+    fn displayed_page(&self, ui: &Ui, doc: &Current) -> usize {
+        if self.focused.get() {
+            return doc.active;
+        }
+        let top = ui.scroll.vadjustment().value();
+        let visible = doc
+            .arrangement
+            .visible(top, top + ui.scroll.vadjustment().page_size());
+        self.hovered_page
+            .get()
+            .filter(|p| visible.contains(p))
+            .unwrap_or_else(|| viewport_page(ui, doc))
+    }
     fn view(&self) -> Option<View> {
         let ui = self.ui.upgrade().filter(|u| !u.closed.get())?;
         let mut value = ui.current.try_borrow_mut().ok()?;
         let d = value.as_mut()?;
         let state = ruler::state(&mut d.session)?;
         let lease = Lease::capture(&d.session);
-        let page = self.hovered_page.get().unwrap_or(d.active);
+        let page = self.displayed_page(&ui, d);
         let rect = d.page_frames.get(page)?.compute_bounds(&self.area)?;
         let editable = state.page == page;
         Some(View {
@@ -251,7 +264,7 @@ impl Ruler {
         let Some(d) = c.as_ref() else {
             return;
         };
-        let page = self.hovered_page.get().unwrap_or(d.active);
+        let page = self.displayed_page(&ui, d);
         let Some(sheet) = d
             .page_frames
             .get(page)

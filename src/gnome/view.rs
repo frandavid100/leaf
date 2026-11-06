@@ -92,6 +92,14 @@ pub(super) fn refresh_document_appearance(ui: &Rc<Ui>) {
     refresh_selection(ui);
 }
 
+/// Viewport geometry is separate from the canonical editing/thumbnail target.
+pub(super) fn viewport_page(ui: &Ui, doc: &Current) -> usize {
+    doc.arrangement.page_at(
+        ui.scroll.hadjustment().value() + ui.scroll.hadjustment().page_size() * 0.3,
+        ui.scroll.vadjustment().value() + ui.scroll.vadjustment().page_size() * 0.3,
+    )
+}
+
 pub(super) fn refresh_pages(ui: &Rc<Ui>) {
     let _perf = perf_scope("leaf.refresh_pages");
     sync_raster_scale(ui);
