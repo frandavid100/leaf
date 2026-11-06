@@ -88,6 +88,12 @@ pub(super) fn format136_ui_test(
         .unwrap();
     selection::select_range(&mut session, &Pos::body(0, 0), &Pos::body(0, 14)).unwrap();
     opened(ui, session, "Native formatting");
+    if compact {
+        // Match the normal editing path and the existing narrow-input test:
+        // a modal overlay sidebar must be dismissed before editor menus open.
+        ui.sidebar.set_show_sidebar(false);
+        ui.sidebar_button.set_active(false);
+    }
     let cases = vec![
         (0, "text-underline", wordcraft_gnome::t!("Underline")),
         (0, "text-strike", wordcraft_gnome::t!("Strikethrough")),

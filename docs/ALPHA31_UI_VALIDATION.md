@@ -50,6 +50,11 @@ rejected. Read-only synchronization is suppressed and an initial opening never
 applies a colour. Continuous valid edits use the existing coalesced formatting
 transaction and preserve their editable's focus and selection.
 
+Numeric controls ignore GTK's initial mapping output. Unset/mixed inputs remain
+blank, and proportional line-spacing values are never reused as point values in
+the Exact field. Merely opening that page therefore preserves the document and
+selection; subsequent native input keeps the existing immediate/debounced edits.
+
 Native highlight palette colours retain the engine's highlight property and
 palette command handler. Arbitrary RGB text backgrounds use canonical character
 shading through a registered Session command. They keep caret-only pending
@@ -77,6 +82,13 @@ widgets. Text repeat is exercised on two successive targets.
 Deterministic metadata checks report 824 source messages with complete English
 and Spanish catalogs. Sidebar checks also cover the narrow dark enlarged-text
 presentation; the normal layout retains the one/multiple-tab bounds checks.
+
+The wide four-family pointer pass succeeds at `9f5066b` in
+[42256123317](https://github.com/frandavid100/leaf/actions/runs/42256123317), including
+all 38 native activations, arbitrary ink/highlight entry, one-step Undo and every
+Back path. The narrow formatting fixture dismisses the modal overlay sidebar
+before opening editor menus, matching the existing narrow-input regression.
+Sidebar geometry/representation checks separately keep that overlay open.
 
 Full native and installed GNOME 49/FlatPark 51 validation, visual acceptance,
 final source identity and checksums must be recorded before issue closure and

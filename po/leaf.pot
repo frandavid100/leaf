@@ -69,7 +69,7 @@ msgstr ""
 msgid "Align Right"
 msgstr ""
 
-#: src/gnome/diagnostics/format136.rs:98 src/gnome/paragraph.rs:688 src/history.rs:156
+#: src/gnome/diagnostics/format136.rs:104 src/gnome/paragraph.rs:688 src/history.rs:156
 msgid "Alignment"
 msgstr ""
 
@@ -253,7 +253,7 @@ msgstr ""
 msgid "Borders"
 msgstr ""
 
-#: src/gnome/diagnostics/format136.rs:109 src/gnome/paragraph.rs:537 src/gnome/paragraph.rs:694
+#: src/gnome/diagnostics/format136.rs:115 src/gnome/paragraph.rs:537 src/gnome/paragraph.rs:694
 msgid "Borders and Shading"
 msgstr ""
 
@@ -497,7 +497,7 @@ msgstr ""
 msgid "Column {number}"
 msgstr ""
 
-#: src/document_properties.rs:372 src/gnome/columns.rs:402 src/gnome/diagnostics/format136.rs:111 src/gnome/paragraph.rs:598 src/gnome/paragraph.rs:696 src/gnome/paragraph.rs:755 src/gnome/tables.rs:92 src/gnome/tables.rs:333
+#: src/document_properties.rs:372 src/gnome/columns.rs:402 src/gnome/diagnostics/format136.rs:117 src/gnome/paragraph.rs:598 src/gnome/paragraph.rs:696 src/gnome/paragraph.rs:755 src/gnome/tables.rs:92 src/gnome/tables.rs:333
 msgid "Columns"
 msgstr ""
 
@@ -957,7 +957,7 @@ msgstr ""
 msgid "Effects"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:149 src/gnome/diagnostics/annotations.rs:167 src/gnome/diagnostics/annotations.rs:182 src/gnome/diagnostics/format136.rs:411 src/gnome/elements.rs:111 src/gnome/elements.rs:253 src/gnome/elements.rs:254 src/gnome/elements.rs:271 src/gnome/menus.rs:529
+#: src/gnome/diagnostics/annotations.rs:149 src/gnome/diagnostics/annotations.rs:167 src/gnome/diagnostics/annotations.rs:182 src/gnome/diagnostics/format136.rs:417 src/gnome/elements.rs:111 src/gnome/elements.rs:253 src/gnome/elements.rs:254 src/gnome/elements.rs:271 src/gnome/menus.rs:529
 msgid "Elements"
 msgstr ""
 
@@ -1137,7 +1137,7 @@ msgstr ""
 msgid "Following Spacing (mm)"
 msgstr ""
 
-#: src/gnome/adaptive.rs:237 src/gnome/adaptive.rs:397 src/gnome/adaptive.rs:834 src/gnome/adaptive.rs:879 src/gnome/diagnostics/format136.rs:94 src/gnome/diagnostics/format136.rs:117 src/gnome/tab.rs:270 src/gnome/tab.rs:273 src/gnome/text_controls.rs:478
+#: src/gnome/adaptive.rs:237 src/gnome/adaptive.rs:397 src/gnome/adaptive.rs:834 src/gnome/adaptive.rs:879 src/gnome/diagnostics/format136.rs:100 src/gnome/diagnostics/format136.rs:123 src/gnome/tab.rs:270 src/gnome/tab.rs:273 src/gnome/text_controls.rs:478
 msgid "Font"
 msgstr ""
 
@@ -1285,7 +1285,7 @@ msgstr ""
 msgid "Hidden Text"
 msgstr ""
 
-#: src/gnome/adaptive.rs:396 src/gnome/diagnostics/format136.rs:97 src/gnome/text_palette.rs:113 src/gnome/text_palette.rs:535
+#: src/gnome/adaptive.rs:396 src/gnome/diagnostics/format136.rs:103 src/gnome/text_palette.rs:113 src/gnome/text_palette.rs:535
 msgid "Highlight"
 msgstr ""
 
@@ -1317,7 +1317,7 @@ msgstr ""
 msgid "Ignore This Occurrence"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:152 src/gnome/diagnostics/format136.rs:114 src/gnome/elements.rs:109 src/gnome/menus.rs:448 src/gnome/picture_controls.rs:161 src/gnome/picture_controls.rs:172 src/navigation.rs:297
+#: src/gnome/diagnostics/annotations.rs:152 src/gnome/diagnostics/format136.rs:120 src/gnome/elements.rs:109 src/gnome/menus.rs:448 src/gnome/picture_controls.rs:161 src/gnome/picture_controls.rs:172 src/navigation.rs:297
 msgid "Image"
 msgstr ""
 
@@ -1373,7 +1373,7 @@ msgstr ""
 msgid "Increase Size"
 msgstr ""
 
-#: src/gnome/diagnostics/format136.rs:100 src/gnome/paragraph.rs:476 src/gnome/paragraph.rs:692 src/history.rs:188
+#: src/gnome/diagnostics/format136.rs:106 src/gnome/paragraph.rs:476 src/gnome/paragraph.rs:692 src/history.rs:188
 msgid "Indents"
 msgstr ""
 
@@ -1505,7 +1505,7 @@ msgstr ""
 msgid "Landscape"
 msgstr ""
 
-#: src/gnome/adaptive.rs:198 src/gnome/adaptive.rs:398 src/gnome/adaptive.rs:488 src/gnome/diagnostics/format136.rs:95 src/gnome/document_properties_dialog.rs:358 src/gnome/tab.rs:292
+#: src/gnome/adaptive.rs:198 src/gnome/adaptive.rs:398 src/gnome/adaptive.rs:488 src/gnome/diagnostics/format136.rs:101 src/gnome/document_properties_dialog.rs:358 src/gnome/tab.rs:292
 msgid "Language"
 msgstr ""
 
@@ -1585,7 +1585,7 @@ msgstr ""
 msgid "Line Numbering"
 msgstr ""
 
-#: src/gnome/diagnostics/format136.rs:104 src/gnome/paragraph.rs:528 src/gnome/paragraph.rs:693 src/gnome/paragraph.rs:888 src/history.rs:153
+#: src/gnome/diagnostics/format136.rs:110 src/gnome/paragraph.rs:528 src/gnome/paragraph.rs:693 src/gnome/paragraph.rs:888 src/history.rs:153
 msgid "Line Spacing"
 msgstr ""
 
@@ -1617,7 +1617,7 @@ msgstr ""
 msgid "Link…"
 msgstr ""
 
-#: src/gnome/diagnostics/format136.rs:99 src/gnome/diagnostics/paragraph.rs:37 src/gnome/paragraph.rs:468 src/gnome/paragraph.rs:689
+#: src/gnome/diagnostics/format136.rs:105 src/gnome/diagnostics/paragraph.rs:37 src/gnome/paragraph.rs:468 src/gnome/paragraph.rs:689
 msgid "List"
 msgstr ""
 
@@ -1721,7 +1721,7 @@ msgstr ""
 msgid "New Paragraph"
 msgstr ""
 
-#: src/gnome/diagnostics/format136.rs:112 src/gnome/styles.rs:422 src/gnome/styles.rs:429
+#: src/gnome/diagnostics/format136.rs:118 src/gnome/styles.rs:422 src/gnome/styles.rs:429
 msgid "New Style"
 msgstr ""
 
@@ -1929,7 +1929,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:226 src/gnome/context.rs:507 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/format136.rs:409 src/gnome/diagnostics/register.rs:182 src/gnome/paragraph.rs:1224 src/gnome/tab.rs:311 src/gnome/tab.rs:579
+#: src/gnome/context.rs:226 src/gnome/context.rs:507 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/format136.rs:415 src/gnome/diagnostics/register.rs:182 src/gnome/paragraph.rs:1224 src/gnome/tab.rs:311 src/gnome/tab.rs:579
 msgid "Paragraph"
 msgstr ""
 
@@ -2681,7 +2681,7 @@ msgstr ""
 msgid "Starting Page Number"
 msgstr ""
 
-#: src/gnome/adaptive.rs:394 src/gnome/diagnostics/format136.rs:93 src/gnome/text_palette.rs:62 src/gnome/text_palette.rs:73
+#: src/gnome/adaptive.rs:394 src/gnome/diagnostics/format136.rs:99 src/gnome/text_palette.rs:62 src/gnome/text_palette.rs:73
 msgid "Strikethrough"
 msgstr ""
 
@@ -2689,7 +2689,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:223 src/gnome/context.rs:506 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/format136.rs:410 src/gnome/diagnostics/performance_checks.rs:68 src/gnome/diagnostics/register.rs:181 src/gnome/styles.rs:499 src/gnome/tab.rs:307 src/gnome/tab.rs:578
+#: src/gnome/context.rs:223 src/gnome/context.rs:506 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:145 src/gnome/diagnostics/format136.rs:416 src/gnome/diagnostics/performance_checks.rs:68 src/gnome/diagnostics/register.rs:181 src/gnome/styles.rs:499 src/gnome/tab.rs:307 src/gnome/tab.rs:578
 msgid "Style"
 msgstr ""
 
@@ -2749,7 +2749,7 @@ msgstr ""
 msgid "Tab stop"
 msgstr ""
 
-#: src/gnome/context.rs:593 src/gnome/context.rs:602 src/gnome/diagnostics/annotations.rs:151 src/gnome/diagnostics/format136.rs:113 src/gnome/elements.rs:108 src/gnome/links.rs:115 src/gnome/menus.rs:447 src/gnome/references.rs:330 src/gnome/tables.rs:38 src/gnome/tables.rs:207 src/gnome/tables.rs:460 src/gnome/tables.rs:473
+#: src/gnome/context.rs:593 src/gnome/context.rs:602 src/gnome/diagnostics/annotations.rs:151 src/gnome/diagnostics/format136.rs:119 src/gnome/elements.rs:108 src/gnome/links.rs:115 src/gnome/menus.rs:447 src/gnome/references.rs:330 src/gnome/tables.rs:38 src/gnome/tables.rs:207 src/gnome/tables.rs:460 src/gnome/tables.rs:473
 msgid "Table"
 msgstr ""
 
@@ -2773,7 +2773,7 @@ msgstr ""
 msgid "Table Size"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:98 src/gnome/diagnostics/format136.rs:115 src/gnome/elements.rs:110 src/gnome/menus.rs:449 src/gnome/navigation.rs:722 src/gnome/references.rs:209 src/navigation.rs:315
+#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:98 src/gnome/diagnostics/format136.rs:121 src/gnome/elements.rs:110 src/gnome/menus.rs:449 src/gnome/navigation.rs:722 src/gnome/references.rs:209 src/navigation.rs:315
 msgid "Table of Contents"
 msgstr ""
 
@@ -2793,7 +2793,7 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
-#: src/gnome/context.rs:229 src/gnome/context.rs:508 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/format136.rs:408 src/gnome/diagnostics/register.rs:183 src/gnome/diagnostics/spellcheck.rs:133 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:580
+#: src/gnome/context.rs:229 src/gnome/context.rs:508 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/format136.rs:414 src/gnome/diagnostics/register.rs:183 src/gnome/diagnostics/spellcheck.rs:133 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:580
 msgid "Text"
 msgstr ""
 
@@ -2805,7 +2805,7 @@ msgstr ""
 msgid "Text Border"
 msgstr ""
 
-#: src/gnome/adaptive.rs:395 src/gnome/diagnostics/format136.rs:96 src/gnome/text_palette.rs:108 src/gnome/text_palette.rs:529
+#: src/gnome/adaptive.rs:395 src/gnome/diagnostics/format136.rs:102 src/gnome/text_palette.rs:108 src/gnome/text_palette.rs:529
 msgid "Text Color"
 msgstr ""
 
@@ -3069,7 +3069,7 @@ msgstr ""
 msgid "UPPERCASE"
 msgstr ""
 
-#: src/gnome/adaptive.rs:393 src/gnome/diagnostics/format136.rs:92 src/gnome/diagnostics/format136.rs:118 src/gnome/menus.rs:659 src/gnome/text_palette.rs:61 src/gnome/text_palette.rs:68
+#: src/gnome/adaptive.rs:393 src/gnome/diagnostics/format136.rs:98 src/gnome/diagnostics/format136.rs:124 src/gnome/menus.rs:659 src/gnome/text_palette.rs:61 src/gnome/text_palette.rs:68
 msgid "Underline"
 msgstr ""
 
