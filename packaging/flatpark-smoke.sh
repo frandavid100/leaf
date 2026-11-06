@@ -82,7 +82,7 @@ mkdir -p "$leaf29_output/tools"
 cp "$leaf29_root/tools/alpha30-pointer-test.sh" "$leaf29_root/tools/alpha31-pointer-test.sh" "$leaf29_root/tools/format136-pointer-test.sh" "$leaf29_output/tools/"
 cat > "$temporary/leaf29-flatpark.sh" <<'FLATPARK29'
 #!/usr/bin/env bash
-exec flatpak run --socket=x11 --nosocket=wayland --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf.FlatparkTest -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/extra/leaf/bin/leaf "$@"' leaf "$@"
+exec flatpak run --socket=x11 --nosocket=wayland --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf.FlatparkTest -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/extra/leaf/bin/leaf "$@"' leaf "$@"
 FLATPARK29
 (
   cd "$leaf29_output"
