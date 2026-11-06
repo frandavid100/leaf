@@ -199,6 +199,14 @@ impl TextTools {
                     ("value", label),
                 ],
             );
+            if self.active_page.borrow().as_deref() == Some("language") {
+                for choice in ["off", "default"].into_iter().chain(TEXT_LANGUAGES.iter().map(|(tag, _)| *tag)) {
+                    if let Some(row) = find_widget(&self.detail, &format!("language-choice-{choice}")) {
+                        if value == choice { row.add_css_class("current-style"); }
+                        else { row.remove_css_class("current-style"); }
+                    }
+                }
+            }
             self.language_value.set_text(&label);
             self.language_value.set_tooltip_text(Some(&label));
             if let Some(button) = self
@@ -219,6 +227,9 @@ impl TextTools {
             return;
         };
         let state = selection_character(&ui);
+        if let Some(controls) = ui.text_controls.borrow().as_ref() {
+            controls.mark_current_font(state["font"].as_str());
+        }
         self.font_value.set_text(&format!(
             "{}: {}",
             wordcraft_gnome::t!("Font"),

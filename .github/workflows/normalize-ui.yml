@@ -1,0 +1,26 @@
+name: Normalize private UI source
+on:
+  push:
+    branches: [chore/normalize-alpha31-ui]
+permissions:
+  contents: read
+jobs:
+  normalize:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - run: |
+          cargo fmt --package wordcraft-gnome
+          cp "$(rustup which rustfmt)" rustfmt
+          printf '%s\n' "$GITHUB_SHA" > source-commit.txt
+          tar -cJf normalized-source.tar.xz src tests examples po
+      - uses: actions/upload-artifact@v4
+        with:
+          name: normalized-private-ui
+          path: |
+            normalized-source.tar.xz
+            source-commit.txt
+            rustfmt
