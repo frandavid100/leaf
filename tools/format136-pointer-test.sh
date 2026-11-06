@@ -14,7 +14,15 @@ while kill -0 "$pid" 2>/dev/null; do
   read -r _ _ role x y < <(grep "^FORMAT136_READY $stage " "$log" | tail -n1)
   window=$(xdotool search --onlyvisible --name '^Leaf Format136 Regression$' | head -n1)
   xdotool windowfocus --sync "$window"
-  xdotool mousemove --sync "$x" "$y" click 1
+  # Let GTK/X11 consume popup entry and the following in-surface motion before
+  # pressing, as in the existing text-pointer regression.
+  xdotool mousemove --sync "$x" "$y"
+  sleep 0.08
+  xdotool mousemove --sync "$((x+1))" "$((y+1))"
+  sleep 0.08
+  xdotool mousedown 1
+  sleep 0.12
+  xdotool mouseup 1
   if [[ "$role" == hex ]]; then
     xdotool key ctrl+a
     xdotool type --clearmodifiers --delay 20 '#234567'

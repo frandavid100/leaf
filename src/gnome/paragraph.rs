@@ -374,6 +374,9 @@ impl ParagraphPopover {
         button.connect_clicked(move |_| {
             if let Some(s) = weak.upgrade() {
                 s.page(page);
+                if std::env::args().any(|a| a == "--format136-ui-test") {
+                    eprintln!("FORMAT136_PARAGRAPH_OPEN {page}");
+                }
                 if std::env::args().any(|a| a == "--split-states-demo") {
                     eprintln!("SPLIT_SUBPAGE_OK");
                 }

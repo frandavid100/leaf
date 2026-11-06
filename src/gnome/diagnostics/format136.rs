@@ -133,6 +133,8 @@ pub(super) fn format136_ui_test(
     let ticks = Cell::new(0u32);
     let original: RefCell<Option<wordcraft_doc::Document>> = RefCell::new(None);
     let depth = Cell::new(0usize);
+    let page_wait = Cell::new(0u8);
+    let selected = RefCell::new(None);
     glib::timeout_add_local(std::time::Duration::from_millis(100), move || {
         ticks.set(ticks.get() + 1);
         assert!(
@@ -186,6 +188,10 @@ pub(super) fn format136_ui_test(
                     u.current.borrow().as_ref().unwrap().session.doc.clone(),
                 ));
                 depth.set(u.current.borrow().as_ref().unwrap().session.undo_depth());
+                selected.replace(Some(
+                    u.current.borrow().as_ref().unwrap().session.sel.clone(),
+                ));
+                page_wait.set(0);
                 header.pin.set_active(index.get() % 2 == 1);
                 match family {
                     0 => {
@@ -271,7 +277,20 @@ pub(super) fn format136_ui_test(
                 phase.set(3);
             }
             3 => {
+                assert_eq!(
+                    u.current.borrow().as_ref().unwrap().session.sel,
+                    *selected.borrow().as_ref().unwrap(),
+                    "opening {row} preserves the actual editing selection"
+                );
                 if header.label.text().as_str() != title {
+                    page_wait.set(page_wait.get() + 1);
+                    assert!(
+                        page_wait.get() < 20,
+                        "opening {row}: expected header {title}, actual={:?}, focus={:?}",
+                        header.label.text(),
+                        gtk::prelude::GtkWindowExt::focus(&w)
+                            .map(|f| (f.type_().name(), f.widget_name()))
+                    );
                     return glib::ControlFlow::Continue;
                 }
                 assert_eq!(header.label.text(), title);
