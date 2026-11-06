@@ -159,7 +159,11 @@ pub(super) fn review29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
                 } else if let Some(panel) = std::env::args()
                     .find_map(|a| a.strip_prefix("--review29-show=").map(str::to_owned))
                 {
-                    if panel == "elements" {
+                    if panel == "navigation" {
+                        u.navigation_button.set_active(true);
+                    } else if panel == "structure" {
+                        u.outline.borrow().as_ref().unwrap().show();
+                    } else if panel == "elements" {
                         u.elements.borrow().as_ref().unwrap().menu.popup();
                     } else if let Some(menu) = format_button(&u, &format!("{panel}-menu")) {
                         menu.popup();

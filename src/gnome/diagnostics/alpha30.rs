@@ -20,9 +20,23 @@ pub(super) fn alpha30_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
     )
     .unwrap();
     let text = (0..140)
-        .map(|i| format!("Paragraph {i} with enough text to produce a long document.\n"))
+        .map(|i| {
+            if i == 0 || i == 100 {
+                format!("Section {i}\n")
+            } else {
+                format!("Paragraph {i} with enough text to produce a long document.\n")
+            }
+        })
         .collect::<String>();
     let mut s = Session::new(wordcraft_doc::Document::from_text(&text));
+    for n in [0, 100] {
+        selection::set_caret(&mut s, &Pos::body(n, 0), false).unwrap();
+        s.run("para.style", &json!({"style":"Heading1"})).unwrap();
+    }
+    for n in (0..120).step_by(3) {
+        selection::set_caret(&mut s, &Pos::body(n, 0), false).unwrap();
+        wordcraft_gnome::annotations::add_bookmark(&mut s, &format!("mark_{n}")).unwrap();
+    }
     selection::set_caret(&mut s, &Pos::body(125, 0), false).unwrap();
     pictures::insert(&mut s, &file).unwrap();
     pictures::resize(&mut s, 150., 90., false, true).unwrap();
@@ -54,28 +68,32 @@ pub(super) fn alpha30_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
                 (u.scroll.vadjustment().value() - old).abs() < 80.,
                 "image edit must preserve its viewport"
             );
-            let mut s = Session::new(wordcraft_doc::Document::from_text(
-                "First heading\nA paragraph\nSecond heading\nMore text",
-            ));
-            for n in [0, 2] {
-                selection::set_caret(&mut s, &Pos::body(n, 0), false).unwrap();
-                s.run("para.style", &json!({"style":"Heading1"})).unwrap();
-            }
-            selection::set_caret(&mut s, &Pos::body(0, 0), false).unwrap();
-            wordcraft_gnome::references::insert_toc(
-                &mut s,
-                &json!({"title":"Contents","levels":3,"hyperlinks":true}),
-            )
-            .unwrap();
-            opened(&u, s, "TOC interaction");
             let (u, w, a) = (u.clone(), w.clone(), a.clone());
-            glib::timeout_add_local_once(std::time::Duration::from_millis(450), move || {
-                alpha30_controls(&u, &w, &a)
+            navigation131_test(&u.clone(), move || {
+                let mut s = Session::new(wordcraft_doc::Document::from_text(
+                    "First heading\nA paragraph\nSecond heading\nMore text",
+                ));
+                for n in [0, 2] {
+                    selection::set_caret(&mut s, &Pos::body(n, 0), false).unwrap();
+                    s.run("para.style", &json!({"style":"Heading1"})).unwrap();
+                }
+                selection::set_caret(&mut s, &Pos::body(0, 0), false).unwrap();
+                wordcraft_gnome::references::insert_toc(
+                    &mut s,
+                    &json!({"title":"Contents","levels":3,"hyperlinks":true}),
+                )
+                .unwrap();
+                opened(&u, s, "TOC interaction");
+                let (u, w, a) = (u.clone(), w.clone(), a.clone());
+                glib::timeout_add_local_once(std::time::Duration::from_millis(450), move || {
+                    alpha30_controls(&u, &w, &a)
+                });
             });
         });
     });
 }
 fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+    window.set_title(Some("Leaf Alpha30 Regression"));
     let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     let depth = ui.current.borrow().as_ref().unwrap().session.undo_depth();
     let tools = ui.text_tools.borrow().as_ref().unwrap().clone();

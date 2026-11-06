@@ -1,24 +1,14 @@
 use super::*;
 
-// Papers-like bottom selector and a heading hierarchy sourced from WordCraft.
-pub(super) fn sidebar_icon(kind: &str) -> gtk::Widget {
-    let icon = gtk::Image::from_icon_name(if kind == "pages" {
-        "view-grid-symbolic"
-    } else {
-        "compass-symbolic"
-    });
-    icon.set_pixel_size(16);
-    icon.upcast()
-}
-
+// Shared native Navigation and Review sidebar.
 pub(super) fn refresh_sidebar_title(ui: &Ui) {
     let label = if ui.sidebar_pages.visible_child_name().as_deref() == Some("search") {
         wordcraft_gnome::t!("Search")
     } else {
-        match ui.navigation_pages.visible_child_name().as_deref() {
-            Some("outline") => wordcraft_gnome::t!("Navigation"),
-            Some("annotations" | "proofing" | "review") => wordcraft_gnome::t!("Review"),
-            _ => wordcraft_gnome::t!("Pages"),
+        if ui.navigation_pages.visible_child_name().as_deref() == Some("review") {
+            wordcraft_gnome::t!("Review")
+        } else {
+            wordcraft_gnome::t!("Navigation")
         }
     };
     ui.sidebar_title.set_text(label);
@@ -34,6 +24,8 @@ pub(super) struct OutlinePanel {
     pub(super) pending: Cell<bool>,
     headings: RefCell<Vec<wordcraft_gnome::navigation::Heading>>,
     caret: RefCell<Option<(u64, u64, Pos)>>,
+    rendered_identity: Cell<Option<(u64, u64)>>,
+    reveal_pending: Cell<bool>,
     filter: gtk::DropDown,
     elements: RefCell<Vec<wordcraft_gnome::navigation::Element>>,
 }
@@ -49,7 +41,27 @@ impl OutlinePanel {
         ui.sidebar_pages.set_visible_child_name("navigation");
         ui.navigation_pages.set_visible_child_name("outline");
         ui.sidebar_button.set_active(true);
-        self.refresh();
+        self.ensure_fresh();
+    }
+    pub(super) fn document_opened(self: &Rc<Self>) {
+        let identity = self.ui.upgrade().and_then(|u| document_identity(&u));
+        if self.rendered_identity.get().map(|(id, _)| id) != identity.map(|(id, _)| id) {
+            self.collapsed.borrow_mut().clear();
+            self.reveal_pending.set(true);
+            if self.ui.upgrade().is_some_and(|u| {
+                u.navigation_pages.visible_child_name().as_deref() == Some("outline")
+            }) {
+                self.ensure_fresh();
+            }
+        }
+    }
+    pub(super) fn ensure_fresh(self: &Rc<Self>) {
+        let identity = self.ui.upgrade().and_then(|u| document_identity(&u));
+        if self.rendered_identity.get() != identity {
+            self.refresh();
+        } else {
+            self.sync_caret();
+        }
     }
     pub(super) fn schedule(self: &Rc<Self>) {
         if !self
@@ -66,7 +78,7 @@ impl OutlinePanel {
         glib::timeout_add_local_once(std::time::Duration::from_millis(160), move || {
             if let Some(s) = weak.upgrade() {
                 s.pending.set(false);
-                s.refresh();
+                s.ensure_fresh();
             }
         });
     }
@@ -74,6 +86,7 @@ impl OutlinePanel {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
+        self.rendered_identity.set(document_identity(&ui));
         let (headings, mut bookmarks, mut sections, focus, elements) = {
             let value = ui.current.borrow();
             let Some(d) = value.as_ref() else {
@@ -109,6 +122,27 @@ impl OutlinePanel {
             mark.heading = owner_of(&mark.pos);
         }
         let filter = self.filter.selected();
+        let previous_target = self
+            .list
+            .selected_row()
+            .and_then(|row| self.positions.borrow().get(row.index() as usize).cloned());
+        let active_target = {
+            let current = ui.current.borrow();
+            let d = current.as_ref().unwrap();
+            elements
+                .iter()
+                .filter(|e| {
+                    (filter == 0 || filter == e.kind)
+                        && wordcraft_gnome::navigation::element_contains(&d.session, e, &focus)
+                })
+                .max_by_key(|e| if e.kind == 4 { 0 } else { 1 })
+                .map(|e| e.pos.clone())
+                .or_else(|| owner_of(&focus).map(|i| headings[i].pos.clone()))
+                .or_else(|| sections.get(section_of(&focus)).map(|(_, p)| p.clone()))
+        };
+        if previous_target != active_target {
+            self.reveal_pending.set(true);
+        }
         let matches = if filter == 1 {
             headings.iter().map(|h| h.pos.clone()).collect::<Vec<_>>()
         } else if filter == 2 {
@@ -489,10 +523,54 @@ impl OutlinePanel {
         }
     }
     fn select_outline_row(&self, row: &gtk::ListBoxRow) {
+        let changed = self.list.selected_row().as_ref() != Some(row);
         self.list.select_row(Some(row));
+        if !changed && !self.reveal_pending.get() {
+            return;
+        }
+        let visible = self.ui.upgrade().is_some_and(|u| {
+            u.sidebar.shows_sidebar()
+                && u.sidebar_pages.visible_child_name().as_deref() == Some("navigation")
+                && u.navigation_pages.visible_child_name().as_deref() == Some("outline")
+        });
+        self.reveal_pending.set(!visible);
+        if !visible {
+            return;
+        }
         let weak = row.downgrade();
+        let weak_ui = self.ui.clone();
+        let document = self
+            .ui
+            .upgrade()
+            .and_then(|u| u.current.borrow().as_ref().map(|d| d.session.document_id()));
+        let scroll_value = row
+            .ancestor(gtk::ScrolledWindow::static_type())
+            .and_then(|w| w.downcast::<gtk::ScrolledWindow>().ok())
+            .map(|s| s.vadjustment().value());
         glib::idle_add_local_once(move || {
             let Some(row) = weak.upgrade() else { return };
+            let Some(ui) = weak_ui.upgrade().filter(|u| !u.closed.get()) else {
+                return;
+            };
+            if ui
+                .current
+                .borrow()
+                .as_ref()
+                .map(|d| d.session.document_id())
+                != document
+            {
+                return;
+            }
+            if ui
+                .outline
+                .borrow()
+                .as_ref()
+                .and_then(|p| p.list.selected_row())
+                .as_ref()
+                != Some(&row)
+            {
+                return;
+            }
             let Some(scroll) = row
                 .ancestor(gtk::ScrolledWindow::static_type())
                 .and_then(|w| w.downcast::<gtk::ScrolledWindow>().ok())
@@ -503,6 +581,21 @@ impl OutlinePanel {
                 return;
             };
             let adj = scroll.vadjustment();
+            // A queued reveal must not override subsequent manual browsing or
+            // operate on a hidden representation after a native allocation.
+            if scroll_value.is_some_and(|v| (adj.value() - v).abs() > 1.) {
+                return;
+            }
+            if !ui.sidebar.is_mapped()
+                || !ui.sidebar.shows_sidebar()
+                || ui.sidebar_pages.visible_child_name().as_deref() != Some("navigation")
+                || ui.navigation_pages.visible_child_name().as_deref() != Some("outline")
+            {
+                if let Some(panel) = ui.outline.borrow().as_ref() {
+                    panel.reveal_pending.set(true);
+                }
+                return;
+            }
             let top = bounds.y() as f64;
             let bottom = top + bounds.height() as f64;
             if top < adj.value() {
@@ -660,6 +753,8 @@ pub(super) fn install_outline(
         pending: Cell::new(false),
         headings: RefCell::new(Vec::new()),
         caret: RefCell::new(None),
+        rendered_identity: Cell::new(None),
+        reveal_pending: Cell::new(true),
         filter,
         elements: RefCell::new(Vec::new()),
     });
@@ -685,7 +780,7 @@ pub(super) fn install_outline(
                 if let Some(ui) = s.ui.upgrade() {
                     ui.navigation_pages.set_visible_child_name("outline");
                 }
-                s.refresh();
+                s.ensure_fresh();
             }
         }
     });
@@ -695,9 +790,77 @@ pub(super) fn install_outline(
             if let Some(ui) = weak.upgrade() {
                 ui.navigation_pages.set_visible_child_name("thumbnails");
                 refresh_thumbnails(&ui);
-                reveal_active_thumbnail(&ui);
+                if ui.thumbnail_reveal_pending.get() {
+                    reveal_active_thumbnail(&ui);
+                }
             }
         }
     });
     s
+}
+
+pub(super) fn install_navigation_switching(ui: &Rc<Ui>) {
+    let weak = Rc::downgrade(ui);
+    ui.navigation_pages
+        .connect_visible_child_name_notify(move |stack| {
+            let Some(ui) = weak.upgrade() else { return };
+            match stack.visible_child_name().as_deref() {
+                Some("thumbnails") => {
+                    ui.last_navigation.set("thumbnails");
+                    ui.navigation_button.set_active(true);
+                    ui.navigation_selector.set_visible(true);
+                }
+                Some("outline") => {
+                    ui.last_navigation.set("outline");
+                    ui.navigation_button.set_active(true);
+                    ui.navigation_selector.set_visible(true);
+                }
+                Some("review") => ui.navigation_selector.set_visible(false),
+                _ => {}
+            }
+            refresh_sidebar_title(&ui);
+        });
+    let weak = Rc::downgrade(ui);
+    ui.navigation_button.connect_toggled(move |b| {
+        if b.is_active() {
+            if let Some(ui) = weak.upgrade() {
+                show_navigation(&ui);
+            }
+        }
+    });
+    let weak = Rc::downgrade(ui);
+    ui.navigation_button.connect_clicked(move |_| {
+        if let Some(ui) = weak.upgrade() {
+            show_navigation(&ui);
+        }
+    });
+    let weak = Rc::downgrade(ui);
+    ui.sidebar.connect_show_sidebar_notify(move |s| {
+        if s.shows_sidebar() {
+            if let Some(ui) = weak.upgrade() {
+                sync_navigation_representation(&ui);
+            }
+        }
+    });
+}
+fn show_navigation(ui: &Rc<Ui>) {
+    if let Some(search) = ui.search.borrow().as_ref() {
+        search.toggle.set_active(false);
+    }
+    ui.sidebar_pages.set_visible_child_name("navigation");
+    ui.navigation_pages
+        .set_visible_child_name(ui.last_navigation.get());
+    sync_navigation_representation(ui);
+}
+fn sync_navigation_representation(ui: &Rc<Ui>) {
+    if ui.navigation_pages.visible_child_name().as_deref() == Some("outline") {
+        if let Some(outline) = ui.outline.borrow().as_ref() {
+            outline.ensure_fresh();
+        }
+    } else if ui.navigation_pages.visible_child_name().as_deref() == Some("thumbnails") {
+        refresh_thumbnails(ui);
+        if ui.thumbnail_reveal_pending.get() {
+            reveal_active_thumbnail(ui);
+        }
+    }
 }

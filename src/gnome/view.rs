@@ -54,6 +54,7 @@ pub(super) fn update_status(ui: &Rc<Ui>) {
             }
             doc.thumb_buttons[doc.active].add_css_class("selected-thumb");
             doc.status_active = Some(doc.active);
+            ui.thumbnail_reveal_pending.set(true);
             let weak = Rc::downgrade(ui);
             glib::idle_add_local_once(move || {
                 if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
@@ -68,6 +69,8 @@ pub(super) fn update_status(ui: &Rc<Ui>) {
     drop(current);
     if ui.pages_button.tooltip_text().as_deref() != Some(pages_tip.as_str()) {
         ui.pages_button.set_tooltip_text(Some(&pages_tip));
+        ui.pages_button
+            .update_property(&[gtk::accessible::Property::Description(&pages_tip)]);
     }
 }
 
@@ -697,6 +700,9 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
     layout_pages(ui);
     ui.scroll.vadjustment().set_value(0.0);
     ui.thumbnails_scroll.vadjustment().set_value(0.0);
+    if let Some(outline) = ui.outline.borrow().as_ref() {
+        outline.document_opened();
+    }
     update_status(ui);
     refresh_pages(ui);
     refresh_thumbnails(ui);
@@ -736,6 +742,13 @@ pub(super) fn schedule_thumbnail_refresh(ui: &Rc<Ui>) {
 /// Only called for an active-page change or when the Pages panel is revealed.
 /// Ordinary sidebar browsing and redraws never snap back to this entry.
 pub(super) fn reveal_active_thumbnail(ui: &Rc<Ui>) {
+    if !ui.sidebar.shows_sidebar()
+        || ui.sidebar_pages.visible_child_name().as_deref() != Some("navigation")
+        || ui.navigation_pages.visible_child_name().as_deref() != Some("thumbnails")
+    {
+        return;
+    }
+    ui.thumbnail_reveal_pending.set(false);
     reveal_active_thumbnail_now(ui);
     let target = ui
         .current

@@ -157,6 +157,9 @@ use columns_checks::*;
 #[path = "diagnostics/context.rs"]
 mod context_checks;
 use context_checks::*;
+#[path = "diagnostics/navigation131.rs"]
+mod navigation131_checks;
+use navigation131_checks::*;
 #[path = "diagnostics/alpha30.rs"]
 mod alpha30_checks;
 use alpha30_checks::*;

@@ -391,7 +391,9 @@ pub(super) fn install_pointer_and_view_input(
                     glib::idle_add_local_once(move || {
                         if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
                             refresh_thumbnails(&ui);
-                            reveal_active_thumbnail(&ui);
+                            if ui.thumbnail_reveal_pending.get() {
+                                reveal_active_thumbnail(&ui);
+                            }
                         }
                     });
                 }

@@ -2905,3 +2905,6 @@ msgstr "Table {number}"
 
 msgid "Tables"
 msgstr "Tables"
+
+msgid "Structure"
+msgstr "Structure"

@@ -694,6 +694,7 @@ pub const MESSAGES: &[&str] = &[
     "Starting Line Number",
     "Starting Page Number",
     "Strikethrough",
+    "Structure",
     "Style",
     "Style Deleted",
     "Style Name",

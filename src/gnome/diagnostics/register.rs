@@ -25,7 +25,7 @@ pub(super) fn install_diagnostics(
     app: &Application,
     controls: DiagnosticControls<'_>,
 ) {
-    if std::env::args().any(|a| a == "--alpha30-ui-test") {
+    if std::env::args().any(|a| a == "--alpha30-ui-test") && host.tabs.n_pages() == 1 {
         alpha30_ui_test(ui, window, app);
     }
     if std::env::args().any(|a| a == "--review29-ui-test" || a == "--review29-demo") {
@@ -263,11 +263,12 @@ pub(super) fn install_diagnostics(
         window.set_title(Some("Leaf Split Button Regression"));
         // Supply coordinates only: extra capture controllers change native routing.
         glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+            s.execute("para.indents", serde_json::json!({"left":18.}));
             m.popup();
             glib::timeout_add_local_once(std::time::Duration::from_millis(400), move || {
                 use gdk::prelude::PopupExt;
                 let pop = s.popover.upgrade().unwrap();
-                let body = find_widget(&s.main, "paragraph-indent")
+                let body = find_widget(&s.main, "paragraph-more-indents-apply")
                     .unwrap()
                     .compute_bounds(&pop)
                     .unwrap();

@@ -12,6 +12,7 @@ Motor, renderer, dependencias y parches permanecen en la revisión fijada de Wor
 | #128 | La miniatura activa deriva del foco de selección maquetado; scroll y hover no cambian el destino. |
 | #129 | Clic ordinario sobre el enlace estructurado del índice, puntero y decoración temporal localizada por páginas; sin inferir destino por título o página impresa. |
 | #130 | Iconos, propiedades enlazadas, Fuente interna con entrada/previsualizaciones, tamaño expandido, repetición propia de fuente/idioma, Superíndice en Más, Sangrías internas y Bordes/Sombreado compartidos. |
+| #131 | Navegación reúne Páginas y Estructura bajo dos representaciones internas; conserva filtro, expansión y desplazamientos independientes por pestaña, restaura la representación al volver y revela destinos modificados mientras estaba oculta. |
 | #121 | Parcial: propiedades visibles/insensibles, explicación mediante tooltip, inserción inferior, transición nativa y herramientas compartidas. La dependencia de #127 sigue pendiente. |
 | #124 | Parcial: índice canónico de todos los tipos disponibles, lectura de tablas anidadas y filtro nativo. Filtros con contexto de sección/títulos y selección activa por extensión real de enlaces, objetos y notas. Falta la asociación de leyendas. |
 | #126/#127 | Sin cierre. Los objetos imagen no tienen una identidad persistente de leyenda; `references.caption` inserta un párrafo Caption/SEQ contiguo, sin propietario. No se dibujan asociaciones adivinadas ni se oculta/elimina texto para simular una propiedad reversible. |
@@ -32,7 +33,7 @@ bookmarks reales e invariancia de documento/historial durante navegación.
 Las regresiones anteriores adaptan explícitamente los requisitos sustituidos
 (Fuente interna, tamaño expandido, Sangrías internas y controles insensibles).
 
-173 pruebas Rust y cuatro Python; 854 mensajes completos inglés/español.
+173 pruebas Rust y cuatro Python; 855 mensajes completos inglés/español.
 Formato, catálogos y enlaces locales comprobados. Pruebas GTK locales con Xvfb,
 interacción de Texto y Fuente, revisión, Párrafo y la nueva pasada superadas.
 La CI optimizada y las instalaciones GNOME 49/51 deben terminar correctamente
@@ -46,3 +47,23 @@ La regresión de lista reproduce la pérdida de tipo en un párrafo nuevo y exig
 conservar tipo/nivel con un solo paso de Deshacer. La numeración importada ligada
 a una definición canónica no se reaplica como un identificador de otro documento.
 La prueba general de interacción abre ahora Fuente en su página interna real.
+
+## Identidad de la revisión final
+
+Se registrará la fuente definitiva al completar la CI optimizada y la instalación.
+La candidata exige éxito completo y equivalencia de fuentes, y compara byte a
+byte el ejecutable empaquetado con el ejecutable optimizado validado.
+
+La regresión de Navegación verifica con controles nativos los desplazamientos
+independientes, filtro y estado por pestaña, regreso desde Revisión/Búsqueda,
+cierre/apertura de la barra y cambio de destino mientras Estructura está oculta.
+Superada en inglés 1× y español 2×. Cambiar de representación no modifica el
+documento, historial, selección ni viewport. La prueba antigua de Sangrías usa
+ahora el par vigente configuración/repetición, con ratón real.
+
+Las ejecuciones iniciales fallidas no son candidatas publicables. La CI detectó
+supuestos antiguos de los conductores (coordenadas 2×, destino del clic fuera del
+viewport y la antigua ubicación de Fuente) y la dependencia de la regla respecto
+a la página activa por viewport. Las regresiones se actualizaron a los requisitos
+vigentes y la regla conserva geometría visible independiente de la miniatura/caret.
+La prueba local completa de reglas supera sus 60 pasos.

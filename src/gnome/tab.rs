@@ -134,21 +134,38 @@ pub(super) fn build_tab(
     selector.set_margin_end(6);
     selector.set_margin_top(5);
     selector.set_margin_bottom(5);
-    let pages_toggle = gtk::ToggleButton::new();
+    let pages_toggle = gtk::ToggleButton::with_label(wordcraft_gnome::t!("Pages"));
     accessible_name(&pages_toggle, wordcraft_gnome::t!("Pages"));
-    pages_toggle.set_child(Some(&sidebar_icon("pages")));
+    // Pages is the internal, labeled Navigation representation selector.
     pages_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Pages")));
     pages_toggle.set_hexpand(true);
-    pages_toggle.add_css_class("flat");
+
     pages_toggle.set_widget_name("sidebar-pages");
-    let titles_toggle = gtk::ToggleButton::new();
-    accessible_name(&titles_toggle, wordcraft_gnome::t!("Navigation"));
-    titles_toggle.set_icon_name("compass-symbolic");
-    titles_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Navigation")));
+    let titles_toggle = gtk::ToggleButton::with_label(wordcraft_gnome::t!("Structure"));
+    accessible_name(&titles_toggle, wordcraft_gnome::t!("Structure"));
+    titles_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Structure")));
     titles_toggle.set_hexpand(true);
-    titles_toggle.add_css_class("flat");
+
     titles_toggle.set_widget_name("sidebar-outline");
     titles_toggle.set_group(Some(&pages_toggle));
+    let navigation_toggle = gtk::ToggleButton::new();
+    navigation_toggle.set_widget_name("sidebar-navigation");
+    navigation_toggle.set_icon_name("compass-symbolic");
+    navigation_toggle.set_hexpand(true);
+    navigation_toggle.add_css_class("flat");
+    navigation_toggle.set_tooltip_text(Some(wordcraft_gnome::t!("Navigation")));
+    accessible_name(&navigation_toggle, wordcraft_gnome::t!("Navigation"));
+    navigation_toggle.set_active(true);
+    let navigation_selector = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    navigation_selector.add_css_class("linked");
+    navigation_selector.set_widget_name("navigation-representation");
+    navigation_selector.set_margin_start(8);
+    navigation_selector.set_margin_end(8);
+    navigation_selector.set_margin_top(6);
+    navigation_selector.set_margin_bottom(6);
+    navigation_selector.append(&pages_toggle);
+    navigation_selector.append(&titles_toggle);
+    navigation.add_top_bar(&navigation_selector);
     let annotations_toggle = gtk::ToggleButton::new();
     accessible_name(&annotations_toggle, wordcraft_gnome::t!("Review"));
     annotations_toggle.set_icon_name("document-edit-symbolic");
@@ -156,10 +173,9 @@ pub(super) fn build_tab(
     annotations_toggle.set_hexpand(true);
     annotations_toggle.add_css_class("flat");
     annotations_toggle.set_widget_name("sidebar-review");
-    annotations_toggle.set_group(Some(&pages_toggle));
+    annotations_toggle.set_group(Some(&navigation_toggle));
     pages_toggle.set_active(true);
-    selector.append(&pages_toggle);
-    selector.append(&titles_toggle);
+    selector.append(&navigation_toggle);
     selector.append(&annotations_toggle);
     let selector_bar = gtk::Box::new(gtk::Orientation::Vertical, 0);
     selector_bar.add_css_class("toolbar");
@@ -382,6 +398,10 @@ pub(super) fn build_tab(
         sidebar_title: side_title,
         sidebar_pages,
         navigation_pages,
+        navigation_button: navigation_toggle.clone(),
+        navigation_selector,
+        last_navigation: Cell::new("thumbnails"),
+        thumbnail_reveal_pending: Cell::new(true),
         outline: RefCell::new(None),
         annotations: RefCell::new(None),
         elements: RefCell::new(None),
@@ -417,6 +437,7 @@ pub(super) fn build_tab(
             }
         });
     }
+    install_navigation_switching(&ui);
     refresh_sidebar_title(&ui);
     ui.history_controls
         .replace(Some(install_history_controls(&ui, &history_tools)));
