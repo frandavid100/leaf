@@ -39,6 +39,19 @@ pub(super) fn interaction_pointer_test(
         }
     });
     ui.document_box.add_controller(trace);
+    let keys = gtk::EventControllerKey::new();
+    keys.set_propagation_phase(gtk::PropagationPhase::Capture);
+    keys.connect_key_pressed(|_, key, _, modifiers| {
+        eprintln!("FONT_KEY {key:?} {modifiers:?}");
+        glib::Propagation::Proceed
+    });
+    ui.font_input.add_controller(keys);
+    if let Some(delegate) = ui.font_input.delegate().filter(|e| e.is::<gtk::Text>()) {
+        delegate.connect_local("paste-clipboard", false, |_| {
+            eprintln!("FONT_PASTE_REQUEST");
+            None
+        });
+    }
     ui.font_input.connect_changed(|entry| {
         if entry.text() == "monospacex" {
             eprintln!("FONT_PASTE_READY");
