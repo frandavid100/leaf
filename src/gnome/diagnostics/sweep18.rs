@@ -369,6 +369,44 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
 }
 
 thread_local! { static TEXT_POINTER_GEOMETRY: RefCell<std::collections::HashMap<String, ([f64;4],u8)>> = RefCell::new(std::collections::HashMap::new()); }
+/// Opt-in test handshake: stable geometry does not prove that GTK delivered a
+/// native pointer event to the newly mapped popup control. Consume no events.
+pub(super) fn observe_pointer_target(
+    marker: &str,
+    pop: &gtk::Popover,
+    widget: &impl IsA<gtk::Widget>,
+) {
+    let motion = gtk::EventControllerMotion::new();
+    motion.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let pop = pop.downgrade();
+    let widget_weak = widget.as_ref().downgrade();
+    let marker = marker.to_owned();
+    let seen = Cell::new(false);
+    let notify = Rc::new(
+        move |controller: &gtk::EventControllerMotion, x: f64, y: f64| {
+            if seen.get() {
+                return;
+            }
+            let Some(pop) = pop.upgrade().filter(|p| p.is_mapped()) else {
+                return;
+            };
+            let Some(widget) = widget_weak.upgrade().filter(|w| w.is_sensitive()) else {
+                return;
+            };
+            if controller.current_event().and_then(|e| e.surface()) == pop.surface()
+                && widget.contains(x, y)
+                && widget.is_mapped()
+            {
+                seen.set(true);
+                eprintln!("POINTER_TARGET_ENTERED {marker}");
+            }
+        },
+    );
+    let entered = notify.clone();
+    motion.connect_enter(move |m, x, y| entered(m, x, y));
+    motion.connect_motion(move |m, x, y| notify(m, x, y));
+    widget.add_controller(motion);
+}
 pub(super) fn text_pointer_target(
     marker: &str,
     pop: &gtk::Popover,
@@ -406,6 +444,9 @@ pub(super) fn text_pointer_target(
     });
     if !stable {
         return false;
+    }
+    if std::env::args().any(|a| a == "--format136-ui-test") {
+        observe_pointer_target(marker, pop, widget);
     }
     eprintln!(
         "{marker} {} {}",

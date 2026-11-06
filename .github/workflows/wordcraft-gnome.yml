@@ -739,6 +739,13 @@ jobs:
           LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 180s bash tools/alpha29-pointer-test.sh "$RUNNER_TEMP/leaf29-installed.sh"
           LANGUAGE=es GDK_SCALE=2 xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s bash tools/alpha29-pointer-test.sh "$RUNNER_TEMP/leaf29-installed.sh"
           mv alpha29-pointer-*.log alpha29-pointer-*.png alpha31-*.log alpha31-*.png dist/alpha29-installed/
+      - name: Retain installed pointer evidence on failure too
+        if: always()
+        run: |
+          mkdir -p dist/alpha29-installed
+          shopt -s nullglob
+          files=(alpha29-pointer-*.log alpha29-pointer-*.png alpha31-*.log alpha31-*.png)
+          if ((${#files[@]})); then mv "${files[@]}" dist/alpha29-installed/; fi
       - name: Capture the installed alpha28 gallery
         run: xvfb-run -a -s '-screen 0 1400x1000x24' dbus-run-session -- bash packaging/capture-gallery.sh flatpak dist/alpha28-gallery
       - uses: actions/upload-artifact@v4
