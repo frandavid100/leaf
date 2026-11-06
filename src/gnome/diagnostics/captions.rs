@@ -12,6 +12,7 @@ fn check(root: &impl IsA<gtk::Widget>, name: &str) -> gtk::CheckButton {
 fn request(window: &ApplicationWindow, widget: &impl IsA<gtk::Widget>, stage: u32, role: &str) {
     use gdk::prelude::PopupExt;
     let pop = widget.native().unwrap().downcast::<gtk::Popover>().unwrap();
+    observe_pointer_target(&format!("CAPTION_INPUT {stage} {role}"), &pop, widget);
     let r = widget.compute_bounds(&pop).unwrap();
     let (tx, ty) = pop.surface_transform();
     let (mut x, mut y) = (
@@ -71,6 +72,9 @@ pub(super) fn captions_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
         wordcraft_gnome::tables::in_table(&ui.current.borrow().as_ref().unwrap().session),
         "creating a table does not require an existing table target"
     );
+    assert!(tools_change(ui, |s| {
+        wordcraft_gnome::annotations::add_bookmark(s, "UserTarget")
+    }));
     ui.sidebar.set_show_sidebar(false);
     ui.sidebar_button.set_active(false);
     zoom_to(ui, if compact { 0.5 } else { 0.85 });
@@ -133,17 +137,20 @@ pub(super) fn captions_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
             5 => {
                 let c = u.current.borrow();
                 let s = &c.as_ref().unwrap().session;
-                assert!(
-                    s.undo_depth() >= depth.get() + 2,
-                    "toggle and native typing are separate edits"
-                );
                 let pairs = captions::all(&s.doc);
+                if pairs.is_empty() {
+                    return glib::ControlFlow::Continue;
+                }
                 assert_eq!(pairs.len(), 1);
                 // XTest has delivered the keys, but slow HiDPI debug rendering
                 // may still be processing the final native key event.
                 if !captions::text(&s.doc, &pairs[0]).ends_with("Authored caption") {
                     return glib::ControlFlow::Continue;
                 }
+                assert!(
+                    s.undo_depth() >= depth.get() + 2,
+                    "toggle and native typing are separate edits"
+                );
                 drop(c);
                 elements.show("image");
             }
@@ -270,6 +277,36 @@ pub(super) fn captions_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
                 drop(c);
                 elements.pop.popdown();
                 opened(&u, reopened, "Reopened caption ownership");
+                let link = show_link(&u).unwrap();
+                find_widget(&link.window, "link-kind")
+                    .unwrap()
+                    .downcast::<gtk::DropDown>()
+                    .unwrap()
+                    .set_selected(2);
+                let targets = find_widget(&link.window, "link-internal-target")
+                    .unwrap()
+                    .downcast::<gtk::DropDown>()
+                    .unwrap();
+                let model = targets.model().unwrap();
+                assert_eq!(
+                    model.n_items(),
+                    1,
+                    "hidden caption anchors do not become user bookmark choices"
+                );
+                assert_eq!(
+                    model
+                        .item(0)
+                        .unwrap()
+                        .downcast::<gtk::StringObject>()
+                        .unwrap()
+                        .string(),
+                    "UserTarget"
+                );
+                find_widget(&link.window, "link-cancel")
+                    .unwrap()
+                    .downcast::<gtk::Button>()
+                    .unwrap()
+                    .emit_clicked();
                 select_image(&u, 0);
                 refresh_selection(&u);
                 let mut c = u.current.borrow_mut();

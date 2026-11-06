@@ -58,6 +58,29 @@ ordinary editable caption paragraphs. They are not silently assigned to nearby
 objects. Numbered caption creation remains limited to the document body by the
 pinned public engine API.
 
+### Validation attempts and delivery gate
+
+The full native run [42287362018](https://github.com/frandavid100/leaf/actions/runs/42287362018)
+passes against `f17c7b4a38979eaaac30d91fff37e8af0f1d2f8f`. It includes the
+independent Insert Table correction from PR #148; the preceding native run
+42283745462 had failed its unchanged contextual table-creation/column-selection
+test. Packages from sources `97194123d1658b920d8feefc2261c892960c63f1`
+and `fc5e51e94c482317a97c7dbd1277c7c1407ad3cd` are **not accepted**.
+
+Those installed attempts also exposed pointer-test delivery races: one caption
+check ran before its expected edit, and one formatting click reached the canvas.
+The isolated [accepted/current control comparison](https://github.com/frandavid100/leaf/actions/runs/42288854217)
+passes with extra focus/screenshot observations in both builds. Those observations
+change timing, so they do not establish a product fix by themselves.
+
+The next diagnostic waits for a real GTK motion event inside the exact target
+on its popup surface before the single click. Only motion is repeated while
+waiting; semantic assertions and the original font-input regression remain intact.
+Typing assertions wait for the complete native edit. Failure captures are retained
+by installed CI as well. Hidden ownership anchors are excluded from the user
+bookmark chooser while named bookmarks remain selectable. Final native/installed
+acceptance of this diagnostic source is still required before closure or delivery.
+
 ## #132 investigation
 
 Original DOCX SHA-256:

@@ -170,6 +170,11 @@ fn show_link_for(ui: &Rc<Ui>, pointer: Option<&Pos>) -> Option<LinkDialog> {
             );
             let model = gtk::StringList::new(&[]);
             for (text, _) in values {
+                // Underscore-prefixed bookmarks are hidden anchors used by
+                // native fields and caption ownership, not named user targets.
+                if kind.selected() == 2 && text.starts_with('_') {
+                    continue;
+                }
                 model.append(&text);
             }
             button.set_sensitive(model.n_items() > 0);

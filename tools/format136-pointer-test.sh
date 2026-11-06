@@ -7,7 +7,7 @@ LEAF29_ACK_DIR=$(mktemp -d "${LEAF29_ACK_PARENT:-/tmp}/leaf136-ack.XXXXXX")
 log=alpha31-format136-${LANGUAGE:-en}-${GDK_SCALE:-1}.log
 "${cmd[@]}" --format136-ui-test > "$log" 2>&1 &
 pid=$!
-trap 'kill "$pid" 2>/dev/null || true; rm -rf "$LEAF29_ACK_DIR"' EXIT
+trap 'scrot "${log%.log}-failure.png" 2>/dev/null || true; kill "$pid" 2>/dev/null || true; rm -rf "$LEAF29_ACK_DIR"' EXIT
 stage=0
 while kill -0 "$pid" 2>/dev/null; do
   if ! grep -q "^FORMAT136_READY $stage " "$log"; then sleep 0.05; continue; fi
@@ -24,6 +24,18 @@ while kill -0 "$pid" 2>/dev/null; do
   sleep 0.08
   xdotool mousemove --sync "$((x+1))" "$((y+1))"
   sleep 0.08
+  # Require actual GTK entry into this exact control on its popup surface.
+  # Repeat only motion while mapping settles; activate it exactly once.
+  for attempt in $(seq 1 60); do
+    grep -q "^POINTER_TARGET_ENTERED FORMAT136_READY $stage " "$log" && break
+    kill -0 "$pid" || { cat "$log"; exit 1; }
+    xdotool mousemove --sync "$x" "$y"
+    sleep 0.04
+    xdotool mousemove --sync "$((x+1))" "$((y+1))"
+    sleep 0.04
+  done
+  grep -q "^POINTER_TARGET_ENTERED FORMAT136_READY $stage " "$log" || { cat "$log"; exit 1; }
+  scrot "${log%.log}-$stage-before.png"
   xdotool mousedown 1
   sleep 0.12
   xdotool mouseup 1
@@ -40,3 +52,5 @@ done
 wait "$pid" || { cat "$log"; exit 1; }
 cat "$log"
 grep -q FORMAT136_UI_OK "$log"
+rm -rf "$LEAF29_ACK_DIR"
+trap - EXIT

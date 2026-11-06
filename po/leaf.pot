@@ -629,7 +629,7 @@ msgstr ""
 msgid "Cross-reference"
 msgstr ""
 
-#: src/gnome/links.rs:343
+#: src/gnome/links.rs:348
 msgid "Ctrl+click to open a link"
 msgstr ""
 
@@ -1801,7 +1801,7 @@ msgstr ""
 msgid "No elements of this type in the document."
 msgstr ""
 
-#: src/gnome/links.rs:252 src/gnome/references.rs:364
+#: src/gnome/links.rs:257 src/gnome/references.rs:364
 msgid "No references of this type are available."
 msgstr ""
 
@@ -2873,7 +2873,7 @@ msgstr ""
 msgid "The document has changed; export it again"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:168 src/gnome/elements.rs:201 src/gnome/elements.rs:224 src/gnome/headers.rs:172 src/gnome/links.rs:238 src/gnome/references.rs:167 src/history.rs:131
+#: src/gnome/annotation_dialog.rs:168 src/gnome/elements.rs:201 src/gnome/elements.rs:224 src/gnome/headers.rs:172 src/gnome/links.rs:243 src/gnome/references.rs:167 src/history.rs:131
 msgid "The document has changed; open this dialog again."
 msgstr ""
 

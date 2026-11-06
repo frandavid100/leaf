@@ -24,6 +24,16 @@ for stage in $(seq 0 6); do
   xdotool mousemove --sync "$((x+1))" "$((y+1))"
   sleep 0.08
   if [[ "$role" != hover ]]; then
+    for attempt in $(seq 1 60); do
+      grep -q "^POINTER_TARGET_ENTERED CAPTION_INPUT $stage " "$log" && break
+      kill -0 "$pid" || { cat "$log"; exit 1; }
+      xdotool mousemove --sync "$x" "$y"
+      sleep 0.04
+      xdotool mousemove --sync "$((x+1))" "$((y+1))"
+      sleep 0.04
+    done
+    grep -q "^POINTER_TARGET_ENTERED CAPTION_INPUT $stage " "$log" || { cat "$log"; exit 1; }
+    scrot "${log%.log}-$stage-before.png"
     xdotool mousedown 1
     sleep 0.12
     xdotool mouseup 1
