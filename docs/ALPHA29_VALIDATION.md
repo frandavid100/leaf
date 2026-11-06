@@ -101,3 +101,12 @@ sugerencias después de cerrar la pestaña. El cierre ahora cancela el trabajo
 entre sugerencias. Las tres rondas locales (15 pestañas/ventanas) terminan con
 cero documentos, controles, diálogos y ventanas retenidos; se conserva la
 regresión estricta existente.
+
+La regresión del menú de documento comprueba sus cinco secciones actuales y
+los grupos/acciones de Elementos en la cabecera. Las entradas contextuales de
+tabla e imagen comprueban que el cuerpo compartido está montado en Elementos y
+vuelve al propietario al cerrar. El retorno desde la lista de fuentes cierra
+Texto desde su lanzador real, sin depender de diferencias de Escape entre
+versiones GTK; después pulsa el caret, escribe y conserva el estado fijado al
+reabrir. Estos recorridos, tablas, navegación, ventanas, HiDPI y apariencia con
+contraste elevado están comprobados localmente antes de la validación final.

@@ -39,11 +39,12 @@ while kill -0 "$pid" 2>/dev/null; do
       if [[ "$role" = size ]]; then value=17.5; elif [[ -n "${LEAF19_LARGE:-}" ]]; then value=64,5; else value=18,75; fi
       xdotool type --clearmodifiers --delay 450 "$value" ;;
     return)
-      # Close both the font choices and their floating Text panel. The new
-      # labeled rows can cover this fixture's caret in a narrow window.
+      # Dismiss the font list, then toggle its Text launcher explicitly.
+      # In narrow windows the floating panel covers this fixture's caret;
+      # Escape routing for nonmodal popovers differs between GTK versions.
       xdotool key Escape
-      sleep 0.15
-      xdotool key Escape
+      sleep 0.25
+      xdotool mousemove --window "$window" "$bx" "$by" click 1
       sleep 0.25
       xdotool mousemove --sync --window "$window" "$ax" "$ay" click 1
       sleep 0.15

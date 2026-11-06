@@ -218,7 +218,14 @@ fn followup_stage(t: Rc<Followup>, stage: u8) {
             }
             7 => followup_emit(stage, "backspace", &[]),
             10 => {
-                followup_emit(stage, "return", &[followup_caret(&t, Pos::body(0, 22))]);
+                followup_emit(
+                    stage,
+                    "return",
+                    &[
+                        followup_caret(&t, Pos::body(0, 22)),
+                        followup_point(&t.menu, &t.window),
+                    ],
+                );
             }
             11 => {
                 t.menu.popup();
@@ -469,6 +476,12 @@ fn followup_check(t: &Followup, stage: u8) {
                         selector.width()
                     );
                 }
+            }
+            if stage == 10 {
+                assert!(
+                    !t.menu.popover().unwrap().is_visible(),
+                    "close Text before clicking its covered caret"
+                );
             }
             if stage == 5 {
                 assert!(popover_pin(&t.menu.popover().unwrap()).is_active());

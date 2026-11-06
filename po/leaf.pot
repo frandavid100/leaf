@@ -557,7 +557,7 @@ msgstr ""
 msgid "Continuous"
 msgstr ""
 
-#: src/gnome/context.rs:466 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:252 src/gnome/diagnostics/spellcheck.rs:128
+#: src/gnome/context.rs:466 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:278 src/gnome/diagnostics/spellcheck.rs:128
 msgid "Copy"
 msgstr ""
 
@@ -801,7 +801,7 @@ msgstr ""
 msgid "Descending (Z–A)"
 msgstr ""
 
-#: src/gnome/diagnostics/context.rs:257 src/gnome/links.rs:122 src/gnome/links.rs:123
+#: src/gnome/diagnostics/context.rs:283 src/gnome/links.rs:122 src/gnome/links.rs:123
 msgid "Destination"
 msgstr ""
 
@@ -1345,7 +1345,7 @@ msgstr ""
 msgid "Image"
 msgstr ""
 
-#: src/gnome/context.rs:523 src/gnome/diagnostics/context.rs:247
+#: src/gnome/context.rs:523 src/gnome/diagnostics/context.rs:260
 msgid "Image Size…"
 msgstr ""
 

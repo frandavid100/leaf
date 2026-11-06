@@ -215,8 +215,21 @@ pub(super) fn context_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
                 );
                 let table = show_document_context(&ui, &parent, 100, 150, DocumentContext::Table);
                 context_activate_row(&table, wordcraft_gnome::t!("More Table Options…"));
-                assert!(ui.table_popover.borrow().as_ref().unwrap().is_visible());
-                ui.table_popover.borrow().as_ref().unwrap().popdown();
+                {
+                    let elements = ui.elements.borrow().as_ref().unwrap().clone();
+                    let origin = ui.table_popover.borrow().as_ref().unwrap().clone();
+                    assert!(elements.pop.is_visible());
+                    assert!(!origin.is_visible());
+                    assert!(origin.child().is_none());
+                    assert!(
+                        elements
+                            .body_for(&origin)
+                            .unwrap()
+                            .is_ancestor(&elements.pop)
+                    );
+                    elements.pop.popdown();
+                    assert!(origin.child().is_some());
+                }
                 document_tools_fixture(&ui);
                 let u = ui.clone();
                 let p = parent.clone();
@@ -245,8 +258,21 @@ pub(super) fn context_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
                     let pop =
                         show_document_context(&u, &p, x as i32, y as i32, DocumentContext::Picture);
                     context_activate_row(&pop, wordcraft_gnome::t!("Image Size…"));
-                    assert!(u.picture.borrow().as_ref().unwrap().pop.is_visible());
-                    u.picture.borrow().as_ref().unwrap().pop.popdown();
+                    {
+                        let elements = u.elements.borrow().as_ref().unwrap().clone();
+                        let origin = u.picture.borrow().as_ref().unwrap().pop.clone();
+                        assert!(elements.pop.is_visible());
+                        assert!(!origin.is_visible());
+                        assert!(origin.child().is_none());
+                        assert!(
+                            elements
+                                .body_for(&origin)
+                                .unwrap()
+                                .is_ancestor(&elements.pop)
+                        );
+                        elements.pop.popdown();
+                        assert!(origin.child().is_some());
+                    }
                     let pop =
                         show_document_context(&u, &p, x as i32, y as i32, DocumentContext::Picture);
                     context_activate_row(&pop, wordcraft_gnome::t!("Copy"));

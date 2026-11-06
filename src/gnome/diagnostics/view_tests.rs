@@ -159,7 +159,7 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     }
     assert!(menu.popover().unwrap().is::<gtk::PopoverMenu>());
     let model = menu.menu_model().unwrap();
-    assert_eq!(model.n_items(), 6);
+    assert_eq!(model.n_items(), 5);
     let history = model.item_link(1, "section").unwrap();
     assert_eq!(history.n_items(), 2);
     for i in 0..2 {
@@ -181,7 +181,14 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     }
     assert!(find_widget(&ui.format_toolbar, "table-menu").is_none());
     assert!(find_widget(&ui.format_toolbar, "picture-menu").is_none());
-    let add = model.item_link(3, "submenu").unwrap();
+    // Insertion now lives in the shared Elements header, not document options.
+    assert!(
+        ui.elements
+            .borrow()
+            .as_ref()
+            .is_some_and(|p| p.menu.widget_name() == "elements-menu")
+    );
+    let add = elements_menu();
     let actions = |m: gio::MenuModel| {
         (0..m.n_items())
             .map(|i| {
@@ -196,9 +203,9 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     assert_eq!(
         actions(add.item_link(0, "section").unwrap()),
         [
-            "win.insert-table",
-            "win.insert-picture",
-            "win.insert-toc",
+            "win.elements-table",
+            "win.elements-image",
+            "win.elements-toc",
             "win.insert-equation"
         ]
     );
@@ -231,7 +238,7 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
         ]
     );
     assert_eq!(sections.item_link(2, "submenu").unwrap().n_items(), 7);
-    let extra = model.item_link(4, "section").unwrap();
+    let extra = model.item_link(3, "section").unwrap();
     assert_eq!(extra.n_items(), 3);
     assert_eq!(
         extra
