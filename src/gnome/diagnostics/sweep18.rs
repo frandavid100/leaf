@@ -446,7 +446,7 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
         );
         match phase.get() {
             0 if pop.is_mapped() => {
-                let arrow = palette.ink.clone().upcast::<gtk::Widget>();
+                let arrow = find_widget(&pop, "text-ink").unwrap();
                 if !text_pointer_target("TEXT18_INK_ARROW", &pop, &arrow) {
                     return glib::ControlFlow::Continue;
                 }
@@ -480,7 +480,7 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                     return glib::ControlFlow::Continue;
                 }
                 settled.set(0);
-                let body = palette.ink_apply.clone().upcast::<gtk::Widget>();
+                let body = find_widget(&pop, "text-ink-apply").unwrap();
                 if !text_pointer_target("TEXT18_INK_BODY", &pop, &body) {
                     return glib::ControlFlow::Continue;
                 }
