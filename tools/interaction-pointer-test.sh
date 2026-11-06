@@ -35,7 +35,7 @@ for marker in SHIFT_POINTER_READY WORD_POINTER_READY WORD_DRAG_READY LINK_POINTE
       xdotool mouseup 1 ;;
     LINK_POINTER_READY) xdotool keydown Control click 1 keyup Control ;;
     FONT_INPUT_READY_4|FONT_INPUT_READY_5|FONT_INPUT_READY_6)
-      scrot vista-texto.png
+      scrot --overwrite "interaction-$marker.png"
       xdotool getmouselocation
       xdotool click 1 key ctrl+a
       if test "$marker" = FONT_INPUT_READY_5; then

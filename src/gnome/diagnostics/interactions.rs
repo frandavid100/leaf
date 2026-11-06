@@ -116,7 +116,7 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
             let tools = u.text_tools.borrow().as_ref().unwrap().clone();
             if stage == 6 {
                 tools.home();
-            } else {
+            } else if stage == 4 {
                 tools.page("font");
             }
             if stage == 5 {
@@ -125,7 +125,14 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
             if stage == 6 {
                 u.size_input.grab_focus();
             } else {
-                u.font_input.grab_focus();
+                assert!(u.font_input.grab_focus(), "native font field accepts focus");
+            }
+            if stage == 5 {
+                u.font_input
+                    .clipboard()
+                    .read_text_async(None::<&gio::Cancellable>, |result| {
+                        eprintln!("FONT_CLIPBOARD_READ {result:?}")
+                    });
             }
             let next = t.clone();
             glib::timeout_add_local_once(std::time::Duration::from_millis(250), move || {
