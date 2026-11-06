@@ -464,9 +464,16 @@ fn followup_check(t: &Followup, stage: u8) {
                     preview.width(),
                     preview.layout().is_ellipsized()
                 );
+                // Entry::width excludes CSS padding; the plain scroller's
+                // content width does not. Compare their actual drawing bounds
+                // in the same popup coordinate space instead.
+                let parent = t.menu.popover().unwrap();
+                let list_bounds = pop.compute_bounds(&parent).unwrap();
+                let field_bounds = selector.compute_bounds(&parent).unwrap();
                 assert!(
-                    (pop.width() - selector.width()).abs() <= 4,
-                    "direct font list uses the field width"
+                    (list_bounds.x() - field_bounds.x()).abs() <= 1.1
+                        && (list_bounds.width() - field_bounds.width()).abs() <= 4.,
+                    "direct font list uses the field bounds: list={list_bounds:?} field={field_bounds:?}"
                 );
                 assert!(
                     preview.width() * 10 >= selector.width() * 6,
