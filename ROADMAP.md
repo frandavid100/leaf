@@ -4,13 +4,18 @@ Actualizada: 6 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En curso: pasada alpha.30 y publicación automática autorizada
+## Completado: alpha.30
 
-Candidata generada y [verificada](https://github.com/frandavid100/leaf/actions/runs/42143216380), con 19 issues resueltos.
-Incluye los cambios recientes y conserva abiertos los casos parciales de
-[la revisión](docs/ALPHA29_VALIDATION.md). La nueva pasada acumula esta candidata y los issues recientes. David autoriza
-la publicación automática tras las comprobaciones; la promoción usa los paquetes
-exactos, sin recompilar. [Proceso](docs/CANDIDATES.md).
+[Publicada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.30)
+automáticamente por autorización de David. Acumula la candidata alpha.29 y cierra
+#122, #123, #125, #128, #129, #130 y #131 tras validar código e instalaciones
+GNOME 49/51. Promovidos los mismos bytes de la candidata; 12 archivos públicos
+verificados por SHA-256. [Evidencia y límites](docs/ALPHA30_VALIDATION.md).
+
+Conservan trabajo #121, #124, #126 y #127; los ocho issues antiguos revisados
+siguen abiertos. Resolver la asociación canónica objeto/leyenda antes de ofrecer
+Show Caption reversible o una decoración que implique esa propiedad. Esta entrega
+no actualiza WordCraft ni inicia Flathub, Weblate o nuevas tareas Orca.
 
 ## Completado: alpha.28
 

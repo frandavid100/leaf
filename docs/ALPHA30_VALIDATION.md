@@ -21,6 +21,9 @@ Motor, renderer, dependencias y parches permanecen en la revisión fijada de Wor
 | #9/#52/#99/#100 | Los controles conocidos pasan; no se dispone del caso original suficiente para atribuir o cerrar los síntomas pendientes. |
 | #84 | La exposición de diccionarios del host requiere integración específica de plataforma; permanece la importación explícita. |
 
+Cerrados tras la publicación verificada: #122, #123, #125, #128, #129, #130 y #131.
+Los restantes conservan el estado parcial/pendiente indicado en la tabla.
+
 ## Comprobaciones
 
 Regresión nueva `--alpha30-ui-test` con ratón real mediante
@@ -36,8 +39,8 @@ Las regresiones anteriores adaptan explícitamente los requisitos sustituidos
 173 pruebas Rust y cuatro Python; 855 mensajes completos inglés/español.
 Formato, catálogos y enlaces locales comprobados. Pruebas GTK locales con Xvfb,
 interacción de Texto y Fuente, revisión, Párrafo y la nueva pasada superadas.
-La CI optimizada y las instalaciones GNOME 49/51 deben terminar correctamente
-antes de la promoción; sus identificadores se registran al finalizar.
+CI optimizada e instalaciones GNOME 49/51 completadas con éxito antes de la
+promoción. La publicación conserva los mismos paquetes, sin recompilar.
 
 Las capturas diagnósticas no sustituyen la galería pública ni una prueba humana.
 
@@ -72,3 +75,18 @@ La prueba local completa de reglas supera sus 60 pasos.
 La primera candidata detectó que el conductor FlatPark cambiaba de directorio
 sin llevar consigo el nuevo script auxiliar de Alpha.30. Se incorpora al entorno
 de diagnóstico y se exige repetir la instalación GNOME 51 antes de publicar.
+
+## Publicación verificada
+
+- [Candidata e instalaciones](https://github.com/frandavid100/leaf/actions/runs/42187179877): éxito completo.
+- Fuente publicada: `85d0134e413f1cb4587e2cf2de9d9928a1e85a1c`.
+- [Promoción automática](https://github.com/frandavid100/leaf/actions/runs/42189125319): éxito; autorización explícita de David.
+- [Release v0.1.0-alpha.30](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.30): pública, no borrador; 12 archivos.
+- Artefacto descargado `13489200539`: SHA-256 `92b2f16566527b92de4b112cd63d8b8ca3e789e5193a38dd7c4874da17b549fc`.
+- Todas las sumas internas verificadas; los 12 digests públicos coinciden con la candidata.
+- Bundle Flatpak: `f868786d7c1ff750a49a3329916e2b0e129f043cdff3910304904e1dcc5eff77`.
+- Archivo FlatPark: `3dad6b82a8d58f91a6e727543c29f17f0385b0eee17c22ca44fac0419672fc84`.
+
+Los registros `alpha29-flatpark/alpha30-en-1.log` y `alpha30-es-2.log` contienen
+`NAVIGATION131_UI_OK` y `ALPHA30_UI_OK`; verifican también la pasada nueva en
+GNOME 51, en inglés 1× y español 2×. La primera candidata fallida no se publicó.

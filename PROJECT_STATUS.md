@@ -12,16 +12,28 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## Pasada alpha.30 en validación
+## Última versión publicada: alpha.30
 
-David autoriza resolver los issues recientes y los antiguos posibles y publicar
-automáticamente después de superar las comprobaciones, sin otra aprobación.
-La alpha.30 acumula la candidata 29 y los cambios de vista, cursores, revisión,
-Texto/Párrafo, Elementos y navegación. [Alcance y límites](docs/ALPHA30_VALIDATION.md).
-No se cierran requisitos parciales: #121, #124, #126 y #127 conservan trabajo.
-La última release pública sigue siendo alpha.28 hasta verificar la promoción.
+[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.30).
+Publicada automáticamente con autorización de David, tras superar la
+[CI nativa](https://github.com/frandavid100/leaf/actions/runs/42184270093),
+[instalaciones GNOME 49 y FlatPark/GNOME 51](https://github.com/frandavid100/leaf/actions/runs/42187179877)
+y [promoción sin recompilar](https://github.com/frandavid100/leaf/actions/runs/42189125319).
+Fuente publicada `85d0134e413f1cb4587e2cf2de9d9928a1e85a1c`; ejecutable de
+`3f898df0f42f280d932eaa2bb3790dd6b45d1190`, con equivalencia y bytes comprobados.
+Los 12 archivos públicos coinciden con la candidata por SHA-256.
 
-## Candidata alpha.29: pendiente de prueba y aprobación
+Cerrados siete issues de esta pasada: #122, #123, #125, #128, #129, #130 y #131.
+Incluye viewport de imágenes estable, cursores, miniaturas por caret, índice
+navegable, tarjetas de revisión, Texto/Párrafo y Navegación Páginas/Estructura.
+Acumula toda la candidata alpha.29. 173 pruebas Rust, cuatro Python y 855 mensajes
+completos inglés/español. [Evidencia, sumas y límites](docs/ALPHA30_VALIDATION.md).
+
+Siguen abiertos 12: #121/#124 parciales, #126/#127 pendientes de asociación canónica
+de leyendas, y los ocho antiguos #1, #2, #9, #52, #84, #99, #100 y #107. No se
+actualiza el motor ni se ocultan requisitos pendientes mediante cierres parciales.
+
+## Candidata alpha.29: incorporada a alpha.30
 
 La [PR #110](https://github.com/frandavid100/leaf/pull/110) integra la pasada
 #99–#109 y #111–#121, además del editor básico de ecuaciones (#56).
@@ -38,12 +50,11 @@ Elementos comparte las herramientas del objeto. Incluye reglas con imán de
 Los casos #99, #100, #107 y #121 conservan trabajo pendiente o limitaciones;
 #1, #2, #9, #52 y #84 siguen abiertos. [Evidencia y límites](docs/ALPHA29_VALIDATION.md).
 
-La candidata alpha.29 no se publicó por separado. La nueva autorización de David
-permite publicar automáticamente alpha.30 después de validar sus paquetes. El manifiesto y
-SHA256SUMS identifican los archivos. [Proceso de candidatas](docs/CANDIDATES.md).
-La última versión publicada continúa siendo alpha.28.
+La candidata alpha.29 no se publicó por separado: sus cambios se distribuyen en
+alpha.30, autorizada y verificada. El manifiesto y SHA256SUMS identifican los
+archivos. [Proceso de candidatas](docs/CANDIDATES.md).
 
-## Última versión publicada: alpha.28
+## Entrega anterior: alpha.28
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.28).
 [CI nativa, Flatpak GNOME 49 y archivo FlatPark GNOME 51](https://github.com/frandavid100/leaf/actions/runs/42057994674)
