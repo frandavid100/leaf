@@ -80,8 +80,8 @@ jobs:
           cat > "$RUNNER_TEMP/installed.sh" <<'RUNNER'
           #!/usr/bin/env bash
           trace=()
-          if test "$BUILD" = signals; then trace=(--filesystem="$GITHUB_WORKSPACE/out:ro" --env=LD_PRELOAD="$GITHUB_WORKSPACE/out/input-trace.so"); fi
-          exec flatpak run "${trace[@]}" --user --branch=alpha --socket=x11 --nosocket=wayland --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/bin/leaf "$@"' leaf "$@"
+          if test "$BUILD" = signals; then trace=(--filesystem="$GITHUB_WORKSPACE/out:ro" --env=LEAF_INPUT_TRACE="$GITHUB_WORKSPACE/out/input-trace.so"); fi
+          exec flatpak run "${trace[@]}" --user --branch=alpha --socket=x11 --nosocket=wayland --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf -c 'if test -n "${LEAF_INPUT_TRACE:-}"; then export LD_PRELOAD="$LEAF_INPUT_TRACE"; fi; export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/bin/leaf "$@"' leaf "$@"
           RUNNER
       - name: Trace unchanged pointer delivery alone and after earlier stages
         env:
