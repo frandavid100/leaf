@@ -8,7 +8,7 @@ permissions:
   actions: read
 jobs:
   inspect:
-    if: github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'success' && contains(github.event.workflow_run.display_title, 'Prepare Alpha31 incremental Review candidate')
+    if: github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'success' && contains(github.event.workflow_run.display_title, '[native-run:42229072026]')
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
