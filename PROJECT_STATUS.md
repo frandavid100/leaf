@@ -19,8 +19,9 @@ Las asociaciones explícitas de leyendas, su ocultación sin pérdida, propiedad
 compartidas, navegación tipada y decoración temporal están implementadas bajo
 validación. Nueve regresiones específicas sin GUI pasan, junto con controles
 GTK por clic/teclado en inglés y español, tema claro/oscuro y escala 1×/2×.
-Faltan la batería gráfica completa, la instalación y la revisión final antes
-de cualquier cierre.
+La batería nativa completa ha pasado (187 pruebas Rust y controles gráficos).
+La validación del Flatpak instalado sigue bloqueada por la activación del primer
+control de formato; falta resolverla y completar la instalación antes de cerrar.
 [Modelo, comprobaciones y límites](docs/CAPTION_OWNERSHIP.md).
 
 El documento original de #132 no reproduce el solapamiento en los controles

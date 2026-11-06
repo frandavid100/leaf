@@ -50,7 +50,7 @@ toggle/reopen and identical exported raster pixels before/after reading cues.
 Real GTK pointer/keyboard checks pass in English light/1× and Spanish dark/2×,
 including native typing, pinned off/on, Undo/Redo, switching identical images,
 table-caption caret context, DOCX reopening, typed navigation and hover/caret
-discovery. Full native/installed CI acceptance is pending. No issue is closed by
+discovery. Full native CI passes; installed acceptance is pending. No issue is closed by
 this checkpoint.
 
 Existing imported or earlier captions without explicit object anchors remain
@@ -68,7 +68,8 @@ test. Packages from sources `97194123d1658b920d8feefc2261c892960c63f1`
 and `fc5e51e94c482317a97c7dbd1277c7c1407ad3cd` are **not accepted**.
 
 Those installed attempts also exposed pointer-test delivery races: one caption
-check ran before its expected edit, and one formatting click reached the canvas.
+check ran before its expected edit, and one formatting control did not activate.
+Canvas focus in the assertion does not establish where that click was delivered.
 The isolated [accepted/current control comparison](https://github.com/frandavid100/leaf/actions/runs/42288854217)
 passes with extra focus/screenshot observations in both builds. Those observations
 change timing, so they do not establish a product fix by themselves.
@@ -80,6 +81,16 @@ Typing assertions wait for the complete native edit. Failure captures are retain
 by installed CI as well. Hidden ownership anchors are excluded from the user
 bookmark chooser while named bookmarks remain selectable. Final native/installed
 acceptance of this diagnostic source is still required before closure or delivery.
+
+The full native run [42295229994](https://github.com/frandavid100/leaf/actions/runs/42295229994)
+passes against `a7fbb14a592ee53088af1d536335b3e351dc196a` (187 Rust tests).
+Installed run [42296908566](https://github.com/frandavid100/leaf/actions/runs/42296908566)
+still fails at the first formatting control even after GTK confirms pointer entry
+into that exact control on its popup surface. Its before/after screenshots show
+the parent Text menu still visible, so the motion handshake is not a fix.
+The unmodified optimized executable also passes the local formatting sequence.
+Further installed event traces are investigative controls, not delivery acceptance;
+the previously delivered candidate remains unchanged.
 
 ## #132 investigation
 
