@@ -14,6 +14,10 @@ while kill -0 "$pid" 2>/dev/null; do
   read -r _ _ role x y < <(grep "^FORMAT136_READY $stage " "$log" | tail -n1)
   window=$(xdotool search --onlyvisible --name '^Leaf Format136 Regression$' | head -n1)
   xdotool windowfocus --sync "$window"
+  # The diagnostic can map a new family while the previous popover is still
+  # relinquishing its native popup grab. Wait for that transition before the
+  # single pointer activation; keep the coordinates and assertions unchanged.
+  sleep 0.35
   # Let GTK/X11 consume popup entry and the following in-surface motion before
   # pressing, as in the existing text-pointer regression.
   xdotool mousemove --sync "$x" "$y"
