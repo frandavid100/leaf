@@ -1,0 +1,51 @@
+name: Leaf focus runtime capture
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  capture:
+    if: contains(github.event.head_commit.message, '[focus-runtime]')
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install runtime tools
+        run: |
+          sudo python3 - <<'PY'
+          from pathlib import Path
+          for p in [Path('/etc/apt/sources.list'), *Path('/etc/apt/sources.list.d').glob('*.sources'), *Path('/etc/apt/sources.list.d').glob('*.list')]:
+              if p.is_file():
+                  p.write_text(p.read_text().replace('http://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu').replace('https://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu'))
+          PY
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends flatpak dbus-x11
+          sudo sysctl kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Install the published control
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v0.1.0-alpha.30 --pattern 'Leaf-0.1.0-alpha.30-x86_64.flatpak' --dir control
+          flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak --user install -y --noninteractive control/Leaf-0.1.0-alpha.30-x86_64.flatpak
+      - name: Capture exact linked libraries and resources
+        run: |
+          set -o pipefail
+          flatpak info --user --show-runtime io.github.frandavid100.leaf > runtime.txt
+          flatpak info --user --show-commit org.gnome.Platform//49 >> runtime.txt
+          dbus-run-session -- flatpak run --user --command=sh io.github.frandavid100.leaf -c '
+            set -eu
+            ldd /app/bin/leaf >&2
+            paths=$(ldd /app/bin/leaf | awk "/=> \\// {print \\$3} /^[[:space:]]*\\// {print \\$1}")
+            tar -chf - $paths /app/bin /app/share /usr/share/glib-2.0/schemas
+          ' | gzip -1 > gnome49-focus-runtime.tar.gz
+          sha256sum gnome49-focus-runtime.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gnome49-focus-runtime
+          path: |
+            gnome49-focus-runtime.tar.gz
+            runtime.txt
+            SHA256SUMS
+          retention-days: 7
