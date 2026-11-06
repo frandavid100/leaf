@@ -12,14 +12,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build: [accepted, current]
+        build: [standalone, combined]
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: 0153cd23368778f5065a2e9d0864f8c5f2ffe830
       - name: Install native test tools
         run: |
           sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|http://security.ubuntu.com/ubuntu|https://security.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
           sudo timeout 120s apt-get -o Acquire::Retries=1 update
-          sudo env DEBIAN_FRONTEND=noninteractive timeout 180s apt-get install -y --no-install-recommends flatpak xvfb xauth xdotool scrot dbus-x11 locales x11-utils
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 180s apt-get install -y --no-install-recommends flatpak xvfb xauth xdotool scrot dbus-x11 locales x11-utils xinput
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           sudo locale-gen en_US.UTF-8
           flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -27,7 +29,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: leaf-flatpak-alpha
-          run-id: ${{ matrix.build == 'accepted' && '42265503961' || '42286444338' }}
+          run-id: 42296908566
           github-token: ${{ github.token }}
           path: candidate
       - name: Install exact comparison binary
@@ -39,28 +41,9 @@ jobs:
           mkdir -p out "$HOME/.var/app/io.github.frandavid100.leaf/cache"
           cat > "$RUNNER_TEMP/installed.sh" <<'RUNNER'
           #!/usr/bin/env bash
-          exec flatpak run --user --branch=alpha --socket=x11 --nosocket=wayland --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/bin/leaf "$@"' leaf "$@"
+          exec flatpak run --user --branch=alpha --socket=x11 --nosocket=wayland --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GDK_DEBUG=events --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/bin/leaf "$@"' leaf "$@"
           RUNNER
-      - name: Add observation without changing pointer actions
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          for name in ['format136-pointer-test.sh','caption-pointer-test.sh']:
-              s=Path('tools',name).read_text()
-              needle='  xdotool windowfocus --sync "$window"'
-              assert needle in s
-              s=s.replace(needle,'''  echo "FOCUS_BEFORE stage=$stage window=$window focused=$(xdotool getwindowfocus) xy=$x,$y" 
-            xwininfo -root -tree
-            scrot "probe-before-focus-$stage.png"
-            xdotool windowfocus --sync "$window"
-            echo "FOCUS_AFTER stage=$stage focused=$(xdotool getwindowfocus)"
-            scrot "probe-after-focus-$stage.png"''')
-              # New artifacts must survive failure too, including the original
-              # driver's otherwise temporary final screen.
-              s=s.replace('trap \'kill "$pid"', 'trap \'scrot "probe-final.png" 2>/dev/null || true; kill "$pid"')
-              Path('out',name).write_text(s)
-          PY
-      - name: Compare controls with complete failure evidence
+      - name: Trace unchanged pointer delivery alone and after earlier stages
         env:
           BUILD: ${{ matrix.build }}
         run: |
@@ -68,14 +51,29 @@ jobs:
           export LEAF29_ACK_DIR
           LEAF29_ACK_DIR=$(mktemp -d "$LEAF29_ACK_PARENT/probe.XXXXXX")
           export LEAF_PROBE_RUNNER="$RUNNER_TEMP/installed.sh"
-          cd out
+          mkdir -p out/tools
+          cp tools/*pointer-test.sh out/tools/
+          cat > "$RUNNER_TEMP/probe-session.sh" <<'PROBE'
+          #!/usr/bin/env bash
+          xinput test-xi2 --root > xinput-events.log 2>&1 &
+          trace=$!
+          trap 'kill "$trace" 2>/dev/null || true' EXIT
           set +e
-          LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 150s bash format136-pointer-test.sh "$LEAF_PROBE_RUNNER" >format-probe.log 2>&1
-          echo "FORMAT_PROBE_EXIT=$?" | tee format-result.log
-          if test "$BUILD" = current; then
-            LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 100s bash caption-pointer-test.sh "$LEAF_PROBE_RUNNER" >caption-probe.log 2>&1
-            echo "CAPTION_PROBE_EXIT=$?" | tee caption-result.log
+          if test "$BUILD" = combined; then
+            bash tools/alpha30-pointer-test.sh "$LEAF_PROBE_RUNNER" >alpha30-driver.log 2>&1
+            echo "ALPHA30_EXIT=$?"
+            bash tools/alpha31-pointer-test.sh "$LEAF_PROBE_RUNNER" >alpha31-driver.log 2>&1
+            echo "ALPHA31_EXIT=$?"
           fi
+          xinput list --long > input-before-format.log
+          bash tools/format136-pointer-test.sh "$LEAF_PROBE_RUNNER" >format-driver.log 2>&1
+          echo "FORMAT_EXIT=$?" | tee format-result.log
+          xinput list --long > input-after-format.log
+          bash tools/caption-pointer-test.sh "$LEAF_PROBE_RUNNER" >caption-driver.log 2>&1
+          echo "CAPTION_EXIT=$?" | tee caption-result.log
+          PROBE
+          cd out
+          LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 230s bash "$RUNNER_TEMP/probe-session.sh"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
