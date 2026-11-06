@@ -314,6 +314,11 @@ pub(super) fn issue_sweep_ui_test(
         "sync never formats text"
     );
     let depth = ui.current.borrow().as_ref().unwrap().session.undo_depth();
+    // Model an edit of the active native control. Without focus, selection
+    // synchronization legitimately rebuilds the page after the first change;
+    // a second write to that old, unmapped widget is a stale control action.
+    spacing.grab_focus();
+    assert!(spacing.is_mapped() && control_has_focus(&spacing));
     spacing.set_value(20.0);
     spacing.set_value(21.0);
     assert_eq!(selection_paragraph(ui)["spaceBefore"], 21.0);
