@@ -1,6 +1,22 @@
 //! Native inline picture controls and cancellable file selection.
 use super::*;
 
+fn picture_properties_target(s: &Session) -> Option<(Pos, f32, f32)> {
+    pictures::selected(s).or_else(|| {
+        let caption = wordcraft_gnome::captions::at(&s.doc, &s.sel.focus)?;
+        if caption.pos.story != s.sel.focus.story || caption.pos.path != s.sel.focus.path {
+            return None;
+        }
+        let wordcraft_gnome::captions::Target::Image(pos) = caption.owner else {
+            return None;
+        };
+        match s.doc.para_at(&pos)?.object_at(pos.off)? {
+            wordcraft_doc::para::InlineObject::Image { w, h, .. } => Some((pos, *w, *h)),
+            _ => None,
+        }
+    })
+}
+
 pub(super) struct PicturePopover {
     pub(super) ui: std::rc::Weak<Ui>,
     pub(super) pop: gtk::Popover,
@@ -11,6 +27,7 @@ pub(super) struct PicturePopover {
     pub(super) lock: gtk::CheckButton,
     spacing: gtk::SpinButton,
     move_with_text: gtk::CheckButton,
+    caption: gtk::CheckButton,
     pub(super) syncing: Cell<bool>,
     pub(super) width_changed: Cell<bool>,
     pub(super) target: RefCell<Option<(Pos, f32, f32)>>,
@@ -21,7 +38,7 @@ impl PicturePopover {
             ui.current
                 .borrow()
                 .as_ref()
-                .and_then(|d| pictures::selected(&d.session))
+                .and_then(|d| picture_properties_target(&d.session))
         });
         self.context.set_sensitive(target.is_some());
         self.hint.set_visible(false);
@@ -31,6 +48,34 @@ impl PicturePopover {
             )));
         }
         self.syncing.set(true);
+        let shown = self
+            .ui
+            .upgrade()
+            .and_then(|ui| {
+                let current = ui.current.borrow();
+                let s = &current.as_ref()?.session;
+                wordcraft_gnome::captions::for_target(
+                    &s.doc,
+                    &wordcraft_gnome::captions::Target::Image(target.as_ref()?.0.clone()),
+                )
+                .map(|c| c.visible)
+            })
+            .unwrap_or(false);
+        self.caption.set_active(shown);
+        let body = target
+            .as_ref()
+            .is_some_and(|(p, _, _)| p.story == wordcraft_doc::StoryRef::Body);
+        let writable = self.ui.upgrade().is_some_and(|u| {
+            u.current
+                .borrow()
+                .as_ref()
+                .is_some_and(|d| !wordcraft_engine::cmd::protect::enforced(&d.session.doc))
+        });
+        self.caption.set_sensitive(body && writable);
+        self.caption
+            .set_tooltip_text((target.is_some() && !body).then_some(wordcraft_gnome::t!(
+                "Captions are available in the document body."
+            )));
         if let Some((_, w, h)) = &target {
             self.width.set_value(*w as f64 / PT_PER_MM);
             self.height.set_value(*h as f64 / PT_PER_MM);
@@ -41,12 +86,13 @@ impl PicturePopover {
             self.move_with_text.set_active(false);
         }
         if let Some(ui) = self.ui.upgrade() {
-            if let Some(float) = ui
-                .current
-                .borrow()
-                .as_ref()
-                .and_then(|d| pictures::layout(&d.session))
-            {
+            if let Some(float) = ui.current.borrow().as_ref().and_then(|d| {
+                let (p, _, _) = target.as_ref()?;
+                match d.session.doc.para_at(p)?.object_at(p.off)? {
+                    wordcraft_doc::para::InlineObject::Image { float, .. } => Some(float.clone()),
+                    _ => None,
+                }
+            }) {
                 self.spacing.set_value(float.dist as f64 / PT_PER_MM);
                 self.move_with_text
                     .set_active(wordcraft_engine::cmd::objects::moves_with_text(&float));
@@ -59,7 +105,14 @@ impl PicturePopover {
     }
     pub(super) fn execute(&self, f: impl FnOnce(&mut Session) -> Result<(), String>) {
         if let Some(ui) = self.ui.upgrade() {
-            if tools_change(&ui, f) {
+            if tools_change(&ui, |s| {
+                if pictures::selected(s).is_none() {
+                    let (pos, _, _) = picture_properties_target(s)
+                        .ok_or(wordcraft_gnome::t!("Select an Image"))?;
+                    pictures::select(s, &pos)?;
+                }
+                f(s)
+            }) {
                 self.refresh();
                 close_format_popover(&self.pop);
                 ui.document_box.grab_focus();
@@ -188,6 +241,9 @@ pub(super) fn install_picture_controls(
     selected.set_xalign(0.);
     selected.add_css_class("heading");
     context.append(&selected);
+    let caption = gtk::CheckButton::with_label(wordcraft_gnome::t!("Show Caption"));
+    caption.set_widget_name("picture-show-caption");
+    context.append(&caption);
     context.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     let width = mm_input(30.0, 1.0 / PT_PER_MM, 4000.0 / PT_PER_MM);
     width.set_widget_name("picture-width");
@@ -271,10 +327,21 @@ pub(super) fn install_picture_controls(
         lock,
         spacing,
         move_with_text,
+        caption,
         syncing: Cell::new(false),
         width_changed: Cell::new(true),
         target: RefCell::new(None),
     });
+    {
+        let weak = Rc::downgrade(&state);
+        state.caption.connect_toggled(move |button| {
+            let Some(p) = weak.upgrade().filter(|p| !p.syncing.get()) else {
+                return;
+            };
+            let show = button.is_active();
+            p.execute(move |s| wordcraft_gnome::captions::set_visible(s, show));
+        });
+    }
     for (button, mode) in placement_buttons {
         let weak = Rc::downgrade(&state);
         button.connect_clicked(move |_| {

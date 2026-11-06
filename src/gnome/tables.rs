@@ -500,6 +500,42 @@ pub(super) fn install_table_controls(
     let heading = gtk::Label::new(Some(wordcraft_gnome::t!("Current Table")));
     heading.add_css_class("heading");
     context.append(&heading);
+    let caption = gtk::CheckButton::with_label(wordcraft_gnome::t!("Show Caption"));
+    caption.set_widget_name("table-show-caption");
+    context.append(&caption);
+    {
+        let weak = Rc::downgrade(ui);
+        let pop = pop.downgrade();
+        caption.connect_toggled(move |button| {
+            let Some(ui) = weak.upgrade() else {
+                return;
+            };
+            let show = button.is_active();
+            let current = ui
+                .current
+                .borrow()
+                .as_ref()
+                .and_then(|d| {
+                    wordcraft_gnome::captions::table_target(&d.session)
+                        .and_then(|t| wordcraft_gnome::captions::for_target(&d.session.doc, &t))
+                })
+                .is_some_and(|c| c.visible);
+            if current == show {
+                return;
+            }
+            if tools_change(&ui, |s| {
+                s.run("table.selectTable", &serde_json::json!({}))
+                    .map_err(|e| e.to_string())?;
+                wordcraft_gnome::captions::set_visible(s, show)
+            }) {
+                if let Some(pop) = pop.upgrade() {
+                    close_format_popover(&pop);
+                }
+                ui.document_box.grab_focus();
+                caret_ensure_visible(&ui);
+            }
+        });
+    }
     for items in [
         vec![
             (wordcraft_gnome::t!("Select Row"), "table.selectRow"),
@@ -600,8 +636,17 @@ pub(super) fn install_table_controls(
             move |p| refresh_table_controls(&ui, p)
         ));
     }
-    content.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-    content.append(&insert);
+    content.remove(&context);
+    let body = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    body.append(&context);
+    body.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+    body.append(&insert);
+    let scroll = gtk::ScrolledWindow::new();
+    scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+    scroll.set_max_content_height(440);
+    scroll.set_propagate_natural_height(true);
+    scroll.set_child(Some(&body));
+    content.append(&scroll);
     pop.set_child(Some(&content));
     menu.set_popover(Some(&pop));
     bar.append(&menu);
@@ -628,5 +673,24 @@ pub(super) fn refresh_table_controls(ui: &Rc<Ui>, pop: &gtk::Popover) {
         w.set_sensitive(
             doc.is_some_and(|d| wordcraft_gnome::tables::selected_cells(&d.session) > 1),
         );
+    }
+    if let Some(button) =
+        find_widget(&root, "table-show-caption").and_then(|w| w.downcast::<gtk::CheckButton>().ok())
+    {
+        let shown = doc
+            .and_then(|d| {
+                wordcraft_gnome::captions::table_target(&d.session)
+                    .and_then(|t| wordcraft_gnome::captions::for_target(&d.session.doc, &t))
+            })
+            .is_some_and(|c| c.visible);
+        let body =
+            doc.is_some_and(|d| wordcraft_gnome::captions::table_target(&d.session).is_some());
+        button.set_sensitive(
+            body && doc.is_some_and(|d| !wordcraft_engine::cmd::protect::enforced(&d.session.doc)),
+        );
+        button.set_tooltip_text((!body).then_some(wordcraft_gnome::t!(
+            "Captions are available in the document body."
+        )));
+        button.set_active(shown);
     }
 }

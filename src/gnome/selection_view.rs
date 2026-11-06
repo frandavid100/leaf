@@ -96,6 +96,7 @@ pub(super) fn refresh_overlay_layers(ui: &Rc<Ui>) {
     let Some(doc) = current.as_mut() else {
         return;
     };
+    next.extend(caption_cue_pages(ui, doc));
     if let Some((a, b)) =
         wordcraft_gnome::references::toc_span_at(&doc.session, &doc.session.sel.focus)
     {

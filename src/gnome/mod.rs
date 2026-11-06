@@ -47,6 +47,8 @@ mod appearance;
 use appearance::*;
 mod canvas;
 use canvas::*;
+mod caption_cues;
+use caption_cues::*;
 mod columns;
 use columns::*;
 mod comment_composer;

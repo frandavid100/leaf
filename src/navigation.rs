@@ -261,6 +261,8 @@ pub struct Element {
     pub pos: Pos,
     pub label: String,
     pub object: bool,
+    pub table: Option<wordcraft_doc::Path>,
+    pub owner: Option<Pos>,
 }
 pub fn elements(doc: &Document) -> Vec<Element> {
     use wordcraft_doc::para::{InlineObject as O, NoteKind};
@@ -287,6 +289,8 @@ pub fn elements(doc: &Document) -> Vec<Element> {
                         &[("number", ordinals[4].to_string())],
                     ),
                     object: false,
+                    table: Some(table.clone()),
+                    owner: None,
                 });
             }
             table_path = table;
@@ -343,6 +347,8 @@ pub fn elements(doc: &Document) -> Vec<Element> {
                 },
                 label,
                 object: !matches!(o, O::FieldStart { .. }),
+                table: None,
+                owner: None,
             });
         }
         let mut previous = None;
@@ -375,22 +381,67 @@ pub fn elements(doc: &Document) -> Vec<Element> {
                         preview.chars().take(70).collect::<String>()
                     ),
                     object: false,
+                    table: None,
+                    owner: None,
                 });
             }
             previous = link;
         }
     }
-    out.sort_by(|a, b| a.pos.cmp(&b.pos).then(a.kind.cmp(&b.kind)));
+    for caption in crate::captions::all(doc) {
+        let owner = out
+            .iter()
+            .find(|e| match &caption.owner {
+                crate::captions::Target::Image(p) => e.kind == 3 && e.pos == *p,
+                crate::captions::Target::Table { path, .. } => {
+                    e.kind == 4 && e.table.as_ref() == Some(path)
+                }
+            })
+            .map(|e| e.pos.clone());
+        let label = crate::captions::text(doc, &caption);
+        for e in &mut out {
+            if e.kind == 6 && e.pos.story == caption.pos.story && e.pos.path == caption.pos.path {
+                e.owner = owner.clone();
+            }
+            if caption.visible
+                && (match &caption.owner {
+                    crate::captions::Target::Image(p) => e.kind == 3 && e.pos == *p,
+                    crate::captions::Target::Table { path, .. } => {
+                        e.kind == 4 && e.table.as_ref() == Some(path)
+                    }
+                })
+                && !label.is_empty()
+            {
+                e.label = label.chars().take(90).collect();
+            }
+        }
+    }
+    out.retain(|e| {
+        let visible = doc
+            .para_at(&e.pos)
+            .is_none_or(|p| p.mark.hidden != Some(true));
+        visible
+    });
+    out.sort_by(|a, b| {
+        a.pos
+            .cmp(&b.pos)
+            .then(a.kind.cmp(&b.kind))
+            .then(a.table.cmp(&b.table))
+    });
     out
 }
 
 /// Active navigation targets use their actual canonical extent, not merely the
 /// nearest paragraph. A table is a fallback container for its nested objects.
 pub fn element_contains(s: &wordcraft_engine::Session, e: &Element, focus: &Pos) -> bool {
+    if let Some(cells) = s.cell_range() {
+        return e.kind == 4 && e.table.as_ref() == Some(&cells.table) && e.pos.story == cells.story;
+    }
     match e.kind {
-        4 => e.pos.path.cell().is_some_and(|(table, _, _)| {
-            focus.story == e.pos.story && focus.path.0.starts_with(&table.0)
-        }),
+        4 => e
+            .table
+            .as_ref()
+            .is_some_and(|table| focus.story == e.pos.story && focus.path.0.starts_with(&table.0)),
         5 => crate::references::toc_span_at(s, focus).is_some_and(|(a, _)| a.path == e.pos.path),
         6 => focus.story == e.pos.story && focus.path == e.pos.path,
         7 | 8 => match s.doc.para_at(&e.pos).and_then(|p| p.object_at(e.pos.off)) {
@@ -418,4 +469,46 @@ pub fn element_contains(s: &wordcraft_engine::Session, e: &Element, focus: &Pos)
                     .contains(&focus.off)
         }
     }
+}
+
+/// Activate the typed canonical destination, even when several entries share
+/// the first paragraph of a table. Navigation remains a pure selection change.
+pub fn activate_element(s: &mut wordcraft_engine::Session, e: &Element) -> Result<(), String> {
+    if let Some(table) = &e.table {
+        let path = s
+            .doc
+            .para_paths(e.pos.story)
+            .into_iter()
+            .find(|p| p.cell().is_some_and(|(t, _, _)| &t == table))
+            .ok_or(crate::t!("There is no table at this position"))?;
+        crate::selection::set_caret(
+            s,
+            &Pos {
+                story: e.pos.story,
+                path,
+                off: 0,
+            },
+            false,
+        )?;
+        s.run("table.selectTable", &serde_json::json!({}))
+            .map_err(|e| e.to_string())?;
+        return Ok(());
+    }
+    if e.object {
+        if let Some(wordcraft_doc::para::InlineObject::NoteRef { id, .. }) =
+            s.doc.para_at(&e.pos).and_then(|p| p.object_at(e.pos.off))
+        {
+            let pos = s.doc.start_of(StoryRef::Part(*id));
+            return crate::selection::set_caret(s, &pos, false);
+        }
+        return crate::selection::select_range(
+            s,
+            &e.pos,
+            &Pos {
+                off: e.pos.off + wordcraft_doc::para::OBJ.len_utf8(),
+                ..e.pos.clone()
+            },
+        );
+    }
+    crate::selection::set_caret(s, &e.pos, false)
 }

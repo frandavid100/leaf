@@ -134,28 +134,7 @@ pub fn caption_kind(s: &Session) -> Option<&'static str> {
     }
 }
 pub fn insert_caption(s: &mut Session) -> Result<(), String> {
-    let label = caption_kind(s).ok_or(wordcraft_gnome::t!(
-        "Select an image or place the caret in a table to insert a caption."
-    ))?;
-    let snapshot = s.edit_snapshot();
-    let mark = s.undo_mark();
-    let result = (|| {
-        s.run(
-            "references.caption",
-            &json!({"label":label,"position":"below"}),
-        )
-        .map_err(|e| e.to_string())?;
-        s.join_next_undo();
-        s.run("text.insert", &json!({"text":": "}))
-            .map_err(|e| e.to_string())?;
-        Ok(())
-    })();
-    if result.is_err() {
-        s.restore(snapshot)
-    } else {
-        s.merge_undo_since(mark)
-    }
-    result
+    crate::captions::set_visible(s, true)
 }
 
 pub fn insert_field(s: &mut Session, instr: &str) -> Result<(), String> {

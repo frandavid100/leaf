@@ -448,6 +448,8 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
     *ui.table_pointer.borrow_mut() = TablePointer::default();
     ui.picture_drag.borrow_mut().take();
     ui.reference_hover.borrow_mut().take();
+    ui.caption_hover.borrow_mut().take();
+    ui.caption_cues.borrow_mut().take();
     ui.selection_rasters.borrow_mut().clear();
     wordcraft_gnome::proofing::configure(&mut session);
     if ui.closed.get() {
@@ -567,6 +569,7 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
                     let _ = cr.fill();
                 }
                 if let Some(ui) = weak.upgrade() {
+                    paint_caption_cue(&ui, widget, cr, i, z);
                     paint_reference_cue(&ui, widget, cr, i, z);
                     paint_selection(&ui, widget, cr, i, z, &selection.highlights);
                     paint_table_pointer(&ui, widget, cr, i, z);

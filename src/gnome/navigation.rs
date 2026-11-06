@@ -321,11 +321,28 @@ impl OutlinePanel {
             label.set_ellipsize(gtk::pango::EllipsizeMode::End);
             label.set_max_width_chars(1);
             label.set_tooltip_text(Some(&element.label));
-            label.set_margin_start(24 + owner.map_or(0, |i| i32::from(headings[i].level + 1) * 12));
-            label.set_margin_top(8);
-            label.set_margin_bottom(8);
-            label.set_margin_end(8);
-            row.set_child(Some(&label));
+            label.set_hexpand(true);
+            let content = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+            content.set_margin_start(
+                12 + owner.map_or(0, |i| i32::from(headings[i].level + 1) * 12)
+                    + if element.owner.is_some() { 12 } else { 0 },
+            );
+            content.set_margin_top(8);
+            content.set_margin_bottom(8);
+            content.set_margin_end(8);
+            let icon = gtk::Image::from_icon_name(match element.kind {
+                3 => "image-x-generic-symbolic",
+                4 => "view-grid-symbolic",
+                5 => "view-list-symbolic",
+                6 => "format-justify-left-symbolic",
+                7 | 8 => "text-x-generic-symbolic",
+                9 => "accessories-calculator-symbolic",
+                10 => "insert-link-symbolic",
+                _ => "insert-text-symbolic",
+            });
+            content.append(&icon);
+            content.append(&label);
+            row.set_child(Some(&content));
             self.list.insert(&row, index as i32);
             self.positions
                 .borrow_mut()
@@ -624,12 +641,18 @@ impl OutlinePanel {
         self.positions.borrow_mut().push(mark.pos.clone());
     }
     pub(super) fn goto(&self, pos: &Pos) {
+        self.goto_target(pos, None);
+    }
+    fn goto_target(&self, pos: &Pos, element: Option<&wordcraft_gnome::navigation::Element>) {
         let Some(ui) = self.ui.upgrade() else {
             return;
         };
         let result = {
             let mut value = ui.current.borrow_mut();
             value.as_mut().map(|d| {
+                if let Some(element) = element {
+                    return wordcraft_gnome::navigation::activate_element(&mut d.session, element);
+                }
                 if let Some(_e) = self
                     .elements
                     .borrow()
@@ -767,6 +790,15 @@ pub(super) fn install_outline(
     let weak = Rc::downgrade(&s);
     s.list.connect_row_activated(move |_, row| {
         if let Some(s) = weak.upgrade() {
+            let element = row
+                .widget_name()
+                .strip_prefix("outline-element-")
+                .and_then(|n| n.parse::<usize>().ok())
+                .and_then(|n| s.elements.borrow().get(n).cloned());
+            if let Some(element) = element {
+                s.goto_target(&element.pos, Some(&element));
+                return;
+            }
             let pos = s.positions.borrow().get(row.index() as usize).cloned();
             if let Some(pos) = pos {
                 s.goto(&pos);
