@@ -1,7 +1,7 @@
 //! Document pointer selection, input methods, zoom and viewport signals.
 use super::*;
 
-fn document_pointer_surface(ui: &Ui, controller: &impl IsA<gtk::EventController>) -> bool {
+pub(super) fn document_pointer_surface(ui: &Ui, controller: &impl IsA<gtk::EventController>) -> bool {
     let Some(surface) = controller
         .as_ref()
         .current_event()
