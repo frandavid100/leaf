@@ -25,7 +25,7 @@ separate from popover page retention. The original font/paste regression and
 its driver retain their assertions and input sequence; passive traces are not
 shipped. Document, engine, renderer, locked dependencies and patches are intact.
 
-## Implemented scope under validation
+## Delivered scope
 
 * #134: native primary HeaderBars and secondary-row size groups align the full
   regions. Document-tab autohiding remains native; the sidebar selector retains
@@ -67,29 +67,87 @@ target-sensitive properties before insertion, disabled no-target actions and
 tooltips. Its existing table colour workflow uses the shared embedded chooser;
 this does not claim to complete the separate caption/object ownership issues.
 
-## Validation status
+## Final acceptance — 6 November 2026
 
-The complete headless suite passes (178 tests), including the three new tests: custom RGB DOCX round-trip with one Undo and
-Redo/repeat; caret-only typing without changing the surrounding word; switching
-between custom/native colours, clearing and rejecting invalid input.
+#134, #135 and #136 are closed. This is the **second unpublished Alpha.31
+candidate**, retaining #133. Alpha.30 remains the latest public release.
 
-The full four-family native pointer regression exercises forward/Back paths,
-repeated visits, real custom-colour hexadecimal entry, canonical targets and
-Undo, at normal and enlarged/HiDPI UI sizes. Existing pointer checks now visit
-the actual direct font list and native palette instead of removed intermediate
-widgets. Text repeat is exercised on two successive targets.
+| Evidence | Accepted identity / result |
+| --- | --- |
+| Candidate source | `79292491050943559df21d9082657fe38ee46254` |
+| Native executable source | `179ef4bec1609c355c3dae325c3358fd6bb948a8` |
+| [Complete native run](https://github.com/frandavid100/leaf/actions/runs/42263872786) | 178 Rust tests, four Python tests, 824 source messages and complete English/Spanish catalogs; full native interactions, lifetime, keyboard, print and visual checks pass. |
+| [Installed candidate run](https://github.com/frandavid100/leaf/actions/runs/42265503961) | GNOME 49 sandbox/upgrade/desktop/printing/accessibility and FlatPark GNOME 51 real extra-data relocation pass. Fully validated optimized executable matches the packaged binary. |
+| [Explicit bilingual installed acceptance](https://github.com/frandavid100/leaf/actions/runs/42269593968) | Both runtime jobs pass using these exact candidate files; English/Spanish titles are asserted literally. |
+| Locale-check source | `126d5f647e5c912d7d1f7c77afe1c728ec914743`; verification scripts only, application not rebuilt. |
+| [Candidate artifact](https://github.com/frandavid100/leaf/actions/runs/42265503961/artifacts/13527444066) | ZIP SHA-256 `18f50e90fa3c71da71ba9fd0edb2b3bcc15e8cef9c237f9f95e0575956a444af` independently verified after download. |
 
-Deterministic metadata checks report 824 source messages with complete English
-and Spanish catalogs. Sidebar checks also cover the narrow dark enlarged-text
-presentation; the normal layout retains the one/multiple-tab bounds checks.
+All eleven entries in `SHA256SUMS` were independently verified, together with
+`candidate.json`, both source identities and run IDs. The machine-readable
+[acceptance record](ALPHA31_UI_VALIDATION.json) retains their exact sizes and hashes.
 
-The wide four-family pointer pass succeeds at `9f5066b` in
-[42256123317](https://github.com/frandavid100/leaf/actions/runs/42256123317), including
-all 38 native activations, arbitrary ink/highlight entry, one-step Undo and every
-Back path. The narrow formatting fixture dismisses the modal overlay sidebar
-before opening editor menus, matching the existing narrow-input regression.
-Sidebar geometry/representation checks separately keep that overlay open.
+| Deliverable | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `Leaf-0.1.0-alpha.31-x86_64.flatpak` | 11251200 | `c1475a7c8e4f6c1529d4ca0158004f68425158f9d6c0efaf92db9c9d26932b28` |
+| `Leaf-0.1.0-alpha.31-flatpark-x86_64.tar.xz` | 11487988 | `ae622d43563694c0eeedaf75228dce7589426075dc5994be4fe9ed5a57356c96` |
 
-Full native and installed GNOME 49/FlatPark 51 validation, visual acceptance,
-final source identity and checksums must be recorded before issue closure and
-candidate delivery. #134–#136 remain open until then.
+## Interaction and visual coverage
+
+The four-family pointer regression visits 18 property pages, with 38 native
+activations, mixed/repeated forward/Back navigation, pinned/unpinned states,
+real custom hexadecimal ink/highlight edits, canonical targets and one-step
+Undo. Merely opening a page preserves document and selection. Native flat
+split components, independent successive Repeat targets, direct font list,
+readable previews, language grouping and reachable final action are checked.
+
+Header allocation checks cover the complete primary/secondary regions in
+Review, Pages and Structure, one/multiple tabs, normal and overlay sidebar
+layouts. The dropdown also retains per-document representation, independent
+scroll/expansion/filter state and editing targets across Review/Search,
+close/reopen and tab changes; mouse and keyboard choices are exercised.
+
+Actual installed screenshots were inspected from both runtimes, including
+English/light/normal UI and Spanish/dark/480px/16pt/2× cases. Font, Language,
+custom Highlight, Paragraph spacing, Style creation, Table properties and
+Navigation/Review header regions were reviewed. Internal QA captures do not
+replace the public gallery. This is automatic X11 coverage, not a human
+Wayland/IME/device test.
+
+The original font/paste interaction source and driver are unchanged from the
+first candidate. Their original input and assertions pass in native and
+installed checks. Three added headless regressions cover custom RGB DOCX
+round-trip and Undo/Redo/repeat, caret-only pending typing, native/custom
+highlight switching, clearing and rejection of invalid input.
+
+## Test-harness corrections retained transparently
+
+The installed visual pass initially labelled an English fallback as a Spanish
+case: `LANGUAGE=es` alone was ignored under the C locale. The application’s
+explicit localization test already passed. The supplemental run sets
+`LC_ALL=en_US.UTF-8` and asserts literal `Fuente` / `Idioma` page titles; both
+runtimes pass. Future installed wrappers retain that explicit locale.
+
+A supplemental first run also exposed a transition race in the diagnostic's
+programmatic switch between popup families. The driver now waits 350ms for
+the old popup grab to settle before its single activation, then retains the
+same pointer coordinates, button sequence and all target/document/history
+assertions. No click retry or weakening of the original font/paste driver was
+introduced. Both complete bilingual installed jobs pass with that driver.
+
+The prior Font width check now compares allocated outer bounds in a common
+popover coordinate space; GtkEntry's content width excluded its padding.
+The pinned paragraph diagnostic focuses its mapped active field before two
+edits, preserving its exact values, target and one-step Undo assertions;
+a stale unmapped control is correctly rejected after panel reconstruction.
+
+## Remaining scope and publication
+
+Thirteen issues remain open: #1, #2, #9, #52, #84, #99, #100, #107, #121, #124,
+#126, #127 and #132. The original-document overlap #132 is not claimed fixed;
+caption/object ownership requirements remain separate. WordCraft, its renderer,
+locked dependencies and patches are unchanged.
+
+No release or tag was published. David must test and approve promotion of these
+exact candidate files without rebuilding. The first candidate's
+[validation record](ALPHA31_VALIDATION.md) remains historical and identifies
+different bytes.

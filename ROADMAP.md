@@ -4,24 +4,21 @@ Actualizada: 6 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En validación: segunda candidata alpha.31
+## Preparada para David: segunda candidata alpha.31
 
-Completar #134–#136 con la corrección de captura de eventos de la regla, que ya
-supera la regresión de fuentes instalada. Cabeceras, selector y formato están
-implementados; los cierres y la entrega esperan la validación completa de los
-mismos archivos. [Evidencia y límites](docs/ALPHA31_UI_VALIDATION.md).
-Sin publicación automática: David debe probar y aprobar la candidata.
+Cerrados #134–#136 tras corregir la captura de eventos de la regla, alinear
+cabeceras, introducir el selector Páginas/Estructura y refinar los cuatro menús.
+Conserva la corrección de Revisión #133. Batería nativa completa, instalaciones
+GNOME 49/51, comprobación explícita de los menús en inglés/español y descarga con
+once sumas verificadas. [Candidata, evidencia y límites](docs/ALPHA31_UI_VALIDATION.md).
 
-## Preparada para David: candidata alpha.31 — Revisión
+David debe probar y aprobar estos mismos archivos antes de publicar. No hay
+publicación automática. Quedan 13 issues; #132 sigue pendiente de reproducción
+fiable en el entorno afectado y las leyendas conservan sus requisitos canónicos.
 
-Cerrado #133 sobre la interfaz publicada en Alpha.30. Candidata comprobada en
-GNOME 49 y FlatPark/GNOME 51, con batería nativa completa, descarga y sumas
-verificadas. [Candidata y evidencia](docs/ALPHA31_VALIDATION.md).
-Pendiente de las pruebas de David y su aprobación para publicar los mismos archivos.
-
-Los intentos de #134–#136 quedan fuera: fallaron la regresión de entrada instalada
-y conservan sus issues abiertos. #132 sigue pendiente de reproducción en el
-entorno afectado. Los otros doce informes conservan sus requisitos y límites.
+La primera candidata, que solo cerraba #133, queda como
+[registro histórico](docs/ALPHA31_VALIDATION.md); sus intentos de interfaz
+retirados no describen el estado actual.
 
 ## Completado: alpha.30
 

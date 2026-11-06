@@ -1,0 +1,109 @@
+{
+  "version": "0.1.0-alpha.31",
+  "candidate": 2,
+  "publication": "unpublished; maintainer approval required",
+  "source": "79292491050943559df21d9082657fe38ee46254",
+  "native_source": "179ef4bec1609c355c3dae325c3358fd6bb948a8",
+  "native_run_id": 42263872786,
+  "candidate_run_id": 42265503961,
+  "artifact_id": 13527444066,
+  "artifact_zip_sha256": "18f50e90fa3c71da71ba9fd0edb2b3bcc15e8cef9c237f9f95e0575956a444af",
+  "rust_tests": 178,
+  "python_tests": 4,
+  "source_messages": 824,
+  "checksums": [
+    {
+      "name": "Leaf-0.1.0-alpha.31-x86_64.flatpak",
+      "bytes": 11251200,
+      "sha256": "c1475a7c8e4f6c1529d4ca0158004f68425158f9d6c0efaf92db9c9d26932b28"
+    },
+    {
+      "name": "Leaf-0.1.0-alpha.31-flatpark-x86_64.tar.xz",
+      "bytes": 11487988,
+      "sha256": "ae622d43563694c0eeedaf75228dce7589426075dc5994be4fe9ed5a57356c96"
+    },
+    {
+      "name": "INSTALL.md",
+      "bytes": 2127,
+      "sha256": "6f0a8702741d93e7713768974e719aef33f71b63b1085fc6a77fb32856b7a74b"
+    },
+    {
+      "name": "source-commit.txt",
+      "bytes": 41,
+      "sha256": "ef319b20ab86d999765a1d8da7b3eccfcc1832a73738f4af3455267a624fd4ab"
+    },
+    {
+      "name": "runtime.txt",
+      "bytes": 29,
+      "sha256": "cc98943bf0d0696d69c2e647f51ef070a92528714cd03342e77b1d45a92efa3c"
+    },
+    {
+      "name": "runtime-commit.txt",
+      "bytes": 65,
+      "sha256": "588c80c4d5d01ba6871ca2336d2c615e16c8d0fdbdcc8c6707bdbe1ce3173499"
+    },
+    {
+      "name": "flatpak-metadata.txt",
+      "bytes": 200,
+      "sha256": "a7fdfdaba74ae6e2e1a65ef15051642e1b18808be444370aa3b4bad71b3b2345"
+    },
+    {
+      "name": "flatpak-smoke.log",
+      "bytes": 12839,
+      "sha256": "553fd482619442fd4d6b47c751eaacaf2dec7c8c2fc03bca127bfcdd5f0c67dd"
+    },
+    {
+      "name": "flatpark-smoke.log",
+      "bytes": 24630,
+      "sha256": "997faa78283717f8edfb7103fb5d71fbc09da13f2a03b4353feb64f6b9bb83b8"
+    },
+    {
+      "name": "candidate.json",
+      "bytes": 305,
+      "sha256": "e541a3f5f53f9e649209184115615d67988b232e2cabcf002b443a41e402cab2"
+    },
+    {
+      "name": "RELEASE_NOTES.md",
+      "bytes": 1543,
+      "sha256": "f8a67231d4dd053aeabac0b87d5bc3498e638dc07e4382623a5ca6d8c62bf4fb"
+    }
+  ],
+  "source_equal_engine_and_original_font_driver": true,
+  "locale_acceptance_run_id": 42269593968,
+  "locale_acceptance_source": "126d5f647e5c912d7d1f7c77afe1c728ec914743",
+  "locale_acceptance_status": "success",
+  "native_status": "success",
+  "installed_status": "success",
+  "issues_closed": [
+    134,
+    135,
+    136
+  ],
+  "remaining_open_issues": [
+    1,
+    2,
+    9,
+    52,
+    84,
+    99,
+    100,
+    107,
+    121,
+    124,
+    126,
+    127,
+    132
+  ],
+  "locale_artifacts": [
+    {
+      "runtime": 49,
+      "id": 13528308269,
+      "zip_sha256": "e949d1dbe22d24e7fb4b7145f0deb9923c379d7542abec6a07d5ed80eb0948ee"
+    },
+    {
+      "runtime": 51,
+      "id": 13528951953,
+      "zip_sha256": "47fd377fb3b110a62611de052c02f86aed049887b028d550966708a286353aee"
+    }
+  ]
+}

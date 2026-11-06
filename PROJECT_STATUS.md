@@ -12,33 +12,37 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En validación: segunda candidata alpha.31 — Interfaz nativa
+## Preparada: segunda candidata alpha.31 — Interfaz nativa
 
-David ha pedido completar también #134–#136 sin reintroducir el fallo de entrada.
-La captura de eventos de la regla invadía la superficie del selector de fuentes;
-la corrección aislada ya supera la misma regresión instalada. Se han implementado
-cabeceras alineadas, selector Páginas/Estructura y menús nativos de formato.
-[Alcance y validación de esta pasada](docs/ALPHA31_UI_VALIDATION.md).
+[Candidata para probar](https://github.com/frandavid100/leaf/actions/runs/42265503961/artifacts/13527444066), sin publicación automática.
+Cerrados #134, #135 y #136: cabeceras alineadas, selector nativo Páginas/Estructura
+y refinamientos comunes de Texto, Párrafo, Estilo y Elementos. Se conserva #133.
+La regla rechaza eventos de superficies flotantes, evitando que el selector de
+fuentes pierda el foco y desvíe el teclado al documento.
 
-Pendientes las baterías nativa e instalada completas, capturas e identidad del
-paquete final. #134–#136 siguen abiertos; todavía no hay una segunda candidata
-aceptada ni publicación de Alpha.31. La primera candidata se conserva debajo.
+178 pruebas Rust, cuatro Python y 824 mensajes completos inglés/español.
+[CI nativa](https://github.com/frandavid100/leaf/actions/runs/42263872786),
+[instalaciones GNOME 49 / FlatPark GNOME 51](https://github.com/frandavid100/leaf/actions/runs/42265503961)
+y [menús realmente traducidos en ambos entornos](https://github.com/frandavid100/leaf/actions/runs/42269593968)
+superados. Descarga, once sumas y capturas instaladas comprobadas; la regresión
+original de fuente/pegado mantiene su secuencia y aserciones.
 
-## Preparada: candidata alpha.31 — Revisión
+Fuente del paquete `79292491050943559df21d9082657fe38ee46254`; ejecutable de
+`179ef4bec1609c355c3dae325c3358fd6bb948a8`, con equivalencia y bytes comprobados.
+[Alcance, identidad, sumas y límites](docs/ALPHA31_UI_VALIDATION.md).
+Quedan 13 issues: #1, #2, #9, #52, #84, #99, #100, #107, #121, #124, #126, #127 y #132.
+Alpha.30 sigue siendo la última versión pública. David debe probar la candidata
+y aprobar la promoción de estos mismos archivos, sin recompilar.
 
-[Candidata para probar](https://github.com/frandavid100/leaf/actions/runs/42230422027/artifacts/13510771784), sin publicación automática.
-Cerrado #133: el panel Revisión conserva las entradas válidas mientras vuelve
-a comprobar el texto, con destinos revalidados y continuidad de tarjetas,
-filtro, scroll y foco. 175 pruebas Rust, cuatro Python y 855 mensajes completos.
-[CI nativa](https://github.com/frandavid100/leaf/actions/runs/42229072026) e
-[instalaciones GNOME 49 / FlatPark GNOME 51](https://github.com/frandavid100/leaf/actions/runs/42230422027) superadas.
-Descarga final, todas las sumas y capturas instaladas comprobadas.
+## Primera candidata alpha.31 — Histórica, sustituida por la segunda
 
-Los experimentos de cabeceras, selector y formato (#134–#136) se retiraron tras
-fallar una regresión de entrada instalada y siguen abiertos. #132 no se reprodujo
-en el entorno comprobado. Permanecen 16 issues abiertos.
-[Alcance, identidad, sumas y límites](docs/ALPHA31_VALIDATION.md).
-Alpha.30 sigue siendo la última versión pública; pendiente de las pruebas de David.
+La [primera candidata](https://github.com/frandavid100/leaf/actions/runs/42230422027/artifacts/13510771784)
+solo cerró #133 sobre la interfaz de Alpha.30. Superó 175 pruebas Rust, cuatro
+Python y las instalaciones GNOME 49/51. En aquella entrega se retiraron los
+experimentos de #134–#136 tras fallar la entrada instalada; quedaron 16 issues.
+Su [identidad y evidencia](docs/ALPHA31_VALIDATION.md) se conservan como historial.
+La segunda candidata incorpora esa corrección y resuelve los tres informes de
+interfaz después de aislar la captura de eventos de la regla.
 
 ## Última versión publicada: alpha.30
 
@@ -57,7 +61,7 @@ navegable, tarjetas de revisión, Texto/Párrafo y Navegación Páginas/Estructu
 Acumula toda la candidata alpha.29. 173 pruebas Rust, cuatro Python y 855 mensajes
 completos inglés/español. [Evidencia, sumas y límites](docs/ALPHA30_VALIDATION.md).
 
-Siguen abiertos 12: #121/#124 parciales, #126/#127 pendientes de asociación canónica
+Al finalizar alpha.30 quedaron abiertos 12: #121/#124 parciales, #126/#127 pendientes de asociación canónica
 de leyendas, y los ocho antiguos #1, #2, #9, #52, #84, #99, #100 y #107. No se
 actualiza el motor ni se ocultan requisitos pendientes mediante cierres parciales.
 
