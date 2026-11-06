@@ -311,12 +311,23 @@ impl ParagraphPopover {
                 .as_array()
                 .is_some_and(|a| a.iter().any(|v| v == key))
         };
+        // The engine stores f32 values; do not show their JSON expansion
+        // (for example 1.149999976) as a current selection value.
+        let line_value = state["lineSpacing"]["value"]
+            .as_f64()
+            .map(|v| {
+                format!("{v:.2}")
+                    .trim_end_matches('0')
+                    .trim_end_matches('.')
+                    .to_owned()
+            })
+            .unwrap_or_default();
         let spacing_value = if mixed("lineSpacing") {
             wordcraft_gnome::t!("Mixed").to_string()
         } else if state["lineSpacing"]["rule"] == "exact" {
-            format!("{} pt", state["lineSpacing"]["value"])
+            format!("{line_value} pt")
         } else {
-            state["lineSpacing"]["value"].to_string()
+            line_value
         };
         let shade_value = if mixed("shading") {
             wordcraft_gnome::t!("Mixed").into()
