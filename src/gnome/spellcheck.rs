@@ -67,6 +67,8 @@ pub(super) struct SpellReview {
     ignored: RefCell<Vec<ProofIssue>>,
     ignored_document: Cell<Option<(u64, u64)>>,
     pub(super) identity: Cell<Option<(u64, u64)>>,
+    // Retained actions may have a current lease while the complete scan is dirty.
+    pub(super) checked: Cell<Option<(u64, u64)>>,
     pub(super) source: RefCell<Option<glib::SourceId>>,
     pub(super) debounce: RefCell<Option<glib::SourceId>>,
     pub(super) generation: Cell<u64>,
@@ -89,6 +91,7 @@ impl SpellReview {
         self.queued.set(false);
     }
     pub(super) fn invalidate(self: &Rc<Self>) {
+        self.checked.set(None);
         self.generation.set(self.generation.get().wrapping_add(1));
         self.index.set(None);
         // Keep only findings that can be remapped unambiguously and are still
@@ -249,6 +252,7 @@ impl SpellReview {
                     s.worker_cancel.borrow_mut().take();
                     if document_identity(&ui) == identity && s.generation.get() == generation {
                         s.identity.set(identity);
+                        s.checked.set(identity);
                         s.snapshot
                             .replace(ui.current.borrow().as_ref().map(|d| d.session.doc.clone()));
                         let (issues, choices): (Vec<_>, Vec<_>) = issues
@@ -277,6 +281,7 @@ impl SpellReview {
                     s.status
                         .set_text(wordcraft_gnome::t!("The spelling check could not finish."));
                     s.identity.set(identity);
+                    s.checked.set(identity);
                     if let Some(review) = ui.review.borrow().as_ref() {
                         review.schedule();
                     }
@@ -597,6 +602,7 @@ pub(super) fn install_spelling(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Sp
         ignored: RefCell::new(Vec::new()),
         ignored_document: Cell::new(None),
         identity: Cell::new(None),
+        checked: Cell::new(None),
         source: RefCell::new(None),
         debounce: RefCell::new(None),
         generation: Cell::new(0),

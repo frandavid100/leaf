@@ -165,6 +165,22 @@ I recieve text.",
             }
             3 => {
                 check_headers(&u, &w);
+                let end = u
+                    .current
+                    .borrow()
+                    .as_ref()
+                    .unwrap()
+                    .session
+                    .doc
+                    .end_of(wordcraft_doc::StoryRef::Body);
+                selection::set_caret(
+                    &mut u.current.borrow_mut().as_mut().unwrap().session,
+                    &end,
+                    false,
+                )
+                .unwrap();
+                apply_user_edit(&u, Edit::Insert(" qqqhiddenreviewzz".into()));
+                assert!(spell.checked.get().is_none());
                 visited.set(0);
                 let r = u.representation.compute_bounds(&w).unwrap();
                 let (tx, ty) = w.surface_transform();
@@ -192,6 +208,17 @@ I recieve text.",
                 u.review.borrow().as_ref().unwrap().show(None);
             }
             5 => {
+                if spell.checked.get() != document_identity(&u) {
+                    return glib::ControlFlow::Continue;
+                }
+                assert!(
+                    spell
+                        .issues
+                        .borrow()
+                        .iter()
+                        .any(|i| i.text == "qqqhiddenreviewzz"),
+                    "reopening Review must scan edits made while hidden"
+                );
                 check_headers(&u, &w);
                 let text = format_button(&u, "text-menu").unwrap();
                 text.popup();

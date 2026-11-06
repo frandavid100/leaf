@@ -70,7 +70,7 @@ impl ReviewPanel {
         ui.navigation_pages.set_visible_child_name("review");
         ui.sidebar_button.set_active(true);
         if let Some(spell) = ui.spelling.borrow().as_ref() {
-            if spell.identity.get() != document_identity(&ui)
+            if spell.checked.get() != document_identity(&ui)
                 && spell.source.borrow().is_none()
                 && spell.debounce.borrow().is_none()
             {
@@ -251,7 +251,7 @@ impl ReviewPanel {
             .spelling
             .borrow()
             .as_ref()
-            .is_some_and(|s| s.identity.get() != document_identity(&ui));
+            .is_some_and(|s| s.checked.get() != document_identity(&ui));
         self.status
             .set_text(if checking && self.includes(ReviewKind::Correction) {
                 wordcraft_gnome::t!("Checking…")
