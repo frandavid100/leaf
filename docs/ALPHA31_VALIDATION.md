@@ -85,5 +85,12 @@ the complete sidebar header (#134); the diagnostic checks that actual header and
 requires the filter to be mapped. This is a test-location update, not a product
 workaround. Neither failed run constitutes an approved candidate.
 
+The later proofing demo also still activated the private ListBox after its cards
+had moved to unified Review. It now activates the actual visible Review target.
+The font interaction keeps its current Font page while pinning, instead of
+artificially removing/reparenting the focused Entry by reopening the same page.
+Clipboard preflight is logged and each input stage retains its own screenshot;
+neither the font nor document/selection assertions are weakened.
+
 The final CI and candidate identity are recorded after completion. Diagnostic
 captures remain internal validation and do not replace the public screenshot gallery.

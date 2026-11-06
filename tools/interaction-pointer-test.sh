@@ -35,9 +35,12 @@ for marker in SHIFT_POINTER_READY WORD_POINTER_READY WORD_DRAG_READY LINK_POINTE
       xdotool mouseup 1 ;;
     LINK_POINTER_READY) xdotool keydown Control click 1 keyup Control ;;
     FONT_INPUT_READY_4|FONT_INPUT_READY_5|FONT_INPUT_READY_6)
-      scrot vista-texto.png
+      scrot --overwrite "interaction-$marker.png"
       xdotool getmouselocation
-      xdotool click 1 key ctrl+a
+      xdotool click 1
+      # Let native popup focus settle before dispatching editable shortcuts.
+      sleep 0.1
+      xdotool key ctrl+a
       if test "$marker" = FONT_INPUT_READY_5; then
         xdotool key ctrl+v
         for attempt in $(seq 1 50); do

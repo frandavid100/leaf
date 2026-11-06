@@ -219,10 +219,12 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                         .iter()
                         .position(|i| i.text == "qqqfinalzz")
                         .unwrap();
-                    s.list
-                        .row_at_index(index as i32)
+                    ui.review.borrow().as_ref().unwrap().refresh();
+                    find_widget(&ui.navigation_pages, &format!("proofing-go-{index}"))
                         .unwrap()
-                        .emit_by_name::<()>("activate", &[]);
+                        .downcast::<gtk::Button>()
+                        .unwrap()
+                        .emit_clicked();
                     let weak = Rc::downgrade(&ui);
                     glib::timeout_add_local_once(
                         std::time::Duration::from_millis(600),
