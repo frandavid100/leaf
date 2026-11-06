@@ -423,7 +423,7 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
     opened(
         ui,
         Session::new(wordcraft_doc::Document::from_text(
-            "First target\nSecond target",
+            "First target\nSecond target\nThird target",
         )),
         "Text pointer",
     );
