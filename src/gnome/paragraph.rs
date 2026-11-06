@@ -13,6 +13,13 @@ pub(super) struct ParagraphPopover {
     pub(super) shade: RefCell<String>,
     pub(super) border: RefCell<serde_json::Value>,
     last_applied: RefCell<std::collections::HashMap<String, serde_json::Value>>,
+    groups: RefCell<std::collections::HashMap<String, serde_json::Value>>,
+    pub(super) last_columns: RefCell<
+        Option<(
+            document_properties::ColumnSetup,
+            document_properties::ColumnScope,
+        )>,
+    >,
     active_page: RefCell<Option<String>>,
     displayed: RefCell<serde_json::Value>,
 }
@@ -202,19 +209,132 @@ impl ParagraphPopover {
         });
         b
     }
+    pub(super) fn remember_property(&self, command: &str, args: &serde_json::Value, ui: &Rc<Ui>) {
+        let group = match command {
+            "para.align" => "alignment",
+            "para.bullets" | "para.numbering" | "para.multilevel" | "para.listLevel" => "list",
+            "para.indents" | "para.indent" | "para.outdent" => "indents",
+            "para.shading" | "para.borders" => "borders",
+            "para.lineSpacing" | "para.spacing" => "spacing",
+            _ => return,
+        };
+        let state = selection_paragraph(ui);
+        let keys: &[&str] = match group {
+            "alignment" => &["align"],
+            "list" => &["numbering"],
+            "indents" => &["indentLeft", "indentRight", "indentFirst"],
+            "borders" => &["borders", "shading"],
+            _ => &["lineSpacing", "spaceBefore", "spaceAfter"],
+        };
+        let props: serde_json::Map<_, _> = keys
+            .iter()
+            .filter_map(|k| {
+                state
+                    .get(*k)
+                    .filter(|v| !v.is_null())
+                    .map(|v| ((*k).to_string(), v.clone()))
+            })
+            .collect();
+        let config = if group == "list" {
+            serde_json::json!({"command":command,"args":args})
+        } else {
+            serde_json::json!({"props":props,"clearShading":group=="borders" && state["shading"].is_null()})
+        };
+        self.groups.borrow_mut().insert(group.into(), config);
+    }
+
+    fn repeat_group(self: &Rc<Self>, page: &str) {
+        if page == "columns" {
+            let saved = self.last_columns.borrow().clone();
+            if let (Some(ui), Some((setup, scope))) = (self.ui.upgrade(), saved) {
+                if tools_change(&ui, |s| {
+                    document_properties::apply_columns(s, &setup, scope).map(|_| ())
+                }) {
+                    if let Some(p) = self.popover.upgrade() {
+                        close_format_popover(&p);
+                    }
+                }
+            }
+        } else {
+            let args = self.groups.borrow().get(page).cloned();
+            if let Some(args) = args {
+                if let Some(command) = args["command"].as_str() {
+                    self.execute(command, args["args"].clone());
+                    return;
+                }
+                let Some(ui) = self.ui.upgrade() else { return };
+                let clear = args["clearShading"] == true;
+                if tools_change(&ui, |s| {
+                    let snapshot = s.edit_snapshot();
+                    let mark = s.undo_mark();
+                    let before = s.doc.clone();
+                    let result = (|| {
+                        if clear {
+                            s.run("para.shading", &serde_json::json!({"color":null}))
+                                .map_err(|e| e.to_string())?;
+                            s.join_next_undo();
+                        }
+                        s.run("para.set", &args).map_err(|e| e.to_string())?;
+                        Ok(())
+                    })();
+                    if result.is_err() {
+                        s.restore(snapshot);
+                    } else if s.doc != before {
+                        s.merge_undo_since(mark);
+                    }
+                    result
+                }) {
+                    if let Some(p) = self.popover.upgrade() {
+                        close_format_popover(&p);
+                    }
+                    ui.document_box.grab_focus();
+                }
+            }
+        }
+    }
     fn option_row(self: &Rc<Self>, title: &str, name: &str, page: &'static str) {
         let button = style_menu_button(title);
         button.set_widget_name(name);
-        let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-        let label = gtk::Label::new(Some(title));
-        label.set_hexpand(true);
-        label.set_xalign(0.);
-        row.append(&label);
-        row.append(&gtk::Image::from_icon_name("go-next-symbolic"));
-        button.set_child(Some(&row));
+        button.set_hexpand(true);
+        if page != "options" {
+            button.remove_css_class("flat");
+            let icon = match page {
+                "alignment" => "format-justify-left-symbolic",
+                "list" => "view-list-symbolic",
+                "indents" => "format-indent-more-symbolic",
+                "columns" => "view-dual-symbolic",
+                _ => "paragraph-symbolic",
+            };
+            let (content, _) = property_content(title, icon);
+            button.set_child(Some(&content));
+        }
         button.set_tooltip_text(Some(title));
         accessible_name(&button, title);
-        self.main.append(&button);
+        if page == "options" {
+            self.main.append(&button);
+        } else {
+            let linked = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+            linked.add_css_class("linked");
+            linked.append(&button);
+            let repeat = gtk::Button::from_icon_name("view-refresh-symbolic");
+
+            repeat.set_widget_name(&format!("{name}-apply"));
+            repeat.set_tooltip_text(Some(wordcraft_gnome::t!("Apply Last Settings")));
+            accessible_name(&repeat, wordcraft_gnome::t!("Apply Last Settings"));
+            repeat.set_sensitive(if page == "columns" {
+                self.last_columns.borrow().is_some()
+            } else {
+                self.groups.borrow().contains_key(page)
+            });
+            let weak = Rc::downgrade(self);
+            repeat.connect_clicked(move |_| {
+                if let Some(s) = weak.upgrade() {
+                    s.repeat_group(page);
+                }
+            });
+            linked.append(&repeat);
+            self.main.append(&linked);
+        }
         let weak = Rc::downgrade(self);
         button.connect_clicked(move |_| {
             if let Some(s) = weak.upgrade() {
@@ -291,21 +411,6 @@ impl ParagraphPopover {
             "paragraph-more-indents",
             "indents",
         );
-        for (title, name, command) in [
-            (
-                wordcraft_gnome::t!("Increase Indent"),
-                "paragraph-indent",
-                "para.indent",
-            ),
-            (
-                wordcraft_gnome::t!("Decrease Indent"),
-                "paragraph-outdent",
-                "para.outdent",
-            ),
-        ] {
-            self.main
-                .append(&self.action(title, name, command, serde_json::json!({})));
-        }
         let mixed = |key: &str| {
             state["_mixed"]
                 .as_array()
@@ -363,17 +468,8 @@ impl ParagraphPopover {
                 wordcraft_gnome::t!("Apply Last Line Spacing"),
             ),
             (
-                wordcraft_gnome::t!("Shading"),
-                shade_value,
-                "shading",
-                "paragraph-shading",
-                "para.shading",
-                serde_json::json!({"color":self.shade.borrow().as_str()}),
-                wordcraft_gnome::t!("Apply Last Shading"),
-            ),
-            (
-                wordcraft_gnome::t!("Borders"),
-                border_value.to_string(),
+                wordcraft_gnome::t!("Borders and Shading"),
+                format!("{border_value}; {shade_value}"),
                 "borders",
                 "paragraph-borders",
                 "para.borders",
@@ -381,12 +477,14 @@ impl ParagraphPopover {
                 wordcraft_gnome::t!("Apply Last Border Settings"),
             ),
         ] {
-            let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+            let row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+            row.add_css_class("linked");
             let label = wordcraft_gnome::i18n::interpolate(
                 wordcraft_gnome::t!("{label}: {value}"),
                 &[("label", title.into()), ("value", value)],
             );
             let open = style_menu_button(&label);
+            open.remove_css_class("flat");
             open.set_widget_name(&format!("paragraph-more-{page}"));
             open.set_hexpand(true);
             let content = gtk::Box::new(gtk::Orientation::Horizontal, 6);
@@ -395,8 +493,12 @@ impl ParagraphPopover {
             text.set_hexpand(true);
             text.set_ellipsize(gtk::pango::EllipsizeMode::End);
             text.set_max_width_chars(28);
+            content.append(&gtk::Image::from_icon_name(if page == "spacing" {
+                "format-justify-fill-symbolic"
+            } else {
+                "view-grid-symbolic"
+            }));
             content.append(&text);
-            content.append(&gtk::Image::from_icon_name("go-next-symbolic"));
             open.set_child(Some(&content));
             open.set_tooltip_text(Some(&label));
             accessible_name(&open, &label);
@@ -407,13 +509,22 @@ impl ParagraphPopover {
                     s.page(page);
                 }
             });
-            let args = self
+            let _args = self
                 .last_applied
                 .borrow()
                 .get(command)
                 .cloned()
                 .unwrap_or(defaults);
-            let apply = self.action(tip, name, command, args);
+            let apply = gtk::Button::new();
+
+            apply.set_widget_name(name);
+            apply.set_sensitive(self.groups.borrow().contains_key(page));
+            let weak = Rc::downgrade(self);
+            apply.connect_clicked(move |_| {
+                if let Some(s) = weak.upgrade() {
+                    s.repeat_group(page);
+                }
+            });
             apply.set_child(Some(&gtk::Image::from_icon_name("view-refresh-symbolic")));
             apply.set_tooltip_text(Some(tip));
             accessible_name(&apply, tip);
@@ -464,6 +575,49 @@ impl ParagraphPopover {
         args: serde_json::Value,
     ) {
         self.detail.append(&self.action(label, name, command, args));
+    }
+    fn shading_controls(self: &Rc<Self>) {
+        self.title(wordcraft_gnome::t!("Shading"));
+        let grid = gtk::Grid::new();
+        grid.set_column_spacing(6);
+        grid.set_row_spacing(6);
+        for (i, (label, color)) in [
+            (wordcraft_gnome::t!("Light Yellow"), "FFF2CC"),
+            (wordcraft_gnome::t!("Light Blue"), "DDEBF7"),
+            (wordcraft_gnome::t!("Light Green"), "E2F0D9"),
+            (wordcraft_gnome::t!("Light Pink"), "FCE4D6"),
+            (wordcraft_gnome::t!("Light Gray"), "E7E6E6"),
+            (wordcraft_gnome::t!("Dark Gray"), "808080"),
+            (wordcraft_gnome::t!("Blue"), "4472C4"),
+            (wordcraft_gnome::t!("Black"), "000000"),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let b = gtk::Button::new();
+            let l = gtk::Label::new(None);
+            l.set_markup(&format!("<span background=\"#{color}\">     </span>"));
+            b.set_child(Some(&l));
+            b.set_tooltip_text(Some(label));
+            accessible_name(&b, label);
+            b.set_widget_name(&format!("paragraph-shade-{color}"));
+            grid.attach(&b, (i % 4) as i32, (i / 4) as i32, 1, 1);
+            let weak = Rc::downgrade(self);
+            b.connect_clicked(move |_| {
+                if let Some(s) = weak.upgrade() {
+                    s.shade.replace(color.into());
+                    s.execute("para.shading", serde_json::json!({"color":color}));
+                }
+            });
+        }
+        self.detail.append(&grid);
+        self.color_entry(wordcraft_gnome::t!("Apply RGB Color"), false);
+        self.button(
+            wordcraft_gnome::t!("No Shading"),
+            "paragraph-shade-none",
+            "para.shading",
+            serde_json::json!({"color":null}),
+        );
     }
     pub(super) fn page(self: &Rc<Self>, page: &str) {
         self.active_page.replace(Some(page.to_string()));
@@ -604,6 +758,22 @@ impl ParagraphPopover {
                 );
             }
             "indents" => {
+                for (title, name, command) in [
+                    (
+                        wordcraft_gnome::t!("Increase Indent"),
+                        "paragraph-indent",
+                        "para.indent",
+                    ),
+                    (
+                        wordcraft_gnome::t!("Decrease Indent"),
+                        "paragraph-outdent",
+                        "para.outdent",
+                    ),
+                ] {
+                    self.detail
+                        .append(&self.action(title, name, command, serde_json::json!({})));
+                }
+
                 self.title(wordcraft_gnome::t!("Indents (pt)"));
                 let left = self.number(
                     wordcraft_gnome::t!("Left"),
@@ -689,49 +859,7 @@ impl ParagraphPopover {
                     self.number_action(n, "para.spacing", key, property);
                 }
             }
-            "shading" => {
-                self.title(wordcraft_gnome::t!("Shading"));
-                let grid = gtk::Grid::new();
-                grid.set_column_spacing(6);
-                grid.set_row_spacing(6);
-                for (i, (label, color)) in [
-                    (wordcraft_gnome::t!("Light Yellow"), "FFF2CC"),
-                    (wordcraft_gnome::t!("Light Blue"), "DDEBF7"),
-                    (wordcraft_gnome::t!("Light Green"), "E2F0D9"),
-                    (wordcraft_gnome::t!("Light Pink"), "FCE4D6"),
-                    (wordcraft_gnome::t!("Light Gray"), "E7E6E6"),
-                    (wordcraft_gnome::t!("Dark Gray"), "808080"),
-                    (wordcraft_gnome::t!("Blue"), "4472C4"),
-                    (wordcraft_gnome::t!("Black"), "000000"),
-                ]
-                .into_iter()
-                .enumerate()
-                {
-                    let b = gtk::Button::new();
-                    let l = gtk::Label::new(None);
-                    l.set_markup(&format!("<span background=\"#{color}\">     </span>"));
-                    b.set_child(Some(&l));
-                    b.set_tooltip_text(Some(label));
-                    accessible_name(&b, label);
-                    b.set_widget_name(&format!("paragraph-shade-{color}"));
-                    grid.attach(&b, (i % 4) as i32, (i / 4) as i32, 1, 1);
-                    let weak = Rc::downgrade(self);
-                    b.connect_clicked(move |_| {
-                        if let Some(s) = weak.upgrade() {
-                            s.shade.replace(color.into());
-                            s.execute("para.shading", serde_json::json!({"color":color}));
-                        }
-                    });
-                }
-                self.detail.append(&grid);
-                self.color_entry(wordcraft_gnome::t!("Apply RGB Color"), false);
-                self.button(
-                    wordcraft_gnome::t!("No Shading"),
-                    "paragraph-shade-none",
-                    "para.shading",
-                    serde_json::json!({"color":null}),
-                );
-            }
+            "shading" => self.shading_controls(),
             "borders" => {
                 self.title(wordcraft_gnome::t!("Borders"));
                 let width = self.number(wordcraft_gnome::t!("Width (pt)"), 0.5, 0.25, 12.0);
@@ -773,6 +901,7 @@ impl ParagraphPopover {
                         }
                     });
                 }
+                self.shading_controls();
             }
             _ => {
                 self.title(wordcraft_gnome::t!("Direction and Formatting"));
@@ -987,6 +1116,8 @@ pub(super) fn install_paragraph_popover(
         spacing: Cell::new(1.5),
         shade: RefCell::new("FFF2CC".into()),
         border: RefCell::new(serde_json::json!({"kind":"outside","width":0.5,"color":"000000"})),
+        groups: RefCell::new(std::collections::HashMap::new()),
+        last_columns: RefCell::new(None),
         active_page: RefCell::new(None),
         displayed: RefCell::new(serde_json::Value::Null),
     });

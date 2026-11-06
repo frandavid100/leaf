@@ -30,7 +30,7 @@ use wordcraft_gnome::{
     pdf_export, pictures,
 };
 
-const APP_VERSION: &str = "0.1.0-alpha.29";
+const APP_VERSION: &str = "0.1.0-alpha.30";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -157,6 +157,9 @@ use columns_checks::*;
 #[path = "diagnostics/context.rs"]
 mod context_checks;
 use context_checks::*;
+#[path = "diagnostics/alpha30.rs"]
+mod alpha30_checks;
+use alpha30_checks::*;
 #[path = "diagnostics/review29.rs"]
 mod review29_checks;
 use review29_checks::*;

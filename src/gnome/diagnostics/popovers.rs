@@ -145,7 +145,7 @@ pub(super) fn pin_test_step(t: Rc<PinTest>, step: u8) {
             assert!(
                 !find_widget(&table.child().unwrap(), "table-context")
                     .unwrap()
-                    .is_visible()
+                    .is_sensitive()
             );
         }
         _ => {

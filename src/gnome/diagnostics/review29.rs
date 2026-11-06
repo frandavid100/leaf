@@ -223,7 +223,7 @@ fn format_rows_and_elements(ui: &Rc<Ui>) {
     let table = ui.table_popover.borrow().as_ref().unwrap().clone();
     let body = elements.body_for(&table).unwrap();
     assert!(find_widget(&body, "table-insert").unwrap().is_visible());
-    assert!(!find_widget(&body, "table-context").unwrap().is_visible());
+    assert!(!find_widget(&body, "table-context").unwrap().is_sensitive());
     elements.pop.popdown();
     assert!(table.child().is_some());
     elements.show("image");
@@ -235,12 +235,16 @@ fn format_rows_and_elements(ui: &Rc<Ui>) {
     assert!(
         !find_widget(&elements.pop, "picture-context")
             .unwrap()
-            .is_visible()
+            .is_sensitive()
     );
     elements.pop.popdown();
     elements.show("toc");
     assert!(find_widget(&elements.pop, "elements-insert-toc").is_some());
-    assert!(find_widget(&elements.pop, "elements-toc-apply").is_none());
+    assert!(
+        !find_widget(&elements.pop, "elements-toc-apply")
+            .unwrap()
+            .is_sensitive()
+    );
     elements.pop.popdown();
     // Restore the review fixture with canonical document replacement for the final capture.
     opened(ui, Session::new(original), "Unified review");

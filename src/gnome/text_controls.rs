@@ -97,6 +97,12 @@ pub(super) fn immediate_format(
         }));
         d.session.doc != before
     };
+    if let Some(t) = ui.text_tools.borrow().as_ref() {
+        t.remember_property(command, &args);
+    }
+    if let Some(p) = ui.paragraph.borrow().as_ref() {
+        p.remember_property(command, &args, ui);
+    }
     let identity = document_identity(ui);
     if changed {
         after_content_change(ui);

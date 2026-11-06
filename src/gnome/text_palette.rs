@@ -6,6 +6,7 @@ use serde_json::json;
 pub(super) struct TextPalette {
     ui: std::rc::Weak<Ui>,
     pub(super) root: gtk::Box,
+    pub(super) properties: gtk::Box,
     pub(super) superscript: gtk::CheckButton,
     pub(super) underline_check: gtk::CheckButton,
     pub(super) strike_check: gtk::CheckButton,
@@ -29,6 +30,7 @@ pub(super) struct TextPalette {
 impl TextPalette {
     pub(super) fn new(ui: &Rc<Ui>, old: &gtk::Box) -> Rc<Self> {
         let root = gtk::Box::new(gtk::Orientation::Vertical, 5);
+        let properties = gtk::Box::new(gtk::Orientation::Vertical, 4);
         root.set_widget_name("text-basic-tools");
         for (button, title) in [
             (&ui.format_bold, wordcraft_gnome::t!("Bold")),
@@ -37,11 +39,24 @@ impl TextPalette {
             old.remove(button);
             button.set_label(Some(title));
             button.set_hexpand(true);
+            check_icon(
+                button,
+                title,
+                if button == &ui.format_bold {
+                    "format-text-bold-symbolic"
+                } else {
+                    "format-text-italic-symbolic"
+                },
+            );
             root.append(button);
         }
         let superscript = gtk::CheckButton::with_label(wordcraft_gnome::t!("Superscript"));
         superscript.set_widget_name("text-superscript");
-        root.append(&superscript);
+        check_icon(
+            &superscript,
+            wordcraft_gnome::t!("Superscript"),
+            "format-text-rich-symbolic",
+        );
         let underline_check = gtk::CheckButton::with_label(wordcraft_gnome::t!("Underline"));
         let strike_check = gtk::CheckButton::with_label(wordcraft_gnome::t!("Strikethrough"));
         let mut buttons = Vec::new();
@@ -60,6 +75,15 @@ impl TextPalette {
             let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
             check.set_widget_name(&format!("{name}-check"));
             check.set_hexpand(true);
+            check_icon(
+                check,
+                title,
+                if name == "text-underline" {
+                    "format-text-underline-symbolic"
+                } else {
+                    "format-text-strikethrough-symbolic"
+                },
+            );
             row.append(check);
             let button = gtk::Button::from_icon_name("go-next-symbolic");
             button.add_css_class("flat");
@@ -90,26 +114,33 @@ impl TextPalette {
                 wordcraft_gnome::t!("Apply Last Highlight"),
             ),
         ] {
-            let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+            let row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+            row.add_css_class("linked");
             let open = style_menu_button(title);
+            open.remove_css_class("flat");
             open.set_widget_name(name);
             open.set_hexpand(true);
             let apply = gtk::Button::from_icon_name("view-refresh-symbolic");
             apply.set_widget_name(&format!("{name}-apply"));
-            apply.add_css_class("flat");
+            // Native linked buttons share one continuous background.
             apply.set_tooltip_text(Some(tip));
             accessible_name(&apply, tip);
             row.append(&open);
             row.append(&apply);
-            root.append(&row);
+            properties.append(&row);
             let content = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+            content.append(&gtk::Image::from_icon_name(if name == "text-ink" {
+                "font-select-symbolic"
+            } else {
+                "color-select-symbolic"
+            }));
             let value = gtk::Label::new(Some(title));
             value.set_xalign(0.);
             value.set_hexpand(true);
             value.set_ellipsize(gtk::pango::EllipsizeMode::End);
             value.set_max_width_chars(28);
             content.append(&value);
-            content.append(&gtk::Image::from_icon_name("go-next-symbolic"));
+            // Lower property rows have no navigation arrow.
             open.set_child(Some(&content));
             configs.push((open, apply, value));
         }
@@ -118,6 +149,7 @@ impl TextPalette {
         let s = Rc::new(Self {
             ui: Rc::downgrade(ui),
             root,
+            properties,
             superscript,
             underline_check,
             strike_check,

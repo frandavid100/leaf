@@ -401,10 +401,8 @@ pub(super) fn issue_sweep_ui_test(
     text_menu.popup();
     let text_popover = text_menu.popover().unwrap();
     assert!(find_widget(&text_popover, "text-apply-size").is_none());
-    assert_eq!(
-        ui.font_input.parent().unwrap().parent(),
-        ui.size_input.parent().unwrap().parent()
-    );
+    let tools = ui.text_tools.borrow().as_ref().unwrap().clone();
+    tools.page("font");
     ui.font_input.grab_focus();
     let original = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     ui.font_input.set_text("ser");
@@ -418,6 +416,7 @@ pub(super) fn issue_sweep_ui_test(
     ui.font_input.set_text("serif");
     ui.font_input.emit_activate();
     assert_eq!(selection_character(ui)["font"], "serif");
+    tools.home();
     ui.size_input.grab_focus();
     ui.size_input.set_value(13.25);
     assert_eq!(selection_character(ui)["size"], 13.25);
@@ -428,6 +427,7 @@ pub(super) fn issue_sweep_ui_test(
     choices.popup();
     assert!(find_widget(&choices.popover().unwrap(), "size-choice-13.25").is_some());
     choices.popdown();
+    tools.page("font");
     let fonts = find_widget(&text_popover, "text-font-choices")
         .unwrap()
         .downcast::<gtk::MenuButton>()
@@ -444,6 +444,7 @@ pub(super) fn issue_sweep_ui_test(
         "preview inherits the menu size"
     );
     fonts.popdown();
+    tools.home();
 
     let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     ui.size_input.set_text("13.");

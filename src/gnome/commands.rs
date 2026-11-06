@@ -23,6 +23,28 @@ pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
     let _perf = perf_scope("leaf.after_content_change");
     // A formatting entry owns its edit even when pagination rebuilds the canvas.
     let was_canvas_focused = ui.document_box.has_focus();
+    let picture_anchor = {
+        let geometry = ui.selection_data.borrow();
+        let current = ui.current.borrow();
+        current.as_ref().and_then(|d| {
+            pictures::selected(&d.session)?;
+            let old = geometry
+                .highlights
+                .first()
+                .filter(|_| geometry.caret.is_none() && geometry.highlights.len() == 1)?;
+            let frame = d
+                .page_frames
+                .get(old.page)?
+                .compute_bounds(&ui.document_box)?;
+            Some((
+                old.page,
+                frame.y() as f64 + old.y * d.page_zoom(old.page) as f64
+                    - ui.scroll.vadjustment().value(),
+            ))
+        })
+    };
+    let identity = document_identity(ui);
+
     let (rebuild, old_zoom, fit_width_mode, old_scroll) = {
         let mut state = ui.current.borrow_mut();
         let Some(doc) = state.as_mut() else { return };
@@ -46,7 +68,10 @@ pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
             needs_rebuild,
             doc.zoom,
             doc.fit_to_width,
-            ui.scroll.vadjustment().value(),
+            (
+                ui.scroll.hadjustment().value(),
+                ui.scroll.vadjustment().value(),
+            ),
         )
     };
     if rebuild {
@@ -66,17 +91,23 @@ pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
             }
             let weak = Rc::downgrade(ui);
             glib::idle_add_local_once(move || {
-                let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+                let Some(ui) = weak
+                    .upgrade()
+                    .filter(|u| !u.closed.get() && document_identity(u) == identity)
+                else {
                     return;
                 };
                 if fit_width_mode {
                     fit_width(&ui);
                 }
                 let vadj = ui.scroll.vadjustment();
-                vadj.set_value(old_scroll.min((vadj.upper() - vadj.page_size()).max(0.0)));
+                vadj.set_value(old_scroll.1.min((vadj.upper() - vadj.page_size()).max(0.0)));
+                let hadj = ui.scroll.hadjustment();
+                hadj.set_value(old_scroll.0.min((hadj.upper() - hadj.page_size()).max(0.)));
                 refresh_pages(&ui);
                 refresh_thumbnails(&ui);
                 refresh_selection(&ui);
+                restore_picture_anchor(&ui, picture_anchor);
                 if was_canvas_focused {
                     caret_ensure_visible(&ui);
                     ui.document_box.grab_focus();
@@ -89,7 +120,11 @@ pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
         refresh_selection(ui);
         let weak = Rc::downgrade(ui);
         glib::idle_add_local_once(move || {
-            if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
+            if let Some(ui) = weak
+                .upgrade()
+                .filter(|u| !u.closed.get() && document_identity(u) == identity)
+            {
+                restore_picture_anchor(&ui, picture_anchor);
                 if was_canvas_focused {
                     caret_ensure_visible(&ui);
                 }
@@ -168,4 +203,33 @@ pub(super) fn apply_format_operation(
         None => {}
     }
     ui.document_box.grab_focus();
+}
+
+// Preserve the selected object's screen position through page/section rebuilds.
+// This is view state only; the canonical object and selection stay in WordCraft.
+fn restore_picture_anchor(ui: &Rc<Ui>, anchor: Option<(usize, f64)>) {
+    let Some((old_page, offset)) = anchor else {
+        return;
+    };
+    let top = {
+        let mut current = ui.current.borrow_mut();
+        current.as_mut().and_then(|d| {
+            let (pos, _, _) = pictures::selected(&d.session)?;
+            let hit = d.session.layout().object(&pos, d.session.page_hint)?;
+            if hit.page != old_page {
+                return None;
+            }
+            let frame = d
+                .page_frames
+                .get(hit.page)?
+                .compute_bounds(&ui.document_box)?;
+            Some(frame.y() as f64 + hit.rect.y as f64 * d.page_zoom(hit.page) as f64)
+        })
+    };
+    if let Some(top) = top {
+        let adjustment = ui.scroll.vadjustment();
+        adjustment.set_value(
+            (top - offset).clamp(0., (adjustment.upper() - adjustment.page_size()).max(0.)),
+        );
+    }
 }

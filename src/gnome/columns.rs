@@ -375,6 +375,9 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
             };
             match result {
                 Ok(changed) => {
+                    if let Some(p) = ui.paragraph.borrow().as_ref() {
+                        p.last_columns.replace(Some((setup.clone(), scope)));
+                    }
                     if changed {
                         after_content_change(&ui);
                     }

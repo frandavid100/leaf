@@ -121,8 +121,38 @@ pub(super) struct TextTools {
     displayed: RefCell<serde_json::Value>,
     pub(super) palette: RefCell<Option<Rc<TextPalette>>>,
     language_value: gtk::Label,
+    font_value: gtk::Label,
+    font_page: gtk::Box,
+    last_font: RefCell<Option<String>>,
+    last_language: RefCell<Option<String>>,
 }
 impl TextTools {
+    pub(super) fn remember_property(&self, command: &str, args: &serde_json::Value) {
+        if let Some(pop) = self.popover.upgrade() {
+            if let Some(button) = find_widget(
+                &pop,
+                if command == "format.font" {
+                    "text-font-apply"
+                } else if command == "leaf.proofText" {
+                    "text-language-apply"
+                } else {
+                    ""
+                },
+            ) {
+                button.set_sensitive(true);
+            }
+        }
+        if command == "format.font" {
+            if let Some(name) = args["name"].as_str() {
+                self.last_font.replace(Some(name.into()));
+            }
+        }
+        if command == "leaf.proofText" {
+            if let Some(choice) = args["choice"].as_str() {
+                self.last_language.replace(Some(choice.into()));
+            }
+        }
+    }
     pub(super) fn language_value_text(&self) -> glib::GString {
         self.language_value.text()
     }
@@ -162,6 +192,13 @@ impl TextTools {
             } else {
                 name(&value)
             };
+            let label = wordcraft_gnome::i18n::interpolate(
+                wordcraft_gnome::t!("{label}: {value}"),
+                &[
+                    ("label", wordcraft_gnome::t!("Language").into()),
+                    ("value", label),
+                ],
+            );
             self.language_value.set_text(&label);
             self.language_value.set_tooltip_text(Some(&label));
             if let Some(button) = self
@@ -182,6 +219,13 @@ impl TextTools {
             return;
         };
         let state = selection_character(&ui);
+        self.font_value.set_text(&format!(
+            "{}: {}",
+            wordcraft_gnome::t!("Font"),
+            state["font"]
+                .as_str()
+                .unwrap_or(wordcraft_gnome::t!("Mixed"))
+        ));
         if *self.displayed.borrow() == state {
             return;
         }
@@ -305,7 +349,7 @@ impl TextTools {
         };
         let state = selection_character(&ui);
         let weak = Rc::downgrade(self);
-        let home = matches!(page, "options" | "language");
+        let home = matches!(page, "options" | "language" | "font");
         self.header.back(
             if home {
                 wordcraft_gnome::t!("Text")
@@ -336,6 +380,16 @@ impl TextTools {
             return;
         }
         match page {
+            "font" => {
+                if let Some(parent) = self
+                    .font_page
+                    .parent()
+                    .and_then(|p| p.downcast::<gtk::Box>().ok())
+                {
+                    parent.remove(&self.font_page);
+                }
+                self.detail.append(&self.font_page);
+            }
             "language" => {
                 let dictionaries = wordcraft_engine::proof::installed_dictionaries();
                 for (label, choice) in [
@@ -422,6 +476,16 @@ impl TextTools {
                 "mode",
             ),
             "options" => {
+                if let Some(p) = self.palette.borrow().as_ref() {
+                    if let Some(parent) = p
+                        .superscript
+                        .parent()
+                        .and_then(|w| w.downcast::<gtk::Box>().ok())
+                    {
+                        parent.remove(&p.superscript);
+                    }
+                    self.detail.append(&p.superscript);
+                }
                 for (label, page) in [
                     (wordcraft_gnome::t!("Font and Characters"), "character"),
                     (wordcraft_gnome::t!("Color and Effects"), "color"),
@@ -632,13 +696,17 @@ pub(super) fn install_text_pages(
     language_value.set_xalign(0.0);
     language_value.set_hexpand(true);
     language_value.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    language_row.append(&gtk::Image::from_icon_name(
+        "preferences-desktop-locale-symbolic",
+    ));
     language_row.append(&language_value);
-    language_row.append(&gtk::Image::from_icon_name("go-next-symbolic"));
     language_button.set_child(Some(&language_row));
     more.set_widget_name("text-more-options");
     main.remove(more);
     main.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     main.append(more);
+    let (font_content, font_value) = property_content(wordcraft_gnome::t!("Font"), "font-symbolic");
+    let font_page = gtk::Box::new(gtk::Orientation::Vertical, 6);
     let s = Rc::new(TextTools {
         ui: Rc::downgrade(ui),
         popover: pop.downgrade(),
@@ -647,13 +715,107 @@ pub(super) fn install_text_pages(
         header: header.clone(),
         palette: RefCell::new(None),
         language_value,
+        font_value,
+        font_page,
+        last_font: RefCell::new(None),
+        last_language: RefCell::new(None),
         active_page: RefCell::new(None),
         displayed: RefCell::new(serde_json::Value::Null),
     });
     let palette = TextPalette::new(ui, _inline);
     main.remove(_inline);
-    main.prepend(&palette.root);
+    let font_selector = ui
+        .font_input
+        .parent()
+        .unwrap()
+        .downcast::<gtk::Box>()
+        .unwrap();
+    let size_selector = ui
+        .size_input
+        .parent()
+        .unwrap()
+        .downcast::<gtk::Box>()
+        .unwrap();
+    for widget in [&font_selector, &size_selector] {
+        if let Some(parent) = widget.parent().and_then(|p| p.downcast::<gtk::Box>().ok()) {
+            parent.remove(widget);
+        }
+    }
+    if let Some(parent) = language_button
+        .parent()
+        .and_then(|p| p.downcast::<gtk::Box>().ok())
+    {
+        parent.remove(&language_button);
+    }
+    main.remove(more);
+    clear_box(&main);
+    main.append(&palette.root);
+    let font_open = style_menu_button(wordcraft_gnome::t!("Font"));
+    font_open.remove_css_class("flat");
+    font_open.set_widget_name("text-font-property");
+    font_open.set_child(Some(&font_content));
+    font_open.set_hexpand(true);
+    s.font_page.append(&font_selector);
+    let font_repeat = gtk::Button::from_icon_name("view-refresh-symbolic");
+    font_repeat.set_widget_name("text-font-apply");
+    font_repeat.set_sensitive(false);
+
+    accessible_name(&font_repeat, wordcraft_gnome::t!("Apply Last Font"));
+    font_repeat.set_tooltip_text(Some(wordcraft_gnome::t!("Apply Last Font")));
+    let font_row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    font_row.add_css_class("linked");
+    font_row.append(&font_open);
+    font_row.append(&font_repeat);
+    main.append(&font_row);
+    let size_row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    size_row.append(&gtk::Image::from_icon_name("zoom-in-symbolic"));
+    size_row.append(&gtk::Label::new(Some(wordcraft_gnome::t!("Size"))));
+    ui.size_input.set_hexpand(true);
+    size_selector.set_hexpand(true);
+    size_selector.set_halign(gtk::Align::Fill);
+    size_row.append(&size_selector);
+    main.append(&size_row);
+    language_button.remove_css_class("flat");
+    language_button.set_hexpand(true);
+    let language_repeat = gtk::Button::from_icon_name("view-refresh-symbolic");
+
+    language_repeat.set_widget_name("text-language-apply");
+    language_repeat.set_sensitive(false);
+    accessible_name(&language_repeat, wordcraft_gnome::t!("Apply Last Language"));
+    language_repeat.set_tooltip_text(Some(wordcraft_gnome::t!("Apply Last Language")));
+    let language_link = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    language_link.add_css_class("linked");
+    language_link.append(&language_button);
+    language_link.append(&language_repeat);
+    main.append(&language_link);
+    main.append(&palette.properties);
+    main.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+    main.append(more);
     s.palette.replace(Some(palette));
+    let weak = Rc::downgrade(&s);
+    font_open.connect_clicked(move |_| {
+        if let Some(s) = weak.upgrade() {
+            s.page("font");
+        }
+    });
+    let weak = Rc::downgrade(&s);
+    font_repeat.connect_clicked(move |_| {
+        if let Some(s) = weak.upgrade() {
+            let value = s.last_font.borrow().clone();
+            if let Some(name) = value {
+                s.execute("format.font", serde_json::json!({"name":name}));
+            }
+        }
+    });
+    let weak = Rc::downgrade(&s);
+    language_repeat.connect_clicked(move |_| {
+        if let Some(s) = weak.upgrade() {
+            let value = s.last_language.borrow().clone();
+            if let Some(choice) = value {
+                s.execute("leaf.proofText", serde_json::json!({"choice":choice}));
+            }
+        }
+    });
     let weak = Rc::downgrade(&s);
     language_button.connect_clicked(move |_| {
         if let Some(s) = weak.upgrade() {

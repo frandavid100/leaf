@@ -4,12 +4,13 @@ Actualizada: 6 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## Pendiente: prueba y aprobación de la candidata alpha.29
+## En curso: pasada alpha.30 y publicación automática autorizada
 
 Candidata generada y [verificada](https://github.com/frandavid100/leaf/actions/runs/42143216380), con 19 issues resueltos.
 Incluye los cambios recientes y conserva abiertos los casos parciales de
-[la revisión](docs/ALPHA29_VALIDATION.md). David debe probarla antes de publicar;
-la promoción usa los paquetes exactos, sin recompilar. [Proceso](docs/CANDIDATES.md).
+[la revisión](docs/ALPHA29_VALIDATION.md). La nueva pasada acumula esta candidata y los issues recientes. David autoriza
+la publicación automática tras las comprobaciones; la promoción usa los paquetes
+exactos, sin recompilar. [Proceso](docs/CANDIDATES.md).
 
 ## Completado: alpha.28
 

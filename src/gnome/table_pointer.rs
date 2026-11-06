@@ -307,9 +307,10 @@ pub(super) fn install_table_hover(ui: &Rc<Ui>) {
         let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
-        if table_pointer_active(&ui) {
+        if table_pointer_active(&ui) || ui.picture_drag.borrow().is_some() {
             return;
         }
+        update_reference_hover(&ui, Some((x, y)));
         let hover = page_point(&ui, x, y, None).and_then(|(p, x, y)| {
             let mut c = ui.current.borrow_mut();
             let d = c.as_mut()?;
@@ -322,20 +323,24 @@ pub(super) fn install_table_hover(ui: &Rc<Ui>) {
             })?;
             Some((p, g, t))
         });
-        let cursor = page_point(&ui, x, y, None)
-            .and_then(|(p, x, y)| hit(&ui, p, x, y))
-            .map(|t| match t {
-                Hit::Resize(t) => match t.edge {
-                    resize::Edge::Column(_) => "col-resize",
-                    resize::Edge::Row(_) => "row-resize",
-                    resize::Edge::Corner => "nwse-resize",
-                },
-                Hit::Mouse(t) => match t.spot {
-                    mouse::Spot::Handle => "move",
-                    mouse::Spot::InsertRow(_) | mouse::Spot::InsertColumn(_) => "copy",
-                    mouse::Spot::Column(_) => "s-resize",
-                    _ => "e-resize",
-                },
+        let cursor = picture_hover(&ui, x, y)
+            .or_else(|| toc_link_at_point(&ui, x, y).map(|_| "pointer"))
+            .or_else(|| {
+                page_point(&ui, x, y, None)
+                    .and_then(|(p, x, y)| hit(&ui, p, x, y))
+                    .map(|t| match t {
+                        Hit::Resize(t) => match t.edge {
+                            resize::Edge::Column(_) => "col-resize",
+                            resize::Edge::Row(_) => "row-resize",
+                            resize::Edge::Corner => "nwse-resize",
+                        },
+                        Hit::Mouse(t) => match t.spot {
+                            mouse::Spot::Handle => "move",
+                            mouse::Spot::InsertRow(_) | mouse::Spot::InsertColumn(_) => "copy",
+                            mouse::Spot::Column(_) => "s-resize",
+                            _ => "e-resize",
+                        },
+                    })
             })
             .unwrap_or("text");
         ui.document_box.set_cursor_from_name(Some(cursor));
@@ -345,7 +350,11 @@ pub(super) fn install_table_hover(ui: &Rc<Ui>) {
     let weak = Rc::downgrade(ui);
     motion.connect_leave(move |_| {
         if let Some(ui) = weak.upgrade() {
+            update_reference_hover(&ui, None);
             ui.table_pointer.borrow_mut().hover = None;
+            if ui.picture_drag.borrow().is_none() {
+                ui.document_box.set_cursor_from_name(None);
+            }
             redraw(&ui);
         }
     });

@@ -385,3 +385,56 @@ pub fn edit_toc(s: &mut Session, code: &str, title: Option<&str>) -> Result<(), 
     }
     result
 }
+
+/// Canonical TOC span: generated entries belong to their TOC field; imported
+/// range fields retain their own explicit boundaries. Styles alone are not a TOC.
+pub fn toc_span_at(s: &Session, pos: &Pos) -> Option<(Pos, Pos)> {
+    if pos.story != StoryRef::Body {
+        return None;
+    }
+    for range in s.doc.field_ranges(StoryRef::Body) {
+        let field = wordcraft_engine::cmd::references::FieldCode::parse(&range.instr);
+        if field.name == "TOC" && !field.has('c') && range.start <= *pos && *pos <= range.end {
+            return Some((range.start, range.end));
+        }
+    }
+    for (start, block) in s.doc.body.iter().enumerate() {
+        let Some(p) = block.as_para() else { continue };
+        if !p.objects.iter().any(|o| matches!(o, InlineObject::Field{instr,..} if {
+            let f=wordcraft_engine::cmd::references::FieldCode::parse(instr); f.name == "TOC" && !f.has('c')
+        })) { continue; }
+        let mut end = start;
+        while s
+            .doc
+            .body
+            .get(end + 1)
+            .and_then(|b| b.as_para())
+            .is_some_and(|p| {
+                p.props
+                    .style
+                    .as_deref()
+                    .is_some_and(|st| st.starts_with("TOC") && st != "TOCHeading")
+            })
+        {
+            end += 1;
+        }
+        let a = Pos::body(start, 0);
+        let z = Pos::body(end, s.doc.body[end].as_para()?.len());
+        if a <= *pos && *pos <= z {
+            return Some((a, z));
+        }
+    }
+    None
+}
+
+/// Follow the stored hyperlink/bookmark, never the cached page number or title.
+pub fn toc_destination(s: &Session, pos: &Pos) -> Option<String> {
+    toc_span_at(s, pos)?;
+    let (_, _, url) = crate::links::range_at(s, pos)?;
+    let name = url.strip_prefix('#')?;
+    s.doc
+        .bookmarks()
+        .iter()
+        .any(|(n, _)| n == name)
+        .then_some(url)
+}

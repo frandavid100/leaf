@@ -23,12 +23,22 @@ impl PicturePopover {
                 .as_ref()
                 .and_then(|d| pictures::selected(&d.session))
         });
-        self.context.set_visible(target.is_some());
-        self.hint.set_visible(target.is_none());
+        self.context.set_sensitive(target.is_some());
+        self.hint.set_visible(false);
+        if let Some(parent) = self.context.parent() {
+            parent.set_tooltip_text(target.is_none().then_some(wordcraft_gnome::t!(
+                "Select an image in the document to edit it."
+            )));
+        }
         self.syncing.set(true);
         if let Some((_, w, h)) = &target {
             self.width.set_value(*w as f64 / PT_PER_MM);
             self.height.set_value(*h as f64 / PT_PER_MM);
+        } else {
+            self.width.set_text("");
+            self.height.set_text("");
+            self.spacing.set_text("");
+            self.move_with_text.set_active(false);
         }
         if let Some(ui) = self.ui.upgrade() {
             if let Some(float) = ui
@@ -244,9 +254,9 @@ pub(super) fn install_picture_controls(
     root.remove(&insert);
     root.remove(&hint);
     root.remove(&context);
-    body.append(&insert);
-    body.append(&hint);
     body.append(&context);
+    body.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+    body.append(&insert);
     scroll.set_child(Some(&body));
     root.append(&scroll);
     pop.set_child(Some(&root));

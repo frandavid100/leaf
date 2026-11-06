@@ -102,6 +102,12 @@ pub(super) fn picture_drag_begin(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
         )
         .ok()
     });
+    ui.document_box
+        .set_cursor_from_name(Some(if edges == (0, 0) {
+            "grabbing"
+        } else {
+            resize_cursor(edges)
+        }));
     ui.picture_drag.replace(Some(PictureDrag {
         document: (doc.session.document_id(), doc.session.rev()),
         pos,
@@ -226,6 +232,7 @@ pub(super) fn picture_drag_finish(ui: &Rc<Ui>) -> bool {
         return false;
     };
     stop_document_drag(ui);
+    ui.document_box.set_cursor_from_name(None);
     if drag.moved && drag.valid && document_identity(ui) == Some(drag.document) {
         let (x, y, w, h) = drag.preview;
         tools_change(ui, |s| {
@@ -250,6 +257,7 @@ pub(super) fn picture_drag_finish(ui: &Rc<Ui>) -> bool {
 pub(super) fn picture_drag_cancel(ui: &Rc<Ui>) -> bool {
     let active = ui.picture_drag.borrow_mut().take().is_some();
     if active {
+        ui.document_box.set_cursor_from_name(None);
         stop_document_drag(ui);
         refresh_selection(ui)
     }
@@ -309,21 +317,58 @@ pub(super) fn paint_picture_frame(ui: &Rc<Ui>, cr: &gtk::cairo::Context, page: u
 pub(super) fn picture_hover(ui: &Rc<Ui>, x: f64, y: f64) -> Option<&'static str> {
     let mut c = ui.current.try_borrow_mut().ok()?;
     let d = c.as_mut()?;
-    let (pos, _, _) = pictures::selected(&d.session)?;
-    let hit = d.session.layout().object(&pos, d.session.page_hint)?;
-    let r = d.page_frames[hit.page].compute_bounds(&ui.document_box)?;
-    let z = d.page_zoom(hit.page);
-    let edges = edges_at(
-        (hit.rect.x, hit.rect.y, hit.rect.w, hit.rect.h),
-        (x - r.x() as f64) as f32 / z,
-        (y - r.y() as f64) as f32 / z,
-        7. / z,
-    )?;
-    Some(match edges {
+    let layout = d.session.layout();
+    if let Some((pos, _, _)) = pictures::selected(&d.session) {
+        if let Some(hit) = layout.object(&pos, d.session.page_hint) {
+            let r = d
+                .page_frames
+                .get(hit.page)?
+                .compute_bounds(&ui.document_box)?;
+            let z = d.page_zoom(hit.page);
+            if let Some(edges) = edges_at(
+                (hit.rect.x, hit.rect.y, hit.rect.w, hit.rect.h),
+                (x - r.x() as f64) as f32 / z,
+                (y - r.y() as f64) as f32 / z,
+                7. / z,
+            ) {
+                return Some(if edges == (0, 0) {
+                    "grab"
+                } else {
+                    resize_cursor(edges)
+                });
+            }
+        }
+    }
+    // Unselected images advertise selection, without nonexistent resize handles.
+    for (page, frame) in d.page_frames.iter().enumerate() {
+        let Some(r) = frame.compute_bounds(&ui.document_box) else {
+            continue;
+        };
+        let z = d.page_zoom(page) as f64;
+        let (px, py) = (
+            ((x - r.x() as f64) / z) as f32,
+            ((y - r.y() as f64) / z) as f32,
+        );
+        if let Some(hit) = layout.object_at_in(page, px, py, 0., wordcraft_doc::StoryRef::Body) {
+            if matches!(
+                d.session
+                    .doc
+                    .para_at(&hit.pos())
+                    .and_then(|p| p.object_at(hit.off)),
+                Some(wordcraft_doc::para::InlineObject::Image { .. })
+            ) {
+                return Some("pointer");
+            }
+        }
+    }
+    None
+}
+fn resize_cursor(edges: (i8, i8)) -> &'static str {
+    match edges {
         (-1, -1) | (1, 1) => "nwse-resize",
         (-1, 1) | (1, -1) => "nesw-resize",
         (_, 0) if edges.0 != 0 => "ew-resize",
         (0, _) if edges.1 != 0 => "ns-resize",
-        _ => "move",
-    })
+        _ => "grab",
+    }
 }

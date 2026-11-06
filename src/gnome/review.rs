@@ -248,7 +248,8 @@ fn revision_card(
 ) -> gtk::Box {
     let card = gtk::Box::new(gtk::Orientation::Vertical, 5);
     card.set_widget_name(&format!("review-change-{n}"));
-    card.add_css_class("card");
+    card.add_css_class("comment-thread");
+    card.set_overflow(gtk::Overflow::Hidden);
     card.set_margin_top(2);
     card.set_margin_bottom(2);
     let body = gtk::Box::new(gtk::Orientation::Vertical, 5);

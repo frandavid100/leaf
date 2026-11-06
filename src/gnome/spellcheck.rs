@@ -235,7 +235,8 @@ impl SpellReview {
             let row = gtk::ListBoxRow::new();
             row.set_widget_name(&format!("proofing-issue-{n}"));
             let line = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-            line.add_css_class("card");
+            line.add_css_class("comment-thread");
+            line.set_overflow(gtk::Overflow::Hidden);
             let body = gtk::Box::new(gtk::Orientation::Vertical, 5);
             body.set_hexpand(true);
             body.set_margin_start(6);

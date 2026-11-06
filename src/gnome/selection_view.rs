@@ -12,13 +12,18 @@ pub(super) fn refresh_selection(ui: &Rc<Ui>) {
             selection::geometry(&mut doc.session)
         }
     };
-    let caret_changed = snapshot.caret != ui.selection_data.borrow().caret;
-    if let Some(page) = snapshot
-        .caret
-        .as_ref()
-        .filter(|_| caret_changed)
-        .map(|c| c.page)
-    {
+    // Always derive this from the focus end, including repagination with an
+    // unchanged selection and object selections (which have no text caret).
+    let page = {
+        let mut current = ui.current.borrow_mut();
+        current.as_mut().and_then(|d| {
+            d.session
+                .layout()
+                .caret_on(&d.session.sel.focus, d.session.page_hint)
+                .map(|c| c.page)
+        })
+    };
+    if let Some(page) = page {
         if let Some(doc) = ui.current.borrow_mut().as_mut() {
             doc.active = page;
         }
@@ -77,7 +82,7 @@ pub(super) fn refresh_overlay_layers(ui: &Rc<Ui>) {
     let selection = ui.selection_data.borrow();
     let search = ui.search_highlights.borrow();
     let motion = ui.caret_motion.borrow();
-    let next: HashSet<usize> = selection
+    let mut next: HashSet<usize> = selection
         .highlights
         .iter()
         .chain(search.iter())
@@ -91,6 +96,17 @@ pub(super) fn refresh_overlay_layers(ui: &Rc<Ui>) {
     let Some(doc) = current.as_mut() else {
         return;
     };
+    if let Some((a, b)) =
+        wordcraft_gnome::references::toc_span_at(&doc.session, &doc.session.sel.focus)
+    {
+        next.extend(
+            doc.session
+                .layout()
+                .selection_rects(&doc.session.doc, &a, &b, doc.session.page_hint)
+                .into_iter()
+                .map(|(page, _)| page),
+        );
+    }
     let header = header_footer::active(&doc.session);
     let mut damaged = std::mem::replace(&mut doc.overlay_pages, next);
     damaged.extend(doc.overlay_pages.iter().copied());
@@ -228,13 +244,21 @@ pub(super) fn caret_ensure_visible(ui: &Rc<Ui>) {
         };
         let Some(doc) = value.as_mut() else { return };
         let layout = doc.session.layout();
-        layout
-            .caret_on(&doc.session.sel.focus, doc.session.page_hint)
-            .and_then(|c| {
+        let picture = pictures::selected(&doc.session)
+            .and_then(|(pos, _, _)| layout.object(&pos, doc.session.page_hint));
+        picture
+            .as_ref()
+            .map(|p| (p.page, p.rect.y))
+            .or_else(|| {
+                layout
+                    .caret_on(&doc.session.sel.focus, doc.session.page_hint)
+                    .map(|c| (c.page, c.top))
+            })
+            .and_then(|(page, top)| {
                 doc.page_frames
-                    .get(c.page)
+                    .get(page)
                     .and_then(|frame| frame.compute_bounds(&ui.document_box))
-                    .map(|r| f64::from(r.y()) + f64::from(c.top * doc.page_zoom(c.page)))
+                    .map(|r| f64::from(r.y()) + f64::from(top * doc.page_zoom(page)))
             })
     };
     if let Some(y) = target {

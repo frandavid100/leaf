@@ -156,7 +156,7 @@ impl ElementsPanel {
         clear_box(&self.toc);
         let insert = style_menu_button(wordcraft_gnome::t!("Insert Table of Contents…"));
         insert.set_widget_name("elements-insert-toc");
-        self.toc.append(&insert);
+        // Append insertion only after every editing control below.
         let weak = Rc::downgrade(ui);
         let pop = self.pop.downgrade();
         insert.connect_clicked(move |_| {
@@ -174,17 +174,24 @@ impl ElementsPanel {
                 .then(|| wordcraft_gnome::references::toc_field(&d.session))
                 .flatten()
         });
-        let Some(existing) = existing else { return };
+        let targeted = existing.is_some();
+        let properties = gtk::Box::new(gtk::Orientation::Vertical, 6);
+        properties.set_sensitive(targeted);
+        self.toc
+            .set_tooltip_text((!targeted).then_some(wordcraft_gnome::t!(
+                "Place the caret in a table of contents."
+            )));
+        self.toc.append(&properties);
         let label = gtk::Label::new(Some(wordcraft_gnome::t!("Current Table of Contents")));
         label.set_xalign(0.);
         label.add_css_class("heading");
-        self.toc.append(&label);
+        properties.append(&label);
         let controls = gtk::Box::new(gtk::Orientation::Vertical, 6);
-        self.toc.append(&controls);
+        properties.append(&controls);
         let apply = style_menu_button(wordcraft_gnome::t!("Apply"));
         apply.set_widget_name("elements-toc-apply");
-        let action = contents_controls(ui, &controls, Some(existing));
-        self.toc.append(&apply);
+        let action = contents_controls(ui, &controls, existing);
+        properties.append(&apply);
         let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
             "The document has changed; open this dialog again."
         )));
@@ -194,6 +201,9 @@ impl ElementsPanel {
         hint.add_css_class("dim-label");
         hint.set_visible(false);
         self.toc.append(&hint);
+        self.toc
+            .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+        self.toc.append(&insert);
         let identity = document_identity(ui);
         let selection = ui.current.borrow().as_ref().map(|d| d.session.sel.clone());
         let weak = Rc::downgrade(ui);
@@ -256,6 +266,8 @@ pub(super) fn install_elements(ui: &Rc<Ui>, bar: &gtk::Box) -> Rc<ElementsPanel>
         &ui.format_group,
     );
     let stack = gtk::Stack::new();
+    stack.set_transition_type(gtk::StackTransitionType::SlideLeftRight);
+    stack.set_interpolate_size(true);
     stack.set_vhomogeneous(false);
     stack.set_hhomogeneous(false);
     let home = gtk::Box::new(gtk::Orientation::Vertical, 2);

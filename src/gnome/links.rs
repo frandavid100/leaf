@@ -372,3 +372,98 @@ pub(super) fn document_link_at_point(ui: &Rc<Ui>, x: f64, y: f64) -> Option<Stri
     }
     None
 }
+
+pub(super) fn toc_link_at_point(ui: &Rc<Ui>, x: f64, y: f64) -> Option<String> {
+    let url = document_link_at_point(ui, x, y)?;
+    let (_, pos) = inspect_canvas_point(ui, x, y)?;
+    let current = ui.current.borrow();
+    let d = current.as_ref()?;
+    (wordcraft_gnome::references::toc_destination(&d.session, &pos).as_ref() == Some(&url))
+        .then_some(url)
+}
+
+pub(super) fn update_reference_hover(ui: &Rc<Ui>, point: Option<(f64, f64)>) {
+    let pos = point.and_then(|(x, y)| {
+        let (page, p) = inspect_canvas_point(ui, x, y)?;
+        let mut current = ui.current.borrow_mut();
+        let d = current.as_mut()?;
+        let (a, b) = wordcraft_gnome::references::toc_span_at(&d.session, &p)?;
+        let rects = d
+            .session
+            .layout()
+            .selection_rects(&d.session.doc, &a, &b, page);
+        let frame = d.page_frames.get(page)?.compute_bounds(&ui.document_box)?;
+        let z = d.page_zoom(page) as f64;
+        rects
+            .into_iter()
+            .any(|(n, r)| {
+                n == page
+                    && x >= frame.x() as f64 + r.x as f64 * z - 4.
+                    && x <= frame.x() as f64 + (r.x + r.w) as f64 * z + 4.
+                    && y >= frame.y() as f64 + r.y as f64 * z - 4.
+                    && y <= frame.y() as f64 + (r.y + r.h) as f64 * z + 4.
+            })
+            .then_some(p)
+    });
+    if *ui.reference_hover.borrow() != pos {
+        ui.reference_hover.replace(pos);
+        if let Some(d) = ui.current.borrow().as_ref() {
+            for area in &d.selection_areas {
+                area.queue_draw();
+            }
+        }
+    }
+}
+
+pub(super) fn paint_reference_cue(
+    ui: &Rc<Ui>,
+    widget: &gtk::DrawingArea,
+    cr: &gtk::cairo::Context,
+    page: usize,
+    zoom: f64,
+) {
+    let Ok(mut current) = ui.current.try_borrow_mut() else {
+        return;
+    };
+    let Some(d) = current.as_mut() else { return };
+    let hover = ui.reference_hover.borrow();
+    let span = hover
+        .as_ref()
+        .and_then(|p| wordcraft_gnome::references::toc_span_at(&d.session, p))
+        .or_else(|| wordcraft_gnome::references::toc_span_at(&d.session, &d.session.sel.focus));
+    let Some((a, b)) = span else { return };
+    let rects = d
+        .session
+        .layout()
+        .selection_rects(&d.session.doc, &a, &b, d.session.page_hint);
+    let bounds = rects
+        .into_iter()
+        .filter(|(p, _)| *p == page)
+        .map(|(_, r)| r)
+        .reduce(|mut a, b| {
+            let right = (a.x + a.w).max(b.x + b.w);
+            let bottom = (a.y + a.h).max(b.y + b.h);
+            a.x = a.x.min(b.x);
+            a.y = a.y.min(b.y);
+            a.w = right - a.x;
+            a.h = bottom - a.y;
+            a
+        });
+    let Some(r) = bounds else { return };
+    let color = widget.style_context().color();
+    let _ = cr.save();
+    cr.set_source_rgba(
+        color.red() as f64,
+        color.green() as f64,
+        color.blue() as f64,
+        0.06,
+    );
+    cr.rectangle(
+        r.x as f64 * zoom - 3.,
+        r.y as f64 * zoom - 3.,
+        r.w as f64 * zoom + 6.,
+        r.h as f64 * zoom + 6.,
+    );
+    let _ = cr.fill();
+    cr.restore().ok();
+}

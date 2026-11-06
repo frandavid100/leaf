@@ -34,6 +34,8 @@ pub(super) struct OutlinePanel {
     pub(super) pending: Cell<bool>,
     headings: RefCell<Vec<wordcraft_gnome::navigation::Heading>>,
     caret: RefCell<Option<(u64, u64, Pos)>>,
+    filter: gtk::DropDown,
+    elements: RefCell<Vec<wordcraft_gnome::navigation::Element>>,
 }
 impl OutlinePanel {
     pub(super) fn show(self: &Rc<Self>) {
@@ -72,7 +74,7 @@ impl OutlinePanel {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
-        let (headings, bookmarks, sections, focus) = {
+        let (headings, bookmarks, sections, focus, elements) = {
             let value = ui.current.borrow();
             let Some(d) = value.as_ref() else {
                 return;
@@ -84,7 +86,13 @@ impl OutlinePanel {
                 0,
                 (1, d.session.doc.start_of(wordcraft_doc::StoryRef::Body)),
             );
-            (headings, bookmarks, sections, d.session.sel.focus.clone())
+            (
+                headings,
+                bookmarks,
+                sections,
+                d.session.sel.focus.clone(),
+                wordcraft_gnome::navigation::elements(&d.session.doc),
+            )
         };
         while let Some(child) = self.list.first_child() {
             self.list.remove(&child);
@@ -96,7 +104,11 @@ impl OutlinePanel {
         let current = wordcraft_gnome::navigation::containing_heading(&headings, &focus);
         self.headings.replace(headings.clone());
         let mut selected = None;
-        for mark in bookmarks.iter().filter(|b| b.heading.is_none()) {
+        let filter = self.filter.selected();
+        for mark in bookmarks
+            .iter()
+            .filter(|b| (filter == 0 || filter == 2) && b.heading.is_none())
+        {
             self.append_bookmark(&ui, mark, 0);
         }
         for (i, h) in headings.iter().enumerate() {
@@ -107,7 +119,10 @@ impl OutlinePanel {
                 hidden = None;
             }
             let has_children = headings.get(i + 1).is_some_and(|n| n.level > h.level)
-                || bookmarks.iter().any(|b| b.heading == Some(i));
+                || bookmarks.iter().any(|b| b.heading == Some(i))
+                || elements.iter().any(|e| {
+                    wordcraft_gnome::navigation::containing_heading(&headings, &e.pos) == Some(i)
+                });
             let key = format!("{:?}:{}", h.pos.path, h.text);
             let collapsed = self.collapsed.borrow().contains(&key);
             if collapsed && has_children {
@@ -172,10 +187,67 @@ impl OutlinePanel {
                 selected = Some(row);
             }
             if !collapsed {
-                for mark in bookmarks.iter().filter(|b| b.heading == Some(i)) {
+                for mark in bookmarks
+                    .iter()
+                    .filter(|b| (filter == 0 || filter == 2) && b.heading == Some(i))
+                {
                     self.append_bookmark(&ui, mark, h.level + 1);
                 }
             }
+        }
+        let mut count = 0;
+        for (n, element) in elements
+            .iter()
+            .enumerate()
+            .filter(|(_, e)| filter == 0 || filter == e.kind)
+        {
+            let owner = wordcraft_gnome::navigation::containing_heading(&headings, &element.pos);
+            if filter == 0
+                && owner.is_some_and(|i| {
+                    let level = headings[i].level;
+                    headings[..=i]
+                        .iter()
+                        .rev()
+                        .filter(|h| h.level <= level)
+                        .any(|h| {
+                            self.collapsed
+                                .borrow()
+                                .contains(&format!("{:?}:{}", h.pos.path, h.text))
+                        })
+                })
+            {
+                continue;
+            }
+            let index = self
+                .positions
+                .borrow()
+                .iter()
+                .position(|p| *p > element.pos)
+                .unwrap_or_else(|| self.positions.borrow().len());
+            let row = gtk::ListBoxRow::new();
+            row.set_widget_name(&format!("outline-element-{n}"));
+            let label = gtk::Label::new(Some(&element.label));
+            label.set_xalign(0.);
+            label.set_ellipsize(gtk::pango::EllipsizeMode::End);
+            label.set_max_width_chars(1);
+            label.set_tooltip_text(Some(&element.label));
+            label.set_margin_start(24 + owner.map_or(0, |i| i32::from(headings[i].level + 1) * 12));
+            label.set_margin_top(8);
+            label.set_margin_bottom(8);
+            label.set_margin_end(8);
+            row.set_child(Some(&label));
+            self.list.insert(&row, index as i32);
+            self.positions
+                .borrow_mut()
+                .insert(index, element.pos.clone());
+            count += 1;
+        }
+        self.elements.replace(elements);
+        if filter >= 3 {
+            self.status.set_text(wordcraft_gnome::t!(
+                "No elements of this type in the document."
+            ));
+            self.status.set_visible(count == 0);
         }
         for (number, pos) in sections {
             let index = self
@@ -270,6 +342,27 @@ impl OutlinePanel {
         };
         let moved = self.caret.borrow().as_ref() != Some(&key);
         self.caret.replace(Some(key.clone()));
+        let element = self
+            .elements
+            .borrow()
+            .iter()
+            .enumerate()
+            .find(|(_, e)| {
+                e.pos.story == key.2.story
+                    && e.pos.path == key.2.path
+                    && (!e.object
+                        || e.kind == 6
+                        || (e.pos.off <= key.2.off
+                            && key.2.off <= e.pos.off + wordcraft_doc::para::OBJ.len_utf8()))
+            })
+            .and_then(|(n, _)| {
+                find_widget(&self.list, &format!("outline-element-{n}"))
+                    .and_then(|w| w.downcast::<gtk::ListBoxRow>().ok())
+            });
+        if let Some(row) = element {
+            self.list.select_row(Some(&row));
+            return;
+        }
         let headings = self.headings.borrow();
         let owner = wordcraft_gnome::navigation::containing_heading(&headings, &key.2);
         let Some(owner) = owner else {
@@ -353,9 +446,28 @@ impl OutlinePanel {
         };
         let result = {
             let mut value = ui.current.borrow_mut();
-            value
-                .as_mut()
-                .map(|d| selection::set_caret(&mut d.session, pos, false))
+            value.as_mut().map(|d| {
+                if let Some(_e) = self
+                    .elements
+                    .borrow()
+                    .iter()
+                    .find(|e| e.pos == *pos && e.object)
+                {
+                    if let Some(wordcraft_doc::para::InlineObject::NoteRef { id, .. }) = d
+                        .session
+                        .doc
+                        .para_at(pos)
+                        .and_then(|p| p.object_at(pos.off))
+                    {
+                        let target = d.session.doc.start_of(wordcraft_doc::StoryRef::Part(*id));
+                        return selection::set_caret(&mut d.session, &target, false);
+                    }
+                    let mut end = pos.clone();
+                    end.off += wordcraft_doc::para::OBJ.len_utf8();
+                    return selection::select_range(&mut d.session, pos, &end);
+                }
+                selection::set_caret(&mut d.session, pos, false)
+            })
         };
         if let Some(Err(e)) = result {
             ui.toasts.add_toast(Toast::new(&e));
@@ -418,6 +530,26 @@ pub(super) fn install_outline(
     status.set_margin_end(12);
     status.set_margin_top(18);
     status.add_css_class("dim-label");
+    let filter = gtk::DropDown::from_strings(&[
+        wordcraft_gnome::t!("All"),
+        wordcraft_gnome::t!("Headings"),
+        wordcraft_gnome::t!("Bookmarks"),
+        wordcraft_gnome::t!("Images"),
+        wordcraft_gnome::t!("Tables"),
+        wordcraft_gnome::t!("Table of Contents"),
+        wordcraft_gnome::t!("Captions"),
+        wordcraft_gnome::t!("Footnotes"),
+        wordcraft_gnome::t!("Endnotes"),
+        wordcraft_gnome::t!("Equations"),
+        wordcraft_gnome::t!("Links"),
+        wordcraft_gnome::t!("Automatic Fields"),
+    ]);
+    filter.set_widget_name("navigation-filter");
+    accessible_name(&filter, wordcraft_gnome::t!("Filter Navigation"));
+    filter.set_margin_start(8);
+    filter.set_margin_end(8);
+    filter.set_margin_top(8);
+    box_.append(&filter);
     box_.append(&status);
     let list = gtk::ListBox::new();
     list.set_activate_on_single_click(true);
@@ -438,6 +570,14 @@ pub(super) fn install_outline(
         pending: Cell::new(false),
         headings: RefCell::new(Vec::new()),
         caret: RefCell::new(None),
+        filter,
+        elements: RefCell::new(Vec::new()),
+    });
+    let weak = Rc::downgrade(&s);
+    s.filter.connect_selected_notify(move |_| {
+        if let Some(s) = weak.upgrade() {
+            s.refresh();
+        }
     });
     let weak = Rc::downgrade(&s);
     s.list.connect_row_activated(move |_, row| {

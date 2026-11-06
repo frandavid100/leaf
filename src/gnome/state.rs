@@ -37,6 +37,7 @@ impl Current {
 pub(super) struct Ui {
     pub(super) table_pointer: RefCell<TablePointer>,
     pub(super) picture_drag: RefCell<Option<PictureDrag>>,
+    pub(super) reference_hover: RefCell<Option<Pos>>,
     pub(super) current: RefCell<Option<Current>>,
     pub(super) printing: PrintState,
     pub(super) spelling: RefCell<Option<Rc<SpellReview>>>,

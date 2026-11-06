@@ -179,6 +179,22 @@ pub(super) fn followup_pointer_test(
     });
 }
 fn followup_stage(t: Rc<Followup>, stage: u8) {
+    if t.mode == "font" && matches!(stage, 1 | 2 | 3 | 6 | 8 | 9 | 11) {
+        let tools = t.ui.text_tools.borrow().as_ref().unwrap().clone();
+        if matches!(stage, 1 | 3 | 6 | 9) {
+            tools.page("font");
+        } else {
+            tools.home();
+        }
+        let next = t.clone();
+        glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
+            followup_stage_ready(next, stage)
+        });
+        return;
+    }
+    followup_stage_ready(t, stage);
+}
+fn followup_stage_ready(t: Rc<Followup>, stage: u8) {
     let u = &t.ui;
     t.window.set_title(Some("Leaf Followup Regression"));
     match t.mode.as_str() {
@@ -448,18 +464,14 @@ fn followup_check(t: &Followup, stage: u8) {
                 );
             }
             if stage == 0 || stage == 12 {
-                let font = find_widget(&t.menu.popover().unwrap(), "text-font-choices")
-                    .unwrap()
-                    .parent()
-                    .unwrap();
                 let menu = find_widget(&t.menu.popover().unwrap(), "text-size-choices")
                     .unwrap()
                     .downcast::<gtk::MenuButton>()
                     .unwrap();
                 let selector = menu.parent().unwrap();
                 assert!(
-                    selector.width() < font.width(),
-                    "size selector must be narrower than the font selector"
+                    selector.hexpands() && u.size_input.hexpands(),
+                    "size selector fills the property row"
                 );
                 if stage == 12 {
                     let pop = menu.popover().unwrap();

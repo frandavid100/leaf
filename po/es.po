@@ -2857,3 +2857,51 @@ msgstr "Escribe con mayúscula la primera palabra de la oración"
 
 msgid "Repeated word: {word}"
 msgstr "Palabra repetida: {word}"
+
+msgid "Apply Last Font"
+msgstr "Aplicar la última fuente"
+
+msgid "Apply Last Language"
+msgstr "Aplicar el último idioma"
+
+msgid "Apply Last Settings"
+msgstr "Aplicar los últimos ajustes"
+
+msgid "Borders and Shading"
+msgstr "Bordes y sombreado"
+
+msgid "Captions"
+msgstr "Leyendas"
+
+msgid "Endnote"
+msgstr "Nota al final"
+
+msgid "Endnotes"
+msgstr "Notas al final"
+
+msgid "Equations"
+msgstr "Ecuaciones"
+
+msgid "Filter Navigation"
+msgstr "Filtrar navegación"
+
+msgid "Images"
+msgstr "Imágenes"
+
+msgid "Links"
+msgstr "Enlaces"
+
+msgid "No elements of this type in the document."
+msgstr "No hay elementos de este tipo en el documento."
+
+msgid "Place the caret in a table of contents."
+msgstr "Coloca el cursor en un índice."
+
+msgid "Place the caret in a table."
+msgstr "Coloca el cursor en una tabla."
+
+msgid "Table {number}"
+msgstr "Tabla {number}"
+
+msgid "Tables"
+msgstr "Tablas"

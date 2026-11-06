@@ -22,7 +22,10 @@ pub(super) fn paragraph_ui_test(
     click("paragraph-alignment");
     click("paragraph-align-center");
     assert_eq!(selection_paragraph(&ui)["align"], "center");
+    s.home();
+    click("paragraph-more-indents");
     click("paragraph-indent");
+    s.home();
     assert!(selection_paragraph(&ui)["indentLeft"].as_f64().unwrap() > 0.0);
     click("paragraph-list");
     click("paragraph-more-bullets");
@@ -34,7 +37,7 @@ pub(super) fn paragraph_ui_test(
     click("paragraph-line-1.5");
     assert_eq!(selection_paragraph(&ui)["lineSpacing"]["value"], 1.5);
     click("paragraph-back");
-    click("paragraph-more-shading");
+    click("paragraph-more-borders");
     click("paragraph-shade-FFF2CC");
     assert!(selection_paragraph(&ui)["shading"].is_array());
     click("paragraph-back");

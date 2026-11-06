@@ -115,3 +115,62 @@ fn long_notes_paginate_and_export_with_editable_story() {
     assert!(std::fs::metadata(&pdf).unwrap().len() > 1000);
     std::fs::remove_file(pdf).unwrap();
 }
+
+#[test]
+fn toc_destinations_use_distinct_stored_bookmarks_and_navigation_is_read_only() {
+    let mut s = Session::new(Document::from_text(
+        "Same title\nBody one\nSame title\nBody two",
+    ));
+    for n in [0, 2] {
+        selection::set_caret(&mut s, &Pos::body(n, 0), false).unwrap();
+        s.run("para.style", &json!({"style":"Heading1"})).unwrap();
+    }
+    selection::set_caret(&mut s, &Pos::body(0, 0), false).unwrap();
+    references::insert_toc(
+        &mut s,
+        &json!({"title":"Contents","levels":3,"hyperlinks":true}),
+    )
+    .unwrap();
+    let entries = s
+        .doc
+        .para_paths(StoryRef::Body)
+        .into_iter()
+        .filter_map(|path| {
+            let p = s.doc.para(StoryRef::Body, &path)?;
+            (p.props.style.as_deref() == Some("TOC1")).then_some(Pos {
+                story: StoryRef::Body,
+                path,
+                off: 0,
+            })
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(entries.len(), 2);
+    let before = s.doc.clone();
+    let depth = s.undo_depth();
+    let destinations = entries
+        .iter()
+        .map(|p| references::toc_destination(&s, p).unwrap())
+        .collect::<Vec<_>>();
+    assert_ne!(destinations[0], destinations[1]);
+    for (pos, url) in entries.iter().zip(destinations) {
+        assert!(references::toc_span_at(&s, pos).is_some());
+        wordcraft_gnome::annotations::goto_bookmark(&mut s, url.trim_start_matches('#')).unwrap();
+        assert!(
+            !s.doc
+                .para_at(&s.sel.focus)
+                .unwrap()
+                .props
+                .style
+                .as_deref()
+                .unwrap_or("")
+                .starts_with("TOC")
+        );
+    }
+    assert_eq!(s.doc, before);
+    assert_eq!(s.undo_depth(), depth);
+    assert!(references::toc_span_at(&s, &s.sel.focus).is_none());
+    let index = wordcraft_gnome::navigation::elements(&s.doc);
+    assert!(index.iter().any(|e| e.kind == 5));
+    assert!(index.iter().any(|e| e.kind == 10));
+    assert!(index.windows(2).all(|p| p[0].pos <= p[1].pos));
+}

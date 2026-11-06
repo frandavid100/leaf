@@ -42,6 +42,7 @@
   </screenshots>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.0-alpha.30" date="2026-11-06" type="development"><description><p>Keep active pages tied to the caret, preserve image view positions, follow table of contents links directly, unify review cards and improve native formatting and element tools.</p></description></release>
     <release version="0.1.0-alpha.29" date="2026-11-05" type="development">
       <description><p>Refine image manipulation, direct document references, automatic fields, thumbnails and the Insert menu.</p></description>
     </release>

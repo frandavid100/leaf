@@ -275,7 +275,7 @@ jobs:
       - name: Identificar versión de prueba
         run: |
           ./target/release/wordcraft-gnome --version | tee version.txt
-          grep -q "Leaf 0.1.0-alpha.29" version.txt
+          grep -q "Leaf 0.1.0-alpha.30" version.txt
       - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
         run: |
           python -m pip install --disable-pip-version-check pillow==11.3.0
@@ -858,7 +858,7 @@ jobs:
       - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
         run: |
           set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.29-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.30-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
           grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
       - name: Require complete success of the parallel native regression run
         if: contains(github.event.head_commit.message, '[bundle-only]')
@@ -891,16 +891,17 @@ jobs:
           LEAF_CANDIDATE_RUN: ${{ github.run_id }}
           LEAF_NATIVE_SHA: ${{ env.LEAF_NATIVE_SOURCE || github.sha }}
           LEAF_NATIVE_RUN: ${{ env.LEAF_NATIVE_RUN || github.run_id }}
+          LEAF_AUTO_PUBLISH: ${{ contains(github.event.head_commit.message, '[auto-publish-alpha]') }}
         run: |
           cp packaging/RELEASE_NOTES.md dist/RELEASE_NOTES.md
           python3 - <<'PYTHON'
           import json, os, pathlib
           pathlib.Path('dist/candidate.json').write_text(json.dumps({
-              'version': '0.1.0-alpha.29', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+              'version': '0.1.0-alpha.30', 'source': os.environ['LEAF_CANDIDATE_SHA'],
               'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
               'native_source': os.environ['LEAF_NATIVE_SHA'],
               'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
-              'publication': 'requires maintainer approval; promote these exact files without rebuilding'
+              'publication': ('automatic publication authorized by David; promote these exact files without rebuilding' if os.environ.get('LEAF_AUTO_PUBLISH') == 'true' else 'requires maintainer approval; promote these exact files without rebuilding')
           }, indent=2) + '\n')
           PYTHON
       - name: Checksums

@@ -91,9 +91,9 @@ pub(super) fn document_tools_ui_test(
                 .downcast::<gtk::Button>()
                 .unwrap()
                 .emit_clicked();
-            assert!(!panel.context.is_visible());
+            assert!(panel.context.is_visible() && !panel.context.is_sensitive());
             apply_user_edit(&ui, Edit::Undo);
-            assert!(panel.context.is_visible());
+            assert!(panel.context.is_visible() && panel.context.is_sensitive());
             panel.pop.popdown();
             let props = show_section_properties(&ui, &parent, 0);
             props.width.set_value(297.0);

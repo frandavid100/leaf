@@ -252,3 +252,134 @@ pub fn section_starts(doc: &Document) -> Vec<(usize, Pos)> {
         })
         .collect()
 }
+
+/// Read-only element index. Positions are canonical anchors, including nested
+/// table cells and floating images; previews never become an editable model.
+#[derive(Clone, Debug)]
+pub struct Element {
+    pub kind: u32,
+    pub pos: Pos,
+    pub label: String,
+    pub object: bool,
+}
+pub fn elements(doc: &Document) -> Vec<Element> {
+    use wordcraft_doc::para::{InlineObject as O, NoteKind};
+    let mut out = Vec::new();
+    let mut tables = std::collections::HashSet::new();
+    let mut ordinals = [0usize; 13];
+    for path in doc.para_paths(StoryRef::Body) {
+        let Some(p) = doc.para(StoryRef::Body, &path) else {
+            continue;
+        };
+        let mut table_path = path.clone();
+        while let Some((table, _, _)) = table_path.cell() {
+            if tables.insert(table.clone()) {
+                ordinals[4] += 1;
+                out.push(Element {
+                    kind: 4,
+                    pos: Pos {
+                        story: StoryRef::Body,
+                        path: path.clone(),
+                        off: 0,
+                    },
+                    label: crate::i18n::interpolate(
+                        crate::t!("Table {number}"),
+                        &[("number", ordinals[4].to_string())],
+                    ),
+                    object: false,
+                });
+            }
+            table_path = table;
+        }
+        for off in p.object_offsets() {
+            let Some(o) = p.object_at(off) else { continue };
+            let (kind, title, preview) = match o {
+                O::Image { alt, .. } => (3, crate::t!("Image"), alt.clone()),
+                O::NoteRef { kind, id, .. } => (
+                    if *kind == NoteKind::Footnote { 7 } else { 8 },
+                    if *kind == NoteKind::Footnote {
+                        crate::t!("Footnote")
+                    } else {
+                        crate::t!("Endnote")
+                    },
+                    doc.para_paths(StoryRef::Part(*id))
+                        .first()
+                        .and_then(|p| doc.para(StoryRef::Part(*id), p))
+                        .map(|p| p.plain_text())
+                        .unwrap_or_default(),
+                ),
+                O::Equation { linear, .. } => (9, crate::t!("Equation"), linear.clone()),
+                O::Field { instr, .. } | O::FieldStart { instr, .. } => {
+                    let field = wordcraft_engine::cmd::references::FieldCode::parse(instr);
+                    if field.name == "TOC" {
+                        (5, crate::t!("Table of Contents"), String::new())
+                    } else if field.name == "SEQ" && p.props.style.as_deref() == Some("Caption") {
+                        (6, crate::t!("Caption"), p.plain_text())
+                    } else {
+                        (11, crate::t!("Automatic Fields"), instr.clone())
+                    }
+                }
+                _ => continue,
+            };
+            ordinals[kind as usize] += 1;
+            let preview = preview
+                .split_whitespace()
+                .collect::<Vec<_>>()
+                .join(" ")
+                .chars()
+                .take(70)
+                .collect::<String>();
+            let label = if preview.is_empty() {
+                format!("{title} {}", ordinals[kind as usize])
+            } else {
+                format!("{title}: {preview}")
+            };
+            out.push(Element {
+                kind,
+                pos: Pos {
+                    story: StoryRef::Body,
+                    path: path.clone(),
+                    off,
+                },
+                label,
+                object: !matches!(o, O::FieldStart { .. }),
+            });
+        }
+        let mut previous = None;
+        for (range, props) in p.run_ranges() {
+            let link = doc
+                .styles
+                .resolve_char(p.props.style.as_deref(), props)
+                .link;
+            if let Some(url) = link.as_ref().filter(|u| previous.as_ref() != Some(*u)) {
+                let text = p
+                    .text
+                    .get(range.clone())
+                    .unwrap_or("")
+                    .replace(wordcraft_doc::para::OBJ, "");
+                let preview = if text.trim().is_empty() {
+                    url.as_str()
+                } else {
+                    text.trim()
+                };
+                out.push(Element {
+                    kind: 10,
+                    pos: Pos {
+                        story: StoryRef::Body,
+                        path: path.clone(),
+                        off: range.start,
+                    },
+                    label: format!(
+                        "{}: {}",
+                        crate::t!("Link"),
+                        preview.chars().take(70).collect::<String>()
+                    ),
+                    object: false,
+                });
+            }
+            previous = link;
+        }
+    }
+    out.sort_by(|a, b| a.pos.cmp(&b.pos).then(a.kind.cmp(&b.kind)));
+    out
+}

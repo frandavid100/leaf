@@ -13,6 +13,12 @@ pub(super) fn format_execute(
         doc.session.run(command, &args).map_err(|e| e.to_string())?;
         doc.session.rev() != rev
     };
+    if let Some(t) = ui.text_tools.borrow().as_ref() {
+        t.remember_property(command, &args);
+    }
+    if let Some(p) = ui.paragraph.borrow().as_ref() {
+        p.remember_property(command, &args, ui);
+    }
     if changed {
         after_content_change(ui);
     } else if command == "view.marks" {
@@ -275,4 +281,21 @@ pub(super) fn show_text_options(ui: &Rc<Ui>, _parent: &ApplicationWindow) {
         }
         s.page("options");
     }
+}
+
+pub(super) fn property_content(label: &str, icon: &str) -> (gtk::Box, gtk::Label) {
+    let content = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    content.append(&gtk::Image::from_icon_name(icon));
+    let text = gtk::Label::new(Some(label));
+    text.set_xalign(0.);
+    text.set_hexpand(true);
+    text.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    text.set_max_width_chars(28);
+    content.append(&text);
+    (content, text)
+}
+pub(super) fn check_icon(check: &gtk::CheckButton, title: &str, icon: &str) {
+    let (content, _) = property_content(title, icon);
+    check.set_child(Some(&content));
+    accessible_name(check, title);
 }

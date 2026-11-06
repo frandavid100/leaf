@@ -19,22 +19,6 @@ pub(super) fn install_pointer_and_view_input(
 ) {
     install_table_hover(ui);
     install_link_tooltip(ui);
-    let hover = gtk::EventControllerMotion::new();
-    let weak = Rc::downgrade(ui);
-    let owns_cursor = Cell::new(false);
-    hover.connect_motion(move |_, x, y| {
-        if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
-            if ui.picture_drag.borrow().is_none() {
-                if let Some(cursor) = picture_hover(&ui, x, y) {
-                    ui.document_box.set_cursor_from_name(Some(cursor));
-                    owns_cursor.set(true);
-                } else if owns_cursor.replace(false) {
-                    ui.document_box.set_cursor_from_name(None);
-                }
-            }
-        }
-    });
-    ui.document_box.add_controller(hover);
     // The centered page stack can be narrower than its viewport. Its surrounding
     // background belongs to the scroller, so page-stack gestures never see it.
     let outside = gtk::GestureClick::new();
@@ -95,6 +79,17 @@ pub(super) fn install_pointer_and_view_input(
                 if !document_pointer_surface(&ui, gesture) {
                     gesture.set_state(gtk::EventSequenceState::Denied);
                     return;
+                }
+                if count == 1
+                    && !gesture
+                        .current_event_state()
+                        .intersects(gdk::ModifierType::SHIFT_MASK | gdk::ModifierType::CONTROL_MASK)
+                {
+                    if let Some(url) = toc_link_at_point(&ui, x, y) {
+                        launch_document_link(&ui, &url);
+                        gesture.set_state(gtk::EventSequenceState::Claimed);
+                        return;
+                    }
                 }
                 if count == 1
                     && !gesture

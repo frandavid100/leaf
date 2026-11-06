@@ -1,8 +1,9 @@
 # Candidatas y publicación
 
 Desde alpha.29, las pruebas automáticas y el empaquetado generan una candidata
-sin crear una release ni cambiar la versión distribuida por FlatPark. David la
-prueba antes de aprobar su publicación.
+sin crear una release ni cambiar la versión distribuida por FlatPark. El proceso normal permite probarla antes de aprobar su publicación. Para la
+pasada alpha.30, David autoriza expresamente la publicación automática tras las
+comprobaciones.
 
 Cada candidata contiene la revisión fuente, el identificador de la ejecución,
 las notas de versión y las sumas SHA-256 de los paquetes. Su versión interna es
@@ -13,7 +14,9 @@ por su ejecución y hash, sin cambiar el paquete antes de publicarlo.
 
 El commit de integración en `main` lleva `[candidate-alpha]`. La batería nativa
 y las comprobaciones instaladas generan el artefacto `leaf-flatpak-alpha`.
-Los paquetes no se suben automáticamente a Releases.
+Sin otra autorización, los paquetes no se suben automáticamente a Releases.
+Un commit de candidata que añade `[auto-publish-alpha]`, dentro de una publicación
+expresamente autorizada, activa la promoción al terminar correctamente la ejecución.
 
 El commit de integración puede añadir `[bundle-only] [native-run:ID]`, con el
 identificador real de una ejecución nativa del mismo repositorio/flujo. No se
@@ -31,11 +34,11 @@ candidata aprobable.
 Para instalar el bundle descargado:
 
 ```sh
-flatpak install --user ./Leaf-0.1.0-alpha.29-x86_64.flatpak
+flatpak install --user ./Leaf-0.1.0-alpha.30-x86_64.flatpak
 flatpak run --user --branch=alpha io.github.frandavid100.leaf
 ```
 
-Al probarla, confirma que «Acerca de Leaf» muestra `0.1.0-alpha.29`, especialmente
+Al probarla, confirma que «Acerca de Leaf» muestra `0.1.0-alpha.30`, especialmente
 si tienes abiertas ventanas de varias versiones. El paquete completo incluye
 `SHA256SUMS`; `sha256sum -c SHA256SUMS` verifica los archivos descargados.
 
@@ -50,8 +53,9 @@ candidata, con nueva fuente, ejecución y sumas.
 
 ## Promover después de la aprobación
 
-El flujo `Publish an approved Alpha candidate without rebuilding` se ejecuta
-manualmente con el identificador de la ejecución aprobada por David. Comprueba
+El flujo `Publish a validated Alpha candidate without rebuilding` se ejecuta
+manualmente con el identificador aprobado por David, o automáticamente mediante
+el marcador autorizado descrito arriba. Comprueba
 que la ejecución terminó correctamente, pertenece a la rama y al flujo de
 candidatas de este repositorio, y que coinciden la fuente, el manifiesto y todas
 las sumas de verificación. Publica esos archivos y sus notas congeladas, creando

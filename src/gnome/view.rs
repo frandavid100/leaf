@@ -101,18 +101,7 @@ pub(super) fn refresh_pages(ui: &Rc<Ui>) {
     let mut errors = Vec::new();
     if let Ok(mut borrowed) = ui.current.try_borrow_mut() {
         if let Some(doc) = borrowed.as_mut() {
-            let viewport = top + adj.page_size().max(600.0) * 0.3;
-            let candidate = doc.arrangement.page_at(
-                ui.scroll.hadjustment().value() + ui.scroll.hadjustment().page_size() * 0.3,
-                viewport,
-            );
-            let same_row = doc.arrangement.rows.iter().any(|r| {
-                (r.first..r.first + r.count).contains(&candidate)
-                    && (r.first..r.first + r.count).contains(&doc.active)
-            });
-            if !same_row {
-                doc.active = candidate;
-            }
+            // Raster visibility never changes the editing target or active thumbnail.
             let visible = doc.arrangement.visible(top, bottom);
             let keep: HashSet<usize> = visible.iter().copied().collect();
             let old: Vec<usize> = doc.painted_pages.difference(&keep).copied().collect();
@@ -444,6 +433,7 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
     let _perf = perf_scope("leaf.opened");
     *ui.table_pointer.borrow_mut() = TablePointer::default();
     ui.picture_drag.borrow_mut().take();
+    ui.reference_hover.borrow_mut().take();
     ui.selection_rasters.borrow_mut().clear();
     wordcraft_gnome::proofing::configure(&mut session);
     if ui.closed.get() {
@@ -563,6 +553,7 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
                     let _ = cr.fill();
                 }
                 if let Some(ui) = weak.upgrade() {
+                    paint_reference_cue(&ui, widget, cr, i, z);
                     paint_selection(&ui, widget, cr, i, z, &selection.highlights);
                     paint_table_pointer(&ui, widget, cr, i, z);
                     paint_picture_frame(&ui, cr, i, z);

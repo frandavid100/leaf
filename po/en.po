@@ -2857,3 +2857,51 @@ msgstr "Capitalize the first word of a sentence"
 
 msgid "Repeated word: {word}"
 msgstr "Repeated word: {word}"
+
+msgid "Apply Last Font"
+msgstr "Apply Last Font"
+
+msgid "Apply Last Language"
+msgstr "Apply Last Language"
+
+msgid "Apply Last Settings"
+msgstr "Apply Last Settings"
+
+msgid "Borders and Shading"
+msgstr "Borders and Shading"
+
+msgid "Captions"
+msgstr "Captions"
+
+msgid "Endnote"
+msgstr "Endnote"
+
+msgid "Endnotes"
+msgstr "Endnotes"
+
+msgid "Equations"
+msgstr "Equations"
+
+msgid "Filter Navigation"
+msgstr "Filter Navigation"
+
+msgid "Images"
+msgstr "Images"
+
+msgid "Links"
+msgstr "Links"
+
+msgid "No elements of this type in the document."
+msgstr "No elements of this type in the document."
+
+msgid "Place the caret in a table of contents."
+msgstr "Place the caret in a table of contents."
+
+msgid "Place the caret in a table."
+msgstr "Place the caret in a table."
+
+msgid "Table {number}"
+msgstr "Table {number}"
+
+msgid "Tables"
+msgstr "Tables"

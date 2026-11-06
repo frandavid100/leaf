@@ -12,6 +12,15 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## Pasada alpha.30 en validación
+
+David autoriza resolver los issues recientes y los antiguos posibles y publicar
+automáticamente después de superar las comprobaciones, sin otra aprobación.
+La alpha.30 acumula la candidata 29 y los cambios de vista, cursores, revisión,
+Texto/Párrafo, Elementos y navegación. [Alcance y límites](docs/ALPHA30_VALIDATION.md).
+No se cierran requisitos parciales: #121, #124, #126 y #127 conservan trabajo.
+La última release pública sigue siendo alpha.28 hasta verificar la promoción.
+
 ## Candidata alpha.29: pendiente de prueba y aprobación
 
 La [PR #110](https://github.com/frandavid100/leaf/pull/110) integra la pasada
@@ -29,8 +38,8 @@ Elementos comparte las herramientas del objeto. Incluye reglas con imán de
 Los casos #99, #100, #107 y #121 conservan trabajo pendiente o limitaciones;
 #1, #2, #9, #52 y #84 siguen abiertos. [Evidencia y límites](docs/ALPHA29_VALIDATION.md).
 
-Todavía no hay release alpha.29. David debe probar la candidata y aprobar su
-promoción: se publicarán esos mismos paquetes, sin recompilar. El manifiesto y
+La candidata alpha.29 no se publicó por separado. La nueva autorización de David
+permite publicar automáticamente alpha.30 después de validar sus paquetes. El manifiesto y
 SHA256SUMS identifican los archivos. [Proceso de candidatas](docs/CANDIDATES.md).
 La última versión publicada continúa siendo alpha.28.
 

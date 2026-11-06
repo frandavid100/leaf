@@ -836,7 +836,9 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
                 "ns-resize"
             }
         });
-        canvas.set_cursor_from_name(cursor);
+        canvas.set_cursor_from_name(
+            cursor.or_else(|| hits.iter().any(|hit| *hit).then_some("default")),
+        );
         r.area.set_cursor_from_name(cursor);
     });
     let weak = Rc::downgrade(&r);
@@ -845,6 +847,10 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             if r.margin_drag.borrow().is_some() {
                 return;
             }
+            if let Some(overlay) = r.overlay.upgrade() {
+                overlay.set_cursor_from_name(None);
+            }
+            r.area.set_cursor_from_name(None);
             r.hovered.set(false);
             r.hide_later();
             r.vertical_reveal.set_reveal_child(false);
@@ -934,6 +940,35 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     });
     r.reveal.add_controller(scroll);
 
+    let marker_motion = gtk::EventControllerMotion::new();
+    let weak = Rc::downgrade(&r);
+    marker_motion.connect_motion(move |_, x, y| {
+        if let Some(r) = weak.upgrade() {
+            if r.drag.borrow().is_none() {
+                let cursor = r
+                    .view()
+                    .filter(|v| v.editable)
+                    .map(|v| {
+                        if Ruler::hit(&v, x, y) != Marker::NewTab {
+                            "ew-resize"
+                        } else {
+                            "default"
+                        }
+                    })
+                    .unwrap_or("default");
+                r.area.set_cursor_from_name(Some(cursor));
+            }
+        }
+    });
+    let weak = Rc::downgrade(&r);
+    marker_motion.connect_leave(move |_| {
+        if let Some(r) = weak.upgrade() {
+            if r.drag.borrow().is_none() {
+                r.area.set_cursor_from_name(None);
+            }
+        }
+    });
+    r.area.add_controller(marker_motion);
     let drag = gtk::GestureDrag::new();
     drag.set_button(gdk::BUTTON_PRIMARY);
     let weak = Rc::downgrade(&r);
@@ -973,6 +1008,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
             snapped: None,
             drop: false,
         }));
+        r.area.set_cursor_from_name(Some("ew-resize"));
         r.area.grab_focus();
         r.focused.set(false);
         g.set_state(gtk::EventSequenceState::Claimed);
@@ -1000,6 +1036,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     let weak = Rc::downgrade(&r);
     drag.connect_drag_end(move |_, _, _| {
         if let Some(r) = weak.upgrade() {
+            r.area.set_cursor_from_name(None);
             let d = r.drag.borrow_mut().take();
             if let Some(d) = d {
                 r.commit(&d.state, &d.lease, d.marker, d.distance, d.drop);
@@ -1011,6 +1048,7 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     drag.connect_cancel(move |_, _| {
         if let Some(r) = weak.upgrade() {
             r.drag.borrow_mut().take();
+            r.area.set_cursor_from_name(None);
             r.area.queue_draw();
             r.hide_later();
         }

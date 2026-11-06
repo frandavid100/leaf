@@ -466,7 +466,7 @@ pub(super) fn install_table_controls(
     let insert = gtk::Button::with_label(wordcraft_gnome::t!("Insert Table…"));
     insert.add_css_class("flat");
     insert.set_widget_name("table-insert");
-    content.append(&insert);
+    // Stable creation stays below the existing-object properties.
     {
         let ui = ui.clone();
         let p = parent.clone();
@@ -590,6 +590,8 @@ pub(super) fn install_table_controls(
             move |p| refresh_table_controls(&ui, p)
         ));
     }
+    content.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+    content.append(&insert);
     pop.set_child(Some(&content));
     menu.set_popover(Some(&pop));
     bar.append(&menu);
@@ -606,7 +608,11 @@ pub(super) fn refresh_table_controls(ui: &Rc<Ui>, pop: &gtk::Popover) {
     let value = ui.current.borrow();
     let doc = value.as_ref();
     if let Some(w) = find_widget(&root, "table-context") {
-        w.set_visible(doc.is_some_and(|d| wordcraft_gnome::tables::in_table(&d.session)));
+        let targeted = doc.is_some_and(|d| wordcraft_gnome::tables::in_table(&d.session));
+        w.set_sensitive(targeted);
+        root.set_tooltip_text(
+            (!targeted).then_some(wordcraft_gnome::t!("Place the caret in a table.")),
+        );
     }
     if let Some(w) = find_widget(&root, "table-merge") {
         w.set_sensitive(
