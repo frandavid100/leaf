@@ -40,7 +40,8 @@ shipped. Document, engine, renderer, locked dependencies and patches are intact.
 
 Font retains the existing editable, validation and debounced command controller.
 Reopening the mapped Font page does not detach the editable. The canonical
-current font is marked in the list; partial searches do not edit the document.
+current font and language markers synchronize without rebuilding focused native
+fields, including pinned selection changes; partial searches do not edit the document.
 
 The real public GtkColorChooserWidget supplies palette and arbitrary-colour
 editing inside the page. It is deprecated but available in the supported GTK 4
@@ -63,7 +64,7 @@ this does not claim to complete the separate caption/object ownership issues.
 
 ## Validation status
 
-The three new headless tests pass: custom RGB DOCX round-trip with one Undo and
+The complete headless suite passes (178 tests), including the three new tests: custom RGB DOCX round-trip with one Undo and
 Redo/repeat; caret-only typing without changing the surrounding word; switching
 between custom/native colours, clearing and rejecting invalid input.
 
@@ -72,6 +73,10 @@ repeated visits, real custom-colour hexadecimal entry, canonical targets and
 Undo, at normal and enlarged/HiDPI UI sizes. Existing pointer checks now visit
 the actual direct font list and native palette instead of removed intermediate
 widgets. Text repeat is exercised on two successive targets.
+
+Deterministic metadata checks report 824 source messages with complete English
+and Spanish catalogs. Sidebar checks also cover the narrow dark enlarged-text
+presentation; the normal layout retains the one/multiple-tab bounds checks.
 
 Full native and installed GNOME 49/FlatPark 51 validation, visual acceptance,
 final source identity and checksums must be recorded before issue closure and

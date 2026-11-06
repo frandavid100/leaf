@@ -2,7 +2,14 @@ use super::*;
 use serde_json::json;
 
 pub(super) fn alpha31_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
-    window.set_default_size(1250, 950);
+    let compact = std::env::var("GDK_SCALE").as_deref() == Ok("2");
+    window.set_default_size(if compact { 480 } else { 1250 }, 950);
+    if compact {
+        adw::StyleManager::default().set_color_scheme(adw::ColorScheme::ForceDark);
+        gtk::Settings::default()
+            .unwrap()
+            .set_property("gtk-font-name", "Cantarell 16");
+    }
     window.set_title(Some("Leaf Alpha31 Regression"));
     let mut s = Session::new(wordcraft_doc::Document::from_text(
         "Comment passage.

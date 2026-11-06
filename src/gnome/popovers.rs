@@ -418,6 +418,10 @@ pub(super) fn property_split(open: &gtk::Button, repeat: &gtk::Button) -> adw::S
         open.set_child(None::<&gtk::Widget>);
         split.set_child(Some(&child));
     }
+    // The secondary uses a custom icon rather than a popup arrow. Keep both
+    // native children explicitly flat outside the HeaderBar's toolbar context.
+    native.set_has_frame(false);
+    arrow.set_has_frame(false);
     native.set_widget_name(&open.widget_name());
     native.set_tooltip_text(open.tooltip_text().as_deref());
     native.set_sensitive(open.is_sensitive());

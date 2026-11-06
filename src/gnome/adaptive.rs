@@ -231,20 +231,28 @@ impl TextTools {
                 );
             }
         }
-        let Some(pop) = self.popover.upgrade().filter(|p| p.is_visible()) else {
-            return;
-        };
         let state = selection_character(&ui);
-        if let Some(controls) = ui.text_controls.borrow().as_ref() {
-            controls.mark_current_font(state["font"].as_str());
-        }
-        self.font_value.set_text(&format!(
+        let font_label = format!(
             "{}: {}",
             wordcraft_gnome::t!("Font"),
             state["font"]
                 .as_str()
                 .unwrap_or(wordcraft_gnome::t!("Mixed"))
-        ));
+        );
+        self.font_value.set_text(&font_label);
+        self.font_value.set_tooltip_text(Some(&font_label));
+        let Some(origin) = self.popover.upgrade() else {
+            return;
+        };
+        let pop = embedded_format(&origin)
+            .map(|(host, _)| host)
+            .unwrap_or(origin);
+        if !pop.is_visible() {
+            return;
+        }
+        if let Some(controls) = ui.text_controls.borrow().as_ref() {
+            controls.mark_current_font(state["font"].as_str());
+        }
         if *self.displayed.borrow() == state {
             return;
         }
@@ -950,6 +958,7 @@ pub(super) fn install_text_pages(
             if !state.ui.upgrade().is_some_and(|u| u.format_reflowing.get()) {
                 state.home();
             }
+            state.sync_selection();
         }
     ));
     s.home();

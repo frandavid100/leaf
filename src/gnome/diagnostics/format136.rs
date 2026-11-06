@@ -239,7 +239,24 @@ pub(super) fn format136_ui_test(
                         .unwrap()
                         .downcast::<adw::SplitButton>()
                         .unwrap();
-                    assert!(split.has_css_class("flat") && split.has_css_class("image-button"));
+                    // libadwaita owns the content-derived image/text classes.
+                    // Both toolbar history and property rows use this native
+                    // component's flat presentation, with its own separator.
+                    assert!(split.has_css_class("flat") && !split.has_css_class("raised"));
+                    let repeat = target
+                        .next_sibling()
+                        .unwrap()
+                        .next_sibling()
+                        .unwrap()
+                        .downcast::<gtk::MenuButton>()
+                        .unwrap();
+                    assert!(!target.downcast_ref::<gtk::Button>().unwrap().has_frame());
+                    assert!(!repeat.has_frame());
+                    eprintln!(
+                        "FORMAT136_SPLIT row={row} classes={:?} repeat_active={}",
+                        split.css_classes(),
+                        repeat.is_active()
+                    );
                 }
                 if text_pointer_target(
                     &format!("FORMAT136_READY {} click", ticket.get()),
