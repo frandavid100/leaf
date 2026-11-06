@@ -163,7 +163,9 @@ Their actions validate the live document id and the revalidated finding; cached
 comments/revisions resolve their canonical targets without weakening asynchronous
 dialog revision guards. Worker generations/revisions guard both success and error.
 
-The complete sidebar/editor header boxes share a vertical SizeGroup. Navigation's
+The primary sidebar/editor HeaderBars keep their native ToolbarView parenting
+and share a vertical SizeGroup. Their secondary filter/tab rows share a second
+vertical SizeGroup; the full allocated header bounds remain aligned. Navigation's
 native DropDown drives the existing per-tab representation controller; private
 toggle state is not a second visible selector. Mapping restores saved browsing
 only when the document revision and editing target are unchanged.

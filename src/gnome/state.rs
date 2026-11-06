@@ -57,6 +57,7 @@ pub(super) struct Ui {
     pub(super) representation: gtk::DropDown,
     pub(super) sidebar_filters: gtk::Stack,
     pub(super) _header_heights: gtk::SizeGroup,
+    pub(super) _secondary_header_heights: gtk::SizeGroup,
     pub(super) last_navigation: Cell<&'static str>,
     pub(super) hidden_navigation_scroll: RefCell<Option<((u64, u64), Pos, f64, f64)>>,
     pub(super) thumbnail_reveal_pending: Cell<bool>,
