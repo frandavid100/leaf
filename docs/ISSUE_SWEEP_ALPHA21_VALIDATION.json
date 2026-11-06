@@ -1,0 +1,266 @@
+{
+  "release": "v0.1.0-alpha.21",
+  "date": "2026-11-02",
+  "source_commit": "3849d2973670ba05093f178108bab182778579f1",
+  "source_tree": "b845e6c9aff03f73c34a829ac965e140491b049b",
+  "branch": "main",
+  "engine": {
+    "version": "0.14.0",
+    "upstream_url": "https://github.com/storytold/wordcraft/releases/tag/v0.14.0",
+    "commit": "5cd53f184aab11def13b7fced18727159b9bc96a",
+    "isolated_update_commit": "4707d77882afb6432d2ba521ad551985324d11cb",
+    "fresh_formats_snapshot": true,
+    "compatibility_patches_reapplied": 4,
+    "patched_upstream_file_comparison": true,
+    "rust_minimum": "1.95",
+    "pdf_backend_unchanged": "92d392cff132eaf53e13afff77f38b5c11b73aa0"
+  },
+  "closed": [
+    18,
+    48,
+    51,
+    61
+  ],
+  "remaining": [
+    1,
+    2,
+    7,
+    9,
+    37,
+    52,
+    53,
+    54,
+    55,
+    56
+  ],
+  "issue_counts": {
+    "closed": 50,
+    "open": 10,
+    "prs_excluded": true
+  },
+  "checks": {
+    "rust": 141,
+    "python": 4,
+    "gettext_source_messages": 678,
+    "fmt": true,
+    "docs_links": 14,
+    "release_build": true,
+    "shipping_profile": {
+      "opt_level": 3,
+      "lto": "thin",
+      "codegen_units": 1,
+      "strip": true,
+      "panic": "unwind"
+    }
+  },
+  "ci": {
+    "run": 41496070439,
+    "url": "https://github.com/frandavid100/leaf/actions/runs/41496070439",
+    "source": "3849d2973670ba05093f178108bab182778579f1",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 125451237969,
+        "name": "test",
+        "conclusion": "success"
+      },
+      {
+        "id": 125451240202,
+        "name": "lifecycle-baseline",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 125461873278,
+        "name": "Package and publish GitHub Flatpak alpha",
+        "conclusion": "success"
+      }
+    ],
+    "native_artifact_reused": false,
+    "artifacts": [
+      {
+        "id": 13167224469,
+        "name": "leaf-flatpak-alpha",
+        "bytes": 39855630,
+        "digest": "sha256:3e2807344f7fdc781b2a9e039135c8aff2c15b2f7784b3cc30c25ebe8fc4395e"
+      },
+      {
+        "id": 13166802041,
+        "name": "leaf-native-unvalidated",
+        "bytes": 16446071,
+        "digest": "sha256:57632b0b3398bfeb2dbd816976d863d029db113ca03795e884694b329157812b"
+      },
+      {
+        "id": 13166514507,
+        "name": "wordcraft-gnome-fase3d-linux",
+        "bytes": 50690090,
+        "digest": "sha256:1b4d7bf9f0765903cfa3605cfd82d4a06bf2c0801f4381ebe8b318f6937bf017"
+      }
+    ],
+    "future_reuse_guard": {
+      "source": "3849d2973670ba05093f178108bab182778579f1",
+      "run": 41496070439,
+      "source_identity_comparison_retained": true,
+      "updated_only_after_complete_ci": true
+    }
+  },
+  "interaction": {
+    "real_native_and_installed_pointer_keyboard": true,
+    "languages": [
+      "en",
+      "es"
+    ],
+    "scales": [
+      1,
+      2
+    ],
+    "font_and_size_popup_control_logical_px": 260,
+    "font_minimum_and_constraint_order_regression": true,
+    "native_adw_split_button": true,
+    "cumulative_history_repeat_stale_targets": true,
+    "rulers": {
+      "thickness_logical_px": 24,
+      "horizontal_header_gap_logical_px": 8,
+      "fade_ms": 175,
+      "independent_hover": true,
+      "viewport_sheet_clipping": true,
+      "no_pin_or_document_menu_entry": true,
+      "horizontal_public_commands_and_one_undo": true,
+      "cancel_and_release_outside": true,
+      "keyboard": "Ctrl+Alt+R / Escape",
+      "vertical_read_only": true,
+      "hidden_gtk_pick_targets": [
+        "GtkPicture",
+        "LeafDocumentCanvas"
+      ]
+    },
+    "upgrade_reinstall_persistent_data": true,
+    "portal_open_save": true,
+    "print_portal": true,
+    "atspi_document_text": true,
+    "orca_document_speech": true,
+    "lifecycle_and_memory": true
+  },
+  "visual_review": {
+    "final_installed_artifact": 13167224469,
+    "font_and_size_independently": true,
+    "normal_long_names_large_font_narrow_hidpi": true,
+    "history_normal_hover_focus_open_disabled_repeat": true,
+    "rulers_dark_wide_light_narrow_dark_narrow_2x_clipped": true,
+    "multipage_scroll_geometry": true,
+    "theme_issue18_previous_installed_artifact": 13156181480,
+    "theme_issue18_all_eight_variants_reviewed": true,
+    "public_screenshots_unchanged": true
+  },
+  "capability_audit": {
+    "reproducer": "examples/issue20_capabilities.rs",
+    "engine_version": "0.14.0",
+    "docx": "13-page automatic TOC remains updatable; fraction/script/root math, one footnote story and floating-image wrapping retained",
+    "odt": "TOC field, footnote story and equation lost; floating wrapping flattened",
+    "loss_guards_retained": true,
+    "advanced_native_authoring_complete": false
+  },
+  "publication": {
+    "id": 431825719,
+    "url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.21",
+    "published_at": "2026-11-02T18:27:22Z",
+    "tag": "v0.1.0-alpha.21",
+    "tag_target": "3849d2973670ba05093f178108bab182778579f1",
+    "source_marker_matches": true,
+    "independent_public_download_readback": true,
+    "github_asset_digests_verified": true,
+    "sha256sums_verified": true,
+    "asset_count": 8,
+    "upgrade_from": "v0.1.0-alpha.20",
+    "assets": [
+      {
+        "name": "flatpak-metadata.txt",
+        "size": 200,
+        "sha256": "a7fdfdaba74ae6e2e1a65ef15051642e1b18808be444370aa3b4bad71b3b2345",
+        "url": "https://github.com/frandavid100/leaf/releases/download/v0.1.0-alpha.21/flatpak-metadata.txt",
+        "github_digest_verified": true
+      },
+      {
+        "name": "flatpak-smoke.log",
+        "size": 9427,
+        "sha256": "0f2b0de0442ab056227243709b83dddfad93f989cf2e1fafe930bb6cb90edd9a",
+        "url": "https://github.com/frandavid100/leaf/releases/download/v0.1.0-alpha.21/flatpak-smoke.log",
+        "github_digest_verified": true
+      },
+      {
+        "name": "INSTALL.md",
+        "size": 2138,
+        "sha256": "1ea02a35a5422e55ca868379fc47493eec6d003e9b3341e1d2261d062c1e96bf",
+        "url": "https://github.com/frandavid100/leaf/releases/download/v0.1.0-alpha.21/INSTALL.md",
+        "github_digest_verified": true
+      },
+      {
+        "name": "Leaf-0.1.0-alpha.21-x86_64.flatpak",
+        "size": 11028040,
+        "sha256": "6b332768aeb50d26c8db44f769a5e014fa71fb546fffc413591bcf2ad2290f40",
+        "url": "https://github.com/frandavid100/leaf/releases/download/v0.1.0-alpha.21/Leaf-0.1.0-alpha.21-x86_64.flatpak",
+        "github_digest_verified": true
+      },
+      {
+        "name": "runtime-commit.txt",
+        "size": 65,
+        "sha256": "588c80c4d5d01ba6871ca2336d2c615e16c8d0fdbdcc8c6707bdbe1ce3173499",
+        "url": "https://github.com/frandavid100/leaf/releases/download/v0.1.0-alpha.21/runtime-commit.txt",
+        "github_digest_verified": true
+      },
+      {
+        "name": "runtime.txt",
+        "size": 29,
+        "sha256": "cc98943bf0d0696d69c2e647f51ef070a92528714cd03342e77b1d45a92efa3c",
+        "url": "https://github.com/frandavid100/leaf/releases/download/v0.1.0-alpha.21/runtime.txt",
+        "github_digest_verified": true
+      },
+      {
+        "name": "SHA256SUMS",
+        "size": 596,
+        "sha256": "d29f620c70cf89c7c85ec05b68a7dcce8bb88ec8c08a18b0944086bc17df9d00",
+        "url": "https://github.com/frandavid100/leaf/releases/download/v0.1.0-alpha.21/SHA256SUMS",
+        "github_digest_verified": true
+      },
+      {
+        "name": "source-commit.txt",
+        "size": 41,
+        "sha256": "b90213c679039fddf215b807eab792c2459104e306a14d8e61066baaceb500cb",
+        "url": "https://github.com/frandavid100/leaf/releases/download/v0.1.0-alpha.21/source-commit.txt",
+        "github_digest_verified": true
+      }
+    ],
+    "bundle": {
+      "name": "Leaf-0.1.0-alpha.21-x86_64.flatpak",
+      "size": 11028040,
+      "sha256": "6b332768aeb50d26c8db44f769a5e014fa71fb546fffc413591bcf2ad2290f40",
+      "url": "https://github.com/frandavid100/leaf/releases/download/v0.1.0-alpha.21/Leaf-0.1.0-alpha.21-x86_64.flatpak",
+      "github_digest_verified": true
+    },
+    "runtime": "org.gnome.Platform/x86_64/49",
+    "runtime_commit": "2bb946ea4ebb050f6a32f90e979feb975b08280d1ff1aac881dec3d1361ad84d",
+    "flatpak_metadata": "[Application]\nname=io.github.frandavid100.leaf\nruntime=org.gnome.Platform/x86_64/49\nsdk=org.gnome.Platform/x86_64/49\ncommand=leaf\n\n[Context]\nshared=ipc;\nsockets=x11;wayland;fallback-x11;\ndevices=dri;\n"
+  },
+  "preserved": {
+    "prior_releases": 19,
+    "prior_release_ids_asset_digests_targets_unchanged": true,
+    "prior_tags": 19,
+    "apexdesk_archive": "58da57efcfd03e7b442b20629703d32a697274f4",
+    "wordcraft_saving": "61f3045d63eb5c0f985c4adacc338f51172daa52",
+    "both_histories_ancestors_of_main": true,
+    "weblate_pr": {
+      "number": 57,
+      "state": "open",
+      "head": "5a02b9c82041b74a0e6258393d9ebd55d58073ae",
+      "base": "main"
+    }
+  },
+  "limits": [
+    "No human GNOME OS/Wayland/IME/fractional-scale/multimonitor or physical-device validation",
+    "No new Orca phase or braille coverage",
+    "No general corpus/fidelity claim",
+    "Ten remaining issues not closed by engine upgrade or property tests",
+    "No hosted Weblate activation, Flathub or replacement public screenshots",
+    "Independent local ThinLTO link failed; shipping GitHub standard optimized build and installed validation succeeded"
+  ]
+}

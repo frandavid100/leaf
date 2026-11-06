@@ -1,0 +1,2916 @@
+msgid ""
+msgstr "Project-Id-Version: Leaf\nReport-Msgid-Bugs-To: https://github.com/frandavid100/leaf/issues\nPOT-Creation-Date: 2026-11-01 00:00+0000\nPO-Revision-Date: 2026-11-01 00:00+0000\nLast-Translator: Leaf contributors\nLanguage-Team: es\nLanguage: es\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "1.15 Lines"
+msgstr "1,15 líneas"
+
+msgid "1.5 Lines"
+msgstr "1,5 líneas"
+
+msgid "25% Gray"
+msgstr "Gris 25 %"
+
+msgid "50% Gray"
+msgstr "Gris 50 %"
+
+msgid "Aa Bb Cc · Sample Text"
+msgstr "Aa Bb Cc · Texto de ejemplo"
+
+msgid "About Leaf"
+msgstr "Acerca de Leaf"
+
+msgid "Actual Size (100%)"
+msgstr "Tamaño real (100 %)"
+
+msgid "Add"
+msgstr "Añadir"
+
+msgid "Add Left Tab Stop"
+msgstr "Añadir tabulación izquierda"
+
+msgid "After"
+msgstr "Posterior"
+
+msgid "Align Left"
+msgstr "Alinear a la izquierda"
+
+msgid "Align Right"
+msgstr "Alinear a la derecha"
+
+msgid "All"
+msgstr "Todos"
+
+msgid "Allow Row to Split Across Pages"
+msgstr "Permitir dividir entre páginas"
+
+msgid "Annotation"
+msgstr "Anotación"
+
+msgid "Annotations"
+msgstr "Anotaciones"
+
+msgid "Appearance"
+msgstr "Aspecto"
+
+msgid "Apply"
+msgstr "Aplicar"
+
+msgid "Apply Color"
+msgstr "Aplicar color"
+
+msgid "Apply Exact Line Spacing"
+msgstr "Aplicar interlineado exacto"
+
+msgid "Apply Indents"
+msgstr "Aplicar sangrías"
+
+msgid "Apply Last Border"
+msgstr "Aplicar el último borde elegido"
+
+msgid "Apply Last Shading"
+msgstr "Aplicar el último sombreado elegido"
+
+msgid "Apply Level"
+msgstr "Aplicar nivel"
+
+msgid "Apply Line Spacing {}"
+msgstr "Aplicar interlineado {}"
+
+msgid "Apply Phonetic Guide"
+msgstr "Aplicar guía fonética"
+
+msgid "Apply RGB Color"
+msgstr "Aplicar color RGB"
+
+msgid "Apply Size"
+msgstr "Aplicar tamaño"
+
+msgid "Apply Spacing"
+msgstr "Aplicar separación"
+
+msgid "Apply Style {}"
+msgstr "Aplicar estilo {}"
+
+msgid "Apply To"
+msgstr "Aplicar a"
+
+msgid "Apply and Manage Styles"
+msgstr "Aplicar y gestionar estilos"
+
+msgid "Apply to All Borders"
+msgstr "Aplicar a todos los bordes"
+
+msgid "Apply {label}"
+msgstr "Aplicar {label}"
+
+msgid "Ascending (A–Z)"
+msgstr "Ascendente (A–Z)"
+
+msgid "Automatic Color"
+msgstr "Color automático"
+
+msgid "Automatic Underline Color"
+msgstr "Color automático del subrayado"
+
+msgid "Autosave"
+msgstr "Guardar automáticamente"
+
+msgid "Background Color"
+msgstr "Color de fondo"
+
+msgid "Before"
+msgstr "Anterior"
+
+msgid "Black"
+msgstr "Negro"
+
+msgid "Blue"
+msgstr "Azul"
+
+msgid "Bold"
+msgstr "Negrita"
+
+msgid "Bold (Ctrl+B)"
+msgstr "Negrita (Ctrl+B)"
+
+msgid "Bold, Italic, Underline and Font Size"
+msgstr "Negrita, cursiva, subrayado y tamaño de letra"
+
+msgid "Border Color (RRGGBB)"
+msgstr "Color de bordes (RRGGBB)"
+
+msgid "Border Width (pt)"
+msgstr "Grosor de bordes (pt)"
+
+msgid "Borders"
+msgstr "Bordes"
+
+msgid "Bottom"
+msgstr "Inferior"
+
+msgid "Bottom (mm)"
+msgstr "Inferior (mm)"
+
+msgid "Bottom · Center"
+msgstr "Abajo · centro"
+
+msgid "Bottom · Left"
+msgstr "Abajo · izquierda"
+
+msgid "Bottom · Right"
+msgstr "Abajo · derecha"
+
+msgid "Breaks and Pagination"
+msgstr "Saltos y conservación"
+
+msgid "Built-in styles cannot be deleted"
+msgstr "Los estilos integrados no se pueden eliminar"
+
+msgid "Bulleted List"
+msgstr "Lista con viñetas"
+
+msgid "Bullets"
+msgstr "Viñetas"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Capitalization"
+msgstr "Mayúsculas tipográficas"
+
+msgid "Capitalize Each Word"
+msgstr "Cada Palabra"
+
+msgid "Case Sensitive"
+msgstr "Distinguir mayúsculas"
+
+msgid "Cell"
+msgstr "Celda"
+
+msgid "Cells"
+msgstr "Celdas"
+
+msgid "Center"
+msgstr "Centrar"
+
+msgid "Center · Left"
+msgstr "Centro · izquierda"
+
+msgid "Center · Right"
+msgstr "Centro · derecha"
+
+msgid "Centered"
+msgstr "Centrada"
+
+msgid "Change Case"
+msgstr "Mayúsculas/minúsculas"
+
+msgid "Character Formatting"
+msgstr "Formato de caracteres"
+
+msgid "Character Spacing"
+msgstr "Espaciado de caracteres"
+
+msgid "Character Style"
+msgstr "Estilo de carácter"
+
+msgid "Check the page size and margins"
+msgstr "Revisa el tamaño de página y los márgenes"
+
+msgid "Choose Color"
+msgstr "Elegir color"
+
+msgid "Choose Color…"
+msgstr "Elegir color…"
+
+msgid "Choose Columns × Rows"
+msgstr "Elige columnas × filas"
+
+msgid "Choose a Local File"
+msgstr "Elige un archivo local"
+
+msgid "Choose a font family"
+msgstr "Elige una familia tipográfica"
+
+msgid "Choose an Image"
+msgstr "Se debe elegir una imagen"
+
+msgid "Choose an Installed Font Family"
+msgstr "Elegir una familia tipográfica instalada"
+
+msgid "Choose…"
+msgstr "Elegir…"
+
+msgid "Circle"
+msgstr "Círculo"
+
+msgid "Clear Tab Stops"
+msgstr "Borrar tabulaciones"
+
+msgid "Clear Text Formatting"
+msgstr "Borrar formato de texto"
+
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Close Tab"
+msgstr "Cerrar pestaña"
+
+msgid "Collapse"
+msgstr "Contraer"
+
+msgid "Collapse Section"
+msgstr "Contraer sección"
+
+msgid "Color and Effects"
+msgstr "Color y efectos"
+
+msgid "Column"
+msgstr "Columna"
+
+msgid "Column Width"
+msgstr "Ancho de columna"
+
+msgid "Column to the Left"
+msgstr "Columna a la izquierda"
+
+msgid "Column to the Right"
+msgstr "Columna a la derecha"
+
+msgid "Columns"
+msgstr "Columnas"
+
+msgid "Columns…"
+msgstr "Columnas…"
+
+msgid "Content Alignment"
+msgstr "Alineación del contenido"
+
+msgid "Contexts"
+msgstr "Contextos"
+
+msgid "Copy"
+msgstr "Copiar"
+
+msgid "Could Not Choose Font: {e}"
+msgstr "No se pudo elegir fuente: {e}"
+
+msgid "Could Not Encode PNG Image"
+msgstr "No se pudo codificar la imagen PNG"
+
+msgid "Could Not Export PDF"
+msgstr "No se pudo exportar el PDF"
+
+msgid "Could Not Load Recovery List"
+msgstr "No se pudo cargar la lista de recuperación"
+
+msgid "Could Not Open Document"
+msgstr "No se pudo abrir el documento"
+
+msgid "Could Not Open Save Dialog: {e}"
+msgstr "No se pudo abrir el guardado: {e}"
+
+msgid "Could Not Prepare Print PDF"
+msgstr "No se pudo preparar el PDF de impresión"
+
+msgid "Could Not Prepare Printing: {e}"
+msgstr "No se pudo preparar la impresión: {e}"
+
+msgid "Could Not Print: {e}"
+msgstr "No se pudo imprimir: {e}"
+
+msgid "Could Not Save Preferences: {e}"
+msgstr "No se guardaron las preferencias: {e}"
+
+msgid "Could Not Save: {e}"
+msgstr "No se ha guardado: {e}"
+
+msgid "Create Style"
+msgstr "Crear estilo"
+
+msgid "Creates continuous sections around the selected text, leaving the rest of the document unchanged."
+msgstr "Crea secciones continuas alrededor del texto, sin cambiar el resto del documento."
+
+msgid "Current Row Pagination"
+msgstr "Paginación de la fila actual"
+
+msgid "Current Section"
+msgstr "Sección actual"
+
+msgid "Current Style"
+msgstr "Estilo actual"
+
+msgid "Current Table"
+msgstr "Tabla actual"
+
+msgid "Custom"
+msgstr "Personalizadas"
+
+msgid "Custom Size"
+msgstr "Tamaño personalizado"
+
+msgid "Custom Widths"
+msgstr "Anchuras personalizadas"
+
+msgid "Cut"
+msgstr "Cortar"
+
+msgid "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages and Headings. Select a thumbnail or heading to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Add in the document menu inserts tables and images; right-click edits them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
+msgstr "DOCUMENTOS\nPestaña nueva en el menú principal crea un documento vacío. El menú principal permite abrir documentos DOCX/ODT, ventanas nuevas y mostrar todas las pestañas. Guardar: Ctrl+S; Guardar como: Ctrl+Mayús+S.\n\nNAVEGACIÓN\nLos botones inferiores del panel izquierdo alternan Páginas y Títulos. Pulsa una miniatura o un título para ir a esa parte del documento. La lupa abre la búsqueda; Escape vuelve a la vista anterior.\n\nBUSCAR Y REEMPLAZAR\nCtrl+F abre la búsqueda. Sus tres puntos permiten distinguir mayúsculas y activar Reemplazar. El botón junto al segundo campo reemplaza todas las coincidencias en un solo paso de deshacer; cada resultado conserva su reemplazo individual.\n\nEDICIÓN\nEstilo, Párrafo y Texto están como iconos a la derecha de la cabecera, con Deshacer/Rehacer a la izquierda. En ventanas estrechas los cinco pasan a la barra inferior. El clic derecho ofrece sus propias páginas de formato dentro del mismo menú. Añadir en el menú del documento permite insertar tablas e imágenes; el clic derecho permite editarlas. Las flechas abren subopciones. Ctrl+Z deshace y Ctrl+Mayús+Z rehace.\n\nAUTOGUARDADO\nPreferencias permite desactivar el autoguardado, usar un archivo de recuperación o guardar en el propio archivo. Recuperar documentos está en el menú principal."
+
+msgid "Dark Blue"
+msgstr "Azul oscuro"
+
+msgid "Dark Gray"
+msgstr "Gris oscuro"
+
+msgid "Dark Green"
+msgstr "Verde oscuro"
+
+msgid "Dark Red"
+msgstr "Rojo oscuro"
+
+msgid "Dark Yellow"
+msgstr "Amarillo oscuro"
+
+msgid "Dashed"
+msgstr "Discontinuo"
+
+msgid "Decrease Indent"
+msgstr "Reducir sangría"
+
+msgid "Decrease Size"
+msgstr "Reducir tamaño"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+msgid "Delete Column"
+msgstr "Eliminar columna"
+
+msgid "Delete Image"
+msgstr "Eliminar imagen"
+
+msgid "Delete Row"
+msgstr "Eliminar fila"
+
+msgid "Delete Style"
+msgstr "Eliminar estilo"
+
+msgid "Delete Table"
+msgstr "Eliminar tabla"
+
+msgid "Descending (Z–A)"
+msgstr "Descendente (Z–A)"
+
+msgid "Destination"
+msgstr "Destino"
+
+msgid "Diamond"
+msgstr "Rombo"
+
+msgid "Direction and Formatting"
+msgstr "Dirección y formato"
+
+msgid "Disabled"
+msgstr "Desactivado"
+
+msgid "Distribute Columns Evenly"
+msgstr "Distribuir columnas uniformemente"
+
+msgid "Distribute Rows Evenly"
+msgstr "Distribuir filas uniformemente"
+
+msgid "Distributed Alignment"
+msgstr "Alineación distribuida"
+
+msgid "Document"
+msgstr "Documento"
+
+msgid "Document Content"
+msgstr "Contenido del documento"
+
+msgid "Document File"
+msgstr "En el propio archivo"
+
+msgid "Document Properties"
+msgstr "Propiedades del documento"
+
+msgid "Document Properties…"
+msgstr "Propiedades del documento…"
+
+msgid "Document Saved"
+msgstr "Documento guardado"
+
+msgid "Document Sent to Printer"
+msgstr "Documento enviado a impresión"
+
+msgid "Document editor for GNOME powered by WordCraft."
+msgstr "Editor de documentos para GNOME basado en el motor WordCraft."
+
+msgid "Documents"
+msgstr "Documentos"
+
+msgid "Dot Dash"
+msgstr "Punto y raya"
+
+msgid "Dot Dot Dash"
+msgstr "Dos puntos y raya"
+
+msgid "Dotted"
+msgstr "Punteado"
+
+msgid "Double"
+msgstr "Doble"
+
+msgid "Double Strikethrough"
+msgstr "Tachado doble"
+
+msgid "Editing and Search"
+msgstr "Edición y búsqueda"
+
+msgid "Effects"
+msgstr "Efectos"
+
+msgid "Embossed"
+msgstr "Relieve"
+
+msgid "Enclosed Characters"
+msgstr "Caracteres encerrados"
+
+msgid "Engraved"
+msgstr "Grabado"
+
+msgid "Enter Six Hexadecimal Characters, for Example 808080"
+msgstr "Introduce seis caracteres hexadecimales, por ejemplo 808080"
+
+msgid "Enter Six Hexadecimal Digits"
+msgstr "Introduce seis cifras hexadecimales"
+
+msgid "Enter Six RGB Digits, for Example 2266AA"
+msgstr "Escribe seis cifras RGB, por ejemplo 2266AA"
+
+msgid "Equal"
+msgstr "Iguales"
+
+msgid "Exactly (pt)"
+msgstr "Exacto (pt)"
+
+msgid "Expand"
+msgstr "Expandir"
+
+msgid "Expand Section"
+msgstr "Expandir sección"
+
+msgid "Export to PDF"
+msgstr "Exportar a PDF"
+
+msgid "Export to PDF…"
+msgstr "Exportar a PDF…"
+
+msgid "Exporting PDF…"
+msgstr "Exportando PDF…"
+
+msgid "F6 switches between the document, sidebar and formatting controls. Tab moves between table cells. Shift+F10 opens the context menu."
+msgstr "F6 cambia entre documento, panel lateral y formato. Tab navega entre celdas de una tabla. Mayús+F10 abre el menú contextual."
+
+msgid "First Line (−: Hanging)"
+msgstr "Primera línea (−: francesa)"
+
+msgid "Fit Contents"
+msgstr "Al contenido"
+
+msgid "Fit Width"
+msgstr "Ajustar ancho"
+
+msgid "Fixed Width"
+msgstr "Ancho fijo"
+
+msgid "Following Spacing (mm)"
+msgstr "Separación posterior (mm)"
+
+msgid "Font"
+msgstr "Fuente"
+
+msgid "Font Family"
+msgstr "Familia tipográfica"
+
+msgid "Font Size"
+msgstr "Tamaño de letra"
+
+msgid "Font Size in Points"
+msgstr "Tamaño de letra en puntos"
+
+msgid "Font and Characters"
+msgstr "Fuente y caracteres"
+
+msgid "Font size must be between 6 and 96 points"
+msgstr "Tamaño de fuente fuera del rango permitido (6–96 puntos)"
+
+msgid "Formatting changed. Save to keep your changes."
+msgstr "Formato modificado. Usa Guardar para conservar los cambios."
+
+msgid "From This Point Onwards"
+msgstr "Desde aquí en adelante"
+
+msgid "Green"
+msgstr "Verde"
+
+msgid "Headings"
+msgstr "Títulos"
+
+msgid "Height (mm)"
+msgstr "Altura (mm)"
+
+msgid "Help"
+msgstr "Ayuda"
+
+msgid "Hexadecimal RGB Color"
+msgstr "Color RGB hexadecimal"
+
+msgid "Hidden Text"
+msgstr "Texto oculto"
+
+msgid "Highlight"
+msgstr "Resaltado"
+
+msgid "Horizontal Line"
+msgstr "Línea horizontal"
+
+msgid "Horizontal and Vertical Alignment"
+msgstr "Alineación horizontal y vertical"
+
+msgid "If you continue without saving, your changes will be lost."
+msgstr "Si continúas sin guardar, se perderán los cambios del documento."
+
+msgid "Image"
+msgstr "Imagen"
+
+msgid "Image Size…"
+msgstr "Tamaño de la imagen…"
+
+msgid "Images (PNG, JPEG, GIF, WebP, BMP, TIFF)"
+msgstr "Imágenes (PNG, JPEG, GIF, WebP, BMP, TIFF)"
+
+msgid "Images cannot be inserted inside a drawing canvas"
+msgstr "No se admite insertar una imagen dentro de un lienzo de dibujo"
+
+msgid "Image…"
+msgstr "Imagen…"
+
+msgid "Increase Indent"
+msgstr "Aumentar sangría"
+
+msgid "Increase Size"
+msgstr "Aumentar tamaño"
+
+msgid "Indents (pt)"
+msgstr "Sangrías (pt)"
+
+msgid "Inline"
+msgstr "En línea"
+
+msgid "Insert Image"
+msgstr "Insertar imagen"
+
+msgid "Insert Image…"
+msgstr "Insertar imagen…"
+
+msgid "Insert Table"
+msgstr "Insertar tabla"
+
+msgid "Insert Table…"
+msgstr "Insertar tabla…"
+
+msgid "Insert a table with {col} columns and {row} rows"
+msgstr "Insertar tabla de {col} columnas y {row} filas"
+
+msgid "Insert and Edit Tables"
+msgstr "Insertar y editar tablas"
+
+msgid "Inside"
+msgstr "Interior"
+
+msgid "Interface"
+msgstr "Interfaz"
+
+msgid "Invert"
+msgstr "Invertir"
+
+msgid "Italic"
+msgstr "Cursiva"
+
+msgid "Italic (Ctrl+I)"
+msgstr "Cursiva (Ctrl+I)"
+
+msgid "Justify"
+msgstr "Justificar"
+
+msgid "Keep Aspect Ratio"
+msgstr "Mantener proporción"
+
+msgid "Keep Lines Together"
+msgstr "Conservar líneas juntas"
+
+msgid "Keep with Next"
+msgstr "Conservar con el siguiente"
+
+msgid "Keyboard Shortcuts"
+msgstr "Atajos del teclado"
+
+msgid "Landscape"
+msgstr "Horizontal"
+
+msgid "Layout"
+msgstr "Distribución"
+
+msgid "Leaf Help"
+msgstr "Ayuda de Leaf"
+
+msgid "Leaf Project"
+msgstr "Proyecto Leaf"
+
+msgid "Left"
+msgstr "Izquierda"
+
+msgid "Left (mm)"
+msgstr "Izquierdo (mm)"
+
+msgid "Left Column"
+msgstr "Columna izquierda"
+
+msgid "Left to Right"
+msgstr "De izquierda a derecha"
+
+msgid "Letter"
+msgstr "Carta"
+
+msgid "Level (1–9)"
+msgstr "Nivel (1–9)"
+
+msgid "Light Blue"
+msgstr "Azul suave"
+
+msgid "Light Gray"
+msgstr "Gris claro"
+
+msgid "Light Green"
+msgstr "Verde suave"
+
+msgid "Light Pink"
+msgstr "Rosa suave"
+
+msgid "Light Yellow"
+msgstr "Amarillo suave"
+
+msgid "Line Between Columns"
+msgstr "Línea entre columnas"
+
+msgid "Line Spacing"
+msgstr "Interlineado"
+
+msgid "Main Menu"
+msgstr "Menú principal"
+
+msgid "Margins"
+msgstr "Márgenes"
+
+msgid "Merge Cells"
+msgstr "Combinar celdas"
+
+msgid "Minimum Row Height"
+msgstr "Altura mínima de fila"
+
+msgid "More Paragraph Options…"
+msgstr "Más opciones de párrafo…"
+
+msgid "More Table Options…"
+msgstr "Más opciones de tabla…"
+
+msgid "More Text Options…"
+msgstr "Más opciones de texto…"
+
+msgid "Multilevel List"
+msgstr "Lista multinivel"
+
+msgid "Multiple selected cells are merged before splitting."
+msgstr "Varias celdas seleccionadas se combinan antes de dividirse."
+
+msgid "Narrow Left Column"
+msgstr "Izquierda más estrecha"
+
+msgid "Narrow Right Column"
+msgstr "Derecha más estrecha"
+
+msgid "New Document"
+msgstr "Documento nuevo"
+
+msgid "New Style"
+msgstr "Nuevo estilo"
+
+msgid "New Style…"
+msgstr "Nuevo estilo…"
+
+msgid "New Tab"
+msgstr "Pestaña nueva"
+
+msgid "New Window"
+msgstr "Ventana nueva"
+
+msgid "No Background Color"
+msgstr "Sin color de fondo"
+
+msgid "No Borders"
+msgstr "Sin bordes"
+
+msgid "No Headings in This Document"
+msgstr "No hay títulos en este documento"
+
+msgid "No Highlight"
+msgstr "Sin resaltado"
+
+msgid "No Matches"
+msgstr "No hay coincidencias"
+
+msgid "No Shading"
+msgstr "Sin sombreado"
+
+msgid "No Styles Found"
+msgstr "No se encontraron estilos"
+
+msgid "No document"
+msgstr "No hay documento"
+
+msgid "None"
+msgstr "Ninguno"
+
+msgid "Number of Columns"
+msgstr "Número de columnas"
+
+msgid "Numbered List"
+msgstr "Lista numerada"
+
+msgid "Numbering"
+msgstr "Numeración"
+
+msgid "Offset (pt)"
+msgstr "Desplazamiento (pt)"
+
+msgid "Only DOCX and ODT files are supported"
+msgstr "Este prototipo admite únicamente DOCX y ODT"
+
+msgid "Open"
+msgstr "Abrir"
+
+msgid "Open Document"
+msgstr "Abrir documento"
+
+msgid "Open…"
+msgstr "Abrir…"
+
+msgid "Orientation"
+msgstr "Orientación"
+
+msgid "Outline"
+msgstr "Contorno"
+
+msgid "Outside"
+msgstr "Exterior"
+
+msgid "PDF Document (.pdf)"
+msgstr "Documento PDF (.pdf)"
+
+msgid "PDF Exported"
+msgstr "PDF exportado"
+
+msgid "Page"
+msgstr "Página"
+
+msgid "Page Break Before"
+msgstr "Salto de página anterior"
+
+msgid "Page Width"
+msgstr "Al ancho de página"
+
+msgid "Pages"
+msgstr "Páginas"
+
+msgid "Paper Size"
+msgstr "Tamaño de papel"
+
+msgid "Paragraph"
+msgstr "Párrafo"
+
+msgid "Paragraph Formatting"
+msgstr "Formato de párrafo"
+
+msgid "Paragraph Spacing (pt)"
+msgstr "Separación entre párrafos (pt)"
+
+msgid "Paragraph Style"
+msgstr "Estilo de párrafo"
+
+msgid "Paste"
+msgstr "Pegar"
+
+msgid "Phonetic Annotation"
+msgstr "Anotación fonética"
+
+msgid "Phonetic Guide"
+msgstr "Guía fonética"
+
+msgid "Pin"
+msgstr "Mantener abierto"
+
+msgid "Pink"
+msgstr "Rosa"
+
+msgid "Place the cursor in the document body, outside a table."
+msgstr "Sitúa el cursor en el cuerpo del documento, fuera de una tabla."
+
+msgid "Portrait"
+msgstr "Vertical"
+
+msgid "Position (pt)"
+msgstr "Posición (pt)"
+
+msgid "Preferences"
+msgstr "Preferencias"
+
+msgid "Preparing to Print…"
+msgstr "Preparando impresión…"
+
+msgid "Print"
+msgstr "Imprimir"
+
+msgid "Print…"
+msgstr "Imprimir…"
+
+msgid "Properties and Split Cells…"
+msgstr "Propiedades y dividir celdas…"
+
+msgid "Purple"
+msgstr "Violeta"
+
+msgid "RGB Color, for Example 2266AA"
+msgstr "Color RGB, por ejemplo 2266AA"
+
+msgid "Recover Documents"
+msgstr "Recuperar documentos"
+
+msgid "Recover Documents…"
+msgstr "Recuperar documentos…"
+
+msgid "Recovered Document"
+msgstr "Documento recuperado"
+
+msgid "Recovery File"
+msgstr "Archivo de recuperación"
+
+msgid "Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved."
+msgstr "Recuperación: copia separada cada 10 segundos. Archivo: guarda cada 30 segundos; sin nombre usa recuperación hasta el primer guardado."
+
+msgid "Recovery: {e}"
+msgstr "Recuperación: {e}"
+
+msgid "Red"
+msgstr "Rojo"
+
+msgid "Redo"
+msgstr "Rehacer"
+
+msgid "Redo (Ctrl+Shift+Z)"
+msgstr "Rehacer (Ctrl+Shift+Z)"
+
+msgid "Remove List"
+msgstr "Quitar lista"
+
+msgid "Remove Phonetic Guide"
+msgstr "Quitar guía fonética"
+
+msgid "Remove Shape"
+msgstr "Quitar forma"
+
+msgid "Remove Underline"
+msgstr "Quitar subrayado"
+
+msgid "Rename"
+msgstr "Renombrar"
+
+msgid "Rename Style"
+msgstr "Renombrar estilo"
+
+msgid "Rename…"
+msgstr "Renombrar…"
+
+msgid "Repeat as Header"
+msgstr "Repetir como cabecera"
+
+msgid "Replace"
+msgstr "Reemplazar"
+
+msgid "Replace All Matches"
+msgstr "Reemplazar todos los resultados"
+
+msgid "Replace Image"
+msgstr "Sustituir imagen"
+
+msgid "Replace Image…"
+msgstr "Sustituir imagen…"
+
+msgid "Replace This Match"
+msgstr "Reemplazar esta coincidencia"
+
+msgid "Replace With"
+msgstr "Reemplazar por"
+
+msgid "Reset Paragraph Formatting"
+msgstr "Restablecer formato de párrafo"
+
+msgid "Restart Numbering at 1"
+msgstr "Reiniciar numeración en 1"
+
+msgid "Restore Automatic Height for Current Row"
+msgstr "Restaurar altura automática de la fila actual"
+
+msgid "Restore Original Size"
+msgstr "Restaurar tamaño original"
+
+msgid "Right"
+msgstr "Derecha"
+
+msgid "Right (mm)"
+msgstr "Derecho (mm)"
+
+msgid "Right Column"
+msgstr "Columna derecha"
+
+msgid "Right to Left"
+msgstr "De derecha a izquierda"
+
+msgid "Row"
+msgstr "Fila"
+
+msgid "Row Above"
+msgstr "Fila encima"
+
+msgid "Row Below"
+msgstr "Fila debajo"
+
+msgid "Rows"
+msgstr "Filas"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Save As"
+msgstr "Guardar como"
+
+msgid "Save As…"
+msgstr "Guardar como…"
+
+msgid "Save Changes?"
+msgstr "¿Guardar los cambios?"
+
+msgid "Save a Copy — DOCX or ODT"
+msgstr "Guardar una copia — DOCX u ODT"
+
+msgid "Scale (%)"
+msgstr "Escala (%)"
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Search (Ctrl+F)"
+msgstr "Buscar (Ctrl+F)"
+
+msgid "Search Document"
+msgstr "Buscar en el documento"
+
+msgid "Search Document (Ctrl+F)"
+msgstr "Buscar en el documento (Ctrl+F)"
+
+msgid "Search Options"
+msgstr "Opciones de búsqueda"
+
+msgid "Search Styles"
+msgstr "Buscar estilos"
+
+msgid "Select"
+msgstr "Seleccionar"
+
+msgid "Select All"
+msgstr "Seleccionar todo"
+
+msgid "Select Cell"
+msgstr "Seleccionar celda"
+
+msgid "Select Column"
+msgstr "Seleccionar columna"
+
+msgid "Select Row"
+msgstr "Seleccionar fila"
+
+msgid "Select Table"
+msgstr "Seleccionar tabla"
+
+msgid "Select an image in the document to edit it."
+msgstr "Selecciona una imagen en el documento para modificarla."
+
+msgid "Selected Column and Row (Points)"
+msgstr "Columna y fila seleccionadas (puntos)"
+
+msgid "Selected Text"
+msgstr "Texto seleccionado"
+
+msgid "Selection Borders and Shading"
+msgstr "Bordes y sombreado de la selección"
+
+msgid "Sentence case"
+msgstr "Tipo oración"
+
+msgid "Shading"
+msgstr "Sombreado"
+
+msgid "Shadow"
+msgstr "Sombra"
+
+msgid "Show All Tabs"
+msgstr "Mostrar todas las pestañas"
+
+msgid "Show Formatting Marks (¶)"
+msgstr "Mostrar marcas de formato (¶)"
+
+msgid "Show or Hide Sidebar"
+msgstr "Mostrar u ocultar el panel lateral"
+
+msgid "Single"
+msgstr "Sencillo"
+
+msgid "Size"
+msgstr "Tamaño"
+
+msgid "Size (pt)"
+msgstr "Tamaño (pt)"
+
+msgid "Size in Points, Including Decimals"
+msgstr "Tamaño en puntos, también con decimales"
+
+msgid "Size must be between 1 and 1638 points"
+msgstr "El tamaño debe estar entre 1 y 1638 puntos"
+
+msgid "Size must be between 1 and 4000 points"
+msgstr "El tamaño debe estar entre 1 y 4000 puntos"
+
+msgid "Small Caps"
+msgstr "Versalitas"
+
+msgid "Sort Selected Paragraphs"
+msgstr "Ordenar párrafos seleccionados"
+
+msgid "Spacing (mm)"
+msgstr "Separación (mm)"
+
+msgid "Spacing (pt)"
+msgstr "Espaciado (pt)"
+
+msgid "Spacing After Column {} (mm)"
+msgstr "Separación tras columna {} (mm)"
+
+msgid "Split Cells"
+msgstr "Dividir celdas"
+
+msgid "Split Selected Cells"
+msgstr "Dividir celdas seleccionadas"
+
+msgid "Split Table"
+msgstr "Dividir tabla"
+
+msgid "Square"
+msgstr "Cuadrado"
+
+msgid "Strikethrough"
+msgstr "Tachado"
+
+msgid "Style"
+msgstr "Estilo"
+
+msgid "Style Deleted"
+msgstr "Estilo eliminado"
+
+msgid "Style Name"
+msgstr "Nombre del estilo"
+
+msgid "Style Saved"
+msgstr "Estilo guardado"
+
+msgid "Style Updated"
+msgstr "Estilo actualizado"
+
+msgid "Styles"
+msgstr "Estilos"
+
+msgid "Subscript"
+msgstr "Subíndice"
+
+msgid "Superscript"
+msgstr "Superíndice"
+
+msgid "Switch Pane"
+msgstr "Cambiar de zona"
+
+msgid "Tab Stops"
+msgstr "Tabulaciones"
+
+msgid "Table"
+msgstr "Tabla"
+
+msgid "Table Alignment"
+msgstr "Alineación de tabla"
+
+msgid "Table Properties"
+msgstr "Propiedades de la tabla"
+
+msgid "Table Size"
+msgstr "Tamaño de la tabla"
+
+msgid "Table…"
+msgstr "Tabla…"
+
+msgid "Teal"
+msgstr "Verde azulado"
+
+msgid "Text"
+msgstr "Texto"
+
+msgid "Text Border"
+msgstr "Borde del texto"
+
+msgid "Text Color"
+msgstr "Color del texto"
+
+msgid "Text Direction"
+msgstr "Dirección del texto"
+
+msgid "Text Options"
+msgstr "Opciones de texto"
+
+msgid "Text Style"
+msgstr "Estilo de texto"
+
+msgid "The cell does not contain a paragraph"
+msgstr "La celda no contiene un párrafo"
+
+msgid "The columns do not fit in the text area. Reduce their number, width or spacing."
+msgstr "Las columnas no caben en el espacio de texto. Reduce su número, anchura o separación."
+
+msgid "The document contains no pages"
+msgstr "El documento no contiene páginas"
+
+msgid "The document has changed. Close and reopen Columns."
+msgstr "El documento ha cambiado. Cierra y vuelve a abrir Columnas."
+
+msgid "The document has changed. Close and reopen its properties."
+msgstr "El documento ha cambiado. Cierra y vuelve a abrir las propiedades."
+
+msgid "The document has changed; choose the image again"
+msgstr "El documento ha cambiado; vuelve a elegir la imagen"
+
+msgid "The document has changed; export it again"
+msgstr "El documento ha cambiado; vuelve a exportarlo"
+
+msgid "The document has changed; search results have been updated"
+msgstr "El documento ha cambiado; la búsqueda se ha actualizado"
+
+msgid "The document is closed"
+msgstr "El documento está cerrado"
+
+msgid "The document is empty"
+msgstr "El documento está vacío"
+
+msgid "The file does not exist or is not a regular file"
+msgstr "El archivo no existe o no es un fichero normal"
+
+msgid "The file path cannot be represented as UTF-8"
+msgstr "La ruta del archivo no se puede representar como UTF-8"
+
+msgid "The margins leave insufficient room for text"
+msgstr "Los márgenes no dejan espacio suficiente para el texto"
+
+msgid "The page exceeds the preview size limit"
+msgstr "La página excede el límite de tamaño de esta vista preliminar"
+
+msgid "The requested page does not exist"
+msgstr "La página solicitada no existe"
+
+msgid "The row does not exist"
+msgstr "No existe la fila"
+
+msgid "The section does not contain an editable paragraph"
+msgstr "La sección no contiene un párrafo editable"
+
+msgid "The style will use the formatting of the current selection."
+msgstr "Se creará con el formato de la selección actual."
+
+msgid "There are no documents to recover."
+msgstr "No hay documentos pendientes de recuperar."
+
+msgid "There is no table at this position"
+msgstr "No hay tabla en esa posición"
+
+msgid "Thick"
+msgstr "Grueso"
+
+msgid "Top"
+msgstr "Superior"
+
+msgid "Top (mm)"
+msgstr "Superior (mm)"
+
+msgid "Top · Center"
+msgstr "Arriba · centro"
+
+msgid "Top · Left"
+msgstr "Arriba · izquierda"
+
+msgid "Top · Right"
+msgstr "Arriba · derecha"
+
+msgid "Triangle"
+msgstr "Triángulo"
+
+msgid "Turquoise"
+msgstr "Turquesa"
+
+msgid "Type to Search"
+msgstr "Escribe para buscar"
+
+msgid "UPPERCASE"
+msgstr "MAYÚSCULAS"
+
+msgid "Underline"
+msgstr "Subrayado"
+
+msgid "Underline (Ctrl+U)"
+msgstr "Subrayado (Ctrl+U)"
+
+msgid "Underline Color"
+msgstr "Color del subrayado"
+
+msgid "Undo"
+msgstr "Deshacer"
+
+msgid "Undo (Ctrl+Z)"
+msgstr "Deshacer (Ctrl+Z)"
+
+msgid "Unequal widths are preserved in DOCX. In ODT, the engine saves them as equal-width columns."
+msgstr "Las anchuras desiguales se conservan en DOCX. En ODT, el motor las guarda como columnas iguales."
+
+msgid "Unknown Autosave Mode"
+msgstr "Modo de autoguardado desconocido"
+
+msgid "Unknown Navigation Action: {action}"
+msgstr "Acción de navegación desconocida: {action}"
+
+msgid "Unpin"
+msgstr "Dejar de mantener abierto"
+
+msgid "Unsaved changes. Save a copy to keep them."
+msgstr "Cambios pendientes. Usa Guardar para conservarlos en una copia."
+
+msgid "Update from Selection"
+msgstr "Actualizar según la selección"
+
+msgid "Use 1 to 12 columns with spacing between 0 and 105.83 mm."
+msgstr "Usa entre 1 y 12 columnas y una separación de 0 a 105,83 mm."
+
+msgid "Use a .docx or .odt extension"
+msgstr "Usa una extensión .docx o .odt"
+
+msgid "Vertical Downwards"
+msgstr "Vertical hacia abajo"
+
+msgid "Vertical Upwards"
+msgstr "Vertical hacia arriba"
+
+msgid "Wavy"
+msgstr "Ondulado"
+
+msgid "Whole Document"
+msgstr "Todo el documento"
+
+msgid "Widow and Orphan Control"
+msgstr "Control de viudas y huérfanas"
+
+msgid "Width (mm)"
+msgstr "Anchura (mm)"
+
+msgid "Width (pt)"
+msgstr "Grosor (pt)"
+
+msgid "Width and following spacing in millimeters. The last column has no following spacing."
+msgstr "Anchura y separación posterior, en milímetros. La última columna no tiene separación posterior."
+
+msgid "Widths"
+msgstr "Anchuras"
+
+msgid "WordCraft Could Not Open the File: {e}"
+msgstr "WordCraft no pudo abrir el archivo: {e}"
+
+msgid "WordCraft did not confirm that the document was saved"
+msgstr "WordCraft no confirmó el guardado"
+
+msgid "WordCraft returned an incomplete image"
+msgstr "WordCraft devolvió una imagen incompleta"
+
+msgid "Words Only"
+msgstr "Solo palabras"
+
+msgid "Yellow"
+msgstr "Amarillo"
+
+msgid "Zoom In"
+msgstr "Ampliar zoom"
+
+msgid "Zoom Out"
+msgstr "Reducir zoom"
+
+msgid "Zoom Out (Ctrl+-)"
+msgstr "Reducir zoom (Ctrl+-)"
+
+msgid "bullets"
+msgstr "viñetas"
+
+msgid "indents"
+msgstr "sangrías"
+
+msgid "lowercase"
+msgstr "minúsculas"
+
+msgid "numbering"
+msgstr "numeración"
+
+msgid "– Dash"
+msgstr "– Guion"
+
+msgid "• Disc"
+msgstr "• Punto"
+
+msgid "○ Circle"
+msgstr "○ Círculo"
+
+msgid "Choose another name to protect the original document."
+msgstr "Elige otro nombre para proteger el documento original."
+
+msgid "Documents (.docx, .odt)"
+msgstr "Documentos (.docx, .odt)"
+
+msgid "Include .docx or .odt in the file name"
+msgstr "Incluye .docx o .odt en el nombre del archivo"
+
+msgid "Document Editor"
+msgstr "Editor de documentos"
+
+msgid "Show or Hide Thumbnails (F9)"
+msgstr "Mostrar u ocultar miniaturas (F9)"
+
+msgid "Zoom In (Ctrl++)"
+msgstr "Ampliar zoom (Ctrl++)"
+
+msgid "Document Options"
+msgstr "Opciones del documento"
+
+msgid "Zoom Options"
+msgstr "Opciones de zoom"
+
+msgid "Choose Font"
+msgstr "Elegir fuente"
+
+msgid "Choose Font…"
+msgstr "Elegir fuente…"
+
+msgid "DOCX and ODT Documents"
+msgstr "Documentos DOCX y ODT"
+
+msgid "Only local files are supported"
+msgstr "Solo se admiten archivos locales"
+
+msgid "There Are Documents to Recover"
+msgstr "Hay documentos pendientes de recuperar"
+
+msgid "Recover"
+msgstr "Recuperar"
+
+msgid "Options for {label}"
+msgstr "Opciones de {label}"
+
+msgid "No Changes Applied"
+msgstr "No se ha aplicado ningún cambio"
+
+msgid "▪ Square"
+msgstr "▪ Cuadrado"
+
+msgid "Help Translate Leaf"
+msgstr "Ayuda a traducir Leaf"
+
+msgid "{col} columnas × {row} filas"
+msgstr "{col} columnas × {row} filas"
+
+msgid "table-action-{command}"
+msgstr "table-action-{command}"
+
+msgid "style-manage-{id}"
+msgstr "style-manage-{id}"
+
+msgid "Lifecycle {n}"
+msgstr "Lifecycle {n}"
+
+msgid "context.{name}"
+msgstr "context.{name}"
+
+msgid "{prefix}-{i}"
+msgstr "{prefix}-{i}"
+
+msgid "outline-heading-{i}"
+msgstr "outline-heading-{i}"
+
+msgid "paragraph-more-{page}"
+msgstr "paragraph-more-{page}"
+
+msgid "paragraph-align-{value}"
+msgstr "paragraph-align-{value}"
+
+msgid "paragraph-list-{kind}"
+msgstr "paragraph-list-{kind}"
+
+msgid "paragraph-line-{value}"
+msgstr "paragraph-line-{value}"
+
+msgid "<span background=\"#{color}\">     </span>"
+msgstr "<span background=\"#{color}\">     </span>"
+
+msgid "paragraph-shade-{color}"
+msgstr "paragraph-shade-{color}"
+
+msgid "paragraph-border-{kind}"
+msgstr "paragraph-border-{kind}"
+
+msgid "Párrafo {i}: texto de prueba para comprobar el cursor al cerrar un menú y volver al documento.\n"
+msgstr "Párrafo {i}: texto de prueba para comprobar el cursor al cerrar un menú y volver al documento.\n"
+
+msgid "Autoguardado: {e}"
+msgstr "Autoguardado: {e}"
+
+msgid "Coincidencia número {i}\n"
+msgstr "Coincidencia número {i}\n"
+
+msgid "{stem}.pdf"
+msgstr "{stem}.pdf"
+
+msgid "{label}{text}"
+msgstr "{label}{text}"
+
+msgid "{label} {text}"
+msgstr "{label} {text}"
+
+msgid "search-hit-{index}"
+msgstr "search-hit-{index}"
+
+msgid "…{before}"
+msgstr "…{before}"
+
+msgid "search-replace-{index}"
+msgstr "search-replace-{index}"
+
+msgid "win.{name}"
+msgstr "win.{name}"
+
+msgid "win.{action}"
+msgstr "win.{action}"
+
+msgid "{name}-copia.{ext}"
+msgstr "{name}-copia.{ext}"
+
+msgid "{size} pt"
+msgstr "{size} pt"
+
+msgid "Create and edit documents"
+msgstr "Crea y edita documentos"
+
+msgid "document;word;docx;odt;write;"
+msgstr "documento;texto;docx;odt;escribir;"
+
+msgid "Leaf is an experimental GTK4 and libadwaita document editor powered by WordCraft."
+msgstr "Leaf es un editor de documentos experimental para GTK4 y libadwaita basado en WordCraft."
+
+msgid "Edit DOCX and ODT files, use text and paragraph styles, work with tables and inline images, and export PDFs. Browse page thumbnails or headings, search and replace text, and open multiple documents."
+msgstr "Edita archivos DOCX y ODT, aplica estilos de texto y párrafo, trabaja con tablas e imágenes en línea y exporta archivos PDF. Navega por miniaturas o títulos, busca y reemplaza texto y abre varios documentos."
+
+msgid "Leaf follows your system language in English and Spanish. Other languages can be contributed using gettext catalogs. Development, documentation and artwork have used substantial AI assistance."
+msgstr "Leaf utiliza el idioma del sistema en español e inglés. Se pueden aportar otros idiomas mediante catálogos gettext. El desarrollo, la documentación y las ilustraciones han utilizado asistencia considerable de IA."
+
+msgid "Horizontal"
+msgstr "Horizontal"
+
+msgid "The path is not UTF-8"
+msgstr "La ruta no es UTF-8"
+
+msgid "The file name must end in .docx or .odt"
+msgstr "El nombre debe terminar en .docx o .odt"
+
+msgid "Select an Image"
+msgstr "Selecciona una imagen"
+
+msgid "Select text in the document body, outside tables."
+msgstr "Selecciona texto del cuerpo del documento, fuera de las tablas."
+
+msgid "Enter a Style Name"
+msgstr "Escribe un nombre para el estilo"
+
+msgid "The style no longer exists"
+msgstr "El estilo ya no existe"
+
+
+msgid "Alignment"
+msgstr "Alineación"
+
+msgid "At the Cursor"
+msgstr "En el cursor"
+
+msgid "Editing Footer"
+msgstr "Editando pie de página"
+
+msgid "Editing Header"
+msgstr "Editando encabezado"
+
+msgid "Footer"
+msgstr "Pie de página"
+
+msgid "Header"
+msgstr "Encabezado"
+
+msgid "In the Footer"
+msgstr "En el pie de página"
+
+msgid "In the Header"
+msgstr "En el encabezado"
+
+msgid "Include Total Pages"
+msgstr "Incluir el total de páginas"
+
+msgid "Insert"
+msgstr "Insertar"
+
+msgid "Page Number"
+msgstr "Número de página"
+
+msgid "Page Number…"
+msgstr "Número de página…"
+
+msgid "Page numbers update automatically. Existing header and footer content is kept."
+msgstr "Los números de página se actualizan automáticamente. Se conserva el contenido del encabezado y del pie de página."
+
+msgid "Paragraph {i}: test body text.\n"
+msgstr "Párrafo {i}: texto de prueba.\n"
+
+msgid "Position"
+msgstr "Posición"
+
+msgid "Return to Document"
+msgstr "Volver al documento"
+
+msgid "The document has changed; open this dialog again."
+msgstr "El documento ha cambiado; vuelve a abrir este diálogo."
+
+msgid "Add to Dictionary"
+msgstr "Añadir al diccionario"
+
+msgid "Change"
+msgstr "Cambiar"
+
+msgid "Check Complete"
+msgstr "Revisión terminada"
+
+msgid "Check Spelling as You Type"
+msgstr "Revisar la ortografía mientras se escribe"
+
+msgid "Check the header/footer distances and starting page number."
+msgstr "Comprueba las distancias del encabezado y el pie y el número de página inicial."
+
+msgid "Checking…"
+msgstr "Revisando…"
+
+msgid "Choose a valid section."
+msgstr "Elige una sección válida."
+
+msgid "Continue from Previous Section"
+msgstr "Continuar desde la sección anterior"
+
+msgid "Different First Page"
+msgstr "Primera página diferente"
+
+msgid "Different Odd and Even Pages"
+msgstr "Páginas pares e impares diferentes"
+
+msgid "Do Not Check Spelling or Grammar"
+msgstr "No revisar la ortografía ni la gramática"
+
+msgid "Existing Format"
+msgstr "Formato existente"
+
+msgid "First Section"
+msgstr "Primera sección"
+
+msgid "First-page settings, numbering and distances apply to the selected section. Odd/even headers apply to the whole document."
+msgstr "Las opciones de primera página, numeración y distancias se aplican a la sección seleccionada. Los encabezados pares e impares se aplican a todo el documento."
+
+msgid "Footer from Bottom (mm)"
+msgstr "Pie desde el borde inferior (mm)"
+
+msgid "Footers"
+msgstr "Pies de página"
+
+msgid "Header and Footer Options"
+msgstr "Opciones de encabezado y pie de página"
+
+msgid "Header from Top (mm)"
+msgstr "Encabezado desde el borde superior (mm)"
+
+msgid "Headers"
+msgstr "Encabezados"
+
+msgid "Headers and Footers"
+msgstr "Encabezados y pies de página"
+
+msgid "Ignore All"
+msgstr "Ignorar todas"
+
+msgid "Independent"
+msgstr "Independiente"
+
+msgid "Independent copies keep the current content. Linking uses the previous section; existing separate content remains available through Undo."
+msgstr "Las copias independientes conservan el contenido actual. Al vincular se usa la sección anterior; puedes recuperar el contenido independiente con Deshacer."
+
+msgid "Keep Existing Links"
+msgstr "Conservar los vínculos existentes"
+
+msgid "Language"
+msgstr "Idioma"
+
+msgid "Language Tag"
+msgstr "Código de idioma"
+
+msgid "Languages without installed dictionaries are skipped."
+msgstr "Se omiten los idiomas sin diccionario instalado."
+
+msgid "Link to Previous Section"
+msgstr "Vincular a la sección anterior"
+
+msgid "Linked to Previous Section"
+msgstr "Vinculado a la sección anterior"
+
+msgid "Make Independent Copies"
+msgstr "Crear copias independientes"
+
+msgid "No dictionary is installed for this language. Its spelling cannot be checked."
+msgstr "No hay ningún diccionario instalado para este idioma. No se puede revisar su ortografía."
+
+msgid "No issues found in text with available proofing tools."
+msgstr "No se han encontrado errores en el texto que dispone de herramientas de revisión."
+
+msgid "Number Format"
+msgstr "Formato de número"
+
+msgid "Other Language"
+msgstr "Otro idioma"
+
+msgid "Page Numbering"
+msgstr "Numeración de páginas"
+
+msgid "Replacement"
+msgstr "Sustitución"
+
+msgid "Section"
+msgstr "Sección"
+
+msgid "Section Links"
+msgstr "Vínculos entre secciones"
+
+msgid "Selection or Typing Position"
+msgstr "Selección o posición de escritura"
+
+msgid "Skip"
+msgstr "Omitir"
+
+msgid "Some Variants Are Linked"
+msgstr "Algunas variantes están vinculadas"
+
+msgid "Spelling and Grammar"
+msgstr "Ortografía y gramática"
+
+msgid "Spelling and Grammar…"
+msgstr "Ortografía y gramática…"
+
+msgid "Spelling tools are available for this language."
+msgstr "Hay herramientas de revisión ortográfica para este idioma."
+
+msgid "Start At"
+msgstr "Empezar en"
+
+msgid "Starting Page Number"
+msgstr "Número de página inicial"
+
+msgid "Text Language"
+msgstr "Idioma del texto"
+
+msgid "Text Language…"
+msgstr "Idioma del texto…"
+
+msgid "The spelling check could not finish."
+msgstr "La revisión ortográfica no ha podido terminar."
+
+msgid "The text has changed. Check it again."
+msgstr "El texto ha cambiado. Vuelve a revisarlo."
+
+msgid "Use a language tag such as es-ES or en-GB."
+msgstr "Usa un código de idioma como es-ES o en-GB."
+
+msgid "Use for New Documents"
+msgstr "Usar en documentos nuevos"
+
+msgid "Document protection prevents changing header/footer settings"
+msgstr "La protección del documento impide cambiar las opciones de encabezado y pie de página"
+
+msgid "A bookmark with this name already exists."
+msgstr "Ya existe un marcador con este nombre."
+
+msgid "Add Bookmark"
+msgstr "Añadir marcador"
+
+msgid "Add Bookmark…"
+msgstr "Añadir marcador…"
+
+msgid "Add Comment"
+msgstr "Añadir comentario"
+
+msgid "Add Comment…"
+msgstr "Añadir comentario…"
+
+msgid "Bookmark Name"
+msgstr "Nombre del marcador"
+
+msgid "Bookmarks"
+msgstr "Marcadores"
+
+msgid "Bookmarks and Comments"
+msgstr "Marcadores y comentarios"
+
+msgid "Bookmarks can only be added to the editable document body."
+msgstr "Los marcadores solo se pueden añadir al cuerpo editable del documento."
+
+msgid "Bookmark…"
+msgstr "Marcador…"
+
+msgid "Comment Options"
+msgstr "Opciones del comentario"
+
+msgid "Comment Text"
+msgstr "Texto del comentario"
+
+msgid "Comments"
+msgstr "Comentarios"
+
+msgid "Comment…"
+msgstr "Comentario…"
+
+msgid "Delete Bookmark"
+msgstr "Eliminar marcador"
+
+msgid "Delete Comment?"
+msgstr "¿Eliminar comentario?"
+
+msgid "Delete Comment…"
+msgstr "Eliminar comentario…"
+
+msgid "Edit Comment"
+msgstr "Editar comentario"
+
+msgid "Edit Comment…"
+msgstr "Editar comentario…"
+
+msgid "Enter some comment text."
+msgstr "Escribe el texto del comentario."
+
+msgid "Go to Comment"
+msgstr "Ir al comentario"
+
+msgid "No Bookmarks"
+msgstr "No hay marcadores"
+
+msgid "No Comments"
+msgstr "No hay comentarios"
+
+msgid "ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."
+msgstr "El exportador actual de WordCraft no conserva los comentarios en ODT. Guarda como DOCX para conservarlos."
+
+msgid "Reopen Comment"
+msgstr "Reabrir comentario"
+
+msgid "Reply"
+msgstr "Responder"
+
+msgid "Reply to Comment"
+msgstr "Responder al comentario"
+
+msgid "Resolve Comment"
+msgstr "Resolver comentario"
+
+msgid "Resolved"
+msgstr "Resuelto"
+
+msgid "Save comments as DOCX. ODT does not preserve them."
+msgstr "Guarda los comentarios como DOCX. ODT no los conserva."
+
+msgid "Start with a letter. Use letters, numbers or underscores; no spaces."
+msgstr "Empieza por una letra. Usa letras, números o guiones bajos, sin espacios."
+
+msgid "The document has changed; try again."
+msgstr "El documento ha cambiado; vuelve a intentarlo."
+
+msgid "The selection has changed; open this dialog again."
+msgstr "La selección ha cambiado; vuelve a abrir este diálogo."
+
+msgid "This also deletes its replies. You can undo this change."
+msgstr "También se eliminarán sus respuestas. Puedes deshacer este cambio."
+
+msgid "This annotation cannot be added or changed here."
+msgstr "No se puede añadir ni modificar esta anotación aquí."
+
+msgid "This comment has no visible anchor in the document."
+msgstr "Este comentario no tiene un anclaje visible en el documento."
+
+msgid "Use a name beginning with a letter, with letters, numbers or underscores, and at most 40 characters."
+msgstr "Usa un nombre que empiece por una letra, con letras, números o guiones bajos, y un máximo de 40 caracteres."
+
+msgid "Add native bookmarks and comment threads with a shared sidebar and protect comments from unsupported ODT saves."
+msgstr "Añade marcadores e hilos de comentarios nativos con un panel lateral compartido y protege los comentarios frente al guardado ODT no compatible."
+
+msgid "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Headings, and Bookmarks and Comments. Select a thumbnail or heading to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks and comment threads are managed in the third sidebar tab. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
+msgstr "DOCUMENTOS\nPestaña nueva en el menú principal crea un documento vacío. El menú principal permite abrir documentos DOCX/ODT, ventanas nuevas y mostrar todas las pestañas. Guardar: Ctrl+S; Guardar como: Ctrl+Mayús+S.\n\nNAVEGACIÓN\nLos botones inferiores del panel izquierdo alternan Páginas, Títulos y Marcadores y comentarios. Pulsa una miniatura o un título para ir a esa parte del documento. La lupa abre la búsqueda; Escape vuelve a la vista anterior.\n\nBUSCAR Y REEMPLAZAR\nCtrl+F abre la búsqueda. Sus tres puntos permiten distinguir mayúsculas y activar Reemplazar. El botón junto al segundo campo reemplaza todas las coincidencias en un solo paso de deshacer; cada resultado conserva su reemplazo individual.\n\nEDICIÓN\nEstilo, Párrafo y Texto están como iconos a la derecha de la cabecera, con Deshacer/Rehacer a la izquierda. En ventanas estrechas los cinco pasan a la barra inferior. El clic derecho ofrece sus propias páginas de formato dentro del mismo menú. Insertar en el menú del documento permite añadir tablas, imágenes, marcadores y comentarios. Los marcadores y los hilos de comentarios se gestionan en la tercera pestaña del panel lateral. Guarda los comentarios en DOCX; ODT no los conserva. Las flechas abren subopciones. Ctrl+Z deshace y Ctrl+Mayús+Z rehace.\n\nAUTOGUARDADO\nPreferencias permite desactivar el autoguardado, usar un archivo de recuperación o guardar en el propio archivo. Recuperar documentos está en el menú principal."
+
+msgid "Check Again"
+msgstr "Volver a revisar"
+
+msgid "Check Spelling and Grammar as You Type"
+msgstr "Revisar la ortografía y gramática mientras se escribe"
+
+msgid "Select an issue to review it."
+msgstr "Selecciona un error para revisarlo."
+
+msgid "Navigation"
+msgstr "Navegación"
+
+msgid "DOCUMENTS\nNew Tab creates a blank document. The main menu opens DOCX/ODT documents, creates windows and shows all tabs. Save: Ctrl+S; Save As: Ctrl+Shift+S.\n\nNAVIGATION\nThe sidebar switches between Pages, Navigation, Comments, and Spelling and Grammar. Navigation groups bookmarks under their headings. Select a thumbnail, heading or bookmark to navigate. The magnifying glass opens search; Escape returns to the previous view.\n\nSEARCH AND REPLACE\nCtrl+F opens search. Its options menu offers case-sensitive search and replacement. The button beside the replacement field replaces all matches in one undo step. Each result also has its own replacement button.\n\nEDITING\nStyle, Paragraph and Text appear as icons on the right of the header, with Undo/Redo on the left. In narrow windows these controls move to the bottom toolbar. Right-click opens formatting pages inside the context menu. Insert in the document menu adds tables, images, bookmarks and comments. Bookmarks appear in Navigation; each comment thread shares one bubble in Comments. Spelling issues only select their text; corrections remain in the document context menu. Save comments as DOCX; ODT does not preserve them. Arrows open suboptions. Ctrl+Z undoes; Ctrl+Shift+Z redoes.\n\nAUTOSAVE\nPreferences can disable autosave, use a recovery file or save directly to the document. Recover Documents is in the main menu."
+msgstr "DOCUMENTOS\nPestaña nueva en el menú principal crea un documento vacío. El menú principal permite abrir documentos DOCX/ODT, ventanas nuevas y mostrar todas las pestañas. Guardar: Ctrl+S; Guardar como: Ctrl+Mayús+S.\n\nNAVEGACIÓN\nLos botones inferiores del panel izquierdo alternan Páginas, Navegación, Comentarios y Ortografía y gramática. Navegación agrupa los marcadores bajo sus títulos. Pulsa una miniatura, un título o un marcador para ir a esa parte del documento. La lupa abre la búsqueda; Escape vuelve a la vista anterior.\n\nBUSCAR Y REEMPLAZAR\nCtrl+F abre la búsqueda. Sus tres puntos permiten distinguir mayúsculas y activar Reemplazar. El botón junto al segundo campo reemplaza todas las coincidencias en un solo paso de deshacer; cada resultado conserva su reemplazo individual.\n\nEDICIÓN\nEstilo, Párrafo y Texto están como iconos a la derecha de la cabecera, con Deshacer/Rehacer a la izquierda. En ventanas estrechas los cinco pasan a la barra inferior. El clic derecho ofrece sus propias páginas de formato dentro del mismo menú. Insertar en el menú del documento permite añadir tablas, imágenes, marcadores y comentarios. Los marcadores aparecen en Navegación; cada hilo comparte una burbuja en Comentarios. Los errores de revisión solo seleccionan su texto; las correcciones siguen en el menú contextual del documento. Guarda los comentarios en DOCX; ODT no los conserva. Las flechas abren subopciones. Ctrl+Z deshace y Ctrl+Mayús+Z rehace.\n\nAUTOGUARDADO\nPreferencias permite desactivar el autoguardado, usar un archivo de recuperación o guardar en el propio archivo. Recuperar documentos está en el menú principal."
+
+msgid "Group bookmarks under navigation headings, combine comment threads in shared bubbles and simplify the spelling sidebar to navigation only."
+msgstr "Agrupa los marcadores bajo los títulos de navegación, reúne cada hilo de comentarios en una burbuja y simplifica la revisión lateral para que solo navegue al texto."
+
+msgid "Information"
+msgstr "Información"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Subject"
+msgstr "Asunto"
+
+msgid "Author"
+msgstr "Autor"
+
+msgid "Keywords"
+msgstr "Palabras clave"
+
+msgid "Category"
+msgstr "Categoría"
+
+msgid "Save as DOCX to preserve the category."
+msgstr "Guarda en DOCX para conservar la categoría."
+
+msgid "Save as DOCX to preserve the document category. The current ODT exporter cannot keep it."
+msgstr "Guarda en DOCX para conservar la categoría del documento. El exportador ODT actual no puede guardarla."
+
+msgid "Group bookmarks under navigation headings, combine comment threads in shared bubbles, simplify the spelling sidebar and edit document title, subject, author, keywords and category."
+msgstr "Agrupa los marcadores bajo los títulos, reúne cada hilo de comentarios en una burbuja, simplifica la revisión lateral y permite editar título, asunto, autor, palabras clave y categoría del documento."
+
+msgid "Follow System"
+msgstr "Seguir el sistema"
+
+msgid "Light"
+msgstr "Claro"
+
+msgid "Dark"
+msgstr "Oscuro"
+
+msgid "Link"
+msgstr "Vínculo"
+
+msgid "Link Text"
+msgstr "Texto del enlace"
+
+msgid "This selection contains different links. Enter a destination to replace them all."
+msgstr "La selección contiene vínculos diferentes. Introduce un destino para reemplazarlos todos."
+
+msgid "Editing"
+msgstr "Edición"
+
+msgid "Reviewing"
+msgstr "Revisión"
+
+msgid "Mixed"
+msgstr "Mixto"
+
+msgid "User Name"
+msgstr "Nombre de usuario"
+
+msgid "Select the text to link."
+msgstr "Selecciona el texto del vínculo."
+
+msgid "Enter your name."
+msgstr "Introduce tu nombre."
+
+msgid "Spelling actions"
+msgstr "Acciones de revisión"
+
+msgid "Ctrl+click to open a link"
+msgstr "Ctrl+clic para abrir un vínculo"
+
+msgid "Author Name"
+msgstr "Nombre del autor"
+
+msgid "Default"
+msgstr "Predeterminado"
+
+msgid "Do Not Check"
+msgstr "No revisar"
+
+msgid "Languages without an installed dictionary cannot be spell-checked."
+msgstr "Los idiomas sin un diccionario instalado no se pueden revisar."
+
+msgid "Language and Review"
+msgstr "Idioma y revisión"
+
+msgid "Review"
+msgstr "Revisión"
+
+msgid "Underline Color…"
+msgstr "Color del subrayado…"
+
+msgid "White"
+msgstr "Blanco"
+
+msgid "Default Language for New Documents"
+msgstr "Idioma predeterminado de los documentos nuevos"
+
+msgid "Review New Documents"
+msgstr "Revisar documentos nuevos"
+
+msgid "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
+msgstr "Guarda como DOCX para conservar la herencia de idioma y revisión. El exportador ODT actual pierde esa herencia."
+
+msgid "First line indent"
+msgstr "Sangría de primera línea"
+
+msgid "Keep the ruler visible"
+msgstr "Mantener visible la regla"
+
+msgid "Leading indent"
+msgstr "Sangría inicial"
+
+msgid "New Paragraph"
+msgstr "Nuevo párrafo"
+
+msgid "Page {page}"
+msgstr "Página {page}"
+
+msgid "Pages: {current} of {total}"
+msgstr "Páginas: {current} de {total}"
+
+msgid "Paragraph Spacing"
+msgstr "Espaciado de párrafo"
+
+msgid "Redo History"
+msgstr "Historial de rehacer"
+
+msgid "Repeat Last Action"
+msgstr "Repetir última acción"
+
+msgid "Ruler"
+msgstr "Regla"
+
+msgid "Ruler (cm). Drag indents or tab stops; click to add a left tab. Arrow keys adjust the selected marker, Up/Down choose a marker, Insert adds a tab, and Delete removes it."
+msgstr "Regla (cm). Arrastra sangrías o tabulaciones; pulsa para añadir una tabulación izquierda. Las flechas ajustan el marcador seleccionado, Arriba/Abajo eligen otro, Insertar añade una tabulación y Suprimir la elimina."
+
+msgid "Ruler: {marker}, {value} pt, page {page}"
+msgstr "Regla: {marker}, {value} pt, página {page}"
+
+msgid "Save as DOCX to preserve editable equations. The current ODT exporter cannot keep their structure."
+msgstr "Guarda como DOCX para conservar las ecuaciones editables. El exportador ODT actual no conserva su estructura."
+
+msgid "Save as DOCX to preserve floating image placement and text wrapping. The current ODT exporter makes these images inline."
+msgstr "Guarda como DOCX para conservar la posición de las imágenes flotantes y el ajuste del texto. El exportador ODT actual convierte estas imágenes en imágenes en línea."
+
+msgid "Save as DOCX to preserve footnotes. The current ODT exporter cannot keep their structure."
+msgstr "Guarda como DOCX para conservar las notas al pie. El exportador ODT actual no conserva su estructura."
+
+msgid "Save as DOCX to preserve the automatic table of contents. The current ODT exporter only keeps static entries."
+msgstr "Guarda como DOCX para conservar el índice automático. El exportador ODT actual solo conserva entradas estáticas."
+
+msgid "Tab stop"
+msgstr "Tabulación"
+
+msgid "Text Formatting"
+msgstr "Formato del texto"
+
+msgid "The document has changed; start the ruler gesture again."
+msgstr "El documento ha cambiado; inicia de nuevo el gesto en la regla."
+
+msgid "Trailing indent"
+msgstr "Sangría final"
+
+msgid "Typing"
+msgstr "Escritura"
+
+msgid "Undo History"
+msgstr "Historial de deshacer"
+
+msgid "{action} ({count} steps)"
+msgstr "{action} ({count} pasos)"
+
+msgid "All Caps"
+msgstr "Todas mayúsculas"
+
+msgid "Apply Style"
+msgstr "Aplicar estilo"
+
+msgid "AutoFit"
+msgstr "Ajuste automático"
+
+msgid "AutoFit Column by Double-Clicking"
+msgstr "Ajustar columna con doble clic"
+
+msgid "Backspace"
+msgstr "Retroceso"
+
+msgid "Bookmark"
+msgstr "Marcador"
+
+msgid "Change List Level"
+msgstr "Cambiar nivel de lista"
+
+msgid "Character Border"
+msgstr "Borde de caracteres"
+
+msgid "Clear All Formatting"
+msgstr "Borrar todo el formato"
+
+msgid "Close Header and Footer"
+msgstr "Cerrar encabezado y pie"
+
+msgid "Create a Style"
+msgstr "Crear un estilo"
+
+msgid "Decrease Font Size"
+msgstr "Reducir tamaño de letra"
+
+msgid "Delete Columns"
+msgstr "Eliminar columnas"
+
+msgid "Delete Rows"
+msgstr "Eliminar filas"
+
+msgid "Different Odd & Even Pages"
+msgstr "Páginas pares e impares diferentes"
+
+msgid "Distribute Columns"
+msgstr "Distribuir columnas"
+
+msgid "Distribute Rows"
+msgstr "Distribuir filas"
+
+msgid "Edit Footer"
+msgstr "Editar pie de página"
+
+msgid "Edit Header"
+msgstr "Editar encabezado"
+
+msgid "Emboss"
+msgstr "Relieve"
+
+msgid "Enclose Characters"
+msgstr "Enmarcar caracteres"
+
+msgid "Engrave"
+msgstr "Grabado"
+
+msgid "Field"
+msgstr "Campo"
+
+msgid "Font Color"
+msgstr "Color de letra"
+
+msgid "Formatting at Selection"
+msgstr "Formato de la selección"
+
+msgid "Hidden"
+msgstr "Oculto"
+
+msgid "Increase Font Size"
+msgstr "Aumentar tamaño de letra"
+
+msgid "Indents"
+msgstr "Sangrías"
+
+msgid "Insert Above"
+msgstr "Insertar encima"
+
+msgid "Insert Below"
+msgstr "Insertar debajo"
+
+msgid "Insert Left"
+msgstr "Insertar a la izquierda"
+
+msgid "Insert Right"
+msgstr "Insertar a la derecha"
+
+msgid "Insert Row or Column by Clicking"
+msgstr "Insertar fila o columna con un clic"
+
+msgid "Left-to-Right Text Direction"
+msgstr "Dirección del texto de izquierda a derecha"
+
+msgid "Line Break"
+msgstr "Salto de línea"
+
+msgid "Line and Paragraph Spacing"
+msgstr "Interlineado y espaciado de párrafo"
+
+msgid "Modify Style"
+msgstr "Modificar estilo"
+
+msgid "Move Table by Dragging"
+msgstr "Mover tabla mediante arrastre"
+
+msgid "New Comment"
+msgstr "Nuevo comentario"
+
+msgid "Normal Style"
+msgstr "Estilo normal"
+
+msgid "Page Setup"
+msgstr "Configuración de página"
+
+msgid "Pictures"
+msgstr "Imágenes"
+
+msgid "Properties"
+msgstr "Propiedades"
+
+msgid "Repeat Header Rows"
+msgstr "Repetir filas de encabezado"
+
+msgid "Resize Table by Dragging"
+msgstr "Cambiar tamaño de tabla mediante arrastre"
+
+msgid "Resolve"
+msgstr "Resolver"
+
+msgid "Restart at 1"
+msgstr "Reiniciar en 1"
+
+msgid "Reviewing Pane"
+msgstr "Panel de revisión"
+
+msgid "Right-to-Left Text Direction"
+msgstr "Dirección del texto de derecha a izquierda"
+
+msgid "Select Table Cells by Clicking"
+msgstr "Seleccionar celdas con un clic"
+
+msgid "Set Character Formatting"
+msgstr "Establecer formato de caracteres"
+
+msgid "Shift+Tab"
+msgstr "Mayús+Tab"
+
+msgid "Sort"
+msgstr "Ordenar"
+
+msgid "Spelling Suggestions"
+msgstr "Sugerencias ortográficas"
+
+msgid "Tab"
+msgstr "Tabulación"
+
+msgid "Tab Character"
+msgstr "Carácter de tabulación"
+
+msgid "Table Column Width"
+msgstr "Anchura de columna de tabla"
+
+msgid "Table Row Height"
+msgstr "Altura de fila de tabla"
+
+msgid "Tabs"
+msgstr "Tabulaciones"
+
+msgid "Text Highlight Color"
+msgstr "Color de resaltado del texto"
+
+msgid "Track Changes"
+msgstr "Seguimiento de cambios"
+
+msgid "Type Text"
+msgstr "Escribir texto"
+
+msgid "Update Style to Match Selection"
+msgstr "Actualizar estilo a partir de la selección"
+
+msgid "Widow/Orphan Control"
+msgstr "Control de viudas y huérfanas"
+
+msgid "Focus ruler"
+msgstr "Enfocar la regla"
+
+msgid "Vertical ruler (cm)"
+msgstr "Regla vertical (cm)"
+
+msgid "Default language"
+msgstr "Idioma predeterminado"
+
+msgid "More Styles…"
+msgstr "Más estilos…"
+
+msgid "Page Break"
+msgstr "Salto de página"
+
+msgid "Column Break"
+msgstr "Salto de columna"
+
+msgid "Section Break (Next Page)"
+msgstr "Salto de sección (página siguiente)"
+
+msgid "Section Break (Continuous)"
+msgstr "Salto de sección (continuo)"
+
+msgid "Section Break (Even Page)"
+msgstr "Salto de sección (página par)"
+
+msgid "Section Break (Odd Page)"
+msgstr "Salto de sección (página impar)"
+
+msgid "Save as DOCX to use this break. The current ODT exporter cannot preserve it."
+msgstr "Guarda como DOCX para usar este salto. El exportador ODT actual no puede conservarlo."
+
+msgid "Breaks"
+msgstr "Saltos"
+
+msgid "Section {number}"
+msgstr "Sección {number}"
+
+msgid "Save as DOCX to preserve column breaks and continuous, even-page or odd-page sections."
+msgstr "Guarda como DOCX para conservar los saltos de columna y las secciones continuas, de página par o de página impar."
+
+msgid "Place the caret in the body of this even page before editing its header or footer."
+msgstr "Sitúa el cursor en el cuerpo de esta página par antes de editar su encabezado o pie."
+
+msgid "Install Additional Languages…"
+msgstr "Instalar idiomas adicionales…"
+
+msgid "Select Matching Hunspell .aff and .dic Files"
+msgstr "Selecciona los archivos .aff y .dic del diccionario Hunspell"
+
+msgid "Select the matching .aff and .dic files for one Hunspell dictionary."
+msgstr "Selecciona los archivos .aff y .dic del mismo diccionario Hunspell."
+
+msgid "A dictionary with this name is already installed."
+msgstr "Ya hay un diccionario instalado con ese nombre."
+
+msgid "Dictionary installed."
+msgstr "Diccionario instalado."
+
+msgid "Section Properties"
+msgstr "Propiedades de sección"
+
+msgid "Section Properties…"
+msgstr "Propiedades de sección…"
+
+msgid "Section Layout"
+msgstr "Maquetación de sección"
+
+msgid "Section Start"
+msgstr "Inicio de sección"
+
+msgid "Next Page"
+msgstr "Página siguiente"
+
+msgid "Continuous"
+msgstr "Continuo"
+
+msgid "Even Page"
+msgstr "Página par"
+
+msgid "Odd Page"
+msgstr "Página impar"
+
+msgid "Next Column"
+msgstr "Columna siguiente"
+
+msgid "Gutter (mm)"
+msgstr "Encuadernación (mm)"
+
+msgid "Column Spacing (mm)"
+msgstr "Separación entre columnas (mm)"
+
+msgid "Column Separator"
+msgstr "Separador de columnas"
+
+msgid "WordCraft does not use a dictionary with this language or filename."
+msgstr "WordCraft no usa diccionarios con este idioma o nombre de archivo."
+
+msgid "Vertical Alignment"
+msgstr "Alineación vertical"
+
+msgid "Section Text Direction"
+msgstr "Dirección del texto de la sección"
+
+msgid "Top to Bottom"
+msgstr "De arriba abajo"
+
+msgid "Bottom to Top"
+msgstr "De abajo arriba"
+
+msgid "Right-to-Left Section"
+msgstr "Sección de derecha a izquierda"
+
+msgid "Line Numbering"
+msgstr "Numeración de líneas"
+
+msgid "Show Line Numbers"
+msgstr "Mostrar números de línea"
+
+msgid "Count By"
+msgstr "Intervalo de numeración"
+
+msgid "Starting Line Number"
+msgstr "Número de línea inicial"
+
+msgid "Distance from Text (mm)"
+msgstr "Distancia al texto (mm)"
+
+msgid "Restart Line Numbers"
+msgstr "Reiniciar numeración de líneas"
+
+msgid "Each Page"
+msgstr "En cada página"
+
+msgid "Each Section"
+msgstr "En cada sección"
+
+msgid "Save as DOCX to preserve the section gutter, alignment, direction or line numbering."
+msgstr "Guarda como DOCX para conservar la encuadernación, la alineación, la dirección o la numeración de líneas de la sección."
+
+msgid "Custom Column Widths"
+msgstr "Anchuras de columna personalizadas"
+
+msgid "Column {number}"
+msgstr "Columna {number}"
+
+msgid "Replies: {count}"
+msgstr "Respuestas: {count}"
+
+msgid "{count}Y"
+msgstr "{count}A"
+
+msgid "{count}M"
+msgstr "{count}M"
+
+msgid "{count}D"
+msgstr "{count}D"
+
+msgid "{count}H"
+msgstr "{count}H"
+
+msgid "Caption"
+msgstr "Leyenda"
+
+msgid "Caption…"
+msgstr "Leyenda…"
+
+msgid "Contents"
+msgstr "Contenido"
+
+msgid "Cross-reference"
+msgstr "Referencia cruzada"
+
+msgid "Cross-reference…"
+msgstr "Referencia cruzada…"
+
+msgid "Edit Footnote"
+msgstr "Editar nota al pie"
+
+msgid "Figure"
+msgstr "Figura"
+
+msgid "Footnote"
+msgstr "Nota al pie"
+
+msgid "Footnote Options"
+msgstr "Opciones de notas al pie"
+
+msgid "Footnote Options…"
+msgstr "Opciones de notas al pie…"
+
+msgid "Heading"
+msgstr "Título"
+
+msgid "Heading Levels"
+msgstr "Niveles de títulos"
+
+msgid "Image on Left, Text on Right"
+msgstr "Imagen a la izquierda, texto a la derecha"
+
+msgid "Image on Right, Text on Left"
+msgstr "Imagen a la derecha, texto a la izquierda"
+
+msgid "Image spacing must be between 0 and 144 points."
+msgstr "El espacio de la imagen debe estar entre 0 y 144 puntos."
+
+msgid "In Line with Text"
+msgstr "En línea con el texto"
+
+msgid "Label"
+msgstr "Etiqueta"
+
+msgid "Move with Text"
+msgstr "Mover con el texto"
+
+msgid "Next Footnote"
+msgstr "Nota al pie siguiente"
+
+msgid "No references of this type are available."
+msgstr "No hay referencias de este tipo disponibles."
+
+msgid "Place the caret in a footnote first."
+msgstr "Sitúa primero el cursor en una nota al pie."
+
+msgid "Place the caret in the document body to insert a footnote."
+msgstr "Sitúa el cursor en el cuerpo del documento para insertar una nota al pie."
+
+msgid "Reference Type"
+msgstr "Tipo de referencia"
+
+msgid "References"
+msgstr "Referencias"
+
+msgid "Restart Numbering"
+msgstr "Reiniciar numeración"
+
+msgid "Return to Reference"
+msgstr "Volver a la referencia"
+
+msgid "Select a footnote reference, or use Next Footnote."
+msgstr "Selecciona una referencia a una nota o usa Nota al pie siguiente."
+
+msgid "Show"
+msgstr "Mostrar"
+
+msgid "Show Page Numbers"
+msgstr "Mostrar números de página"
+
+msgid "Space Around Image (mm)"
+msgstr "Espacio alrededor de la imagen (mm)"
+
+msgid "Table of Contents"
+msgstr "Índice de contenidos"
+
+msgid "Table of Contents…"
+msgstr "Índice de contenidos…"
+
+msgid "Target"
+msgstr "Destino"
+
+msgid "Text Above and Below"
+msgstr "Texto arriba y abajo"
+
+msgid "The footnote reference could not be found."
+msgstr "No se ha encontrado la referencia de la nota al pie."
+
+msgid "This Section"
+msgstr "Esta sección"
+
+msgid "Update References"
+msgstr "Actualizar referencias"
+
+msgid "Save as DOCX to preserve cross-references and caption numbering. The current ODT exporter only keeps their text."
+msgstr "Guarda como DOCX para conservar las referencias cruzadas y la numeración de leyendas. El exportador ODT actual solo conserva su texto."
+
+msgid "Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures."
+msgstr "Añade notas al pie, índices automáticos, leyendas numeradas y referencias cruzadas a documentos DOCX. Coloca imágenes flotantes con ajuste de texto y controles nativos. Leaf bloquea los guardados ODT que perderían estas estructuras."
+
+msgid "Automatic Fields"
+msgstr "Campos automáticos"
+
+msgid "Clickable Entries"
+msgstr "Entradas con enlace"
+
+msgid "Complete the expression and match its brackets."
+msgstr "Completa la expresión y empareja sus paréntesis."
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Destination Type"
+msgstr "Tipo de destino"
+
+msgid "Display on Its Own Line"
+msgstr "Mostrar en una línea propia"
+
+msgid "Document Title"
+msgstr "Título del documento"
+
+msgid "Edit Equation…"
+msgstr "Editar ecuación…"
+
+msgid "Edit Table of Contents…"
+msgstr "Editar índice…"
+
+msgid "Equation"
+msgstr "Ecuación"
+
+msgid "Equation…"
+msgstr "Ecuación…"
+
+msgid "External Link"
+msgstr "Enlace externo"
+
+msgid "File Name"
+msgstr "Nombre del archivo"
+
+msgid "Footnotes"
+msgstr "Notas al pie"
+
+msgid "Fraction"
+msgstr "Fracción"
+
+msgid "Greek Symbols"
+msgstr "Símbolos griegos"
+
+msgid "Header and Footer"
+msgstr "Encabezado y pie"
+
+msgid "Link…"
+msgstr "Enlace…"
+
+msgid "Mathematical Expression"
+msgstr "Expresión matemática"
+
+msgid "Power"
+msgstr "Potencia"
+
+msgid "Quadratic Formula"
+msgstr "Fórmula cuadrática"
+
+msgid "Right-align Page Numbers"
+msgstr "Alinear los números de página a la derecha"
+
+msgid "Save as DOCX to preserve automatic fields, cross-references and caption numbering. The current ODT exporter only keeps their text."
+msgstr "Guarda como DOCX para conservar los campos automáticos, las referencias cruzadas y la numeración de leyendas. El exportador ODT actual solo conserva su texto."
+
+msgid "Select an image or place the caret in a table to insert a caption."
+msgstr "Selecciona una imagen o sitúa el cursor en una tabla para insertar una leyenda."
+
+msgid "Show Page Number"
+msgstr "Mostrar número de página"
+
+msgid "Square Root"
+msgstr "Raíz cuadrada"
+
+msgid "The table of contents could not be found."
+msgstr "No se ha encontrado el índice."
+
+msgid "This imported equation cannot be edited faithfully with the basic editor. Its original structure is preserved."
+msgstr "El editor básico no puede editar fielmente esta ecuación importada. Se conserva su estructura original."
+
+msgid "Time"
+msgstr "Hora"
+
+msgid "Total Pages"
+msgstr "Total de páginas"
+
+msgid "UnicodeMath: (a+b)/(c+d), x^2, x_1, √(x). Use ordinary Unicode symbols; this is not a LaTeX editor."
+msgstr "UnicodeMath: (a+b)/(c+d), x^2, x_1, √(x). Usa símbolos Unicode normales; este editor no admite LaTeX."
+
+msgid "Use UnicodeMath input, up to 4096 characters. LaTeX commands are not supported here."
+msgstr "Usa expresiones UnicodeMath de hasta 4096 caracteres. Este editor no admite órdenes LaTeX."
+
+msgid "{current} of {total}"
+msgstr "{current} de {total}"
+
+msgid "Choose a destination inside the document."
+msgstr "Elige un destino dentro del documento."
+
+msgid "WordCraft cannot anchor this image on the destination page. Its original position has been kept."
+msgstr "WordCraft no puede anclar esta imagen en la página de destino. Se ha conservado su posición original."
+
+msgid "Accept"
+msgstr "Aceptar"
+
+msgid "Alignment: {value}"
+msgstr "Alineación: {value}"
+
+msgid "Apply Last Line Spacing"
+msgstr "Aplicar el último interlineado"
+
+msgid "Changes"
+msgstr "Cambios"
+
+msgid "Comment"
+msgstr "Comentario"
+
+msgid "Correction"
+msgstr "Corrección"
+
+msgid "Correction Options"
+msgstr "Opciones de corrección"
+
+msgid "Corrections"
+msgstr "Correcciones"
+
+msgid "Current Table of Contents"
+msgstr "Índice actual"
+
+msgid "Default — {language}"
+msgstr "Predeterminado — {language}"
+
+msgid "Deletion"
+msgstr "Eliminación"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "Edit DOCX and ODT documents"
+msgstr "Editar documentos DOCX y ODT"
+
+msgid "Elements"
+msgstr "Elementos"
+
+msgid "English (United Kingdom)"
+msgstr "Inglés (Reino Unido)"
+
+msgid "English (United States)"
+msgstr "Inglés (Estados Unidos)"
+
+msgid "Formatting"
+msgstr "Formato"
+
+msgid "Go to Change"
+msgstr "Ir al cambio"
+
+msgid "Grammar Correction"
+msgstr "Corrección gramatical"
+
+msgid "Ignore"
+msgstr "Ignorar"
+
+msgid "Ignore This Occurrence"
+msgstr "Ignorar esta aparición"
+
+msgid "Insert Table of Contents…"
+msgstr "Insertar índice…"
+
+msgid "Insertion"
+msgstr "Inserción"
+
+msgid "Line Spacing Options"
+msgstr "Opciones de interlineado"
+
+msgid "Manage “{style}”"
+msgstr "Gestionar «{style}»"
+
+msgid "More Paragraph Options"
+msgstr "Más opciones de párrafo"
+
+msgid "Moved From"
+msgstr "Movido desde"
+
+msgid "Moved To"
+msgstr "Movido a"
+
+msgid "No Review Items"
+msgstr "No hay elementos para revisar"
+
+msgid "No Tracked Changes"
+msgstr "No hay cambios sugeridos"
+
+msgid "No corrections found in text with available proofing tools."
+msgstr "No se han encontrado correcciones en el texto con herramientas de revisión disponibles."
+
+msgid "Open a Document"
+msgstr "Abrir un documento"
+
+msgid "Reject"
+msgstr "Rechazar"
+
+msgid "Remove"
+msgstr "Eliminar"
+
+msgid "Review Filter"
+msgstr "Filtro de revisión"
+
+msgid "Save as DOCX to preserve tracked formatting changes. The current ODT exporter cannot keep them."
+msgstr "Guarda como DOCX para conservar los cambios de formato sugeridos. El exportador ODT actual no puede conservarlos."
+
+msgid "Save as DOCX to preserve tracked moves. The current ODT exporter cannot keep their association."
+msgstr "Guarda como DOCX para conservar los movimientos sugeridos. El exportador ODT actual no puede conservar su asociación."
+
+msgid "Selected Image"
+msgstr "Imagen seleccionada"
+
+msgid "Show or Hide Sidebar (F9)"
+msgstr "Mostrar u ocultar el panel lateral (F9)"
+
+msgid "Spanish (Argentina)"
+msgstr "Español (Argentina)"
+
+msgid "Spanish (Mexico)"
+msgstr "Español (México)"
+
+msgid "Spanish (Spain)"
+msgstr "Español (España)"
+
+msgid "Spelling Correction"
+msgstr "Corrección ortográfica"
+
+msgid "Suggest"
+msgstr "Sugerir"
+
+msgid "Suggestion: {text}"
+msgstr "Sugerencia: {text}"
+
+msgid "Text Language: {language}"
+msgstr "Idioma del texto: {language}"
+
+msgid "This change is out of date. Refresh Review."
+msgstr "Este cambio está desactualizado. Actualiza Revisión."
+
+msgid "This type of change cannot be resolved here."
+msgstr "Este tipo de cambio no se puede resolver aquí."
+
+msgid "Tracked Change"
+msgstr "Cambio sugerido"
+
+msgid "Unknown Author"
+msgstr "Autor desconocido"
+
+msgid "{kind} — {author}"
+msgstr "{kind} — {author}"
+
+msgid "Apply Last Border Settings"
+msgstr "Aplicar los últimos ajustes de borde"
+
+msgid "Apply Last Highlight"
+msgstr "Aplicar el último resaltado"
+
+msgid "Apply Last Text Color"
+msgstr "Aplicar el último color del texto"
+
+msgid "List"
+msgstr "Lista"
+
+msgid "{label}: {value}"
+msgstr "{label}: {value}"
+
+msgid "DOCUMENTS\nOpen DOCX/ODT documents from the main menu. Ctrl+S saves; Ctrl+Shift+S saves a copy. Use DOCX for notes, equations, automatic references, comments and advanced tracked changes.\n\nNAVIGATION AND REVIEW\nF9 shows or hides Pages, Navigation and Review. Ctrl+F searches; Ctrl+H replaces. Review filters corrections, tracked changes and comments. Apply or ignore a correction occurrence, accept/reject changes, and reply to or resolve comments. F7 opens corrections. Edit/Suggest controls whether new edits are tracked.\n\nFORMATTING AND ELEMENTS\nStyle, Paragraph, Text and Elements are in the adaptive header or bottom toolbar. Format rows show current values; mixed checkboxes enable the option across the selection. Arrows open internal options with Back. Reapply remembers that feature’s applied settings. Pins keep panels floating. Elements shares table, image and contents tools with right-click, while keeping Insert available. Ctrl+Z undoes; Ctrl+Shift+Z redoes. Ruler drags snap to 0.5 cm; Escape cancels.\n\nAUTOSAVE\nPreferences can disable autosave, use recovery copies or save directly to the document. Recover Documents is in the main menu."
+msgstr "DOCUMENTOS\nAbre documentos DOCX/ODT desde el menú principal. Ctrl+S guarda; Ctrl+Mayús+S guarda una copia. Usa DOCX para notas, ecuaciones, referencias automáticas, comentarios y cambios sugeridos avanzados.\n\nNAVEGACIÓN Y REVISIÓN\nF9 muestra u oculta Páginas, Navegación y Revisión. Ctrl+F busca; Ctrl+H reemplaza. Revisión filtra correcciones, cambios sugeridos y comentarios. Aplica o ignora una aparición, acepta/rechaza cambios y responde o resuelve comentarios. F7 abre las correcciones. Editar/Sugerir controla si se registran las nuevas ediciones.\n\nFORMATO Y ELEMENTOS\nEstilo, Párrafo, Texto y Elementos están en la cabecera adaptable o la barra inferior. Las filas muestran valores actuales; las casillas mixtas activan la opción en toda la selección. Las flechas abren opciones internas con vuelta atrás. Reaplicar recuerda los ajustes aplicados de esa propiedad. La chincheta mantiene los paneles flotantes. Elementos comparte opciones de tabla, imagen e índice con el clic derecho y conserva Insertar. Ctrl+Z deshace; Ctrl+Mayús+Z rehace. Los arrastres de regla usan un imán de 0,5 cm; Escape cancela.\n\nAUTOGUARDADO\nPreferencias permite desactivar el autoguardado, usar copias de recuperación o guardar en el propio documento. Recuperar documentos está en el menú principal."
+
+msgid "The current engine supports one table of contents per document. Edit the existing table of contents instead."
+msgstr "El motor actual admite un índice por documento. Edita el índice existente."
+
+msgid "Possible spelling mistake"
+msgstr "Posible error ortográfico"
+
+msgid "Use \"an\" before a vowel sound"
+msgstr "Usa «an» antes de un sonido vocálico"
+
+msgid "Use \"a\" before a consonant sound"
+msgstr "Usa «a» antes de un sonido consonántico"
+
+msgid "Remove the space before the punctuation"
+msgstr "Elimina el espacio antes del signo de puntuación"
+
+msgid "Extra space"
+msgstr "Espacio adicional"
+
+msgid "Capitalize the first word of a sentence"
+msgstr "Escribe con mayúscula la primera palabra de la oración"
+
+msgid "Repeated word: {word}"
+msgstr "Palabra repetida: {word}"
+
+msgid "Apply Last Font"
+msgstr "Aplicar la última fuente"
+
+msgid "Apply Last Language"
+msgstr "Aplicar el último idioma"
+
+msgid "Apply Last Settings"
+msgstr "Aplicar los últimos ajustes"
+
+msgid "Borders and Shading"
+msgstr "Bordes y sombreado"
+
+msgid "Captions"
+msgstr "Leyendas"
+
+msgid "Endnote"
+msgstr "Nota al final"
+
+msgid "Endnotes"
+msgstr "Notas al final"
+
+msgid "Equations"
+msgstr "Ecuaciones"
+
+msgid "Filter Navigation"
+msgstr "Filtrar navegación"
+
+msgid "Images"
+msgstr "Imágenes"
+
+msgid "Links"
+msgstr "Enlaces"
+
+msgid "No elements of this type in the document."
+msgstr "No hay elementos de este tipo en el documento."
+
+msgid "Place the caret in a table of contents."
+msgstr "Coloca el cursor en un índice."
+
+msgid "Place the caret in a table."
+msgstr "Coloca el cursor en una tabla."
+
+msgid "Table {number}"
+msgstr "Tabla {number}"
+
+msgid "Tables"
+msgstr "Tablas"
+
+msgid "Structure"
+msgstr "Estructura"
+
+msgid "Show Caption"
+msgstr "Mostrar leyenda"
+
+msgid "Captions are available in the document body."
+msgstr "Las leyendas están disponibles en el cuerpo del documento."

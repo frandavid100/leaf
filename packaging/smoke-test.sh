@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+set -euo pipefail
+app_id=io.github.frandavid100.leaf
+export GSK_RENDERER=cairo
+export LC_ALL=en_US.UTF-8
+export LANGUAGE=es
+export XDG_CURRENT_DESKTOP=GNOME
+export XDG_DATA_DIRS="$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+dbus-update-activation-environment DISPLAY XDG_CURRENT_DESKTOP XDG_DATA_DIRS
+mkdir -p "$HOME/.config/xdg-desktop-portal"
+printf '[preferred]\ndefault=gtk\n' > "$HOME/.config/xdg-desktop-portal/portals.conf"
+flatpak run --command=sh "$app_id" -c 'grep -q retained "$XDG_DATA_HOME/upgrade-test"'
+echo FLATPAK_UPGRADE_SANDBOX_OK
+flatpak run "$app_id" --version | grep -F 'Leaf 0.1.0-alpha.31'
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --issue-sweep-ui-test 2>dist/flatpak-issues.log
+grep -q ISSUE_SWEEP_UI_OK dist/flatpak-issues.log
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --sweep18-ui-test 2>dist/flatpak-sweep18.log
+grep -q SWEEP18_UI_OK dist/flatpak-sweep18.log
+bash tools/table-pointer-test.sh tools/flatpak_print_run.sh
+cp table18-*.log dist/
+bash tools/text-pointer-test.sh tools/flatpak_print_run.sh
+cp text18-pointer.log dist/
+bash tools/interaction-pointer-test.sh tools/flatpak_print_run.sh
+# Acknowledgements use the app's existing cache mapping, with no extra permissions.
+mkdir -p "$HOME/.var/app/$app_id/cache"
+export LEAF19_ACK_PARENT="$HOME/.var/app/$app_id/cache"
+export LEAF20_ACK_PARENT="$HOME/.var/app/$app_id/cache"
+for language in en es; do
+  LANGUAGE=$language timeout 100s bash tools/sweep20-pointer-test.sh tools/followup19-flatpak-run.sh
+done
+LANGUAGE=en GDK_SCALE=2 xvfb-run -a -s '-screen 0 2560x1800x24' timeout 100s bash tools/sweep20-pointer-test.sh tools/followup19-flatpak-run.sh
+cp sweep20-pointer-*.log sweep20-pointer-*.png dist/
+for target in range caret; do
+  LANGUAGE=en LEAF19_RANGE=$target timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh font
+done
+LANGUAGE=en LEAF19_REFLOW=1 timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh font
+LANGUAGE=en LEAF19_NARROW=1 LEAF19_LARGE=1 timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh font
+LANGUAGE=en GDK_SCALE=2 LEAF19_RANGE=caret LEAF19_NARROW=1 LEAF19_LARGE=1 xvfb-run -a -s '-screen 0 2560x1800x24' timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh font
+for mode in link paragraph; do
+  LANGUAGE=en timeout 120s bash tools/followup19-pointer-test.sh tools/followup19-flatpak-run.sh "$mode"
+done
+cp followup19-*.log dist/
+cp interactions-pointer.log dist/flatpak-interactions.log
+flatpak run "$app_id" --issue-preferences-read-test | tee dist/flatpak-issue-preferences.log
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --annotations-ui-test 2>dist/flatpak-annotations.log
+grep -q ANNOTATIONS_UI_OK dist/flatpak-annotations.log
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --host-cache-ui-test 2>dist/flatpak-host-cache.log
+grep -q LEAF_HOST_CACHE_UI_OK dist/flatpak-host-cache.log
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --page-options-ui-test 2>dist/flatpak-page-options.log
+grep -q PAGE_OPTIONS_UI_OK dist/flatpak-page-options.log
+grep -q DOCUMENT_METADATA_UI_OK dist/flatpak-page-options.log
+proofing_config=$(mktemp -d "$HOME/.var/app/$app_id/cache/leaf-proofing.XXXXXX")
+flatpak run --socket=x11 --nosocket=wayland \
+  --env="XDG_CONFIG_HOME=$proofing_config" --env="LEAF_DICTIONARY_TEST_DIR=$proofing_config" \
+  "$app_id" --proofing-ui-test 2>dist/flatpak-proofing.log
+grep -q DICTIONARY_INSTALL_OK dist/flatpak-proofing.log
+rm -rf "$proofing_config"
+grep -q PROOFING_UI_OK dist/flatpak-proofing.log
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --headers-ui-test 2>dist/flatpak-headers.log
+grep -q HEADER_FOOTER_UI_OK dist/flatpak-headers.log
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --columns-ui-test 2>dist/flatpak-columns.log
+grep -q COLUMNS_UI_OK dist/flatpak-columns.log
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --chrome-ui-test 2>dist/flatpak-chrome.log
+grep -q DOCUMENT_CHROME_OK dist/flatpak-chrome.log
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --styles-ui-test 2>dist/flatpak-styles.log
+grep -q STYLES_POPOVER_OK dist/flatpak-styles.log
+flatpak run --env=GDK_SCALE=2 --socket=x11 --nosocket=wayland "$app_id" --hidpi-ui-test 2>dist/flatpak-hidpi.log
+grep -q 'HIDPI_UI_OK scale=2' dist/flatpak-hidpi.log
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --lifecycle-ui-test 2>dist/flatpak-lifecycle.log
+grep -q LIFECYCLE_UI_OK dist/flatpak-lifecycle.log
+echo FLATPAK_LIFECYCLE_OK
+for language in en es; do
+  flatpak run --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="$language" --socket=x11 --nosocket=wayland "$app_id" --localization-ui-test 2>"dist/flatpak-localization-$language.log"
+  grep -q "LOCALIZATION_UI_OK language=$language" "dist/flatpak-localization-$language.log"
+done
+echo FLATPAK_LOCALIZATION_OK
+# Show and cancel the real system print dialog; never send to a printer.
+bash tools/print_dialog_test.sh bash tools/flatpak_print_run.sh
+cp print-dialog.log print-dialog.png dist/
+# A real exported desktop launcher, using the installed icon and application ID.
+gtk-launch "$app_id" 2>dist/flatpak-launcher.log &
+launcher_pid=$!
+for attempt in $(seq 1 100); do
+  if flatpak ps --columns=application | grep -qx "$app_id"; then break; fi
+  sleep 0.1
+done
+flatpak ps --columns=application | grep -qx "$app_id"
+sleep 3
+scrot dist/leaf-installed.png
+flatpak kill "$app_id"
+wait "$launcher_pid" || true
+# An outside document must enter through the document portal, not --filesystem=home.
+python3 tools/create_launch_fixture.py /tmp/launch-test.docx
+flatpak run --socket=x11 --nosocket=wayland --file-forwarding "$app_id" --launch-file-test @@u file:///tmp/launch-test.docx @@ 2>dist/flatpak-file-open.log
+grep -q LAUNCH_FILE_OK dist/flatpak-file-open.log
+flatpak run --socket=x11 --nosocket=wayland --file-forwarding "$app_id" --save-current-file-test @@u file:///tmp/launch-test.docx @@ 2>dist/flatpak-file-save.log
+grep -q SAVE_CURRENT_FILE_UI_OK dist/flatpak-file-save.log
+python3 - <<'VERIFY'
+import zipfile
+with zipfile.ZipFile('/tmp/launch-test.docx') as z:
+ assert b'Leaf CtrlS saved' in z.read('word/document.xml')
+print('FLATPAK_PORTAL_FILE_SAVE_OK')
+VERIFY
+# Preferences written inside application data survive reinstalling the same bundle.
+flatpak run --command=sh "$app_id" -c '
+  leaf_state_root="${XDG_STATE_HOME:-$XDG_DATA_HOME/state}/wordcraft-gnome/recovery"
+  leaf_app_root="${XDG_DATA_HOME%/data}"
+  case "$leaf_state_root" in "$leaf_app_root"/*) ;; *) echo "State path outside persistent app data" >&2; exit 1;; esac
+  test -d "$leaf_state_root"
+  printf persistent > "$leaf_state_root/package-default-test"
+'
+# Also exercise the host fallback used when a runtime does not define XDG_STATE_HOME.
+flatpak run --command=sh "$app_id" -c 'unset XDG_STATE_HOME; exec /app/bin/leaf --package-storage-test' | grep PACKAGE_STORAGE_OK
+flatpak --user uninstall -y --noninteractive "$app_id"
+# Intentionally do not pass --delete-data: verify normal reinstall preserves app data.
+flatpak --user install -y --noninteractive dist/Leaf-0.1.0-alpha.31-x86_64.flatpak
+flatpak run --command=sh "$app_id" -c '
+  grep -q "autosave.*0" "$XDG_CONFIG_HOME/wordcraft-gnome/preferences.json"
+  leaf_state_root="${XDG_STATE_HOME:-$XDG_DATA_HOME/state}/wordcraft-gnome/recovery"
+  grep -q persistent "$leaf_state_root/package-default-test"
+  grep -q persistent "$XDG_DATA_HOME/state/wordcraft-gnome/recovery/package-test"
+'
+# This CI seed is not shipped: every tester receives the normal recovery-mode default.
+echo FLATPAK_INSTALLED_LAUNCHER_OK
+echo FLATPAK_PORTAL_FILE_OPEN_OK
+echo FLATPAK_REINSTALL_DATA_OK
+# Explicitly compare actual GNOME high-contrast and keyboard/hover/selected states.
+# Libadwaita's own debug setting changes appearance without changing host settings.
+bash packaging/appearance-smoke.sh flatpak 1
+xvfb-run -a -s '-screen 0 2560x1800x24' bash packaging/appearance-smoke.sh flatpak 2
+echo FLATPAK_SMOKE_OK

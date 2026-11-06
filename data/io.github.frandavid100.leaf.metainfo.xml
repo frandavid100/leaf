@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.frandavid100.leaf</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Leaf</name>
+  <developer id="io.github.frandavid100">
+    <name>Leaf contributors</name>
+  </developer>
+  <summary>Create and edit documents</summary>
+  <description>
+    <p>Leaf is an experimental GTK4 and libadwaita document editor powered by WordCraft.</p>
+    <p>Edit DOCX and ODT files, use text and paragraph styles, work with tables and inline images, and export PDFs. Browse page thumbnails or headings, search and replace text, and open multiple documents.</p>
+    <p>Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures.</p>
+    <p>Leaf follows your system language in English and Spanish. Other languages can be contributed using gettext catalogs. Development, documentation and artwork have used substantial AI assistance.</p>
+    <p xml:lang="es">Leaf es un editor de documentos experimental para GTK4 y libadwaita basado en WordCraft.</p>
+    <p xml:lang="es">Edita archivos DOCX y ODT, aplica estilos de texto y párrafo, trabaja con tablas e imágenes en línea y exporta archivos PDF. Navega por miniaturas o títulos, busca y reemplaza texto y abre varios documentos.</p>
+    <p xml:lang="es">Añade notas al pie, índices automáticos, leyendas numeradas y referencias cruzadas a documentos DOCX. Coloca imágenes flotantes con ajuste de texto y controles nativos. Leaf bloquea los guardados ODT que perderían estas estructuras.</p>
+    <p xml:lang="es">Leaf utiliza el idioma del sistema en español e inglés. Se pueden aportar otros idiomas mediante catálogos gettext. El desarrollo, la documentación y las ilustraciones han utilizado asistencia considerable de IA.</p>
+  </description>
+  <launchable type="desktop-id">io.github.frandavid100.leaf.desktop</launchable>
+  <url type="homepage">https://github.com/frandavid100/leaf</url>
+  <url type="bugtracker">https://github.com/frandavid100/leaf/issues</url>
+  <url type="help">https://github.com/frandavid100/leaf/blob/main/docs/TESTING.md</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Edit documents with page previews and native formatting tools</caption>
+      <caption xml:lang="es">Edita documentos con miniaturas y controles de formato nativos</caption>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/main/docs/screenshots/leaf-alpha28-main.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Edit automatically numbered footnotes on the page</caption>
+      <caption xml:lang="es">Edita notas al pie numeradas en la propia página</caption>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/main/docs/screenshots/leaf-alpha28-notes.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Review a document with comment threads</caption>
+      <caption xml:lang="es">Revisa un documento con hilos de comentarios</caption>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/main/docs/screenshots/leaf-alpha28-review.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Apply paragraph formatting with native controls</caption>
+      <caption xml:lang="es">Aplica formato de párrafo con controles nativos</caption>
+      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/main/docs/screenshots/leaf-alpha28-format.png</image>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="0.1.0-alpha.30" date="2026-11-06" type="development">
+      <description>
+        <p>Keep active pages tied to the caret, preserve image view positions, follow table of contents links directly, unify review cards and improve native formatting and element tools.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.29" date="2026-11-05" type="development">
+      <description>
+        <p>Refine image manipulation, direct document references, automatic fields, thumbnails and the Insert menu.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.28" date="2026-11-05" type="development">
+      <description>
+        <p>Add footnote editing, automatic contents and cross-references, floating picture controls and independent section zoom.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.26" date="2026-11-03" type="development">
+      <description>
+        <p>Arrange page rows by section, preview margin changes while dragging, and refine the rulers, comments and section menu.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.25" date="2026-11-03" type="development">
+      <description>
+        <p>Refine comment threads, style previews, page thumbnails and rulers, and adjust margins by dragging ruler boundaries.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.24" date="2026-11-03" type="development">
+      <description>
+        <p>Add section properties in Navigation, translucent rulers and a Hunspell dictionary installer.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.23" date="2026-11-03" type="development">
+      <description>
+        <p>Add four-edge rulers, a break menu and section navigation, independent even-page headers and footers, and native inline properties tabs.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.22" date="2026-11-03" type="development">
+      <description>
+        <p>Refine formatting controls, compose and reply to comments in the sidebar, and share the Insert submenu with the context menu.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.21" date="2026-11-02" type="development">
+      <description>
+        <p>Update WordCraft to 0.14.0, use native history split buttons, align font and size choices, and add thin hover-only horizontal and vertical rulers.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.20" date="2026-11-02" type="development">
+      <description>
+        <p>Native history controls, repeat formatting, ruler and interface refinements.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.19" date="2026-11-02" type="development">
+      <description>
+        <p>Improve readable font choices, whole-link editing and keyboard insertion, paragraph selection dragging, heading context and sidebar presentation.</p>
+        <p xml:lang="es">Mejora la legibilidad de las fuentes, la edición e inserción de enlaces, el arrastre por párrafos, el contexto de títulos y la presentación lateral.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.18" date="2026-11-02" type="development">
+      <description>
+        <p>Compact text tools, inherited language and review settings, native selection colors, active outline headings and table pointer controls.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.17" date="2026-11-02" type="development">
+      <description>
+        <p>Fix keyboard and word selection, usable links, section synchronization, proofing actions, real author names, adaptive page grids and native menu/dialog presentation.</p>
+        <p xml:lang="es">Corrige el teclado y la selección por palabras, los vínculos, la sincronización de secciones, las acciones de revisión, el nombre real del autor, la distribución de páginas y la presentación de menús y diálogos.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.16" date="2026-11-01" type="development">
+      <description>
+        <p>Improve immediate formatting and selection synchronization, edit links, navigate comment anchors, save opened documents, and add theme, zoom and editing-mode controls.</p>
+        <p xml:lang="es">Mejora el formato inmediato y su sincronización con la selección, edita vínculos, navega a comentarios, guarda documentos abiertos y añade controles de tema, zoom y modo de edición.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.15" date="2026-11-01" type="development">
+      <description>
+        <p>Group bookmarks under navigation headings, combine comment threads in shared bubbles, simplify the spelling sidebar and edit document title, subject, author, keywords and category.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.14" date="2026-11-01" type="development">
+      <description>
+        <p>Add bookmarks, comment threads and a navigable spelling and grammar sidebar; move live checking to Preferences and protect comments from unsupported ODT saves.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.13" date="2026-11-01" type="development">
+      <description>
+        <p>Reduce unnecessary host redraws, thumbnail traversal and inactive search updates without changing the document engine.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.12" date="2026-11-01" type="development">
+      <description>
+        <p>Expose document text, cursor and selection to assistive technology through the native GTK accessible text interface.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.11" date="2026-11-01" type="development">
+      <description>
+        <p>Preserve standard ODF header and footer geometry across independent LibreOffice edits, and respect externally changed number formats.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.10" date="2026-11-01" type="development">
+      <description>
+        <p>Section-aware headers and footers, page numbering controls, native spelling review and text languages with bundled Spanish dictionaries.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.9" date="2026-11-01" type="development">
+      <description>
+        <p>Edit headers and footers directly on the document and insert automatic page numbers without replacing existing content.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.8" date="2026-11-01" type="development">
+      <description>
+        <p>Complete localized validation messages and verify live dark/light page and thumbnail textures.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.7" date="2026-11-01" type="development">
+      <description>
+        <p>English and Spanish localization, community translation catalogs, and native engine dark document rendering.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.6" date="2026-10-31" type="development">
+      <description>
+        <p>Release closed GTK document and window state, weaken signal captures and stop obsolete callbacks.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.5" date="2026-10-31" type="development">
+      <description>
+        <p>Native printing with private PDF snapshots, keyboard pane navigation and clearer accessible control labels.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.4" date="2026-10-31" type="development">
+      <description>
+        <p>Preserve ODT headers, footers and their tables and images; retain explicit repeating table rows.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.3" date="2026-10-31" type="development">
+      <description>
+        <p>Correct document and thumbnail rendering density on HiDPI displays.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.2" date="2026-10-31" type="development">
+      <description>
+        <p>Column layout controls and native symbolic formatting icons.</p>
+      </description>
+    </release>
+    <release version="0.1.0-alpha.1" date="2026-10-31" type="development">
+      <description>
+        <p>First GitHub Flatpak alpha for testing document editing on Linux.</p>
+      </description>
+    </release>
+  </releases>
+  <summary xml:lang="es">Crea y edita documentos</summary>
+</component>

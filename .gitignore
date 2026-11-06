@@ -1,0 +1,33 @@
+/target/
+Cargo.lock
+*.swp
+
+/po/locale/
+
+# Python contributor checks
+__pycache__/
+*.py[cod]
+
+# Native alpha18 regression output
+sweep18-*.log
+table18-*.log
+text18-*.log
+
+/split-states.log
+/vista-dividido-*.png
+
+/split-pointer-window.log
+
+# Native issue-followup evidence (uploaded by CI, never source assets)
+/followup19-*.log
+/followup19-*.png
+
+# Native alpha20 interaction evidence
+/sweep20-pointer-*.log
+/sweep20-pointer-*.png
+
+# Local/CI Alpha29 interaction evidence is an artifact, not source.
+/alpha29-pointer-*
+/alpha29-review-*
+/interactions-pointer.log
+/vista-texto.png

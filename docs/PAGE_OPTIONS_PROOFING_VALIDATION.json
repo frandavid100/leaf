@@ -1,0 +1,45 @@
+{
+  "release": "v0.1.0-alpha.10",
+  "source_commit": "612357ec0b70f38222f9ebea4180c5654e09b5b8",
+  "workflow_run": 41294178799,
+  "native_job": 124811443253,
+  "package_job": 124814004452,
+  "root_tests_passed": 87,
+  "new_page_options_tests": 4,
+  "new_proofing_tests": 5,
+  "gettext_source_messages": 562,
+  "native_artifact": {
+    "id": 13078444355,
+    "zip_sha256": "a649095c7d1e1048b8f072a1dde624c976cdb334f9c3d35f7f7cdbcdbd8b1935"
+  },
+  "package_artifact": {
+    "id": 13078823719,
+    "zip_sha256": "f3f6d6f09ff0891cee745c1297ff8690cb7ac05ecf498764fc6e63feede46c65"
+  },
+  "bundle": {
+    "name": "Leaf-0.1.0-alpha.10-x86_64.flatpak",
+    "bytes": 10521560,
+    "sha256": "018ee7a40b2ca5ae7e5c0e25371b031c1e751d0b6bb4a6dbdb063652c6f85686"
+  },
+  "spanish_dictionary_source": "LibreOffice/dictionaries@4f1df64b2e8e14751aa7c2205d170ca016071315/es",
+  "verification": [
+    "Native and package ZIP digests independently checked after download",
+    "All seven SHA256SUMS entries verified",
+    "source-commit.txt equals the compiled/released commit",
+    "PAGE_OPTIONS_UI_OK and PROOFING_UI_OK natively and in the installed sandbox",
+    "Native full GUI regressions, 100/200% scaling, keyboard, print portal, localization and dark documents passed",
+    "Lifecycle dialog workload includes closing language and asynchronous spelling review windows",
+    "Upgrade from alpha.9 and reinstall data retention passed",
+    "Three formats patches reproduce the vendored src tree exactly from pinned upstream",
+    "Nine original dictionary/credit/license files match their checked-in checksums",
+    "Internal document-properties screenshot inspected; no public promotional screenshot replaced"
+  ],
+  "limits": [
+    "No manual GNOME OS, physical printer or full Orca verification",
+    "Full compatibility corpus remains manual and was not rerun",
+    "ODT exact distances, section links and original unchecked-text language use Leaf extension attributes that external editors may ignore/strip",
+    "Grammar is limited to upstream rules and languages without available dictionaries are skipped",
+    "At most 500 issues are reported per scan",
+    "Continuous-section page-style fidelity remains limited upstream"
+  ]
+}

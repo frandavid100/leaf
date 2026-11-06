@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-01",
+  "source_messages": 520,
+  "languages": [
+    "en",
+    "es"
+  ],
+  "native": {
+    "source": "eaa83c9f6acf88478e8eae9aa3c7aad36fddf6ac",
+    "run": 41285353136,
+    "job": 124785422076,
+    "artifact": 13074788467,
+    "zip_sha256": "7c0a3ac7cde3a97c262827c4c9e44f45a60650ebbf9fcbf7091fefc9c93f9c6d",
+    "passed": true,
+    "independently_verified": true
+  },
+  "package": {
+    "source": "23207f0be9c352c31cedcd4fa274251007847169",
+    "run": 41286130576,
+    "job": 124787688014,
+    "artifact": 13075286512,
+    "zip_sha256": "8461b14cfddb08c11708195462263810ac92da1d83d7d47c2084e6bed75c0cb4",
+    "bundle_bytes": 10207640,
+    "bundle_sha256": "1aec3ec70c9e310c1480b5468973b7ca4e206c2612dff652b521b92e7984c264",
+    "passed": true,
+    "all_published_checksums_verified": true,
+    "upgrade_from": "alpha.6"
+  },
+  "release": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.8",
+  "weblate": "prepared; account/project activation pending owner",
+  "public_screenshots": "pending owner; development captures excluded from release assets",
+  "full_corpus_rerun": false,
+  "manual_gnome_os_test": false
+}
