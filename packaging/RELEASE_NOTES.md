@@ -6,7 +6,7 @@ Leaf 0.1.0-alpha.30 includes the complete alpha.29 candidate and a further issue
 - Ordinary clicks on automatic contents entries follow their stored heading bookmarks. Hover shows a pointer; a temporary theme-aware editor cue identifies the index without affecting saved documents or PDF output.
 - Corrections, suggested changes and comment threads use the same flat, theme-aware conversation card background.
 - Text uses symbolic icons, continuous native linked property/reapply rows and a full-width Size control. Font has an internal page retaining direct family entry and previews. Font and Language remember their own last successful settings. Superscript moves to More Text Options.
-- Paragraph uses the same property/reapply rows. Increase/Decrease Indent move inside Indents; Borders and Shading share a page and repeat their combined configuration. More Options stays icon-free.
+- Paragraph uses the same property/reapply rows. Increase/Decrease Indent move inside Indents; Borders and Shading share a page and repeat their combined configuration. More Options stays icon-free. Reapplying a multilevel list preserves both its type and its level in one undoable edit.
 - Elements keeps existing-object properties visible but insensitive without a target, explains availability with tooltips, and puts insertion last. Header and context entry points still share the same controls.
 - Navigation adds a read-only type filter and canonical entries for images, tables, contents, captions, notes, equations, links and fields, including nested table cells. Filters retain the relevant heading/section context; active entries use real link/object/note extents. Caption/object ownership remains unfinished, so #124 stays open.
 

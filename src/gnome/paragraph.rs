@@ -235,7 +235,16 @@ impl ParagraphPopover {
                     .map(|v| ((*k).to_string(), v.clone()))
             })
             .collect();
-        let config = if group == "list" {
+        let config = if command == "para.listLevel" {
+            let saved = self.groups.borrow().get("list").cloned();
+            if let Some(mut saved) = saved.filter(|v| v["command"].is_string()) {
+                saved["listLevel"] = args["level"].clone();
+                saved
+            } else {
+                // Imported numbering retains its canonical definition in this document.
+                serde_json::json!({"props":props,"document":ui.current.borrow().as_ref().map(|d|d.session.document_id())})
+            }
+        } else if group == "list" {
             serde_json::json!({"command":command,"args":args})
         } else {
             serde_json::json!({"props":props,"clearShading":group=="borders" && state["shading"].is_null()})
@@ -258,11 +267,22 @@ impl ParagraphPopover {
         } else {
             let args = self.groups.borrow().get(page).cloned();
             if let Some(args) = args {
-                if let Some(command) = args["command"].as_str() {
+                let Some(ui) = self.ui.upgrade() else { return };
+                if args["document"].as_u64().is_some_and(|id| {
+                    ui.current
+                        .borrow()
+                        .as_ref()
+                        .is_none_or(|d| d.session.document_id() != id)
+                }) {
+                    return;
+                }
+                if let Some(command) = args["command"]
+                    .as_str()
+                    .filter(|_| args["listLevel"].is_null())
+                {
                     self.execute(command, args["args"].clone());
                     return;
                 }
-                let Some(ui) = self.ui.upgrade() else { return };
                 let clear = args["clearShading"] == true;
                 if tools_change(&ui, |s| {
                     let snapshot = s.edit_snapshot();
@@ -274,7 +294,17 @@ impl ParagraphPopover {
                                 .map_err(|e| e.to_string())?;
                             s.join_next_undo();
                         }
-                        s.run("para.set", &args).map_err(|e| e.to_string())?;
+                        if let Some(command) = args["command"].as_str() {
+                            s.run(command, &args["args"]).map_err(|e| e.to_string())?;
+                            s.join_next_undo();
+                            s.run(
+                                "para.listLevel",
+                                &serde_json::json!({"level":args["listLevel"]}),
+                            )
+                            .map_err(|e| e.to_string())?;
+                        } else {
+                            s.run("para.set", &args).map_err(|e| e.to_string())?;
+                        }
                         Ok(())
                     })();
                     if result.is_err() {
@@ -324,7 +354,16 @@ impl ParagraphPopover {
             repeat.set_sensitive(if page == "columns" {
                 self.last_columns.borrow().is_some()
             } else {
-                self.groups.borrow().contains_key(page)
+                self.groups.borrow().get(page).is_some_and(|v| {
+                    v["document"].as_u64().is_none_or(|id| {
+                        self.ui.upgrade().is_some_and(|u| {
+                            u.current
+                                .borrow()
+                                .as_ref()
+                                .is_some_and(|d| d.session.document_id() == id)
+                        })
+                    })
+                })
             });
             let weak = Rc::downgrade(self);
             repeat.connect_clicked(move |_| {

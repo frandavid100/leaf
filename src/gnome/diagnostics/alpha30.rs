@@ -169,6 +169,7 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
             .is_sensitive()
     );
     elements.pop.popdown();
+    alpha30_all_repeats(ui);
     let outline = ui.outline.borrow().as_ref().unwrap().clone();
     outline.show();
     let filter = find_widget(&ui.navigation_pages, "navigation-filter")
@@ -269,4 +270,85 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
             glib::ControlFlow::Break
         });
     });
+}
+
+fn alpha30_all_repeats(ui: &Rc<Ui>) {
+    let restore = ui.current.borrow().as_ref().unwrap().session.doc.clone();
+    opened(
+        ui,
+        Session::new(wordcraft_doc::Document::from_text(
+            "First paragraph\nSecond paragraph\nThird paragraph",
+        )),
+        "Property repeats",
+    );
+    let p = ui.paragraph.borrow().as_ref().unwrap().clone();
+    let target = |row| {
+        let mut c = ui.current.borrow_mut();
+        selection::set_caret(&mut c.as_mut().unwrap().session, &Pos::body(row, 0), false).unwrap();
+        drop(c);
+        refresh_selection(ui);
+    };
+    p.execute("para.align", json!({"value":"center"}));
+    target(1);
+    p.home();
+    button(&p.main, "paragraph-alignment-apply").emit_clicked();
+    assert_eq!(selection_paragraph(ui)["align"], "center");
+    p.execute("para.multilevel", json!({"kind":"outline"}));
+    p.execute("para.listLevel", json!({"level":1}));
+    target(2);
+    p.home();
+    let before = ui.current.borrow().as_ref().unwrap().session.undo_depth();
+    button(&p.main, "paragraph-list-apply").emit_clicked();
+    assert_eq!(
+        selection_paragraph(ui)["numbering"]["level"],
+        1,
+        "repeat retains list family and level"
+    );
+    assert_eq!(
+        ui.current.borrow().as_ref().unwrap().session.undo_depth(),
+        before + 1
+    );
+    p.execute(
+        "para.indents",
+        json!({"left":24.,"right":12.,"firstLine":6.}),
+    );
+    target(0);
+    p.home();
+    button(&p.main, "paragraph-more-indents-apply").emit_clicked();
+    let state = selection_paragraph(ui);
+    assert_eq!(state["indentLeft"], 24.);
+    assert_eq!(state["indentRight"], 12.);
+    assert_eq!(state["indentFirst"], 6.);
+    p.execute("para.lineSpacing", json!({"value":1.5}));
+    target(1);
+    p.home();
+    button(&p.main, "paragraph-spacing").emit_clicked();
+    assert_eq!(selection_paragraph(ui)["lineSpacing"]["value"], 1.5);
+    let editor = columns_editor(ui, || {});
+    editor.controls.count.set_value(2.);
+    editor.apply.emit_clicked();
+    assert_eq!(
+        document_properties::ColumnSetup::current(&ui.current.borrow().as_ref().unwrap().session)
+            .count,
+        2
+    );
+    opened(
+        ui,
+        Session::new(wordcraft_doc::Document::from_text(
+            "Another document\nOrdinary text",
+        )),
+        "Column repeat",
+    );
+    p.home();
+    button(&p.main, "paragraph-columns-apply").emit_clicked();
+    assert_eq!(
+        document_properties::ColumnSetup::current(&ui.current.borrow().as_ref().unwrap().session)
+            .count,
+        2
+    );
+    assert_eq!(
+        ui.current.borrow().as_ref().unwrap().session.undo_depth(),
+        1
+    );
+    opened(ui, Session::new(restore), "TOC interaction");
 }

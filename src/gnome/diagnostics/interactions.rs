@@ -108,6 +108,12 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
             } else {
                 popover_pin(&t.text.popover().unwrap()).set_active(true);
             }
+            let tools = u.text_tools.borrow().as_ref().unwrap().clone();
+            if stage == 6 {
+                tools.home();
+            } else {
+                tools.page("font");
+            }
             if stage == 5 {
                 u.font_input.clipboard().set_text("monospacex");
             }
