@@ -46,7 +46,8 @@ with/without emoji, renders three scales and checks text after DOCX reopening.
 
 ## Remaining requirements
 
-#136 still requires the direct searchable Font page, embedded native color
+#136 still requires visual background parity in the shared split controls,
+the direct searchable Font page, embedded native color
 choosers throughout applicable menus, and completion of the Style/Elements
 cross-menu audit and short-window/color interaction cases. GTK's public
 ColorChooserWidget remains available but deprecated since 4.10; the replacement
@@ -58,13 +59,31 @@ to change the engine without authorization.
 #121/#124 retain their caption dependency. #126/#127 require canonical persistent
 object/caption ownership; adjacency is not a safe replacement.
 #1/#2 retain measured engine layout limitations; #107 retains rollback for the
-manual-page-break anchor case. #9/#52/#99/#100 still need the original affected
+manual-page-break anchor case. A fresh public-API reproduction (without Leaf's
+rollback) still places the requested page-1 image on page 0 at BodyPath([1]),
+offset 1. Existing WordCraft reports [#4262](https://github.com/storytold/wordcraft/issues/4262)
+and [#4243](https://github.com/storytold/wordcraft/issues/4243) remain open. The
+upstream comment attempt returned HTTP 403, “Resource not accessible by
+integration”; the reproduction and access limit were instead recorded on
+[Leaf #107](https://github.com/frandavid100/leaf/issues/107#issuecomment-6683816460).
+No upstream publication is claimed. #9/#52/#99/#100 still need the original affected
 context/provider or document to isolate their unresolved symptoms. #84 requires
 specific native/Flatpak platform integration and end-to-end dictionary access.
 No partial issue is closed by this candidate.
 
 ## Verification record
 
-Local Rust, gettext, documentation and real-widget results and the final CI and
-candidate identity are recorded after completion. Diagnostic captures remain
-internal validation and do not replace the public screenshot gallery.
+The first candidate run `42212447711` failed the installed font paste regression;
+the same interaction passed locally and in native run `42211043826`. The pointer
+driver now waits for actual native Entry paste delivery before Backspace instead
+of assuming a fixed 250ms clipboard latency. Assertions on document text,
+selection and the resulting font remain intact.
+
+Native run `42211043826` subsequently failed an outdated proofing diagnostic that
+searched for Review's filter inside the content stack. The filter now belongs to
+the complete sidebar header (#134); the diagnostic checks that actual header and
+requires the filter to be mapped. This is a test-location update, not a product
+workaround. Neither failed run constitutes an approved candidate.
+
+The final CI and candidate identity are recorded after completion. Diagnostic
+captures remain internal validation and do not replace the public screenshot gallery.

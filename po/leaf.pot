@@ -61,7 +61,7 @@ msgstr ""
 msgid "Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures."
 msgstr ""
 
-#: src/gnome/context.rs:842 src/gnome/diagnostics/spellcheck.rs:124 src/gnome/diagnostics/spellcheck.rs:138
+#: src/gnome/context.rs:842 src/gnome/diagnostics/spellcheck.rs:128 src/gnome/diagnostics/spellcheck.rs:142
 msgid "Add to Dictionary"
 msgstr ""
 
@@ -577,7 +577,7 @@ msgstr ""
 msgid "Continuous"
 msgstr ""
 
-#: src/gnome/context.rs:466 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:278 src/gnome/diagnostics/spellcheck.rs:128
+#: src/gnome/context.rs:466 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:278 src/gnome/diagnostics/spellcheck.rs:132
 msgid "Copy"
 msgstr ""
 
@@ -697,7 +697,7 @@ msgstr ""
 msgid "Custom Widths"
 msgstr ""
 
-#: src/gnome/context.rs:452 src/gnome/diagnostics/context.rs:119 src/gnome/diagnostics/spellcheck.rs:127
+#: src/gnome/context.rs:452 src/gnome/diagnostics/context.rs:119 src/gnome/diagnostics/spellcheck.rs:131
 msgid "Cut"
 msgstr ""
 
@@ -2893,7 +2893,7 @@ msgstr ""
 msgid "Teal"
 msgstr ""
 
-#: src/gnome/context.rs:229 src/gnome/context.rs:508 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:172 src/gnome/diagnostics/spellcheck.rs:129 src/gnome/references.rs:335 src/gnome/tab.rs:264 src/gnome/tab.rs:299 src/gnome/tab.rs:576
+#: src/gnome/context.rs:229 src/gnome/context.rs:508 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:147 src/gnome/diagnostics/register.rs:172 src/gnome/diagnostics/spellcheck.rs:133 src/gnome/references.rs:335 src/gnome/tab.rs:264 src/gnome/tab.rs:299 src/gnome/tab.rs:576
 msgid "Text"
 msgstr ""
 

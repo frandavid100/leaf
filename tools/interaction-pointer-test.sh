@@ -40,7 +40,12 @@ for marker in SHIFT_POINTER_READY WORD_POINTER_READY WORD_DRAG_READY LINK_POINTE
       xdotool click 1 key ctrl+a
       if test "$marker" = FONT_INPUT_READY_5; then
         xdotool key ctrl+v
-        sleep 0.25
+        for attempt in $(seq 1 50); do
+          grep -q '^FONT_PASTE_READY$' interactions-pointer.log && break
+          kill -0 "$leaf_pid" || { cat interactions-pointer.log; exit 1; }
+          sleep 0.02
+        done
+        grep -q '^FONT_PASTE_READY$' interactions-pointer.log || { cat interactions-pointer.log; exit 1; }
         xdotool key BackSpace
       else
         if test "$marker" = FONT_INPUT_READY_4; then family='serif '; else family=17.5; fi
