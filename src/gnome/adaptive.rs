@@ -342,7 +342,8 @@ impl TextTools {
         n
     }
     pub(super) fn page(self: &Rc<Self>, page: &str) {
-        // Reopening the current page must preserve its mapped native editable.
+        // Never unparent a mapped editable merely to reopen its current page.
+        // GTK owns its native focus/clipboard target across pinning and typing.
         if page == "font"
             && self.active_page.borrow().as_deref() == Some("font")
             && self.stack.visible_child_name().as_deref() == Some("detail")
@@ -357,23 +358,32 @@ impl TextTools {
         };
         let state = selection_character(&ui);
         let weak = Rc::downgrade(self);
-        let home = matches!(page, "options" | "language" | "font");
-        self.header.back(
-            if home {
-                wordcraft_gnome::t!("Text")
-            } else {
-                wordcraft_gnome::t!("Text Options")
-            },
-            move || {
-                if let Some(s) = weak.upgrade() {
-                    if home {
-                        s.home();
-                    } else {
-                        s.page("options");
-                    }
-                }
-            },
+        let home = matches!(
+            page,
+            "options" | "language" | "font" | "underline" | "strike" | "ink" | "highlight"
         );
+        let title = match page {
+            "underline" => wordcraft_gnome::t!("Underline"),
+            "strike" => wordcraft_gnome::t!("Strikethrough"),
+            "ink" => wordcraft_gnome::t!("Text Color"),
+            "highlight" => wordcraft_gnome::t!("Highlight"),
+            "font" => wordcraft_gnome::t!("Font"),
+            "language" => wordcraft_gnome::t!("Language"),
+            "character" => wordcraft_gnome::t!("Font and Characters"),
+            "color" => wordcraft_gnome::t!("Color and Effects"),
+            "case" => wordcraft_gnome::t!("Change Case"),
+            "annotations" => wordcraft_gnome::t!("Annotations"),
+            _ => wordcraft_gnome::t!("More Text Options…"),
+        };
+        self.header.back(title, move || {
+            if let Some(s) = weak.upgrade() {
+                if home {
+                    s.home();
+                } else {
+                    s.page("options");
+                }
+            }
+        });
         if let Some(panel) = self
             .palette
             .borrow()
@@ -389,6 +399,38 @@ impl TextTools {
         }
         match page {
             "font" => {
+                if find_widget(&self.font_page, "text-font-list").is_none() {
+                    let Some(controls) = ui.text_controls.borrow().as_ref().cloned() else {
+                        return;
+                    };
+                    // A single searchable selection page, with the existing
+                    // editable and command/debounce controller retained.
+                    if let Some(parent) = ui.font_input.parent().and_then(|p| p.downcast::<gtk::Box>().ok()) {
+                        parent.remove(&ui.font_input);
+                    }
+                    clear_box(&self.font_page);
+                    ui.font_input.set_icon_from_icon_name(gtk::EntryIconPosition::Primary, Some("edit-find-symbolic"));
+                    self.font_page.append(&ui.font_input);
+                    let choices = controls.font_choices.clone();
+                    if let Some(parent) = choices.parent().and_then(|p| p.downcast::<gtk::ScrolledWindow>().ok()) {
+                        parent.set_child(None::<&gtk::Widget>);
+                    }
+                    let list = gtk::ScrolledWindow::new();
+                    list.set_widget_name("text-font-list");
+                    list.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+                    list.set_min_content_height(160);
+                    list.set_max_content_height(280);
+                    list.set_propagate_natural_height(true);
+                    list.set_child(Some(&choices));
+                    self.font_page.append(&list);
+                }
+                if let Some(controls) = ui.text_controls.borrow().as_ref() {
+                    let syncing = ui.format_syncing.replace(true);
+                    ui.font_input.set_text("");
+                    ui.font_input.remove_css_class("error");
+                    ui.format_syncing.set(syncing);
+                    controls.show_fonts();
+                }
                 if let Some(parent) = self
                     .font_page
                     .parent()
@@ -399,10 +441,36 @@ impl TextTools {
                 self.detail.append(&self.font_page);
             }
             "language" => {
+                let search = gtk::SearchEntry::new();
+                search.set_widget_name("language-search");
+                accessible_name(&search, wordcraft_gnome::t!("Language"));
+                self.detail.append(&search);
+                let choices = gtk::Box::new(gtk::Orientation::Vertical, 2);
+                self.detail.append(&choices);
+                let target = choices.downgrade();
+                search.connect_search_changed(move |entry| {
+                    if let Some(choices) = target.upgrade() {
+                        let query = entry.text().to_lowercase();
+                        let mut child = choices.first_child();
+                        while let Some(w) = child {
+                            child = w.next_sibling();
+                            if let Some(b) = w.downcast_ref::<gtk::Button>() {
+                                w.set_visible(
+                                    b.label().is_some_and(|s| s.to_lowercase().contains(&query)),
+                                );
+                            }
+                        }
+                    }
+                });
+                let selected = ui
+                    .current
+                    .borrow()
+                    .as_ref()
+                    .map(|d| wordcraft_gnome::proofing_defaults::choice(&d.session));
                 let dictionaries = wordcraft_engine::proof::installed_dictionaries();
                 for (label, choice) in [
                     (wordcraft_gnome::t!("Do Not Check"), "off"),
-                    (wordcraft_gnome::t!("Default"), "default"),
+                    (wordcraft_gnome::t!("Default language"), "default"),
                 ]
                 .into_iter()
                 .chain(TEXT_LANGUAGES.iter().map(|(tag, name)| (*name, *tag)))
@@ -416,10 +484,12 @@ impl TextTools {
                         b.set_tooltip_text(Some(&path.to_string_lossy()));
                     }
 
-                    self.detail.append(&b);
+                    if selected.as_deref() == Some(choice) {
+                        b.add_css_class("current-style");
+                    }
+                    choices.append(&b);
                     if choice == "default" {
-                        self.detail
-                            .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+                        choices.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
                     }
                     let weak = Rc::downgrade(self);
                     b.connect_clicked(move |_| {
@@ -679,6 +749,7 @@ pub(super) fn install_text_pages(
         main.append(&w);
     }
     let detail = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    detail.set_margin_bottom(8);
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
     scroll.set_max_content_height(420);
@@ -770,11 +841,7 @@ pub(super) fn install_text_pages(
 
     accessible_name(&font_repeat, wordcraft_gnome::t!("Apply Last Font"));
     font_repeat.set_tooltip_text(Some(wordcraft_gnome::t!("Apply Last Font")));
-    let font_row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    font_row.add_css_class("linked");
-    font_row.append(&font_open);
-    font_row.append(&font_repeat);
-    main.append(&font_row);
+    main.append(&property_split(&font_open, &font_repeat));
     let size_row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     size_row.append(&gtk::Image::from_icon_name("zoom-in-symbolic"));
     size_row.append(&gtk::Label::new(Some(wordcraft_gnome::t!("Size"))));
@@ -782,7 +849,11 @@ pub(super) fn install_text_pages(
     size_selector.set_hexpand(true);
     size_selector.set_halign(gtk::Align::Fill);
     size_row.append(&size_selector);
-    main.append(&size_row);
+    let size_field = gtk::Frame::new(None);
+    size_field.set_widget_name("text-size-field");
+    size_row.set_margin_start(8);
+    size_field.set_child(Some(&size_row));
+    main.append(&size_field);
     language_button.remove_css_class("flat");
     language_button.set_hexpand(true);
     let language_repeat = gtk::Button::from_icon_name("view-refresh-symbolic");
@@ -791,11 +862,7 @@ pub(super) fn install_text_pages(
     language_repeat.set_sensitive(false);
     accessible_name(&language_repeat, wordcraft_gnome::t!("Apply Last Language"));
     language_repeat.set_tooltip_text(Some(wordcraft_gnome::t!("Apply Last Language")));
-    let language_link = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    language_link.add_css_class("linked");
-    language_link.append(&language_button);
-    language_link.append(&language_repeat);
-    main.append(&language_link);
+    main.append(&property_split(&language_button, &language_repeat));
     main.append(&palette.properties);
     main.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     main.append(more);

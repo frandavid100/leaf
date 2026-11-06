@@ -522,9 +522,15 @@ pub(super) fn install_style_popover(ui: &Rc<Ui>, menu: &gtk::MenuButton) -> Rc<S
     main.append(&create);
     let detail = gtk::Box::new(gtk::Orientation::Vertical, 6);
     let form = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    stack.add_named(&main, Some("list"));
-    stack.add_named(&detail, Some("detail"));
-    stack.add_named(&form, Some("form"));
+    for (body, name) in [(&main, "list"), (&detail, "detail"), (&form, "form")] {
+        body.set_margin_bottom(8);
+        let page = gtk::ScrolledWindow::new();
+        page.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+        page.set_propagate_natural_height(true);
+        page.set_max_content_height(420);
+        page.set_child(Some(body));
+        stack.add_named(&page, Some(name));
+    }
     root.append(&stack);
     let message = gtk::Label::new(None);
     message.set_wrap(true);

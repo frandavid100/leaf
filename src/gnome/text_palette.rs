@@ -25,6 +25,7 @@ pub(super) struct TextPalette {
     pub(super) last_ink: RefCell<String>,
     pub(super) last_highlight: RefCell<String>,
     panels: RefCell<std::collections::HashMap<&'static str, gtk::Box>>,
+    pickers: RefCell<std::collections::HashMap<&'static str, Rc<InlineColor>>>,
     syncing: Cell<bool>,
 }
 impl TextPalette {
@@ -114,8 +115,6 @@ impl TextPalette {
                 wordcraft_gnome::t!("Apply Last Highlight"),
             ),
         ] {
-            let row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-            row.add_css_class("linked");
             let open = style_menu_button(title);
             open.remove_css_class("flat");
             open.set_widget_name(name);
@@ -125,9 +124,7 @@ impl TextPalette {
             // Native linked buttons share one continuous background.
             apply.set_tooltip_text(Some(tip));
             accessible_name(&apply, tip);
-            row.append(&open);
-            row.append(&apply);
-            properties.append(&row);
+            // Assemble after setting the property content below.
             let content = gtk::Box::new(gtk::Orientation::Horizontal, 6);
             content.append(&gtk::Image::from_icon_name(if name == "text-ink" {
                 "font-select-symbolic"
@@ -142,6 +139,7 @@ impl TextPalette {
             content.append(&value);
             // Lower property rows have no navigation arrow.
             open.set_child(Some(&content));
+            properties.append(&property_split(&open, &apply));
             configs.push((open, apply, value));
         }
         let (ink, ink_apply, ink_value) = configs.remove(0);
@@ -168,6 +166,7 @@ impl TextPalette {
             last_ink: RefCell::new("auto".into()),
             last_highlight: RefCell::new("yellow".into()),
             panels: RefCell::new(std::collections::HashMap::new()),
+            pickers: RefCell::new(std::collections::HashMap::new()),
             syncing: Cell::new(false),
         });
         let weak = Rc::downgrade(&s);
@@ -244,7 +243,10 @@ impl TextPalette {
         s.sync();
         s
     }
-    pub(super) fn options_page(&self, name: &str) -> Option<gtk::Box> {
+    pub(super) fn options_page(self: &Rc<Self>, name: &str) -> Option<gtk::Box> {
+        if matches!(name, "ink" | "highlight") {
+            self.color_page(if name == "ink" { "ink" } else { "highlight" });
+        }
         self.panels.borrow().get(name).cloned()
     }
     fn apply(&self, command: &str, args: serde_json::Value) -> bool {
@@ -302,7 +304,7 @@ impl TextPalette {
         }
     }
     pub(super) fn choose_highlight(&self, value: &str) -> bool {
-        if self.apply("format.highlight", json!({"color":value})) {
+        if self.apply("leaf.highlight", json!({"color":value})) {
             if value != "none" {
                 self.last_highlight.replace(value.into());
             }
@@ -349,14 +351,12 @@ impl TextPalette {
                 }
             });
         }
-        let color = style_menu_button(wordcraft_gnome::t!("Underline Color…"));
-        root.append(&color);
         let weak = Rc::downgrade(self);
-        color.connect_clicked(move |_| {
-            if let Some(s) = weak.upgrade() {
-                s.pick_color("format.underlineColor");
-            }
+        let picker = embedded_color_chooser("text-underline-chooser", None, move |hex| {
+            weak.upgrade().is_some_and(|s| s.apply("format.underlineColor", json!({"color":hex})))
         });
+        root.append(&picker.widget);
+        self.pickers.borrow_mut().insert("underline", picker);
         let auto = style_menu_button(wordcraft_gnome::t!("Automatic Color"));
         root.append(&auto);
         let weak = Rc::downgrade(self);
@@ -390,129 +390,49 @@ impl TextPalette {
                 }
             });
         }
-        let root = self.panel("ink");
-        for (title, value) in [
-            (wordcraft_gnome::t!("Automatic Color"), "auto"),
-            (wordcraft_gnome::t!("Black"), "000000"),
-            (wordcraft_gnome::t!("Red"), "E01B24"),
-            (wordcraft_gnome::t!("Blue"), "1C71D8"),
-            (wordcraft_gnome::t!("Green"), "26A269"),
-            (wordcraft_gnome::t!("Purple"), "813D9C"),
-        ] {
-            let b = style_menu_button(title);
-            b.set_widget_name(&format!("ink-choice-{value}"));
-            root.append(&b);
-            let weak = Rc::downgrade(self);
-            b.connect_clicked(move |_| {
-                if let Some(s) = weak.upgrade() {
-                    if s.choose_ink(value) {
-                        s.home();
-                    }
-                }
-            });
-        }
-        let color = style_menu_button(wordcraft_gnome::t!("Choose Color…"));
-        root.append(&color);
-        let weak = Rc::downgrade(self);
-        color.connect_clicked(move |_| {
-            if let Some(s) = weak.upgrade() {
-                s.pick_color("format.color");
-            }
-        });
-        let entry = gtk::Entry::new();
-        entry.set_placeholder_text(Some("RGB: 2266AA"));
-        accessible_name(&entry, wordcraft_gnome::t!("Hexadecimal RGB Color"));
-        root.append(&entry);
-        let weak = Rc::downgrade(self);
-        entry.connect_changed(move |e| {
-            if let Some(s) = weak.upgrade() {
-                let value = e.text();
-                let hex = value.trim().trim_start_matches('#');
-                if hex.len() == 6 && hex.bytes().all(|c| c.is_ascii_hexdigit()) {
-                    s.choose_ink(hex);
-                    e.remove_css_class("error");
-                } else if !hex.is_empty() {
-                    e.add_css_class("error");
-                }
-            }
-        });
-        let root = self.panel("highlight");
-        for (title, value) in [
-            (wordcraft_gnome::t!("No Highlight"), "none"),
-            (wordcraft_gnome::t!("Yellow"), "yellow"),
-            (wordcraft_gnome::t!("Green"), "brightGreen"),
-            (wordcraft_gnome::t!("Turquoise"), "turquoise"),
-            (wordcraft_gnome::t!("Pink"), "pink"),
-            (wordcraft_gnome::t!("Blue"), "blue"),
-            (wordcraft_gnome::t!("Red"), "red"),
-            (wordcraft_gnome::t!("Dark Blue"), "darkBlue"),
-            (wordcraft_gnome::t!("Teal"), "teal"),
-            (wordcraft_gnome::t!("Dark Green"), "green"),
-            (wordcraft_gnome::t!("Purple"), "violet"),
-            (wordcraft_gnome::t!("Dark Red"), "darkRed"),
-            (wordcraft_gnome::t!("Dark Yellow"), "darkYellow"),
-            (wordcraft_gnome::t!("50% Gray"), "gray50"),
-            (wordcraft_gnome::t!("25% Gray"), "gray25"),
-            (wordcraft_gnome::t!("Black"), "black"),
-            (wordcraft_gnome::t!("White"), "white"),
-        ] {
-            let b = style_menu_button(title);
-            b.set_widget_name(&format!("highlight-choice-{value}"));
-            root.append(&b);
-            let weak = Rc::downgrade(self);
-            b.connect_clicked(move |_| {
-                if let Some(s) = weak.upgrade() {
-                    if s.choose_highlight(value) {
-                        s.home();
-                    }
-                }
-            });
-        }
+        self.panel("ink");
+        self.panel("highlight");
     }
-    fn pick_color(self: &Rc<Self>, command: &'static str) {
+    fn color_page(self: &Rc<Self>, name: &'static str) {
+        let root = self.panels.borrow().get(name).cloned().unwrap();
+        clear_box(&root);
+        let clear = style_menu_button(if name == "ink" {
+            wordcraft_gnome::t!("Automatic Color")
+        } else {
+            wordcraft_gnome::t!("No Highlight")
+        });
+        clear.set_widget_name(if name == "ink" { "ink-choice-auto" } else { "highlight-choice-none" });
+        root.append(&clear);
+        let weak = Rc::downgrade(self);
+        clear.connect_clicked(move |_| {
+            if let Some(s) = weak.upgrade() {
+                if name == "ink" { s.choose_ink("auto"); } else { s.choose_highlight("none"); }
+            }
+        });
+        let weak = Rc::downgrade(self);
+        let picker = embedded_color_chooser(&format!("text-{name}-chooser"), None, move |hex| {
+            weak.upgrade().is_some_and(|s| if name == "ink" { s.choose_ink(hex) } else { s.choose_highlight(hex) })
+        });
+        root.append(&picker.widget);
+        self.pickers.borrow_mut().insert(name, picker);
+        self.sync_pickers();
+    }
+    fn sync_pickers(&self) {
         let Some(ui) = self.ui.upgrade() else { return };
-        let Some(host) = ui.host.upgrade() else {
-            return;
-        };
-        let identity = document_identity(&ui);
-        let dialog = gtk::ColorDialog::new();
-        dialog.set_with_alpha(false);
-        dialog.set_title(wordcraft_gnome::t!("Choose Color"));
-        let weak = Rc::downgrade(self);
-        dialog.choose_rgba(
-            Some(&host.window),
-            None::<&gdk::RGBA>,
-            None::<&gio::Cancellable>,
-            move |result| {
-                let Some(s) = weak.upgrade() else { return };
-                let Some(ui) =
-                    s.ui.upgrade()
-                        .filter(|u| !u.closed.get() && document_identity(u) == identity)
-                else {
-                    return;
-                };
-                match result {
-                    Ok(c) => {
-                        let hex = format!(
-                            "{:02X}{:02X}{:02X}",
-                            (c.red() * 255.).round() as u8,
-                            (c.green() * 255.).round() as u8,
-                            (c.blue() * 255.).round() as u8
-                        );
-                        if command == "format.color" {
-                            s.choose_ink(&hex);
-                        } else {
-                            s.apply(command, json!({"color":hex}));
-                        }
-                    }
-                    Err(e)
-                        if e.matches(gtk::DialogError::Cancelled)
-                            || e.matches(gtk::DialogError::Dismissed) => {}
-                    Err(e) => ui.toasts.add_toast(Toast::new(&e.to_string())),
-                }
-            },
-        );
+        let current = ui.current.borrow();
+        let Some(d) = current.as_ref() else { return };
+        let resolved = wordcraft_gnome::text_properties::selected_resolved(&d.session);
+        let Some(p) = resolved.first() else { return };
+        let ink = match p.color { wordcraft_doc::props::TextColor::Rgb(c) => Some(c), _ => None };
+        let background = p.highlight.or(p.shading);
+        for (name, color) in [("ink", ink), ("highlight", background), ("underline", p.underline_color)] {
+            if let Some(picker) = self.pickers.borrow().get(name) {
+                let hex = color.map(|c| format!("#{}", c.hex()));
+                picker.sync(hex.as_deref());
+            }
+        }
     }
+
     pub(super) fn sync(&self) {
         let Some(ui) = self.ui.upgrade() else { return };
         let state = selection_character(&ui);
@@ -520,6 +440,7 @@ impl TextPalette {
             return;
         }
         self.displayed.replace(state.clone());
+        self.sync_pickers();
         self.syncing.set(true);
         for (button, key, on) in [
             (
@@ -563,10 +484,10 @@ impl TextPalette {
             .unwrap_or_default();
         let highlight = if resolved
             .windows(2)
-            .any(|w| w[0].highlight != w[1].highlight)
+            .any(|w| w[0].highlight.or(w[0].shading) != w[1].highlight.or(w[1].shading))
         {
             wordcraft_gnome::t!("Mixed").into()
-        } else if let Some(c) = resolved.first().and_then(|p| p.highlight) {
+        } else if let Some(c) = resolved.first().and_then(|p| p.highlight.or(p.shading)) {
             format!("#{:02X}{:02X}{:02X}", c.0, c.1, c.2)
         } else {
             wordcraft_gnome::t!("No Highlight").into()

@@ -243,7 +243,7 @@ pub(super) struct TextControls {
     size: gtk::SpinButton,
     font_menu: gtk::MenuButton,
     size_menu: gtk::MenuButton,
-    font_choices: gtk::Box,
+    pub(super) font_choices: gtk::Box,
     size_choices: gtk::Box,
     font_source: RefCell<Option<glib::SourceId>>,
     size_source: RefCell<Option<glib::SourceId>>,
@@ -285,7 +285,12 @@ impl TextControls {
             .any(|f| f.eq_ignore_ascii_case(value))
             || ["sans", "serif", "monospace"].contains(&value.to_ascii_lowercase().as_str());
         if !valid {
-            self.font.add_css_class("error");
+            let query = value.to_lowercase();
+            if query.is_empty() || self.family_names().iter().any(|f| f.to_lowercase().contains(&query)) {
+                self.font.remove_css_class("error");
+            } else {
+                self.font.add_css_class("error");
+            }
             return;
         }
         self.font.remove_css_class("error");
@@ -352,11 +357,15 @@ impl TextControls {
         });
         source.replace(Some(id));
     }
-    fn show_fonts(self: &Rc<Self>) {
+    pub(super) fn show_fonts(self: &Rc<Self>) {
         clear_box(&self.font_choices);
+        let current = self.ui.upgrade().map(|u| selection_character(&u));
         for family in self.family_names() {
             let button = gtk::Button::new();
             button.add_css_class("flat");
+            if current.as_ref().and_then(|s| s["font"].as_str()).is_some_and(|name| name.eq_ignore_ascii_case(&family)) {
+                button.add_css_class("current-style");
+            }
             let preview = gtk::Label::new(Some(&family));
             preview.set_widget_name("font-preview");
             preview.set_xalign(0.0);
@@ -382,6 +391,16 @@ impl TextControls {
                 }
             });
             self.font_choices.append(&button);
+        }
+        self.filter_fonts();
+    }
+    fn filter_fonts(&self) {
+        let query = self.font.text().trim().to_lowercase();
+        let mut child = self.font_choices.first_child();
+        while let Some(row) = child {
+            child = row.next_sibling();
+            let name = row.first_child().and_then(|w| w.downcast::<gtk::Label>().ok()).map(|l| l.text().to_lowercase());
+            row.set_visible(name.is_some_and(|name| name.contains(&query)));
         }
     }
     fn show_sizes(self: &Rc<Self>) {
@@ -521,6 +540,7 @@ pub(super) fn install_text_controls(
     let weak = Rc::downgrade(&s);
     s.font.connect_changed(move |_| {
         if let Some(s) = weak.upgrade() {
+            s.filter_fonts();
             s.schedule(true);
         }
     });

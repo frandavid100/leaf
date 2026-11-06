@@ -3,6 +3,7 @@
 
 extern crate self as wordcraft_gnome;
 pub mod i18n;
+pub mod highlight;
 
 use std::path::Path;
 use wordcraft_doc::Document;

@@ -44,7 +44,9 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
         tools.home();
     }
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, before);
-    button(&palette.options_page("ink").unwrap(), "ink-choice-1C71D8");
+    tools.page("ink");
+    test_choose_color(&menu.popover().unwrap(), "text-ink-chooser", "1C71D8");
+    tools.home();
     assert_eq!(*palette.last_ink.borrow(), "1C71D8");
     for n in [1, 2] {
         select_paragraph(ui, n);
@@ -55,10 +57,9 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
         );
         assert_eq!(tools.stack.visible_child_name().as_deref(), Some("main"));
     }
-    button(
-        &palette.options_page("highlight").unwrap(),
-        "highlight-choice-yellow",
-    );
+    tools.page("highlight");
+    test_choose_color(&menu.popover().unwrap(), "text-highlight-chooser", "FFFF00");
+    tools.home();
     select_paragraph(ui, 0);
     palette.highlight_apply.emit_clicked();
     assert_eq!(selection_character(ui)["highlight"], json!([255, 255, 0]));
@@ -459,7 +460,8 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 }
                 settled.set(0);
                 let child = pop.clone();
-                let blue = find_widget(&child, "ink-choice-1C71D8").unwrap();
+                let picker = find_widget(&child, "text-ink-chooser").unwrap();
+                let blue = native_color_swatch(&picker, &gdk::RGBA::parse("#1C71D8").unwrap()).unwrap();
                 if !text_pointer_target("TEXT18_BLUE", &child, &blue) {
                     return glib::ControlFlow::Continue;
                 }
@@ -545,4 +547,25 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
         }
         glib::ControlFlow::Continue
     });
+}
+
+#[allow(deprecated)]
+pub(super) fn test_choose_color(root: &impl IsA<gtk::Widget>, name: &str, hex: &str) {
+    let picker = find_widget(root, name).unwrap().downcast::<gtk::ColorChooserWidget>().unwrap();
+    assert!(picker.is_mapped(), "native chooser must actually be shown: {name}");
+    let rgba = gdk::RGBA::parse(format!("#{hex}")).unwrap();
+    picker.set_rgba(&rgba);
+    picker.emit_by_name::<()>("color-activated", &[&rgba]);
+}
+pub(super) fn native_color_swatch(root: &gtk::Widget, color: &gdk::RGBA) -> Option<gtk::Widget> {
+    if root.type_().name() == "GtkColorSwatch" && root.find_property("rgba").is_some()
+        && root.property::<Option<gdk::RGBA>>("rgba").as_ref() == Some(color) {
+        return Some(root.clone());
+    }
+    let mut child = root.first_child();
+    while let Some(w) = child {
+        child = w.next_sibling();
+        if let Some(found) = native_color_swatch(&w, color) { return Some(found); }
+    }
+    None
 }

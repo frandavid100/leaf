@@ -23,33 +23,6 @@ pub(super) fn interaction_pointer_test(
     app: &Application,
     text: &gtk::MenuButton,
 ) {
-    let input = ui.font_input.downgrade();
-    let canvas = ui.document_box.downgrade();
-    let window = w.downgrade();
-    let log: Rc<dyn Fn(&str)> = Rc::new(move |event| {
-        let (Some(input), Some(canvas), Some(window)) = (input.upgrade(), canvas.upgrade(), window.upgrade()) else { return };
-        let focus = gtk::prelude::GtkWindowExt::focus(&window);
-        eprintln!("FOCUS_TRACE {event} root={:?} font_mapped={} font_focus={} canvas_focus={} active={}",
-            focus.map(|w| (w.type_().name().to_string(), w.widget_name().to_string())),
-            input.is_mapped(), control_has_focus(&input), canvas.has_focus(), window.is_active());
-    });
-    let trace_focus = log.clone();
-    w.connect_notify_local(Some("focus-widget"), move |_, _| trace_focus("window-focus"));
-    let trace_focus = log.clone();
-    let keys = gtk::EventControllerKey::new();
-    keys.set_propagation_phase(gtk::PropagationPhase::Capture);
-    keys.connect_key_pressed(move |_, key, _, modifiers| {
-        trace_focus(&format!("key={key:?} modifiers={modifiers:?}"));
-        glib::Propagation::Proceed
-    });
-    w.add_controller(keys);
-    let trace_focus = log.clone();
-    let steps = Cell::new(0);
-    glib::timeout_add_local(std::time::Duration::from_millis(150), move || {
-        steps.set(steps.get() + 1);
-        trace_focus("tick");
-        if steps.get() < 150 { glib::ControlFlow::Continue } else { glib::ControlFlow::Break }
-    });
     let trace = gtk::GestureClick::new();
     trace.set_button(gdk::BUTTON_PRIMARY);
     trace.set_propagation_phase(gtk::PropagationPhase::Capture);

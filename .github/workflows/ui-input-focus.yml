@@ -43,6 +43,7 @@ jobs:
           cargo fmt --package wordcraft-gnome
           python tools/update_translations.py --compile
           git diff > normalized.patch
+          cargo test --locked --test highlight
           cargo build --release --locked --features gui --bin wordcraft-gnome
       - name: Install the identical GNOME 49 bundle
         env:

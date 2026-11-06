@@ -38,7 +38,7 @@ pub(super) fn paragraph_ui_test(
     assert_eq!(selection_paragraph(&ui)["lineSpacing"]["value"], 1.5);
     click("paragraph-back");
     click("paragraph-more-borders");
-    click("paragraph-shade-FFF2CC");
+    test_choose_color(&s.popover.upgrade().unwrap(), "paragraph-shading-chooser", "FFF2CC");
     assert!(selection_paragraph(&ui)["shading"].is_array());
     click("paragraph-back");
     click("paragraph-more-borders");
