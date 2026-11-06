@@ -99,3 +99,15 @@ The final scope restores the four formatting modules and their Alpha30 controls
 regression to published source `868ac18`; #133–#135 remain. No partial #136
 acceptance or formatting improvement is claimed. Full native and installed checks
 remain required for the final package.
+
+## Published font regression restored without modifications
+
+The formatting rollback alone did not make the modified font diagnostic pass.
+To remove test-side confounding, the final candidate restores both
+`diagnostics/interactions.rs` and `tools/interaction-pointer-test.sh` exactly to
+published Alpha30 source. Its font, document, selection, pinned-input and canvas
+assertions remain mandatory and unchanged. The intermediate paste acknowledgement,
+clipboard preflight, key tracing and stage timing changes are not shipped.
+The same `[candidate-alpha]` marker in the preflight PR title skips only the
+optional performance comparison, as it already does on a candidate push; native
+functional and installed checks remain mandatory.

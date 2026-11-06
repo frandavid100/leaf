@@ -268,7 +268,7 @@ jobs:
           cargo run -- --png muestra-wordcraft.png
           test -s muestra-wordcraft.png
       - name: Comparar rendimiento reproducible
-        if: ${{ !contains(github.event.head_commit.message, '[release-alpha]') && !contains(github.event.head_commit.message, '[candidate-alpha]') && !contains(github.event.head_commit.message, '[a11y-candidate]') && !contains(github.event.head_commit.message, '[perf-candidate]') && !contains(github.event.head_commit.message, '[refactor-candidate]') }}
+        if: ${{ !contains(github.event.head_commit.message, '[release-alpha]') && !contains(github.event.head_commit.message, '[candidate-alpha]') && !contains(github.event.head_commit.message, '[a11y-candidate]') && !contains(github.event.head_commit.message, '[perf-candidate]') && !contains(github.event.head_commit.message, '[refactor-candidate]') && !contains(github.event.pull_request.title, '[candidate-alpha]') }}
         run: |
           cargo run --locked --example performance > performance-debug.txt
           cargo run --release --locked --example performance > performance-release.txt
