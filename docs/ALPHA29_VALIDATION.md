@@ -88,3 +88,9 @@ La revisión visual en español también corrige el nombre «Revisión» y local
 las explicaciones ortográficas y las reglas inglesas comunes del motor en el
 idioma de la interfaz. Los mensajes desconocidos se conservan íntegros. El
 interlineado actual muestra decimales legibles sin redondear el valor guardado.
+
+La regresión histórica de fuente/tamaño cierra la lista de familias y su panel
+Texto antes de pulsar el caret: las filas nuevas pueden cubrir ese punto en una
+ventana estrecha. La escritura, los decimales con coma, el pegado y la selección
+con panel fijado siguen comprobándose con entrada real; el panel conserva su pin
+al volver a abrirlo.
