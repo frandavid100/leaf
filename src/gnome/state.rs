@@ -54,6 +54,7 @@ pub(super) struct Ui {
     pub(super) navigation_pages: gtk::Stack,
     pub(super) navigation_button: gtk::ToggleButton,
     pub(super) navigation_selector: gtk::Box,
+    pub(super) representation: gtk::DropDown,
     pub(super) last_navigation: Cell<&'static str>,
     pub(super) thumbnail_reveal_pending: Cell<bool>,
     pub(super) outline: RefCell<Option<Rc<OutlinePanel>>>,

@@ -157,14 +157,28 @@ pub(super) fn build_tab(
     accessible_name(&navigation_toggle, wordcraft_gnome::t!("Navigation"));
     navigation_toggle.set_active(true);
     let navigation_selector = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    navigation_selector.add_css_class("linked");
     navigation_selector.set_widget_name("navigation-representation");
     navigation_selector.set_margin_start(8);
     navigation_selector.set_margin_end(8);
     navigation_selector.set_margin_top(6);
     navigation_selector.set_margin_bottom(6);
-    navigation_selector.append(&pages_toggle);
-    navigation_selector.append(&titles_toggle);
+    let representation = gtk::DropDown::from_strings(&[
+        wordcraft_gnome::t!("Pages"),
+        wordcraft_gnome::t!("Structure"),
+    ]);
+    representation.set_widget_name("navigation-representation-choice");
+    representation.set_hexpand(true);
+    accessible_name(&representation, wordcraft_gnome::t!("Navigation"));
+    navigation_selector.append(&representation);
+    let pages = pages_toggle.clone();
+    let titles = titles_toggle.clone();
+    representation.connect_selected_notify(move |choice| {
+        if choice.selected() == 0 {
+            pages.set_active(true);
+        } else {
+            titles.set_active(true);
+        }
+    });
     navigation.add_top_bar(&navigation_selector);
     let annotations_toggle = gtk::ToggleButton::new();
     accessible_name(&annotations_toggle, wordcraft_gnome::t!("Review"));
@@ -400,6 +414,7 @@ pub(super) fn build_tab(
         navigation_pages,
         navigation_button: navigation_toggle.clone(),
         navigation_selector,
+        representation,
         last_navigation: Cell::new("thumbnails"),
         thumbnail_reveal_pending: Cell::new(true),
         outline: RefCell::new(None),

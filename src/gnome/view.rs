@@ -71,6 +71,9 @@ pub(super) fn update_status(ui: &Rc<Ui>) {
         ui.pages_button.set_tooltip_text(Some(&pages_tip));
         ui.pages_button
             .update_property(&[gtk::accessible::Property::Description(&pages_tip)]);
+        ui.representation.set_tooltip_text(Some(&pages_tip));
+        ui.representation
+            .update_property(&[gtk::accessible::Property::Description(&pages_tip)]);
     }
 }
 
