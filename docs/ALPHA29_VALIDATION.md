@@ -76,3 +76,10 @@ No cambian WordCraft, las dependencias ni los parches. No se sustituyen capturas
 públicas ni se amplían Orca, Weblate o Flathub. DOCX sigue siendo necesario para
 las estructuras que el exportador ODT pierde. Las comprobaciones automáticas no
 sustituyen pruebas humanas en Wayland, métodos de entrada o impresoras físicas.
+
+La prueba de Texto usa dos movimientos de ratón antes del clic: en GTK 4.14/X11,
+un salto instantáneo entre superficies puede producir una notificación tardía de
+la ventana padre. Una reproducción mínima independiente confirma el efecto; el
+segundo movimiento reproduce la entrada normal en el panel sin cambiar su
+modalidad ni sustituir el clic por activación programática. Las etiquetas actuales
+se actualizan en su widget existente para conservar el foco durante refrescos.

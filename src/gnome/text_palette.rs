@@ -15,6 +15,9 @@ pub(super) struct TextPalette {
     pub(super) highlight: gtk::Button,
     pub(super) ink_apply: gtk::Button,
     pub(super) highlight_apply: gtk::Button,
+    ink_value: gtk::Label,
+    highlight_value: gtk::Label,
+    displayed: RefCell<serde_json::Value>,
     pub(super) last_underline: RefCell<String>,
     last_underline_color: RefCell<Option<String>>,
     pub(super) last_strike: Cell<bool>,
@@ -99,10 +102,19 @@ impl TextPalette {
             row.append(&open);
             row.append(&apply);
             root.append(&row);
-            configs.push((open, apply));
+            let content = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+            let value = gtk::Label::new(Some(title));
+            value.set_xalign(0.);
+            value.set_hexpand(true);
+            value.set_ellipsize(gtk::pango::EllipsizeMode::End);
+            value.set_max_width_chars(28);
+            content.append(&value);
+            content.append(&gtk::Image::from_icon_name("go-next-symbolic"));
+            open.set_child(Some(&content));
+            configs.push((open, apply, value));
         }
-        let (ink, ink_apply) = configs.remove(0);
-        let (highlight, highlight_apply) = configs.remove(0);
+        let (ink, ink_apply, ink_value) = configs.remove(0);
+        let (highlight, highlight_apply, highlight_value) = configs.remove(0);
         let s = Rc::new(Self {
             ui: Rc::downgrade(ui),
             root,
@@ -115,6 +127,9 @@ impl TextPalette {
             highlight,
             ink_apply,
             highlight_apply,
+            ink_value,
+            highlight_value,
+            displayed: RefCell::new(serde_json::Value::Null),
             last_underline: RefCell::new("single".into()),
             last_underline_color: RefCell::new(None),
             last_strike: Cell::new(false),
@@ -469,6 +484,10 @@ impl TextPalette {
     pub(super) fn sync(&self) {
         let Some(ui) = self.ui.upgrade() else { return };
         let state = selection_character(&ui);
+        if *self.displayed.borrow() == state {
+            return;
+        }
+        self.displayed.replace(state.clone());
         self.syncing.set(true);
         for (button, key, on) in [
             (
@@ -520,23 +539,27 @@ impl TextPalette {
         } else {
             wordcraft_gnome::t!("No Highlight").into()
         };
-        for (button, title, value) in [
-            (&self.ink, wordcraft_gnome::t!("Text Color"), color),
-            (&self.highlight, wordcraft_gnome::t!("Highlight"), highlight),
+        for (button, text, title, value) in [
+            (
+                &self.ink,
+                &self.ink_value,
+                wordcraft_gnome::t!("Text Color"),
+                color,
+            ),
+            (
+                &self.highlight,
+                &self.highlight_value,
+                wordcraft_gnome::t!("Highlight"),
+                highlight,
+            ),
         ] {
             let label = wordcraft_gnome::i18n::interpolate(
                 wordcraft_gnome::t!("{label}: {value}"),
                 &[("label", title.into()), ("value", value)],
             );
-            let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
-            let text = gtk::Label::new(Some(&label));
-            text.set_xalign(0.);
-            text.set_hexpand(true);
-            text.set_ellipsize(gtk::pango::EllipsizeMode::End);
-            text.set_max_width_chars(28);
-            row.append(&text);
-            row.append(&gtk::Image::from_icon_name("go-next-symbolic"));
-            button.set_child(Some(&row));
+            if text.text() != label {
+                text.set_text(&label);
+            }
             button.set_tooltip_text(Some(&label));
             accessible_name(button, &label);
         }

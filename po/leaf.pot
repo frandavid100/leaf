@@ -9,11 +9,11 @@ msgstr ""
 msgid "1.5 Lines"
 msgstr ""
 
-#: src/gnome/text_palette.rs:408
+#: src/gnome/text_palette.rs:423
 msgid "25% Gray"
 msgstr ""
 
-#: src/gnome/text_palette.rs:407
+#: src/gnome/text_palette.rs:422
 msgid "50% Gray"
 msgstr ""
 
@@ -117,7 +117,7 @@ msgstr ""
 msgid "Apply Last Border Settings"
 msgstr ""
 
-#: src/gnome/text_palette.rs:87
+#: src/gnome/text_palette.rs:90
 msgid "Apply Last Highlight"
 msgstr ""
 
@@ -129,7 +129,7 @@ msgstr ""
 msgid "Apply Last Shading"
 msgstr ""
 
-#: src/gnome/text_palette.rs:82
+#: src/gnome/text_palette.rs:85
 msgid "Apply Last Text Color"
 msgstr ""
 
@@ -193,7 +193,7 @@ msgstr ""
 msgid "AutoFit Column by Double-Clicking"
 msgstr ""
 
-#: src/gnome/text_palette.rs:313 src/gnome/text_palette.rs:348 src/gnome/text_palette.rs:506
+#: src/gnome/text_palette.rs:328 src/gnome/text_palette.rs:363 src/gnome/text_palette.rs:525
 msgid "Automatic Color"
 msgstr ""
 
@@ -217,15 +217,15 @@ msgstr ""
 msgid "Before"
 msgstr ""
 
-#: src/gnome/paragraph.rs:694 src/gnome/text_palette.rs:349 src/gnome/text_palette.rs:409
+#: src/gnome/paragraph.rs:694 src/gnome/text_palette.rs:364 src/gnome/text_palette.rs:424
 msgid "Black"
 msgstr ""
 
-#: src/gnome/paragraph.rs:693 src/gnome/text_palette.rs:351 src/gnome/text_palette.rs:399
+#: src/gnome/paragraph.rs:693 src/gnome/text_palette.rs:366 src/gnome/text_palette.rs:414
 msgid "Blue"
 msgstr ""
 
-#: src/gnome/accessibility.rs:106 src/gnome/menus.rs:657 src/gnome/tab.rs:205 src/gnome/text_palette.rs:31
+#: src/gnome/accessibility.rs:106 src/gnome/menus.rs:657 src/gnome/tab.rs:205 src/gnome/text_palette.rs:34
 msgid "Bold"
 msgstr ""
 
@@ -397,11 +397,11 @@ msgstr ""
 msgid "Checking…"
 msgstr ""
 
-#: src/gnome/format_controls.rs:179 src/gnome/text_palette.rs:433
+#: src/gnome/format_controls.rs:179 src/gnome/text_palette.rs:448
 msgid "Choose Color"
 msgstr ""
 
-#: src/gnome/text_palette.rs:367
+#: src/gnome/text_palette.rs:382
 msgid "Choose Color…"
 msgstr ""
 
@@ -689,7 +689,7 @@ msgstr ""
 msgid "Dark"
 msgstr ""
 
-#: src/gnome/text_palette.rs:401
+#: src/gnome/text_palette.rs:416
 msgid "Dark Blue"
 msgstr ""
 
@@ -697,19 +697,19 @@ msgstr ""
 msgid "Dark Gray"
 msgstr ""
 
-#: src/gnome/text_palette.rs:403
+#: src/gnome/text_palette.rs:418
 msgid "Dark Green"
 msgstr ""
 
-#: src/gnome/text_palette.rs:405
+#: src/gnome/text_palette.rs:420
 msgid "Dark Red"
 msgstr ""
 
-#: src/gnome/text_palette.rs:406
+#: src/gnome/text_palette.rs:421
 msgid "Dark Yellow"
 msgstr ""
 
-#: src/gnome/text_palette.rs:286
+#: src/gnome/text_palette.rs:301
 msgid "Dashed"
 msgstr ""
 
@@ -917,19 +917,19 @@ msgstr ""
 msgid "Documents (.docx, .odt)"
 msgstr ""
 
-#: src/gnome/text_palette.rs:288
+#: src/gnome/text_palette.rs:303
 msgid "Dot Dash"
 msgstr ""
 
-#: src/gnome/text_palette.rs:289
+#: src/gnome/text_palette.rs:304
 msgid "Dot Dot Dash"
 msgstr ""
 
-#: src/gnome/text_palette.rs:285
+#: src/gnome/text_palette.rs:300
 msgid "Dotted"
 msgstr ""
 
-#: src/gnome/paragraph.rs:633 src/gnome/text_palette.rs:283 src/gnome/text_palette.rs:324
+#: src/gnome/paragraph.rs:633 src/gnome/text_palette.rs:298 src/gnome/text_palette.rs:339
 msgid "Double"
 msgstr ""
 
@@ -1237,7 +1237,7 @@ msgstr ""
 msgid "Greek Symbols"
 msgstr ""
 
-#: src/gnome/text_palette.rs:352 src/gnome/text_palette.rs:396
+#: src/gnome/text_palette.rs:367 src/gnome/text_palette.rs:411
 msgid "Green"
 msgstr ""
 
@@ -1289,7 +1289,7 @@ msgstr ""
 msgid "Help Translate Leaf"
 msgstr ""
 
-#: src/gnome/text_palette.rs:377
+#: src/gnome/text_palette.rs:392
 msgid "Hexadecimal RGB Color"
 msgstr ""
 
@@ -1301,7 +1301,7 @@ msgstr ""
 msgid "Hidden Text"
 msgstr ""
 
-#: src/gnome/text_palette.rs:85 src/gnome/text_palette.rs:525
+#: src/gnome/text_palette.rs:88 src/gnome/text_palette.rs:552
 msgid "Highlight"
 msgstr ""
 
@@ -1477,7 +1477,7 @@ msgstr ""
 msgid "Invert"
 msgstr ""
 
-#: src/gnome/accessibility.rs:107 src/gnome/menus.rs:658 src/gnome/tab.rs:208 src/gnome/text_palette.rs:32
+#: src/gnome/accessibility.rs:107 src/gnome/menus.rs:658 src/gnome/tab.rs:208 src/gnome/text_palette.rs:35
 msgid "Italic"
 msgstr ""
 
@@ -1677,7 +1677,7 @@ msgstr ""
 msgid "Minimum Row Height"
 msgstr ""
 
-#: src/gnome/adaptive.rs:139 src/gnome/paragraph.rs:241 src/gnome/paragraph.rs:267 src/gnome/paragraph.rs:315 src/gnome/paragraph.rs:322 src/gnome/paragraph.rs:334 src/gnome/selection_view.rs:142 src/gnome/text_palette.rs:497 src/gnome/text_palette.rs:517
+#: src/gnome/adaptive.rs:139 src/gnome/paragraph.rs:241 src/gnome/paragraph.rs:267 src/gnome/paragraph.rs:315 src/gnome/paragraph.rs:322 src/gnome/paragraph.rs:334 src/gnome/selection_view.rs:142 src/gnome/text_palette.rs:516 src/gnome/text_palette.rs:536
 msgid "Mixed"
 msgstr ""
 
@@ -1789,7 +1789,7 @@ msgstr ""
 msgid "No Headings in This Document"
 msgstr ""
 
-#: src/gnome/text_palette.rs:394 src/gnome/text_palette.rs:521
+#: src/gnome/text_palette.rs:409 src/gnome/text_palette.rs:540
 msgid "No Highlight"
 msgstr ""
 
@@ -1885,7 +1885,7 @@ msgstr ""
 msgid "Open…"
 msgstr ""
 
-#: src/gnome/text_palette.rs:65
+#: src/gnome/text_palette.rs:68
 msgid "Options for {label}"
 msgstr ""
 
@@ -1993,7 +1993,7 @@ msgstr ""
 msgid "Pin"
 msgstr ""
 
-#: src/gnome/text_palette.rs:398
+#: src/gnome/text_palette.rs:413
 msgid "Pink"
 msgstr ""
 
@@ -2049,7 +2049,7 @@ msgstr ""
 msgid "Properties and Split Cells…"
 msgstr ""
 
-#: src/gnome/text_palette.rs:353 src/gnome/text_palette.rs:404
+#: src/gnome/text_palette.rs:368 src/gnome/text_palette.rs:419
 msgid "Purple"
 msgstr ""
 
@@ -2089,7 +2089,7 @@ msgstr ""
 msgid "Recovery: {e}"
 msgstr ""
 
-#: src/gnome/text_palette.rs:350 src/gnome/text_palette.rs:400
+#: src/gnome/text_palette.rs:365 src/gnome/text_palette.rs:415
 msgid "Red"
 msgstr ""
 
@@ -2585,7 +2585,7 @@ msgstr ""
 msgid "Show or Hide Sidebar (F9)"
 msgstr ""
 
-#: src/gnome/paragraph.rs:630 src/gnome/text_palette.rs:282 src/gnome/text_palette.rs:323
+#: src/gnome/paragraph.rs:630 src/gnome/text_palette.rs:297 src/gnome/text_palette.rs:338
 msgid "Single"
 msgstr ""
 
@@ -2697,7 +2697,7 @@ msgstr ""
 msgid "Starting Page Number"
 msgstr ""
 
-#: src/gnome/text_palette.rs:43 src/gnome/text_palette.rs:54
+#: src/gnome/text_palette.rs:46 src/gnome/text_palette.rs:57
 msgid "Strikethrough"
 msgstr ""
 
@@ -2741,7 +2741,7 @@ msgstr ""
 msgid "Suggestion: {text}"
 msgstr ""
 
-#: src/gnome/text_palette.rs:39
+#: src/gnome/text_palette.rs:42
 msgid "Superscript"
 msgstr ""
 
@@ -2801,7 +2801,7 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
-#: src/gnome/text_palette.rs:402
+#: src/gnome/text_palette.rs:417
 msgid "Teal"
 msgstr ""
 
@@ -2817,7 +2817,7 @@ msgstr ""
 msgid "Text Border"
 msgstr ""
 
-#: src/gnome/text_palette.rs:80 src/gnome/text_palette.rs:524
+#: src/gnome/text_palette.rs:83 src/gnome/text_palette.rs:546
 msgid "Text Color"
 msgstr ""
 
@@ -2981,7 +2981,7 @@ msgstr ""
 msgid "There is no table at this position"
 msgstr ""
 
-#: src/gnome/text_palette.rs:284
+#: src/gnome/text_palette.rs:299
 msgid "Thick"
 msgstr ""
 
@@ -3069,7 +3069,7 @@ msgstr ""
 msgid "Triangle"
 msgstr ""
 
-#: src/gnome/text_palette.rs:397
+#: src/gnome/text_palette.rs:412
 msgid "Turquoise"
 msgstr ""
 
@@ -3089,7 +3089,7 @@ msgstr ""
 msgid "UPPERCASE"
 msgstr ""
 
-#: src/gnome/menus.rs:659 src/gnome/text_palette.rs:42 src/gnome/text_palette.rs:49
+#: src/gnome/menus.rs:659 src/gnome/text_palette.rs:45 src/gnome/text_palette.rs:52
 msgid "Underline"
 msgstr ""
 
@@ -3097,7 +3097,7 @@ msgstr ""
 msgid "Underline Color"
 msgstr ""
 
-#: src/gnome/text_palette.rs:305
+#: src/gnome/text_palette.rs:320
 msgid "Underline Color…"
 msgstr ""
 
@@ -3185,11 +3185,11 @@ msgstr ""
 msgid "Vertical ruler (cm)"
 msgstr ""
 
-#: src/gnome/text_palette.rs:287
+#: src/gnome/text_palette.rs:302
 msgid "Wavy"
 msgstr ""
 
-#: src/gnome/text_palette.rs:410
+#: src/gnome/text_palette.rs:425
 msgid "White"
 msgstr ""
 
@@ -3241,11 +3241,11 @@ msgstr ""
 msgid "WordCraft returned an incomplete image"
 msgstr ""
 
-#: src/gnome/text_palette.rs:290
+#: src/gnome/text_palette.rs:305
 msgid "Words Only"
 msgstr ""
 
-#: src/gnome/text_palette.rs:395
+#: src/gnome/text_palette.rs:410
 msgid "Yellow"
 msgstr ""
 
@@ -3301,7 +3301,7 @@ msgstr ""
 msgid "{kind} — {author}"
 msgstr ""
 
-#: src/gnome/paragraph.rs:280 src/gnome/paragraph.rs:375 src/gnome/text_palette.rs:528
+#: src/gnome/paragraph.rs:280 src/gnome/paragraph.rs:375 src/gnome/text_palette.rs:557
 msgid "{label}: {value}"
 msgstr ""
 

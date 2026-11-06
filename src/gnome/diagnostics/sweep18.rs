@@ -422,10 +422,11 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
     );
     select_paragraph(ui, 0);
     let menu = format_button(ui, "text-menu").unwrap();
-    menu.popup();
     let pop = menu.popover().unwrap();
+    menu.popup();
     let tools = ui.text_tools.borrow().as_ref().unwrap().clone();
     let palette = tools.palette.borrow().as_ref().unwrap().clone();
+
     let (u, a) = (ui.clone(), app.clone());
     let phase = Cell::new(0);
     let ticks = Cell::new(0);
