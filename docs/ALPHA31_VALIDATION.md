@@ -11,13 +11,13 @@ format patches are unchanged.
 | Issue | Result |
 | --- | --- |
 | #133 | Retain and reconcile proofing findings during rescans. Remap only unchanged text outside the changed span, revalidate against current paragraph proofing and update suggestions for changed paragraphs. Reuse unaffected correction, comment and change cards; preserve scroll/focus. Every retained action verifies document identity and current targets. Async success and failure reject stale generations/revisions. |
-| #134 | Native vertical SizeGroups synchronize the primary HeaderBars and the secondary filter/tab rows separately. HeaderBars keep their original direct ToolbarView parenting; complete header bounds remain aligned without pixel offsets. |
-| #135 | Pages/Structure uses one full-width native DropDown matching Review. Existing representation controllers keep per-document state and filters; hidden private toggle state is not presented as duplicate controls. Sidebar/tab remapping restores browsing only for an unchanged document revision and editing target. |
+| #134 | Withdrawn from the final candidate. Complete-header alignment remains open until it can pass installed input regressions. |
+| #135 | Withdrawn from the final candidate. Published Pages/Structure tabs and their controllers are retained; the requested dropdown remains open. |
 | #136 | Not included: the experimental formatting changes were withdrawn after the installed font-paste regression failed while published Alpha30 passed on the same GNOME 49 runtime. Text/Paragraph controls return to the published implementation; the issue remains open in full. |
 
 The focused GTK diagnostic verifies incremental pending results, canonical
 offsets after unequal-length Unicode replacement, unaffected card identity,
-Undo, header allocation and native dropdown mouse/keyboard input. Previous Alpha.30 checks continue to cover per-document representation,
+Undo and rescanning edits made while Review is hidden. Header/dropdown assertions belong only to withdrawn iterations. Previous Alpha.30 checks continue to cover per-document representation,
 scroll/filter/expansion, navigation and property reapply behavior.
 
 ## #132 investigation
@@ -122,3 +122,20 @@ geometry diagnostic checks equal primary starts/heights and the complete lower
 boundary of the secondary rows. This preserves #134 without wrapping the native
 HeaderBars in generic boxes. Installed focus/paste remains a required check;
 its result must be confirmed before accepting this candidate.
+
+## Final scope: Review on the published interface
+
+After both generic header wrappers and separate native header rows failed the
+same installed input regression, #134 and #135 are withdrawn as well. The final
+candidate restores published tab construction, Ui fields, Navigation, status and
+Navigation regression, and returns Review's filter to its published content row.
+The intended functional change is #133 only; #132 investigation and synthetic
+geometry controls are retained. #134–#136 remain open without partial closures.
+
+The 40-finding native XTest check corrected paragraphs 1, 2 and 25. Saving and
+reading the DOCX confirmed those exact targets and 37 remaining misspellings.
+Three native toolbar Undo operations restored all 40 original misspellings;
+Redo restored exactly paragraphs 1, 2 and 25. The filter and visible list position
+were retained and the list stayed populated. This evidence was completed before
+the local executor became unavailable. Full native and installed CI remains
+required for the final package.

@@ -12,14 +12,15 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En curso: candidata alpha.31
+## En curso: candidata alpha.31 — Revisión
 
-David solicita una pasada de issues y una candidata para probar, sin publicación
-automática. #133–#135 están implementados y en validación; #136 queda fuera de esta candidata tras detectar una regresión de pegado en
-los controles experimentales; se conserva el formato publicado en Alpha.30. #132 se investigó con el DOCX
-original sin reproducir el solapamiento en este entorno; permanece abierto.
-Hay 17 issues abiertos antes de completar la validación y registrar cierres.
-[Alcance, reproducción y límites](docs/ALPHA31_VALIDATION.md).
+La candidata final se limita a #133: actualización incremental de Revisión,
+con destinos revalidados y conservación de tarjetas válidas. Los experimentos
+de cabeceras, selector y formato (#134–#136) se retiran tras fallar una regresión
+de entrada instalada; conservan sus issues abiertos y la interfaz publicada en
+Alpha.30. #132 se investigó sin reproducir el solapamiento en el entorno local.
+Hay 17 issues abiertos antes de cerrar la validación.
+[Alcance, pruebas y límites](docs/ALPHA31_VALIDATION.md).
 El motor y la última versión pública no cambian.
 
 ## Última versión publicada: alpha.30
