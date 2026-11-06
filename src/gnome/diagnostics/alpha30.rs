@@ -237,7 +237,11 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
                 r.y() as f64 + (c.top + c.height / 2.) as f64 * d.page_zoom(c.page) as f64,
             )
         };
-        eprintln!("ALPHA30_TOC_LINK {} {}", x as i32, y as i32);
+        eprintln!(
+            "ALPHA30_TOC_LINK {} {}",
+            (x * w.scale_factor() as f64) as i32,
+            (y * w.scale_factor() as f64) as i32
+        );
         let tries = Cell::new(0);
         glib::timeout_add_local(std::time::Duration::from_millis(100), move || {
             tries.set(tries.get() + 1);
