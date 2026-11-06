@@ -233,7 +233,7 @@ I recieve text.",
         glib::ControlFlow::Continue
     });
 }
-fn check_headers(ui: &Rc<Ui>, window: &ApplicationWindow) {
+pub(super) fn check_headers(ui: &Rc<Ui>, window: &ApplicationWindow) {
     let a = find_widget(&ui.sidebar, "sidebar-header-secondary")
         .unwrap()
         .compute_bounds(window)

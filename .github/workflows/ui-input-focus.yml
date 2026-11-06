@@ -60,7 +60,23 @@ jobs:
           prefix=source.split("# Acknowledgements use",1)[0]
           Path('input-prefix.sh').write_text(prefix)
           PREFIX
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash input-prefix.sh
+          if ! xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash input-prefix.sh; then
+            python - <<'FAILURE'
+            from pathlib import Path
+            for log in [*Path('dist').glob('*.log'), Path('interactions-pointer.log')]:
+                if log.exists():
+                    text=log.read_text(errors='replace')
+                    if 'panicked' in text or log.name == 'interactions-pointer.log':
+                        print(str(log)); print(text[-12000:])
+            FAILURE
+            exit 1
+          fi
+      - name: Exercise complete format pages with pointer and native custom colour entry
+        run: |
+          export LEAF29_ACK_PARENT="$HOME/.var/app/io.github.frandavid100.leaf/cache"
+          mkdir -p "$LEAF29_ACK_PARENT"
+          LANGUAGE=en GDK_SCALE=1 xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 150s bash tools/format136-pointer-test.sh tools/format136-flatpak-run.sh
+          LANGUAGE=es GDK_SCALE=2 xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 150s bash tools/format136-pointer-test.sh tools/format136-flatpak-run.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -70,4 +86,6 @@ jobs:
             normalized.patch
             interactions-pointer.log
             vista-texto*.png
+            alpha31-*.log
+            alpha31-*.png
             target/release/wordcraft-gnome

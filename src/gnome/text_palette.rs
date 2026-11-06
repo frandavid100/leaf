@@ -253,7 +253,12 @@ impl TextPalette {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return false;
         };
-        match format_execute(&ui, command, args.clone()) {
+        let result = if matches!(command, "format.color" | "format.underlineColor" | "leaf.highlight") {
+            immediate_format(&ui, command, args.clone())
+        } else {
+            format_execute(&ui, command, args.clone())
+        };
+        match result {
             Ok(()) => {
                 if command == "format.underlineColor" {
                     self.last_underline_color

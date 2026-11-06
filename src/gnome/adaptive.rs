@@ -414,6 +414,8 @@ impl TextTools {
                     let choices = controls.font_choices.clone();
                     if let Some(parent) = choices.parent().and_then(|p| p.downcast::<gtk::ScrolledWindow>().ok()) {
                         parent.set_child(None::<&gtk::Widget>);
+                    } else if let Some(parent) = choices.parent().and_then(|p| p.downcast::<gtk::Viewport>().ok()) {
+                        parent.set_child(None::<&gtk::Widget>);
                     }
                     let list = gtk::ScrolledWindow::new();
                     list.set_widget_name("text-font-list");
@@ -456,7 +458,8 @@ impl TextTools {
                             child = w.next_sibling();
                             if let Some(b) = w.downcast_ref::<gtk::Button>() {
                                 w.set_visible(
-                                    b.label().is_some_and(|s| s.to_lowercase().contains(&query)),
+                                    matches!(w.widget_name().as_str(), "language-choice-off" | "language-choice-default")
+                                        || b.label().is_some_and(|s| s.to_lowercase().contains(&query)),
                                 );
                             }
                         }

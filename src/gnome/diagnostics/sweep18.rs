@@ -369,7 +369,7 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
 }
 
 thread_local! { static TEXT_POINTER_GEOMETRY: RefCell<std::collections::HashMap<String, ([f64;4],u8)>> = RefCell::new(std::collections::HashMap::new()); }
-fn text_pointer_target(marker: &str, pop: &gtk::Popover, widget: &impl IsA<gtk::Widget>) -> bool {
+pub(super) fn text_pointer_target(marker: &str, pop: &gtk::Popover, widget: &impl IsA<gtk::Widget>) -> bool {
     use gdk::prelude::PopupExt;
     let r = widget.as_ref().compute_bounds(pop).unwrap();
     let (tx, ty) = pop.surface_transform();

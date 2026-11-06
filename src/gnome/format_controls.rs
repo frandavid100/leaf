@@ -176,7 +176,7 @@ pub(super) fn panel_color(
     let picker = embedded_color_chooser("element-background-chooser", initial.as_deref(), move |hex| {
         let Some(ui) = weak_ui.upgrade().filter(|u| !u.closed.get()) else { return false };
         let Some(window) = weak_window.upgrade().filter(|w| w.is_visible()) else { return false };
-        match format_execute(&ui, command, serde_json::json!({"color":hex})) {
+        match immediate_format(&ui, command, serde_json::json!({"color":hex})) {
             Ok(()) => true,
             Err(e) => { window.add_toast(Toast::new(&e)); false }
         }

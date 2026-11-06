@@ -616,7 +616,7 @@ impl ParagraphPopover {
             let Some(s) = weak.upgrade() else { return false };
             let Some(ui) = s.ui.upgrade().filter(|u| !u.closed.get()) else { return false };
             let args = serde_json::json!({"color":hex});
-            match format_execute(&ui, "para.shading", args.clone()) {
+            match immediate_format(&ui, "para.shading", args.clone()) {
                 Ok(()) => { s.shade.replace(hex.into()); s.last_applied.borrow_mut().insert("para.shading".into(), args); true },
                 Err(e) => { s.message.set_text(&e); s.message.set_visible(true); false }
             }
@@ -912,7 +912,7 @@ impl ParagraphPopover {
                             edge["color"] = serde_json::json!(hex);
                         }
                     }
-                    match format_execute(&ui, "para.set", serde_json::json!({"props":{"borders":borders}})) {
+                    match immediate_format(&ui, "para.set", serde_json::json!({"props":{"borders":borders}})) {
                         Ok(()) => { s.remember_property("para.borders", &args, &ui); true },
                         Err(e) => { s.message.set_text(&e); s.message.set_visible(true); false }
                     }

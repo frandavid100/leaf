@@ -40,7 +40,7 @@ impl ElementsPanel {
             });
         }
     }
-    fn home(&self) {
+    pub(super) fn home(&self) {
         self.active.replace("home".into());
         self.header.home();
         self.stack.set_visible_child_name("home");

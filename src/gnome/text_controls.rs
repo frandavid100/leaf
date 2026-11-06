@@ -59,6 +59,9 @@ pub(super) fn immediate_format(
     let changed = {
         let mut current = ui.current.borrow_mut();
         let d = current.as_mut().ok_or(wordcraft_gnome::t!("No document"))?;
+        if command == "leaf.highlight" {
+            wordcraft_gnome::highlight::register(&mut d.session);
+        }
         if wordcraft_gnome::text_properties::formatting_matches(&d.session, command, &args) {
             return Ok(());
         }

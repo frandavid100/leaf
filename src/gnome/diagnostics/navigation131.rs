@@ -123,11 +123,13 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
             }
             9 => {
                 let h = u.host.upgrade().unwrap();
+                check_headers(&selected_ui(&h).unwrap(), &h.window);
                 h.tabs
                     .set_selected_page(u.tab_page.borrow().as_ref().unwrap());
             }
             10 => {
                 let h = u.host.upgrade().unwrap();
+                check_headers(&u, &h.window);
                 if let Some((page, _)) = other.borrow_mut().take() {
                     h.tabs.close_page(&page);
                 }
@@ -148,6 +150,7 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                 filter.set_selected(0);
             }
             11 => {
+                check_headers(&u, &u.host.upgrade().unwrap().window);
                 u.review.borrow().as_ref().unwrap().show(None);
                 {
                     let mut c = u.current.borrow_mut();

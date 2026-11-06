@@ -26,6 +26,7 @@ pub(super) struct FormatHeader {
 impl FormatHeader {
     pub(super) fn home(&self) {
         self.label.set_text(&self.title);
+        self.label.set_tooltip_text(Some(&self.title));
         let parent = self.parent_back.borrow().clone();
         self.arrow.set_visible(parent.is_some());
         self.button.set_can_target(parent.is_some());
@@ -34,6 +35,7 @@ impl FormatHeader {
     }
     pub(super) fn back(&self, label: &str, callback: impl Fn() + 'static) {
         self.label.set_text(label);
+        self.label.set_tooltip_text(Some(label));
         self.arrow.set_visible(true);
         self.button.set_can_target(true);
         self.button.set_focusable(true);
@@ -338,7 +340,8 @@ pub(super) fn embedded_color_chooser(
     let last = Rc::new(RefCell::new(None::<String>));
     let previous = last.clone();
     let action: Rc<dyn Fn(&str)> = Rc::new(move |hex| {
-        if !guard.get() && previous.borrow().as_deref() != Some(hex) && apply(hex) {
+        let changed = previous.borrow().as_deref() != Some(hex);
+        if !guard.get() && changed && apply(hex) {
             previous.replace(Some(hex.into()));
         }
     });
