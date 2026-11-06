@@ -7,7 +7,7 @@ if [[ "$leaf_runner" = *.sh ]]; then leaf_cmd=(bash "$leaf_runner"); fi
 "${leaf_cmd[@]}" --text18-pointer-test 2>"$log" &
 leaf_pid=$!
 trap 'scrot "${log%.log}-failure.png" 2>/dev/null || true; kill "$leaf_pid" 2>/dev/null || true' EXIT
-for marker in TEXT18_INK_ARROW TEXT18_BLUE TEXT18_INK_BODY TEXT18_UNDERLINE_ARROW TEXT18_DOUBLE TEXT18_UNDERLINE_OFF TEXT18_UNDERLINE_ON; do
+for marker in TEXT18_INK_ARROW TEXT18_BLUE TEXT18_INK_BACK TEXT18_INK_BODY TEXT18_INK_AGAIN TEXT18_UNDERLINE_ARROW TEXT18_DOUBLE TEXT18_UNDERLINE_OFF TEXT18_UNDERLINE_ON; do
   for attempt in $(seq 1 250); do
     grep -q "^$marker " "$log" && break
     kill -0 "$leaf_pid" || { cat "$log"; exit 1; }

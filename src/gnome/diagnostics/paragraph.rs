@@ -5,6 +5,7 @@ pub(super) fn paragraph_ui_test(
     menu: &gtk::MenuButton,
     app: &Application,
 ) {
+    s.header.pin.set_active(true);
     menu.popup();
     let ui = s.ui.upgrade().unwrap();
     let click = |name: &str| {
@@ -32,6 +33,8 @@ pub(super) fn paragraph_ui_test(
     assert_eq!(s.stack.visible_child_name().as_deref(), Some("detail"));
     click("paragraph-list-•");
     assert!(selection_paragraph(&ui)["numbering"].is_object());
+    click("paragraph-back");
+    assert_eq!(s.header.label.text(), wordcraft_gnome::t!("List"));
     click("paragraph-back");
     click("paragraph-more-spacing");
     click("paragraph-line-1.5");

@@ -801,6 +801,12 @@ pub(super) fn install_outline(
 
 pub(super) fn install_navigation_switching(ui: &Rc<Ui>) {
     let weak = Rc::downgrade(ui);
+    ui.sidebar_pages.connect_visible_child_name_notify(move |stack| {
+        if let Some(ui) = weak.upgrade() {
+            ui.sidebar_filters.set_visible(stack.visible_child_name().as_deref() == Some("navigation"));
+        }
+    });
+    let weak = Rc::downgrade(ui);
     ui.navigation_pages
         .connect_visible_child_name_notify(move |stack| {
             let Some(ui) = weak.upgrade() else { return };

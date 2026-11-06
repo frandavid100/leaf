@@ -298,12 +298,12 @@ pub(super) struct InlineColor {
 #[allow(deprecated)]
 impl InlineColor {
     pub(super) fn sync(&self, color: Option<&str>) {
+        self.syncing.set(true);
         if let Some(rgba) = color.and_then(|c| gdk::RGBA::parse(c).ok()) {
-            self.syncing.set(true);
             self.widget.set_rgba(&rgba);
-            self.last.borrow_mut().take();
-            self.syncing.set(false);
         }
+        self.last.borrow_mut().take();
+        self.syncing.set(false);
     }
 }
 #[allow(deprecated)]
@@ -425,7 +425,13 @@ pub(super) fn property_split(open: &gtk::Button, repeat: &gtk::Button) -> adw::S
     arrow.set_tooltip_text(repeat.tooltip_text().as_deref());
     arrow.set_sensitive(repeat.is_sensitive());
     let action = repeat.clone();
-    arrow.set_create_popup_func(move |_| action.emit_clicked());
+    arrow.set_create_popup_func(move |button| {
+        action.emit_clicked();
+        let weak = button.downgrade();
+        glib::idle_add_local_once(move || {
+            if let Some(button) = weak.upgrade() { button.set_active(false); }
+        });
+    });
     let target = arrow.downgrade();
     repeat.connect_sensitive_notify(move |source| {
         if let Some(target) = target.upgrade() {

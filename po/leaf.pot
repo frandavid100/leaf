@@ -45,7 +45,7 @@ msgstr ""
 msgid "Add Comment"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1025
+#: src/gnome/paragraph.rs:1032
 msgid "Add Left Tab Stop"
 msgstr ""
 
@@ -77,7 +77,7 @@ msgstr ""
 msgid "Alignment: {value}"
 msgstr ""
 
-#: src/gnome/navigation.rs:717 src/gnome/paragraph.rs:923 src/gnome/review.rs:424 src/gnome/tables.rs:389
+#: src/gnome/navigation.rs:717 src/gnome/paragraph.rs:930 src/gnome/review.rs:424 src/gnome/tables.rs:389
 msgid "All"
 msgstr ""
 
@@ -89,11 +89,11 @@ msgstr ""
 msgid "Allow Row to Split Across Pages"
 msgstr ""
 
-#: src/gnome/adaptive.rs:696
+#: src/gnome/adaptive.rs:698
 msgid "Annotation"
 msgstr ""
 
-#: src/gnome/adaptive.rs:375 src/gnome/adaptive.rs:571
+#: src/gnome/adaptive.rs:375 src/gnome/adaptive.rs:573
 msgid "Annotations"
 msgstr ""
 
@@ -109,7 +109,7 @@ msgstr ""
 msgid "Apply Last Border Settings"
 msgstr ""
 
-#: src/gnome/adaptive.rs:843 src/gnome/adaptive.rs:844
+#: src/gnome/adaptive.rs:845 src/gnome/adaptive.rs:846
 msgid "Apply Last Font"
 msgstr ""
 
@@ -117,7 +117,7 @@ msgstr ""
 msgid "Apply Last Highlight"
 msgstr ""
 
-#: src/gnome/adaptive.rs:864 src/gnome/adaptive.rs:865
+#: src/gnome/adaptive.rs:866 src/gnome/adaptive.rs:867
 msgid "Apply Last Language"
 msgstr ""
 
@@ -133,7 +133,7 @@ msgstr ""
 msgid "Apply Last Text Color"
 msgstr ""
 
-#: src/gnome/adaptive.rs:701
+#: src/gnome/adaptive.rs:703
 msgid "Apply Phonetic Guide"
 msgstr ""
 
@@ -165,7 +165,7 @@ msgstr ""
 msgid "Apply to All Borders"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1012
+#: src/gnome/paragraph.rs:1019
 msgid "Ascending (A–Z)"
 msgstr ""
 
@@ -257,7 +257,7 @@ msgstr ""
 msgid "Borders and Shading"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:248 src/gnome/paragraph.rs:927 src/gnome/tables.rs:394
+#: src/gnome/document_properties_dialog.rs:248 src/gnome/paragraph.rs:934 src/gnome/tables.rs:394
 msgid "Bottom"
 msgstr ""
 
@@ -285,7 +285,7 @@ msgstr ""
 msgid "Breaks"
 msgstr ""
 
-#: src/gnome/paragraph.rs:985
+#: src/gnome/paragraph.rs:992
 msgid "Breaks and Pagination"
 msgstr ""
 
@@ -305,11 +305,11 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/gnome/adaptive.rs:603
+#: src/gnome/adaptive.rs:605
 msgid "Capitalization"
 msgstr ""
 
-#: src/gnome/adaptive.rs:551
+#: src/gnome/adaptive.rs:553
 msgid "Capitalize Each Word"
 msgstr ""
 
@@ -357,7 +357,7 @@ msgstr ""
 msgid "Centered"
 msgstr ""
 
-#: src/gnome/adaptive.rs:374 src/gnome/adaptive.rs:546 src/gnome/adaptive.rs:572
+#: src/gnome/adaptive.rs:374 src/gnome/adaptive.rs:548 src/gnome/adaptive.rs:574
 msgid "Change Case"
 msgstr ""
 
@@ -373,11 +373,11 @@ msgstr ""
 msgid "Character Border"
 msgstr ""
 
-#: src/gnome/adaptive.rs:595
+#: src/gnome/adaptive.rs:597
 msgid "Character Formatting"
 msgstr ""
 
-#: src/gnome/adaptive.rs:622
+#: src/gnome/adaptive.rs:624
 msgid "Character Spacing"
 msgstr ""
 
@@ -421,7 +421,7 @@ msgstr ""
 msgid "Choose…"
 msgstr ""
 
-#: src/gnome/adaptive.rs:681
+#: src/gnome/adaptive.rs:683
 msgid "Circle"
 msgstr ""
 
@@ -429,11 +429,11 @@ msgstr ""
 msgid "Clear All Formatting"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1038
+#: src/gnome/paragraph.rs:1045
 msgid "Clear Tab Stops"
 msgstr ""
 
-#: src/gnome/adaptive.rs:584
+#: src/gnome/adaptive.rs:586
 msgid "Clear Text Formatting"
 msgstr ""
 
@@ -461,7 +461,7 @@ msgstr ""
 msgid "Collapse Section"
 msgstr ""
 
-#: src/gnome/adaptive.rs:373 src/gnome/adaptive.rs:570
+#: src/gnome/adaptive.rs:373 src/gnome/adaptive.rs:572
 msgid "Color and Effects"
 msgstr ""
 
@@ -697,7 +697,7 @@ msgstr ""
 msgid "Decrease Indent"
 msgstr ""
 
-#: src/gnome/adaptive.rs:618
+#: src/gnome/adaptive.rs:620
 msgid "Decrease Size"
 msgstr ""
 
@@ -705,7 +705,7 @@ msgstr ""
 msgid "Default Language for New Documents"
 msgstr ""
 
-#: src/gnome/adaptive.rs:474 src/gnome/adaptive.rs:774
+#: src/gnome/adaptive.rs:476 src/gnome/adaptive.rs:776
 msgid "Default language"
 msgstr ""
 
@@ -761,7 +761,7 @@ msgstr ""
 msgid "Deletion"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1018
+#: src/gnome/paragraph.rs:1025
 msgid "Descending (Z–A)"
 msgstr ""
 
@@ -773,11 +773,11 @@ msgstr ""
 msgid "Destination Type"
 msgstr ""
 
-#: src/gnome/adaptive.rs:684
+#: src/gnome/adaptive.rs:686
 msgid "Diamond"
 msgstr ""
 
-#: src/gnome/adaptive.rs:534
+#: src/gnome/adaptive.rs:536
 msgid "Dictionary installed."
 msgstr ""
 
@@ -793,7 +793,7 @@ msgstr ""
 msgid "Different Odd and Even Pages"
 msgstr ""
 
-#: src/gnome/paragraph.rs:956
+#: src/gnome/paragraph.rs:963
 msgid "Direction and Formatting"
 msgstr ""
 
@@ -825,11 +825,11 @@ msgstr ""
 msgid "Distribute Rows Evenly"
 msgstr ""
 
-#: src/gnome/paragraph.rs:395 src/gnome/paragraph.rs:688 src/gnome/paragraph.rs:958
+#: src/gnome/paragraph.rs:395 src/gnome/paragraph.rs:688 src/gnome/paragraph.rs:965
 msgid "Distributed Alignment"
 msgstr ""
 
-#: src/gnome/adaptive.rs:168 src/gnome/adaptive.rs:473
+#: src/gnome/adaptive.rs:168 src/gnome/adaptive.rs:475
 msgid "Do Not Check"
 msgstr ""
 
@@ -953,7 +953,7 @@ msgstr ""
 msgid "Editing and Search"
 msgstr ""
 
-#: src/gnome/adaptive.rs:662
+#: src/gnome/adaptive.rs:664
 msgid "Effects"
 msgstr ""
 
@@ -965,7 +965,7 @@ msgstr ""
 msgid "Emboss"
 msgstr ""
 
-#: src/gnome/adaptive.rs:666
+#: src/gnome/adaptive.rs:668
 msgid "Embossed"
 msgstr ""
 
@@ -973,7 +973,7 @@ msgstr ""
 msgid "Enclose Characters"
 msgstr ""
 
-#: src/gnome/adaptive.rs:679
+#: src/gnome/adaptive.rs:681
 msgid "Enclosed Characters"
 msgstr ""
 
@@ -997,7 +997,7 @@ msgstr ""
 msgid "Engrave"
 msgstr ""
 
-#: src/gnome/adaptive.rs:667
+#: src/gnome/adaptive.rs:669
 msgid "Engraved"
 msgstr ""
 
@@ -1005,7 +1005,7 @@ msgstr ""
 msgid "Enter Six Hexadecimal Characters, for Example 808080"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1075
+#: src/gnome/paragraph.rs:1082
 msgid "Enter Six RGB Digits, for Example 2266AA"
 msgstr ""
 
@@ -1137,7 +1137,7 @@ msgstr ""
 msgid "Following Spacing (mm)"
 msgstr ""
 
-#: src/gnome/adaptive.rs:224 src/gnome/adaptive.rs:370 src/gnome/adaptive.rs:788 src/gnome/adaptive.rs:833 src/gnome/diagnostics/format136.rs:61 src/gnome/diagnostics/format136.rs:76 src/gnome/tab.rs:270 src/gnome/tab.rs:273 src/gnome/text_controls.rs:451
+#: src/gnome/adaptive.rs:224 src/gnome/adaptive.rs:370 src/gnome/adaptive.rs:790 src/gnome/adaptive.rs:835 src/gnome/diagnostics/format136.rs:61 src/gnome/diagnostics/format136.rs:76 src/gnome/tab.rs:270 src/gnome/tab.rs:273 src/gnome/text_controls.rs:451
 msgid "Font"
 msgstr ""
 
@@ -1157,7 +1157,7 @@ msgstr ""
 msgid "Font Size in Points"
 msgstr ""
 
-#: src/gnome/adaptive.rs:372 src/gnome/adaptive.rs:569
+#: src/gnome/adaptive.rs:372 src/gnome/adaptive.rs:571
 msgid "Font and Characters"
 msgstr ""
 
@@ -1281,7 +1281,7 @@ msgstr ""
 msgid "Hidden"
 msgstr ""
 
-#: src/gnome/adaptive.rs:608
+#: src/gnome/adaptive.rs:610
 msgid "Hidden Text"
 msgstr ""
 
@@ -1293,7 +1293,7 @@ msgstr ""
 msgid "Horizontal"
 msgstr ""
 
-#: src/gnome/paragraph.rs:930
+#: src/gnome/paragraph.rs:937
 msgid "Horizontal Line"
 msgstr ""
 
@@ -1369,7 +1369,7 @@ msgstr ""
 msgid "Increase Indent"
 msgstr ""
 
-#: src/gnome/adaptive.rs:617
+#: src/gnome/adaptive.rs:619
 msgid "Increase Size"
 msgstr ""
 
@@ -1449,11 +1449,11 @@ msgstr ""
 msgid "Insertion"
 msgstr ""
 
-#: src/gnome/paragraph.rs:925 src/gnome/tables.rs:391
+#: src/gnome/paragraph.rs:932 src/gnome/tables.rs:391
 msgid "Inside"
 msgstr ""
 
-#: src/gnome/adaptive.rs:503
+#: src/gnome/adaptive.rs:505
 msgid "Install Additional Languages…"
 msgstr ""
 
@@ -1461,7 +1461,7 @@ msgstr ""
 msgid "Interface"
 msgstr ""
 
-#: src/gnome/adaptive.rs:552
+#: src/gnome/adaptive.rs:554
 msgid "Invert"
 msgstr ""
 
@@ -1485,11 +1485,11 @@ msgstr ""
 msgid "Keep Existing Links"
 msgstr ""
 
-#: src/gnome/paragraph.rs:993
+#: src/gnome/paragraph.rs:1000
 msgid "Keep Lines Together"
 msgstr ""
 
-#: src/gnome/paragraph.rs:988
+#: src/gnome/paragraph.rs:995
 msgid "Keep with Next"
 msgstr ""
 
@@ -1505,7 +1505,7 @@ msgstr ""
 msgid "Landscape"
 msgstr ""
 
-#: src/gnome/adaptive.rs:198 src/gnome/adaptive.rs:371 src/gnome/adaptive.rs:446 src/gnome/diagnostics/format136.rs:62 src/gnome/document_properties_dialog.rs:358 src/gnome/tab.rs:292
+#: src/gnome/adaptive.rs:198 src/gnome/adaptive.rs:371 src/gnome/adaptive.rs:448 src/gnome/diagnostics/format136.rs:62 src/gnome/document_properties_dialog.rs:358 src/gnome/tab.rs:292
 msgid "Language"
 msgstr ""
 
@@ -1541,7 +1541,7 @@ msgstr ""
 msgid "Leaf is an experimental GTK4 and libadwaita document editor powered by WordCraft."
 msgstr ""
 
-#: src/gnome/paragraph.rs:802 src/gnome/paragraph.rs:928 src/gnome/tables.rs:212 src/gnome/tables.rs:395
+#: src/gnome/paragraph.rs:802 src/gnome/paragraph.rs:935 src/gnome/tables.rs:212 src/gnome/tables.rs:395
 msgid "Left"
 msgstr ""
 
@@ -1553,7 +1553,7 @@ msgstr ""
 msgid "Left Column"
 msgstr ""
 
-#: src/gnome/paragraph.rs:964
+#: src/gnome/paragraph.rs:971
 msgid "Left to Right"
 msgstr ""
 
@@ -1617,7 +1617,7 @@ msgstr ""
 msgid "Link…"
 msgstr ""
 
-#: src/gnome/diagnostics/format136.rs:66 src/gnome/paragraph.rs:437 src/gnome/paragraph.rs:633
+#: src/gnome/diagnostics/format136.rs:66 src/gnome/diagnostics/paragraph.rs:37 src/gnome/paragraph.rs:437 src/gnome/paragraph.rs:633
 msgid "List"
 msgstr ""
 
@@ -1649,7 +1649,7 @@ msgstr ""
 msgid "Minimum Row Height"
 msgstr ""
 
-#: src/gnome/adaptive.rs:169 src/gnome/adaptive.rs:227 src/gnome/paragraph.rs:396 src/gnome/paragraph.rs:422 src/gnome/paragraph.rs:466 src/gnome/paragraph.rs:473 src/gnome/paragraph.rs:485 src/gnome/selection_view.rs:158 src/gnome/text_palette.rs:474 src/gnome/text_palette.rs:494
+#: src/gnome/adaptive.rs:169 src/gnome/adaptive.rs:227 src/gnome/paragraph.rs:396 src/gnome/paragraph.rs:422 src/gnome/paragraph.rs:466 src/gnome/paragraph.rs:473 src/gnome/paragraph.rs:485 src/gnome/paragraph.rs:893 src/gnome/selection_view.rs:158 src/gnome/text_palette.rs:474 src/gnome/text_palette.rs:494
 msgid "Mixed"
 msgstr ""
 
@@ -1749,7 +1749,7 @@ msgstr ""
 msgid "No Background Color"
 msgstr ""
 
-#: src/gnome/paragraph.rs:922
+#: src/gnome/paragraph.rs:929
 msgid "No Borders"
 msgstr ""
 
@@ -1833,7 +1833,7 @@ msgstr ""
 msgid "Odd Page"
 msgstr ""
 
-#: src/gnome/adaptive.rs:636
+#: src/gnome/adaptive.rs:638
 msgid "Offset (pt)"
 msgstr ""
 
@@ -1869,11 +1869,11 @@ msgstr ""
 msgid "Orientation"
 msgstr ""
 
-#: src/gnome/adaptive.rs:664 src/gnome/paragraph.rs:762
+#: src/gnome/adaptive.rs:666 src/gnome/paragraph.rs:762
 msgid "Outline"
 msgstr ""
 
-#: src/gnome/paragraph.rs:924 src/gnome/tables.rs:390
+#: src/gnome/paragraph.rs:931 src/gnome/tables.rs:390
 msgid "Outside"
 msgstr ""
 
@@ -1893,7 +1893,7 @@ msgstr ""
 msgid "Page Break"
 msgstr ""
 
-#: src/gnome/paragraph.rs:998
+#: src/gnome/paragraph.rs:1005
 msgid "Page Break Before"
 msgstr ""
 
@@ -1929,7 +1929,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:226 src/gnome/context.rs:507 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/format136.rs:187 src/gnome/diagnostics/register.rs:174 src/gnome/paragraph.rs:1124 src/gnome/tab.rs:311 src/gnome/tab.rs:579
+#: src/gnome/context.rs:226 src/gnome/context.rs:507 src/gnome/diagnostics/context.rs:146 src/gnome/diagnostics/format136.rs:187 src/gnome/diagnostics/register.rs:174 src/gnome/paragraph.rs:1131 src/gnome/tab.rs:311 src/gnome/tab.rs:579
 msgid "Paragraph"
 msgstr ""
 
@@ -1953,11 +1953,11 @@ msgstr ""
 msgid "Paste"
 msgstr ""
 
-#: src/gnome/adaptive.rs:697
+#: src/gnome/adaptive.rs:699
 msgid "Phonetic Annotation"
 msgstr ""
 
-#: src/gnome/adaptive.rs:694
+#: src/gnome/adaptive.rs:696
 msgid "Phonetic Guide"
 msgstr ""
 
@@ -1997,7 +1997,7 @@ msgstr ""
 msgid "Portrait"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1024
+#: src/gnome/paragraph.rs:1031
 msgid "Position (pt)"
 msgstr ""
 
@@ -2037,7 +2037,7 @@ msgstr ""
 msgid "Quadratic Formula"
 msgstr ""
 
-#: src/gnome/paragraph.rs:890
+#: src/gnome/paragraph.rs:897
 msgid "RGB Color, for Example 2266AA"
 msgstr ""
 
@@ -2097,11 +2097,11 @@ msgstr ""
 msgid "Remove List"
 msgstr ""
 
-#: src/gnome/adaptive.rs:720
+#: src/gnome/adaptive.rs:722
 msgid "Remove Phonetic Guide"
 msgstr ""
 
-#: src/gnome/adaptive.rs:690
+#: src/gnome/adaptive.rs:692
 msgid "Remove Shape"
 msgstr ""
 
@@ -2177,7 +2177,7 @@ msgstr ""
 msgid "Reply to Comment"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1044
+#: src/gnome/paragraph.rs:1051
 msgid "Reset Paragraph Formatting"
 msgstr ""
 
@@ -2237,7 +2237,7 @@ msgstr ""
 msgid "Reviewing Pane"
 msgstr ""
 
-#: src/gnome/paragraph.rs:808 src/gnome/paragraph.rs:929 src/gnome/tables.rs:214 src/gnome/tables.rs:396
+#: src/gnome/paragraph.rs:808 src/gnome/paragraph.rs:936 src/gnome/tables.rs:214 src/gnome/tables.rs:396
 msgid "Right"
 msgstr ""
 
@@ -2249,7 +2249,7 @@ msgstr ""
 msgid "Right Column"
 msgstr ""
 
-#: src/gnome/paragraph.rs:970
+#: src/gnome/paragraph.rs:977
 msgid "Right to Left"
 msgstr ""
 
@@ -2369,7 +2369,7 @@ msgstr ""
 msgid "Save comments as DOCX. ODT does not preserve them."
 msgstr ""
 
-#: src/gnome/adaptive.rs:630
+#: src/gnome/adaptive.rs:632
 msgid "Scale (%)"
 msgstr ""
 
@@ -2457,7 +2457,7 @@ msgstr ""
 msgid "Select Column"
 msgstr ""
 
-#: src/gnome/adaptive.rs:516
+#: src/gnome/adaptive.rs:518
 msgid "Select Matching Hunspell .aff and .dic Files"
 msgstr ""
 
@@ -2517,7 +2517,7 @@ msgstr ""
 msgid "Selection Borders and Shading"
 msgstr ""
 
-#: src/gnome/adaptive.rs:548
+#: src/gnome/adaptive.rs:550
 msgid "Sentence case"
 msgstr ""
 
@@ -2529,7 +2529,7 @@ msgstr ""
 msgid "Shading"
 msgstr ""
 
-#: src/gnome/adaptive.rs:665
+#: src/gnome/adaptive.rs:667
 msgid "Shadow"
 msgstr ""
 
@@ -2545,7 +2545,7 @@ msgstr ""
 msgid "Show All Tabs"
 msgstr ""
 
-#: src/gnome/paragraph.rs:981
+#: src/gnome/paragraph.rs:988
 msgid "Show Formatting Marks (¶)"
 msgstr ""
 
@@ -2573,11 +2573,11 @@ msgstr ""
 msgid "Single"
 msgstr ""
 
-#: src/gnome/adaptive.rs:848 src/gnome/tables.rs:206
+#: src/gnome/adaptive.rs:850 src/gnome/tables.rs:206
 msgid "Size"
 msgstr ""
 
-#: src/gnome/adaptive.rs:699
+#: src/gnome/adaptive.rs:701
 msgid "Size (pt)"
 msgstr ""
 
@@ -2589,7 +2589,7 @@ msgstr ""
 msgid "Size must be between 1 and 4000 points"
 msgstr ""
 
-#: src/gnome/adaptive.rs:598
+#: src/gnome/adaptive.rs:600
 msgid "Small Caps"
 msgstr ""
 
@@ -2601,7 +2601,7 @@ msgstr ""
 msgid "Sort"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1010
+#: src/gnome/paragraph.rs:1017
 msgid "Sort Selected Paragraphs"
 msgstr ""
 
@@ -2613,7 +2613,7 @@ msgstr ""
 msgid "Spacing (mm)"
 msgstr ""
 
-#: src/gnome/adaptive.rs:624 src/gnome/adaptive.rs:700
+#: src/gnome/adaptive.rs:626 src/gnome/adaptive.rs:702
 msgid "Spacing (pt)"
 msgstr ""
 
@@ -2657,7 +2657,7 @@ msgstr ""
 msgid "Split Table"
 msgstr ""
 
-#: src/gnome/adaptive.rs:682
+#: src/gnome/adaptive.rs:684
 msgid "Square"
 msgstr ""
 
@@ -2717,7 +2717,7 @@ msgstr ""
 msgid "Subject"
 msgstr ""
 
-#: src/gnome/adaptive.rs:616 src/gnome/equations.rs:39
+#: src/gnome/adaptive.rs:618 src/gnome/equations.rs:39
 msgid "Subscript"
 msgstr ""
 
@@ -2745,7 +2745,7 @@ msgstr ""
 msgid "Tab Character"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1023
+#: src/gnome/paragraph.rs:1030
 msgid "Tab Stops"
 msgstr ""
 
@@ -2805,7 +2805,7 @@ msgstr ""
 msgid "Text Above and Below"
 msgstr ""
 
-#: src/gnome/adaptive.rs:669
+#: src/gnome/adaptive.rs:671
 msgid "Text Border"
 msgstr ""
 
@@ -3013,7 +3013,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:245 src/gnome/paragraph.rs:926 src/gnome/tables.rs:393
+#: src/gnome/document_properties_dialog.rs:245 src/gnome/paragraph.rs:933 src/gnome/tables.rs:393
 msgid "Top"
 msgstr ""
 
@@ -3053,7 +3053,7 @@ msgstr ""
 msgid "Trailing indent"
 msgstr ""
 
-#: src/gnome/adaptive.rs:683
+#: src/gnome/adaptive.rs:685
 msgid "Triangle"
 msgstr ""
 
@@ -3069,7 +3069,7 @@ msgstr ""
 msgid "Typing"
 msgstr ""
 
-#: src/gnome/adaptive.rs:550
+#: src/gnome/adaptive.rs:552
 msgid "UPPERCASE"
 msgstr ""
 
@@ -3181,7 +3181,7 @@ msgstr ""
 msgid "Whole Document"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1003
+#: src/gnome/paragraph.rs:1010
 msgid "Widow and Orphan Control"
 msgstr ""
 
@@ -3249,7 +3249,7 @@ msgstr ""
 msgid "document;word;docx;odt;write;"
 msgstr ""
 
-#: src/gnome/adaptive.rs:549
+#: src/gnome/adaptive.rs:551
 msgid "lowercase"
 msgstr ""
 

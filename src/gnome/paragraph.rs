@@ -886,6 +886,13 @@ impl ParagraphPopover {
             "borders" => {
                 self.title(wordcraft_gnome::t!("Borders"));
                 let width = self.number(wordcraft_gnome::t!("Width (pt)"), 0.5, 0.25, 12.0);
+                if let Some(edges) = state["borders"].as_object() {
+                    let widths = edges.values().filter_map(|v| v["width"].as_f64()).collect::<Vec<_>>();
+                    if let Some(first) = widths.first() {
+                        if widths.iter().all(|n| (n-first).abs() < 0.001) { width.set_value(*first); }
+                        else { width.set_text(""); width.set_tooltip_text(Some(wordcraft_gnome::t!("Mixed"))); }
+                    }
+                }
                 let color = gtk::Entry::new();
                 color.set_placeholder_text(Some(wordcraft_gnome::t!(
                     "RGB Color, for Example 2266AA"

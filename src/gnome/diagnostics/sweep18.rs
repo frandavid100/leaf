@@ -468,13 +468,14 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 phase.set(2);
             }
             2 if palette.last_ink.borrow().as_str() == "1C71D8" => {
-                assert_eq!(
-                    selection_character(&u)["color"],
-                    json!({"Rgb":[28,113,216]})
-                );
-                select_paragraph(&u, 1);
-                settled.set(0);
-                phase.set(8);
+                assert_eq!(selection_character(&u)["color"], json!({"Rgb":[28,113,216]}));
+                if !text_pointer_target("TEXT18_INK_BACK", &pop, &tools.header.button) {
+                    return glib::ControlFlow::Continue;
+                }
+                phase.set(11);
+            }
+            11 if tools.stack.visible_child_name().as_deref() == Some("main") => {
+                select_paragraph(&u, 1); settled.set(0); phase.set(8);
             }
             8 => {
                 settled.set(settled.get() + 1);
@@ -490,10 +491,18 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
             }
             3 if selection_character(&u)["color"] == json!({"Rgb":[28,113,216]}) => {
                 assert_eq!(tools.stack.visible_child_name().as_deref(), Some("main"));
+                select_paragraph(&u, 2); settled.set(0); phase.set(9);
+            }
+            9 => {
+                settled.set(settled.get()+1);
+                if settled.get() < 5 { return glib::ControlFlow::Continue; }
+                let repeat = find_widget(&pop, "text-ink-apply").unwrap();
+                if !text_pointer_target("TEXT18_INK_AGAIN", &pop, &repeat) { return glib::ControlFlow::Continue; }
+                phase.set(10);
+            }
+            10 if selection_character(&u)["color"] == json!({"Rgb":[28,113,216]}) => {
                 let arrow = palette.underline.clone().upcast::<gtk::Widget>();
-                if !text_pointer_target("TEXT18_UNDERLINE_ARROW", &pop, &arrow) {
-                    return glib::ControlFlow::Continue;
-                }
+                if !text_pointer_target("TEXT18_UNDERLINE_ARROW", &pop, &arrow) { return glib::ControlFlow::Continue; }
                 phase.set(4);
             }
             4 if tools.stack.visible_child_name().as_deref() == Some("detail") => {
