@@ -828,7 +828,7 @@ jobs:
         if: always()
         run: |
           shopt -s nullglob
-          evidence=(followup19-*.log followup19-*.png sweep20-pointer-*.log sweep20-pointer-*.png)
+          evidence=(followup19-*.log followup19-*.png sweep20-pointer-*.log sweep20-pointer-*.png interactions-pointer.log vista-texto.png)
           if (( ${#evidence[@]} )); then cp "${evidence[@]}" dist/; fi
       - name: Verify installed Flatpak print portal handoff
         run: |
