@@ -430,7 +430,10 @@ pub(super) fn issue_sweep_ui_test(
     tools.page("font");
     let fonts = find_widget(&text_popover, "text-font-list").unwrap();
     assert!(fonts.is_mapped(), "Font opens the list immediately");
-    let preview = find_widget(&fonts, "font-preview").unwrap().downcast::<gtk::Label>().unwrap();
+    let preview = find_widget(&fonts, "font-preview")
+        .unwrap()
+        .downcast::<gtk::Label>()
+        .unwrap();
     let attributes = preview.attributes().unwrap().to_string();
     assert!(attributes.contains("family"));
     assert!(

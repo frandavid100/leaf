@@ -168,19 +168,38 @@ pub(super) fn panel_color(
     g.add(&title);
     let initial = if command == "table.shading" {
         let mut current = ui.current.borrow_mut();
-        current.as_mut().and_then(|d| d.session.run("table.properties", &serde_json::json!({})).ok())
+        current
+            .as_mut()
+            .and_then(|d| {
+                d.session
+                    .run("table.properties", &serde_json::json!({}))
+                    .ok()
+            })
             .and_then(|v| rgb_value_hex(&v["cell"]["shading"]))
-    } else { None };
+    } else {
+        None
+    };
     let weak_ui = Rc::downgrade(ui);
     let weak_window = w.downgrade();
-    let picker = embedded_color_chooser("element-background-chooser", initial.as_deref(), move |hex| {
-        let Some(ui) = weak_ui.upgrade().filter(|u| !u.closed.get()) else { return false };
-        let Some(window) = weak_window.upgrade().filter(|w| w.is_visible()) else { return false };
-        match immediate_format(&ui, command, serde_json::json!({"color":hex})) {
-            Ok(()) => true,
-            Err(e) => { window.add_toast(Toast::new(&e)); false }
-        }
-    });
+    let picker = embedded_color_chooser(
+        "element-background-chooser",
+        initial.as_deref(),
+        move |hex| {
+            let Some(ui) = weak_ui.upgrade().filter(|u| !u.closed.get()) else {
+                return false;
+            };
+            let Some(window) = weak_window.upgrade().filter(|w| w.is_visible()) else {
+                return false;
+            };
+            match immediate_format(&ui, command, serde_json::json!({"color":hex})) {
+                Ok(()) => true,
+                Err(e) => {
+                    window.add_toast(Toast::new(&e));
+                    false
+                }
+            }
+        },
+    );
     accessible_name(&picker.widget, label);
     g.add(&picker.widget);
 }

@@ -4,6 +4,14 @@ Actualizada: 6 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## En validación: segunda candidata alpha.31
+
+Completar #134–#136 con la corrección de captura de eventos de la regla, que ya
+supera la regresión de fuentes instalada. Cabeceras, selector y formato están
+implementados; los cierres y la entrega esperan la validación completa de los
+mismos archivos. [Evidencia y límites](docs/ALPHA31_UI_VALIDATION.md).
+Sin publicación automática: David debe probar y aprobar la candidata.
+
 ## Preparada para David: candidata alpha.31 — Revisión
 
 Cerrado #133 sobre la interfaz publicada en Alpha.30. Candidata comprobada en

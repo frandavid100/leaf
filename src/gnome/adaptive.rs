@@ -405,16 +405,29 @@ impl TextTools {
                     };
                     // A single searchable selection page, with the existing
                     // editable and command/debounce controller retained.
-                    if let Some(parent) = ui.font_input.parent().and_then(|p| p.downcast::<gtk::Box>().ok()) {
+                    if let Some(parent) = ui
+                        .font_input
+                        .parent()
+                        .and_then(|p| p.downcast::<gtk::Box>().ok())
+                    {
                         parent.remove(&ui.font_input);
                     }
                     clear_box(&self.font_page);
-                    ui.font_input.set_icon_from_icon_name(gtk::EntryIconPosition::Primary, Some("edit-find-symbolic"));
+                    ui.font_input.set_icon_from_icon_name(
+                        gtk::EntryIconPosition::Primary,
+                        Some("edit-find-symbolic"),
+                    );
                     self.font_page.append(&ui.font_input);
                     let choices = controls.font_choices.clone();
-                    if let Some(parent) = choices.parent().and_then(|p| p.downcast::<gtk::ScrolledWindow>().ok()) {
+                    if let Some(parent) = choices
+                        .parent()
+                        .and_then(|p| p.downcast::<gtk::ScrolledWindow>().ok())
+                    {
                         parent.set_child(None::<&gtk::Widget>);
-                    } else if let Some(parent) = choices.parent().and_then(|p| p.downcast::<gtk::Viewport>().ok()) {
+                    } else if let Some(parent) = choices
+                        .parent()
+                        .and_then(|p| p.downcast::<gtk::Viewport>().ok())
+                    {
                         parent.set_child(None::<&gtk::Widget>);
                     }
                     let list = gtk::ScrolledWindow::new();
@@ -458,8 +471,12 @@ impl TextTools {
                             child = w.next_sibling();
                             if let Some(b) = w.downcast_ref::<gtk::Button>() {
                                 w.set_visible(
-                                    matches!(w.widget_name().as_str(), "language-choice-off" | "language-choice-default")
-                                        || b.label().is_some_and(|s| s.to_lowercase().contains(&query)),
+                                    matches!(
+                                        w.widget_name().as_str(),
+                                        "language-choice-off" | "language-choice-default"
+                                    ) || b
+                                        .label()
+                                        .is_some_and(|s| s.to_lowercase().contains(&query)),
                                 );
                             }
                         }

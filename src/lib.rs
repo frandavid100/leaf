@@ -2,8 +2,8 @@
 //! La lógica de apertura, paginación y renderizado no utiliza GTK ni egui.
 
 extern crate self as wordcraft_gnome;
-pub mod i18n;
 pub mod highlight;
+pub mod i18n;
 
 use std::path::Path;
 use wordcraft_doc::Document;

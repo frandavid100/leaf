@@ -222,8 +222,16 @@ fn followup_stage_ready(t: Rc<Followup>, stage: u8) {
                 );
             }
             3 | 9 => {
-                assert!(find_widget(&t.menu.popover().unwrap(), "text-font-list").unwrap().is_mapped());
-                followup_emit(stage, "choices", &[followup_point(&u.font_input, &t.window)]);
+                assert!(
+                    find_widget(&t.menu.popover().unwrap(), "text-font-list")
+                        .unwrap()
+                        .is_mapped()
+                );
+                followup_emit(
+                    stage,
+                    "choices",
+                    &[followup_point(&u.font_input, &t.window)],
+                );
             }
             4 => followup_emit(stage, "escape", &[]),
             5 => {
@@ -439,12 +447,23 @@ fn followup_check(t: &Followup, stage: u8) {
                 assert!(pop.is_mapped(), "direct font list remains mapped");
                 let mut previews = Vec::new();
                 followup_font_labels(&pop, &mut previews);
-                assert_eq!(previews.iter().filter(|l| l.text() == t.family).count(), 1,
-                    "one visible name per family");
+                assert_eq!(
+                    previews.iter().filter(|l| l.text() == t.family).count(),
+                    1,
+                    "one visible name per family"
+                );
                 let preview = previews.into_iter().find(|l| l.text() == t.family).unwrap();
                 let selector = u.font_input.clone();
-                eprintln!("ISSUE19_FONT_GEOMETRY list={} preview={} ellipsized={}", pop.width(), preview.width(), preview.layout().is_ellipsized());
-                assert!((pop.width()-selector.width()).abs() <= 4, "direct font list uses the field width");
+                eprintln!(
+                    "ISSUE19_FONT_GEOMETRY list={} preview={} ellipsized={}",
+                    pop.width(),
+                    preview.width(),
+                    preview.layout().is_ellipsized()
+                );
+                assert!(
+                    (pop.width() - selector.width()).abs() <= 4,
+                    "direct font list uses the field width"
+                );
                 assert!(
                     preview.width() * 10 >= selector.width() * 6,
                     "font labels may not collapse into ellipses"

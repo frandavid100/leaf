@@ -53,8 +53,15 @@ fn native_palette_and_no_highlight_clear_custom_shading() {
         s.run("leaf.highlight", &json!({"color":color})).unwrap();
         assert!(highlight::matches(&s, color));
     }
-    assert!(wordcraft_gnome::text_properties::selected_resolved(&s).iter().all(|p| p.shading.is_none() && p.highlight.is_none()));
+    assert!(
+        wordcraft_gnome::text_properties::selected_resolved(&s)
+            .iter()
+            .all(|p| p.shading.is_none() && p.highlight.is_none())
+    );
     let before = s.doc.clone();
-    assert!(s.run("leaf.highlight", &json!({"color":"invalid"})).is_err());
+    assert!(
+        s.run("leaf.highlight", &json!({"color":"invalid"}))
+            .is_err()
+    );
     assert_eq!(s.doc, before);
 }

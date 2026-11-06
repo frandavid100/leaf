@@ -93,7 +93,10 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                 u.search.borrow().as_ref().unwrap().show(false);
             }
             6 => {
-                assert!(!u.sidebar_filters.is_visible(), "Search does not show Navigation/Review filters");
+                assert!(
+                    !u.sidebar_filters.is_visible(),
+                    "Search does not show Navigation/Review filters"
+                );
                 u.search.borrow().as_ref().unwrap().toggle.set_active(false);
                 assert!(u.sidebar_filters.is_visible());
                 assert_eq!(

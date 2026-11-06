@@ -8,7 +8,9 @@ pub fn formatting_matches(s: &Session, command: &str, args: &serde_json::Value) 
         return false;
     }
     match command {
-        "leaf.highlight" => args["color"].as_str().is_some_and(|v| crate::highlight::matches(s, v)),
+        "leaf.highlight" => args["color"]
+            .as_str()
+            .is_some_and(|v| crate::highlight::matches(s, v)),
         "format.font" => args["name"]
             .as_str()
             .is_some_and(|font| props.iter().all(|p| p.font == font)),

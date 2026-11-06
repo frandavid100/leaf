@@ -315,8 +315,12 @@ pub(super) fn embedded_color_chooser(
     let picker = gtk::ColorChooserWidget::new();
     picker.set_widget_name(name);
     picker.set_use_alpha(false);
-    let colors = ["#000000", "#FFFFFF", "#E01B24", "#1C71D8", "#26A269", "#813D9C", "#FFFF00", "#2266AA"]
-        .iter().map(|c| gdk::RGBA::parse(*c).unwrap()).collect::<Vec<_>>();
+    let colors = [
+        "#000000", "#FFFFFF", "#E01B24", "#1C71D8", "#26A269", "#813D9C", "#FFFF00", "#2266AA",
+    ]
+    .iter()
+    .map(|c| gdk::RGBA::parse(*c).unwrap())
+    .collect::<Vec<_>>();
     picker.add_palette(gtk::Orientation::Horizontal, 4, &colors);
     if let Some(color) = initial.and_then(|s| gdk::RGBA::parse(s).ok()) {
         picker.set_rgba(&color);
@@ -356,15 +360,28 @@ pub(super) fn embedded_color_chooser(
             action(&rgba_hex(rgba));
         }
     });
-    Rc::new(InlineColor { widget: picker, syncing, last })
+    Rc::new(InlineColor {
+        widget: picker,
+        syncing,
+        last,
+    })
 }
 pub(super) fn rgba_hex(c: &gdk::RGBA) -> String {
-    format!("{:02X}{:02X}{:02X}", (c.red() * 255.).round() as u8,
-        (c.green() * 255.).round() as u8, (c.blue() * 255.).round() as u8)
+    format!(
+        "{:02X}{:02X}{:02X}",
+        (c.red() * 255.).round() as u8,
+        (c.green() * 255.).round() as u8,
+        (c.blue() * 255.).round() as u8
+    )
 }
 pub(super) fn rgb_value_hex(v: &serde_json::Value) -> Option<String> {
     let c = v.as_array().filter(|a| a.len() == 3)?;
-    Some(format!("#{:02X}{:02X}{:02X}", c[0].as_u64()?, c[1].as_u64()?, c[2].as_u64()?))
+    Some(format!(
+        "#{:02X}{:02X}{:02X}",
+        c[0].as_u64()?,
+        c[1].as_u64()?,
+        c[2].as_u64()?
+    ))
 }
 
 pub(super) fn popover_pin(pop: &gtk::Popover) -> gtk::ToggleButton {
@@ -410,12 +427,16 @@ pub(super) fn property_split(open: &gtk::Button, repeat: &gtk::Button) -> adw::S
     open.connect_notify_local(Some("tooltip-text"), move |source, _| {
         if let Some(target) = target.upgrade() {
             target.set_tooltip_text(source.tooltip_text().as_deref());
-            if let Some(label) = source.tooltip_text() { accessible_name(&target, &label); }
+            if let Some(label) = source.tooltip_text() {
+                accessible_name(&target, &label);
+            }
         }
     });
     let target = native.downgrade();
     open.connect_sensitive_notify(move |source| {
-        if let Some(target) = target.upgrade() { target.set_sensitive(source.is_sensitive()); }
+        if let Some(target) = target.upgrade() {
+            target.set_sensitive(source.is_sensitive());
+        }
     });
 
     // Forward activation through a public callback, retaining the original
@@ -429,7 +450,9 @@ pub(super) fn property_split(open: &gtk::Button, repeat: &gtk::Button) -> adw::S
         action.emit_clicked();
         let weak = button.downgrade();
         glib::idle_add_local_once(move || {
-            if let Some(button) = weak.upgrade() { button.set_active(false); }
+            if let Some(button) = weak.upgrade() {
+                button.set_active(false);
+            }
         });
     });
     let target = arrow.downgrade();

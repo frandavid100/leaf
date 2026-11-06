@@ -26,7 +26,15 @@ pub(super) fn install_diagnostics(
     controls: DiagnosticControls<'_>,
 ) {
     if std::env::args().any(|a| a == "--format136-ui-test") && host.tabs.n_pages() == 1 {
-        format136_ui_test(ui, window, app, controls.text_menu, controls.align_menu, controls.style_menu, controls.style_popover);
+        format136_ui_test(
+            ui,
+            window,
+            app,
+            controls.text_menu,
+            controls.align_menu,
+            controls.style_menu,
+            controls.style_popover,
+        );
     }
     if std::env::args().any(|a| a == "--alpha31-ui-test") && host.tabs.n_pages() == 1 {
         alpha31_ui_test(ui, window, app);

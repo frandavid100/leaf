@@ -883,7 +883,11 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     let weak = Rc::downgrade(&r);
     margins.connect_drag_begin(move |gesture, x, y| {
         let Some(r) = weak.upgrade() else { return };
-        if !r.ui.upgrade().is_some_and(|u| document_pointer_surface(&u, gesture)) {
+        if !r
+            .ui
+            .upgrade()
+            .is_some_and(|u| document_pointer_surface(&u, gesture))
+        {
             gesture.set_state(gtk::EventSequenceState::Denied);
             return;
         }
@@ -969,7 +973,11 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
     let weak = Rc::downgrade(&r);
     marker_motion.connect_motion(move |controller, x, y| {
         if let Some(r) = weak.upgrade() {
-            if !r.ui.upgrade().is_some_and(|u| document_pointer_surface(&u, controller)) {
+            if !r
+                .ui
+                .upgrade()
+                .is_some_and(|u| document_pointer_surface(&u, controller))
+            {
                 return;
             }
             if r.drag.borrow().is_none() {
@@ -1004,7 +1012,11 @@ pub(super) fn install_ruler(ui: &Rc<Ui>, overlay: &gtk::Overlay) -> Rc<Ruler> {
         let Some(r) = weak.upgrade() else {
             return;
         };
-        if !r.ui.upgrade().is_some_and(|u| document_pointer_surface(&u, g)) {
+        if !r
+            .ui
+            .upgrade()
+            .is_some_and(|u| document_pointer_surface(&u, g))
+        {
             g.set_state(gtk::EventSequenceState::Denied);
             return;
         }

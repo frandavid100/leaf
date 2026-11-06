@@ -12,6 +12,18 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## En validación: segunda candidata alpha.31 — Interfaz nativa
+
+David ha pedido completar también #134–#136 sin reintroducir el fallo de entrada.
+La captura de eventos de la regla invadía la superficie del selector de fuentes;
+la corrección aislada ya supera la misma regresión instalada. Se han implementado
+cabeceras alineadas, selector Páginas/Estructura y menús nativos de formato.
+[Alcance y validación de esta pasada](docs/ALPHA31_UI_VALIDATION.md).
+
+Pendientes las baterías nativa e instalada completas, capturas e identidad del
+paquete final. #134–#136 siguen abiertos; todavía no hay una segunda candidata
+aceptada ni publicación de Alpha.31. La primera candidata se conserva debajo.
+
 ## Preparada: candidata alpha.31 — Revisión
 
 [Candidata para probar](https://github.com/frandavid100/leaf/actions/runs/42230422027/artifacts/13510771784), sin publicación automática.

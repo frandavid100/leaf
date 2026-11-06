@@ -289,7 +289,12 @@ impl TextControls {
             || ["sans", "serif", "monospace"].contains(&value.to_ascii_lowercase().as_str());
         if !valid {
             let query = value.to_lowercase();
-            if query.is_empty() || self.family_names().iter().any(|f| f.to_lowercase().contains(&query)) {
+            if query.is_empty()
+                || self
+                    .family_names()
+                    .iter()
+                    .any(|f| f.to_lowercase().contains(&query))
+            {
                 self.font.remove_css_class("error");
             } else {
                 self.font.add_css_class("error");
@@ -366,7 +371,11 @@ impl TextControls {
         for family in self.family_names() {
             let button = gtk::Button::new();
             button.add_css_class("flat");
-            if current.as_ref().and_then(|s| s["font"].as_str()).is_some_and(|name| name.eq_ignore_ascii_case(&family)) {
+            if current
+                .as_ref()
+                .and_then(|s| s["font"].as_str())
+                .is_some_and(|name| name.eq_ignore_ascii_case(&family))
+            {
                 button.add_css_class("current-style");
             }
             let preview = gtk::Label::new(Some(&family));
@@ -402,7 +411,10 @@ impl TextControls {
         let mut child = self.font_choices.first_child();
         while let Some(row) = child {
             child = row.next_sibling();
-            let name = row.first_child().and_then(|w| w.downcast::<gtk::Label>().ok()).map(|l| l.text().to_lowercase());
+            let name = row
+                .first_child()
+                .and_then(|w| w.downcast::<gtk::Label>().ok())
+                .map(|l| l.text().to_lowercase());
             row.set_visible(name.is_some_and(|name| name.contains(&query)));
         }
     }

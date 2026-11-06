@@ -610,20 +610,45 @@ impl ParagraphPopover {
     }
     fn shading_controls(self: &Rc<Self>) {
         self.title(wordcraft_gnome::t!("Shading"));
-        let initial = self.ui.upgrade().and_then(|u| rgb_value_hex(&selection_paragraph(&u)["shading"]));
+        let initial = self
+            .ui
+            .upgrade()
+            .and_then(|u| rgb_value_hex(&selection_paragraph(&u)["shading"]));
         let weak = Rc::downgrade(self);
-        let picker = embedded_color_chooser("paragraph-shading-chooser", initial.as_deref(), move |hex| {
-            let Some(s) = weak.upgrade() else { return false };
-            let Some(ui) = s.ui.upgrade().filter(|u| !u.closed.get()) else { return false };
-            let args = serde_json::json!({"color":hex});
-            match immediate_format(&ui, "para.shading", args.clone()) {
-                Ok(()) => { s.shade.replace(hex.into()); s.last_applied.borrow_mut().insert("para.shading".into(), args); true },
-                Err(e) => { s.message.set_text(&e); s.message.set_visible(true); false }
-            }
-        });
+        let picker = embedded_color_chooser(
+            "paragraph-shading-chooser",
+            initial.as_deref(),
+            move |hex| {
+                let Some(s) = weak.upgrade() else {
+                    return false;
+                };
+                let Some(ui) = s.ui.upgrade().filter(|u| !u.closed.get()) else {
+                    return false;
+                };
+                let args = serde_json::json!({"color":hex});
+                match immediate_format(&ui, "para.shading", args.clone()) {
+                    Ok(()) => {
+                        s.shade.replace(hex.into());
+                        s.last_applied
+                            .borrow_mut()
+                            .insert("para.shading".into(), args);
+                        true
+                    }
+                    Err(e) => {
+                        s.message.set_text(&e);
+                        s.message.set_visible(true);
+                        false
+                    }
+                }
+            },
+        );
         self.detail.append(&picker.widget);
-        self.button(wordcraft_gnome::t!("No Shading"), "paragraph-shade-none",
-            "para.shading", serde_json::json!({"color":null}));
+        self.button(
+            wordcraft_gnome::t!("No Shading"),
+            "paragraph-shade-none",
+            "para.shading",
+            serde_json::json!({"color":null}),
+        );
     }
     pub(super) fn page(self: &Rc<Self>, page: &str) {
         self.active_page.replace(Some(page.to_string()));
@@ -887,10 +912,17 @@ impl ParagraphPopover {
                 self.title(wordcraft_gnome::t!("Borders"));
                 let width = self.number(wordcraft_gnome::t!("Width (pt)"), 0.5, 0.25, 12.0);
                 if let Some(edges) = state["borders"].as_object() {
-                    let widths = edges.values().filter_map(|v| v["width"].as_f64()).collect::<Vec<_>>();
+                    let widths = edges
+                        .values()
+                        .filter_map(|v| v["width"].as_f64())
+                        .collect::<Vec<_>>();
                     if let Some(first) = widths.first() {
-                        if widths.iter().all(|n| (n-first).abs() < 0.001) { width.set_value(*first); }
-                        else { width.set_text(""); width.set_tooltip_text(Some(wordcraft_gnome::t!("Mixed"))); }
+                        if widths.iter().all(|n| (n - first).abs() < 0.001) {
+                            width.set_value(*first);
+                        } else {
+                            width.set_text("");
+                            width.set_tooltip_text(Some(wordcraft_gnome::t!("Mixed")));
+                        }
                     }
                 }
                 let color = gtk::Entry::new();
@@ -898,32 +930,58 @@ impl ParagraphPopover {
                     "RGB Color, for Example 2266AA"
                 )));
                 color.set_text("000000");
-                if let Some(hex) = state["borders"].as_object().and_then(|b| b.values().find_map(|v| rgb_value_hex(&v["color"]))) {
+                if let Some(hex) = state["borders"]
+                    .as_object()
+                    .and_then(|b| b.values().find_map(|v| rgb_value_hex(&v["color"])))
+                {
                     color.set_text(hex.trim_start_matches('#'));
                 }
                 let entry = color.clone();
                 let weak = Rc::downgrade(self);
-                let picker = embedded_color_chooser("paragraph-border-chooser", Some(&format!("#{}", color.text())), move |hex| {
-                    entry.set_text(hex);
-                    let Some(s) = weak.upgrade() else { return false };
-                    let Some(ui) = s.ui.upgrade().filter(|u| !u.closed.get()) else { return false };
-                    let current = selection_paragraph(&ui);
-                    let has_border = current["borders"].as_object().is_some_and(|b| b.values().any(|v| v.is_object()));
-                    let mut args = s.border.borrow().clone();
-                    args["color"] = serde_json::json!(hex);
-                    s.border.replace(args.clone());
-                    if !has_border { return true; }
-                    let mut borders = current["borders"].clone();
-                    if let Some(edges) = borders.as_object_mut() {
-                        for edge in edges.values_mut().filter(|v| v.is_object()) {
-                            edge["color"] = serde_json::json!(hex);
+                let picker = embedded_color_chooser(
+                    "paragraph-border-chooser",
+                    Some(&format!("#{}", color.text())),
+                    move |hex| {
+                        entry.set_text(hex);
+                        let Some(s) = weak.upgrade() else {
+                            return false;
+                        };
+                        let Some(ui) = s.ui.upgrade().filter(|u| !u.closed.get()) else {
+                            return false;
+                        };
+                        let current = selection_paragraph(&ui);
+                        let has_border = current["borders"]
+                            .as_object()
+                            .is_some_and(|b| b.values().any(|v| v.is_object()));
+                        let mut args = s.border.borrow().clone();
+                        args["color"] = serde_json::json!(hex);
+                        s.border.replace(args.clone());
+                        if !has_border {
+                            return true;
                         }
-                    }
-                    match immediate_format(&ui, "para.set", serde_json::json!({"props":{"borders":borders}})) {
-                        Ok(()) => { s.remember_property("para.borders", &args, &ui); true },
-                        Err(e) => { s.message.set_text(&e); s.message.set_visible(true); false }
-                    }
-                });
+                        let mut borders = current["borders"].clone();
+                        if let Some(edges) = borders.as_object_mut() {
+                            for edge in edges.values_mut().filter(|v| v.is_object()) {
+                                edge["color"] = serde_json::json!(hex);
+                            }
+                        }
+                        match immediate_format(
+                            &ui,
+                            "para.set",
+                            serde_json::json!({"props":{"borders":borders}}),
+                        ) {
+                            Ok(()) => {
+                                s.remember_property("para.borders", &args, &ui);
+                                true
+                            }
+                            Err(e) => {
+                                s.message.set_text(&e);
+                                s.message.set_visible(true);
+                                false
+                            }
+                        }
+                    },
+                );
                 self.detail.append(&picker.widget);
                 for (label, kind) in [
                     (wordcraft_gnome::t!("No Borders"), "none"),

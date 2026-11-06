@@ -253,7 +253,10 @@ impl TextPalette {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return false;
         };
-        let result = if matches!(command, "format.color" | "format.underlineColor" | "leaf.highlight") {
+        let result = if matches!(
+            command,
+            "format.color" | "format.underlineColor" | "leaf.highlight"
+        ) {
             immediate_format(&ui, command, args.clone())
         } else {
             format_execute(&ui, command, args.clone())
@@ -358,7 +361,8 @@ impl TextPalette {
         }
         let weak = Rc::downgrade(self);
         let picker = embedded_color_chooser("text-underline-chooser", None, move |hex| {
-            weak.upgrade().is_some_and(|s| s.apply("format.underlineColor", json!({"color":hex})))
+            weak.upgrade()
+                .is_some_and(|s| s.apply("format.underlineColor", json!({"color":hex})))
         });
         root.append(&picker.widget);
         self.pickers.borrow_mut().insert("underline", picker);
@@ -406,17 +410,31 @@ impl TextPalette {
         } else {
             wordcraft_gnome::t!("No Highlight")
         });
-        clear.set_widget_name(if name == "ink" { "ink-choice-auto" } else { "highlight-choice-none" });
+        clear.set_widget_name(if name == "ink" {
+            "ink-choice-auto"
+        } else {
+            "highlight-choice-none"
+        });
         root.append(&clear);
         let weak = Rc::downgrade(self);
         clear.connect_clicked(move |_| {
             if let Some(s) = weak.upgrade() {
-                if name == "ink" { s.choose_ink("auto"); } else { s.choose_highlight("none"); }
+                if name == "ink" {
+                    s.choose_ink("auto");
+                } else {
+                    s.choose_highlight("none");
+                }
             }
         });
         let weak = Rc::downgrade(self);
         let picker = embedded_color_chooser(&format!("text-{name}-chooser"), None, move |hex| {
-            weak.upgrade().is_some_and(|s| if name == "ink" { s.choose_ink(hex) } else { s.choose_highlight(hex) })
+            weak.upgrade().is_some_and(|s| {
+                if name == "ink" {
+                    s.choose_ink(hex)
+                } else {
+                    s.choose_highlight(hex)
+                }
+            })
         });
         root.append(&picker.widget);
         self.pickers.borrow_mut().insert(name, picker);
@@ -428,9 +446,16 @@ impl TextPalette {
         let Some(d) = current.as_ref() else { return };
         let resolved = wordcraft_gnome::text_properties::selected_resolved(&d.session);
         let Some(p) = resolved.first() else { return };
-        let ink = match p.color { wordcraft_doc::props::TextColor::Rgb(c) => Some(c), _ => None };
+        let ink = match p.color {
+            wordcraft_doc::props::TextColor::Rgb(c) => Some(c),
+            _ => None,
+        };
         let background = p.highlight.or(p.shading);
-        for (name, color) in [("ink", ink), ("highlight", background), ("underline", p.underline_color)] {
+        for (name, color) in [
+            ("ink", ink),
+            ("highlight", background),
+            ("underline", p.underline_color),
+        ] {
             if let Some(picker) = self.pickers.borrow().get(name) {
                 let hex = color.map(|c| format!("#{}", c.hex()));
                 picker.sync(hex.as_deref());
