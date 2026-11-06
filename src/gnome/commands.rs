@@ -108,7 +108,7 @@ pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
                 refresh_thumbnails(&ui);
                 refresh_selection(&ui);
                 restore_picture_anchor(&ui, picture_anchor);
-                if was_canvas_focused {
+                if was_canvas_focused || ui.document_box.has_focus() {
                     caret_ensure_visible(&ui);
                     ui.document_box.grab_focus();
                 }
@@ -125,7 +125,7 @@ pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
                 .filter(|u| !u.closed.get() && document_identity(u) == identity)
             {
                 restore_picture_anchor(&ui, picture_anchor);
-                if was_canvas_focused {
+                if was_canvas_focused || ui.document_box.has_focus() {
                     caret_ensure_visible(&ui);
                 }
             }
