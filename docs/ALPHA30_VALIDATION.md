@@ -50,7 +50,8 @@ La prueba general de interacción abre ahora Fuente en su página interna real.
 
 ## Identidad de la revisión final
 
-Se registrará la fuente definitiva al completar la CI optimizada y la instalación.
+Fuente nativa: `3f898df0f42f280d932eaa2bb3790dd6b45d1190`.
+[Validación nativa](https://github.com/frandavid100/leaf/actions/runs/42184270093).
 La candidata exige éxito completo y equivalencia de fuentes, y compara byte a
 byte el ejecutable empaquetado con el ejecutable optimizado validado.
 
