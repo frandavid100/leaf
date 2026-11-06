@@ -432,24 +432,58 @@ pub(super) fn paint_reference_cue(
         .and_then(|p| wordcraft_gnome::references::toc_span_at(&d.session, p))
         .or_else(|| wordcraft_gnome::references::toc_span_at(&d.session, &d.session.sel.focus));
     let Some((a, b)) = span else { return };
-    let rects = d
+    let layout = d.session.layout();
+    let Some(sheet) = layout.pages.get(page) else {
+        return;
+    };
+    let left = sheet.body.x;
+    let section = d
         .session
-        .layout()
-        .selection_rects(&d.session.doc, &a, &b, d.session.page_hint);
-    let bounds = rects
-        .into_iter()
-        .filter(|(p, _)| *p == page)
-        .map(|(_, r)| r)
-        .reduce(|mut a, b| {
-            let right = (a.x + a.w).max(b.x + b.w);
-            let bottom = (a.y + a.h).max(b.y + b.h);
-            a.x = a.x.min(b.x);
-            a.y = a.y.min(b.y);
-            a.w = right - a.x;
-            a.h = bottom - a.y;
-            a
-        });
-    let Some(r) = bounds else { return };
+        .doc
+        .section_index_of(a.path.0.first().copied().unwrap_or(0) as usize);
+    let columns = d
+        .session
+        .doc
+        .sections()
+        .get(section)
+        .map(|(_, p)| p.column_boxes())
+        .unwrap_or_else(|| vec![(0., sheet.body.w)]);
+    let rects = layout.selection_rects(&d.session.doc, &a, &b, d.session.page_hint);
+    // A continued TOC can occupy two columns. Keep each backing inside its
+    // own column, so following text in another column is never tinted.
+    let mut bounds = Vec::new();
+    for column in 0..columns.len() {
+        let bound = rects
+            .iter()
+            .filter(|(p, r)| {
+                if *p != page {
+                    return false;
+                }
+                let center = r.x + r.w / 2. - left;
+                columns
+                    .iter()
+                    .enumerate()
+                    .min_by(|(_, a), (_, b)| {
+                        let distance =
+                            |(x, w): &(f32, f32)| (x - center).max(0.).max(center - x - w);
+                        distance(a).total_cmp(&distance(b))
+                    })
+                    .is_some_and(|(index, _)| index == column)
+            })
+            .map(|(_, r)| *r)
+            .reduce(|mut a, b| {
+                let right = (a.x + a.w).max(b.x + b.w);
+                let bottom = (a.y + a.h).max(b.y + b.h);
+                a.x = a.x.min(b.x);
+                a.y = a.y.min(b.y);
+                a.w = right - a.x;
+                a.h = bottom - a.y;
+                a
+            });
+        if let Some(r) = bound {
+            bounds.push(r);
+        }
+    }
     let color = widget.style_context().color();
     let _ = cr.save();
     cr.set_source_rgba(
@@ -458,12 +492,14 @@ pub(super) fn paint_reference_cue(
         color.blue() as f64,
         0.06,
     );
-    cr.rectangle(
-        r.x as f64 * zoom - 3.,
-        r.y as f64 * zoom - 3.,
-        r.w as f64 * zoom + 6.,
-        r.h as f64 * zoom + 6.,
-    );
-    let _ = cr.fill();
+    for r in bounds {
+        cr.rectangle(
+            r.x as f64 * zoom - 3.,
+            r.y as f64 * zoom - 3.,
+            r.w as f64 * zoom + 6.,
+            r.h as f64 * zoom + 6.,
+        );
+        let _ = cr.fill();
+    }
     cr.restore().ok();
 }
