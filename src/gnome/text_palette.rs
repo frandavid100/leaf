@@ -114,8 +114,6 @@ impl TextPalette {
                 wordcraft_gnome::t!("Apply Last Highlight"),
             ),
         ] {
-            let row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-            row.add_css_class("linked");
             let open = style_menu_button(title);
             open.remove_css_class("flat");
             open.set_widget_name(name);
@@ -125,9 +123,7 @@ impl TextPalette {
             // Native linked buttons share one continuous background.
             apply.set_tooltip_text(Some(tip));
             accessible_name(&apply, tip);
-            row.append(&open);
-            row.append(&apply);
-            properties.append(&row);
+            // Assemble after setting the property content below.
             let content = gtk::Box::new(gtk::Orientation::Horizontal, 6);
             content.append(&gtk::Image::from_icon_name(if name == "text-ink" {
                 "font-select-symbolic"
@@ -142,6 +138,7 @@ impl TextPalette {
             content.append(&value);
             // Lower property rows have no navigation arrow.
             open.set_child(Some(&content));
+            properties.append(&property_split(&open, &apply));
             configs.push((open, apply, value));
         }
         let (ink, ink_apply, ink_value) = configs.remove(0);

@@ -4,6 +4,14 @@ Actualizada: 6 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## En curso: candidata alpha.31
+
+Pasada autorizada de issues; preparar candidata para la prueba de David, sin
+promoción automática. Prioridad: continuidad de Revisión (#133), cabeceras y
+selector de Navegación (#134/#135). #136 se mantiene parcial; #132 necesita
+reproducción en el entorno afectado. Los pendientes anteriores conservan sus
+límites y no se cierran por aproximación. [Validación](docs/ALPHA31_VALIDATION.md).
+
 ## Completado: alpha.30
 
 [Publicada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.30)

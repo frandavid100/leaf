@@ -48,43 +48,90 @@ pub fn description(issue: &Issue) -> String {
     }
 }
 
+/// Findings for one canonical paragraph, also used to revalidate retained UI entries.
+pub fn paragraph_issues(s: &Session, pos: &Pos) -> Vec<Issue> {
+    let Some(p) = s.doc.para_at(pos) else {
+        return Vec::new();
+    };
+    let runs = wordcraft_engine::layout::para::proof_runs(&s.doc, p, None);
+    wordcraft_engine::layout::para::paragraph_issues(
+        p,
+        &runs,
+        &s.prefs.spelling(),
+        true,
+        wordcraft_engine::layout::para::is_list_item(&s.doc, p),
+    )
+    .into_iter()
+    .map(|i| Issue {
+        start: Pos {
+            off: i.start,
+            ..pos.clone()
+        },
+        end: Pos {
+            off: i.end,
+            ..pos.clone()
+        },
+        text: p.text.get(i.start..i.end).unwrap_or("").into(),
+        message: i.message,
+        spelling: i.kind == wordcraft_engine::proof::IssueKind::Spelling,
+    })
+    .collect()
+}
 pub fn issues(s: &Session) -> Vec<Issue> {
     let mut out = Vec::new();
     for story in s.doc.shown_stories() {
         for path in s.doc.para_paths(story) {
-            let Some(p) = s.doc.para(story, &path) else {
-                continue;
-            };
-            let runs = wordcraft_engine::layout::para::proof_runs(&s.doc, p, None);
-            for i in wordcraft_engine::layout::para::paragraph_issues(
-                p,
-                &runs,
-                &s.prefs.spelling(),
-                true,
-                wordcraft_engine::layout::para::is_list_item(&s.doc, p),
-            ) {
-                out.push(Issue {
-                    start: Pos {
-                        story,
-                        path: path.clone(),
-                        off: i.start,
-                    },
-                    end: Pos {
-                        story,
-                        path: path.clone(),
-                        off: i.end,
-                    },
-                    text: p.text.get(i.start..i.end).unwrap_or("").into(),
-                    message: i.message,
-                    spelling: i.kind == wordcraft_engine::proof::IssueKind::Spelling,
-                });
-                if out.len() >= 500 {
-                    return out;
-                }
+            out.extend(paragraph_issues(
+                s,
+                &Pos {
+                    story,
+                    path,
+                    off: 0,
+                },
+            ));
+            if out.len() >= 500 {
+                out.truncate(500);
+                return out;
             }
         }
     }
     out
+}
+/// Remap only unchanged text outside a single changed span. Ambiguous/overlapping
+/// findings are discarded; paragraph proofing must still confirm the result.
+pub fn remap_issue(
+    old: &wordcraft_doc::Document,
+    new: &wordcraft_doc::Document,
+    i: &Issue,
+) -> Option<Issue> {
+    let before = &old.para_at(&i.start)?.text;
+    let after = &new.para_at(&i.start)?.text;
+    if before == after {
+        return Some(i.clone());
+    }
+    let prefix = before
+        .chars()
+        .zip(after.chars())
+        .take_while(|(a, b)| a == b)
+        .map(|(c, _)| c.len_utf8())
+        .sum::<usize>();
+    let suffix = before[prefix..]
+        .chars()
+        .rev()
+        .zip(after[prefix..].chars().rev())
+        .take_while(|(a, b)| a == b)
+        .map(|(c, _)| c.len_utf8())
+        .sum::<usize>();
+    let mut next = i.clone();
+    if i.end.off <= prefix {
+        return Some(next);
+    }
+    if i.start.off < before.len() - suffix {
+        return None;
+    }
+    next.start.off = after.len().checked_sub(before.len() - i.start.off)?;
+    next.end.off = after.len().checked_sub(before.len() - i.end.off)?;
+    Some(next)
 }
 pub fn at(s: &mut Session, pos: &Pos) -> Option<Issue> {
     let v = s.run("review.suggestions", &json!({"pos":pos})).ok()?;

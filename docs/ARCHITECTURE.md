@@ -151,3 +151,19 @@ public equation commands. Imported math must survive a linear round-trip before
 editing is enabled. The Alpha29 diagnostic and pointer driver exercise these
 controls in English/Spanish and normal/HiDPI, including the installed Flatpak.
 See [candidates](CANDIDATES.md) for the separate human approval/publication step.
+
+
+## Alpha31 derived review state
+
+SpellReview keeps a disposable snapshot only for finding remapping. A changed
+paragraph's retained findings must match current public proofing output; an
+overlapping or ambiguous changed span is discarded. Suggestions are recomputed
+for changed paragraphs. Cards are derived widgets, not a second document model.
+Their actions validate the live document id and the revalidated finding; cached
+comments/revisions resolve their canonical targets without weakening asynchronous
+dialog revision guards. Worker generations/revisions guard both success and error.
+
+The complete sidebar/editor header boxes share a vertical SizeGroup. Navigation's
+native DropDown drives the existing per-tab representation controller; private
+toggle state is not a second visible selector. Mapping restores saved browsing
+only when the document revision and editing target are unchanged.

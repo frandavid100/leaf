@@ -159,3 +159,40 @@ fn whole_document_language_updates_typing_without_losing_other_pending_format() 
     assert_eq!(s.pending.as_ref().unwrap().bold, Some(true));
     assert_eq!(s.pending.as_ref().unwrap().no_proof, Some(false));
 }
+
+#[test]
+fn retained_findings_remap_by_changed_span_and_revalidate_after_undo() {
+    proofing::initialize();
+    let mut s = Session::new(Document::from_text(
+        "The qqqretainedzz and qqqretainedzz.\nOther qqqwordzzz.",
+    ));
+    proofing::language(&mut s, "en-US", false, true).unwrap();
+    let old = s.doc.clone();
+    let original = proofing::issues(&s);
+    let first = original.iter().find(|i| i.text == "qqqretainedzz").unwrap();
+    let second = original
+        .iter()
+        .filter(|i| i.text == "qqqretainedzz")
+        .nth(1)
+        .unwrap();
+    proofing::replace(&mut s, first, "🙂 example").unwrap();
+    assert!(proofing::remap_issue(&old, &s.doc, first).is_none());
+    let remapped = proofing::remap_issue(&old, &s.doc, second).unwrap();
+    assert!(proofing::paragraph_issues(&s, &remapped.start).contains(&remapped));
+    assert!(remapped.start.off < second.start.off);
+    proofing::replace(&mut s, &remapped, "word").unwrap();
+    assert_eq!(
+        s.doc.plain_text(StoryRef::Body),
+        "The 🙂 example and word.\nOther qqqwordzzz."
+    );
+    s.run("edit.undo", &json!({})).unwrap();
+    let before_undo = s.doc.clone();
+    s.run("edit.undo", &json!({})).unwrap();
+    let restored = proofing::remap_issue(&before_undo, &s.doc, &remapped).unwrap();
+    assert_eq!(&restored, second);
+    let unrelated = original.iter().find(|i| i.text == "qqqwordzzz").unwrap();
+    assert_eq!(
+        proofing::remap_issue(&old, &s.doc, unrelated).as_ref(),
+        Some(unrelated)
+    );
+}
