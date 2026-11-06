@@ -65,8 +65,12 @@ pub(super) fn captions_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
     }
     std::fs::remove_file(file).unwrap();
     selection::set_caret(&mut s, &Pos::body(2, 0), false).unwrap();
-    s.run("insert.table", &json!({"rows":2,"cols":2})).unwrap();
     opened(ui, s, "Captions and exact targets");
+    table_command(ui, "insert.table", json!({"rows":2,"cols":2}));
+    assert!(
+        wordcraft_gnome::tables::in_table(&ui.current.borrow().as_ref().unwrap().session),
+        "creating a table does not require an existing table target"
+    );
     ui.sidebar.set_show_sidebar(false);
     ui.sidebar_button.set_active(false);
     zoom_to(ui, if compact { 0.5 } else { 0.85 });
