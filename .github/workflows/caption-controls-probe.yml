@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build: [standalone, combined]
+        build: [plain, signals]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,7 +21,7 @@ jobs:
         run: |
           sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|http://security.ubuntu.com/ubuntu|https://security.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
           sudo timeout 120s apt-get -o Acquire::Retries=1 update
-          sudo env DEBIAN_FRONTEND=noninteractive timeout 180s apt-get install -y --no-install-recommends flatpak xvfb xauth xdotool scrot dbus-x11 locales x11-utils xinput
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 180s apt-get install -y --no-install-recommends flatpak xvfb xauth xdotool scrot dbus-x11 locales x11-utils xinput libgtk-4-dev gcc pkg-config
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           sudo locale-gen en_US.UTF-8
           flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -32,6 +32,44 @@ jobs:
           run-id: 42296908566
           github-token: ${{ github.token }}
           path: candidate
+      - name: Compile read-only signal observer
+        run: |
+          mkdir -p out
+          cat > out/input-trace.c <<'CTRACE'
+          /* Temporary read-only signal tracing for the installed GTK control comparison. */
+          #include <gtk/gtk.h>
+          #include <stdio.h>
+          static gboolean trace(GSignalInvocationHint *hint, guint n, const GValue *v, gpointer unused) {
+            GObject *object = g_value_get_object(v);
+            const char *signal = g_signal_name(hint->signal_id);
+            if (GTK_IS_EVENT_CONTROLLER(object)) {
+              GtkEventController *c = GTK_EVENT_CONTROLLER(object);
+              GtkWidget *w = gtk_event_controller_get_widget(c);
+              GdkEvent *e = gtk_event_controller_get_current_event(c);
+              fprintf(stderr,"INPUT_TRACE time=%lld signal=%s controller=%s widget=%s/%s event=%d surface=%p state=%d\n",(long long)g_get_monotonic_time(),signal,G_OBJECT_TYPE_NAME(c),w?G_OBJECT_TYPE_NAME(w):"null",w?gtk_widget_get_name(w):"null",e?gdk_event_get_event_type(e):-1,e?(void*)gdk_event_get_surface(e):NULL,GTK_IS_GESTURE(c)?gtk_gesture_get_sequence_state(GTK_GESTURE(c),NULL):-1);
+            } else if (GTK_IS_BUTTON(object)) {
+              fprintf(stderr,"INPUT_TRACE time=%lld signal=%s widget=%s/%s\n",(long long)g_get_monotonic_time(),signal,G_OBJECT_TYPE_NAME(object),gtk_widget_get_name(GTK_WIDGET(object)));
+            }
+            return TRUE;
+          }
+          static void watch(GType t,const char *s) {
+            gpointer c = g_type_class_ref(t);
+            guint id=g_signal_lookup(s,t);
+            if(id)g_signal_add_emission_hook(id,0,trace,NULL,NULL);
+            g_type_class_unref(c);
+          }
+          static gboolean install(gpointer unused) {
+            watch(GTK_TYPE_GESTURE_CLICK,"pressed");
+            watch(GTK_TYPE_GESTURE_CLICK,"released");
+            watch(GTK_TYPE_GESTURE,"cancel");
+            watch(GTK_TYPE_GESTURE,"sequence-state-changed");
+            watch(GTK_TYPE_BUTTON,"clicked");
+            fprintf(stderr,"INPUT_TRACE installed\n");
+            return G_SOURCE_REMOVE;
+          }
+          __attribute__((constructor)) static void init(void) { g_idle_add(install,NULL); }
+          CTRACE
+          gcc -shared -fPIC $(pkg-config --cflags gtk4) out/input-trace.c -o out/input-trace.so
       - name: Install exact comparison binary
         run: |
           sha256sum candidate/Leaf-0.1.0-alpha.31-x86_64.flatpak
@@ -41,7 +79,9 @@ jobs:
           mkdir -p out "$HOME/.var/app/io.github.frandavid100.leaf/cache"
           cat > "$RUNNER_TEMP/installed.sh" <<'RUNNER'
           #!/usr/bin/env bash
-          exec flatpak run --user --branch=alpha --socket=x11 --nosocket=wayland --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GDK_DEBUG=events --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/bin/leaf "$@"' leaf "$@"
+          trace=()
+          if test "$BUILD" = signals; then trace=(--filesystem="$GITHUB_WORKSPACE/out:ro" --env=LD_PRELOAD="$GITHUB_WORKSPACE/out/input-trace.so"); fi
+          exec flatpak run "${trace[@]}" --user --branch=alpha --socket=x11 --nosocket=wayland --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/bin/leaf "$@"' leaf "$@"
           RUNNER
       - name: Trace unchanged pointer delivery alone and after earlier stages
         env:
@@ -55,20 +95,17 @@ jobs:
           cp tools/*pointer-test.sh out/tools/
           cat > "$RUNNER_TEMP/probe-session.sh" <<'PROBE'
           #!/usr/bin/env bash
-          xinput test-xi2 --root > xinput-events.log 2>&1 &
-          trace=$!
-          trap 'kill "$trace" 2>/dev/null || true' EXIT
           set +e
-          if test "$BUILD" = combined; then
+          if true; then
+            bash "$LEAF_PROBE_RUNNER" --review29-ui-test > review29.log 2>&1
+            echo "REVIEW_EXIT=$?"
             bash tools/alpha30-pointer-test.sh "$LEAF_PROBE_RUNNER" >alpha30-driver.log 2>&1
             echo "ALPHA30_EXIT=$?"
             bash tools/alpha31-pointer-test.sh "$LEAF_PROBE_RUNNER" >alpha31-driver.log 2>&1
             echo "ALPHA31_EXIT=$?"
           fi
-          xinput list --long > input-before-format.log
           bash tools/format136-pointer-test.sh "$LEAF_PROBE_RUNNER" >format-driver.log 2>&1
           echo "FORMAT_EXIT=$?" | tee format-result.log
-          xinput list --long > input-after-format.log
           bash tools/caption-pointer-test.sh "$LEAF_PROBE_RUNNER" >caption-driver.log 2>&1
           echo "CAPTION_EXIT=$?" | tee caption-result.log
           PROBE
