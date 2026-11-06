@@ -29,6 +29,10 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
             .unwrap()
             .downcast::<gtk::ScrolledWindow>()
             .unwrap();
+        let structure_button = find_widget(&u.sidebar, "sidebar-outline")
+            .unwrap()
+            .downcast::<gtk::ToggleButton>()
+            .unwrap();
         let filter = find_widget(&outline, "navigation-filter")
             .unwrap()
             .downcast::<gtk::DropDown>()
@@ -36,12 +40,12 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
         match phase.get() {
             0 => {
                 u.navigation_button.set_active(true);
-                u.representation.set_selected(0);
+                u.pages_button.set_active(true);
                 let a = u.thumbnails_scroll.vadjustment();
                 a.set_value((a.upper() - a.page_size()) * 0.35);
                 thumbs.set(a.value());
                 assert!(thumbs.get() > 20.);
-                u.representation.set_selected(1);
+                structure_button.set_active(true);
             }
             1 => {
                 filter.set_selected(2);
@@ -51,7 +55,7 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                 a.set_value((a.upper() - a.page_size()) * 0.45);
                 structure.set(a.value());
                 assert!(structure.get() > 20.);
-                u.representation.set_selected(0);
+                u.pages_button.set_active(true);
             }
             3 => {
                 assert!(
@@ -69,7 +73,7 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                     Some("thumbnails")
                 );
                 assert_eq!(u.sidebar_title.text(), wordcraft_gnome::t!("Navigation"));
-                u.representation.set_selected(1);
+                structure_button.set_active(true);
             }
             5 => {
                 assert_eq!(filter.selected(), 2);
@@ -109,9 +113,7 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                 );
                 assert!(
                     (outline.vadjustment().value() - structure.get()).abs() < 1.,
-                    "reopening preserves browsing: actual={} expected={}",
-                    outline.vadjustment().value(),
-                    structure.get()
+                    "reopening preserves browsing when the target is unchanged"
                 );
                 let h = u.host.upgrade().unwrap();
                 gio::prelude::ActionGroupExt::activate_action(&h.window, "new-tab", None);
@@ -135,9 +137,7 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                 assert_eq!(u.last_navigation.get(), "outline");
                 assert!(
                     (outline.vadjustment().value() - structure.get()).abs() < 1.,
-                    "document tabs retain their own sidebar state: actual={} expected={}",
-                    outline.vadjustment().value(),
-                    structure.get()
+                    "document tabs retain their own sidebar state"
                 );
                 assert!(
                     u.pages_button

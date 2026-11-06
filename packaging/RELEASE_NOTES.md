@@ -1,11 +1,21 @@
-Leaf 0.1.0-alpha.31 candidate improves Review continuity and sidebar layout.
+Leaf 0.1.0-alpha.31 candidate improves Review continuity.
 
-- Applying a correction keeps valid remaining findings visible during rechecking. Changed text offsets are remapped and revalidated; stale results and targets are rejected. Unaffected correction, comment and tracked-change cards are reused.
-- Sidebar and editor headers share native sizing for their complete regions, including filters, representation choice and document tabs.
-- Navigation uses a native Pages/Structure dropdown matching Review. It retains document-specific filters, expansion and independent browsing positions without moving the editing target.
+Applying a correction keeps valid remaining findings visible during rechecking.
+Changed text offsets are remapped and revalidated; stale results and targets are
+rejected. Unaffected correction, comment and tracked-change cards are reused.
+The current filter, scrolling context and sensible focus are retained. Undo/Redo
+and a 40-finding DOCX were checked with real native input.
 
-This is a candidate for maintainer testing, not an automatically published release. #136 remains open. Its experimental formatting changes were withdrawn from this candidate after installed font paste regressed while the published Alpha30 control passed on the same runtime. The published Text/Paragraph controls are retained. Caption ownership, the documented engine limitations and the unresolved original-document/platform reports remain open.
+This is a candidate for maintainer testing. The published Alpha30 header,
+Navigation and formatting interface is retained. Experiments for #134–#136 are
+not included because they did not pass the installed input regression, and those
+issues remain open. Caption ownership, documented engine limits and unresolved
+original-document/platform reports also remain open.
 
-The original DOCX from #132 was inspected without altering its text or formatting. Its overlap did not reproduce in the local layout, PNG/PDF or Leaf window with the tested fonts, so the report remains open. Small synthetic wrapping controls and an incremental Review regression were added.
+The original DOCX from #132 was inspected without changing its text or formatting.
+Its overlap did not reproduce locally, so the report remains open. Small synthetic
+geometry controls and an incremental Review regression were added.
 
-WordCraft, renderer, dependency revisions and existing format patches are unchanged. The candidate records its source and SHA-256 sums. Automated checks do not imply human testing.
+WordCraft, renderer, dependency revisions and existing patches are unchanged.
+The candidate records its source and SHA-256 sums. Automated success does not
+imply human validation on every platform or document.

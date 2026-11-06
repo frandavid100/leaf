@@ -4,13 +4,13 @@ Actualizada: 6 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En curso: candidata alpha.31
+## En curso: candidata alpha.31 — Revisión
 
-Pasada autorizada de issues; preparar candidata para la prueba de David, sin
-promoción automática. Prioridad: continuidad de Revisión (#133), cabeceras y
-selector de Navegación (#134/#135). #136 se retira de esta candidata y permanece abierto; #132 necesita
-reproducción en el entorno afectado. Los pendientes anteriores conservan sus
-límites y no se cierran por aproximación. [Validación](docs/ALPHA31_VALIDATION.md).
+Preparar una candidata de #133 sobre la interfaz publicada en Alpha.30.
+Los intentos de #134–#136 quedan fuera de esta candidata: una regresión de
+entrada instalada obliga a continuar su investigación sin darlos por cerrados.
+#132 sigue pendiente de reproducción en el entorno afectado. Los pendientes
+anteriores conservan sus límites. [Validación](docs/ALPHA31_VALIDATION.md).
 
 ## Completado: alpha.30
 

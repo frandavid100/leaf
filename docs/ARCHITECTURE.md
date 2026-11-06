@@ -163,9 +163,7 @@ Their actions validate the live document id and the revalidated finding; cached
 comments/revisions resolve their canonical targets without weakening asynchronous
 dialog revision guards. Worker generations/revisions guard both success and error.
 
-The primary sidebar/editor HeaderBars keep their native ToolbarView parenting
-and share a vertical SizeGroup. Their secondary filter/tab rows share a second
-vertical SizeGroup; the full allocated header bounds remain aligned. Navigation's
-native DropDown drives the existing per-tab representation controller; private
-toggle state is not a second visible selector. Mapping restores saved browsing
-only when the document revision and editing target are unchanged.
+The final Alpha31 candidate retains the published Alpha30 header, Navigation
+and formatting interface. The header/dropdown experiments remain in Git history,
+outside the accepted candidate scope. Review cards and findings are derived
+state; no parallel editable document model is introduced.
