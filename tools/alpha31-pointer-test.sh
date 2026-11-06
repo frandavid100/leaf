@@ -30,7 +30,7 @@ for attempt in $(seq 1 200); do
   kill -0 "$pid" || { cat "$log"; exit 1; }
   sleep 0.05
 done
-sleep 0.2
+sleep 0.8
 scrot "${log%.log}-format.png"
 wait "$pid" || { cat "$log"; exit 1; }
 grep -q ALPHA31_UI_OK "$log"

@@ -320,6 +320,7 @@ pub(super) fn property_split(open: &gtk::Button, repeat: &gtk::Button) -> adw::S
     native.connect_clicked(move |_| source.emit_clicked());
     // Forward activation through a public callback, retaining the original
     // secondary action object so each caller owns its weak target callback.
+    arrow.add_css_class("flat");
     arrow.set_icon_name("view-refresh-symbolic");
     arrow.set_widget_name(&repeat.widget_name());
     arrow.set_tooltip_text(repeat.tooltip_text().as_deref());
