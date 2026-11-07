@@ -19,7 +19,9 @@ folder portal, without adding host filesystem permissions. The chooser is
 cancellable and owned by its tab/panel; callbacks use weak owners. Dictionary
 changes update proofing across tabs and windows, not the document language,
 selection, dirty state or Undo. Newly detected engine-supported language tags
-appear in the language list; unavailable dictionaries are dimmed and explained.
+appear in the language list. Choices without readable dictionary files are
+dimmed. Finding files does not imply that their format has been validated;
+WordCraft parses them when their language is actually used.
 
 Native Ubuntu can offer its installed Language Support launcher when the OS,
 executable and desktop entry are present. Flatpak never offers that launcher.
@@ -27,8 +29,8 @@ The actual Ubuntu graphical installation flow remains unverified.
 
 ## Test plan and current limits
 
-Three adapter regressions cover precedence, changed/removed sources and
-incomplete pairs. The real-widget diagnostic and pointer driver exercise
+Four adapter regressions cover precedence, changed/removed sources and
+incomplete pairs, plus discovery without parsing dictionary contents. The real-widget diagnostic and pointer driver exercise
 chooser selection/cancellation/owner cleanup, file refresh, restart persistence,
 removal and unchanged document state. Native CI installs a Czech Hunspell package
 after startup and verifies rediscovery. Installed Flatpaks exercise the actual
@@ -48,8 +50,9 @@ unchanged. No private documents or public screenshots are used.
 
 The first native run installed Ubuntu's real `hunspell-nl` 2:2.20.19-2, but
 WordCraft 0.16 rejected line 54: `KEEPCASE Kc` appears before `FLAG long`. A direct
-public-API probe reproduces this without GTK or Leaf. Leaf must not advertise
-that unreadable dictionary as available. No engine code is changed here.
+public-API probe reproduces this without GTK or Leaf. The picker reports only readable file presence; its tooltip explicitly leaves
+format validation to WordCraft when that language is used. No engine code is
+changed here.
 The native positive control uses Ubuntu `hunspell-cs` 1:24.2.1-1, whose `cs_CZ`
 dictionary loads correctly through the same public APIs. The portal fixture
 continues to use its invented Italian words.
@@ -75,18 +78,29 @@ GTK3 control verifies the exact selected source. It never accepts the Home
 folder. The native branch of the driver is unchanged byte for byte.
 
 The binary is reused from the fully successful native run: all compiled inputs
-are still required to match; only this uncompiled pointer driver is excluded
+are still required to match; only the two uncompiled Flatpak test drivers are excluded
 from the source comparison. The portal test runs before the longer installed
 regressions, which remain mandatory. Actual installed portal success is still
 pending and must be recorded before publication.
 
-## Focus-triggered reload correction
+## Reload and language catalog correction
 
-The next installed run loaded the dictionary through its real document-portal
-path, then stalled during window-focus handling after the source file changed.
-A captured main-thread stack enters Leaf from GTK's focus notification; the
-background threads are waiting normally. The manager no longer reloads global
-resources from that notification. Refresh remains explicit and language-list
-opening still rescans sources. Native and installed checks must validate this
-change before publication. Temporary early native artifacts retain symbols for
-diagnostics; final native and packaged executables are stripped as before.
+Installed run 42402167877 successfully read the updated four-word fixture through
+its real document-portal path, then stalled while rebuilding the language list.
+The symbolized main-thread stack enters WordCraft's `AffixDict::build` through
+Leaf's `additional_languages`, `dictionary_path` and `TextTools::page`. An
+independent sandbox read succeeded. The stall comes from eagerly parsing large
+unrelated runtime dictionaries while displaying choices, not portal access.
+
+The language catalog now uses the public file-discovery metadata APIs and read
+permissions only. Actual parsing remains with WordCraft when the document uses
+the chosen language; import verification and the active-language diagnostics
+still check the engine. Tooltips distinguish file presence from validation.
+A regression covers discovery of readable but intentionally invalid contents.
+
+The manager also no longer reloads resources from window-focus notifications;
+explicit Refresh and opening the language list rescan the inventory. Removing
+the focus reload alone did not solve the eager parsing stall. Both changes need
+fresh native and installed validation before publication. Temporary early native
+artifacts retain symbols for diagnostics; final native and packaged executables
+are stripped as before.

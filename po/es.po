@@ -3013,3 +3013,9 @@ msgstr "Usa los diccionarios accesibles del sistema, una carpeta adicional o arc
 
 msgid "_Use This Folder"
 msgstr "_Usar esta carpeta"
+
+msgid "Dictionary files found. WordCraft checks them when this language is used."
+msgstr "Se han encontrado archivos de diccionario. WordCraft los comprueba al utilizar este idioma."
+
+msgid "No spelling dictionary files were found for this language."
+msgstr "No se han encontrado archivos de diccionario ortográfico para este idioma."

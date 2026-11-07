@@ -234,28 +234,24 @@ pub fn dictionary_path(tag: &str) -> Option<PathBuf> {
             .find_map(|(l, p)| (l == lang).then_some(p).flatten())
             .or_else(|| proof::pack_dictionary_file(lang))
     }?;
+    Some(source_path(path))
+}
+
+fn source_path(path: PathBuf) -> PathBuf {
     let indexed = CURRENT.get().and_then(|s| s.lock().ok()).is_some_and(|s| {
         s.index
             .as_ref()
             .is_some_and(|i| path.parent() == Some(i.0.as_path()))
     });
-    Some(if indexed {
+    if indexed {
         std::fs::read_link(&path).unwrap_or(path)
     } else {
         path
-    })
+    }
 }
 
-pub fn available(tag: &str) -> bool {
-    !matches!(ProofLang::from_tag(Some(tag)), ProofLang::Other)
-        && proof::missing_dictionary(Some(tag)).is_none()
-        && proof::unreadable_dictionary(Some(tag)).is_none()
-}
-
-/// Add installed languages beyond the frontend's usual choices. A filename is
-/// advertised only when the public engine actually selects that dictionary.
-pub fn additional_languages() -> Vec<String> {
-    let names = CURRENT
+fn catalog_names() -> Vec<String> {
+    CURRENT
         .get()
         .and_then(|s| s.lock().ok())
         .and_then(|s| {
@@ -264,22 +260,69 @@ pub fn additional_languages() -> Vec<String> {
                     .values()
                     .chain(i.system.iter())
                     .filter_map(|p| p.dic.path.file_stem()?.to_str().map(str::to_owned))
-                    .collect::<Vec<_>>()
+                    .collect()
             })
         })
-        .unwrap_or_default();
-    let mut tags = std::collections::BTreeSet::new();
-    for name in names {
-        if let Some(tag) = proof::lang::normalize_tag(&name.replace('_', "-")) {
-            if dictionary_path(&tag)
-                .is_some_and(|p| p.file_stem().is_some_and(|s| s == name.as_str()))
-                && available(&tag)
-            {
-                tags.insert(tag);
-            }
-        }
+        .unwrap_or_default()
+}
+
+/// File discovery only: never call pack_dictionary_file or dictionary-loaded
+/// queries while building UI choices. Those APIs parse potentially huge files.
+/// WordCraft validates spelling data when the document actually uses a language.
+pub fn dictionary_files(tag: &str) -> Option<PathBuf> {
+    let lang = ProofLang::from_tag(Some(tag));
+    if matches!(lang, ProofLang::Other) {
+        return None;
     }
-    tags.into_iter().collect()
+    let builtin = proof::installed_dictionaries()
+        .into_iter()
+        .find_map(|(l, p)| (l == lang).then_some(p).flatten());
+    if let Some(path) = builtin {
+        return Some(source_path(path));
+    }
+    let wanted = proof::lang::normalize_tag(tag)?;
+    catalog_names()
+        .into_iter()
+        .filter(|name| {
+            proof::lang::normalize_tag(&name.replace('_', "-")).as_ref() == Some(&wanted)
+        })
+        .find_map(|name| proof::hunspell::find(&[name.as_str()]).map(|(_, dic)| source_path(dic)))
+}
+
+fn readable_pair(dic: &Path) -> bool {
+    std::fs::File::open(dic).is_ok() && std::fs::File::open(dic.with_extension("aff")).is_ok()
+}
+
+/// Presence/read permission is distinct from a parsed, valid dictionary.
+pub fn has_dictionary_files(tag: &str) -> bool {
+    ProofLang::from_tag(Some(tag)).is_english()
+        || dictionary_files(tag).is_some_and(|p| readable_pair(&p))
+}
+
+/// Actual engine validation, for the language being used; not a catalog query.
+pub fn available(tag: &str) -> bool {
+    !matches!(ProofLang::from_tag(Some(tag)), ProofLang::Other)
+        && proof::missing_dictionary(Some(tag)).is_none()
+        && proof::unreadable_dictionary(Some(tag)).is_none()
+}
+
+fn declared_languages(names: impl IntoIterator<Item = String>) -> Vec<String> {
+    names
+        .into_iter()
+        .filter_map(|name| proof::lang::normalize_tag(&name.replace('_', "-")))
+        .filter(|tag| !matches!(ProofLang::from_tag(Some(tag)), ProofLang::Other))
+        .collect::<std::collections::BTreeSet<_>>()
+        .into_iter()
+        .collect()
+}
+
+/// Reflect readable files without loading every installed spelling dictionary.
+/// The picker describes file presence; it does not claim parser validation.
+pub fn additional_languages() -> Vec<String> {
+    declared_languages(catalog_names())
+        .into_iter()
+        .filter(|tag| has_dictionary_files(tag))
+        .collect()
 }
 
 #[cfg(test)]
@@ -347,6 +390,20 @@ mod tests {
         assert!(pairs(&r).unwrap().is_empty());
         pair(&r, "it_IT", "prova");
         assert_eq!(pairs(&r).unwrap().len(), 1);
+        std::fs::remove_dir_all(r).unwrap();
+    }
+    #[test]
+    fn catalog_discovery_does_not_parse_dictionary_contents() {
+        let r = root();
+        pair(&r, "lt_LT", "not-a-valid-dictionary/INVALID-FLAG");
+        std::fs::write(
+            r.join("lt_LT.aff"),
+            "KEEPCASE not-a-flag\nSET unknown-encoding\n",
+        )
+        .unwrap();
+        let found = pairs(&r).unwrap();
+        assert!(readable_pair(&found["lt_LT"].dic.path));
+        assert_eq!(declared_languages(found.into_keys()), ["lt-LT"]);
         std::fs::remove_dir_all(r).unwrap();
     }
 }
