@@ -132,3 +132,13 @@ It keeps the standard document path while isolating mounts; the application's
 Flatpak sandbox and file-access assertions are unchanged. Both folder selection
 and restart execute inside the same test namespace. Full installed validation
 is required again.
+
+Run 42407729300 confirmed that rootless `bwrap` isolation prevents FUSE mounting
+on the Ubuntu runner (`Operation not permitted`), a limitation also reported
+in #2140. The CI wrapper now creates a host mount namespace using its existing
+passwordless sudo, marks propagation private, and immediately drops to the
+original UID/GID with `setpriv` before starting D-Bus, the portal or Leaf. The
+installed launcher asserts that it still runs with that original UID. No test
+application runs as root, no user namespace is added, and standard portal paths
+are preserved. Non-CI invocations retain the ordinary session command. All
+installed checks remain mandatory before publication.

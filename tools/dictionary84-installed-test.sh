@@ -14,6 +14,7 @@ temporary=$(mktemp -d)
 trap 'rm -rf "$temporary"' EXIT
 cat > "$temporary/installed.sh" <<'RUNNER'
 #!/usr/bin/env bash
+if [[ -n ${LEAF84_TEST_UID:-} ]]; then test "$(id -u)" = "$LEAF84_TEST_UID"; fi
 exec flatpak run --socket=x11 --nosocket=wayland \
   --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" \
   --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo \
@@ -24,6 +25,15 @@ exec flatpak run --socket=x11 --nosocket=wayland \
   leaf "$LEAF84_BINARY" "$@"
 RUNNER
 cd "$output"
+session=()
+if [[ ${CI:-} == true ]]; then
+  # FUSE cannot mount in a rootless user namespace on this runner. Create only
+  # a host mount namespace, then drop privileges before starting any test/app.
+  export LEAF84_TEST_UID
+  LEAF84_TEST_UID=$(id -u)
+  session=(sudo -E unshare --mount --propagation private --
+    setpriv --reuid="$LEAF84_TEST_UID" --regid="$(id -g)" --init-groups)
+fi
 for language in en es; do
   scale=1;screen=1400x1100x24
   if [[ "$language" == es ]]; then scale=2;screen=2800x2200x24;fi
@@ -31,7 +41,6 @@ for language in en es; do
   # from earlier D-Bus sessions (xdg-desktop-portal #2140). Selection and reopen
   # share the same namespace; no Leaf filesystem permission is widened.
   LANGUAGE=$language GDK_SCALE=$scale xvfb-run -a -s "-screen 0 $screen" \
-    bwrap --bind / / --dev-bind /dev /dev --die-with-parent -- \
-    dbus-run-session -- timeout 240s bash "$root/tools/dictionary84-test.sh" "$temporary/installed.sh" folder
+    "${session[@]}" dbus-run-session -- timeout 240s bash "$root/tools/dictionary84-test.sh" "$temporary/installed.sh" folder
 done
 echo DICTIONARY84_INSTALLED_PORTAL_OK
