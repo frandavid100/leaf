@@ -97,8 +97,9 @@ jobs:
           done
       - name: Verify contextual and pinned native menu controls before packaging
         run: |
+          set -o pipefail
           GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 1280x900x24' timeout 90s bash tools/context-pointer-test.sh
-          GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --test-document --pin-ui-test 2> popover-pin.log
+          GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --test-document --pin-ui-test 2>&1 | tee popover-pin.log
           grep -q POPOVER_PIN_OK popover-pin.log
       - name: Validate grouped Insert and annotation workflows
         run: |
