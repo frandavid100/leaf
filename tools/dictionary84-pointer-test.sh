@@ -79,6 +79,7 @@ PY
   touch "$LEAF84_ACK/$stage"
   if [[ "$role" == update-and-refresh && ${LEAF84_GDB:-} == 1 ]]; then
     (
+      trap - EXIT
       sleep 15
       if kill -0 "$pid" 2>/dev/null && ! grep -q DICTIONARY84_REFRESH_OK "$log"; then
         touch "${log%.log}-hang-detected"
@@ -86,13 +87,17 @@ PY
         if [[ -n "$app_pid" ]]; then
           sudo timeout 25s gdb --batch "$LEAF84_GDB_BINARY" -ex 'set pagination off' -ex 'thread apply all bt' -p "$app_pid" > "${log%.log}-backtrace.log" 2>&1 || true
         fi
-        folder=$(python3 - "$LEAF84_PROFILE/config/wordcraft-gnome/preferences.json" <<'PYTHON'
+        cat "${log%.log}-backtrace.log" || true
+        if [[ -r "$LEAF84_PROFILE/config/wordcraft-gnome/preferences.json" ]]; then
+          folder=$(python3 - "$LEAF84_PROFILE/config/wordcraft-gnome/preferences.json" <<'PYTHON'
 import json,sys
 print(json.load(open(sys.argv[1]))['dictionary_folder'])
 PYTHON
-        )
-        timeout 8s flatpak run --command=sh "$LEAF84_APP_ID" -c 'test -f "$1/1" && cat "$2/it_IT.dic"' leaf "$LEAF84_ACK" "$folder" > "${log%.log}-portal-read.log" 2>&1 || true
-        cat "${log%.log}-backtrace.log" "${log%.log}-portal-read.log" || true
+          )
+          timeout 8s flatpak run --command=sh "$LEAF84_APP_ID" -c 'test -f "$1/1" && cat "$2/it_IT.dic"' leaf "$LEAF84_ACK" "$folder" > "${log%.log}-portal-read.log" 2>&1 || true
+          cat "${log%.log}-portal-read.log" || true
+        fi
+        kill "$pid" 2>/dev/null || true
       fi
     ) &
   fi

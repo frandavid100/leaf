@@ -700,9 +700,9 @@ jobs:
           PY
           native_source=$(python3 -c "import json; print(json.load(open('native-run.json'))['head_sha'])")
           git cat-file -e "$native_source^{commit}" || git fetch origin "$native_source"
-          # The chooser pointer driver is not a binary input. Its Flatpak-only
-          # navigation may evolve while reusing the identical native executable.
-          git diff --exit-code "$native_source" -- src Cargo.toml Cargo.lock craft-i18n.rev tests vendor po data examples tools patches ':(exclude)tools/dictionary84-pointer-test.sh'
+          # These two Flatpak test drivers are not binary inputs. Sandbox-only
+          # control/profile changes may reuse the identical native executable.
+          git diff --exit-code "$native_source" -- src Cargo.toml Cargo.lock craft-i18n.rev tests vendor po data examples tools patches ':(exclude)tools/dictionary84-pointer-test.sh' ':(exclude)tools/dictionary84-installed-test.sh'
       - uses: actions/download-artifact@v4
         with:
           name: ${{ contains(github.event.head_commit.message, '[bundle-only]') && 'leaf-native-unvalidated' || 'wordcraft-gnome-fase3d-linux' }}

@@ -18,9 +18,10 @@ exec flatpak run --socket=x11 --nosocket=wayland \
   --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" \
   --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo \
   --env=LEAF84_ACK="${LEAF84_ACK:-}" \
-  --env=XDG_CONFIG_HOME="$LEAF84_PROFILE/config" \
-  --env=XDG_STATE_HOME="$LEAF84_PROFILE/state" \
-  --command=sh "$LEAF84_APP_ID" -c 'exec "$@"' leaf "$LEAF84_BINARY" "$@"
+  --env=LEAF84_PROFILE="$LEAF84_PROFILE" \
+  --command=sh "$LEAF84_APP_ID" \
+  -c 'export XDG_CONFIG_HOME="$LEAF84_PROFILE/config" XDG_STATE_HOME="$LEAF84_PROFILE/state"; exec "$@"' \
+  leaf "$LEAF84_BINARY" "$@"
 RUNNER
 cd "$output"
 for language in en es; do
