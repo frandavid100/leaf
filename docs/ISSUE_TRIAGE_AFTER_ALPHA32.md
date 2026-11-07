@@ -1,7 +1,12 @@
 # Revisión de issues después de alpha.32
 
+La pasada posterior de #9/#99/#156 ya ha producido dos correcciones nativas y
+una reproducción nueva del motor. Alpha.33 está en validación; los tres informes
+siguen abiertos hasta resolver/verificar sus requisitos respectivos.
+[Estado más reciente](ALPHA33_VALIDATION.md).
+
 Revisados el 7 de noviembre de 2026 tras la petición de David de cerrar lo que
-ya pueda considerarse resuelto. Esta revisión no modifica el ejecutable publicado
+ya pueda considerarse resuelto. La revisión inicial no modifica el ejecutable publicado
 ni exige otra release. Base: alpha.32, fuente publicada
 `2524dbc789cfbfa0f3b6e153fde16f1df5887b8a`, WordCraft 0.16.0
 `02a802cbafe45b5c8fecc00490c8f6b78c5ba251`.
@@ -41,9 +46,9 @@ que incumpla esos requisitos, se puede reabrir con esa reproducción.
 | #1, #2 | Maquetación de columnas. El trabajo de WordCraft continúa aparte; conservar anchuras ODT no prueba que se haya corregido su flujo/separador. No se integra otra rama ni se duplica ese trabajo. |
 | #107 | Sigue la limitación de anclaje de imágenes. La batería de alpha.32 conserva `a_rejected_cross_page_anchor_restores_the_original_picture`: el rechazo no se maquilla como un movimiento correcto. Requiere corregir el anclaje público del motor. |
 | #152 | Reproducido de nuevo en 0.16.0: Delete, Backspace y borrar el salto seleccionado dejan `Heading1` en el texto que era Normal. Necesita corrección del modelo upstream; no restilizar después desde GTK. |
-| #9 | El informe se amplió después de la comprobación anterior de David: Before no cambia por debajo de 5,5. Se ha demostrado la meseta con After precedente 5,5 por la regla de máximo entre espacios vecinos. Falta confirmar propiedades/estado del DOCX editado concreto; no se cierra el síntoma ampliado con el documento de control antiguo. |
-| #99 | Muestra ya fue aportado y se conserva privado. La comprobación registrada sitúa la nota por encima del footer; no reproduce la captura. Falta aislar el estado gráfico/edición que produce el solapamiento o demostrar su corrección en ese recorrido. No se vuelve a pedir como si faltase el archivo. |
-| #156 | El salto de Fin no tiene aún reproducción del estado gráfico/viewport concreto. Los controles anteriores de posiciones del motor no justifican declarar arreglado un salto de scroll observado por David. |
+| #9 | Controles nativos por debajo de 5,5, coma e incremento comprobados; alpha.33 explica el máximo entre espacios vecinos. El Portland original hereda After=8 pt; su copia editada exacta no está confirmada. Sigue abierto. |
+| #99 | Ya reproducido con tabla y texto inventados, crecimiento de nota, Undo/Redo y layout nuevo: nota debajo del footer. Corrección del motor pendiente; informe upstream bloqueado por 403. [Reproducción pública](ISSUE99_TABLE_NOTES_REPRO.md). |
+| #156 | Reproducidos dos fallos nativos: Home/End consumidos por GTK y zoom pendiente que restaura una página antigua. Alpha.33 corrige ambos y pasa los controles nuevos; cierre pendiente de la batería completa y del paquete. |
 | #52 | Las hojas blancas de Files requieren identificar el proveedor y las entradas de caché/documentos afectados. Las miniaturas internas de Leaf son otra función; no se atribuye el defecto sin esa evidencia. |
 | #84 | Descubrimiento de diccionarios del host y flujo de ajustes del sistema, en nativo/Flatpak y GNOME OS/Ubuntu. Importación y diccionarios incluidos funcionan, pero no prueban esa integración ni autorizan permisos amplios al host. |
 

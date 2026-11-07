@@ -4,6 +4,14 @@ Actualizada: 7 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## En validación: alpha.33 — revisión de #9/#99/#156
+
+Dos fallos nativos de navegación de #156 corregidos y reproducidos antes/después;
+controles reales de espaciado y explicación para #9; reproducción pública del
+motor para #99. Publicación automática pendiente de toda la batería nativa y de
+las instalaciones GNOME 49/51. #9/#99 permanecen abiertos; #156 no se cierra hasta
+verificar el paquete publicado. [Estado y evidencia](docs/ALPHA33_VALIDATION.md).
+
 ## Completado: alpha.32 — actualización y rendimiento
 
 [Publicada y verificada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.32)

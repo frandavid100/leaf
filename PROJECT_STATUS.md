@@ -12,6 +12,19 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## En validación: alpha.33 — Fin/Inicio y restauración de zoom
+
+[PR #161 integrado](https://github.com/frandavid100/leaf/pull/161). Corrige dos
+fallos reproducidos de #156: teclas consumidas por el scroller y restauración de
+una página antigua después de navegar durante un zoom pendiente. Los controles
+nuevos pasan; siguen la batería nativa completa y las instalaciones GNOME 49/51.
+No está publicada todavía y #156 sigue abierto hasta verificar la entrega.
+
+#9 tiene controles nativos medidos y una explicación visible del espaciado;
+falta confirmar su copia editada concreta. #99 tiene reproducción sintética del
+solapamiento tabla/nota/footer; necesita corrección del motor. Ambos siguen
+abiertos. [Evidencia, fuentes y límites](docs/ALPHA33_VALIDATION.md).
+
 ## Publicada y verificada: alpha.32 — WordCraft 0.16 y optimización
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.32),
