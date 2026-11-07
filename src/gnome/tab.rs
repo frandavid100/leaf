@@ -829,6 +829,7 @@ pub(super) fn build_tab(
     }
     window.present();
     install_table_context_menu(&ui, &window);
+    image_drop::install(&ui);
     install_diagnostics(
         &ui,
         &window,

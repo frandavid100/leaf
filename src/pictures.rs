@@ -36,17 +36,35 @@ pub fn insert(s: &mut Session, path: &Path) -> Result<(), String> {
     let p = path
         .to_str()
         .ok_or(wordcraft_gnome::t!("The path is not UTF-8"))?;
-    let snapshot = s.edit_snapshot();
-    s.run("insert.picture", &json!({"path":p}))
-        .map_err(|e| e.to_string())?;
-    let Some((p, _, _)) = selected(s) else {
-        s.restore(snapshot);
-        return Err(
-            wordcraft_gnome::t!("Images cannot be inserted inside a drawing canvas").into(),
-        );
-    };
-    select(s, &p)
+    insert_args(s, &json!({"path":p}))
 }
+/// Clipboard data follows the same validated engine path as an image file.
+pub fn insert_data(s: &mut Session, data: &[u8]) -> Result<(), String> {
+    insert_args(
+        s,
+        &json!({"data":wordcraft_engine::cmd::insert::base64_encode(data)}),
+    )
+}
+fn insert_args(s: &mut Session, args: &serde_json::Value) -> Result<(), String> {
+    crate::operations::atomic(s, wordcraft_gnome::t!("Insert Image"), |s| {
+        s.run("insert.picture", args).map_err(|e| e.to_string())?;
+        let Some((pos, width, _)) = selected(s) else {
+            return Err(
+                wordcraft_gnome::t!("Images cannot be inserted inside a drawing canvas").into(),
+            );
+        };
+        select(s, &pos)?;
+        let block = pos.path.0.first().copied().unwrap_or(0) as usize;
+        let section = s.doc.section_index_of(block);
+        let max = s.doc.sections()[section].1.text_width();
+        if width > max {
+            s.run("picture.size", &json!({"width":max}))
+                .map_err(|e| e.to_string())?;
+        }
+        Ok(())
+    })
+}
+
 pub fn replace(s: &mut Session, path: &Path) -> Result<(), String> {
     selected(s).ok_or(wordcraft_gnome::t!("Select an Image"))?;
     s.run(

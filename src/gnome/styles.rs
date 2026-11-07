@@ -378,6 +378,51 @@ impl StylePopover {
         }
         self.detail
             .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+        if st.kind == wordcraft_doc::styles::StyleKind::Paragraph {
+            let candidates = self
+                .ui
+                .upgrade()
+                .and_then(|u| {
+                    u.current
+                        .borrow()
+                        .as_ref()
+                        .map(|d| wordcraft_gnome::styles::list(&d.session))
+                })
+                .unwrap_or_default()
+                .into_iter()
+                .filter(|v| v.kind == wordcraft_doc::styles::StyleKind::Paragraph)
+                .collect::<Vec<_>>();
+            let label = gtk::Label::new(Some(wordcraft_gnome::t!("Following Paragraph Style")));
+            label.set_xalign(0.0);
+            self.detail.append(&label);
+            let names = candidates
+                .iter()
+                .map(|v| v.name.as_str())
+                .collect::<Vec<_>>();
+            let next = gtk::DropDown::from_strings(&names);
+            next.set_widget_name("style-next");
+            next.set_selected(
+                candidates
+                    .iter()
+                    .position(|v| Some(&v.id) == st.next.as_ref().or(Some(&st.id)))
+                    .unwrap_or(0) as u32,
+            );
+            self.detail.append(&next);
+            let id = st.id.clone();
+            let weak = Rc::downgrade(self);
+            next.connect_selected_notify(move |choice| {
+                if let (Some(s), Some(target)) =
+                    (weak.upgrade(), candidates.get(choice.selected() as usize))
+                {
+                    if let Err(error) = s.run(wordcraft_gnome::styles::Edit::Next(
+                        id.clone(),
+                        target.id.clone(),
+                    )) {
+                        s.report(&error);
+                    }
+                }
+            });
+        }
         let update = self.action(
             wordcraft_gnome::t!("Update from Selection"),
             "style-update",

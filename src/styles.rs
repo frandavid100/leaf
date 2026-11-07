@@ -70,6 +70,7 @@ pub enum Edit {
     Rename(String, String),
     Delete(String),
     Create(String),
+    Next(String, String),
 }
 pub fn edit(session: &mut Session, edit: Edit) -> Result<Option<String>, String> {
     let name_ok = |name: &str, except: Option<&str>| -> Result<String, String> {
@@ -85,27 +86,40 @@ pub fn edit(session: &mut Session, edit: Edit) -> Result<Option<String>, String>
         }
         Ok(name.to_owned())
     };
-    let (cmd, args) = match edit {
-        Edit::Apply(id) => ("para.style", json!({"style":id})),
-        Edit::Update(id) => ("styles.updateToMatch", json!({"style":id})),
-        Edit::Delete(id) => ("styles.delete", json!({"style":id})),
-        Edit::Rename(id, name) => {
-            let name = name_ok(&name, Some(&id))?;
-            ("styles.modify", json!({"style":id,"name":name}))
-        }
-        Edit::Create(name) => {
-            let name = name_ok(&name, None)?;
-            let based = session
-                .doc
-                .para_at(&session.sel.focus)
-                .and_then(|p| p.props.style.clone())
-                .unwrap_or_else(|| "Normal".into());
-            (
-                "styles.create",
-                json!({"name":name,"fromSelection":true,"basedOn":based}),
-            )
-        }
-    };
+    let (cmd, args) =
+        match edit {
+            Edit::Apply(id) => ("para.style", json!({"style":id})),
+            Edit::Next(id, next) => {
+                for target in [&id, &next] {
+                    if !session.doc.styles.styles.iter().any(|style| {
+                        &style.id == target && matches!(style.kind, StyleKind::Paragraph)
+                    }) {
+                        return Err(
+                            wordcraft_gnome::t!("Choose an existing paragraph style").into()
+                        );
+                    }
+                }
+                ("styles.modify", json!({"style":id,"next":next}))
+            }
+            Edit::Update(id) => ("styles.updateToMatch", json!({"style":id})),
+            Edit::Delete(id) => ("styles.delete", json!({"style":id})),
+            Edit::Rename(id, name) => {
+                let name = name_ok(&name, Some(&id))?;
+                ("styles.modify", json!({"style":id,"name":name}))
+            }
+            Edit::Create(name) => {
+                let name = name_ok(&name, None)?;
+                let based = session
+                    .doc
+                    .para_at(&session.sel.focus)
+                    .and_then(|p| p.props.style.clone())
+                    .unwrap_or_else(|| "Normal".into());
+                (
+                    "styles.create",
+                    json!({"name":name,"fromSelection":true,"basedOn":based}),
+                )
+            }
+        };
     let result = session.run(cmd, &args).map_err(|e| e.to_string())?;
     Ok(result["id"].as_str().map(str::to_owned))
 }

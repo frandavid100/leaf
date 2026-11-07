@@ -34,3 +34,7 @@ text18-*.log
 
 # Pinned source inputs live outside Cargo target/cache cleanup.
 /.build-deps/
+
+# Alpha35 native interaction evidence
+/workflows35-*.log
+/workflows35-*.png

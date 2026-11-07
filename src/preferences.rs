@@ -155,3 +155,16 @@ pub fn set_theme(mode: u32) -> Result<(), String> {
     }
     update("theme", serde_json::json!(mode))
 }
+
+pub fn template_folder() -> Option<PathBuf> {
+    read()["template_folder"]
+        .as_str()
+        .map(PathBuf::from)
+        .filter(|p| p.is_absolute())
+}
+pub fn set_template_folder(path: &std::path::Path) -> Result<(), String> {
+    update(
+        "template_folder",
+        serde_json::json!(path.to_str().ok_or("The path is not UTF-8")?),
+    )
+}

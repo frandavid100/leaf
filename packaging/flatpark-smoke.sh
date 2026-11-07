@@ -45,7 +45,7 @@ tar -xJf leaf.tar.xz -C leaf
 rm leaf.tar.xz
 APPLY
 chmod +x "$temporary/build/files/bin/apply_extra"
-flatpak build-finish --command=/app/extra/leaf/bin/leaf \
+flatpak build-finish --filesystem=xdg-templates:ro --command=/app/extra/leaf/bin/leaf \
   --extra-data="leaf.tar.xz:$checksum:$size:0:http://127.0.0.1:$port/leaf.tar.xz" \
   --metadata='Extra Data=NoRuntime=false' \
   --share=ipc --socket=wayland --socket=fallback-x11 --device=dri "$temporary/build"
@@ -65,6 +65,14 @@ for language in en es; do
     "$app_id" --localization-ui-test >"$log" 2>&1 || { cat "$log"; exit 1; }
   cat "$log"
   grep -q "LOCALIZATION_UI_OK language=$language" "$log"
+done
+for language in en es; do
+  log="$temporary/workflows35-$language.log"
+  timeout 120s flatpak run --socket=x11 --nosocket=wayland \
+    --env=GSK_RENDERER=cairo --env=LC_ALL=en_US.UTF-8 --env="LANGUAGE=$language" \
+    "$app_id" --workflows35-ui-test >"$log" 2>&1 || { cat "$log"; exit 1; }
+  cat "$log"
+  grep -q WORKFLOWS35_UI_OK "$log"
 done
 log="$temporary/proofing.log"
 timeout 90s flatpak run --socket=x11 --nosocket=wayland \

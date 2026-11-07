@@ -11,13 +11,47 @@ pub(super) struct SearchPanel {
     pub(super) _actions_width: gtk::SizeGroup,
     pub(super) match_case: gtk::CheckButton,
     pub(super) replace_mode: gtk::CheckButton,
+    pub(super) whole_word: gtk::CheckButton,
+    pub(super) special: gtk::CheckButton,
+    pub(super) regex: gtk::CheckButton,
+    pub(super) preserve_case: gtk::CheckButton,
+    pub(super) scope: gtk::DropDown,
+    range: RefCell<Option<wordcraft_gnome::search::Range>>,
     pub(super) list: gtk::ListBox,
     pub(super) status: gtk::Label,
     pub(super) hits: RefCell<Vec<wordcraft_gnome::search::Hit>>,
     pub(super) pending: Cell<bool>,
 }
 impl SearchPanel {
+    fn options(&self) -> wordcraft_gnome::search::Options {
+        use wordcraft_gnome::search::{Options, Scope};
+        Options {
+            match_case: self.match_case.is_active(),
+            whole_word: self.whole_word.is_active(),
+            special: self.special.is_active(),
+            regex: self.regex.is_active(),
+            preserve_case: self.preserve_case.is_active(),
+            scope: match self.scope.selected() {
+                1 => Scope::Body,
+                2 => Scope::Notes,
+                3 => Scope::HeadersFooters,
+                4 => Scope::Selection,
+                _ => Scope::Document,
+            },
+        }
+    }
+    fn capture_range(&self) {
+        if let Some(ui) = self.ui.upgrade() {
+            self.range.replace(
+                ui.current
+                    .borrow()
+                    .as_ref()
+                    .and_then(|d| wordcraft_gnome::search::Range::capture(&d.session)),
+            );
+        }
+    }
     pub(super) fn show(&self, replace: bool) {
+        self.capture_range();
         if replace {
             self.replace_mode.set_active(true);
         }
@@ -58,10 +92,11 @@ impl SearchPanel {
             let mut state = ui.current.borrow_mut();
             state.as_mut().map(|d| {
                 let _p = perf_scope("boundary.search_query");
-                wordcraft_gnome::search::query(
+                wordcraft_gnome::search::query_with(
                     &mut d.session,
                     &self.query.text(),
-                    self.match_case.is_active(),
+                    &self.options(),
+                    self.range.borrow().as_ref(),
                 )
             })
         };
@@ -187,11 +222,18 @@ impl SearchPanel {
         let result = {
             let mut value = ui.current.borrow_mut();
             value.as_mut().map(|d| {
-                wordcraft_gnome::search::replace_all(
+                let mut range = self.range.borrow_mut();
+                wordcraft_gnome::search::replace_with(
                     &mut d.session,
+                    &self.hits.borrow(),
                     &self.query.text(),
                     &self.replacement.text(),
-                    self.match_case.is_active(),
+                    &self.options(),
+                    if self.scope.selected() == 4 {
+                        range.as_mut()
+                    } else {
+                        None
+                    },
                 )
             })
         };
@@ -213,11 +255,23 @@ impl SearchPanel {
         let result = {
             let mut state = ui.current.borrow_mut();
             state.as_mut().map(|d| {
-                wordcraft_gnome::search::replace(&mut d.session, &hit, &self.replacement.text())
+                let mut range = self.range.borrow_mut();
+                wordcraft_gnome::search::replace_with(
+                    &mut d.session,
+                    std::slice::from_ref(&hit),
+                    &self.query.text(),
+                    &self.replacement.text(),
+                    &self.options(),
+                    if self.scope.selected() == 4 {
+                        range.as_mut()
+                    } else {
+                        None
+                    },
+                )
             })
         };
         match result {
-            Some(Ok(())) => after_content_change(&ui),
+            Some(Ok(_)) => after_content_change(&ui),
             Some(Err(e)) => ui.toasts.add_toast(Toast::new(&e)),
             None => {}
         }
@@ -264,6 +318,39 @@ pub(super) fn install_search_panel(
     let replace = gtk::CheckButton::with_label(wordcraft_gnome::t!("Replace"));
     choices.append(&case);
     choices.append(&replace);
+    let whole_word = gtk::CheckButton::with_label(wordcraft_gnome::t!("Whole Words"));
+    whole_word.set_widget_name("search-whole-words");
+    choices.append(&whole_word);
+    let scope = gtk::DropDown::from_strings(&[
+        wordcraft_gnome::t!("Entire Document"),
+        wordcraft_gnome::t!("Body Text"),
+        wordcraft_gnome::t!("Notes"),
+        wordcraft_gnome::t!("Headers and Footers"),
+        wordcraft_gnome::t!("Selected Text"),
+    ]);
+    scope.set_widget_name("search-scope");
+    accessible_name(&scope, wordcraft_gnome::t!("Search In"));
+    choices.append(&scope);
+    let capture = gtk::Button::with_label(wordcraft_gnome::t!("Use Current Selection"));
+    choices.append(&capture);
+    let advanced = gtk::Expander::new(Some(wordcraft_gnome::t!("Advanced")));
+    let advanced_box = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    let special = gtk::CheckButton::with_label(wordcraft_gnome::t!("Special Characters"));
+    let regex = gtk::CheckButton::with_label(wordcraft_gnome::t!("Regular Expressions"));
+    let preserve_case =
+        gtk::CheckButton::with_label(wordcraft_gnome::t!("Preserve Capitalization"));
+    for b in [&special, &regex, &preserve_case] {
+        advanced_box.append(b);
+    }
+    let help = gtk::Label::new(Some(wordcraft_gnome::t!(
+        "Special: ^t tab, ^l line break, ^p paragraph. Regex: ([0-9]+), replacement: $1. Zero-length replacements are disabled."
+    )));
+    help.set_wrap(true);
+    help.set_max_width_chars(32);
+    help.add_css_class("dim-label");
+    advanced_box.append(&help);
+    advanced.set_child(Some(&advanced_box));
+    choices.append(&advanced);
     pop.set_child(Some(&choices));
     options.set_popover(Some(&pop));
     let replacement = gtk::Entry::new();
@@ -275,6 +362,41 @@ pub(super) fn install_search_panel(
     replacement_row.set_margin_start(6);
     replacement_row.set_margin_end(6);
     replacement_row.append(&replacement);
+    // Native insert menus share the documented engine codes for both entries.
+    for (entry, row) in [
+        (query.clone().upcast::<gtk::Editable>(), line.clone()),
+        (
+            replacement.clone().upcast::<gtk::Editable>(),
+            replacement_row.clone(),
+        ),
+    ] {
+        let menu = gtk::MenuButton::new();
+        menu.set_icon_name("insert-text-symbolic");
+        accessible_name(&menu, wordcraft_gnome::t!("Insert Special Character"));
+        let pop = gtk::Popover::new();
+        let items = gtk::Box::new(gtk::Orientation::Vertical, 4);
+        for (label, code) in [
+            (wordcraft_gnome::t!("Tab"), "^t"),
+            (wordcraft_gnome::t!("Line Break"), "^l"),
+            (wordcraft_gnome::t!("Paragraph Break"), "^p"),
+        ] {
+            let button = gtk::Button::with_label(label);
+            items.append(&button);
+            let entry = entry.clone();
+            let special = special.clone();
+            let pop = pop.clone();
+            button.connect_clicked(move |_| {
+                special.set_active(true);
+                let mut position = entry.position();
+                entry.insert_text(code, &mut position);
+                entry.set_position(position);
+                pop.popdown();
+            });
+        }
+        pop.set_child(Some(&items));
+        menu.set_popover(Some(&pop));
+        row.append(&menu);
+    }
     let replace_all = gtk::Button::new();
     accessible_name(&replace_all, wordcraft_gnome::t!("Replace All Matches"));
     replace_all.set_child(Some(&paragraph_icon("replace")));
@@ -310,10 +432,38 @@ pub(super) fn install_search_panel(
         _actions_width: actions_width,
         match_case: case.clone(),
         replace_mode: replace.clone(),
+        whole_word: whole_word.clone(),
+        special: special.clone(),
+        regex: regex.clone(),
+        preserve_case: preserve_case.clone(),
+        scope: scope.clone(),
+        range: RefCell::new(None),
         list: list.clone(),
         status,
         hits: RefCell::new(Vec::new()),
         pending: Cell::new(false),
+    });
+    for button in [&whole_word, &special, &regex, &preserve_case] {
+        let weak = Rc::downgrade(&s);
+        button.connect_toggled(move |_| {
+            if let Some(s) = weak.upgrade() {
+                s.refresh();
+            }
+        });
+    }
+    let weak = Rc::downgrade(&s);
+    scope.connect_selected_notify(move |_| {
+        if let Some(s) = weak.upgrade() {
+            s.refresh();
+        }
+    });
+    let weak = Rc::downgrade(&s);
+    capture.connect_clicked(move |_| {
+        if let Some(s) = weak.upgrade() {
+            s.capture_range();
+            s.scope.set_selected(4);
+            s.refresh();
+        }
     });
     let weak = Rc::downgrade(&s);
     replace_all.connect_clicked(move |_| {
@@ -350,6 +500,7 @@ pub(super) fn install_search_panel(
                     "navigation"
                 });
                 if b.is_active() {
+                    s.capture_range();
                     ui.sidebar.set_show_sidebar(true);
                     s.query.grab_focus();
                     s.refresh();

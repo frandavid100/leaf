@@ -252,6 +252,106 @@ impl OutlinePanel {
                 label.add_css_class("heading");
             }
             content.append(&label);
+            if filter == 0 {
+                let drag = gtk::DragSource::new();
+                drag.set_actions(gdk::DragAction::MOVE);
+                let weak = Rc::downgrade(self);
+                drag.connect_prepare(move |_, _, _| {
+                    let panel = weak.upgrade()?;
+                    let ui = panel.ui.upgrade()?;
+                    let (id, revision) = document_identity(&ui)?;
+                    let token = format!("leaf-section:{id}:{revision}:{i}");
+                    Some(gdk::ContentProvider::for_value(&token.to_value()))
+                });
+                row.add_controller(drag);
+                let target = gtk::DropTarget::new(String::static_type(), gdk::DragAction::MOVE);
+                let weak = Rc::downgrade(self);
+                target.connect_drop(move |_, value, _, _| {
+                    let Some(panel) = weak.upgrade() else {
+                        return false;
+                    };
+                    let Some(ui) = panel.ui.upgrade() else {
+                        return false;
+                    };
+                    let Ok(token) = value.get::<String>() else {
+                        return false;
+                    };
+                    let parts = token.split(':').collect::<Vec<_>>();
+                    if parts.len() != 4 || parts[0] != "leaf-section" {
+                        return false;
+                    }
+                    let (Ok(id), Ok(revision), Ok(source)) = (
+                        parts[1].parse::<u64>(),
+                        parts[2].parse::<u64>(),
+                        parts[3].parse::<usize>(),
+                    ) else {
+                        return false;
+                    };
+                    if document_identity(&ui) != Some((id, revision)) {
+                        return false;
+                    }
+                    let changed = tools_change(&ui, |s| {
+                        wordcraft_gnome::navigation::move_section(s, source, i)
+                    });
+                    panel.refresh();
+                    changed
+                });
+                row.add_controller(target);
+                let next_peer = headings
+                    .iter()
+                    .enumerate()
+                    .skip(i + 1)
+                    .find(|(_, other)| other.level <= h.level)
+                    .map(|(index, _)| index);
+                let after_peer = next_peer.map(|next| {
+                    headings
+                        .iter()
+                        .enumerate()
+                        .skip(next + 1)
+                        .find(|(_, other)| other.level <= headings[next].level)
+                        .map(|(index, _)| index)
+                        .unwrap_or(headings.len())
+                });
+                for (name, label, destination) in [
+                    (
+                        "section-up",
+                        wordcraft_gnome::t!("Move Section Up"),
+                        i.saturating_sub(1),
+                    ),
+                    (
+                        "section-down",
+                        wordcraft_gnome::t!("Move Section Down"),
+                        after_peer.unwrap_or(headings.len()),
+                    ),
+                ] {
+                    let button = gtk::Button::from_icon_name(if name == "section-up" {
+                        "go-up-symbolic"
+                    } else {
+                        "go-down-symbolic"
+                    });
+                    button.add_css_class("flat");
+                    button.set_widget_name(name);
+                    accessible_name(&button, label);
+                    button.set_tooltip_text(Some(label));
+                    button.set_sensitive(if name == "section-up" {
+                        i > 0
+                    } else {
+                        next_peer.is_some()
+                    });
+                    let weak = Rc::downgrade(self);
+                    button.connect_clicked(move |_| {
+                        if let Some(panel) = weak.upgrade() {
+                            if let Some(ui) = panel.ui.upgrade() {
+                                tools_change(&ui, |s| {
+                                    wordcraft_gnome::navigation::move_section(s, i, destination)
+                                });
+                                panel.refresh();
+                            }
+                        }
+                    });
+                    content.append(&button);
+                }
+            }
             row.set_child(Some(&content));
             self.list.append(&row);
             let weak = Rc::downgrade(self);

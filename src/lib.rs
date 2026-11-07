@@ -174,3 +174,9 @@ pub mod equations;
 pub mod references;
 
 pub mod review;
+
+pub mod operations;
+
+pub mod templates;
+
+pub mod document_fonts;
