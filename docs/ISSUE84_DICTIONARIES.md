@@ -104,3 +104,21 @@ the focus reload alone did not solve the eager parsing stall. Both changes need
 fresh native and installed validation before publication. Temporary early native
 artifacts retain symbols for diagnostics; final native and packaged executables
 are stripped as before.
+
+## Isolated installed portal sessions
+
+The identical binary passed native run 42403961297. Candidate run 42405334031
+passed the installed GNOME 49 checks, including the real dictionary portal, restart, general smoke, pointer controls,
+printing and AT-SPI/Orca. GNOME 51 then failed before Leaf received its selection:
+`fusermount3` could not access `/run/user/1001/doc` and reported Permission denied.
+The independent D-Bus sessions were sharing the runtime mount left by earlier
+tests. This matches upstream [xdg-desktop-portal #2140](https://github.com/flatpak/xdg-desktop-portal/issues/2140),
+whose controlled reproducer avoids the collision with a runtime per session.
+
+The installed dictionary driver now gives each language run a private runtime,
+shared by its folder-selection and reopen stages. It still uses the real portal
+and verifies that the raw host folder is inaccessible beforehand; no filesystem
+permissions are added. Runtime state is never recursively deleted while it could
+contain a FUSE mount. All native compiled inputs are unchanged and the fully
+successful native binary is reused. Installed checks must pass again before
+publication; alpha.34 remains unpublished at this point.

@@ -27,7 +27,13 @@ cd "$output"
 for language in en es; do
   scale=1;screen=1400x1100x24
   if [[ "$language" == es ]]; then scale=2;screen=2800x2200x24;fi
-  LANGUAGE=$language GDK_SCALE=$scale xvfb-run -a -s "-screen 0 $screen" \
+  # Independent D-Bus sessions must not compete for the same document-portal
+  # FUSE mount left by earlier installed/Orca tests (xdg-desktop-portal #2140).
+  # Keep one private runtime for selection AND reopen so persistence is real.
+  runtime=$(mktemp -d "${XDG_RUNTIME_DIR:-/tmp}/leaf84-runtime.XXXXXX")
+  XDG_RUNTIME_DIR=$runtime LANGUAGE=$language GDK_SCALE=$scale xvfb-run -a -s "-screen 0 $screen" \
     dbus-run-session -- timeout 240s bash "$root/tools/dictionary84-test.sh" "$temporary/installed.sh" folder
+  # Do not recursively remove a directory that may still contain a FUSE mount.
+  rmdir "$runtime" 2>/dev/null || true
 done
 echo DICTIONARY84_INSTALLED_PORTAL_OK
