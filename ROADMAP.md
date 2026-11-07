@@ -10,7 +10,9 @@ Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 el 7/11/2026: WordCraft 0.16.0, mayor conservación ODT, datos lingüísticos fijados
 y pegado HTML/RTF. Optimización medida del cliente e índices/código de portapapeles
 más claros. Batería nativa, GNOME 49/51 y publicación de los mismos bytes
-completados; doce archivos públicos verificados. No se cierran más issues.
+completados; doce archivos públicos verificados. La revisión posterior cierra
+#100, ya implementado y comprobado en esa release; no cambia el ejecutable.
+[Revisión de los nueve pendientes](docs/ISSUE_TRIAGE_AFTER_ALPHA32.md).
 [Alcance, mediciones y evidencia](docs/WORDCRAFT_016_REVIEW.md).
 
 ## Completado: alpha.31 automática
@@ -21,7 +23,7 @@ cierres: #135/#149/#150/#151/#155; integra las candidatas previas. Batería nati
 completa, GNOME 49 y FlatPark/GNOME 51 superados; promovidos los mismos bytes y
 verificados los doce archivos públicos. [Evidencia y límites](docs/ALPHA31_REMAINING.md).
 
-Quedan #1/#2/#9/#52/#84/#99/#100/#107/#152/#156. Columnas #1/#2 se trabajan en
+Pendientes actuales: #1/#2/#9/#52/#84/#99/#107/#152/#156. Columnas #1/#2 se trabajan en
 WordCraft aparte; #152 reproduce un defecto del modelo upstream. Conservar
 abiertos los casos sin reproducción suficiente y las limitaciones del motor/host.
 

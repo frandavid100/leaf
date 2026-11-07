@@ -34,7 +34,10 @@ superados. [Instalaciones GNOME 49/51](https://github.com/frandavid100/leaf/acti
 y [promoción sin recompilar](https://github.com/frandavid100/leaf/actions/runs/42374275590)
 correctas. Once sumas internas y los doce archivos públicos verificados.
 Fuente publicada `2524dbc789cfbfa0f3b6e153fde16f1df5887b8a`.
-No se cierran informes adicionales; siguen abiertos los diez indicados abajo.
+La actualización inicial no cerró informes adicionales. La revisión posterior
+ha cerrado #100: números y navegación de notas verificados en esta misma release.
+Quedan nueve: #1/#2/#9/#52/#84/#99/#107/#152/#156.
+[Comprobaciones y límites pendientes](docs/ISSUE_TRIAGE_AFTER_ALPHA32.md).
 
 ## Histórica: alpha.31 publicada y verificada
 
@@ -51,7 +54,7 @@ correctas. 187 pruebas Rust, cuatro Python y 811 mensajes completos inglés/espa
 las once sumas internas y los doce archivos públicos coinciden por SHA-256.
 Fuente publicada `e3bdb1f318cd078d7e24e0a7fef8c84e3a192756`.
 
-Siguen abiertos diez informes: #1, #2, #9, #52, #84, #99, #100, #107, #152 y #156.
+Al publicar alpha.31 quedaron abiertos diez informes: #1, #2, #9, #52, #84, #99, #100, #107, #152 y #156.
 Columnas #1/#2 se trabajan aparte en WordCraft; los límites de motor/host y casos
 sin reproducción no se presentan como resueltos.
 [Implementación, identidad y límites](docs/ALPHA31_REMAINING.md).

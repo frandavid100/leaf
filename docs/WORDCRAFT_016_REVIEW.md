@@ -133,8 +133,11 @@ The promotion rechecks native success and candidate identity.
 - FlatPark archive: 13,196,204 bytes,
   `388c04a759eb9a22cd2f03310c965cf7909e7a6f2fba3fd548ffdc711b7b30b0`.
 
-No additional issues are closed by this engine update. The ten remaining reports
-stay open: #1, #2, #9, #52, #84, #99, #100, #107, #152 and #156. In particular,
+At publication the engine update itself closed no additional issues. Subsequent
+[functional triage](ISSUE_TRIAGE_AFTER_ALPHA32.md) closes #100 on the same published
+binary: labels and direct note navigation meet the current requirements, without
+attributing an unidentified historical cause. Nine remain: #1, #2, #9, #52, #84,
+#99, #107, #152 and #156. In particular,
 the separately developed upstream column changes are not inferred to be in this
 stable release, and generic picture-placement improvements do not prove the exact
 #107 case; Leaf retains its rollback when the public arrange command cannot
