@@ -201,7 +201,9 @@ command. Rich bytes are temporary input, never a parallel document or history.
 ## Dictionary resources
 
 [src/dictionaries.rs](../src/dictionaries.rs) inventories readable Hunspell sources
-and owns the disposable merged index. WordCraft remains the spellchecker.
+and owns the disposable merged index. Language pickers inspect file metadata
+and read permissions; they do not parse unrelated dictionaries. WordCraft owns
+format validation and spelling when a language is used.
 [src/gnome/dictionaries.rs](../src/gnome/dictionaries.rs) owns the weak/cancellable
 folder and import UI; the native/Flatpak chooser returns the authorized path.
 [Issue #84](ISSUE84_DICTIONARIES.md) records precedence, checks and GNOME OS limits.

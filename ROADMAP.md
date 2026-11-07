@@ -1,9 +1,13 @@
 # Hoja de ruta de Leaf
 
+## Publicada y verificada: alpha.34 — candidata de diccionarios
 
-**En preparación:** candidata alpha.34 para probar diccionarios (#84): carpeta
-autorizada por el selector, recarga y disponibilidad. El issue sigue abierto
-hasta la prueba de David en GNOME OS. [Alcance y límites](docs/ISSUE84_DICTIONARIES.md).
+[Descarga](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34):
+selección de carpeta mediante el selector/portal, recarga, importación y
+detección de archivos de diccionario. Batería nativa completa e instalaciones GNOME
+49/51 correctas; doce sumas internas y trece archivos públicos verificados.
+El #84 sigue abierto hasta la prueba de David en GNOME OS.
+[Evidencia y límites](docs/ALPHA34_VALIDATION.md).
 
 Actualizada: 7 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).

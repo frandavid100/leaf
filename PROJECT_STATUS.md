@@ -1,9 +1,13 @@
 # Estado actual de Leaf
 
+## Publicada y verificada: alpha.34 — candidata de diccionarios
 
-**En preparación:** candidata alpha.34 para probar diccionarios (#84): carpeta
-autorizada por el selector, recarga y disponibilidad. El issue sigue abierto
-hasta la prueba de David en GNOME OS. [Alcance y límites](docs/ISSUE84_DICTIONARIES.md).
+[Descarga](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34):
+selección de carpeta mediante el selector/portal, recarga, importación y
+detección de archivos de diccionario. Batería nativa completa e instalaciones GNOME
+49/51 correctas; doce sumas internas y trece archivos públicos verificados.
+El #84 sigue abierto hasta la prueba de David en GNOME OS.
+[Evidencia y límites](docs/ALPHA34_VALIDATION.md).
 
 Actualizado: 7 de noviembre de 2026. Esta página describe el presente;
 el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.
@@ -17,7 +21,7 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## Publicada y verificada: alpha.33 — Fin/Inicio y restauración de zoom
+## Histórica: alpha.33 publicada y verificada — Fin/Inicio y restauración de zoom
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33),
 publicada automáticamente el 7/11/2026. Cerrado #156: el editor recibe Fin/Inicio

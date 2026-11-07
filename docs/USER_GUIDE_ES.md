@@ -95,9 +95,19 @@ F7 abre las correcciones en Revisión. Cada tarjeta permite seleccionar el texto
 aplicar la propuesta disponible o ignorar solo esa aparición. El menú de la
 corrección conserva otras sugerencias, Ignorar todas y Añadir al diccionario.
 Una edición invalida los destinos anteriores antes de volver a comprobar.
-Los idiomas sin diccionario se omiten; la gramática usa las reglas de WordCraft.
+La ortografía requiere un diccionario compatible para el idioma del texto;
+la gramática utiliza las reglas disponibles para ese idioma.
 La preferencia de revisión mientras se escribe establece el valor de documentos
 nuevos; un documento ya abierto conserva el suyo.
+
+En **Texto → Idioma → Ajustes de diccionarios…** puedes elegir una carpeta con
+parejas Hunspell `.aff`/`.dic`, actualizar sus archivos, dejar de usarla o importar
+archivos. En Flatpak, el selector concede acceso a la carpeta elegida. Los
+diccionarios incluidos y las importaciones siguen disponibles; el idioma del
+documento y el de los menús son independientes. Los idiomas sin archivos de
+diccionario aparecen atenuados en la lista. La compatibilidad de los archivos se
+comprueba al utilizar ese idioma.
+[Prueba de la candidata](../tests/fixtures/dictionary84/README.md).
 
 ## Cambios sugeridos
 

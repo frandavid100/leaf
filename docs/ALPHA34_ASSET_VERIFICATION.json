@@ -1,0 +1,84 @@
+{
+  "version": "0.1.0-alpha.34",
+  "source": "df4a22988216700c4771604d5e1ffeb5eaca74ab",
+  "native_source": "65e8b6d2406372bc7443e3c0fd090cdbb1ed2948",
+  "native_run_id": 42403961297,
+  "candidate_run_id": 42410141026,
+  "release_url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34",
+  "internal_checksums_verified": 12,
+  "public_assets_verified": 13,
+  "assets": [
+    {
+      "name": "INSTALL.md",
+      "size_bytes": 2127,
+      "sha256": "59c7c4623c57f4595914bfb70859efa5f3a410c6e93d5286e1e186edf5aba72c"
+    },
+    {
+      "name": "Leaf-0.1.0-alpha.34-dictionary-test.zip",
+      "size_bytes": 1079,
+      "sha256": "9997c4821f0939c93bcbab61aed877d98abed4546ec6e2f8158a0fc50c06378e"
+    },
+    {
+      "name": "Leaf-0.1.0-alpha.34-flatpark-x86_64.tar.xz",
+      "size_bytes": 13248512,
+      "sha256": "53be0d168627d2b20dab579948c5238d764e1e0d16c4bfe582e1b7114354a078"
+    },
+    {
+      "name": "Leaf-0.1.0-alpha.34-x86_64.flatpak",
+      "size_bytes": 12955944,
+      "sha256": "77bea9abab6c84f3e481a7ec816366aad0b3fc5fa544eed268d8aac810150dff"
+    },
+    {
+      "name": "RELEASE_NOTES.md",
+      "size_bytes": 1242,
+      "sha256": "fe84de0c74f4247cdd2d9a46ee4fe57a918552f686016af6eb395ee4294dd826"
+    },
+    {
+      "name": "SHA256SUMS",
+      "size_bytes": 1060,
+      "sha256": "58dc76c3adebd0f35e5becba287e6a034d443c98c86adf23115a646d13b38961"
+    },
+    {
+      "name": "candidate.json",
+      "size_bytes": 318,
+      "sha256": "227405022e744ddca1def99a48e64eabed519c5e9081757829614bbcbbe04970"
+    },
+    {
+      "name": "flatpak-metadata.txt",
+      "size_bytes": 200,
+      "sha256": "a7fdfdaba74ae6e2e1a65ef15051642e1b18808be444370aa3b4bad71b3b2345"
+    },
+    {
+      "name": "flatpak-smoke.log",
+      "size_bytes": 12873,
+      "sha256": "9c8ee78f40b0bf50308b4b3e9d7a06eef82d647797bcdee79ad29126415e0635"
+    },
+    {
+      "name": "flatpark-smoke.log",
+      "size_bytes": 53946,
+      "sha256": "a431991cf86c5ce530b537d69a30327d903f7726d0b285ee6a1c46f259f66639"
+    },
+    {
+      "name": "runtime-commit.txt",
+      "size_bytes": 65,
+      "sha256": "588c80c4d5d01ba6871ca2336d2c615e16c8d0fdbdcc8c6707bdbe1ce3173499"
+    },
+    {
+      "name": "runtime.txt",
+      "size_bytes": 29,
+      "sha256": "cc98943bf0d0696d69c2e647f51ef070a92528714cd03342e77b1d45a92efa3c"
+    },
+    {
+      "name": "source-commit.txt",
+      "size_bytes": 41,
+      "sha256": "634eb6a6f14c029de8fb5dc5446d0a0ee1ec2c05ad53b58f182e8e604ef7dfa7"
+    }
+  ],
+  "tag": "v0.1.0-alpha.34",
+  "tag_target": "df4a22988216700c4771604d5e1ffeb5eaca74ab",
+  "tag_target_verified": true,
+  "publisher_run_id": 42412187391,
+  "rust_tests_passed": 193,
+  "python_tests_passed": 4,
+  "complete_messages": 832
+}

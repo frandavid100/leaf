@@ -4,6 +4,18 @@ These notes were moved from the README on 2 November 2026. The latest delivery i
 releases and checks recorded at that point. Consult [GitHub Releases](https://github.com/frandavid100/leaf/releases)
 and [project status](../PROJECT_STATUS.md) for the current release and work in progress.
 
+## Alpha.34 — dictionary integration test candidate
+
+Choose a Hunspell folder through the native/portal chooser, refresh changed
+files, retain access after restart and keep imports and bundled fallbacks.
+Language choices discover readable files without parsing unrelated dictionaries;
+WordCraft validates their format when used. Native checks and installed GNOME
+49/51 controls passed; all thirteen public assets were verified. Issue #84 stays
+open pending David's GNOME OS test.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34) ·
+[Evidence and limits](ALPHA34_VALIDATION.md) ·
+[Manual test](../tests/fixtures/dictionary84/README.md).
+
 ## Alpha.33 — published and verified
 
 Home/End now reach the document editor before GTK scrolling consumes them, and
