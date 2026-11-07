@@ -122,3 +122,13 @@ permissions are added. Runtime state is never recursively deleted while it could
 contain a FUSE mount. All native compiled inputs are unchanged and the fully
 successful native binary is reused. Installed checks must pass again before
 publication; alpha.34 remains unpublished at this point.
+
+The private-runtime attempt in run 42407375927 created a functioning host portal
+but returned its nonstandard host prefix to the application, outside Flatpak's
+standard runtime mapping. That attempt failed the real access check and was
+not published. The driver instead follows #2140's mount-namespace workaround:
+`bwrap --bind / / --dev-bind /dev /dev --die-with-parent -- dbus-run-session`.
+It keeps the standard document path while isolating mounts; the application's
+Flatpak sandbox and file-access assertions are unchanged. Both folder selection
+and restart execute inside the same test namespace. Full installed validation
+is required again.
