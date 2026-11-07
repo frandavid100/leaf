@@ -97,6 +97,7 @@ pub(super) fn refresh_overlay_layers(ui: &Rc<Ui>) {
         return;
     };
     next.extend(caption_cue_pages(ui, doc));
+    perf_count("toc_lookup_scans", 1);
     if let Some((a, b)) =
         wordcraft_gnome::references::toc_span_at(&doc.session, &doc.session.sel.focus)
     {

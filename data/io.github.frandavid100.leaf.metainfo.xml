@@ -11,11 +11,11 @@
   <description>
     <p>Leaf is an experimental GTK4 and libadwaita document editor powered by WordCraft.</p>
     <p>Edit DOCX and ODT files, use text and paragraph styles, work with tables and inline images, and export PDFs. Browse page thumbnails or headings, search and replace text, and open multiple documents.</p>
-    <p>Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures.</p>
+    <p>Use footnotes, comment threads, floating pictures and basic equations in DOCX and ODT documents. DOCX also preserves every Leaf caption association and the supported automatic contents and cross-reference options.</p>
     <p>Leaf follows your system language in English and Spanish. Other languages can be contributed using gettext catalogs. Development, documentation and artwork have used substantial AI assistance.</p>
     <p xml:lang="es">Leaf es un editor de documentos experimental para GTK4 y libadwaita basado en WordCraft.</p>
     <p xml:lang="es">Edita archivos DOCX y ODT, aplica estilos de texto y párrafo, trabaja con tablas e imágenes en línea y exporta archivos PDF. Navega por miniaturas o títulos, busca y reemplaza texto y abre varios documentos.</p>
-    <p xml:lang="es">Añade notas al pie, índices automáticos, leyendas numeradas y referencias cruzadas a documentos DOCX. Coloca imágenes flotantes con ajuste de texto y controles nativos. Leaf bloquea los guardados ODT que perderían estas estructuras.</p>
+    <p xml:lang="es">Utiliza notas al pie, hilos de comentarios, imágenes flotantes y ecuaciones básicas en documentos DOCX y ODT. DOCX conserva además todas las asociaciones de leyendas de Leaf y las opciones admitidas de índices automáticos y referencias cruzadas.</p>
     <p xml:lang="es">Leaf utiliza el idioma del sistema en español e inglés. Se pueden aportar otros idiomas mediante catálogos gettext. El desarrollo, la documentación y las ilustraciones han utilizado asistencia considerable de IA.</p>
   </description>
   <launchable type="desktop-id">io.github.frandavid100.leaf.desktop</launchable>
@@ -46,6 +46,11 @@
   </screenshots>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.0-alpha.32" date="2026-11-07" type="development">
+      <description>
+        <p>Update to WordCraft 0.16, preserve more editable ODT content and improve frontend efficiency and code organization.</p>
+      </description>
+    </release>
     <release version="0.1.0-alpha.30" date="2026-11-06" type="development">
       <description>
         <p>Keep active pages tied to the caret, preserve image view positions, follow table of contents links directly, unify review cards and improve native formatting and element tools.</p>

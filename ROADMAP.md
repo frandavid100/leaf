@@ -4,6 +4,12 @@ Actualizada: 7 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## En curso: alpha.32 — actualización y rendimiento
+
+Actualización a WordCraft 0.16.0 autorizada, integración de las mejoras aplicables,
+optimización medida del cliente y revisión de claridad. Publicar automáticamente
+tras las comprobaciones nativas e instaladas. [Alcance y evidencia](docs/WORDCRAFT_016_REVIEW.md).
+
 ## Completado: alpha.31 automática
 
 [Publicada y verificada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.31)

@@ -6,8 +6,7 @@ use wordcraft_engine::Session;
 /// Prevent silent loss through the pinned upstream ODT exporter. The recovery
 /// copy is engine-native; this guard applies to document files and autosave.
 pub fn requires_docx(session: &Session) -> bool {
-    !session.doc.comments.is_empty()
-        || !session.doc.core.category.is_empty()
+    !session.doc.core.category.is_empty()
         || crate::proofing_defaults::odt_loses_inheritance(session)
         || odt_structure_error(session).is_some()
 }
@@ -18,11 +17,6 @@ pub fn format_preservation_error(session: &Session, path: &Path) -> Option<&'sta
         .is_some_and(|e| e.eq_ignore_ascii_case("odt"))
     {
         return None;
-    }
-    if !session.doc.comments.is_empty() {
-        return Some(wordcraft_gnome::t!(
-            "ODT cannot preserve comments with the current WordCraft exporter. Save as DOCX to keep them."
-        ));
     }
     if crate::proofing_defaults::odt_loses_inheritance(session) {
         return Some(wordcraft_gnome::t!(
@@ -36,14 +30,10 @@ pub fn format_preservation_error(session: &Session, path: &Path) -> Option<&'sta
 }
 
 fn odt_structure_error(session: &Session) -> Option<&'static str> {
-    use wordcraft_doc::{
-        InlineObject, PartKind, StoryRef,
-        para::{COLUMN_BREAK, Wrap},
-        section::SectionStart,
-    };
+    use wordcraft_doc::{InlineObject, StoryRef, para::COLUMN_BREAK, section::SectionStart};
     if crate::captions::requires_docx(&session.doc) {
         return Some(wordcraft_gnome::t!(
-            "Save as DOCX to preserve automatic fields, cross-references and caption numbering. The current ODT exporter only keeps their text."
+            "Save as DOCX to preserve caption associations and hidden caption text."
         ));
     }
     if session.doc.sections().iter().any(|(_, section)| {
@@ -74,16 +64,6 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
             "Save as DOCX to preserve column breaks and continuous, even-page or odd-page sections."
         ));
     }
-    if session
-        .doc
-        .parts
-        .values()
-        .any(|p| p.kind == PartKind::Footnote)
-    {
-        return Some(wordcraft_gnome::t!(
-            "Save as DOCX to preserve footnotes. The current ODT exporter cannot keep their structure."
-        ));
-    }
     if wordcraft_engine::cmd::review::has_format_changes(&session.doc) {
         return Some(wordcraft_gnome::t!(
             "Save as DOCX to preserve tracked formatting changes. The current ODT exporter cannot keep them."
@@ -94,15 +74,29 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
             "Save as DOCX to preserve tracked moves. The current ODT exporter cannot keep their association."
         ));
     }
-    let (mut equation, mut toc, mut floating, mut reference) = (false, false, false, false);
+    let (mut equation, mut effects, mut reference, mut toc) = (false, false, false, false);
     for story in
         std::iter::once(StoryRef::Body).chain(session.doc.parts.keys().copied().map(StoryRef::Part))
     {
         for path in session.doc.para_paths(story) {
             for o in &session.doc.para(story, &path).unwrap().objects {
                 match o {
-                    InlineObject::Equation { .. } => equation = true,
+                    InlineObject::Equation { linear, math, .. } => {
+                        let text = if math.nodes.is_empty() {
+                            linear.clone()
+                        } else {
+                            wordcraft_doc::math::to_linear(&math.nodes)
+                        };
+                        equation |= !math.omml.is_empty()
+                            || math.linear
+                            || (!math.nodes.is_empty()
+                                && wordcraft_doc::math::parse_linear(&text) != math.nodes);
+                    }
                     InlineObject::FieldStart { instr, .. } | InlineObject::Field { instr, .. } => {
+                        toc |= instr
+                            .split_whitespace()
+                            .next()
+                            .is_some_and(|name| name.eq_ignore_ascii_case("TOC"));
                         reference |= instr.split_whitespace().next().is_some_and(|s| {
                             [
                                 "REF", "PAGEREF", "SEQ", "AUTHOR", "TITLE", "FILENAME", "DATE",
@@ -111,14 +105,8 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
                             .iter()
                             .any(|name| s.eq_ignore_ascii_case(name))
                         });
-                        toc |= instr
-                            .split_whitespace()
-                            .next()
-                            .is_some_and(|s| s.eq_ignore_ascii_case("TOC"));
                     }
-                    InlineObject::Image { float, .. } if float.wrap != Wrap::Inline => {
-                        floating = true
-                    }
+                    InlineObject::Image { fx, .. } => effects |= *fx != Default::default(),
                     _ => {}
                 }
             }
@@ -126,19 +114,15 @@ fn odt_structure_error(session: &Session) -> Option<&'static str> {
     }
     if equation {
         Some(wordcraft_gnome::t!(
-            "Save as DOCX to preserve editable equations. The current ODT exporter cannot keep their structure."
+            "Save as DOCX to preserve the original equation structure and formatting."
         ))
-    } else if toc {
+    } else if reference || toc {
         Some(wordcraft_gnome::t!(
-            "Save as DOCX to preserve the automatic table of contents. The current ODT exporter only keeps static entries."
+            "Save as DOCX to preserve all table of contents and automatic field options."
         ))
-    } else if reference {
+    } else if effects {
         Some(wordcraft_gnome::t!(
-            "Save as DOCX to preserve automatic fields, cross-references and caption numbering. The current ODT exporter only keeps their text."
-        ))
-    } else if floating {
-        Some(wordcraft_gnome::t!(
-            "Save as DOCX to preserve floating image placement and text wrapping. The current ODT exporter makes these images inline."
+            "Save as DOCX to preserve picture effects. The current ODT exporter cannot keep them."
         ))
     } else {
         None

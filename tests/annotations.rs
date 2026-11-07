@@ -114,10 +114,10 @@ fn annotation_queries_are_read_only_and_protection_is_respected() {
 }
 
 #[test]
-fn bookmarks_and_comment_threads_roundtrip_docx() {
+fn bookmarks_and_comment_threads_roundtrip_docx_and_odt() {
     let dir = std::env::temp_dir().join(format!("leaf-annotations-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    for ext in ["docx"] {
+    for ext in ["docx", "odt"] {
         let mut s = session();
         selection::select_range(&mut s, &Pos::body(0, 0), &Pos::body(0, 5)).unwrap();
         a::add_bookmark(&mut s, "Café_1").unwrap();
@@ -149,29 +149,25 @@ fn bookmarks_and_comment_threads_roundtrip_docx() {
 }
 
 #[test]
-fn odt_bookmark_locations_survive_but_comments_must_not_be_silently_saved() {
+fn odt_bookmark_ranges_and_comments_survive_a_normal_leaf_save() {
     let dir = std::env::temp_dir().join(format!("leaf-annotations-odt-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let path = dir.join("bookmarks.odt");
     let mut s = session();
     selection::select_range(&mut s, &Pos::body(0, 0), &Pos::body(0, 5)).unwrap();
     a::add_bookmark(&mut s, "Café_1").unwrap();
+    a::goto_bookmark(&mut s, "Café_1").unwrap();
+    a::add_comment(&mut s, "Must not disappear").unwrap();
+    a::goto_bookmark(&mut s, "Café_1").unwrap();
+    let expected = s.sel.clone();
+    assert!(saving::format_preservation_error(&s, &path).is_none());
     saving::save(&mut s, &path).unwrap();
-    let original = std::fs::read(&path).unwrap();
     let mut back = wordcraft_gnome::open_document(&path).unwrap();
     assert_eq!(a::bookmarks(&back), ["Café_1"]);
     a::goto_bookmark(&mut back, "Café_1").unwrap();
-    // The pinned upstream exporter stores a point bookmark, not its original range.
-    assert!(back.sel.is_collapsed());
-    a::add_comment(&mut s, "Must not disappear").unwrap();
-    assert!(saving::format_preservation_error(&s, &path).is_some());
-    assert!(saving::save(&mut s, &path).unwrap_err().contains("DOCX"));
-    assert!(s.dirty);
-    assert_eq!(std::fs::read(&path).unwrap(), original);
-    // Reproduction for upstream, deliberately bypassing Leaf's save guard.
-    let bytes = wordcraft_engine::io::save_bytes("upstream.odt", &s.doc).unwrap();
-    let raw = dir.join("upstream.odt");
-    std::fs::write(&raw, bytes).unwrap();
-    assert!(a::comments(&wordcraft_gnome::open_document(&raw).unwrap()).is_empty());
+    assert_eq!(back.sel, expected);
+    let comments = a::comments(&back);
+    assert_eq!(comments.len(), 1);
+    assert_eq!(comments[0].text, "Must not disappear");
     std::fs::remove_dir_all(dir).unwrap();
 }

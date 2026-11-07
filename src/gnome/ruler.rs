@@ -255,6 +255,7 @@ impl Ruler {
     }
 
     pub(super) fn refresh(&self) {
+        perf_count("ruler_refresh", 1);
         let (Some(ui), Some(overlay)) = (self.ui.upgrade(), self.overlay.upgrade()) else {
             return;
         };

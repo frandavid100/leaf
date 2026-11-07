@@ -38,7 +38,17 @@ fn footnote_edit_navigation_history_and_docx_roundtrip() {
     assert!(references::footnote_refs(&reopened).is_empty());
     reopened.run("edit.undo", &json!({})).unwrap();
     assert_eq!(references::footnote_refs(&reopened).len(), 1);
-    assert!(saving::format_preservation_error(&reopened, &path.with_extension("odt")).is_some());
+    let odt = path.with_extension("odt");
+    saving::save(&mut reopened, &odt).unwrap();
+    let mut odt_copy = open_document(&odt).unwrap();
+    references::open_footnote(&mut odt_copy, true).unwrap();
+    assert!(
+        odt_copy
+            .doc
+            .plain_text(odt_copy.sel.focus.story)
+            .contains("A real footnote.")
+    );
+    std::fs::remove_file(odt).unwrap();
     std::fs::remove_file(path).unwrap();
     while s.can_undo() {
         s.run("edit.undo", &json!({})).unwrap();

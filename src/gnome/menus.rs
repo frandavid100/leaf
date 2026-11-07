@@ -288,6 +288,17 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
         w.set_version(APP_VERSION);
         w.set_developer_name(wordcraft_gnome::t!("Leaf Project"));
         w.set_license_type(gtk::License::Gpl30);
+        let language_licenses = wordcraft_engine::proof::packs::licence_texts()
+            .into_iter()
+            .map(|(title, text)| format!("{title}\n\n{text}"))
+            .collect::<Vec<_>>()
+            .join("\n\n");
+        w.add_legal_section(
+            wordcraft_gnome::t!("Language Data"),
+            None,
+            gtk::License::Custom,
+            Some(&glib::markup_escape_text(&language_licenses)),
+        );
         w.set_website("https://github.com/frandavid100/leaf");
         w.set_issue_url("https://github.com/frandavid100/leaf/issues");
         w.set_comments(wordcraft_gnome::t!(

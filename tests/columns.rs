@@ -132,18 +132,16 @@ fn custom_columns_and_separator_roundtrip_in_docx_and_odt() {
             let got = page::sect(&reopened).columns;
             assert_eq!(got.count, expected.count, "{kind:?} {ext}");
             assert_eq!(got.separator, expected.separator, "{kind:?} {ext}");
-            assert!((got.space - expected.space).abs() < 0.2, "{kind:?} {ext}");
+            let got_setup = ColumnSetup::current(&reopened);
+            let expected_setup = ColumnSetup::current(&s);
+            assert!(
+                (got_setup.space - expected_setup.space).abs() < 0.2,
+                "{kind:?} {ext}: {got:?} vs {expected:?}"
+            );
             assert_eq!(reopened.doc.plain_text(StoryRef::Body), text);
-            if ext == "docx" {
-                assert_eq!(got.widths.len(), expected.widths.len(), "{kind:?} {ext}");
-                for ((w, g), (x, y)) in got.widths.iter().zip(&expected.widths) {
-                    assert!((w - x).abs() < 0.2 && (g - y).abs() < 0.2, "{kind:?} {ext}");
-                }
-            } else {
-                assert!(
-                    got.widths.is_empty(),
-                    "upstream ODT export supports equal widths only"
-                );
+            assert_eq!(got.widths.len(), expected.widths.len(), "{kind:?} {ext}");
+            for ((w, g), (x, y)) in got.widths.iter().zip(&expected.widths) {
+                assert!((w - x).abs() < 0.2 && (g - y).abs() < 0.2, "{kind:?} {ext}");
             }
         }
     }

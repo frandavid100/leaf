@@ -220,7 +220,12 @@ fn floating_picture_wrap_spacing_history_and_docx() {
     copy.run("select.objects", &json!({"index":0})).unwrap();
     assert_eq!(pictures::layout(&copy).unwrap().wrap, float.wrap);
     assert!((pictures::layout(&copy).unwrap().dist - 8.).abs() < 0.1);
-    assert!(saving::format_preservation_error(&copy, &path.with_extension("odt")).is_some());
+    let odt = path.with_extension("odt");
+    saving::save(&mut copy, &odt).unwrap();
+    let mut odt_copy = open_document(&odt).unwrap();
+    odt_copy.run("select.objects", &json!({"index":0})).unwrap();
+    assert_eq!(pictures::layout(&odt_copy).unwrap().wrap, float.wrap);
+    assert!((pictures::layout(&odt_copy).unwrap().dist - 8.).abs() < 0.1);
     s.run("edit.undo", &json!({})).unwrap();
     assert_eq!(s.doc, before);
     std::fs::remove_dir_all(dir).unwrap();

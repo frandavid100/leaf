@@ -6,13 +6,18 @@ upgrade is a separate, explicitly authorized task, not part of routine cleanup.
 
 ## Current boundary
 
-- Engine/doc/render: `5cd53f184aab11def13b7fced18727159b9bc96a` in [Cargo.toml](Cargo.toml).
+- Engine/doc/render: `02a802cbafe45b5c8fecc00490c8f6b78c5ba251` in [Cargo.toml](Cargo.toml).
 - PDF backend patch: the craft-libs revision declared in Cargo.toml.
 - Existing compatibility exception: [vendor/wordcraft-formats](vendor/wordcraft-formats),
-  with four isolated ODT preservation/properties patches documented in
+  with a residual ODT compatibility delta documented in
   [patches/README.md](patches/README.md). Other engine crates/render are unmodified.
 - GTK lives in [src/gnome](src/gnome); the top-level [src library](src/lib.rs)
   contains GTK-independent adapters. [Architecture](docs/ARCHITECTURE.md) maps each feature.
+
+WordCraft Language data is pinned in `craft-i18n.rev`. Run
+`bash tools/prepare-language-data.sh`, then export `CRAFT_I18N_DIR` to the reported
+absolute path and `CRAFT_I18N_REQUIRED=1` before building. Advance this pin with
+the release and retain its embedded license texts.
 
 The source of truth is Session/Document. Public commands own mutation, protection,
 dirty state and history; DocLayout owns geometry. Leaf controls native input,
@@ -23,8 +28,8 @@ Do not introduce a second editable model or patch the engine for UI convenience.
 
 1. Inspect upstream changes and its MSRV/krilla requirements before choosing a revision.
 2. Update WordCraft revisions together in Cargo.toml and vendor/wordcraft-formats/Cargo.toml.
-3. Recopy the formats crate from that exact revision and reapply the four patches
-   in the recorded order, or remove patches now fixed upstream. Keep licenses and
+3. Recopy the formats crate from that exact revision and reapply the current compatibility delta
+   in the recorded order, or remove changes now fixed upstream. Keep licenses and
    provenance. Never carry an unrelated stale vendored crate across the upgrade.
 4. Regenerate Cargo.lock and inspect the dependency diff. A revision bump is not
    presumed source-compatible; adapt public API changes on the Leaf side.

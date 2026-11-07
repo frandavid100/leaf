@@ -1,24 +1,36 @@
+# Standalone snapshot of WordCraft 0.16.0; compatibility delta: patches/README.md.
 [package]
 name = "wordcraft-formats"
-version = "0.14.0"
+version = "0.16.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
-description = "Pinned WordCraft formats with Leaf ODT preservation patch"
+description = "Pinned WordCraft formats with Leaf ODT compatibility preservation"
 
 [dependencies]
-wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a" }
-wordcraft-geom = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a", features = ["image"] }
-wordcraft-metafile = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a" }
+wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
+wordcraft-geom = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251", features = ["image"] }
+wordcraft-metafile = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
+base64 = { version = "0.23" }
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp", "gif", "bmp", "tiff"] }
-quick-xml = "0.41"
+quick-xml = { version = "0.41" }
 zip = { version = "3", default-features = false, features = ["deflate"] }
-cfb = "0.15"
-encoding_rs = "0.8"
-chardetng = "1"
-log = "0.4"
+cfb = { version = "0.15" }
+encoding_rs = { version = "0.8" }
+chardetng = { version = "1" }
+log = { version = "0.4" }
 chrono = { version = "0.4.45", default-features = false, features = ["std"] }
-[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
-js-sys = "0.3"
+aes = { version = "0.9" }
+sha1 = { version = "0.11" }
+sha2 = { version = "0.11" }
+hmac = { version = "0.13" }
+getrandom = { version = "0.3" }
+zeroize = { version = "1" }
+miniz_oxide = { version = "0.9" }
+
+[target."cfg(all(target_arch = \"wasm32\", target_os = \"unknown\"))".dependencies]
+js-sys = { version = "0.3" }
+getrandom = { version = "0.3", features = ["wasm_js"] }
+
 [dev-dependencies]
-wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a", features = ["test-support"] }
-proptest = "1"
+wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251", features = ["test-support"] }
+proptest = { version = "1" }

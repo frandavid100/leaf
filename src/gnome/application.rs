@@ -6,6 +6,16 @@ pub(super) fn run() {
         println!("Leaf {APP_VERSION}");
         return;
     }
+    if std::env::args().any(|arg| arg == "--language-data-licenses") {
+        assert!(
+            wordcraft_engine::proof::packs::embedded_locales().contains(&"en-us"),
+            "release must embed its pinned Language data"
+        );
+        for (title, text) in wordcraft_engine::proof::packs::licence_texts() {
+            println!("{title}\n\n{text}\n");
+        }
+        return;
+    }
     if std::env::args().any(|a| a == "--package-storage-test") {
         let root = wordcraft_gnome::preferences::recovery_root();
         let data = std::env::var_os("XDG_DATA_HOME").expect("sandbox data home");

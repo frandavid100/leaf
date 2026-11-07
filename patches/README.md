@@ -1,3 +1,47 @@
+# WordCraft formats compatibility delta
+
+## Current: WordCraft 0.16.0
+
+Upstream: https://github.com/storytold/wordcraft at
+`02a802cbafe45b5c8fecc00490c8f6b78c5ba251`, crate wordcraft-formats 0.16.0
+(MIT OR Apache-2.0). The complete formats crate was recopied from that revision;
+its licenses are retained. Engine, document, layout and rendering crates are
+unmodified upstream dependencies at the same revision.
+
+The four 0.14 patches below are historical and are **not** applied to this tree.
+Their replacements are the smaller source delta in
+[wordcraft-formats-0.16-compat.patch](wordcraft-formats-0.16-compat.patch).
+The standalone Cargo manifest resolves upstream workspace dependencies at the
+same WordCraft revision and preserves their ranges/features, including the new
+ODT crypto dependencies. It is recorded separately from the source patch.
+
+To reproduce: copy `crates/formats` at the revision above, copy LICENSE-MIT and
+LICENSE-APACHE from the repository root, generate the standalone manifest, and
+run `patch -p1 < ../../patches/wordcraft-formats-0.16-compat.patch` from the vendor
+crate. No unrelated importer/exporter or engine code is patched.
+
+The residual compatibility changes preserve:
+
+- Editable header/footer links, disabled variants and otherwise unreferenced
+  parts. ODF master pages receive the inherited content; link metadata is only
+  restored if the exported copy still agrees with its predecessor. Independently
+  edited content stays independent; duplicate parts alone are discarded.
+- Writer-compatible dynamic header/footer reservations, standard geometry taking
+  priority over stale cached distances, and exceptional overlapping nominal
+  margins. Ordinary geometry uses standard ODF properties.
+- No Proof overrides and the original language of unchecked text. Standard
+  `fo:language="zxx"` interoperates with ODF readers; supplemental metadata retains
+  the language for re-enabling review and accepts files from earlier Leaf releases.
+
+WordCraft 0.16 now supplies the other original preservation work, including page
+parts with tables/images and native page fields. The existing small regressions
+remain enabled. Additional tests check retained ODT objects, custom column widths,
+bookmark ranges and comment replies. Guarded features are listed in
+[the integration review](../docs/WORDCRAFT_016_REVIEW.md); do not infer complete
+ODF parity from these targeted checks.
+
+## Historical delta for WordCraft 0.14.0
+
 # Isolated WordCraft formats compatibility patch
 
 Upstream: https://github.com/storytold/wordcraft at 5cd53f184aab11def13b7fced18727159b9bc96a, crate wordcraft-formats 0.14.0 (MIT OR Apache-2.0).

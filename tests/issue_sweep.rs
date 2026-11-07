@@ -152,7 +152,9 @@ fn font_sizes_include_effective_styles_and_other_stories_but_not_unused_styles()
     unused.id = "Unused".into();
     unused.name = "Unused".into();
     unused.chr.size = Some(77.5);
-    s.doc.styles.styles.push(unused);
+    std::sync::Arc::make_mut(&mut s.doc.styles)
+        .styles
+        .push(unused);
     let header = s.doc.add_part(
         wordcraft_doc::PartKind::Header,
         vec![wordcraft_doc::para_block(

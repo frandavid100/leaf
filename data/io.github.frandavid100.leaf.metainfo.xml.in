@@ -11,7 +11,7 @@
   <description>
     <p>Leaf is an experimental GTK4 and libadwaita document editor powered by WordCraft.</p>
     <p>Edit DOCX and ODT files, use text and paragraph styles, work with tables and inline images, and export PDFs. Browse page thumbnails or headings, search and replace text, and open multiple documents.</p>
-    <p>Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents. Position floating images with text wrapping and native controls. Leaf prevents ODT saves that would lose these structures.</p>
+    <p>Use footnotes, comment threads, floating pictures and basic equations in DOCX and ODT documents. DOCX also preserves every Leaf caption association and the supported automatic contents and cross-reference options.</p>
     <p>Leaf follows your system language in English and Spanish. Other languages can be contributed using gettext catalogs. Development, documentation and artwork have used substantial AI assistance.</p>
   </description>
   <launchable type="desktop-id">io.github.frandavid100.leaf.desktop</launchable>
@@ -42,6 +42,11 @@
   </screenshots>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.0-alpha.32" date="2026-11-07" type="development">
+      <description>
+        <p>Update to WordCraft 0.16, preserve more editable ODT content and improve frontend efficiency and code organization.</p>
+      </description>
+    </release>
     <release version="0.1.0-alpha.30" date="2026-11-06" type="development"><description><p>Keep active pages tied to the caret, preserve image view positions, follow table of contents links directly, unify review cards and improve native formatting and element tools.</p></description></release>
     <release version="0.1.0-alpha.29" date="2026-11-05" type="development">
       <description><p>Refine image manipulation, direct document references, automatic fields, thumbnails and the Insert menu.</p></description>
