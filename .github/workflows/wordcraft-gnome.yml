@@ -695,7 +695,7 @@ jobs:
     needs: test
     if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[candidate-alpha]') && (needs.test.result == 'success' || (needs.test.result == 'skipped' && contains(github.event.head_commit.message, '[bundle-only]')))
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 60
     permissions:
       contents: read
       actions: read
@@ -733,6 +733,26 @@ jobs:
           # These two Flatpak test drivers are not binary inputs. Sandbox-only
           # control/profile changes may reuse the identical native executable.
           git diff --exit-code "$native_source" -- src Cargo.toml Cargo.lock craft-i18n.rev tests vendor po data examples tools patches ':(exclude)tools/dictionary84-pointer-test.sh' ':(exclude)tools/dictionary84-installed-test.sh'
+      - name: Wait for the reusable native executable without bypassing validation
+        if: contains(github.event.head_commit.message, '[bundle-only]')
+        timeout-minutes: 21
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 80); do
+            conclusion=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LEAF_NATIVE_RUN" --jq '.conclusion // "pending"')
+            case "$conclusion" in
+              pending|success) ;;
+              *) echo "Native validation ended with $conclusion" >&2; exit 1 ;;
+            esac
+            available=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LEAF_NATIVE_RUN/artifacts?name=leaf-native-unvalidated" --jq '[.artifacts[] | select(.name == "leaf-native-unvalidated" and .expired == false)] | length')
+            if test "$available" -gt 0; then exit 0; fi
+            echo "Waiting for the native executable ($attempt/80). Full native success remains required before promotion."
+            sleep 15
+          done
+          echo 'The native executable was not available within 20 minutes.' >&2
+          exit 1
       - uses: actions/download-artifact@v4
         with:
           name: ${{ contains(github.event.head_commit.message, '[bundle-only]') && 'leaf-native-unvalidated' || 'wordcraft-gnome-fase3d-linux' }}

@@ -25,6 +25,10 @@ The ordered source selection’s first character (or the caret) supplies the app
 - Templates use read-only access to the system XDG Templates folder or the folder portal, and open as new unsaved tabs. The source is never a save target. The bundle and relocated-prefix test declare the read-only XDG Templates grant; an existing external FlatPark manifest without that grant can use the folder chooser. No external store manifest update is claimed.
 - Clipboard reads are cancellable and compare document identity, revision and selection. Drops use GDK FileList. Neither requires broad home access.
 
+## Automatic delivery
+
+The candidate waits up to 20 minutes for its exact native executable while the mandatory native suite continues. It still requires full native success and compares the stripped executable with the final validated artifact before publication. The package job has a 60-minute ceiling to include this bounded wait and the two installed runtimes.
+
 ## Verification record
 
 In progress. All 205 local Rust tests pass, including 15 workflow regressions; four Python tests, all 879 en/es messages, document links and native GTK controls/real gestures at scale 1/2 pass. Template restart and the ODT preservation guard are covered. Exact source, CI run identities, release assets and final results are recorded here after publication.
