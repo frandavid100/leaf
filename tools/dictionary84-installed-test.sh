@@ -26,21 +26,24 @@ exec flatpak run --socket=x11 --nosocket=wayland \
   leaf "$LEAF84_BINARY" "$@"
 RUNNER
 cd "$output"
-session=()
 if [[ ${CI:-} == true ]]; then
-  # FUSE cannot mount in a rootless user namespace on this runner. Create only
-  # a host mount namespace, then drop privileges before starting any test/app.
   export LEAF84_TEST_UID
   LEAF84_TEST_UID=$(id -u)
-  session=(sudo -E unshare --mount --propagation private --
-    setpriv --reuid="$LEAF84_TEST_UID" --regid="$(id -g)" --init-groups)
 fi
 for language in en es; do
   scale=1;screen=1400x1100x24
   if [[ "$language" == es ]]; then scale=2;screen=2800x2200x24;fi
-  # Keep the standard portal paths, but isolate this session's mount namespace
-  # from earlier D-Bus sessions (xdg-desktop-portal #2140). Selection and reopen
-  # share the same namespace; no Leaf filesystem permission is widened.
+  session=()
+  if [[ ${CI:-} == true ]]; then
+    # A private namespace can still inherit an unusable old FUSE mount. Bind
+    # fresh runtime storage at the STANDARD path, then restore the runner UID.
+    # This preserves Flatpak's path mapping without touching the outer session.
+    runtime=$(mktemp -d "${RUNNER_TEMP:-/tmp}/leaf84-runtime.XXXXXX")
+    session=(sudo -E unshare --mount --propagation private --
+      bash -euc 'mount --bind "$1" "$2"; shift 2; exec setpriv "$@"'
+      leaf84-mount "$runtime" "${XDG_RUNTIME_DIR:?Missing runtime directory}"
+      --reuid="$LEAF84_TEST_UID" --regid="$(id -g)" --init-groups --)
+  fi
   LANGUAGE=$language GDK_SCALE=$scale xvfb-run -a -s "-screen 0 $screen" \
     "${session[@]}" dbus-run-session -- timeout 240s bash "$root/tools/dictionary84-test.sh" "$temporary/installed.sh" folder
 done

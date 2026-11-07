@@ -142,3 +142,14 @@ installed launcher asserts that it still runs with that original UID. No test
 application runs as root, no user namespace is added, and standard portal paths
 are preserved. Non-CI invocations retain the ordinary session command. All
 installed checks remain mandatory before publication.
+
+Run 42408192016 passed every GNOME 49 check again, but GNOME 51 showed that a
+private host mount namespace still inherits an already unusable outer `doc`
+mount. CI now binds a fresh, runner-owned temporary directory at the unchanged
+standard `$XDG_RUNTIME_DIR` path inside that namespace, before restoring the
+original UID/GID. This hides inherited stale mounts while preserving Flatpak's
+URI mapping. No outer mount or application permission changes. Selection and
+restart share this private storage; no possible FUSE tree is recursively deleted.
+The complete GNOME 51 check moves immediately after the GNOME 49 dictionary
+check, so any portal failure is detected before the lengthy existing smoke
+regressions. Every previous installed check is retained and remains required.
