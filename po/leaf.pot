@@ -29,7 +29,7 @@ msgstr ""
 msgid "Accept"
 msgstr ""
 
-#: src/gnome/tab.rs:64 src/gnome/tab.rs:506 src/gnome/tab.rs:507
+#: src/gnome/tab.rs:64 src/gnome/tab.rs:507 src/gnome/tab.rs:508
 msgid "Actual Size (100%)"
 msgstr ""
 
@@ -45,7 +45,7 @@ msgstr ""
 msgid "Add Comment"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1172
+#: src/gnome/paragraph.rs:1182
 msgid "Add Left Tab Stop"
 msgstr ""
 
@@ -73,7 +73,7 @@ msgstr ""
 msgid "Alignment: {value}"
 msgstr ""
 
-#: src/gnome/navigation.rs:740 src/gnome/paragraph.rs:1070 src/gnome/review.rs:424 src/gnome/tables.rs:378
+#: src/gnome/navigation.rs:740 src/gnome/paragraph.rs:1080 src/gnome/review.rs:424 src/gnome/tables.rs:378
 msgid "All"
 msgstr ""
 
@@ -161,7 +161,7 @@ msgstr ""
 msgid "Apply to All Borders"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1159
+#: src/gnome/paragraph.rs:1169
 msgid "Ascending (A–Z)"
 msgstr ""
 
@@ -203,6 +203,10 @@ msgstr ""
 
 #: src/gnome/paragraph.rs:971
 msgid "Before (pt)"
+msgstr ""
+
+#: src/gnome/paragraph.rs:992
+msgid "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."
 msgstr ""
 
 #: src/gnome/accessibility.rs:106 src/gnome/menus.rs:662 src/gnome/tab.rs:244 src/gnome/text_palette.rs:37
@@ -249,7 +253,7 @@ msgstr ""
 msgid "Borders"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:248 src/gnome/paragraph.rs:1074 src/gnome/tables.rs:383
+#: src/gnome/document_properties_dialog.rs:248 src/gnome/paragraph.rs:1084 src/gnome/tables.rs:383
 msgid "Bottom"
 msgstr ""
 
@@ -421,7 +425,7 @@ msgstr ""
 msgid "Clear All Formatting"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1185
+#: src/gnome/paragraph.rs:1195
 msgid "Clear Tab Stops"
 msgstr ""
 
@@ -665,7 +669,7 @@ msgstr ""
 msgid "DOCUMENTS\nOpen DOCX/ODT documents from the main menu. Ctrl+S saves; Ctrl+Shift+S saves a copy. Use DOCX for notes, equations, automatic references, comments and advanced tracked changes.\n\nNAVIGATION AND REVIEW\nF9 shows or hides Pages, Navigation and Review. Ctrl+F searches; Ctrl+H replaces. Review filters corrections, tracked changes and comments. Apply or ignore a correction occurrence, accept/reject changes, and reply to or resolve comments. F7 opens corrections. Edit/Suggest controls whether new edits are tracked.\n\nFORMATTING AND ELEMENTS\nStyle, Paragraph, Text and Elements are in the adaptive header or bottom toolbar. Format rows show current values; mixed checkboxes enable the option across the selection. Arrows open internal options with Back. Reapply remembers that feature’s applied settings. Pins keep panels floating. Elements shares table, image and contents tools with right-click, while keeping Insert available. Ctrl+Z undoes; Ctrl+Shift+Z redoes. Ruler drags snap to 0.5 cm; Escape cancels.\n\nAUTOSAVE\nPreferences can disable autosave, use recovery copies or save directly to the document. Recover Documents is in the main menu."
 msgstr ""
 
-#: src/gnome/tab.rs:733
+#: src/gnome/tab.rs:734
 msgid "DOCX and ODT Documents"
 msgstr ""
 
@@ -741,7 +745,7 @@ msgstr ""
 msgid "Deletion"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1165
+#: src/gnome/paragraph.rs:1175
 msgid "Descending (Z–A)"
 msgstr ""
 
@@ -801,7 +805,7 @@ msgstr ""
 msgid "Distribute Rows Evenly"
 msgstr ""
 
-#: src/gnome/paragraph.rs:457 src/gnome/paragraph.rs:792 src/gnome/paragraph.rs:1105
+#: src/gnome/paragraph.rs:457 src/gnome/paragraph.rs:792 src/gnome/paragraph.rs:1115
 msgid "Distributed Alignment"
 msgstr ""
 
@@ -809,7 +813,7 @@ msgstr ""
 msgid "Do Not Check"
 msgstr ""
 
-#: src/gnome/application.rs:84 src/gnome/files.rs:158 src/gnome/tab.rs:769
+#: src/gnome/application.rs:84 src/gnome/files.rs:158 src/gnome/tab.rs:770
 msgid "Document"
 msgstr ""
 
@@ -981,7 +985,7 @@ msgstr ""
 msgid "Enter Six Hexadecimal Characters, for Example 808080"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1222
+#: src/gnome/paragraph.rs:1232
 msgid "Enter Six RGB Digits, for Example 2266AA"
 msgstr ""
 
@@ -1093,7 +1097,7 @@ msgstr ""
 msgid "Fit Contents"
 msgstr ""
 
-#: src/gnome/tab.rs:63 src/gnome/tab.rs:510 src/gnome/tab.rs:511 src/gnome/tables.rs:248
+#: src/gnome/tab.rs:63 src/gnome/tab.rs:511 src/gnome/tab.rs:512 src/gnome/tables.rs:248
 msgid "Fit Width"
 msgstr ""
 
@@ -1269,7 +1273,7 @@ msgstr ""
 msgid "Horizontal"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1077
+#: src/gnome/paragraph.rs:1087
 msgid "Horizontal Line"
 msgstr ""
 
@@ -1421,7 +1425,7 @@ msgstr ""
 msgid "Insertion"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1072 src/gnome/tables.rs:380
+#: src/gnome/paragraph.rs:1082 src/gnome/tables.rs:380
 msgid "Inside"
 msgstr ""
 
@@ -1457,11 +1461,11 @@ msgstr ""
 msgid "Keep Existing Links"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1140
+#: src/gnome/paragraph.rs:1150
 msgid "Keep Lines Together"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1135
+#: src/gnome/paragraph.rs:1145
 msgid "Keep with Next"
 msgstr ""
 
@@ -1517,7 +1521,7 @@ msgstr ""
 msgid "Leaf is an experimental GTK4 and libadwaita document editor powered by WordCraft."
 msgstr ""
 
-#: src/gnome/paragraph.rs:1075 src/gnome/tables.rs:237 src/gnome/tables.rs:384
+#: src/gnome/paragraph.rs:1085 src/gnome/tables.rs:237 src/gnome/tables.rs:384
 msgid "Left"
 msgstr ""
 
@@ -1529,7 +1533,7 @@ msgstr ""
 msgid "Left (pt)"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1111
+#: src/gnome/paragraph.rs:1121
 msgid "Left to Right"
 msgstr ""
 
@@ -1625,7 +1629,7 @@ msgstr ""
 msgid "Minimum Row Height"
 msgstr ""
 
-#: src/gnome/adaptive.rs:169 src/gnome/adaptive.rs:240 src/gnome/paragraph.rs:458 src/gnome/paragraph.rs:484 src/gnome/paragraph.rs:533 src/gnome/paragraph.rs:540 src/gnome/paragraph.rs:552 src/gnome/paragraph.rs:1006 src/gnome/selection_view.rs:154 src/gnome/text_palette.rs:499 src/gnome/text_palette.rs:519
+#: src/gnome/adaptive.rs:169 src/gnome/adaptive.rs:240 src/gnome/paragraph.rs:458 src/gnome/paragraph.rs:484 src/gnome/paragraph.rs:533 src/gnome/paragraph.rs:540 src/gnome/paragraph.rs:552 src/gnome/paragraph.rs:1016 src/gnome/selection_view.rs:154 src/gnome/text_palette.rs:499 src/gnome/text_palette.rs:519
 msgid "Mixed"
 msgstr ""
 
@@ -1685,7 +1689,7 @@ msgstr ""
 msgid "New Comment"
 msgstr ""
 
-#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:147 src/gnome/tab.rs:810 src/gnome/workspace.rs:318
+#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:147 src/gnome/tab.rs:811 src/gnome/workspace.rs:318
 msgid "New Document"
 msgstr ""
 
@@ -1721,7 +1725,7 @@ msgstr ""
 msgid "No Background Color"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1069
+#: src/gnome/paragraph.rs:1079
 msgid "No Borders"
 msgstr ""
 
@@ -1809,7 +1813,7 @@ msgstr ""
 msgid "Only DOCX and ODT files are supported"
 msgstr ""
 
-#: src/gnome/application.rs:76 src/gnome/tab.rs:758
+#: src/gnome/application.rs:76 src/gnome/tab.rs:759
 msgid "Only local files are supported"
 msgstr ""
 
@@ -1817,7 +1821,7 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: src/gnome/tab.rs:731
+#: src/gnome/tab.rs:732
 msgid "Open Document"
 msgstr ""
 
@@ -1841,7 +1845,7 @@ msgstr ""
 msgid "Outline"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1071 src/gnome/tables.rs:379
+#: src/gnome/paragraph.rs:1081 src/gnome/tables.rs:379
 msgid "Outside"
 msgstr ""
 
@@ -1861,7 +1865,7 @@ msgstr ""
 msgid "Page Break"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1145
+#: src/gnome/paragraph.rs:1155
 msgid "Page Break Before"
 msgstr ""
 
@@ -1897,7 +1901,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:408 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:418 src/gnome/diagnostics/register.rs:185 src/gnome/paragraph.rs:1245 src/gnome/tab.rs:311 src/gnome/tab.rs:583
+#: src/gnome/context.rs:131 src/gnome/context.rs:408 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:418 src/gnome/diagnostics/register.rs:197 src/gnome/paragraph.rs:1255 src/gnome/tab.rs:311 src/gnome/tab.rs:584
 msgid "Paragraph"
 msgstr ""
 
@@ -1961,7 +1965,7 @@ msgstr ""
 msgid "Portrait"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1171
+#: src/gnome/paragraph.rs:1181
 msgid "Position (pt)"
 msgstr ""
 
@@ -1997,11 +2001,11 @@ msgstr ""
 msgid "Quadratic Formula"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1011
+#: src/gnome/paragraph.rs:1021
 msgid "RGB Color, for Example 2266AA"
 msgstr ""
 
-#: src/gnome/tab.rs:880
+#: src/gnome/tab.rs:881
 msgid "Recover"
 msgstr ""
 
@@ -2025,7 +2029,7 @@ msgstr ""
 msgid "Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved."
 msgstr ""
 
-#: src/gnome/view.rs:466
+#: src/gnome/view.rs:493
 msgid "Recovery: {e}"
 msgstr ""
 
@@ -2137,7 +2141,7 @@ msgstr ""
 msgid "Reply to Comment"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1191
+#: src/gnome/paragraph.rs:1201
 msgid "Reset Paragraph Formatting"
 msgstr ""
 
@@ -2197,7 +2201,7 @@ msgstr ""
 msgid "Reviewing Pane"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1076 src/gnome/tables.rs:239 src/gnome/tables.rs:385
+#: src/gnome/paragraph.rs:1086 src/gnome/tables.rs:239 src/gnome/tables.rs:385
 msgid "Right"
 msgstr ""
 
@@ -2209,7 +2213,7 @@ msgstr ""
 msgid "Right (pt)"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1117
+#: src/gnome/paragraph.rs:1127
 msgid "Right to Left"
 msgstr ""
 
@@ -2489,7 +2493,7 @@ msgstr ""
 msgid "Show Caption"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1128
+#: src/gnome/paragraph.rs:1138
 msgid "Show Formatting Marks (¶)"
 msgstr ""
 
@@ -2633,7 +2637,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:407 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:419 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:184 src/gnome/styles.rs:499 src/gnome/tab.rs:307 src/gnome/tab.rs:582
+#: src/gnome/context.rs:128 src/gnome/context.rs:407 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:419 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:196 src/gnome/styles.rs:499 src/gnome/tab.rs:307 src/gnome/tab.rs:583
 msgid "Style"
 msgstr ""
 
@@ -2733,7 +2737,7 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:409 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:417 src/gnome/diagnostics/register.rs:186 src/gnome/diagnostics/spellcheck.rs:145 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:584
+#: src/gnome/context.rs:134 src/gnome/context.rs:409 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:417 src/gnome/diagnostics/register.rs:198 src/gnome/diagnostics/spellcheck.rs:145 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:585
 msgid "Text"
 msgstr ""
 
@@ -2785,7 +2789,7 @@ msgstr ""
 msgid "The current engine supports one table of contents per document. Edit the existing table of contents instead."
 msgstr ""
 
-#: src/gnome/view.rs:477
+#: src/gnome/view.rs:504
 msgid "The document contains no pages"
 msgstr ""
 
@@ -2893,7 +2897,7 @@ msgstr ""
 msgid "The text has changed. Check it again."
 msgstr ""
 
-#: src/gnome/tab.rs:879
+#: src/gnome/tab.rs:880
 msgid "There Are Documents to Recover"
 msgstr ""
 
@@ -2949,7 +2953,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:245 src/gnome/paragraph.rs:1073 src/gnome/tables.rs:382
+#: src/gnome/document_properties_dialog.rs:245 src/gnome/paragraph.rs:1083 src/gnome/tables.rs:382
 msgid "Top"
 msgstr ""
 
@@ -3121,7 +3125,7 @@ msgstr ""
 msgid "Whole Document"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1150
+#: src/gnome/paragraph.rs:1160
 msgid "Widow and Orphan Control"
 msgstr ""
 
@@ -3133,7 +3137,7 @@ msgstr ""
 msgid "Width (mm)"
 msgstr ""
 
-#: src/gnome/paragraph.rs:995
+#: src/gnome/paragraph.rs:1005
 msgid "Width (pt)"
 msgstr ""
 
@@ -3213,7 +3217,7 @@ msgstr ""
 msgid "{count}Y"
 msgstr ""
 
-#: src/gnome/diagnostics/view_tests.rs:55 src/gnome/view.rs:619
+#: src/gnome/diagnostics/view_tests.rs:55 src/gnome/view.rs:646
 msgid "{current} of {total}"
 msgstr ""
 

@@ -15,6 +15,9 @@ pub(super) fn install_keyboard_input(
         let key_host = host.clone();
         let key_app = app.clone();
         let controller = gtk::EventControllerKey::new();
+        // Handle editor keys before ScrolledWindow's Home/End bindings consume
+        // them. Focus guards below leave native entry navigation to GTK.
+        controller.set_propagation_phase(gtk::PropagationPhase::Capture);
         // GTK supplies dead-key composition, accents and input methods.
         // Committed text enters WordCraft; ordinary shortcuts remain in
         // the key controller instead of being converted into characters.

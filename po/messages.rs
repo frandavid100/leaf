@@ -50,6 +50,7 @@ pub const MESSAGES: &[&str] = &[
     "Background Color",
     "Backspace",
     "Before (pt)",
+    "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing.",
     "Bold",
     "Bold (Ctrl+B)",
     "Bold, Italic, Underline and Font Size",

@@ -2950,3 +2950,6 @@ msgstr "Guarda como DOCX para conservar los efectos de las imágenes. El exporta
 
 msgid "Use footnotes, comment threads, floating pictures and basic equations in DOCX and ODT documents. DOCX also preserves every Leaf caption association and the supported automatic contents and cross-reference options."
 msgstr "Utiliza notas al pie, hilos de comentarios, imágenes flotantes y ecuaciones básicas en documentos DOCX y ODT. DOCX conserva además todas las asociaciones de leyendas de Leaf y las opciones admitidas de índices automáticos y referencias cruzadas."
+
+msgid "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."
+msgstr "Entre párrafos se utiliza el mayor de los valores Antes y Después contiguos. Los estilos pueden suprimir este espacio."

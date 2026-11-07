@@ -30,7 +30,7 @@ use wordcraft_gnome::{
     pdf_export, pictures,
 };
 
-const APP_VERSION: &str = "0.1.0-alpha.32";
+const APP_VERSION: &str = "0.1.0-alpha.33";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -145,6 +145,9 @@ mod workspace;
 use workspace::*;
 
 // Opt-in diagnostics and synthetic fixtures; no normal startup work.
+#[path = "diagnostics/pending_issues.rs"]
+mod pending_issue_checks;
+use pending_issue_checks::*;
 #[path = "diagnostics/clipboard.rs"]
 mod clipboard_checks;
 use clipboard_checks::*;

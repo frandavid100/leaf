@@ -378,6 +378,7 @@ pub(super) fn build_tab(
         printing: PrintState::default(),
         selection_data: Rc::new(RefCell::new(SelectionGeometry::default())),
         selection_zoom: Rc::new(Cell::new(1.0)),
+        caret_navigation_generation: Cell::new(0),
         caret_motion: Rc::new(RefCell::new(Default::default())),
         caret_tick_active: Cell::new(false),
         drag_scroll: RefCell::new(None),

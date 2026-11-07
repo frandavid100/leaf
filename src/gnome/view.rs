@@ -295,11 +295,38 @@ fn apply_zoom(ui: &Rc<Ui>, zoom: f32) {
     layout_pages(ui);
     refresh_selection(ui);
     update_status(ui);
+    let target = ui.current.borrow().as_ref().map(|doc| {
+        (
+            (doc.session.document_id(), doc.session.rev()),
+            doc.session.sel.clone(),
+            doc.zoom,
+        )
+    });
+    let navigation = ui.caret_navigation_generation.get();
     let weak = Rc::downgrade(ui);
     // Wait for allocation without keeping a closed document alive.
     glib::idle_add_local_once(move || {
         if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
-            scroll_to_page(&ui, current_page);
+            let Some((identity, selection, zoom)) = target else {
+                return;
+            };
+            let restore_page = {
+                let current = ui.current.borrow();
+                let Some(doc) = current.as_ref() else { return };
+                // A replaced/edited document or a later zoom has its own reveal.
+                if (doc.session.document_id(), doc.session.rev()) != identity || doc.zoom != zoom {
+                    return;
+                }
+                navigation == ui.caret_navigation_generation.get()
+                    && doc.session.sel == selection
+                    && doc.active == current_page
+            };
+            if restore_page {
+                scroll_to_page(&ui, current_page);
+            } else {
+                // Resolve newer navigation against the now allocated geometry.
+                caret_ensure_visible(&ui);
+            }
         }
     });
 }

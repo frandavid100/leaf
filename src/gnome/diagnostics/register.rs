@@ -25,6 +25,18 @@ pub(super) fn install_diagnostics(
     app: &Application,
     controls: DiagnosticControls<'_>,
 ) {
+    for flag in ["--pending-end-ui-test", "--pending-spacing-ui-test"] {
+        if std::env::args().any(|arg| arg == flag) && host.tabs.n_pages() == 1 {
+            let (u, w, a) = (ui.clone(), window.clone(), app.clone());
+            glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+                if flag == "--pending-end-ui-test" {
+                    pending_end_ui_test(&u, &w, &a)
+                } else {
+                    pending_spacing_ui_test(&u, &a)
+                }
+            });
+        }
+    }
     if std::env::args().any(|a| a == "--captions-ui-test") && host.tabs.n_pages() == 1 {
         captions_ui_test(ui, window, app);
     }

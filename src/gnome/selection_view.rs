@@ -270,6 +270,10 @@ pub(super) fn caret_ensure_visible(ui: &Rc<Ui>) {
 }
 
 pub(super) fn selected_command(ui: &Rc<Ui>, action: &str, extend: bool) {
+    // End at an existing line end still requests a reveal. Selection equality
+    // alone cannot tell a queued zoom restoration that navigation superseded it.
+    ui.caret_navigation_generation
+        .set(ui.caret_navigation_generation.get().wrapping_add(1));
     let result = {
         let mut value = ui.current.borrow_mut();
         value.as_mut().map(|doc| {

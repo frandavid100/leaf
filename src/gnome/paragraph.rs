@@ -989,6 +989,16 @@ impl ParagraphPopover {
                     }
                     self.number_action(n, "para.spacing", key, property);
                 }
+                let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
+                    "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."
+                )));
+                hint.set_widget_name("paragraph-spacing-hint");
+                hint.set_wrap(true);
+                hint.set_max_width_chars(38);
+                hint.set_xalign(0.0);
+                hint.set_margin_top(6);
+                hint.add_css_class("dim-label");
+                self.detail.append(&hint);
             }
             "shading" => self.shading_controls(),
             "borders" => {
