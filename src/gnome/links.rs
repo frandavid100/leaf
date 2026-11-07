@@ -392,7 +392,7 @@ pub(super) fn update_reference_hover(ui: &Rc<Ui>, point: Option<(f64, f64)>) {
         let (page, p) = inspect_canvas_point(ui, x, y)?;
         let mut current = ui.current.borrow_mut();
         let d = current.as_mut()?;
-        let (a, b) = wordcraft_gnome::references::toc_span_at(&d.session, &p)?;
+        let (a, b) = cached_toc_span(ui, &d.session, &p)?;
         let rects = d
             .session
             .layout()
@@ -434,8 +434,8 @@ pub(super) fn paint_reference_cue(
     let hover = ui.reference_hover.borrow();
     let span = hover
         .as_ref()
-        .and_then(|p| wordcraft_gnome::references::toc_span_at(&d.session, p))
-        .or_else(|| wordcraft_gnome::references::toc_span_at(&d.session, &d.session.sel.focus));
+        .and_then(|p| cached_toc_span(ui, &d.session, p))
+        .or_else(|| cached_toc_span(ui, &d.session, &d.session.sel.focus));
     let Some((a, b)) = span else { return };
     let layout = d.session.layout();
     let Some(sheet) = layout.pages.get(page) else {
@@ -489,7 +489,7 @@ pub(super) fn paint_reference_cue(
             bounds.push(r);
         }
     }
-    let color = widget.style_context().color();
+    let color = widget.color();
     let _ = cr.save();
     cr.set_source_rgba(
         color.red() as f64,

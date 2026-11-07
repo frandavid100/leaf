@@ -1,5 +1,6 @@
 //! Inheritable proofing properties in WordCraft's own styles and character runs.
 use serde_json::{Value, json};
+use std::sync::Arc;
 use wordcraft_doc::{Document, props::CharProps};
 use wordcraft_engine::{CmdError, CmdResult, CommandSpec, Registry, Session};
 
@@ -18,15 +19,16 @@ fn defaults_command(s: &mut Session, v: &Value) -> CmdResult {
     {
         return Ok(json!({"changed":false}));
     }
+    let defaults = &mut Arc::make_mut(&mut s.doc.styles).default_chr;
     if let Some(lang) = lang {
-        if s.doc.styles.default_chr.lang.as_ref() != Some(&lang) {
-            s.doc.styles.default_chr.lang_bidi = Some(lang.clone());
-            s.doc.styles.default_chr.lang_ea = Some(lang.clone());
-            s.doc.styles.default_chr.lang = Some(lang);
+        if defaults.lang.as_ref() != Some(&lang) {
+            defaults.lang_bidi = Some(lang.clone());
+            defaults.lang_ea = Some(lang.clone());
+            defaults.lang = Some(lang);
         }
     }
     if let Some(on) = review {
-        s.doc.styles.default_chr.no_proof = Some(!on);
+        defaults.no_proof = Some(!on);
     }
     Ok(json!({"changed":true}))
 }
@@ -111,8 +113,9 @@ pub fn review(s: &Session) -> bool {
 }
 pub fn new_document() -> Session {
     let mut doc = Document::new();
-    doc.styles.default_chr.lang = Some(preferred_language());
-    doc.styles.default_chr.no_proof = Some(!crate::preferences::check_spelling());
+    let defaults = &mut Arc::make_mut(&mut doc.styles).default_chr;
+    defaults.lang = Some(preferred_language());
+    defaults.no_proof = Some(!crate::preferences::check_spelling());
     Session::new(doc)
 }
 pub fn preferred_language() -> String {

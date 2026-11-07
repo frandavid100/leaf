@@ -49,6 +49,15 @@ pub(super) fn host_cache_ui_test(ui: &Rc<Ui>, app: &Application) {
             "only old/new caret layers need repainting"
         );
         assert_eq!(
+            result["counts"]["toc_lookup_scans"].as_u64().unwrap_or(0),
+            0,
+            "caret moves must reuse the current revision's TOC ranges"
+        );
+        assert!(
+            result["counts"]["ruler_refresh"].as_u64().unwrap_or(0) <= 80,
+            "one selection refresh must not repeat the same ruler work"
+        );
+        assert_eq!(
             result["counts"]["style_rows_visited"].as_u64().unwrap_or(0),
             0,
             "a populated hidden style list must not be traversed on caret moves"
@@ -156,7 +165,50 @@ pub(super) fn host_cache_ui_test(ui: &Rc<Ui>, app: &Application) {
                 "indexed lookup must match all actual GTK allocations"
             );
         }
+        verify_toc_cache_revision_and_identity();
         eprintln!("LEAF_HOST_CACHE_UI_OK pages={pages}");
         a.quit();
     });
+}
+
+/// Range caches are keyed by both document identity and content revision.
+fn verify_toc_cache_revision_and_identity() {
+    let mut source = Session::new(wordcraft_doc::Document::from_text("Heading\nBody"));
+    source.run("para.heading1", &serde_json::json!({})).unwrap();
+    source
+        .run("references.toc", &serde_json::json!({"levels":2}))
+        .unwrap();
+    let mut session = Session::new(source.doc.clone());
+    let position = wordcraft_gnome::references::toc_field(&session).unwrap().0;
+    let mut cache = TocCache::default();
+    let expected = wordcraft_gnome::references::toc_span_at(&session, &position);
+    assert!(expected.is_some());
+    let first = perf_phase("toc_initial", || {
+        assert_eq!(cache.at(&session, &position), expected)
+    });
+    assert_eq!(first["counts"]["toc_lookup_scans"], 1);
+    let warm = perf_phase("toc_warm", || {
+        assert_eq!(cache.at(&session, &position), expected)
+    });
+    assert_eq!(warm["counts"]["toc_lookup_scans"].as_u64().unwrap_or(0), 0);
+    let end = session.doc.end_of(wordcraft_doc::StoryRef::Body);
+    selection::set_caret(&mut session, &end, false).unwrap();
+    session
+        .run("text.insert", &serde_json::json!({"text":" changed"}))
+        .unwrap();
+    for command in [None, Some("edit.undo"), Some("edit.redo")] {
+        if let Some(command) = command {
+            session.run(command, &serde_json::json!({})).unwrap();
+        }
+        let expected = wordcraft_gnome::references::toc_span_at(&session, &position);
+        let changed = perf_phase("toc_new_revision", || {
+            assert_eq!(cache.at(&session, &position), expected)
+        });
+        assert_eq!(changed["counts"]["toc_lookup_scans"], 1);
+    }
+    let fresh = Session::new(source.doc);
+    assert!(cache.at(&fresh, &position).is_some());
+    let other = Session::new(wordcraft_doc::Document::from_text("No table of contents"));
+    assert_eq!(fresh.rev(), other.rev());
+    assert!(cache.at(&other, &Pos::body(0, 0)).is_none());
 }

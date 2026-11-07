@@ -86,6 +86,19 @@ pub(super) fn context_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
                     "real native row click must copy"
                 );
                 assert!(
+                    ui.document_box
+                        .clipboard()
+                        .formats()
+                        .contain_mime_type("text/rtf"),
+                    "native Copy must offer the engine's RTF"
+                );
+                assert!(
+                    ui.document_box
+                        .clipboard()
+                        .formats()
+                        .contain_mime_type("text/html")
+                );
+                assert!(
                     ui.document_box.has_focus(),
                     "closing context must return keyboard focus to editor"
                 );

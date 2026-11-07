@@ -90,7 +90,19 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                     .borrow()
                     .iter()
                     .position(|i| i.text == "qqqgtkwordzz")
-                    .unwrap();
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "missing fixture finding: issues={:?}, document={:?}",
+                            s.issues.borrow(),
+                            ui.current
+                                .borrow()
+                                .as_ref()
+                                .unwrap()
+                                .session
+                                .doc
+                                .plain_text(wordcraft_doc::StoryRef::Body)
+                        )
+                    });
                 find_widget(&ui.navigation_pages, &format!("proofing-go-{index}"))
                     .unwrap()
                     .downcast::<gtk::Button>()

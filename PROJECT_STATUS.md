@@ -12,6 +12,16 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## En validación: alpha.32 — WordCraft 0.16 y optimización
+
+David autoriza el 7/11/2026 actualizar el motor a la última versión estable,
+adaptar y optimizar Leaf para rendimiento/claridad y publicar una nueva release.
+Motor fijado a WordCraft 0.16.0, formatos recopiado con compatibilidad residual,
+Language data fijados y mayor conservación ODT. Se mantiene la revisión de todos
+los límites y la batería nativa/instalada antes de publicar.
+[Integración, pruebas y mediciones](docs/WORDCRAFT_016_REVIEW.md).
+La última release pública sigue siendo alpha.31 hasta verificar la nueva entrega.
+
 ## Publicada y verificada: alpha.31
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.31),

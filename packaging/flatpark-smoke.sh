@@ -72,6 +72,12 @@ timeout 90s flatpak run --socket=x11 --nosocket=wayland \
   "$app_id" --proofing-ui-test >"$log" 2>&1 || { cat "$log"; exit 1; }
 cat "$log"
 grep -q PROOFING_UI_OK "$log"
+log="$temporary/clipboard.log"
+timeout 90s flatpak run --socket=x11 --nosocket=wayland \
+  --env=GSK_RENDERER=cairo --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE=es \
+  "$app_id" --clipboard-ui-test >"$log" 2>&1 || { cat "$log"; exit 1; }
+cat "$log"
+grep -q CLIPBOARD_FORMATS_UI_OK "$log"
 # Exercise the new candidate interactions in the relocated GNOME 51 build too.
 leaf29_root=$PWD
 leaf29_output=${2:-dist/alpha29-flatpark}

@@ -2932,3 +2932,21 @@ msgstr "Antes (pt)"
 
 msgid "After (pt)"
 msgstr "Después (pt)"
+
+msgid "Language Data"
+msgstr "Datos lingüísticos"
+
+msgid "Save as DOCX to preserve caption associations and hidden caption text."
+msgstr "Guarda como DOCX para conservar las asociaciones de las leyendas y su texto oculto."
+
+msgid "Save as DOCX to preserve the original equation structure and formatting."
+msgstr "Guarda como DOCX para conservar la estructura y el formato originales de las ecuaciones."
+
+msgid "Save as DOCX to preserve all table of contents and automatic field options."
+msgstr "Guarda como DOCX para conservar todas las opciones del índice y de los campos automáticos."
+
+msgid "Save as DOCX to preserve picture effects. The current ODT exporter cannot keep them."
+msgstr "Guarda como DOCX para conservar los efectos de las imágenes. El exportador ODT actual no puede conservarlos."
+
+msgid "Use footnotes, comment threads, floating pictures and basic equations in DOCX and ODT documents. DOCX also preserves every Leaf caption association and the supported automatic contents and cross-reference options."
+msgstr "Utiliza notas al pie, hilos de comentarios, imágenes flotantes y ecuaciones básicas en documentos DOCX y ODT. DOCX conserva además todas las asociaciones de leyendas de Leaf y las opciones admitidas de índices automáticos y referencias cruzadas."

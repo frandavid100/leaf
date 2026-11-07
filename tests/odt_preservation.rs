@@ -100,6 +100,7 @@ fn all_six_page_parts_keep_text_format_nested_tables_and_images() {
         props: Default::default(),
     });
     picture.objects.push(InlineObject::Image {
+        fx: Default::default(),
         media: "logo.png".into(),
         w: 12.0,
         h: 12.0,

@@ -212,7 +212,7 @@ impl ColumnSetup {
         let c = page::sect(s).columns;
         Self {
             count: c.count,
-            space: c.space,
+            space: c.widths.first().map_or(c.space, |(_, gap)| *gap),
             separator: c.separator,
             kind: if c.widths.is_empty() {
                 ColumnKind::Equal

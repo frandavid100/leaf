@@ -66,6 +66,16 @@ pub(super) fn performance_ui_test(ui: &Rc<Ui>, app: &Application) {
         }
     }));
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, original);
+    phases.push(perf_phase("derived_refresh_16", || {
+        for _ in 0..16 {
+            assert!(
+                !wordcraft_gnome::references::refresh_derived(
+                    &mut ui.current.borrow_mut().as_mut().unwrap().session
+                )
+                .unwrap()
+            );
+        }
+    }));
     // Clear a cross-page selection and move between pages; old highlights must disappear.
     selected_command(ui, "select-all", false);
     selected_command(ui, "docEnd", false);

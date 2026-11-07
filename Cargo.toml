@@ -23,9 +23,9 @@ path = "src/main.rs"
 
 [dependencies]
 # Anclado a una revisión concreta para reproducir cada compilación.
-wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a" }
-wordcraft-engine = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a" }
-wordcraft-render = { git = "https://github.com/storytold/wordcraft", rev = "5cd53f184aab11def13b7fced18727159b9bc96a" }
+wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
+wordcraft-engine = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
+wordcraft-render = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
 serde_json = "1"
 # Already used and locked by WordCraft; reuse UAX #29 boundaries for AT-SPI.
 unicode-segmentation = "1.13"
@@ -35,7 +35,7 @@ adw = { package = "libadwaita", version = "0.8", features = ["v1_4"], optional =
 # WordCraft usa un backend PDF modificado. Los [patch] de una dependencia
 # no se heredan: el proyecto consumidor debe declarar el mismo reemplazo.
 [patch.crates-io]
-krilla = { git = "https://github.com/storytold/craft-libs", rev = "92d392cff132eaf53e13afff77f38b5c11b73aa0" }
+krilla = { git = "https://github.com/storytold/craft-libs", rev = "c5a1cbfb5f9049f9270955caffb5bee5997aebf7" }
 
 # Production binaries optimize the renderer and engine as well as the GTK host.
 # Keep unwinding: upstream uses catch_unwind in file/recovery operations.
@@ -45,6 +45,6 @@ lto = "thin"
 codegen-units = 1
 strip = "symbols"
 
-# Small, auditable compatibility patch; see patches/README.md.
+# The formats snapshot retains only the compatibility delta in patches/README.md.
 [patch."https://github.com/storytold/wordcraft"]
 wordcraft-formats = { path = "vendor/wordcraft-formats" }

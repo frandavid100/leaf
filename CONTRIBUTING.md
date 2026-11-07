@@ -15,6 +15,8 @@ gettext and the other tools declared by the workflow. GNOME OS users can test
 the published Flatpak without installing development packages on the host.
 
 ```sh
+bash tools/prepare-language-data.sh
+export CRAFT_I18N_DIR="$PWD/.build-deps/craft-i18n" CRAFT_I18N_REQUIRED=1
 cargo fmt --package wordcraft-gnome -- --check
 python -m unittest discover -s tools -p 'test_*.py'
 python tools/update_translations.py --check --compile

@@ -194,6 +194,13 @@ pub(super) fn install_diagnostics(
         });
     }
 
+    if std::env::args().any(|a| a == "--clipboard-ui-test") {
+        let ui = ui.clone();
+        let app = app.clone();
+        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+            clipboard_ui_test(&ui, &app)
+        });
+    }
     if std::env::args().any(|a| a == "--context-ui-test") {
         let u = ui.clone();
         let w = window.clone();

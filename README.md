@@ -17,7 +17,8 @@ Leaf is a word processor for Linux with a native GNOME interface. Its goal is to
 ## Write and organise
 
 - Edit DOCX and ODT files with styles, tables and images.
-- Add footnotes, automatic contents, numbered captions and cross-references to DOCX documents.
+- Use footnotes, comments, floating pictures and basic equations in DOCX and ODT.
+- Add automatic contents, numbered captions and cross-references to DOCX documents.
 - Position and resize floating pictures, control text wrapping and adjust spacing.
 - Arrange pages with columns, headers, footers and page numbers.
 - Navigate by thumbnails, headings and bookmarks; search, replace, review spelling and add comments.
@@ -27,7 +28,7 @@ English and Spanish interfaces, with light and dark appearance.
 
 ## The power behind the interface
 
-[WordCraft 0.14.0](https://github.com/storytold/wordcraft/releases/tag/v0.14.0) provides Leaf's document engine. Its [documented capabilities](https://github.com/storytold/wordcraft/blob/5cd53f184aab11def13b7fced18727159b9bc96a/README.md#what-works-today) include advanced tools familiar from Microsoft Word, such as footnotes, bibliographies, tracked changes and mail merge.
+[WordCraft 0.16.0](https://github.com/storytold/wordcraft/releases/tag/v0.16.0) provides Leaf's document engine. Its [documented capabilities](https://github.com/storytold/wordcraft/blob/02a802cbafe45b5c8fecc00490c8f6b78c5ba251/README.md#what-works-today) include advanced tools familiar from Microsoft Word, such as footnotes, bibliographies, tracked changes and mail merge.
 
 The aim is to bring more of that power into GNOME while keeping the interface simple. Leaf currently exposes part of the engine's functionality; additional features need integration and testing.
 
@@ -35,7 +36,7 @@ The aim is to bring more of that power into GNOME while keeping the interface si
 
 Download the x86_64 `.flatpak` from [Releases](https://github.com/frandavid100/leaf/releases) and open it with GNOME Software. Updates are currently installed manually.
 
-**Leaf is in alpha.** Test with copies of important files: complex document compatibility is still being tested. Notes, automatic contents, captions, cross-references, floating images, comments and category metadata require DOCX. Leaf blocks ODT saves that would lose supported document structures.
+**Leaf is in alpha.** Test with copies of important files: complex document compatibility is still being tested. Advanced contents/field options, caption associations, original equation formatting, picture effects, language inheritance and category metadata still require DOCX. Leaf blocks ODT saves that would lose supported document structures.
 
 Community translations are managed with [Weblate](https://hosted.weblate.org/projects/leaf/application/). Approval for free Libre hosting is pending.
 

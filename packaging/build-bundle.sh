@@ -3,7 +3,7 @@
 set -euo pipefail
 app_id=io.github.frandavid100.leaf
 runtime_version=49
-version=0.1.0-alpha.31
+version=0.1.0-alpha.32
 binary=${1:?Usage: build-bundle.sh TESTED_BINARY}
 work=flatpak-build
 repo=flatpak-repo
@@ -30,6 +30,8 @@ cp data/dictionaries/*.aff data/dictionaries/*.dic "$work/files/share/hunspell/"
 cp data/dictionaries/LICENSE.md data/dictionaries/GPLv3.txt data/dictionaries/README_hunspell_es.txt data/dictionaries/SOURCE.md data/dictionaries/SHA256SUMS "$work/files/share/licenses/$app_id/dictionaries/"
 install -Dm0644 data/THEME_SELECTOR_SOURCES.md "$work/files/share/licenses/$app_id/THEME_SELECTOR_SOURCES.md"
 install -Dm0644 LICENSE "$work/files/share/licenses/$app_id/LICENSE"
+"$binary" --language-data-licenses > "$work/files/share/licenses/$app_id/LANGUAGE_DATA.txt"
+test -s "$work/files/share/licenses/$app_id/LANGUAGE_DATA.txt"
 install -Dm0644 docs/AI_ASSISTANCE.md "$work/files/share/doc/leaf/AI_ASSISTANCE.md"
 install -Dm0644 vendor/wordcraft-formats/LICENSE-MIT "$work/files/share/licenses/wordcraft-formats/LICENSE-MIT"
 install -Dm0644 vendor/wordcraft-formats/LICENSE-APACHE "$work/files/share/licenses/wordcraft-formats/LICENSE-APACHE"
@@ -40,14 +42,14 @@ flatpak build-finish --command=leaf --share=ipc --socket=wayland --socket=fallba
 tar -C "$work/files" -cJf "$out/Leaf-$version-flatpark-x86_64.tar.xz" .
 flatpak build-export "$repo" "$work" alpha
 flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo "$repo" "$out/Leaf-$version-x86_64.flatpak" "$app_id" alpha
-if test -f prior-release/Leaf-0.1.0-alpha.28-x86_64.flatpak; then
-  flatpak --user install -y --noninteractive prior-release/Leaf-0.1.0-alpha.28-x86_64.flatpak
+if test -f prior-release/Leaf-0.1.0-alpha.31-x86_64.flatpak; then
+  flatpak --user install -y --noninteractive prior-release/Leaf-0.1.0-alpha.31-x86_64.flatpak
   # Seed persistent data without starting a document portal outside the smoke-test bus.
   mkdir -p "$HOME/.var/app/$app_id/data"
   printf retained > "$HOME/.var/app/$app_id/data/upgrade-test"
 fi
 flatpak --user install -y --noninteractive "$out/Leaf-$version-x86_64.flatpak"
-if test -f prior-release/Leaf-0.1.0-alpha.28-x86_64.flatpak; then
+if test -f prior-release/Leaf-0.1.0-alpha.31-x86_64.flatpak; then
   grep -q retained "$HOME/.var/app/$app_id/data/upgrade-test"
   echo FLATPAK_UPGRADE_OK
 fi

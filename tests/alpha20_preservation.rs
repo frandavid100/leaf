@@ -40,7 +40,16 @@ fn check(kind: &str) {
     let mut s = fixture(kind);
     let odt = dir.join("existing.odt");
     std::fs::write(&odt, b"original bytes").unwrap();
-    assert!(saving::requires_docx(&s));
+    if kind == "toc" {
+        assert!(saving::requires_docx(&s));
+        let before = s.doc.clone();
+        assert!(saving::save(&mut s, &odt).unwrap_err().contains("DOCX"));
+        assert_eq!(s.doc, before);
+        assert_eq!(std::fs::read(&odt).unwrap(), b"original bytes");
+        std::fs::remove_dir_all(dir).unwrap();
+        return;
+    }
+    assert!(!saving::requires_docx(&s));
     let before = (
         s.doc.clone(),
         s.sel.clone(),
@@ -49,23 +58,31 @@ fn check(kind: &str) {
         s.path.clone(),
         s.undo_depth(),
     );
-    assert!(saving::save(&mut s, &odt).unwrap_err().contains("DOCX"));
-    assert_eq!(std::fs::read(&odt).unwrap(), b"original bytes");
-    assert_eq!(
-        (
-            s.doc.clone(),
-            s.sel.clone(),
-            s.rev(),
-            s.dirty,
-            s.path.clone(),
-            s.undo_depth()
-        ),
-        before
-    );
+    saving::save(&mut s, &odt).unwrap();
+    let odt_copy = wordcraft_gnome::open_document(&odt).unwrap();
+    let mut preserved = false;
+    odt_copy.doc.objects_in_reading_order(&mut |o| preserved |= match kind {
+        "math" => matches!(o, InlineObject::Equation { linear, .. } if !linear.is_empty()),
+        "toc" => matches!(o, InlineObject::FieldStart { instr, .. } | InlineObject::Field { instr, .. } if instr.starts_with("TOC")),
+        "image" => matches!(o, InlineObject::Image { float, .. } if float.wrap != wordcraft_doc::para::Wrap::Inline),
+        "note" => matches!(o, InlineObject::NoteRef { .. }),
+        _ => false,
+    });
+    assert!(preserved, "{kind}: ODT must retain an editable object");
+    // Successful saves now stamp the engine's file metadata; authored data stays identical.
+    let mut after = s.doc.clone();
+    after.core.last_modified_by = before.0.core.last_modified_by.clone();
+    after.core.created = before.0.core.created.clone();
+    after.core.modified = before.0.core.modified.clone();
+    after.core.revision = before.0.core.revision;
+    assert_eq!(after, before.0);
+    assert_eq!(s.sel, before.1);
+    assert_eq!(s.rev(), before.2);
+    assert_eq!(s.undo_depth(), before.5);
     let docx = dir.join("safe.docx");
     saving::save(&mut s, &docx).unwrap();
     let copy = wordcraft_gnome::open_document(&docx).unwrap();
-    assert!(saving::requires_docx(&copy));
+    assert_eq!(saving::requires_docx(&copy), kind == "math");
     if kind == "note" {
         assert!(
             copy.doc

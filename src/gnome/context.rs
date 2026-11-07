@@ -8,101 +8,6 @@ pub(super) enum DocumentContext {
     Picture,
 }
 
-// Share the engine fragment between tabs only while GTK still owns this exact
-// clipboard provider. Never paste an old fragment after another app copies.
-thread_local! {
-    static CLIPBOARD_WATCHED:Cell<bool>=const{Cell::new(false)};
-    pub(super) static RICH_CLIPBOARD: RefCell<Option<(gdk::ContentProvider,wordcraft_doc::edit::Fragment)>> = const { RefCell::new(None) };
-}
-pub(super) fn context_copy(ui: &Rc<Ui>) -> bool {
-    if !CLIPBOARD_WATCHED.with(|v| v.replace(true)) {
-        ui.document_box.clipboard().connect_changed(|clipboard| {
-            RICH_CLIPBOARD.with(|c| {
-                let mut c = c.borrow_mut();
-                if c.as_ref()
-                    .is_some_and(|(provider, _)| clipboard.content().as_ref() != Some(provider))
-                {
-                    c.take();
-                }
-            });
-        });
-    }
-    let result = {
-        let mut value = ui.current.borrow_mut();
-        let Some(d) = value.as_mut() else {
-            return false;
-        };
-        if d.session.sel.is_collapsed() {
-            return false;
-        }
-        d.session
-            .run("edit.copy", &serde_json::json!({}))
-            .map(|v| (v, d.session.clipboard.clone()))
-    };
-    let (value, fragment) = match result {
-        Ok(v) => v,
-        Err(e) => {
-            ui.toasts.add_toast(Toast::new(&e.to_string()));
-            return false;
-        }
-    };
-    let text = value["text"].as_str().unwrap_or_default();
-    let mut providers = vec![gdk::ContentProvider::for_value(&text.to_value())];
-    if let Some(html) = value["html"].as_str().filter(|h| !h.is_empty()) {
-        providers.push(gdk::ContentProvider::for_bytes(
-            "text/html",
-            &glib::Bytes::from_owned(html.as_bytes().to_vec()),
-        ));
-    }
-    let provider = gdk::ContentProvider::new_union(&providers);
-    if let Err(e) = ui.document_box.clipboard().set_content(Some(&provider)) {
-        ui.toasts.add_toast(Toast::new(&e.to_string()));
-        return false;
-    }
-    RICH_CLIPBOARD.with(|c| c.replace(fragment.map(|f| (provider, f))));
-    true
-}
-pub(super) fn context_paste(ui: &Rc<Ui>) {
-    let clipboard = ui.document_box.clipboard();
-    let fragment = RICH_CLIPBOARD.with(|c| {
-        c.borrow()
-            .as_ref()
-            .filter(|(p, _)| clipboard.content().as_ref() == Some(p))
-            .map(|(_, f)| f.clone())
-    });
-    if let Some(fragment) = fragment {
-        tools_change(ui, move |s| {
-            s.clipboard_text = fragment.clipboard_text();
-            s.clipboard = Some(fragment);
-            s.run("edit.paste", &serde_json::json!({}))
-                .map(|_| ())
-                .map_err(|e| e.to_string())
-        });
-        ui.document_box.grab_focus();
-        caret_ensure_visible(ui);
-        return;
-    }
-    let identity = document_identity(ui);
-    let selection = ui.current.borrow().as_ref().map(|d| d.session.sel.clone());
-    let weak = Rc::downgrade(ui);
-    clipboard.read_text_async(None::<&gio::Cancellable>, move |result| {
-        let Some(ui) = weak.upgrade() else {
-            return;
-        };
-        if ui.closed.get()
-            || document_identity(&ui) != identity
-            || ui.current.borrow().as_ref().map(|d| d.session.sel.clone()) != selection
-        {
-            return;
-        }
-        match result {
-            Ok(Some(text)) => apply_user_edit(&ui, Edit::Paste(text.to_string())),
-            Ok(None) => {}
-            Err(e) => ui.toasts.add_toast(Toast::new(&e.to_string())),
-        }
-        ui.document_box.grab_focus();
-    });
-}
 pub(super) fn context_prepare(ui: &Rc<Ui>, x: f64, y: f64) -> Option<DocumentContext> {
     let pos = pos_at_canvas(ui, x, y)?;
     let toc = ui
@@ -470,10 +375,6 @@ pub(super) fn show_document_context(
             context_copy(u);
         },
     );
-    let formats = ui.document_box.clipboard().formats();
-    let can_paste = formats.contains_type(String::static_type())
-        || formats.contain_mime_type("text/plain")
-        || formats.contain_mime_type("text/plain;charset=utf-8");
     context_item(
         &edit,
         &group,
@@ -481,7 +382,7 @@ pub(super) fn show_document_context(
         ui,
         wordcraft_gnome::t!("Paste"),
         "paste",
-        can_paste,
+        clipboard_can_paste(ui),
         context_paste,
     );
     context_item(

@@ -2932,3 +2932,21 @@ msgstr "Before (pt)"
 
 msgid "After (pt)"
 msgstr "After (pt)"
+
+msgid "Language Data"
+msgstr "Language Data"
+
+msgid "Save as DOCX to preserve caption associations and hidden caption text."
+msgstr "Save as DOCX to preserve caption associations and hidden caption text."
+
+msgid "Save as DOCX to preserve the original equation structure and formatting."
+msgstr "Save as DOCX to preserve the original equation structure and formatting."
+
+msgid "Save as DOCX to preserve all table of contents and automatic field options."
+msgstr "Save as DOCX to preserve all table of contents and automatic field options."
+
+msgid "Save as DOCX to preserve picture effects. The current ODT exporter cannot keep them."
+msgstr "Save as DOCX to preserve picture effects. The current ODT exporter cannot keep them."
+
+msgid "Use footnotes, comment threads, floating pictures and basic equations in DOCX and ODT documents. DOCX also preserves every Leaf caption association and the supported automatic contents and cross-reference options."
+msgstr "Use footnotes, comment threads, floating pictures and basic equations in DOCX and ODT documents. DOCX also preserves every Leaf caption association and the supported automatic contents and cross-reference options."

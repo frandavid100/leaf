@@ -29,6 +29,8 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
     ui.input_context.focus_out();
     ui.input_context.set_client_widget(None::<&gtk::Widget>);
     ui.selection_rasters.borrow_mut().clear();
+    ui.toc_cache.borrow_mut().clear();
+    cancel_clipboard_read(ui);
     *ui.table_pointer.borrow_mut() = TablePointer::default();
     ui.picture_drag.borrow_mut().take();
     ui.document_box.reset();
