@@ -375,10 +375,6 @@ pub(super) fn show_document_context(
             context_copy(u);
         },
     );
-    let formats = ui.document_box.clipboard().formats();
-    let can_paste = formats.contains_type(String::static_type())
-        || formats.contain_mime_type("text/plain")
-        || formats.contain_mime_type("text/plain;charset=utf-8");
     context_item(
         &edit,
         &group,
@@ -386,7 +382,7 @@ pub(super) fn show_document_context(
         ui,
         wordcraft_gnome::t!("Paste"),
         "paste",
-        can_paste,
+        clipboard_can_paste(ui),
         context_paste,
     );
     context_item(

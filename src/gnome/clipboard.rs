@@ -8,6 +8,17 @@ use std::{
     rc::Rc,
 };
 
+const RICH_MIME_TYPES: &[&str] = &["text/html", "text/rtf", "application/rtf"];
+
+pub(super) fn clipboard_can_paste(ui: &Ui) -> bool {
+    let formats = ui.document_box.clipboard().formats();
+    formats.contains_type(String::static_type())
+        || ["text/plain", "text/plain;charset=utf-8"]
+            .iter()
+            .chain(RICH_MIME_TYPES)
+            .any(|mime| formats.contain_mime_type(mime))
+}
+
 // Share the engine fragment between tabs only while GTK still owns this exact
 // clipboard provider. Never paste an old fragment after another app copies.
 thread_local! {
@@ -141,17 +152,16 @@ async fn external_clipboard(
 }
 
 async fn rich_clipboard(clipboard: &gdk::Clipboard) -> Option<serde_json::Value> {
-    const MIME_TYPES: &[&str] = &["text/html", "text/rtf", "application/rtf"];
     const MAX_RICH_BYTES: usize = 8 * 1024 * 1024;
     let formats = clipboard.formats();
-    if !MIME_TYPES
+    if !RICH_MIME_TYPES
         .iter()
         .any(|mime| formats.contain_mime_type(mime))
     {
         return None;
     }
     let (stream, mime) = clipboard
-        .read_future(MIME_TYPES, glib::Priority::DEFAULT)
+        .read_future(RICH_MIME_TYPES, glib::Priority::DEFAULT)
         .await
         .ok()?;
     let mut data = Vec::new();

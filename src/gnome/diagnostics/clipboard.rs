@@ -44,7 +44,9 @@ pub(super) fn clipboard_ui_test(ui: &Rc<Ui>, app: &Application) {
                 gdk::ContentProvider::for_bytes(mime, &glib::Bytes::from_owned(bytes.to_vec()))
             };
             clipboard.set_content(Some(&provider)).unwrap();
-            context_paste(&ui);
+            let window = ui.host.upgrade().unwrap().window.clone();
+            let menu = show_document_context(&ui, &window, 100, 150, DocumentContext::Text);
+            context_activate_row(&menu, wordcraft_gnome::t!("Paste"));
             wait_for_transfer(&ui).await;
             {
                 let current = ui.current.borrow();
