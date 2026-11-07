@@ -90,7 +90,9 @@ jobs:
             exit 1
           fi
       - name: Compilar lector GNOME
-        run: cargo build --release --locked --features gui --bin wordcraft-gnome
+        # Keep symbols in the temporary early artifact for portal diagnostics.
+        # Both final native output and the packaged executable are stripped later.
+        run: cargo rustc --release --locked --features gui --bin wordcraft-gnome -- -C strip=none
       - name: Investigate spacing and real End viewport behavior
         run: |
           set +e
