@@ -30,7 +30,7 @@ The actual Ubuntu graphical installation flow remains unverified.
 Three adapter regressions cover precedence, changed/removed sources and
 incomplete pairs. The real-widget diagnostic and pointer driver exercise
 chooser selection/cancellation/owner cleanup, file refresh, restart persistence,
-removal and unchanged document state. Native CI installs a Dutch Hunspell package
+removal and unchanged document state. Native CI installs a Czech Hunspell package
 after startup and verifies rediscovery. Installed Flatpaks exercise the actual
 folder portal in English at scale 1 and Spanish at scale 2, on GNOME 49 and 51.
 Automated results must be recorded after execution, not inferred from this plan.
@@ -43,3 +43,13 @@ proves the folder workflow, not the dictionary provisioning policy of GNOME OS.
 
 WordCraft/dependencies/vendor and the original interaction pointer driver are
 unchanged. No private documents or public screenshots are used.
+
+## Dictionary dialect limit found during validation
+
+The first native run installed Ubuntu's real `hunspell-nl` 2:2.20.19-2, but
+WordCraft 0.16 rejected line 54: `KEEPCASE Kc` appears before `FLAG long`. A direct
+public-API probe reproduces this without GTK or Leaf. Leaf must not advertise
+that unreadable dictionary as available. No engine code is changed here.
+The native positive control uses Ubuntu `hunspell-cs` 1:24.2.1-1, whose `cs_CZ`
+dictionary loads correctly through the same public APIs. The portal fixture
+continues to use its invented Italian words.

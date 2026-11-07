@@ -6,3 +6,5 @@ Leaf 0.1.0-alpha.34 — dictionary integration test candidate
 - Include a separate synthetic dictionary ZIP with Spanish test instructions. Its invented Italian words are test data, never installed automatically.
 
 Issue #84 remains open pending David’s GNOME OS test. Automated native and installed GNOME-runtime checks are recorded with this candidate; these do not claim human GNOME OS validation. WordCraft remains pinned at 0.16.0.
+
+Compatibility limit: readable files still need a Hunspell dialect supported by WordCraft. Ubuntu’s Dutch dictionary currently fails its KEEPCASE/FLAG-order parser; this frontend candidate does not change the engine.

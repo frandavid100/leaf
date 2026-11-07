@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Validate the actual host folder portal in either Flatpak runtime layout.
 set -euo pipefail
+export XDG_CURRENT_DESKTOP=GNOME
 export LEAF84_APP_ID=${1:?Usage: dictionary84-installed-test.sh APP_ID BINARY OUTPUT}
 export LEAF84_BINARY=${2:?Missing binary}
 output=${3:?Missing output}

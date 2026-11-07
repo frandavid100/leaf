@@ -75,7 +75,7 @@ pub(super) fn import_dictionary_files(ui: &Rc<Ui>, parent: &impl IsA<gtk::Window
                 return;
             }
         };
-        let paths = (0..files.n_items())
+        let paths = (0..files.n_items().min(3))
             .filter_map(|i| files.item(i)?.downcast::<gio::File>().ok()?.path())
             .collect::<Vec<_>>();
         match proofing::install_dictionary(&paths) {
@@ -212,7 +212,7 @@ pub(super) fn show_dictionary_tools(ui: &Rc<Ui>) -> Option<Rc<DictionaryTools>> 
         .transient_for(&host.window)
         .modal(true)
         .default_width(460)
-        .default_height(360)
+        .default_height(480)
         .build();
     window.set_destroy_with_parent(true);
     let toolbar = ToolbarView::new();
@@ -305,8 +305,8 @@ pub(super) fn show_dictionary_tools(ui: &Rc<Ui>) -> Option<Rc<DictionaryTools>> 
     });
     let weak = Rc::downgrade(&panel);
     import.connect_clicked(move |_| {
-        if let Some(p) = weak.upgrade() {
-            if let Some(ui) = p.ui.upgrade() {
+        if let Some(p) = weak.upgrade().filter(|p| !p.closed.get()) {
+            if let Some(ui) = p.ui.upgrade().filter(|u| !u.closed.get()) {
                 import_dictionary_files(&ui, &p.window);
             }
         }

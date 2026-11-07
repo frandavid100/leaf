@@ -33,7 +33,7 @@ pub(super) fn dictionaries84_ui_test(ui: &Rc<Ui>, app: &Application, mode: &'sta
     }));
     let (ui, app) = (ui.clone(), app.clone());
     glib::spawn_future_local(async move {
-        let tag = if mode == "native" { "nl-NL" } else { "it-IT" };
+        let tag = if mode == "native" { "cs-CZ" } else { "it-IT" };
         let mut s = Session::new(wordcraft_doc::Document::from_text(
             "foglio foglioprovaextra qqqleaferrore",
         ));
@@ -64,6 +64,12 @@ pub(super) fn dictionaries84_ui_test(ui: &Rc<Ui>, app: &Application, mode: &'sta
                     sources::dictionary_path(tag)
                 );
                 ready(&panel, 0, "install-system", "dictionary-refresh").await;
+                eprintln!(
+                    "DICTIONARY84_NATIVE_AFTER selected={:?} missing={:?} unreadable={:?}",
+                    sources::dictionary_path(tag),
+                    wordcraft_engine::proof::missing_dictionary(Some(tag)),
+                    wordcraft_engine::proof::unreadable_dictionary(Some(tag))
+                );
                 assert!(
                     sources::dictionary_path(tag)
                         .is_some_and(|p| p.starts_with("/usr/share/hunspell")
@@ -73,8 +79,8 @@ pub(super) fn dictionaries84_ui_test(ui: &Rc<Ui>, app: &Application, mode: &'sta
                 let text = ui.text_tools.borrow().as_ref().unwrap().clone();
                 text.page("language");
                 assert!(
-                    find_widget(&text.detail, "language-choice-nl-NL")
-                        .or_else(|| find_widget(&text.detail, "language-choice-nl"))
+                    find_widget(&text.detail, "language-choice-cs-CZ")
+                        .or_else(|| find_widget(&text.detail, "language-choice-cs"))
                         .is_some()
                 );
                 eprintln!("DICTIONARY84_NATIVE_SYSTEM_OK dynamic_language=true");

@@ -30,7 +30,7 @@ while kill -0 "$pid" 2>/dev/null; do
   window=$(xdotool search --onlyvisible --name '^Leaf Dictionary Probe$' | head -n1)
   if [[ "$role" == install-system ]]; then
     [[ ${CI:-} == true ]] || { echo 'System installation probe runs only on CI.' >&2; exit 1; }
-    sudo timeout 120s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends hunspell-nl
+    sudo timeout 120s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends hunspell-cs
   elif [[ "$role" == update-and-refresh ]]; then
     test -f "${LEAF84_SOURCE:?Missing synthetic source}/LEAF_TEST_FIXTURE"
     python3 - "$LEAF84_SOURCE" <<'PY'
