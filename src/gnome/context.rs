@@ -568,7 +568,17 @@ pub(super) fn show_document_context(
         DocumentContext::Table => {
             for (title, prefix, items) in [
                 (
-                    wordcraft_gnome::t!("Add"),
+                    wordcraft_gnome::t!("Select"),
+                    "select",
+                    vec![
+                        (wordcraft_gnome::t!("Cell"), "table.selectCell"),
+                        (wordcraft_gnome::t!("Row"), "table.selectRow"),
+                        (wordcraft_gnome::t!("Column"), "table.selectColumn"),
+                        (wordcraft_gnome::t!("Table"), "table.selectTable"),
+                    ],
+                ),
+                (
+                    wordcraft_gnome::t!("Insert"),
                     "insert",
                     vec![
                         (wordcraft_gnome::t!("Row Above"), "table.insertRowAbove"),
@@ -581,16 +591,6 @@ pub(super) fn show_document_context(
                             wordcraft_gnome::t!("Column to the Right"),
                             "table.insertColumnRight",
                         ),
-                    ],
-                ),
-                (
-                    wordcraft_gnome::t!("Select"),
-                    "select",
-                    vec![
-                        (wordcraft_gnome::t!("Cell"), "table.selectCell"),
-                        (wordcraft_gnome::t!("Row"), "table.selectRow"),
-                        (wordcraft_gnome::t!("Column"), "table.selectColumn"),
-                        (wordcraft_gnome::t!("Table"), "table.selectTable"),
                     ],
                 ),
                 (
@@ -623,28 +623,47 @@ pub(super) fn show_document_context(
                 &group,
                 &pop,
                 ui,
-                wordcraft_gnome::t!("More Table Options…"),
-                "table-tools",
-                true,
-                context_table_editor,
-            );
-            context_item(
-                &specific,
-                &group,
-                &pop,
-                ui,
                 wordcraft_gnome::t!("Merge Cells"),
                 "merge",
                 merge,
                 |u| table_command(u, "table.merge", serde_json::json!({})),
             );
+            let split = gio::Menu::new();
+            let p = parent.downgrade();
+            context_item(
+                &split,
+                &group,
+                &pop,
+                ui,
+                wordcraft_gnome::t!("Split Cells"),
+                "split-cells",
+                true,
+                move |u| {
+                    if let Some(p) = p.upgrade() {
+                        show_split_cells(u, &p);
+                    }
+                },
+            );
+            context_item(
+                &split,
+                &group,
+                &pop,
+                ui,
+                wordcraft_gnome::t!("Split Table"),
+                "split-table",
+                true,
+                |u| {
+                    table_command(u, "table.splitTable", serde_json::json!({}));
+                },
+            );
+            specific.append_submenu(Some(wordcraft_gnome::t!("Split")), &split);
             let p = parent.downgrade();
             context_item(
                 &specific,
                 &group,
                 &pop,
                 ui,
-                wordcraft_gnome::t!("Properties and Split Cells…"),
+                wordcraft_gnome::t!("Table Properties"),
                 "table-properties",
                 true,
                 move |u| {
@@ -652,6 +671,16 @@ pub(super) fn show_document_context(
                         show_table_properties(u, &p);
                     }
                 },
+            );
+            context_item(
+                &specific,
+                &group,
+                &pop,
+                ui,
+                wordcraft_gnome::t!("More Table Options…"),
+                "table-tools",
+                true,
+                context_table_editor,
             );
         }
     }

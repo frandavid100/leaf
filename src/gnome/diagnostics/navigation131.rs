@@ -69,6 +69,13 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                     Some("thumbnails")
                 );
                 assert_eq!(u.sidebar_title.text(), wordcraft_gnome::t!("Navigation"));
+                assert!(u.navigation_selector.is_visible());
+                assert_eq!(
+                    u.sidebar_filters.visible_child_name().as_deref(),
+                    Some("navigation")
+                );
+                assert!(u.representation.is_mapped());
+                assert_eq!(u.representation.model().unwrap().n_items(), 2);
                 u.representation.set_selected(1);
             }
             5 => {

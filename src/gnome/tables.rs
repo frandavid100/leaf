@@ -354,42 +354,6 @@ pub(super) fn show_table_properties(ui: &Rc<Ui>, parent: &ApplicationWindow) {
         "table.textDirection",
         "value",
     );
-    let g = panel_group(&p, wordcraft_gnome::t!("Split Cells"));
-    let cols = panel_number(&g, wordcraft_gnome::t!("Columns"), 2.0, 1.0, 63.0);
-    cols.set_digits(0);
-    cols.set_increments(1.0, 1.0);
-    let rows = panel_number(&g, wordcraft_gnome::t!("Rows"), 1.0, 1.0, 63.0);
-    rows.set_digits(0);
-    rows.set_increments(1.0, 1.0);
-    let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
-        "Multiple selected cells are merged before splitting."
-    )));
-    hint.set_wrap(true);
-    hint.add_css_class("dim-label");
-    g.add(&hint);
-    let b = gtk::Button::with_label(wordcraft_gnome::t!("Split Selected Cells"));
-    g.add(&b);
-    {
-        let ui = ui.clone();
-        let w = w.clone();
-        b.connect_clicked(glib::clone!(
-            #[weak]
-            ui,
-            #[weak]
-            w,
-            move |_| {
-                cols.update();
-                rows.update();
-                if let Err(e) = format_execute(
-                    &ui,
-                    "table.split",
-                    serde_json::json!({"columns":cols.value_as_int(),"rows":rows.value_as_int()}),
-                ) {
-                    w.add_toast(Toast::new(&e));
-                }
-            }
-        ));
-    }
     let p = panel_page(&w, wordcraft_gnome::t!("Appearance"));
     let g = panel_group(&p, wordcraft_gnome::t!("Selection Borders and Shading"));
     panel_color(
@@ -473,6 +437,101 @@ pub(super) fn show_table_properties(ui: &Rc<Ui>, parent: &ApplicationWindow) {
         ));
     }
     w.present();
+}
+
+pub(super) fn show_split_cells(ui: &Rc<Ui>, parent: &ApplicationWindow) {
+    let w = panel_window(parent, wordcraft_gnome::t!("Split Cells"));
+    w.set_search_enabled(false);
+    let p = panel_page(&w, wordcraft_gnome::t!("Split Cells"));
+    let g = panel_group(&p, wordcraft_gnome::t!("Split Cells"));
+    let cols = panel_number(&g, wordcraft_gnome::t!("Columns"), 2.0, 1.0, 63.0);
+    cols.set_digits(0);
+    cols.set_increments(1.0, 1.0);
+    let rows = panel_number(&g, wordcraft_gnome::t!("Rows"), 1.0, 1.0, 63.0);
+    rows.set_digits(0);
+    rows.set_increments(1.0, 1.0);
+    let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
+        "Multiple selected cells are merged before splitting."
+    )));
+    hint.set_wrap(true);
+    hint.add_css_class("dim-label");
+    g.add(&hint);
+    let b = gtk::Button::with_label(wordcraft_gnome::t!("Split Selected Cells"));
+    g.add(&b);
+    {
+        let ui = ui.clone();
+        let w = w.clone();
+        b.connect_clicked(glib::clone!(
+            #[weak]
+            ui,
+            #[weak]
+            w,
+            move |_| {
+                cols.update();
+                rows.update();
+                if let Err(e) = format_execute(
+                    &ui,
+                    "table.split",
+                    serde_json::json!({"columns":cols.value_as_int(),"rows":rows.value_as_int()}),
+                ) {
+                    w.add_toast(Toast::new(&e));
+                }
+            }
+        ));
+    }
+    w.present();
+}
+
+fn table_submenu(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+    outer: &gtk::Popover,
+    title: &str,
+    name: &str,
+    items: &[(&str, &'static str)],
+) -> gtk::MenuButton {
+    let menu = gtk::MenuButton::new();
+    menu.set_label(title);
+    menu.add_css_class("flat");
+    menu.set_widget_name(name);
+    menu.set_hexpand(true);
+    menu.set_direction(gtk::ArrowType::Right);
+    accessible_name(&menu, title);
+    let pop = gtk::Popover::new();
+    let body = gtk::Box::new(gtk::Orientation::Vertical, 3);
+    for &(label, command) in items {
+        let b = gtk::Button::with_label(label);
+        b.add_css_class("flat");
+        b.set_widget_name(&format!("table-action-{command}"));
+        let weak = Rc::downgrade(ui);
+        let outer = outer.downgrade();
+        let inner = pop.downgrade();
+        let parent = parent.downgrade();
+        b.connect_clicked(move |_| {
+            let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+                return;
+            };
+            if let Some(p) = inner.upgrade() {
+                p.popdown();
+            }
+            if let Some(p) = outer.upgrade() {
+                close_format_popover(&p);
+            }
+            if command == "leaf.splitCells" {
+                if tools_change(&ui, use_table_target) {
+                    if let Some(parent) = parent.upgrade() {
+                        show_split_cells(&ui, &parent);
+                    }
+                }
+            } else {
+                table_command(&ui, command, serde_json::json!({}));
+            }
+        });
+        body.append(&b);
+    }
+    pop.set_child(Some(&body));
+    menu.set_popover(Some(&pop));
+    menu
 }
 
 pub(super) fn install_table_controls(
@@ -562,61 +621,73 @@ pub(super) fn install_table_controls(
             }
         });
     }
-    for items in [
-        vec![
-            (wordcraft_gnome::t!("Select Row"), "table.selectRow"),
-            (wordcraft_gnome::t!("Select Column"), "table.selectColumn"),
-        ],
-        vec![
-            (wordcraft_gnome::t!("Select Cell"), "table.selectCell"),
-            (wordcraft_gnome::t!("Select Table"), "table.selectTable"),
-        ],
-        vec![
-            (wordcraft_gnome::t!("Row Above"), "table.insertRowAbove"),
-            (wordcraft_gnome::t!("Row Below"), "table.insertRowBelow"),
-        ],
-        vec![
-            (wordcraft_gnome::t!("Left Column"), "table.insertColumnLeft"),
-            (
-                wordcraft_gnome::t!("Right Column"),
-                "table.insertColumnRight",
-            ),
-        ],
-        vec![
-            (wordcraft_gnome::t!("Merge Cells"), "table.merge"),
+    context.remove(&caption);
+    for (title, name, items) in [
+        (
+            wordcraft_gnome::t!("Select"),
+            "table-select",
+            vec![
+                (wordcraft_gnome::t!("Cell"), "table.selectCell"),
+                (wordcraft_gnome::t!("Row"), "table.selectRow"),
+                (wordcraft_gnome::t!("Column"), "table.selectColumn"),
+                (wordcraft_gnome::t!("Table"), "table.selectTable"),
+            ],
+        ),
+        (
+            wordcraft_gnome::t!("Insert"),
+            "table-add",
+            vec![
+                (wordcraft_gnome::t!("Row Above"), "table.insertRowAbove"),
+                (wordcraft_gnome::t!("Row Below"), "table.insertRowBelow"),
+                (
+                    wordcraft_gnome::t!("Column to the Left"),
+                    "table.insertColumnLeft",
+                ),
+                (
+                    wordcraft_gnome::t!("Column to the Right"),
+                    "table.insertColumnRight",
+                ),
+            ],
+        ),
+        (
+            wordcraft_gnome::t!("Delete"),
+            "table-delete",
+            vec![
+                (wordcraft_gnome::t!("Row"), "table.deleteRow"),
+                (wordcraft_gnome::t!("Column"), "table.deleteColumn"),
+                (wordcraft_gnome::t!("Table"), "table.deleteTable"),
+            ],
+        ),
+    ] {
+        context.append(&table_submenu(ui, parent, &pop, title, name, &items));
+    }
+    let merge = gtk::Button::with_label(wordcraft_gnome::t!("Merge Cells"));
+    merge.set_widget_name("table-merge");
+    merge.add_css_class("flat");
+    let weak = Rc::downgrade(ui);
+    let outer = pop.downgrade();
+    merge.connect_clicked(move |_| {
+        if let Some(ui) = weak.upgrade() {
+            if let Some(p) = outer.upgrade() {
+                close_format_popover(&p);
+            }
+            table_command(&ui, "table.merge", serde_json::json!({}));
+        }
+    });
+    context.append(&merge);
+    context.append(&table_submenu(
+        ui,
+        parent,
+        &pop,
+        wordcraft_gnome::t!("Split"),
+        "table-split",
+        &[
+            (wordcraft_gnome::t!("Split Cells"), "leaf.splitCells"),
             (wordcraft_gnome::t!("Split Table"), "table.splitTable"),
         ],
-        vec![
-            (wordcraft_gnome::t!("Delete Row"), "table.deleteRow"),
-            (wordcraft_gnome::t!("Delete Column"), "table.deleteColumn"),
-        ],
-    ] {
-        let row = gtk::Box::new(gtk::Orientation::Horizontal, 4);
-        for (label, command) in items {
-            let b = gtk::Button::with_label(label);
-            b.add_css_class("flat");
-            b.set_hexpand(true);
-            row.append(&b);
-            b.set_widget_name(&format!("table-action-{command}"));
-            if command == "table.merge" {
-                b.set_widget_name("table-merge");
-            }
-            let ui = ui.clone();
-            let pop = pop.clone();
-            b.connect_clicked(glib::clone!(
-                #[weak]
-                ui,
-                #[weak]
-                pop,
-                move |_| {
-                    close_format_popover(&pop);
-                    table_command(&ui, command, serde_json::json!({}));
-                }
-            ));
-        }
-        context.append(&row);
-    }
-    let properties = gtk::Button::with_label(wordcraft_gnome::t!("Properties and Split Cells…"));
+    ));
+    let properties = gtk::Button::with_label(wordcraft_gnome::t!("Table Properties"));
+    properties.set_widget_name("table-properties");
     properties.add_css_class("flat");
     context.append(&properties);
     {
@@ -636,24 +707,7 @@ pub(super) fn install_table_controls(
             }
         ));
     }
-    let remove = gtk::Button::with_label(wordcraft_gnome::t!("Delete Table"));
-    remove.set_widget_name("table-delete");
-    remove.add_css_class("destructive-action");
-    context.append(&remove);
-    {
-        let ui = ui.clone();
-        let pop = pop.clone();
-        remove.connect_clicked(glib::clone!(
-            #[weak]
-            ui,
-            #[weak]
-            pop,
-            move |_| {
-                close_format_popover(&pop);
-                table_command(&ui, "table.deleteTable", serde_json::json!({}));
-            }
-        ));
-    }
+    context.append(&caption);
     {
         let ui = ui.clone();
         pop.connect_show(glib::clone!(

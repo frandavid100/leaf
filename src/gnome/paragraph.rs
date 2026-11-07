@@ -229,6 +229,18 @@ impl ParagraphPopover {
     ) -> gtk::Button {
         let b = style_menu_button(label);
         b.set_widget_name(name);
+        let icon = if command.starts_with("para.align") {
+            "format-justify-left-symbolic"
+        } else if command.contains("indent") || command.contains("dent") {
+            "format-indent-more-symbolic"
+        } else if command.contains("shading") {
+            "color-select-symbolic"
+        } else if command.contains("borders") {
+            "view-grid-symbolic"
+        } else {
+            "paragraph-symbolic"
+        };
+        b.set_child(Some(&property_content(label, icon).0));
         let weak = Rc::downgrade(self);
         b.connect_clicked(move |_| {
             if let Some(s) = weak.upgrade() {
@@ -242,7 +254,8 @@ impl ParagraphPopover {
             "para.align" => "alignment",
             "para.bullets" | "para.numbering" | "para.multilevel" | "para.listLevel" => "list",
             "para.indents" | "para.indent" | "para.outdent" => "indents",
-            "para.shading" | "para.borders" => "borders",
+            "para.shading" => "shading",
+            "para.borders" => "borders",
             "para.lineSpacing" | "para.spacing" => "spacing",
             _ => return,
         };
@@ -251,7 +264,8 @@ impl ParagraphPopover {
             "alignment" => &["align"],
             "list" => &["numbering"],
             "indents" => &["indentLeft", "indentRight", "indentFirst"],
-            "borders" => &["borders", "shading"],
+            "borders" => &["borders"],
+            "shading" => &["shading"],
             _ => &["lineSpacing", "spaceBefore", "spaceAfter"],
         };
         let props: serde_json::Map<_, _> = keys
@@ -275,7 +289,7 @@ impl ParagraphPopover {
         } else if group == "list" {
             serde_json::json!({"command":command,"args":args})
         } else {
-            serde_json::json!({"props":props,"clearShading":group=="borders" && state["shading"].is_null()})
+            serde_json::json!({"props":props,"clearShading":group=="shading" && state["shading"].is_null()})
         };
         self.groups.borrow_mut().insert(group.into(), config);
     }
@@ -369,6 +383,11 @@ impl ParagraphPopover {
         button.set_tooltip_text(Some(title));
         accessible_name(&button, title);
         if page == "options" {
+            let footer = gtk::Label::new(Some(title));
+            footer.set_xalign(0.);
+            button.set_child(Some(&footer));
+            self.main
+                .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
             self.main.append(&button);
         } else {
             let repeat = gtk::Button::from_icon_name("view-refresh-symbolic");
@@ -473,6 +492,11 @@ impl ParagraphPopover {
             "list",
         );
         self.option_row(
+            wordcraft_gnome::t!("Columns"),
+            "paragraph-columns",
+            "columns",
+        );
+        self.option_row(
             wordcraft_gnome::t!("Indents"),
             "paragraph-more-indents",
             "indents",
@@ -534,13 +558,22 @@ impl ParagraphPopover {
                 wordcraft_gnome::t!("Apply Last Line Spacing"),
             ),
             (
-                wordcraft_gnome::t!("Borders and Shading"),
-                format!("{border_value}; {shade_value}"),
+                wordcraft_gnome::t!("Borders"),
+                border_value.into(),
                 "borders",
                 "paragraph-borders",
                 "para.borders",
                 self.border.borrow().clone(),
                 wordcraft_gnome::t!("Apply Last Border Settings"),
+            ),
+            (
+                wordcraft_gnome::t!("Shading"),
+                shade_value,
+                "shading",
+                "paragraph-shading",
+                "para.shading",
+                serde_json::json!({"color":self.shade.borrow().as_str()}),
+                wordcraft_gnome::t!("Apply Last Settings"),
             ),
         ] {
             let label = wordcraft_gnome::i18n::interpolate(
@@ -557,10 +590,10 @@ impl ParagraphPopover {
             text.set_hexpand(true);
             text.set_ellipsize(gtk::pango::EllipsizeMode::End);
             text.set_max_width_chars(28);
-            content.append(&gtk::Image::from_icon_name(if page == "spacing" {
-                "format-justify-fill-symbolic"
-            } else {
-                "view-grid-symbolic"
+            content.append(&gtk::Image::from_icon_name(match page {
+                "spacing" => "format-justify-fill-symbolic",
+                "shading" => "color-select-symbolic",
+                _ => "view-grid-symbolic",
             }));
             content.append(&text);
             open.set_child(Some(&content));
@@ -594,11 +627,7 @@ impl ParagraphPopover {
             accessible_name(&apply, tip);
             self.main.append(&property_split(&open, &apply));
         }
-        self.option_row(
-            wordcraft_gnome::t!("Columns"),
-            "paragraph-columns",
-            "columns",
-        );
+
         self.option_row(
             wordcraft_gnome::t!("More Paragraph Options"),
             "paragraph-more-options",
@@ -619,6 +648,7 @@ impl ParagraphPopover {
         l.set_xalign(0.0);
         l.set_hexpand(true);
         l.set_wrap(true);
+        row.append(&gtk::Image::from_icon_name("paragraph-symbolic"));
         row.append(&l);
         let n = gtk::SpinButton::with_range(min, max, 0.5);
         n.set_digits(2);
@@ -691,7 +721,7 @@ impl ParagraphPopover {
             "numbering" => wordcraft_gnome::t!("Numbering"),
             "indents" => wordcraft_gnome::t!("Indents"),
             "spacing" => wordcraft_gnome::t!("Line Spacing"),
-            "borders" => wordcraft_gnome::t!("Borders and Shading"),
+            "borders" => wordcraft_gnome::t!("Borders"),
             "shading" => wordcraft_gnome::t!("Shading"),
             "columns" => wordcraft_gnome::t!("Columns"),
             _ => wordcraft_gnome::t!("More Paragraph Options"),
@@ -853,21 +883,22 @@ impl ParagraphPopover {
                         .append(&self.action(title, name, command, serde_json::json!({})));
                 }
 
-                self.title(wordcraft_gnome::t!("Indents (pt)"));
+                self.detail
+                    .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
                 let left = self.number(
-                    wordcraft_gnome::t!("Left"),
+                    wordcraft_gnome::t!("Left (pt)"),
                     state["indentLeft"].as_f64().unwrap_or(0.0),
                     -1584.0,
                     1584.0,
                 );
                 let right = self.number(
-                    wordcraft_gnome::t!("Right"),
+                    wordcraft_gnome::t!("Right (pt)"),
                     state["indentRight"].as_f64().unwrap_or(0.0),
                     -1584.0,
                     1584.0,
                 );
                 let first = self.number(
-                    wordcraft_gnome::t!("First Line (−: Hanging)"),
+                    wordcraft_gnome::t!("First Line (pt; −: Hanging)"),
                     state["indentFirst"].as_f64().unwrap_or(0.0),
                     -1584.0,
                     1584.0,
@@ -894,6 +925,9 @@ impl ParagraphPopover {
                 ] {
                     let b = style_menu_button(label);
                     b.set_widget_name(&format!("paragraph-line-{value}"));
+                    b.set_child(Some(
+                        &property_content(label, "format-justify-fill-symbolic").0,
+                    ));
                     self.detail.append(&b);
                     let weak = Rc::downgrade(self);
                     b.connect_clicked(move |_| {
@@ -944,7 +978,6 @@ impl ParagraphPopover {
             }
             "shading" => self.shading_controls(),
             "borders" => {
-                self.title(wordcraft_gnome::t!("Borders"));
                 let width = self.number(wordcraft_gnome::t!("Width (pt)"), 0.5, 0.25, 12.0);
                 if let Some(edges) = state["borders"].as_object() {
                     let widths = edges
@@ -1031,6 +1064,7 @@ impl ParagraphPopover {
                 ] {
                     let b = style_menu_button(label);
                     b.set_widget_name(&format!("paragraph-border-{kind}"));
+                    b.set_child(Some(&property_content(label, "view-grid-symbolic").0));
                     self.detail.append(&b);
                     let weak = Rc::downgrade(self);
                     let width = width.clone();
@@ -1050,7 +1084,6 @@ impl ParagraphPopover {
                         }
                     });
                 }
-                self.shading_controls();
             }
             _ => {
                 self.title(wordcraft_gnome::t!("Direction and Formatting"));
@@ -1178,32 +1211,6 @@ impl ParagraphPopover {
             self.message.set_visible(true);
             None
         }
-    }
-    pub(super) fn color_entry(self: &Rc<Self>, label: &str, _border: bool) {
-        let e = gtk::Entry::new();
-        e.set_placeholder_text(Some("RGB hexadecimal: FFF2CC"));
-        self.detail.append(&e);
-        let _ = label;
-        let weak = Rc::downgrade(self);
-        e.connect_changed(move |entry| {
-            if let Some(s) = weak.upgrade() {
-                let c = entry.text().trim().trim_start_matches('#').to_string();
-                if c.len() == 6 && c.bytes().all(|b| b.is_ascii_hexdigit()) {
-                    entry.remove_css_class("error");
-                    s.shade.replace(c.clone());
-                    if let Some(ui) = s.ui.upgrade() {
-                        if let Err(e) =
-                            immediate_format(&ui, "para.shading", serde_json::json!({"color":c}))
-                        {
-                            s.message.set_text(&e);
-                            s.message.set_visible(true);
-                        }
-                    }
-                } else if !c.is_empty() {
-                    entry.add_css_class("error");
-                }
-            }
-        });
     }
 }
 pub(super) fn install_paragraph_popover(

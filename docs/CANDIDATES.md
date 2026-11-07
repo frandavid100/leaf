@@ -2,8 +2,8 @@
 
 Desde alpha.29, las pruebas automáticas y el empaquetado generan una candidata
 sin crear una release ni cambiar la versión distribuida por FlatPark. El proceso normal permite probarla antes de aprobar su publicación. Para la
-pasada alpha.30, David autoriza expresamente la publicación automática tras las
-comprobaciones.
+pasada alpha.30 y la última pasada alpha.31 del 7/11/2026, David autoriza
+expresamente la publicación automática tras las comprobaciones.
 
 Cada candidata contiene la revisión fuente, el identificador de la ejecución,
 las notas de versión y las sumas SHA-256 de los paquetes. Su versión interna es

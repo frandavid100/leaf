@@ -2914,3 +2914,15 @@ msgstr "Mostrar leyenda"
 
 msgid "Captions are available in the document body."
 msgstr "Las leyendas están disponibles en el cuerpo del documento."
+
+msgid "Split"
+msgstr "Dividir"
+
+msgid "Left (pt)"
+msgstr "Izquierda (pt)"
+
+msgid "Right (pt)"
+msgstr "Derecha (pt)"
+
+msgid "First Line (pt; −: Hanging)"
+msgstr "Primera línea (pt; −: francesa)"

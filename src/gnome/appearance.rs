@@ -95,6 +95,10 @@ pub(super) fn install_css() {
       .bookmark-name { font-weight: normal; }
       .style-row.current-style, .format-popover button.current-style { background: alpha(@window_fg_color, 0.14); border-radius: 6px; }
       .format-popover button:checked:not(.split-action) { background: alpha(@window_fg_color, 0.14); }
+      .format-popover .size-field { border: none; border-radius: 6px; }
+      .format-popover .size-controls spinbutton { background: transparent; box-shadow: none; border: none; }
+      .format-popover .size-controls spinbutton text { background: transparent; }
+      .format-popover .size-controls button { background: transparent; box-shadow: none; border: none; }
       .page-indicator, .zoom-value { font-feature-settings: 'tnum'; }
     ");
     if let Some(display) = gdk::Display::default() {

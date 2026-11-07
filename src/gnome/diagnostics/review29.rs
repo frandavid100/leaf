@@ -250,6 +250,74 @@ fn format_rows_and_elements(ui: &Rc<Ui>) {
             .is_sensitive()
     );
     elements.pop.popdown();
+    // The shared table body keeps operation groups in their requested order,
+    // while creation stays independent of a current table.
+    let mut sample = Session::new(wordcraft_doc::Document::new());
+    sample
+        .run("insert.table", &json!({"rows":2,"cols":2}))
+        .unwrap();
+    opened(ui, sample, "Table groups");
+    elements.show("table");
+    let body = elements.body_for(&table).unwrap();
+    let context = find_widget(&body, "table-context").unwrap();
+    assert!(context.is_sensitive());
+    let mut order = Vec::new();
+    let mut child = context.first_child();
+    while let Some(w) = child {
+        if w.widget_name().starts_with("table-") {
+            order.push(w.widget_name().to_string());
+        }
+        child = w.next_sibling();
+    }
+    assert_eq!(
+        order,
+        [
+            "table-select",
+            "table-add",
+            "table-delete",
+            "table-merge",
+            "table-split",
+            "table-properties",
+            "table-show-caption"
+        ]
+    );
+    let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
+    let depth = ui.current.borrow().as_ref().unwrap().session.undo_depth();
+    let submenu = find_widget(&body, "table-add")
+        .unwrap()
+        .downcast::<gtk::MenuButton>()
+        .unwrap();
+    submenu.popup();
+    click(
+        &submenu.popover().unwrap(),
+        "table-action-table.insertRowAbove",
+    );
+    {
+        let c = ui.current.borrow();
+        let s = &c.as_ref().unwrap().session;
+        assert_eq!(
+            s.doc
+                .body
+                .iter()
+                .find_map(|b| b.as_table())
+                .unwrap()
+                .rows
+                .len(),
+            3
+        );
+        assert_eq!(s.undo_depth(), depth + 1);
+    }
+    apply_user_edit(ui, Edit::Undo);
+    assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, before);
+    elements.show("table");
+    let submenu = find_widget(&body, "table-split")
+        .unwrap()
+        .downcast::<gtk::MenuButton>()
+        .unwrap();
+    assert!(find_widget(&submenu.popover().unwrap(), "table-action-leaf.splitCells").is_some());
+    assert!(find_widget(&submenu.popover().unwrap(), "table-action-table.splitTable").is_some());
+    elements.pop.popdown();
+    eprintln!("TABLE151_GROUPS_HISTORY_OK");
     // Restore the review fixture with canonical document replacement for the final capture.
     opened(ui, Session::new(original), "Unified review");
 }

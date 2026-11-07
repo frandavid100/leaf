@@ -828,6 +828,9 @@ pub(super) fn install_text_pages(
     language_row.append(&language_value);
     language_button.set_child(Some(&language_row));
     more.set_widget_name("text-more-options");
+    let footer = gtk::Label::new(Some(wordcraft_gnome::t!("More Text Options…")));
+    footer.set_xalign(0.);
+    more.set_child(Some(&footer));
     main.remove(more);
     main.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     main.append(more);
@@ -895,10 +898,16 @@ pub(super) fn install_text_pages(
     ui.size_input.set_hexpand(true);
     size_selector.set_hexpand(true);
     size_selector.set_halign(gtk::Align::Fill);
+    size_selector.remove_css_class("linked");
+    size_selector.add_css_class("size-controls");
     size_row.append(&size_selector);
     let size_field = gtk::Frame::new(None);
     size_field.set_widget_name("text-size-field");
-    size_row.set_margin_start(8);
+    size_row.set_margin_start(12);
+    size_row.set_margin_end(4);
+    size_row.set_margin_top(3);
+    size_row.set_margin_bottom(3);
+    size_field.add_css_class("size-field");
     size_field.set_child(Some(&size_row));
     main.append(&size_field);
     language_button.remove_css_class("flat");

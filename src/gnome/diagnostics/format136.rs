@@ -109,11 +109,8 @@ pub(super) fn format136_ui_test(
             "paragraph-more-spacing",
             wordcraft_gnome::t!("Line Spacing"),
         ),
-        (
-            1,
-            "paragraph-more-borders",
-            wordcraft_gnome::t!("Borders and Shading"),
-        ),
+        (1, "paragraph-more-borders", wordcraft_gnome::t!("Borders")),
+        (1, "paragraph-more-shading", wordcraft_gnome::t!("Shading")),
         (1, "paragraph-columns", wordcraft_gnome::t!("Columns")),
         (2, "style-new", wordcraft_gnome::t!("New Style")),
         (3, "table", wordcraft_gnome::t!("Table")),
@@ -243,6 +240,7 @@ pub(super) fn format136_ui_test(
                     "paragraph-alignment",
                     "paragraph-more-spacing",
                     "paragraph-more-borders",
+                    "paragraph-more-shading",
                 ]
                 .contains(&row)
                 {
@@ -322,13 +320,16 @@ pub(super) fn format136_ui_test(
                     let ad = scroll.vadjustment();
                     ad.set_value((ad.upper() - ad.page_size()).max(0.));
                 }
-                if matches!(row, "text-ink" | "text-highlight") {
+                if matches!(
+                    row,
+                    "text-ink" | "text-highlight" | "paragraph-more-shading"
+                ) {
                     let picker = find_widget(
                         &pop,
-                        if row == "text-ink" {
-                            "text-ink-chooser"
-                        } else {
-                            "text-highlight-chooser"
+                        match row {
+                            "text-ink" => "text-ink-chooser",
+                            "text-highlight" => "text-highlight-chooser",
+                            _ => "paragraph-shading-chooser",
                         },
                     )
                     .unwrap()
@@ -344,10 +345,10 @@ pub(super) fn format136_ui_test(
             4 => {
                 let picker = find_widget(
                     &pop,
-                    if row == "text-ink" {
-                        "text-ink-chooser"
-                    } else {
-                        "text-highlight-chooser"
+                    match row {
+                        "text-ink" => "text-ink-chooser",
+                        "text-highlight" => "text-highlight-chooser",
+                        _ => "paragraph-shading-chooser",
                     },
                 )
                 .unwrap();
@@ -367,6 +368,8 @@ pub(super) fn format136_ui_test(
                 let state = selection_character(&u);
                 if row == "text-ink" {
                     assert_eq!(state["color"], json!({"Rgb":[35,69,103]}));
+                } else if row == "paragraph-more-shading" {
+                    assert_eq!(selection_paragraph(&u)["shading"], json!([35, 69, 103]));
                 } else {
                     assert!(wordcraft_gnome::highlight::matches(
                         &u.current.borrow().as_ref().unwrap().session,
