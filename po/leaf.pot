@@ -33,7 +33,7 @@ msgstr ""
 msgid "Actual Size (100%)"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:76 src/gnome/comment_composer.rs:67 src/gnome/diagnostics/context.rs:207
+#: src/gnome/annotation_dialog.rs:76 src/gnome/comment_composer.rs:67
 msgid "Add"
 msgstr ""
 
@@ -461,7 +461,7 @@ msgstr ""
 msgid "Color and Effects"
 msgstr ""
 
-#: src/gnome/context.rs:576 src/gnome/context.rs:601 src/gnome/diagnostics/context.rs:210 src/gnome/tables.rs:632 src/gnome/tables.rs:657
+#: src/gnome/context.rs:576 src/gnome/context.rs:601 src/gnome/diagnostics/context.rs:214 src/gnome/tables.rs:632 src/gnome/tables.rs:657
 msgid "Column"
 msgstr ""
 
@@ -541,7 +541,7 @@ msgstr ""
 msgid "Continuous"
 msgstr ""
 
-#: src/gnome/context.rs:466 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:278 src/gnome/diagnostics/spellcheck.rs:132
+#: src/gnome/context.rs:466 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:282 src/gnome/diagnostics/spellcheck.rs:132
 msgid "Copy"
 msgstr ""
 
@@ -709,7 +709,7 @@ msgstr ""
 msgid "Default — {language}"
 msgstr ""
 
-#: src/gnome/annotations.rs:675 src/gnome/context.rs:597 src/gnome/tables.rs:653 src/history.rs:155
+#: src/gnome/annotations.rs:675 src/gnome/context.rs:597 src/gnome/diagnostics/context.rs:208 src/gnome/tables.rs:653 src/history.rs:155
 msgid "Delete"
 msgstr ""
 
@@ -749,7 +749,7 @@ msgstr ""
 msgid "Descending (Z–A)"
 msgstr ""
 
-#: src/gnome/diagnostics/context.rs:283 src/gnome/links.rs:122 src/gnome/links.rs:123
+#: src/gnome/diagnostics/context.rs:287 src/gnome/links.rs:122 src/gnome/links.rs:123
 msgid "Destination"
 msgstr ""
 
@@ -1301,7 +1301,7 @@ msgstr ""
 msgid "Image"
 msgstr ""
 
-#: src/gnome/context.rs:523 src/gnome/diagnostics/context.rs:260
+#: src/gnome/context.rs:523 src/gnome/diagnostics/context.rs:264
 msgid "Image Size…"
 msgstr ""
 
@@ -1369,7 +1369,7 @@ msgstr ""
 msgid "Information"
 msgstr ""
 
-#: src/gnome/context.rs:581 src/gnome/headers.rs:128 src/gnome/links.rs:73 src/gnome/references.rs:110 src/gnome/tables.rs:637
+#: src/gnome/context.rs:581 src/gnome/diagnostics/context.rs:207 src/gnome/headers.rs:128 src/gnome/links.rs:73 src/gnome/references.rs:110 src/gnome/tables.rs:637
 msgid "Insert"
 msgstr ""
 
@@ -1641,7 +1641,7 @@ msgstr ""
 msgid "More Styles…"
 msgstr ""
 
-#: src/gnome/context.rs:680 src/gnome/diagnostics/context.rs:217
+#: src/gnome/context.rs:680 src/gnome/diagnostics/context.rs:221
 msgid "More Table Options…"
 msgstr ""
 
@@ -2405,7 +2405,7 @@ msgstr ""
 msgid "Section {number}"
 msgstr ""
 
-#: src/gnome/context.rs:571 src/gnome/diagnostics/context.rs:209 src/gnome/tables.rs:627
+#: src/gnome/context.rs:571 src/gnome/diagnostics/context.rs:206 src/gnome/diagnostics/context.rs:213 src/gnome/tables.rs:627
 msgid "Select"
 msgstr ""
 
@@ -2593,7 +2593,7 @@ msgstr ""
 msgid "Spelling and Grammar"
 msgstr ""
 
-#: src/gnome/context.rs:659 src/gnome/tables.rs:682
+#: src/gnome/context.rs:659 src/gnome/diagnostics/context.rs:209 src/gnome/tables.rs:682
 msgid "Split"
 msgstr ""
 
