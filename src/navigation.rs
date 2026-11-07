@@ -521,3 +521,102 @@ pub fn activate_element(s: &mut wordcraft_engine::Session, e: &Element) -> Resul
     }
     crate::selection::set_caret(s, &e.pos, false)
 }
+
+/// Move an intact heading subtree as a registered engine command.
+/// WordCraft keeps the document, protection, revision and history authoritative.
+pub fn move_section(
+    s: &mut wordcraft_engine::Session,
+    source: usize,
+    destination: usize,
+) -> Result<(), String> {
+    use wordcraft_engine::{CommandSpec, Registry};
+    if s.registry.get("leaf.moveSection").is_none() {
+        let mut specs = s.registry.all().to_vec();
+        specs.push(CommandSpec::new(
+            "leaf.moveSection",
+            "Move Section",
+            "Navigation",
+            move_command,
+        ));
+        s.registry = std::sync::Arc::new(Registry::new(specs));
+    }
+    s.run(
+        "leaf.moveSection",
+        &serde_json::json!({"source":source,"destination":destination}),
+    )
+    .map(|_| ())
+    .map_err(|e| e.to_string())
+}
+fn move_command(
+    s: &mut wordcraft_engine::Session,
+    v: &serde_json::Value,
+) -> wordcraft_engine::CmdResult {
+    use wordcraft_engine::{CmdError, Selection};
+    let source = v["source"]
+        .as_u64()
+        .ok_or_else(|| CmdError::Params("Missing source".into()))? as usize;
+    let destination = v["destination"]
+        .as_u64()
+        .ok_or_else(|| CmdError::Params("Missing destination".into()))?
+        as usize;
+    let hs = headings(&s.doc);
+    let h = hs
+        .get(source)
+        .ok_or_else(|| CmdError::Params("Missing heading".into()))?;
+    if h.pos.path.0.len() != 1 {
+        return Err(CmdError::Failed(
+            wordcraft_gnome::t!("Headings inside tables cannot be moved as sections.").into(),
+        ));
+    }
+    let start = h.pos.path.0[0] as usize;
+    let end = hs
+        .iter()
+        .skip(source + 1)
+        .find(|other| other.level <= h.level && other.pos.path.0.len() == 1)
+        .map(|h| h.pos.path.0[0] as usize)
+        .unwrap_or(s.doc.body.len());
+    let target = if destination == hs.len() {
+        s.doc.body.len()
+    } else {
+        let h = hs
+            .get(destination)
+            .ok_or_else(|| CmdError::Params("Missing destination heading".into()))?;
+        if h.pos.path.0.len() != 1 {
+            return Err(CmdError::Failed(
+                wordcraft_gnome::t!("Choose a heading outside a table.").into(),
+            ));
+        }
+        h.pos.path.0[0] as usize
+    };
+    if (start..=end).contains(&target) {
+        return Ok(serde_json::json!({}));
+    }
+    let (lo, hi) = if target < start {
+        (target, end)
+    } else {
+        (start, target)
+    };
+    if s.doc.settings.track_changes
+        || s.doc.body[lo..hi]
+            .iter()
+            .any(|b| b.as_para().is_some_and(|p| p.section.is_some()))
+    {
+        return Err(CmdError::Failed(wordcraft_gnome::t!("Sections cannot move across page-section breaks or while tracking changes. The document has been kept unchanged.").into()));
+    }
+    // Blocks carry their inline references, child tables, images and annotation IDs.
+    // Session::run provides protection, rollback, revision and a single history step.
+    if target < start {
+        s.doc.body[lo..hi].rotate_right(end - start)
+    } else {
+        s.doc.body[lo..hi].rotate_left(end - start)
+    }
+    let new_start = if target < start {
+        target
+    } else {
+        target - (end - start)
+    };
+    s.sel = Selection::caret(Pos::body(new_start, 0));
+    s.pending = None;
+    s.goal_x = None;
+    Ok(serde_json::json!({"block":new_start}))
+}

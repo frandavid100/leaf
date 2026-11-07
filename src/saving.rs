@@ -8,6 +8,7 @@ use wordcraft_engine::Session;
 pub fn requires_docx(session: &Session) -> bool {
     !session.doc.core.category.is_empty()
         || crate::proofing_defaults::odt_loses_inheritance(session)
+        || crate::styles::odt_loses_next(session)
         || odt_structure_error(session).is_some()
 }
 
@@ -21,6 +22,11 @@ pub fn format_preservation_error(session: &Session, path: &Path) -> Option<&'sta
     if crate::proofing_defaults::odt_loses_inheritance(session) {
         return Some(wordcraft_gnome::t!(
             "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
+        ));
+    }
+    if crate::styles::odt_loses_next(session) {
+        return Some(wordcraft_gnome::t!(
+            "Save as DOCX to preserve the following paragraph style. The current ODT exporter cannot keep it."
         ));
     }
     if let Some(error) = odt_structure_error(session) {

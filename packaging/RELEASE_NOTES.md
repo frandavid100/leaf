@@ -1,10 +1,15 @@
-Leaf 0.1.0-alpha.34 — dictionary integration test candidate
+Leaf 0.1.0-alpha.35 — personal templates and editing workflows
 
-- Open Dictionary Settings from Text → Language to choose an additional Hunspell folder through the native file chooser, refresh changed dictionaries, remove that source or import a matching .aff/.dic pair.
-- Combine imported, selected-folder, bundled and readable native system dictionaries. Keep document language and Undo unchanged when resources change.
-- Show dictionary availability and add discovered languages recognized by WordCraft. Native Ubuntu may offer its installed Language Support application; Flatpak uses the folder portal and does not request broad host access.
-- Include a separate synthetic dictionary ZIP with Spanish test instructions. Its invented Italian words are test data, never installed automatically.
+- Choose the following paragraph style from the existing Style details. The document remains the source of each style's appearance.
+- Create untitled copies from the system Templates folder or a folder chosen through the native chooser. Manage the original files in Files.
+- Paste plain text with Ctrl+Shift+V or the context menu. Copy formatting once, or keep the painter active for multiple destinations; Escape cancels.
+- Move complete heading sections, with their children, tables, images and references, from Structure by dragging or using the arrow buttons. One Undo restores the move.
+- Search and replace whole words, restrict operations to a captured selection, preserve capitalization, and search notes, headers and footers. Advanced options support regular expressions and tab, soft-break and paragraph-break codes, with inline examples and errors.
+- Inspect document font declarations and uses, see actual fallback fonts, navigate uses, and explicitly substitute a font throughout the document with Undo. Opening documents preserves their authored font names.
+- Paste external images/screenshots and drop image files at a document position; images preserve their proportions and initially fit the text width.
 
-Issue #84 remains open pending David’s GNOME OS test. Automated native and installed GNOME-runtime checks are recorded with this candidate; these do not claim human GNOME OS validation. WordCraft remains pinned at 0.16.0.
+Format preservation: changed following-paragraph styles require DOCX when the pinned ODT exporter would lose the choice. Leaf refuses the lossy save and keeps the document unchanged.
 
-Compatibility limit: readable files still need a Hunspell dialect supported by WordCraft. Ubuntu’s Dutch dictionary currently fails its KEEPCASE/FLAG-order parser; this frontend candidate does not change the engine.
+Safety limits: moving a heading inside a table, moving across a page-section break, and moving sections while tracking changes are refused without altering the document. Document-wide font replacement also requires change tracking to be off. A selected search range is invalidated by unrelated document edits. Regex replacements do not insert at empty matches.
+
+WordCraft remains pinned at 0.16.0. No new conflict-protection or symbol-picker workflow is included. Native and installed GNOME 49/51 automated checks are required before publication; they do not claim human GNOME OS validation.

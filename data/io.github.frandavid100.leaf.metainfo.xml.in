@@ -42,6 +42,9 @@
   </screenshots>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.0-alpha.35" date="2026-11-07" type="development">
+      <description><p>Add personal templates, following paragraph styles, format painter, plain-text and image paste, heading-section movement, document font substitution and advanced scoped search and replace.</p></description>
+    </release>
     <release version="0.1.0-alpha.34" date="2026-11-07" type="development">
       <description><p>Dictionary folder selection, refresh and availability controls for testing.</p></description>
     </release>

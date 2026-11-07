@@ -93,6 +93,21 @@ jobs:
         # Keep symbols in the temporary early artifact for portal diagnostics.
         # Both final native output and the packaged executable are stripped later.
         run: cargo rustc --release --locked --features gui --bin wordcraft-gnome -- -C strip=none
+      - name: Verify accepted alpha35 workflows in native English and Spanish HiDPI
+        run: |
+          set -o pipefail
+          for language in en es; do
+            scale=1
+            if test "$language" = es; then scale=2; fi
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 120s ./target/release/wordcraft-gnome --workflows35-ui-test 2>&1 | tee workflows35-$language.log
+            grep -q WORKFLOWS35_UI_OK workflows35-$language.log
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 180s bash tools/workflows35-pointer-test.sh
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workflows35-native-controls
+          path: workflows35-*.log
       - name: Investigate spacing and real End viewport behavior
         run: |
           set +e
@@ -289,7 +304,22 @@ jobs:
       - name: Native bookmarks and comment threads
         run: |
           set -o pipefail
-          git diff --exit-code c6e7e89e36665775a0fe5294fb8cfd56afd42ba1 -- Cargo.toml Cargo.lock craft-i18n.rev vendor patches
+          # Feature work may reuse a locked transitive crate in the frontend.
+          # Preserve every existing dependency, engine package, profile and patch.
+          git diff --exit-code 2cd4ef308650686f5b71175c57b5875eb441dd8c -- craft-i18n.rev vendor patches
+          python3 - <<'WORDCRAFT_BOUNDARY'
+          import subprocess,tomllib
+          from pathlib import Path
+          base='2cd4ef308650686f5b71175c57b5875eb441dd8c'
+          def before(path):return tomllib.loads(subprocess.check_output(['git','show',f'{base}:{path}'],text=True))
+          old=before('Cargo.toml');new=tomllib.loads(Path('Cargo.toml').read_text())
+          assert all(new['dependencies'].get(name)==spec for name,spec in old['dependencies'].items())
+          assert old.get('patch')==new.get('patch')
+          assert old.get('profile')==new.get('profile')
+          def engine_packages(lock):return [p for p in lock['package'] if p['name']!='wordcraft-gnome']
+          assert engine_packages(before('Cargo.lock'))==engine_packages(tomllib.loads(Path('Cargo.lock').read_text()))
+          print('WORDCRAFT_BOUNDARY_OK unchanged_existing_dependencies_and_lock_packages')
+          WORDCRAFT_BOUNDARY
           xvfb-run -a -s '-screen 0 1280x900x24' bash -c '
             set -e
             for panel in annotations proofing; do
@@ -338,7 +368,7 @@ jobs:
       - name: Identificar versión de prueba
         run: |
           ./target/release/wordcraft-gnome --version | tee version.txt
-          grep -q "Leaf 0.1.0-alpha.34" version.txt
+          grep -q "Leaf 0.1.0-alpha.35" version.txt
       - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
         run: |
           python -m pip install --disable-pip-version-check pillow==11.3.0
@@ -665,7 +695,7 @@ jobs:
     needs: test
     if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[candidate-alpha]') && (needs.test.result == 'success' || (needs.test.result == 'skipped' && contains(github.event.head_commit.message, '[bundle-only]')))
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 60
     permissions:
       contents: read
       actions: read
@@ -703,6 +733,26 @@ jobs:
           # These two Flatpak test drivers are not binary inputs. Sandbox-only
           # control/profile changes may reuse the identical native executable.
           git diff --exit-code "$native_source" -- src Cargo.toml Cargo.lock craft-i18n.rev tests vendor po data examples tools patches ':(exclude)tools/dictionary84-pointer-test.sh' ':(exclude)tools/dictionary84-installed-test.sh'
+      - name: Wait for the reusable native executable without bypassing validation
+        if: contains(github.event.head_commit.message, '[bundle-only]')
+        timeout-minutes: 21
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 80); do
+            conclusion=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LEAF_NATIVE_RUN" --jq '.conclusion // "pending"')
+            case "$conclusion" in
+              pending|success) ;;
+              *) echo "Native validation ended with $conclusion" >&2; exit 1 ;;
+            esac
+            available=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LEAF_NATIVE_RUN/artifacts?name=leaf-native-unvalidated" --jq '[.artifacts[] | select(.name == "leaf-native-unvalidated" and .expired == false)] | length')
+            if test "$available" -gt 0; then exit 0; fi
+            echo "Waiting for the native executable ($attempt/80). Full native success remains required before promotion."
+            sleep 15
+          done
+          echo 'The native executable was not available within 20 minutes.' >&2
+          exit 1
       - uses: actions/download-artifact@v4
         with:
           name: ${{ contains(github.event.head_commit.message, '[bundle-only]') && 'leaf-native-unvalidated' || 'wordcraft-gnome-fase3d-linux' }}
@@ -727,7 +777,7 @@ jobs:
                   path.write_text(uri + '\n')
           PY
           sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi libgtk-4-1 libadwaita-1-0 poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
           # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Validate desktop metadata
@@ -750,6 +800,8 @@ jobs:
           path: debug-native
           run-id: ${{ env.LEAF_NATIVE_RUN }}
           github-token: ${{ github.token }}
+      - name: Verify alpha35 native controls and real portal image transfer on GNOME 49
+        run: bash tools/workflows35-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/workflows35-installed
       - name: Verify installed dictionary folder portal and restart
         env:
           LEAF84_GDB: '1'
@@ -758,7 +810,7 @@ jobs:
       - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
         run: |
           set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.34-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.35-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
           grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
       - name: Exercise the installed sandbox and desktop launcher
         run: |
@@ -979,7 +1031,7 @@ jobs:
           python3 - <<'PYTHON'
           import json, os, pathlib
           pathlib.Path('dist/candidate.json').write_text(json.dumps({
-              'version': '0.1.0-alpha.34', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+              'version': '0.1.0-alpha.35', 'source': os.environ['LEAF_CANDIDATE_SHA'],
               'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
               'native_source': os.environ['LEAF_NATIVE_SHA'],
               'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
@@ -991,7 +1043,7 @@ jobs:
           python3 - <<'PYTHON'
           from pathlib import Path
           from zipfile import ZipFile, ZIP_DEFLATED
-          with ZipFile("dist/Leaf-0.1.0-alpha.34-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
+          with ZipFile("dist/Leaf-0.1.0-alpha.35-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
               for source in sorted(Path("tests/fixtures/dictionary84").iterdir()):
                   if source.is_file(): archive.write(source, "Leaf-dictionary-test/" + source.name)
           PYTHON

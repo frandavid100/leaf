@@ -226,6 +226,8 @@ pub(super) fn context_item(
         "cut" => Some("<Control>x"),
         "copy" => Some("<Control>c"),
         "paste" => Some("<Control>v"),
+        "paste-plain" => Some("<Control><Shift>v"),
+        "copy-format" => Some("<Control><Shift>c"),
         "select-all" => Some("<Control>a"),
         _ => None,
     };
@@ -394,6 +396,36 @@ pub(super) fn show_document_context(
         "select-all",
         true,
         |u| selected_command(u, "select-all", false),
+    );
+    context_item(
+        &edit,
+        &group,
+        &pop,
+        ui,
+        wordcraft_gnome::t!("Paste Plain Text"),
+        "paste-plain",
+        clipboard_can_paste(ui),
+        clipboard::paste_plain,
+    );
+    context_item(
+        &edit,
+        &group,
+        &pop,
+        ui,
+        wordcraft_gnome::t!("Copy Formatting"),
+        "copy-format",
+        true,
+        |ui| format_painter::start(ui, false),
+    );
+    context_item(
+        &edit,
+        &group,
+        &pop,
+        ui,
+        wordcraft_gnome::t!("Keep Copying Formatting"),
+        "copy-format-sticky",
+        true,
+        |ui| format_painter::start(ui, true),
     );
     root.append_section(None, &edit);
     if let Some(host) = ui.host.upgrade() {

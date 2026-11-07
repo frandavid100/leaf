@@ -3019,3 +3019,144 @@ msgstr "Dictionary files found. WordCraft checks them when this language is used
 
 msgid "No spelling dictionary files were found for this language."
 msgstr "No spelling dictionary files were found for this language."
+
+msgid "Choose a replacement font."
+msgstr "Choose a replacement font."
+
+msgid "Turn off change tracking before replacing document fonts."
+msgstr "Turn off change tracking before replacing document fonts."
+
+msgid "The clipboard image is too large."
+msgstr "The clipboard image is too large."
+
+msgid "Paste Plain Text"
+msgstr "Paste Plain Text"
+
+msgid "Copy Formatting"
+msgstr "Copy Formatting"
+
+msgid "Keep Copying Formatting"
+msgstr "Keep Copying Formatting"
+
+msgid "Document Fonts"
+msgstr "Document Fonts"
+
+msgid "New from Template"
+msgstr "New from Template"
+
+msgid "Opening a document preserves its font names. Replace changes the document and can be undone."
+msgstr "Opening a document preserves its font names. Replace changes the document and can be undone."
+
+msgid "Missing; displayed as"
+msgstr "Missing; displayed as"
+
+msgid "Next Use"
+msgstr "Next Use"
+
+msgid "Replacement Font"
+msgstr "Replacement Font"
+
+msgid "The document changed. Reopen the font list."
+msgstr "The document changed. Reopen the font list."
+
+msgid "Select a destination to apply formatting. Escape cancels."
+msgstr "Select a destination to apply formatting. Escape cancels."
+
+msgid "New from Template…"
+msgstr "New from Template…"
+
+msgid "Document Fonts…"
+msgstr "Document Fonts…"
+
+msgid "Move Section Up"
+msgstr "Move Section Up"
+
+msgid "Move Section Down"
+msgstr "Move Section Down"
+
+msgid "Whole Words"
+msgstr "Whole Words"
+
+msgid "Entire Document"
+msgstr "Entire Document"
+
+msgid "Body Text"
+msgstr "Body Text"
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Search In"
+msgstr "Search In"
+
+msgid "Use Current Selection"
+msgstr "Use Current Selection"
+
+msgid "Advanced"
+msgstr "Advanced"
+
+msgid "Special Characters"
+msgstr "Special Characters"
+
+msgid "Regular Expressions"
+msgstr "Regular Expressions"
+
+msgid "Preserve Capitalization"
+msgstr "Preserve Capitalization"
+
+msgid "Special: ^t tab, ^l line break, ^p paragraph. Regex: ([0-9]+), replacement: $1. Zero-length replacements are disabled."
+msgstr "Special: ^t tab, ^l line break, ^p paragraph. Regex: ([0-9]+), replacement: $1. Zero-length replacements are disabled."
+
+msgid "Insert Special Character"
+msgstr "Insert Special Character"
+
+msgid "Paragraph Break"
+msgstr "Paragraph Break"
+
+msgid "Following Paragraph Style"
+msgstr "Following Paragraph Style"
+
+msgid "Add DOCX or ODT files to your templates folder."
+msgstr "Add DOCX or ODT files to your templates folder."
+
+msgid "Choose your templates folder."
+msgstr "Choose your templates folder."
+
+msgid "Open Templates Folder"
+msgstr "Open Templates Folder"
+
+msgid "Choose Another Folder…"
+msgstr "Choose Another Folder…"
+
+msgid "Headings inside tables cannot be moved as sections."
+msgstr "Headings inside tables cannot be moved as sections."
+
+msgid "Choose a heading outside a table."
+msgstr "Choose a heading outside a table."
+
+msgid "Sections cannot move across page-section breaks or while tracking changes. The document has been kept unchanged."
+msgstr "Sections cannot move across page-section breaks or while tracking changes. The document has been kept unchanged."
+
+msgid "The selection changed. Select the search range again."
+msgstr "The selection changed. Select the search range again."
+
+msgid "Select the text to search first."
+msgstr "Select the text to search first."
+
+msgid "The search result no longer matches."
+msgstr "The search result no longer matches."
+
+msgid "Zero-length matches cannot be replaced. Use a pattern that selects text."
+msgstr "Zero-length matches cannot be replaced. Use a pattern that selects text."
+
+msgid "The result is outside the selected search range."
+msgstr "The result is outside the selected search range."
+
+msgid "Choose an existing paragraph style"
+msgstr "Choose an existing paragraph style"
+
+msgid "Save as DOCX to preserve the following paragraph style. The current ODT exporter cannot keep it."
+msgstr "Save as DOCX to preserve the following paragraph style. The current ODT exporter cannot keep it."
+
+msgid "Use DOCX to preserve changes to the following paragraph style."
+msgstr "Use DOCX to preserve changes to the following paragraph style."

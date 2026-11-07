@@ -3019,3 +3019,144 @@ msgstr "Se han encontrado archivos de diccionario. WordCraft los comprueba al ut
 
 msgid "No spelling dictionary files were found for this language."
 msgstr "No se han encontrado archivos de diccionario ortográfico para este idioma."
+
+msgid "Choose a replacement font."
+msgstr "Elige una fuente de sustitución."
+
+msgid "Turn off change tracking before replacing document fonts."
+msgstr "Desactiva el control de cambios antes de sustituir las fuentes del documento."
+
+msgid "The clipboard image is too large."
+msgstr "La imagen del portapapeles es demasiado grande."
+
+msgid "Paste Plain Text"
+msgstr "Pegar sin formato"
+
+msgid "Copy Formatting"
+msgstr "Copiar formato"
+
+msgid "Keep Copying Formatting"
+msgstr "Mantener activo el pincel de formato"
+
+msgid "Document Fonts"
+msgstr "Fuentes del documento"
+
+msgid "New from Template"
+msgstr "Nuevo desde plantilla"
+
+msgid "Opening a document preserves its font names. Replace changes the document and can be undone."
+msgstr "Al abrir un documento se conservan los nombres de sus fuentes. Sustituir modifica el documento y se puede deshacer."
+
+msgid "Missing; displayed as"
+msgstr "No disponible; se muestra como"
+
+msgid "Next Use"
+msgstr "Siguiente uso"
+
+msgid "Replacement Font"
+msgstr "Fuente de sustitución"
+
+msgid "The document changed. Reopen the font list."
+msgstr "El documento ha cambiado. Vuelve a abrir la lista de fuentes."
+
+msgid "Select a destination to apply formatting. Escape cancels."
+msgstr "Selecciona un destino para aplicar el formato. Escape cancela."
+
+msgid "New from Template…"
+msgstr "Nuevo desde plantilla…"
+
+msgid "Document Fonts…"
+msgstr "Fuentes del documento…"
+
+msgid "Move Section Up"
+msgstr "Subir apartado"
+
+msgid "Move Section Down"
+msgstr "Bajar apartado"
+
+msgid "Whole Words"
+msgstr "Palabras completas"
+
+msgid "Entire Document"
+msgstr "Todo el documento"
+
+msgid "Body Text"
+msgstr "Cuerpo del documento"
+
+msgid "Notes"
+msgstr "Notas"
+
+msgid "Search In"
+msgstr "Buscar en"
+
+msgid "Use Current Selection"
+msgstr "Usar la selección actual"
+
+msgid "Advanced"
+msgstr "Avanzado"
+
+msgid "Special Characters"
+msgstr "Caracteres especiales"
+
+msgid "Regular Expressions"
+msgstr "Expresiones regulares"
+
+msgid "Preserve Capitalization"
+msgstr "Conservar mayúsculas y minúsculas"
+
+msgid "Special: ^t tab, ^l line break, ^p paragraph. Regex: ([0-9]+), replacement: $1. Zero-length replacements are disabled."
+msgstr "Especiales: ^t tabulación, ^l salto de línea, ^p párrafo. Expresión: ([0-9]+), sustitución: $1. No se sustituyen coincidencias vacías."
+
+msgid "Insert Special Character"
+msgstr "Insertar carácter especial"
+
+msgid "Paragraph Break"
+msgstr "Salto de párrafo"
+
+msgid "Following Paragraph Style"
+msgstr "Estilo del párrafo siguiente"
+
+msgid "Add DOCX or ODT files to your templates folder."
+msgstr "Añade archivos DOCX u ODT a tu carpeta de plantillas."
+
+msgid "Choose your templates folder."
+msgstr "Elige tu carpeta de plantillas."
+
+msgid "Open Templates Folder"
+msgstr "Abrir carpeta de plantillas"
+
+msgid "Choose Another Folder…"
+msgstr "Elegir otra carpeta…"
+
+msgid "Headings inside tables cannot be moved as sections."
+msgstr "Los títulos dentro de tablas no se pueden mover como apartados."
+
+msgid "Choose a heading outside a table."
+msgstr "Elige un título fuera de una tabla."
+
+msgid "Sections cannot move across page-section breaks or while tracking changes. The document has been kept unchanged."
+msgstr "Los apartados no se pueden mover a través de saltos de sección ni con el control de cambios activado. El documento se ha conservado sin cambios."
+
+msgid "The selection changed. Select the search range again."
+msgstr "La selección ha cambiado. Vuelve a seleccionar el ámbito de búsqueda."
+
+msgid "Select the text to search first."
+msgstr "Selecciona primero el texto donde quieras buscar."
+
+msgid "The search result no longer matches."
+msgstr "El resultado ya no coincide con la búsqueda."
+
+msgid "Zero-length matches cannot be replaced. Use a pattern that selects text."
+msgstr "No se pueden sustituir coincidencias vacías. Usa un patrón que seleccione texto."
+
+msgid "The result is outside the selected search range."
+msgstr "El resultado está fuera de la selección de búsqueda."
+
+msgid "Choose an existing paragraph style"
+msgstr "Elige un estilo de párrafo existente"
+
+msgid "Save as DOCX to preserve the following paragraph style. The current ODT exporter cannot keep it."
+msgstr "Guarda como DOCX para conservar el estilo del párrafo siguiente. El exportador ODT actual no puede conservarlo."
+
+msgid "Use DOCX to preserve changes to the following paragraph style."
+msgstr "Usa DOCX para conservar los cambios en el estilo del párrafo siguiente."

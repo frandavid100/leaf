@@ -27,6 +27,8 @@ wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "02a802c
 wordcraft-engine = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
 wordcraft-render = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
 serde_json = "1"
+# Reuse the locked matcher to expand WordCraft regex captures before case adaptation.
+regex-automata = "0.4"
 # Already used and locked by WordCraft; reuse UAX #29 boundaries for AT-SPI.
 unicode-segmentation = "1.13"
 gtk = { package = "gtk4", version = "0.10", features = ["v4_14"], optional = true }

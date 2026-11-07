@@ -2,6 +2,10 @@ use super::*;
 
 pub(super) fn run() {
     wordcraft_gnome::i18n::init();
+    if std::env::args().any(|arg| arg == "--workflows35-template-restart-test") {
+        workflows35_checks::template_restart();
+        return;
+    }
     if std::env::args().any(|arg| arg == "--version") {
         println!("Leaf {APP_VERSION}");
         return;
@@ -34,6 +38,10 @@ pub(super) fn run() {
         assert_eq!(wordcraft_gnome::preferences::user_name(), "Leaf QA");
         assert_eq!(wordcraft_gnome::preferences::theme(), 2);
         println!("ISSUE_PREFERENCES_RESTART_OK");
+        return;
+    }
+    if std::env::args().any(|arg| arg == "--workflows35-drag-source") {
+        workflows35_checks::drag_source();
         return;
     }
     glib::set_application_name("Leaf");

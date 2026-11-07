@@ -1,25 +1,30 @@
 # Hoja de ruta de Leaf
 
-## Publicada y verificada: alpha.34 — candidata de diccionarios
+## En preparación: alpha.35 — propuestas aceptadas
 
-[Descarga](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34):
-selección de carpeta mediante el selector/portal, recarga, importación y
-detección de archivos de diccionario. Batería nativa completa e instalaciones GNOME
-49/51 correctas; doce sumas internas y trece archivos públicos verificados.
-El #84 sigue abierto hasta la prueba de David en GNOME OS.
-[Evidencia y límites](docs/ALPHA34_VALIDATION.md).
+[PR #183](https://github.com/frandavid100/leaf/pull/183) implementa los issues
+#170–#182 creados para las propuestas aprobadas: estilo siguiente, plantillas
+personales, pegado sin formato, movimiento de apartados, pincel de formato,
+búsqueda avanzada, fuentes del documento e imágenes externas.
+La batería completa sin GUI, quince regresiones nuevas, gettext en/es y los
+controles GTK y gestos reales locales a escala 1/2 pasan. La CI nativa e instalada
+GNOME 49/51 debe completarse antes de publicar y cerrar los informes.
+[Alcance, validación y límites](docs/ALPHA35_WORKFLOWS.md).
+
+La última publicada es [alpha.34](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34).
+#84 fue comprobado y cerrado por David en la conversación de pruebas.
 
 Actualizada: 7 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## Pendientes actuales tras alpha.34
+## Informes anteriores a las nuevas propuestas
 
-Seis informes abiertos: cuatro esperan integrar correcciones de WordCraft
-(#1/#99/#107/#152), #84 espera validación real del sistema y #52 necesita los
-originales y diagnóstico del proveedor de miniaturas. La siguiente release se
-publicará automáticamente con arreglos adicionales verificados; esta revisión
-solo documenta los bloqueos. [Detalle](docs/REMAINING_AFTER_ALPHA34.md).
+#1/#99/#107/#152 esperan la integración de las correcciones propuestas en
+WordCraft. #52 queda aplazado por decisión de David. #84 ya fue probado y cerrado
+en la conversación de validación. Los nuevos #170–#182 siguen el alcance de esta
+alpha y se cerrarán tras verificar su publicación.
+[Auditoría histórica de los bloqueos](docs/REMAINING_AFTER_ALPHA34.md).
 
 ## Completado: alpha.33 — revisión de #9/#99/#156
 

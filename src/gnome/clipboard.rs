@@ -8,11 +8,18 @@ use std::{
     rc::Rc,
 };
 
+enum External {
+    Text(serde_json::Value),
+    Image(gdk::Texture),
+}
+
 const RICH_MIME_TYPES: &[&str] = &["text/html", "text/rtf", "application/rtf"];
 
 pub(super) fn clipboard_can_paste(ui: &Ui) -> bool {
     let formats = ui.document_box.clipboard().formats();
-    formats.contains_type(String::static_type())
+    formats.contains_type(gdk::Texture::static_type())
+        || formats.mime_types().iter().any(|m| m.starts_with("image/"))
+        || formats.contains_type(String::static_type())
         || ["text/plain", "text/plain;charset=utf-8"]
             .iter()
             .chain(RICH_MIME_TYPES)
@@ -104,7 +111,28 @@ pub(super) fn context_paste(ui: &Rc<Ui>) {
     let selection = ui.current.borrow().as_ref().map(|d| d.session.sel.clone());
     let weak = Rc::downgrade(ui);
     let task = glib::spawn_future_local(async move {
-        let result = external_clipboard(&clipboard).await;
+        let result = if clipboard
+            .formats()
+            .contains_type(gdk::Texture::static_type())
+            || clipboard
+                .formats()
+                .mime_types()
+                .iter()
+                .any(|m| m.starts_with("image/"))
+        {
+            if let Some(args) = rich_clipboard(&clipboard).await {
+                Ok(Some(External::Text(args)))
+            } else {
+                clipboard
+                    .read_texture_future()
+                    .await
+                    .map(|texture| texture.map(External::Image))
+            }
+        } else {
+            external_clipboard(&clipboard)
+                .await
+                .map(|value| value.map(External::Text))
+        };
         let Some(ui) = weak.upgrade() else { return };
         ui.clipboard_read.borrow_mut().take();
         if ui.closed.get()
@@ -114,7 +142,22 @@ pub(super) fn context_paste(ui: &Rc<Ui>) {
             return;
         }
         match result {
-            Ok(Some(args)) => {
+            Ok(Some(External::Image(texture))) => {
+                if texture.width() > 16384
+                    || texture.height() > 16384
+                    || i64::from(texture.width()) * i64::from(texture.height()) > 64_000_000
+                {
+                    ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
+                        "The clipboard image is too large."
+                    )));
+                    return;
+                }
+                let png = texture.save_to_png_bytes();
+                tools_change(&ui, |s| {
+                    wordcraft_gnome::pictures::insert_data(s, png.as_ref())
+                });
+            }
+            Ok(Some(External::Text(args))) => {
                 tools_change(&ui, move |session| {
                     session
                         .run("edit.paste", &args)
@@ -188,4 +231,38 @@ async fn rich_clipboard(clipboard: &gdk::Clipboard) -> Option<serde_json::Value>
     } else {
         serde_json::json!({"rtf":text})
     })
+}
+
+/// Read only native text; rich fragments and HTML never participate.
+pub(super) fn paste_plain(ui: &Rc<Ui>) {
+    cancel_clipboard_read(ui);
+    let clipboard = ui.document_box.clipboard();
+    let identity = document_identity(ui);
+    let selection = ui.current.borrow().as_ref().map(|d| d.session.sel.clone());
+    let weak = Rc::downgrade(ui);
+    let task = glib::spawn_future_local(async move {
+        let result = clipboard.read_text_future().await;
+        let Some(ui) = weak.upgrade() else { return };
+        ui.clipboard_read.borrow_mut().take();
+        if ui.closed.get()
+            || document_identity(&ui) != identity
+            || ui.current.borrow().as_ref().map(|d| d.session.sel.clone()) != selection
+        {
+            return;
+        }
+        match result {
+            Ok(Some(text)) if !text.is_empty() => {
+                tools_change(&ui, move |s| {
+                    s.run("edit.pasteText", &serde_json::json!({"text":text.as_str()}))
+                        .map(|_| ())
+                        .map_err(|e| e.to_string())
+                });
+            }
+            Err(e) => ui.toasts.add_toast(Toast::new(&e.to_string())),
+            _ => {}
+        }
+        ui.document_box.grab_focus();
+        caret_ensure_visible(&ui);
+    });
+    ui.clipboard_read.replace(Some(task));
 }

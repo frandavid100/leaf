@@ -97,6 +97,12 @@ pub(super) fn install_keyboard_input(
             #[upgrade_or]
             glib::Propagation::Proceed,
             move |_, key, _, modifiers| {
+                if key == gdk::Key::Escape
+                    && ui.document_box.has_focus()
+                    && format_painter::cancel(&ui)
+                {
+                    return glib::Propagation::Stop;
+                }
                 let shift = modifiers.contains(gdk::ModifierType::SHIFT_MASK);
                 let control = modifiers.contains(gdk::ModifierType::CONTROL_MASK);
                 if key == gdk::Key::Escape
@@ -290,7 +296,11 @@ pub(super) fn install_keyboard_input(
                         return glib::Propagation::Stop;
                     }
                     if key == gdk::Key::v || key == gdk::Key::V {
-                        context_paste(&ui);
+                        if shift {
+                            clipboard::paste_plain(&ui)
+                        } else {
+                            context_paste(&ui)
+                        };
                         return glib::Propagation::Stop;
                     }
                     if key == gdk::Key::x || key == gdk::Key::X {
@@ -307,7 +317,11 @@ pub(super) fn install_keyboard_input(
                         return glib::Propagation::Stop;
                     }
                     if key == gdk::Key::c || key == gdk::Key::C {
-                        copy_selection(&ui);
+                        if shift {
+                            format_painter::start(&ui, false);
+                        } else {
+                            copy_selection(&ui);
+                        }
                         return glib::Propagation::Stop;
                     }
                     if key == gdk::Key::a || key == gdk::Key::A {
