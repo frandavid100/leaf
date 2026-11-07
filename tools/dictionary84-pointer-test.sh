@@ -48,13 +48,15 @@ PY
       xdotool windowfocus --sync "$dialog"
       test -d "${LEAF84_SOURCE:?Missing synthetic source}"
       printf 'DICTIONARY84_DRIVER_SOURCE %s\n' "$LEAF84_SOURCE"
+      # GTK's inline completion can change a path during synthetic typing or
+      # Return. Paste it atomically and activate the actual accept mnemonic.
       xdotool key --clearmodifiers ctrl+l
+      sleep 0.3
       xdotool key --clearmodifiers ctrl+a
-      xdotool type --clearmodifiers --delay 15 "$LEAF84_SOURCE/"
+      printf '%s' "$LEAF84_SOURCE" | xclip -selection clipboard
+      xdotool key --clearmodifiers ctrl+v
       sleep 0.5
       scrot "${log%.log}-location.png"
-      xdotool key --clearmodifiers Return
-      sleep 1
       xdotool key --clearmodifiers alt+u
       ;;
     cancel)

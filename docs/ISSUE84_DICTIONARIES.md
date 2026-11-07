@@ -53,3 +53,13 @@ that unreadable dictionary as available. No engine code is changed here.
 The native positive control uses Ubuntu `hunspell-cs` 1:24.2.1-1, whose `cs_CZ`
 dictionary loads correctly through the same public APIs. The portal fixture
 continues to use its invented Italian words.
+
+## Local native selector check
+
+The native folder/reload/cancel/owner-close/restart/forget diagnostic passed
+locally through a TCP Xvfb display, GTK 4.14 and an isolated profile. Synthetic
+character-by-character path entry plus Return interacted with GTK's inline
+completion, returning a different path; a standalone GtkFileDialog reproduces
+that without Leaf. The test driver pastes its synthetic path atomically and
+activates the translated accept mnemonic. This exercises the real chooser and
+resource loader; it does not replace the installed Flatpak portal checks.
