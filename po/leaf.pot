@@ -49,7 +49,7 @@ msgstr ""
 msgid "Add Left Tab Stop"
 msgstr ""
 
-#: src/gnome/context.rs:772 src/gnome/diagnostics/spellcheck.rs:128 src/gnome/diagnostics/spellcheck.rs:142
+#: src/gnome/context.rs:772 src/gnome/diagnostics/spellcheck.rs:140 src/gnome/diagnostics/spellcheck.rs:154
 msgid "Add to Dictionary"
 msgstr ""
 
@@ -537,7 +537,7 @@ msgstr ""
 msgid "Continuous"
 msgstr ""
 
-#: src/gnome/context.rs:371 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:295 src/gnome/diagnostics/spellcheck.rs:132
+#: src/gnome/context.rs:371 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:295 src/gnome/diagnostics/spellcheck.rs:144
 msgid "Copy"
 msgstr ""
 
@@ -657,7 +657,7 @@ msgstr ""
 msgid "Custom Widths"
 msgstr ""
 
-#: src/gnome/context.rs:357 src/gnome/diagnostics/context.rs:132 src/gnome/diagnostics/spellcheck.rs:131
+#: src/gnome/context.rs:357 src/gnome/diagnostics/context.rs:132 src/gnome/diagnostics/spellcheck.rs:143
 msgid "Cut"
 msgstr ""
 
@@ -2733,7 +2733,7 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:409 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:417 src/gnome/diagnostics/register.rs:186 src/gnome/diagnostics/spellcheck.rs:133 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:584
+#: src/gnome/context.rs:134 src/gnome/context.rs:409 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:417 src/gnome/diagnostics/register.rs:186 src/gnome/diagnostics/spellcheck.rs:145 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:584
 msgid "Text"
 msgstr ""
 

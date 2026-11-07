@@ -267,7 +267,7 @@ jobs:
               args=()
               if test "$variant" = narrow; then args+=(--narrow); fi
               if test "$variant" = dark; then args+=(--dark); fi
-              LANGUAGE=es GSK_RENDERER=cairo ./target/release/wordcraft-gnome --$panel-demo "${args[@]}" > "$panel-$variant.log" 2>&1 &
+              XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=es GSK_RENDERER=cairo ./target/release/wordcraft-gnome --$panel-demo "${args[@]}" > "$panel-$variant.log" 2>&1 &
               pid=$!
               for attempt in $(seq 1 200); do
                 grep -q DEMO_READY "$panel-$variant.log" && break
