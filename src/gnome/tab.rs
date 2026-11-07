@@ -451,6 +451,8 @@ pub(super) fn build_tab(
         review: RefCell::new(None),
         annotation_dialog: RefCell::new(None),
         link_dialog: RefCell::new(None),
+        dictionary_tools: RefCell::new(None),
+        dictionary_chooser: RefCell::new(None),
         host: Rc::downgrade(host),
         open_button: open_button.clone(),
         search: RefCell::new(None),

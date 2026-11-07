@@ -89,6 +89,7 @@ jobs:
           gh release create "v$LEAF_APPROVED_VERSION" \
             "dist/Leaf-$LEAF_APPROVED_VERSION-x86_64.flatpak" \
             "dist/Leaf-$LEAF_APPROVED_VERSION-flatpark-x86_64.tar.xz" \
+            "dist/Leaf-$LEAF_APPROVED_VERSION-dictionary-test.zip" \
             dist/SHA256SUMS dist/INSTALL.md dist/source-commit.txt dist/runtime.txt \
             dist/runtime-commit.txt dist/flatpak-metadata.txt dist/flatpak-smoke.log \
             dist/flatpark-smoke.log dist/candidate.json dist/RELEASE_NOTES.md \

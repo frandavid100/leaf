@@ -34,6 +34,7 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
     *ui.table_pointer.borrow_mut() = TablePointer::default();
     ui.picture_drag.borrow_mut().take();
     ui.document_box.reset();
+    stop_dictionary_tools(ui);
     let link = ui.link_dialog.borrow_mut().take();
     if let Some(window) = link {
         window.close();

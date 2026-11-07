@@ -197,3 +197,11 @@ External HTML/RTF reads are asynchronous and bounded to 8 MiB; plain text uses
 GDK decoding. A read holds a weak Ui, is cancelled on replacement/close or a new
 paste, and validates document id, revision and selection before the public paste
 command. Rich bytes are temporary input, never a parallel document or history.
+
+## Dictionary resources
+
+[src/dictionaries.rs](../src/dictionaries.rs) inventories readable Hunspell sources
+and owns the disposable merged index. WordCraft remains the spellchecker.
+[src/gnome/dictionaries.rs](../src/gnome/dictionaries.rs) owns the weak/cancellable
+folder and import UI; the native/Flatpak chooser returns the authorized path.
+[Issue #84](ISSUE84_DICTIONARIES.md) records precedence, checks and GNOME OS limits.

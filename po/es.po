@@ -2953,3 +2953,63 @@ msgstr "Utiliza notas al pie, hilos de comentarios, imágenes flotantes y ecuaci
 
 msgid "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."
 msgstr "Entre párrafos se utiliza el mayor de los valores Antes y Después contiguos. Los estilos pueden suprimir este espacio."
+
+msgid "Choose Dictionary Folder…"
+msgstr "Elegir carpeta de diccionarios…"
+
+msgid "Choose a Dictionary Folder"
+msgstr "Seleccionar una carpeta de diccionarios"
+
+msgid "Choose a folder containing only dictionary files."
+msgstr "Elige una carpeta que contenga solo archivos de diccionario."
+
+msgid "Choose a local dictionary folder."
+msgstr "Selecciona una carpeta local de diccionarios."
+
+msgid "Dictionaries"
+msgstr "Diccionarios"
+
+msgid "Dictionaries refreshed."
+msgstr "Diccionarios actualizados."
+
+msgid "Dictionary Settings…"
+msgstr "Ajustes de diccionarios…"
+
+msgid "Dictionary folder: {folder}"
+msgstr "Carpeta de diccionarios: {folder}"
+
+msgid "Dictionary included with Leaf."
+msgstr "Diccionario incluido con Leaf."
+
+msgid "Import Dictionary Files…"
+msgstr "Importar archivos de diccionario…"
+
+msgid "No additional dictionary folder selected."
+msgstr "No se ha seleccionado ninguna carpeta adicional de diccionarios."
+
+msgid "No matching Hunspell .aff and .dic pairs were found in this folder."
+msgstr "No se han encontrado parejas Hunspell .aff y .dic correspondientes en esta carpeta."
+
+msgid "No spelling dictionary is available for this language."
+msgstr "No hay ningún diccionario ortográfico disponible para este idioma."
+
+msgid "Refresh Dictionaries"
+msgstr "Actualizar diccionarios"
+
+msgid "Stop Using This Folder"
+msgstr "Dejar de usar esta carpeta"
+
+msgid "System Language Settings…"
+msgstr "Ajustes de idioma del sistema…"
+
+msgid "The folder path cannot be represented as UTF-8."
+msgstr "La ruta de la carpeta no se puede representar en UTF-8."
+
+msgid "The selected folder is unavailable. Other dictionaries remain available."
+msgstr "La carpeta seleccionada no está disponible. Los demás diccionarios siguen disponibles."
+
+msgid "Use readable system dictionaries, an additional folder or imported Hunspell files. The document language stays independent of the interface language."
+msgstr "Usa los diccionarios accesibles del sistema, una carpeta adicional o archivos Hunspell importados. El idioma del documento es independiente del idioma de la interfaz."
+
+msgid "_Use This Folder"
+msgstr "_Usar esta carpeta"

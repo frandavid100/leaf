@@ -107,6 +107,18 @@ jobs:
           path: |
             pending-*.log
             pending-*.png
+      - name: Verify native system and dictionary folder controls
+        run: |
+          for mode in native folder; do
+            LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 240s bash tools/dictionary84-test.sh ./target/release/wordcraft-gnome "$mode"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dictionary84-native-controls
+          path: |
+            dictionary84-*.log
+            dictionary84-*.png
       - name: Verify unified Review and shared formatting and Elements panels
         run: |
           set -o pipefail
@@ -324,7 +336,7 @@ jobs:
       - name: Identificar versión de prueba
         run: |
           ./target/release/wordcraft-gnome --version | tee version.txt
-          grep -q "Leaf 0.1.0-alpha.33" version.txt
+          grep -q "Leaf 0.1.0-alpha.34" version.txt
       - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
         run: |
           python -m pip install --disable-pip-version-check pillow==11.3.0
@@ -730,6 +742,8 @@ jobs:
           xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/smoke-test.sh 2>&1 | tee dist/flatpak-smoke.log
       - name: Verify installed spacing and Home End navigation
         run: dbus-run-session -- bash tools/pending-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/pending-installed
+      - name: Verify installed dictionary folder portal and restart
+        run: bash tools/dictionary84-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/dictionary84-installed
       - name: Compare failed font input with the published Alpha30 control
         if: failure()
         env:
@@ -909,7 +923,7 @@ jobs:
       - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
         run: |
           set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.33-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.34-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
           grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
       - name: Require complete success of the parallel native regression run
         if: contains(github.event.head_commit.message, '[bundle-only]')
@@ -948,17 +962,26 @@ jobs:
           python3 - <<'PYTHON'
           import json, os, pathlib
           pathlib.Path('dist/candidate.json').write_text(json.dumps({
-              'version': '0.1.0-alpha.33', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+              'version': '0.1.0-alpha.34', 'source': os.environ['LEAF_CANDIDATE_SHA'],
               'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
               'native_source': os.environ['LEAF_NATIVE_SHA'],
               'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
               'publication': ('automatic publication authorized by David; promote these exact files without rebuilding' if os.environ.get('LEAF_AUTO_PUBLISH') == 'true' else 'requires maintainer approval; promote these exact files without rebuilding')
           }, indent=2) + '\n')
           PYTHON
+      - name: Package synthetic dictionary test files
+        run: |
+          python3 - <<'PYTHON'
+          from pathlib import Path
+          from zipfile import ZipFile, ZIP_DEFLATED
+          with ZipFile("dist/Leaf-0.1.0-alpha.34-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
+              for source in sorted(Path("tests/fixtures/dictionary84").iterdir()):
+                  if source.is_file(): archive.write(source, "Leaf-dictionary-test/" + source.name)
+          PYTHON
       - name: Checksums
         working-directory: dist
         run: |
-          sha256sum Leaf-*.flatpak Leaf-*-flatpark-x86_64.tar.xz INSTALL.md source-commit.txt runtime.txt runtime-commit.txt flatpak-metadata.txt flatpak-smoke.log flatpark-smoke.log candidate.json RELEASE_NOTES.md > SHA256SUMS
+          sha256sum Leaf-*.flatpak Leaf-*-flatpark-x86_64.tar.xz Leaf-*-dictionary-test.zip INSTALL.md source-commit.txt runtime.txt runtime-commit.txt flatpak-metadata.txt flatpak-smoke.log flatpark-smoke.log candidate.json RELEASE_NOTES.md > SHA256SUMS
           sha256sum -c SHA256SUMS
           cat candidate.json
           cat SHA256SUMS
