@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   test:
@@ -16,7 +17,7 @@ jobs:
       LANGUAGE: es
     if: ${{ !contains(github.event.head_commit.message, '[bundle-only]') && !contains(github.event.head_commit.message, '[lifecycle-baseline]') && !contains(github.event.head_commit.message, '[interop-audit-only]') && !contains(github.event.head_commit.message, '[perf-baseline]') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -152,9 +153,22 @@ jobs:
           name: leaf-native-unvalidated
           path: target/release/wordcraft-gnome
           retention-days: 3
+      - name: Profile upgraded engine before client optimization
+        if: contains(github.event.pull_request.title, '[perf-control]')
+        run: |
+          set -o pipefail
+          mkdir -p perf-control
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_CACHE_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en LEAF_PERF_PARAGRAPHS=600 LEAF_PERF_REPORT="$PWD/perf-control/report.json" GSK_RENDERER=cairo xvfb-run -a timeout 180s ./target/release/wordcraft-gnome --performance-ui-test 2>&1 | tee perf-control/probe.log
+          grep -q LEAF_PERFORMANCE_OK perf-control/probe.log
+          git rev-parse HEAD > perf-control/source-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: contains(github.event.pull_request.title, '[perf-control]')
+        with:
+          name: leaf-engine-control-profile
+          path: perf-control/
       - name: Verify WordCraft boundary for this performance audit
         if: contains(github.event.head_commit.message, '[perf-candidate]')
-        run: git diff --exit-code a1670541e9500fa329c16a42c8e908122db1ecaa -- Cargo.toml Cargo.lock vendor patches
+        run: git diff --exit-code c6e7e89e36665775a0fe5294fb8cfd56afd42ba1 -- Cargo.toml Cargo.lock craft-i18n.rev vendor patches
       - name: Verify alpha18 text, theme, navigation and table pointer controls
         run: |
           set -o pipefail
@@ -238,7 +252,7 @@ jobs:
       - name: Native bookmarks and comment threads
         run: |
           set -o pipefail
-          git diff --exit-code 4707d77882afb6432d2ba521ad551985324d11cb -- Cargo.toml Cargo.lock vendor patches
+          git diff --exit-code c6e7e89e36665775a0fe5294fb8cfd56afd42ba1 -- Cargo.toml Cargo.lock craft-i18n.rev vendor patches
           xvfb-run -a -s '-screen 0 1280x900x24' bash -c '
             set -e
             for panel in annotations proofing; do
@@ -649,7 +663,7 @@ jobs:
           PY
           native_source=$(python3 -c "import json; print(json.load(open('native-run.json'))['head_sha'])")
           git cat-file -e "$native_source^{commit}" || git fetch origin "$native_source"
-          git diff --exit-code "$native_source" -- src Cargo.toml Cargo.lock tests vendor po data examples tools patches
+          git diff --exit-code "$native_source" -- src Cargo.toml Cargo.lock craft-i18n.rev tests vendor po data examples tools patches
       - uses: actions/download-artifact@v4
         with:
           name: ${{ contains(github.event.head_commit.message, '[bundle-only]') && 'leaf-native-unvalidated' || 'wordcraft-gnome-fase3d-linux' }}
