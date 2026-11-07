@@ -14,6 +14,7 @@ temporary=$(mktemp -d)
 trap 'rm -rf "$temporary"' EXIT
 cat > "$temporary/installed.sh" <<'RUNNER'
 #!/usr/bin/env bash
+set -euo pipefail
 if [[ -n ${LEAF84_TEST_UID:-} ]]; then test "$(id -u)" = "$LEAF84_TEST_UID"; fi
 exec flatpak run --socket=x11 --nosocket=wayland \
   --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" \
