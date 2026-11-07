@@ -264,3 +264,80 @@ fn image_bytes_use_engine_sizing_and_rejected_image_is_atomic() {
     s.run("edit.undo", &json!({})).unwrap();
     assert_eq!(s.doc, before);
 }
+
+#[test]
+fn section_move_keeps_nested_table_image_and_note_references_intact() {
+    let mut s = session("A\nTable location\nA child\nChild body\nB\nB body");
+    for (i, style) in [(0, "Heading1"), (2, "Heading2"), (4, "Heading1")] {
+        selection::set_caret(&mut s, &Pos::body(i, 0), false).unwrap();
+        s.run("para.style", &json!({"style":style})).unwrap();
+    }
+    selection::set_caret(&mut s, &Pos::body(1, 0), false).unwrap();
+    s.run("insert.table", &json!({"rows":2,"cols":2})).unwrap();
+    s.run("text.insert", &json!({"text":"Inside table"}))
+        .unwrap();
+    wordcraft_gnome::references::insert_footnote(&mut s).unwrap();
+    s.run("text.insert", &json!({"text":"Travel with reference"}))
+        .unwrap();
+    wordcraft_gnome::references::return_to_reference(&mut s).unwrap();
+    let png =
+        wordcraft_engine::cmd::insert::base64_decode(include_str!("fixtures/picture.b64")).unwrap();
+    pictures::insert_data(&mut s, &png).unwrap();
+    let original = s.doc.clone();
+    let headings = navigation::headings(&s.doc);
+    let b = headings.iter().find(|h| h.text == "B").unwrap().pos.path.0[0] as usize;
+    let mut expected = original.clone();
+    expected.body.rotate_left(b);
+    let depth = s.undo_depth();
+    navigation::move_section(&mut s, 0, headings.len()).unwrap();
+    assert_eq!(s.doc, expected);
+    assert_eq!(s.undo_depth(), depth + 1);
+    assert_eq!(wordcraft_gnome::references::footnote_refs(&s).len(), 1);
+    s.run("edit.undo", &json!({})).unwrap();
+    assert_eq!(s.doc, original);
+    s.run("edit.redo", &json!({})).unwrap();
+    assert_eq!(s.doc, expected);
+    let dir = folder();
+    let path = dir.join("Moved.docx");
+    saving::save(&mut s, &path).unwrap();
+    let reopened = open_document(&path).unwrap();
+    assert_eq!(
+        wordcraft_gnome::references::footnote_refs(&reopened).len(),
+        1
+    );
+    assert!(!reopened.doc.media.is_empty());
+    assert!(reopened.doc.body.iter().any(|b| b.as_table().is_some()));
+    std::fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn structural_refusals_preserve_document_selection_and_history() {
+    let mut s = session("A\nA body\nB\nB body");
+    for i in [0, 2] {
+        selection::set_caret(&mut s, &Pos::body(i, 0), false).unwrap();
+        s.run("para.style", &json!({"style":"Heading1"})).unwrap();
+    }
+    s.run("review.trackChanges", &json!({"value":true}))
+        .unwrap();
+    let before = s.doc.clone();
+    let selection = s.sel.clone();
+    let depth = s.undo_depth();
+    let rev = s.rev();
+    assert!(navigation::move_section(&mut s, 0, 2).is_err());
+    assert_eq!(s.doc, before);
+    assert_eq!(s.sel, selection);
+    assert_eq!(s.rev(), rev);
+    assert_eq!(s.undo_depth(), depth);
+    assert!(document_fonts::substitute(&mut s, "Aptos", "DejaVu Sans").is_err());
+    assert_eq!(s.doc, before);
+    assert_eq!(s.undo_depth(), depth);
+    s.run("review.trackChanges", &json!({"value":false}))
+        .unwrap();
+    selection::set_caret(&mut s, &Pos::body(1, 0), false).unwrap();
+    s.run("layout.break", &json!({"kind":"nextPage"})).unwrap();
+    let before = s.doc.clone();
+    let depth = s.undo_depth();
+    assert!(navigation::move_section(&mut s, 0, 2).is_err());
+    assert_eq!(s.doc, before);
+    assert_eq!(s.undo_depth(), depth);
+}

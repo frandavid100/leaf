@@ -101,6 +101,7 @@ jobs:
             if test "$language" = es; then scale=2; fi
             XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 120s ./target/release/wordcraft-gnome --workflows35-ui-test 2>&1 | tee workflows35-$language.log
             grep -q WORKFLOWS35_UI_OK workflows35-$language.log
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 180s bash tools/workflows35-pointer-test.sh
           done
       - uses: actions/upload-artifact@v4
         if: always()
@@ -741,7 +742,7 @@ jobs:
                   path.write_text(uri + '\n')
           PY
           sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi libgtk-4-1 libadwaita-1-0 poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
           # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Validate desktop metadata
@@ -764,13 +765,8 @@ jobs:
           path: debug-native
           run-id: ${{ env.LEAF_NATIVE_RUN }}
           github-token: ${{ github.token }}
-      - name: Verify alpha35 native controls in the installed GNOME 49 sandbox
-        run: |
-          set -o pipefail
-          for language in en es; do
-            xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 120s flatpak run --socket=x11 --nosocket=wayland --env=GSK_RENDERER=cairo --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE=$language io.github.frandavid100.leaf --workflows35-ui-test 2>&1 | tee dist/workflows35-installed-$language.log
-            grep -q WORKFLOWS35_UI_OK dist/workflows35-installed-$language.log
-          done
+      - name: Verify alpha35 native controls and real portal image transfer on GNOME 49
+        run: bash tools/workflows35-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/workflows35-installed
       - name: Verify installed dictionary folder portal and restart
         env:
           LEAF84_GDB: '1'

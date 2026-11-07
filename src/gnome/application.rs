@@ -36,6 +36,10 @@ pub(super) fn run() {
         println!("ISSUE_PREFERENCES_RESTART_OK");
         return;
     }
+    if std::env::args().any(|arg| arg == "--workflows35-drag-source") {
+        workflows35_checks::drag_source();
+        return;
+    }
     glib::set_application_name("Leaf");
     let input_files: Vec<_> = std::env::args_os()
         .skip(1)

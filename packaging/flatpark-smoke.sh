@@ -66,14 +66,7 @@ for language in en es; do
   cat "$log"
   grep -q "LOCALIZATION_UI_OK language=$language" "$log"
 done
-for language in en es; do
-  log="$temporary/workflows35-$language.log"
-  timeout 120s flatpak run --socket=x11 --nosocket=wayland \
-    --env=GSK_RENDERER=cairo --env=LC_ALL=en_US.UTF-8 --env="LANGUAGE=$language" \
-    "$app_id" --workflows35-ui-test >"$log" 2>&1 || { cat "$log"; exit 1; }
-  cat "$log"
-  grep -q WORKFLOWS35_UI_OK "$log"
-done
+bash tools/workflows35-installed-test.sh "$app_id" /app/extra/leaf/bin/leaf dist/workflows35-flatpark
 log="$temporary/proofing.log"
 timeout 90s flatpak run --socket=x11 --nosocket=wayland \
   --env=GSK_RENDERER=cairo --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE=es \

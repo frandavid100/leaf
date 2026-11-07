@@ -1,5 +1,21 @@
 # Decisiones vigentes
 
+## 2026-11-07: propuestas aceptadas para alpha.35
+
+David autoriza crear los trece issues #170–#182, implementarlos, cerrar solo los
+verificados y publicar automáticamente una alpha. Se mantiene el flujo de estilos
+basado en el documento; solo se añade el estilo siguiente. Las plantillas son
+archivos normales de la carpeta XDG Templates o de una carpeta elegida mediante
+el portal. Se aplazan protección frente a conflictos y selector de símbolos.
+
+Las operaciones estructurales y de fuentes se registran como comandos del motor
+mediante su API pública: WordCraft mantiene protección, transacciones, revisión e
+historial. No se modifica el motor ni el snapshot de formatos. Los límites de
+selección de búsqueda invalidan resultados tras cambios ajenos. Se verifican
+las nuevas acciones con pruebas sin GUI, controles GTK y gestos reales, también
+en los paquetes GNOME 49/51. [Detalle](ALPHA35_WORKFLOWS.md).
+
+
 Estas decisiones proceden de David y del trabajo ya aceptado. Prevalecen sobre
 propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funciones.
 

@@ -25,6 +25,17 @@ pub(super) fn install_diagnostics(
     app: &Application,
     controls: DiagnosticControls<'_>,
 ) {
+    if std::env::args().any(|arg| arg == "--workflows35-pointer-test") && host.tabs.n_pages() == 1 {
+        let (u, w, a, outline) = (
+            ui.clone(),
+            window.clone(),
+            app.clone(),
+            controls.outline_panel.clone(),
+        );
+        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+            workflows35_checks::pointer(&u, &w, &a, &outline)
+        });
+    }
     if std::env::args().any(|arg| arg == "--workflows35-ui-test") && host.tabs.n_pages() == 1 {
         let (u, w, a, s, style, outline) = (
             ui.clone(),

@@ -485,7 +485,7 @@ msgstr ""
 msgid "Clickable Entries"
 msgstr ""
 
-#: src/gnome/application.rs:137
+#: src/gnome/application.rs:141
 msgid "Close"
 msgstr ""
 
@@ -621,7 +621,7 @@ msgstr ""
 msgid "Could Not Load Recovery List"
 msgstr ""
 
-#: src/gnome/application.rs:134
+#: src/gnome/application.rs:138
 msgid "Could Not Open Document"
 msgstr ""
 
@@ -889,7 +889,7 @@ msgstr ""
 msgid "Do Not Check"
 msgstr ""
 
-#: src/gnome/application.rs:84 src/gnome/files.rs:158 src/gnome/tab.rs:772
+#: src/gnome/application.rs:88 src/gnome/files.rs:158 src/gnome/tab.rs:772
 msgid "Document"
 msgstr ""
 
@@ -905,7 +905,7 @@ msgstr ""
 msgid "Document File"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows35.rs:243 src/gnome/document_fonts.rs:24
+#: src/gnome/diagnostics/workflows35.rs:246 src/gnome/document_fonts.rs:24
 msgid "Document Fonts"
 msgstr ""
 
@@ -1833,7 +1833,7 @@ msgstr ""
 msgid "New Window"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows35.rs:261 src/gnome/templates.rs:5
+#: src/gnome/diagnostics/workflows35.rs:264 src/gnome/templates.rs:5
 msgid "New from Template"
 msgstr ""
 
@@ -1961,7 +1961,7 @@ msgstr ""
 msgid "Only DOCX and ODT files are supported"
 msgstr ""
 
-#: src/gnome/application.rs:76 src/gnome/tab.rs:761
+#: src/gnome/application.rs:80 src/gnome/tab.rs:761
 msgid "Only local files are supported"
 msgstr ""
 
@@ -2057,7 +2057,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:440 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:418 src/gnome/diagnostics/register.rs:222 src/gnome/paragraph.rs:1255 src/gnome/tab.rs:311 src/gnome/tab.rs:586
+#: src/gnome/context.rs:131 src/gnome/context.rs:440 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:418 src/gnome/diagnostics/register.rs:233 src/gnome/paragraph.rs:1255 src/gnome/tab.rs:311 src/gnome/tab.rs:586
 msgid "Paragraph"
 msgstr ""
 
@@ -2845,7 +2845,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:439 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:419 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:221 src/gnome/styles.rs:544 src/gnome/tab.rs:307 src/gnome/tab.rs:585
+#: src/gnome/context.rs:128 src/gnome/context.rs:439 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:419 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:232 src/gnome/styles.rs:544 src/gnome/tab.rs:307 src/gnome/tab.rs:585
 msgid "Style"
 msgstr ""
 
@@ -2949,7 +2949,7 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:441 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:417 src/gnome/diagnostics/register.rs:223 src/gnome/diagnostics/spellcheck.rs:145 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:587
+#: src/gnome/context.rs:134 src/gnome/context.rs:441 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:417 src/gnome/diagnostics/register.rs:234 src/gnome/diagnostics/spellcheck.rs:145 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:587
 msgid "Text"
 msgstr ""
 

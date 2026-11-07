@@ -1,13 +1,18 @@
 # Estado actual de Leaf
 
-## Publicada y verificada: alpha.34 — candidata de diccionarios
+## En preparación: alpha.35 — propuestas aceptadas
 
-[Descarga](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34):
-selección de carpeta mediante el selector/portal, recarga, importación y
-detección de archivos de diccionario. Batería nativa completa e instalaciones GNOME
-49/51 correctas; doce sumas internas y trece archivos públicos verificados.
-El #84 sigue abierto hasta la prueba de David en GNOME OS.
-[Evidencia y límites](docs/ALPHA34_VALIDATION.md).
+[PR #183](https://github.com/frandavid100/leaf/pull/183) implementa los issues
+#170–#182 creados para las propuestas aprobadas: estilo siguiente, plantillas
+personales, pegado sin formato, movimiento de apartados, pincel de formato,
+búsqueda avanzada, fuentes del documento e imágenes externas.
+La batería completa sin GUI, doce regresiones nuevas, gettext en/es y los
+controles GTK y gestos reales locales a escala 1/2 pasan. La CI nativa e instalada
+GNOME 49/51 debe completarse antes de publicar y cerrar los informes.
+[Alcance, validación y límites](docs/ALPHA35_WORKFLOWS.md).
+
+La última publicada es [alpha.34](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34).
+#84 fue comprobado y cerrado por David en la conversación de pruebas.
 
 Actualizado: 7 de noviembre de 2026. Esta página describe el presente;
 el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.

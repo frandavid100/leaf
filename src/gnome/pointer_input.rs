@@ -230,7 +230,9 @@ pub(super) fn install_pointer_and_view_input(
             if table_pointer_active(&ui) {
                 return;
             }
-            format_painter::apply(&ui);
+            if !ui.pointer_moved.get() {
+                format_painter::apply(&ui);
+            }
             if count != 1
                 || ui.pointer_moved.get()
                 || gesture
