@@ -12,20 +12,28 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En validación: alpha.33 — Fin/Inicio y restauración de zoom
+## Publicada y verificada: alpha.33 — Fin/Inicio y restauración de zoom
 
-[PR #161 integrado](https://github.com/frandavid100/leaf/pull/161). Corrige dos
-fallos reproducidos de #156: teclas consumidas por el scroller y restauración de
-una página antigua después de navegar durante un zoom pendiente. Los controles
-nuevos pasan; siguen la batería nativa completa y las instalaciones GNOME 49/51.
-No está publicada todavía y #156 sigue abierto hasta verificar la entrega.
+[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33),
+publicada automáticamente el 7/11/2026. Cerrado #156: el editor recibe Fin/Inicio
+antes de los atajos de scroll de GTK y el zoom pendiente respeta una navegación
+posterior, incluso cuando Fin no cambia la posición por estar ya al final de línea.
 
-#9 tiene controles nativos medidos y una explicación visible del espaciado;
-falta confirmar su copia editada concreta. #99 tiene reproducción sintética del
-solapamiento tabla/nota/footer; necesita corrección del motor. Ambos siguen
-abiertos. [Evidencia, fuentes y límites](docs/ALPHA33_VALIDATION.md).
+#9 tiene controles nativos medidos y explicación visible del espaciado; falta
+confirmar su copia editada concreta. #99 tiene reproducción sintética de nota en
+tabla debajo del footer; necesita corrección del motor. Ambos siguen abiertos.
 
-## Publicada y verificada: alpha.32 — WordCraft 0.16 y optimización
+189 pruebas Rust, cuatro Python, 811 mensajes completos y
+[batería nativa completa](https://github.com/frandavid100/leaf/actions/runs/42381417100)
+correctos. [Instalaciones GNOME 49/51](https://github.com/frandavid100/leaf/actions/runs/42382604979),
+comparación final del ejecutable y
+[publicación sin recompilar](https://github.com/frandavid100/leaf/actions/runs/42384540865)
+correctas. Tag y doce archivos públicos comprobados; once sumas internas verificadas.
+Fuente publicada `529e086d7e6aec85c1ed4409af8c7e55aaa6c8b7`.
+Quedan ocho: #1/#2/#9/#52/#84/#99/#107/#152.
+[Evidencia y límites](docs/ALPHA33_VALIDATION.md).
+
+## Histórica: alpha.32 publicada y verificada — WordCraft 0.16 y optimización
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.32),
 publicada automáticamente el 7/11/2026 conforme a la autorización de David.
@@ -49,7 +57,7 @@ correctas. Once sumas internas y los doce archivos públicos verificados.
 Fuente publicada `2524dbc789cfbfa0f3b6e153fde16f1df5887b8a`.
 La actualización inicial no cerró informes adicionales. La revisión posterior
 ha cerrado #100: números y navegación de notas verificados en esta misma release.
-Quedan nueve: #1/#2/#9/#52/#84/#99/#107/#152/#156.
+Después de aquella revisión inicial quedaron nueve: #1/#2/#9/#52/#84/#99/#107/#152/#156.
 [Comprobaciones y límites pendientes](docs/ISSUE_TRIAGE_AFTER_ALPHA32.md).
 
 ## Histórica: alpha.31 publicada y verificada

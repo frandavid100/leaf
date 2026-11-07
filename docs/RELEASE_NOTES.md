@@ -1,8 +1,19 @@
 # Release and validation notes
 
-These notes were moved from the README on 2 November 2026. They describe the
-releases and checks recorded at that point; consult [GitHub Releases](https://github.com/frandavid100/leaf/releases)
+These notes were moved from the README on 2 November 2026. The latest delivery is linked below; older entries describe the
+releases and checks recorded at that point. Consult [GitHub Releases](https://github.com/frandavid100/leaf/releases)
 and [project status](../PROJECT_STATUS.md) for the current release and work in progress.
+
+## Alpha.33 — published and verified
+
+Home/End now reach the document editor before GTK scrolling consumes them, and
+pending zoom restoration respects newer caret navigation. Native fields keep
+their own navigation. Paragraph spacing explains adjoining Before/After values;
+#9's exact edited case and #99's reproduced engine overlap remain unresolved.
+#156 is completed after full native and installed GNOME 49/51 validation and
+verification of all twelve public assets.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33) ·
+[Evidence and limits](ALPHA33_VALIDATION.md).
 
 ## Alpha.21 — published and verified
 

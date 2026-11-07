@@ -1,6 +1,6 @@
 # Alpha.33: teclado, zoom y revisión de #9/#99
 
-Estado: **validación en curso; todavía no publicada**. Trabajo solicitado por
+Estado: **publicada y verificada** en [alpha.33](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33). Trabajo solicitado por
 David el 7/11/2026, con autorización previa para publicar automáticamente después
 de las comprobaciones. [PR #161](https://github.com/frandavid100/leaf/pull/161).
 
@@ -68,10 +68,18 @@ un fork del motor a Leaf. El documento privado no se publica.
   cuatro Python, 811 mensajes gettext completos, formato y enlaces correctos.
   La CI final también supera las 189 pruebas sin interfaz y los controles nuevos.
 - Batería nativa completa, GNOME 49 instalado, FlatPark/GNOME 51 y comparación
-  final del ejecutable: **en curso**. El mismo controlador nuevo se ejecuta en
+  final del ejecutable: **superados**. El mismo controlador nuevo se ejecuta en
   ambos runtimes, en inglés/español y escala 1×/2×.
-- Publicación y verificación de archivos públicos: **pendientes**.
-  #156 se cerrará después de verificar la entrega, no por iniciar el workflow.
+- [Publicación automática](https://github.com/frandavid100/leaf/actions/runs/42384540865)
+  correcta el 7/11/2026 a las 15:04 UTC. Tag/source coinciden con la candidata;
+  doce archivos públicos coinciden en tamaño y SHA-256 con la descarga validada,
+  incluidas las once entradas del manifiesto. #156 cerrado después de comprobarlo.
+  [Registro verificable de los archivos](ALPHA33_ASSET_VERIFICATION.json).
+
+Bundle: 12 932 008 bytes, SHA-256
+`8aaee728e01a9e2c35ff999cf68431a8d01f6f910a4ca2dabe6d5928b85f17b2`.
+Archivo FlatPark: 13 213 348 bytes, SHA-256
+`24af9ce8630ad76549592ba9b7c3e797570aab8f0bbf97f9bc9f4abcfe3d300d`.
 
 Implementación y verificación asistidas por IA. Las comprobaciones automatizadas
 no se presentan como una sesión humana en GNOME OS/Wayland.

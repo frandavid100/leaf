@@ -1,0 +1,85 @@
+{
+  "version": "0.1.0-alpha.33",
+  "source": "529e086d7e6aec85c1ed4409af8c7e55aaa6c8b7",
+  "native_source": "ce16577ba85139f9f0d8c10551b103d4c8c3f5fe",
+  "native_run_id": 42381417100,
+  "candidate_run_id": 42382604979,
+  "release_url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33",
+  "internal_checksums_verified": 11,
+  "public_assets_verified": 12,
+  "assets": [
+    {
+      "name": "INSTALL.md",
+      "size_bytes": 2127,
+      "sha256": "41629e5c00edbab955e22c024bb403e7bc603ba0ba6234e8243b7410a7ca1bff"
+    },
+    {
+      "name": "Leaf-0.1.0-alpha.33-flatpark-x86_64.tar.xz",
+      "size_bytes": 13213348,
+      "sha256": "24af9ce8630ad76549592ba9b7c3e797570aab8f0bbf97f9bc9f4abcfe3d300d"
+    },
+    {
+      "name": "Leaf-0.1.0-alpha.33-x86_64.flatpak",
+      "size_bytes": 12932008,
+      "sha256": "8aaee728e01a9e2c35ff999cf68431a8d01f6f910a4ca2dabe6d5928b85f17b2"
+    },
+    {
+      "name": "RELEASE_NOTES.md",
+      "size_bytes": 948,
+      "sha256": "11da76bc611a6c84674471ef441caf7f296a5293a420d55fed9668eb0e97ed18"
+    },
+    {
+      "name": "SHA256SUMS",
+      "size_bytes": 954,
+      "sha256": "12b13cf6c292e944583ebe9240a07a5fcb547fcfba0d559d6abf4ef13f0fa4d8"
+    },
+    {
+      "name": "candidate.json",
+      "size_bytes": 318,
+      "sha256": "a5de1b8e8b7c35127ab5b7d6ffd9f69cc9b96a4b9408d5fbbcc230be3bbac689"
+    },
+    {
+      "name": "flatpak-metadata.txt",
+      "size_bytes": 200,
+      "sha256": "a7fdfdaba74ae6e2e1a65ef15051642e1b18808be444370aa3b4bad71b3b2345"
+    },
+    {
+      "name": "flatpak-smoke.log",
+      "size_bytes": 12839,
+      "sha256": "6230423d807d4797d50b3edf8bc64b60a6ca113dd7e193445fcbcad6c97ed7ab"
+    },
+    {
+      "name": "flatpark-smoke.log",
+      "size_bytes": 41475,
+      "sha256": "626ec42d129ca461412c2df0b0dea33516ac0a08423f97172dd128122532a20f"
+    },
+    {
+      "name": "runtime-commit.txt",
+      "size_bytes": 65,
+      "sha256": "588c80c4d5d01ba6871ca2336d2c615e16c8d0fdbdcc8c6707bdbe1ce3173499"
+    },
+    {
+      "name": "runtime.txt",
+      "size_bytes": 29,
+      "sha256": "cc98943bf0d0696d69c2e647f51ef070a92528714cd03342e77b1d45a92efa3c"
+    },
+    {
+      "name": "source-commit.txt",
+      "size_bytes": 41,
+      "sha256": "75c46e6eb20d19c06d1578980aee8bf8ff2337cb90f3bf164e9d91f9754e331f"
+    }
+  ],
+  "publication_run_id": 42384540865,
+  "tag_verified": true,
+  "native_validation": "passed",
+  "gnome49_installed": "passed",
+  "gnome51_relocated": "passed",
+  "packaged_native_bytes_match": true,
+  "closed_issues": [
+    156
+  ],
+  "reviewed_still_open": [
+    9,
+    99
+  ]
+}

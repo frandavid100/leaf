@@ -1,8 +1,8 @@
 # Revisión de issues después de alpha.32
 
 La pasada posterior de #9/#99/#156 ya ha producido dos correcciones nativas y
-una reproducción nueva del motor. Alpha.33 está en validación; los tres informes
-siguen abiertos hasta resolver/verificar sus requisitos respectivos.
+una reproducción nueva del motor. Alpha.33 está publicada y verificada;
+#156 queda completado y #9/#99 permanecen abiertos.
 [Estado más reciente](ALPHA33_VALIDATION.md).
 
 Revisados el 7 de noviembre de 2026 tras la petición de David de cerrar lo que
@@ -39,7 +39,7 @@ La revisión local usa datos inventados. No se publican documentos privados ni
 se presenta esto como una prueba humana en GNOME OS. Si reaparece un estado
 que incumpla esos requisitos, se puede reabrir con esa reproducción.
 
-## Los nueve restantes
+## Estado de los informes revisados
 
 | Issues | Estado y siguiente evidencia necesaria |
 | --- | --- |
@@ -48,7 +48,7 @@ que incumpla esos requisitos, se puede reabrir con esa reproducción.
 | #152 | Reproducido de nuevo en 0.16.0: Delete, Backspace y borrar el salto seleccionado dejan `Heading1` en el texto que era Normal. Necesita corrección del modelo upstream; no restilizar después desde GTK. |
 | #9 | Controles nativos por debajo de 5,5, coma e incremento comprobados; alpha.33 explica el máximo entre espacios vecinos. El Portland original hereda After=8 pt; su copia editada exacta no está confirmada. Sigue abierto. |
 | #99 | Ya reproducido con tabla y texto inventados, crecimiento de nota, Undo/Redo y layout nuevo: nota debajo del footer. Corrección del motor pendiente; informe upstream bloqueado por 403. [Reproducción pública](ISSUE99_TABLE_NOTES_REPRO.md). |
-| #156 | Reproducidos dos fallos nativos: Home/End consumidos por GTK y zoom pendiente que restaura una página antigua. Alpha.33 corrige ambos y pasa los controles nuevos; cierre pendiente de la batería completa y del paquete. |
+| #156 | Cerrado con alpha.33 publicada/verificada: captura nativa de Home/End y restauración de zoom que respeta la navegación posterior. Batería completa, paquetes GNOME 49/51 y archivos públicos verificados. [Evidencia](ALPHA33_VALIDATION.md). |
 | #52 | Las hojas blancas de Files requieren identificar el proveedor y las entradas de caché/documentos afectados. Las miniaturas internas de Leaf son otra función; no se atribuye el defecto sin esa evidencia. |
 | #84 | Descubrimiento de diccionarios del host y flujo de ajustes del sistema, en nativo/Flatpak y GNOME OS/Ubuntu. Importación y diccionarios incluidos funcionan, pero no prueban esa integración ni autorizan permisos amplios al host. |
 
