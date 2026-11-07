@@ -65,13 +65,79 @@ AB/BA order, two fresh-profile repetitions per size (120/600/1800 paragraphs),
 Xvfb/Cairo on one runner, canonical document equality and deterministic operation
 counts. Timing and RSS are reported without noisy pass thresholds; shared engine
 and prior thumbnail improvements are not credited to this client change.
-Actual results will be recorded here after validation. No whole-application speedup is inferred from a synthetic
-workload or from upstream's published memory figures.
+The [complete measured summary](WORDCRAFT_016_PERFORMANCE.json) identifies control
+`4869c0a37f94dd7f51d796b9fcce281834c66380` and final native source
+`c55188c3eb6fa791a4d294fbae03a030408dcda0`. All twelve raw profiles preserve the
+canonical document. At every size and repetition, 80 caret moves issue 80 ruler
+refreshes instead of 160 and zero repeated TOC scans instead of 80; overlay work
+is unchanged. The index is rebuilt after revision/identity changes, including
+Undo/Redo. Existing thumbnail and inactive-search work bounds also pass.
+
+| Paragraphs | Pages | Measured phase | Before median, ms | After median, ms |
+| --- | --- | --- | --- | --- |
+| 120 | 11 | 80 caret moves | 194.454 | 183.036 |
+| 120 | 11 | 16 field-free reference refreshes | 0.960 | 0.016 |
+| 600 | 55 | 80 caret moves | 236.921 | 213.652 |
+| 600 | 55 | 16 field-free reference refreshes | 1.600 | 0.023 |
+| 1800 | 164 | 80 caret moves | 330.667 | 314.709 |
+| 1800 | 164 | 16 field-free reference refreshes | 3.087 | 0.073 |
+
+These are inclusive phase times from two samples per binary/size, not a
+statistical whole-application claim. Cursor medians improve by roughly 5–10% in
+this workload. Field-free reference refresh becomes much cheaper but was already
+a small absolute cost. Cursor-phase RSS is about 1.6–2.3 MiB higher; no reduction
+in total client memory is claimed. Upstream's shared Undo data is a separate
+engine improvement, not part of this same-engine comparison. Fresh profiles do
+not clear the operating system's file cache; no cold-disk or general document
+speedup is inferred.
 
 ## Validation and delivery
 
-In progress: local Rust/format checks, optimized native build, matched GUI
-performance runs, full native regression and GNOME 49 / relocated GNOME 51 package
-checks. Release identity, sources and asset hashes are recorded only after success.
+Passed: 189 Rust tests, four Python tests, formatting, current-document links,
+810 complete English/Spanish gettext messages, optimized native build and the
+[complete final native workflow](https://github.com/frandavid100/leaf/actions/runs/42371069496).
+Native clipboard/menu/Undo/stale-result diagnostics, cache identity/revision,
+original interaction/font/clipboard/canvas driver, pointer regressions, memory,
+printing, localization and HiDPI checks pass. An earlier narrow review demo
+failed before scenarios received independent profiles; its assertions are kept.
+
+The [installed GNOME 49 / relocated GNOME 51 workflow](https://github.com/frandavid100/leaf/actions/runs/42372618858)
+passes on the same optimized binary, including the original font/clipboard/canvas
+driver, the new rich-clipboard diagnostic in both runtimes, real pointer input,
+English/Spanish, 1×/2×, upgrade/reinstall persistence, document/print portals and
+the existing AT-SPI/Orca check. This is automated Ubuntu CI evidence, not a claim
+of human GNOME OS, braille, printer or real-document testing.
+
+Two initial packaging attempts caught assumptions about downloaded executable
+permissions and host GTK libraries while extracting the new licenses. The final
+builder executes the staged binary inside its GNOME Flatpak runtime. Its embedded
+license text matches the tested native output. Application inputs remain equal
+to the fully validated native source.
+
+## Published alpha.32
+
+[Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.32),
+published 7 November 2026 through the [automatic promotion](https://github.com/frandavid100/leaf/actions/runs/42374275590)
+without rebuilding. The complete native workflow succeeds before acceptance;
+packaging compares the stripped early/final native executables byte for byte.
+The promotion rechecks native success and candidate identity.
+
+- Published source and verified tag: `2524dbc789cfbfa0f3b6e153fde16f1df5887b8a`.
+- Native source: `c55188c3eb6fa791a4d294fbae03a030408dcda0`, run `42371069496`.
+- Candidate run `42372618858`, artifact `13575365590`.
+- All eleven internal checksum entries pass; all twelve public asset sizes and
+  SHA-256 digests match the downloaded validated candidate, including the
+  checksum file itself. Source/version/run identity and archive licenses match.
+- x86_64 Flatpak: 12,904,096 bytes,
+  `60e01f8bd2e6d01171707186c07f13b52764121438f6176d72d52d5e15ee2ef4`.
+- FlatPark archive: 13,196,204 bytes,
+  `388c04a759eb9a22cd2f03310c965cf7909e7a6f2fba3fd548ffdc711b7b30b0`.
+
+No additional issues are closed by this engine update. The ten remaining reports
+stay open: #1, #2, #9, #52, #84, #99, #100, #107, #152 and #156. In particular,
+the separately developed upstream column changes are not inferred to be in this
+stable release, and generic picture-placement improvements do not prove the exact
+#107 case; Leaf retains its rollback when the public arrange command cannot
+honor the requested page. Unsupported ODT fidelity options remain guarded.
 The original font/clipboard/canvas driver remains unchanged. No new Orca phase,
 Weblate action, Flathub submission or public screenshot replacement is included.

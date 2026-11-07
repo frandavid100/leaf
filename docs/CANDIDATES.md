@@ -2,13 +2,22 @@
 
 Desde alpha.29, las pruebas automáticas y el empaquetado generan una candidata
 sin crear una release ni cambiar la versión distribuida por FlatPark. El proceso normal permite probarla antes de aprobar su publicación. Para la
-pasada alpha.30 y la última pasada alpha.31 del 7/11/2026, David autoriza
+pasada alpha.30, la última pasada alpha.31 y la actualización alpha.32 del 7/11/2026, David autoriza
 expresamente la publicación automática tras las comprobaciones.
 
 Cada candidata contiene la revisión fuente, el identificador de la ejecución,
 las notas de versión y las sumas SHA-256 de los paquetes. Su versión interna es
 la Alpha prevista; «candidata 1», «candidata 2», etc. distinguen las compilaciones
 por su ejecución y hash, sin cambiar el paquete antes de publicarlo.
+
+## Alpha.32 publicada
+
+La [candidata 42372618858](https://github.com/frandavid100/leaf/actions/runs/42372618858)
+superó GNOME 49/51 y la batería nativa completa 42371069496. La
+[promoción automática](https://github.com/frandavid100/leaf/actions/runs/42374275590)
+publicó los mismos archivos el 7/11/2026. Verificados el tag y los doce archivos
+públicos; fuente `2524dbc789cfbfa0f3b6e153fde16f1df5887b8a`.
+[Actualización, mediciones y límites](WORDCRAFT_016_REVIEW.md).
 
 ## Alpha.31 publicada
 
@@ -45,11 +54,11 @@ candidata aprobable.
 Para instalar el bundle descargado:
 
 ```sh
-flatpak install --user ./Leaf-0.1.0-alpha.31-x86_64.flatpak
+flatpak install --user ./Leaf-0.1.0-alpha.32-x86_64.flatpak
 flatpak run --user --branch=alpha io.github.frandavid100.leaf
 ```
 
-Al probarla, confirma que «Acerca de Leaf» muestra `0.1.0-alpha.31`, especialmente
+Al probarla, confirma que «Acerca de Leaf» muestra `0.1.0-alpha.32`, especialmente
 si tienes abiertas ventanas de varias versiones. El paquete completo incluye
 `SHA256SUMS`; `sha256sum -c SHA256SUMS` verifica los archivos descargados.
 

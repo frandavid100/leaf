@@ -12,17 +12,31 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En validación: alpha.32 — WordCraft 0.16 y optimización
+## Publicada y verificada: alpha.32 — WordCraft 0.16 y optimización
 
-David autoriza el 7/11/2026 actualizar el motor a la última versión estable,
-adaptar y optimizar Leaf para rendimiento/claridad y publicar una nueva release.
-Motor fijado a WordCraft 0.16.0, formatos recopiado con compatibilidad residual,
-Language data fijados y mayor conservación ODT. Se mantiene la revisión de todos
-los límites y la batería nativa/instalada antes de publicar.
-[Integración, pruebas y mediciones](docs/WORDCRAFT_016_REVIEW.md).
-La última release pública sigue siendo alpha.31 hasta verificar la nueva entrega.
+[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.32),
+publicada automáticamente el 7/11/2026 conforme a la autorización de David.
+Motor actualizado de WordCraft 0.14.0 a la última estable 0.16.0, con formatos
+recopiado y compatibilidad residual documentada. ODT conserva notas, comentarios,
+imágenes flotantes, ecuaciones básicas nuevas y anchuras de columnas; se mantienen
+las protecciones para opciones sin fidelidad demostrada. Datos lingüísticos
+fijados y licencias incluidas. Pegado HTML/RTF nativo con cancelación de destinos
+obsoletos; portapapeles e índices derivados separados para facilitar la revisión.
 
-## Publicada y verificada: alpha.31
+Las pruebas medidas reducen recorridos repetidos del índice (80→0) y refrescos
+de regla (160→80) durante 80 movimientos del cursor; medianas de esa fase ~5–10%
+menores. No se extrapola a toda la aplicación ni se afirma menor memoria global.
+[Integración, resultados y límites](docs/WORDCRAFT_016_REVIEW.md).
+
+189 pruebas Rust, cuatro Python, 810 mensajes completos inglés/español y
+[batería nativa completa](https://github.com/frandavid100/leaf/actions/runs/42371069496)
+superados. [Instalaciones GNOME 49/51](https://github.com/frandavid100/leaf/actions/runs/42372618858)
+y [promoción sin recompilar](https://github.com/frandavid100/leaf/actions/runs/42374275590)
+correctas. Once sumas internas y los doce archivos públicos verificados.
+Fuente publicada `2524dbc789cfbfa0f3b6e153fde16f1df5887b8a`.
+No se cierran informes adicionales; siguen abiertos los diez indicados abajo.
+
+## Histórica: alpha.31 publicada y verificada
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.31),
 publicada automáticamente el 7/11/2026 con autorización de David. En esta última

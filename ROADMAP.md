@@ -4,11 +4,14 @@ Actualizada: 7 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En curso: alpha.32 — actualización y rendimiento
+## Completado: alpha.32 — actualización y rendimiento
 
-Actualización a WordCraft 0.16.0 autorizada, integración de las mejoras aplicables,
-optimización medida del cliente y revisión de claridad. Publicar automáticamente
-tras las comprobaciones nativas e instaladas. [Alcance y evidencia](docs/WORDCRAFT_016_REVIEW.md).
+[Publicada y verificada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.32)
+el 7/11/2026: WordCraft 0.16.0, mayor conservación ODT, datos lingüísticos fijados
+y pegado HTML/RTF. Optimización medida del cliente e índices/código de portapapeles
+más claros. Batería nativa, GNOME 49/51 y publicación de los mismos bytes
+completados; doce archivos públicos verificados. No se cierran más issues.
+[Alcance, mediciones y evidencia](docs/WORDCRAFT_016_REVIEW.md).
 
 ## Completado: alpha.31 automática
 

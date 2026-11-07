@@ -1,0 +1,694 @@
+{
+  "schema": 2,
+  "order": "AB/BA",
+  "repeats_per_size": 2,
+  "baseline_source": "4869c0a37f94dd7f51d796b9fcce281834c66380",
+  "candidate_source": "c55188c3eb6fa791a4d294fbae03a030408dcda0",
+  "summary": [
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "import_docx",
+      "before": {
+        "median_ms": 1.5938984999999999,
+        "counts": {},
+        "median_rss_kib": 173790.0
+      },
+      "after": {
+        "median_ms": 1.508515,
+        "counts": {},
+        "median_rss_kib": 175338.0
+      }
+    },
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "import_odt",
+      "before": {
+        "median_ms": 1.856869,
+        "counts": {},
+        "median_rss_kib": 175092.0
+      },
+      "after": {
+        "median_ms": 1.7283255,
+        "counts": {},
+        "median_rss_kib": 176554.0
+      }
+    },
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "first_layout",
+      "before": {
+        "median_ms": 32.94368,
+        "counts": {},
+        "median_rss_kib": 180290.0
+      },
+      "after": {
+        "median_ms": 31.942712999999998,
+        "counts": {},
+        "median_rss_kib": 181902.0
+      }
+    },
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "open_widgets_and_initial_rasters",
+      "before": {
+        "median_ms": 16.294776499999998,
+        "counts": {
+          "overlay_queue": 1,
+          "page_widgets": 11,
+          "ruler_refresh": 5,
+          "thumbnail_bounds": 2,
+          "toc_lookup_scans": 1
+        },
+        "median_rss_kib": 185188.0
+      },
+      "after": {
+        "median_ms": 16.054364,
+        "counts": {
+          "overlay_queue": 1,
+          "page_widgets": 11,
+          "ruler_refresh": 4,
+          "thumbnail_bounds": 2,
+          "toc_lookup_scans": 1
+        },
+        "median_rss_kib": 186764.0
+      }
+    },
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "thumbnail_cache_hits_80",
+      "before": {
+        "median_ms": 0.1480325,
+        "counts": {
+          "thumbnail_bounds": 800
+        },
+        "median_rss_kib": 193646.0
+      },
+      "after": {
+        "median_ms": 0.146841,
+        "counts": {
+          "thumbnail_bounds": 800
+        },
+        "median_rss_kib": 195158.0
+      }
+    },
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "cursor_right_80",
+      "before": {
+        "median_ms": 194.45389899999998,
+        "counts": {
+          "overlay_queue": 80,
+          "ruler_refresh": 160,
+          "toc_lookup_scans": 80
+        },
+        "median_rss_kib": 194158.0
+      },
+      "after": {
+        "median_ms": 183.03555649999998,
+        "counts": {
+          "overlay_queue": 80,
+          "ruler_refresh": 80
+        },
+        "median_rss_kib": 195800.0
+      }
+    },
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "derived_refresh_16",
+      "before": {
+        "median_ms": 0.9603105000000001,
+        "counts": {},
+        "median_rss_kib": 194158.0
+      },
+      "after": {
+        "median_ms": 0.0163445,
+        "counts": {},
+        "median_rss_kib": 195824.0
+      }
+    },
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "scroll_pages",
+      "before": {
+        "median_ms": 65.433591,
+        "counts": {
+          "ruler_refresh": 10
+        },
+        "median_rss_kib": 200484.0
+      },
+      "after": {
+        "median_ms": 66.680703,
+        "counts": {
+          "ruler_refresh": 10
+        },
+        "median_rss_kib": 195072.0
+      }
+    },
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "scroll_thumbnails",
+      "before": {
+        "median_ms": 80.15723750000001,
+        "counts": {
+          "thumbnail_bounds": 123
+        },
+        "median_rss_kib": 197518.0
+      },
+      "after": {
+        "median_ms": 89.7842245,
+        "counts": {
+          "thumbnail_bounds": 123
+        },
+        "median_rss_kib": 197272.0
+      }
+    },
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "edit_8_and_undo",
+      "before": {
+        "median_ms": 80.60322350000001,
+        "counts": {
+          "overlay_queue": 9,
+          "ruler_refresh": 27,
+          "toc_lookup_scans": 9
+        },
+        "median_rss_kib": 198008.0
+      },
+      "after": {
+        "median_ms": 78.419007,
+        "counts": {
+          "overlay_queue": 9,
+          "ruler_refresh": 18,
+          "toc_lookup_scans": 9
+        },
+        "median_rss_kib": 199398.0
+      }
+    },
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "active_search",
+      "before": {
+        "median_ms": 5.3937764999999995,
+        "counts": {
+          "overlay_queue": 5,
+          "ruler_refresh": 2,
+          "search_rows": 5,
+          "toc_lookup_scans": 1
+        },
+        "median_rss_kib": 198696.0
+      },
+      "after": {
+        "median_ms": 5.3535165,
+        "counts": {
+          "overlay_queue": 5,
+          "ruler_refresh": 1,
+          "search_rows": 5
+        },
+        "median_rss_kib": 200004.0
+      }
+    },
+    {
+      "paragraphs": 120,
+      "pages": 11,
+      "phase": "inactive_search_refresh_4",
+      "before": {
+        "median_ms": 0.0026839999999999998,
+        "counts": {},
+        "median_rss_kib": 200704.0
+      },
+      "after": {
+        "median_ms": 0.002604,
+        "counts": {},
+        "median_rss_kib": 196604.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "import_docx",
+      "before": {
+        "median_ms": 3.6317605000000004,
+        "counts": {},
+        "median_rss_kib": 174242.0
+      },
+      "after": {
+        "median_ms": 3.6510695,
+        "counts": {},
+        "median_rss_kib": 175648.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "import_odt",
+      "before": {
+        "median_ms": 5.3783235000000005,
+        "counts": {},
+        "median_rss_kib": 175494.0
+      },
+      "after": {
+        "median_ms": 5.3227895,
+        "counts": {},
+        "median_rss_kib": 176834.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "first_layout",
+      "before": {
+        "median_ms": 74.59522799999999,
+        "counts": {},
+        "median_rss_kib": 190136.0
+      },
+      "after": {
+        "median_ms": 75.514832,
+        "counts": {},
+        "median_rss_kib": 191528.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "open_widgets_and_initial_rasters",
+      "before": {
+        "median_ms": 20.2813105,
+        "counts": {
+          "overlay_queue": 1,
+          "page_widgets": 55,
+          "ruler_refresh": 5,
+          "thumbnail_bounds": 2,
+          "toc_lookup_scans": 1
+        },
+        "median_rss_kib": 199690.0
+      },
+      "after": {
+        "median_ms": 20.881082499999998,
+        "counts": {
+          "overlay_queue": 1,
+          "page_widgets": 55,
+          "ruler_refresh": 4,
+          "thumbnail_bounds": 2,
+          "toc_lookup_scans": 1
+        },
+        "median_rss_kib": 201960.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "thumbnail_cache_hits_80",
+      "before": {
+        "median_ms": 0.19788250000000002,
+        "counts": {
+          "thumbnail_bounds": 1120
+        },
+        "median_rss_kib": 208670.0
+      },
+      "after": {
+        "median_ms": 0.192795,
+        "counts": {
+          "thumbnail_bounds": 1120
+        },
+        "median_rss_kib": 210876.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "cursor_right_80",
+      "before": {
+        "median_ms": 236.9212305,
+        "counts": {
+          "overlay_queue": 80,
+          "ruler_refresh": 160,
+          "toc_lookup_scans": 80
+        },
+        "median_rss_kib": 209108.0
+      },
+      "after": {
+        "median_ms": 213.65169450000002,
+        "counts": {
+          "overlay_queue": 80,
+          "ruler_refresh": 80
+        },
+        "median_rss_kib": 211460.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "derived_refresh_16",
+      "before": {
+        "median_ms": 1.599923,
+        "counts": {},
+        "median_rss_kib": 209154.0
+      },
+      "after": {
+        "median_ms": 0.022759500000000002,
+        "counts": {},
+        "median_rss_kib": 211460.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "scroll_pages",
+      "before": {
+        "median_ms": 75.2513905,
+        "counts": {
+          "ruler_refresh": 10
+        },
+        "median_rss_kib": 217414.0
+      },
+      "after": {
+        "median_ms": 62.3570115,
+        "counts": {
+          "ruler_refresh": 10
+        },
+        "median_rss_kib": 217664.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "scroll_thumbnails",
+      "before": {
+        "median_ms": 91.748356,
+        "counts": {
+          "thumbnail_bounds": 153
+        },
+        "median_rss_kib": 212694.0
+      },
+      "after": {
+        "median_ms": 105.2613705,
+        "counts": {
+          "thumbnail_bounds": 153
+        },
+        "median_rss_kib": 218392.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "edit_8_and_undo",
+      "before": {
+        "median_ms": 112.98925450000002,
+        "counts": {
+          "overlay_queue": 9,
+          "ruler_refresh": 27,
+          "toc_lookup_scans": 9
+        },
+        "median_rss_kib": 213144.0
+      },
+      "after": {
+        "median_ms": 120.02326,
+        "counts": {
+          "overlay_queue": 9,
+          "ruler_refresh": 18,
+          "toc_lookup_scans": 9
+        },
+        "median_rss_kib": 218978.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "active_search",
+      "before": {
+        "median_ms": 12.142997999999999,
+        "counts": {
+          "overlay_queue": 24,
+          "ruler_refresh": 2,
+          "search_rows": 24,
+          "toc_lookup_scans": 1
+        },
+        "median_rss_kib": 213872.0
+      },
+      "after": {
+        "median_ms": 11.836091500000002,
+        "counts": {
+          "overlay_queue": 24,
+          "ruler_refresh": 1,
+          "search_rows": 24
+        },
+        "median_rss_kib": 219584.0
+      }
+    },
+    {
+      "paragraphs": 600,
+      "pages": 55,
+      "phase": "inactive_search_refresh_4",
+      "before": {
+        "median_ms": 0.0025435,
+        "counts": {},
+        "median_rss_kib": 213952.0
+      },
+      "after": {
+        "median_ms": 0.0024435000000000004,
+        "counts": {},
+        "median_rss_kib": 220314.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "import_docx",
+      "before": {
+        "median_ms": 10.409138,
+        "counts": {},
+        "median_rss_kib": 179766.0
+      },
+      "after": {
+        "median_ms": 10.206088,
+        "counts": {},
+        "median_rss_kib": 181114.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "import_odt",
+      "before": {
+        "median_ms": 16.5515365,
+        "counts": {},
+        "median_rss_kib": 184426.0
+      },
+      "after": {
+        "median_ms": 16.5244655,
+        "counts": {},
+        "median_rss_kib": 185896.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "first_layout",
+      "before": {
+        "median_ms": 183.47697,
+        "counts": {},
+        "median_rss_kib": 226074.0
+      },
+      "after": {
+        "median_ms": 186.3503965,
+        "counts": {},
+        "median_rss_kib": 227634.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "open_widgets_and_initial_rasters",
+      "before": {
+        "median_ms": 28.966338,
+        "counts": {
+          "overlay_queue": 1,
+          "page_widgets": 164,
+          "ruler_refresh": 5,
+          "thumbnail_bounds": 2,
+          "toc_lookup_scans": 1
+        },
+        "median_rss_kib": 240482.0
+      },
+      "after": {
+        "median_ms": 29.394386500000003,
+        "counts": {
+          "overlay_queue": 1,
+          "page_widgets": 164,
+          "ruler_refresh": 4,
+          "thumbnail_bounds": 2,
+          "toc_lookup_scans": 1
+        },
+        "median_rss_kib": 242212.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "thumbnail_cache_hits_80",
+      "before": {
+        "median_ms": 0.253456,
+        "counts": {
+          "thumbnail_bounds": 1440
+        },
+        "median_rss_kib": 250406.0
+      },
+      "after": {
+        "median_ms": 0.2400065,
+        "counts": {
+          "thumbnail_bounds": 1440
+        },
+        "median_rss_kib": 252128.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "cursor_right_80",
+      "before": {
+        "median_ms": 330.6665845,
+        "counts": {
+          "overlay_queue": 80,
+          "ruler_refresh": 160,
+          "toc_lookup_scans": 80
+        },
+        "median_rss_kib": 250954.0
+      },
+      "after": {
+        "median_ms": 314.70948,
+        "counts": {
+          "overlay_queue": 80,
+          "ruler_refresh": 80
+        },
+        "median_rss_kib": 252862.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "derived_refresh_16",
+      "before": {
+        "median_ms": 3.0868900000000004,
+        "counts": {},
+        "median_rss_kib": 250954.0
+      },
+      "after": {
+        "median_ms": 0.0725545,
+        "counts": {},
+        "median_rss_kib": 252878.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "scroll_pages",
+      "before": {
+        "median_ms": 48.652206,
+        "counts": {
+          "ruler_refresh": 10
+        },
+        "median_rss_kib": 258460.0
+      },
+      "after": {
+        "median_ms": 83.46535,
+        "counts": {
+          "ruler_refresh": 10
+        },
+        "median_rss_kib": 256096.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "scroll_thumbnails",
+      "before": {
+        "median_ms": 114.575853,
+        "counts": {
+          "thumbnail_bounds": 213
+        },
+        "median_rss_kib": 260122.0
+      },
+      "after": {
+        "median_ms": 101.854606,
+        "counts": {
+          "thumbnail_bounds": 192
+        },
+        "median_rss_kib": 256096.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "edit_8_and_undo",
+      "before": {
+        "median_ms": 201.279191,
+        "counts": {
+          "overlay_queue": 9,
+          "ruler_refresh": 27,
+          "toc_lookup_scans": 9
+        },
+        "median_rss_kib": 260704.0
+      },
+      "after": {
+        "median_ms": 208.253425,
+        "counts": {
+          "overlay_queue": 9,
+          "ruler_refresh": 18,
+          "toc_lookup_scans": 9
+        },
+        "median_rss_kib": 257904.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "active_search",
+      "before": {
+        "median_ms": 27.4819685,
+        "counts": {
+          "overlay_queue": 72,
+          "ruler_refresh": 2,
+          "search_rows": 72,
+          "toc_lookup_scans": 1
+        },
+        "median_rss_kib": 261412.0
+      },
+      "after": {
+        "median_ms": 26.018557,
+        "counts": {
+          "overlay_queue": 72,
+          "ruler_refresh": 1,
+          "search_rows": 72
+        },
+        "median_rss_kib": 258584.0
+      }
+    },
+    {
+      "paragraphs": 1800,
+      "pages": 164,
+      "phase": "inactive_search_refresh_4",
+      "before": {
+        "median_ms": 0.002529,
+        "counts": {},
+        "median_rss_kib": 261648.0
+      },
+      "after": {
+        "median_ms": 0.002679,
+        "counts": {},
+        "median_rss_kib": 265824.0
+      }
+    }
+  ],
+  "limits": "Synthetic ordinary body text, Xvfb/Cairo, fresh profiles, same runner and WordCraft revision. Inclusive spans overlap; boundary calls include adapter overhead. No general speed/memory or cold-disk claims."
+}
