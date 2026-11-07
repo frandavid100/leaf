@@ -202,10 +202,14 @@ pub(super) fn context_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
                 );
                 table_command(&ui, "insert.table", serde_json::json!({"rows":2,"cols":2}));
                 let table = show_document_context(&ui, &parent, 100, 150, DocumentContext::Table);
-                assert!(has_submenu(
-                    &table.menu_model().unwrap(),
-                    wordcraft_gnome::t!("Add")
-                ));
+                for label in [
+                    wordcraft_gnome::t!("Select"),
+                    wordcraft_gnome::t!("Insert"),
+                    wordcraft_gnome::t!("Delete"),
+                    wordcraft_gnome::t!("Split"),
+                ] {
+                    assert!(has_submenu(&table.menu_model().unwrap(), label));
+                }
                 context_activate_row(&table, wordcraft_gnome::t!("Select"));
                 context_activate_row(&table, wordcraft_gnome::t!("Column"));
                 assert!(
