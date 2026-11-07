@@ -31,3 +31,6 @@ text18-*.log
 /alpha29-review-*
 /interactions-pointer.log
 /vista-texto.png
+
+# Pinned source inputs live outside Cargo target/cache cleanup.
+/.build-deps/
