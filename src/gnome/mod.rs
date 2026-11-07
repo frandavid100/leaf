@@ -49,6 +49,8 @@ mod canvas;
 use canvas::*;
 mod caption_cues;
 use caption_cues::*;
+mod clipboard;
+use clipboard::*;
 mod columns;
 use columns::*;
 mod comment_composer;
@@ -93,6 +95,8 @@ mod elements;
 mod equations;
 use elements::*;
 use equations::*;
+mod reference_geometry;
+use reference_geometry::*;
 mod references;
 use references::*;
 mod picture_pointer;
@@ -141,6 +145,9 @@ mod workspace;
 use workspace::*;
 
 // Opt-in diagnostics and synthetic fixtures; no normal startup work.
+#[path = "diagnostics/clipboard.rs"]
+mod clipboard_checks;
+use clipboard_checks::*;
 #[path = "diagnostics/captions.rs"]
 mod caption_checks;
 use caption_checks::*;

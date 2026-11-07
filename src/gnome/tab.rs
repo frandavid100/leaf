@@ -393,6 +393,8 @@ pub(super) fn build_tab(
         tab_page: RefCell::new(Some(tab_page.clone())),
         closed: Cell::new(false),
         derived_source: RefCell::new(None),
+        toc_cache: RefCell::new(TocCache::default()),
+        clipboard_read: RefCell::new(None),
         autosave_source: RefCell::new(None),
         theme_signal: RefCell::new(None),
         restoring: Cell::new(false),

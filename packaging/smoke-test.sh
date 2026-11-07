@@ -21,6 +21,8 @@ cp table18-*.log dist/
 bash tools/text-pointer-test.sh tools/flatpak_print_run.sh
 cp text18-pointer.log dist/
 bash tools/interaction-pointer-test.sh tools/flatpak_print_run.sh
+flatpak run --socket=x11 --nosocket=wayland "$app_id" --clipboard-ui-test 2>dist/flatpak-clipboard.log
+grep -q CLIPBOARD_FORMATS_UI_OK dist/flatpak-clipboard.log
 # Acknowledgements use the app's existing cache mapping, with no extra permissions.
 mkdir -p "$HOME/.var/app/$app_id/cache"
 export LEAF19_ACK_PARENT="$HOME/.var/app/$app_id/cache"

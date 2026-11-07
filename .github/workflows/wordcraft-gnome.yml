@@ -106,6 +106,8 @@ jobs:
           grep -q POPOVER_PIN_OK popover-pin.log
           GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --test-document --paragraph-ui-test 2>&1 | tee paragraph-popover.log
           grep -q PARAGRAPH_POPOVER_OK paragraph-popover.log
+          GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --clipboard-ui-test 2>&1 | tee clipboard-formats.log
+          grep -q CLIPBOARD_FORMATS_UI_OK clipboard-formats.log
       - name: Validate grouped Insert and annotation workflows
         run: |
           set -o pipefail
@@ -167,7 +169,7 @@ jobs:
           name: leaf-engine-control-profile
           path: perf-control/
       - name: Verify WordCraft boundary for this performance audit
-        if: contains(github.event.head_commit.message, '[perf-candidate]')
+        if: contains(github.event.head_commit.message, '[perf-candidate]') || contains(github.event.pull_request.title, '[perf-candidate]')
         run: git diff --exit-code c6e7e89e36665775a0fe5294fb8cfd56afd42ba1 -- Cargo.toml Cargo.lock craft-i18n.rev vendor patches
       - name: Verify alpha18 text, theme, navigation and table pointer controls
         run: |
@@ -224,15 +226,20 @@ jobs:
           XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) GSK_RENDERER=cairo xvfb-run -a timeout 120s ./target/release/wordcraft-gnome --host-cache-ui-test 2>&1 | tee host-cache-ui.log
           grep -q LEAF_HOST_CACHE_UI_OK host-cache-ui.log
       - uses: actions/download-artifact@v4
-        if: contains(github.event.head_commit.message, '[perf-candidate]')
+        if: contains(github.event.head_commit.message, '[perf-candidate]') || contains(github.event.pull_request.title, '[perf-candidate]')
         with:
-          name: leaf-perf-baseline
+          name: leaf-native-unvalidated
           path: baseline-artifact
-          run-id: '41314479212'
+          run-id: '42369077031'
           github-token: ${{ github.token }}
       - name: Compare baseline and optimized host on the same runner
-        if: contains(github.event.head_commit.message, '[perf-candidate]')
-        run: python tools/performance_compare.py baseline-artifact/wordcraft-gnome ./target/release/wordcraft-gnome
+        if: contains(github.event.head_commit.message, '[perf-candidate]') || contains(github.event.pull_request.title, '[perf-candidate]')
+        env:
+          LEAF_PERF_BASELINE_SOURCE: '4869c0a37f94dd7f51d796b9fcce281834c66380'
+          LEAF_PERF_CANDIDATE_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          git diff --exit-code "$LEAF_PERF_BASELINE_SOURCE" -- Cargo.toml Cargo.lock craft-i18n.rev vendor patches
+          python tools/performance_compare.py baseline-artifact/wordcraft-gnome ./target/release/wordcraft-gnome
       - name: Verify English, Spanish and live dark documents
         run: |
           LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --localization-ui-test 2>&1 | tee localization-en.log

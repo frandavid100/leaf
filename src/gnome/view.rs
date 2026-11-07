@@ -444,6 +444,7 @@ pub(super) fn clear_canvas(canvas: &impl IsA<gtk::Fixed>) {
 }
 
 pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
+    cancel_clipboard_read(ui);
     let _perf = perf_scope("leaf.opened");
     *ui.table_pointer.borrow_mut() = TablePointer::default();
     ui.picture_drag.borrow_mut().take();

@@ -47,8 +47,25 @@ four save stamps when comparing the otherwise unchanged canonical document.
 The engine-upgrade snapshot adds opt-in counters for repeated TOC scans and ruler
 refreshes and a field-free derived-reference phase. It is the same-engine control
 for subsequent client optimizations. Normal use records no metrics or documents.
-Matched release comparisons and final code changes will be recorded here after
-their actual results. No whole-application speedup is inferred from a synthetic
+The host now indexes canonical TOC ranges once per document id/revision for
+selection, hover and drawing; it removes a duplicate ruler refresh, shares
+immutable caption cue rectangles, and checks eligible fields before making a
+disposable reference-update Session. No cached range is written into the model.
+Revision/identity, Undo/Redo and unchanged-document diagnostics cover these paths.
+
+Clipboard handling is extracted into one private module. Leaf offers upstream
+RTF/HTML and single-equation MathML when copying; external HTML/RTF uses public
+`edit.paste`, with a bounded asynchronous transfer, weak ownership, cancellation
+and identity/revision/selection validation. Plain text and exact-provider internal
+fragments retain their existing paths. Native/installed diagnostics check external
+RTF/HTML/plain text, formatting, one-step Undo and stale/replaced destinations.
+
+Matched optimized-build comparisons use the same engine/formats/language pins,
+AB/BA order, two fresh-profile repetitions per size (120/600/1800 paragraphs),
+Xvfb/Cairo on one runner, canonical document equality and deterministic operation
+counts. Timing and RSS are reported without noisy pass thresholds; shared engine
+and prior thumbnail improvements are not credited to this client change.
+Actual results will be recorded here after validation. No whole-application speedup is inferred from a synthetic
 workload or from upstream's published memory figures.
 
 ## Validation and delivery

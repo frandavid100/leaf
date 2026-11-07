@@ -69,9 +69,6 @@ pub(super) fn refresh_selection(ui: &Rc<Ui>) {
     if let Some(p) = ui.picture.borrow().as_ref() {
         p.refresh();
     }
-    if let Some(ruler) = ui.ruler.borrow().as_ref() {
-        ruler.refresh();
-    }
     if let Some(elements) = ui.elements.borrow().as_ref() {
         elements.sync();
     }
@@ -97,10 +94,7 @@ pub(super) fn refresh_overlay_layers(ui: &Rc<Ui>) {
         return;
     };
     next.extend(caption_cue_pages(ui, doc));
-    perf_count("toc_lookup_scans", 1);
-    if let Some((a, b)) =
-        wordcraft_gnome::references::toc_span_at(&doc.session, &doc.session.sel.focus)
-    {
+    if let Some((a, b)) = cached_toc_span(ui, &doc.session, &doc.session.sel.focus) {
         next.extend(
             doc.session
                 .layout()

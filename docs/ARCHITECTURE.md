@@ -74,6 +74,7 @@ session while inspecting it.
 | Shared Elements | [elements.rs](../src/gnome/elements.rs), [references.rs](../src/gnome/references.rs) | Shared native table/image bodies, contextual TOC controls and stable creation; restoration on close/teardown. |
 | Styles | [styles.rs](../src/gnome/styles.rs) | [styles.rs](../src/styles.rs); styles tests and `--styles-ui-test`. |
 | Paragraph/text panels | [paragraph.rs](../src/gnome/paragraph.rs), [format_controls.rs](../src/gnome/format_controls.rs), [adaptive.rs](../src/gnome/adaptive.rs), [text_palette.rs](../src/gnome/text_palette.rs) | [formatting.rs](../src/formatting.rs); formatting tests, `--paragraph-ui-test`. |
+| Clipboard | [clipboard.rs](../src/gnome/clipboard.rs) | Public engine fragments plus HTML/RTF/plain text; one cancellable read per tab, weak ownership and identity/revision/selection leases. `--clipboard-ui-test` checks external providers, one-step Undo and stale reads. |
 | Context, pinning and contained pages | [context.rs](../src/gnome/context.rs), [popovers.rs](../src/gnome/popovers.rs) | Context pointer, `--pin-ui-test`, `--adaptive-ui-test` in CI. |
 | Tables | [tables.rs](../src/gnome/tables.rs), [table_pointer.rs](../src/gnome/table_pointer.rs) | [tables.rs](../src/tables.rs); tables tests, real Tab/Shift+Tab input and tools/table-pointer-test.sh (public engine hit targets, one edit per drag). |
 | Footnotes, contents, captions and cross-references | [references.rs](../src/gnome/references.rs) and [adapter](../src/references.rs) | Canonical engine stories/fields, section-aware note options, note/reference navigation and DOCX/history regressions. |
@@ -177,3 +178,22 @@ authored caption text; the public Session command owns history and protection.
 `src/gnome/caption_cues.rs` draws disposable theme-aware backing from native
 layout, cached by document identity/revision. Navigation uses typed targets to
 distinguish tables and their nested pictures. See [ownership and validation](CAPTION_OWNERSHIP.md).
+
+
+## Alpha32 disposable indexes and clipboard
+
+`reference_geometry.rs` retains only canonical TOC ranges, keyed by document id
+and revision. Caret, hover and drawing lookups reuse the index; content changes,
+Undo/Redo and replacement rebuild it on demand. Actual TOC activation still
+validates the stored bookmark through the core adapter. Caption cues share an
+immutable `Rc<[Cue]>` instead of copying every rectangle for each paint.
+`refresh_selection` updates the ruler through `update_status` once. The derived
+reference adapter checks body/table/part blocks for eligible fields before
+creating its disposable Session copy.
+
+`clipboard.rs` owns native format negotiation independently of context menus.
+Internal fragments are reusable only while GTK owns that exact provider.
+External HTML/RTF reads are asynchronous and bounded to 8 MiB; plain text uses
+GDK decoding. A read holds a weak Ui, is cancelled on replacement/close or a new
+paste, and validates document id, revision and selection before the public paste
+command. Rich bytes are temporary input, never a parallel document or history.

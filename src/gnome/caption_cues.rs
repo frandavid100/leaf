@@ -2,14 +2,14 @@
 use super::*;
 use wordcraft_gnome::captions::{self, Cue};
 
-fn cached_caption_cues(ui: &Rc<Ui>, d: &mut Current) -> Vec<Cue> {
+fn cached_caption_cues(ui: &Rc<Ui>, d: &mut Current) -> Rc<[Cue]> {
     let key = (d.session.document_id(), d.session.rev());
     if let Some((id, revision, cues)) = ui.caption_cues.borrow().as_ref() {
         if (*id, *revision) == key {
             return cues.clone();
         }
     }
-    let cues = captions::cues(&mut d.session);
+    let cues: Rc<[Cue]> = captions::cues(&mut d.session).into();
     ui.caption_cues.replace(Some((key.0, key.1, cues.clone())));
     cues
 }

@@ -165,9 +165,25 @@ fn derived_field(instr: &str) -> bool {
     )
 }
 
+/// Check canonical blocks before cloning a Session; ordinary documents need no refresh.
+fn has_derived_fields(doc: &wordcraft_doc::Document) -> bool {
+    fn in_blocks(blocks: &wordcraft_doc::Blocks) -> bool {
+        blocks.iter().any(|block| match &**block {
+            wordcraft_doc::Block::Para(p) => p.objects.iter().any(|object| {
+                matches!(object, InlineObject::Field { instr, .. } | InlineObject::FieldStart { instr, .. } if derived_field(instr))
+            }),
+            wordcraft_doc::Block::Table(table) => table.rows.iter().any(|row| row.cells.iter().any(|cell| in_blocks(&cell.blocks))),
+        })
+    }
+    in_blocks(&doc.body) || doc.parts.values().any(|part| in_blocks(&part.blocks))
+}
+
 /// Refresh only document-derived values. Other fields retain their values and locks.
 /// Generated values are recomputed after source Undo/Redo without adding a history step.
 pub fn refresh_derived(s: &mut Session) -> Result<bool, String> {
+    if !has_derived_fields(&s.doc) {
+        return Ok(false);
+    }
     let mut probe = Session::new(s.doc.clone());
     probe.sel = s.sel.clone();
     probe.page_hint = s.page_hint;
@@ -187,16 +203,6 @@ pub fn refresh_derived(s: &mut Session) -> Result<bool, String> {
 }
 
 fn refresh_derived_inner(s: &mut Session) -> Result<bool, String> {
-    let needed = std::iter::once(StoryRef::Body)
-        .chain(s.doc.parts.keys().copied().map(StoryRef::Part))
-        .any(|story| s.doc.para_paths(story).into_iter().any(|path| {
-            s.doc.para(story, &path).is_some_and(|p| p.objects.iter().any(|o| {
-                matches!(o, InlineObject::Field { instr, .. } | InlineObject::FieldStart { instr, .. } if derived_field(instr))
-            }))
-        }));
-    if !needed {
-        return Ok(false);
-    }
     let snapshot = s.edit_snapshot();
     let before = s.doc.clone();
     let selection = s.sel.clone();
@@ -367,21 +373,26 @@ pub fn edit_toc(s: &mut Session, code: &str, title: Option<&str>) -> Result<(), 
 
 /// Canonical TOC span: generated entries belong to their TOC field; imported
 /// range fields retain their own explicit boundaries. Styles alone are not a TOC.
-pub fn toc_span_at(s: &Session, pos: &Pos) -> Option<(Pos, Pos)> {
-    if pos.story != StoryRef::Body {
-        return None;
-    }
+pub fn toc_spans(s: &Session) -> Vec<(Pos, Pos)> {
+    let mut spans = Vec::new();
     for range in s.doc.field_ranges(StoryRef::Body) {
         let field = wordcraft_engine::cmd::references::FieldCode::parse(&range.instr);
-        if field.name == "TOC" && !field.has('c') && range.start <= *pos && *pos <= range.end {
-            return Some((range.start, range.end));
+        if field.name == "TOC" && !field.has('c') {
+            spans.push((range.start, range.end));
         }
     }
     for (start, block) in s.doc.body.iter().enumerate() {
         let Some(p) = block.as_para() else { continue };
-        if !p.objects.iter().any(|o| matches!(o, InlineObject::Field{instr,..} if {
-            let f=wordcraft_engine::cmd::references::FieldCode::parse(instr); f.name == "TOC" && !f.has('c')
-        })) { continue; }
+        let contains_toc = p.objects.iter().any(|object| {
+            let InlineObject::Field { instr, .. } = object else {
+                return false;
+            };
+            let field = wordcraft_engine::cmd::references::FieldCode::parse(instr);
+            field.name == "TOC" && !field.has('c')
+        });
+        if !contains_toc {
+            continue;
+        }
         let mut end = start;
         while s
             .doc
@@ -398,12 +409,20 @@ pub fn toc_span_at(s: &Session, pos: &Pos) -> Option<(Pos, Pos)> {
             end += 1;
         }
         let a = Pos::body(start, 0);
-        let z = Pos::body(end, s.doc.body[end].as_para()?.len());
-        if a <= *pos && *pos <= z {
-            return Some((a, z));
-        }
+        let z = Pos::body(end, s.doc.body[end].as_para().unwrap().len());
+        spans.push((a, z));
     }
-    None
+    spans
+}
+
+/// Canonical TOC membership for adapters without a retained view index.
+pub fn toc_span_at(s: &Session, pos: &Pos) -> Option<(Pos, Pos)> {
+    if pos.story != StoryRef::Body {
+        return None;
+    }
+    toc_spans(s)
+        .into_iter()
+        .find(|(start, end)| start <= pos && pos <= end)
 }
 
 /// Follow the stored hyperlink/bookmark, never the cached page number or title.
