@@ -181,6 +181,50 @@ pub(super) fn pending_end_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: 
                 assert_visible(&ui, &format!("{value}:zoom={zoom}"));
             }
         }
+        // Repaginate through an edit, then repeat a real End on a later page.
+        {
+            let mut c = ui.current.borrow_mut();
+            selection::set_caret(&mut c.as_mut().unwrap().session, &Pos::body(0, 0), false)
+                .unwrap();
+        }
+        apply_user_edit(&ui, Edit::Insert("Reflow control. ".repeat(500)));
+        settle(250).await;
+        window.set_title(Some("Leaf Pending Issues"));
+        let after_edit = {
+            let c = ui.current.borrow();
+            let s = &c.as_ref().unwrap().session;
+            (s.doc.clone(), s.undo_depth(), s.dirty)
+        };
+        let (page, from) = later_position(&ui, 0.7);
+        let expected = {
+            let mut c = ui.current.borrow_mut();
+            let d = c.as_mut().unwrap();
+            selection::set_caret(&mut d.session, &from, false).unwrap();
+            d.session.page_hint = page;
+            d.session.layout().line_bounds(&from, page).unwrap().1
+        };
+        refresh_selection(&ui);
+        caret_ensure_visible(&ui);
+        ui.document_box.grab_focus();
+        settle(150).await;
+        key(&ui, &window, stage, "End", true).await;
+        stage += 1;
+        assert_eq!(
+            ui.current.borrow().as_ref().unwrap().session.sel.focus,
+            expected
+        );
+        assert_visible(&ui, "after-repagination");
+        for (value, expected) in [
+            ("ctrl+End", Pos::body(160, 0)),
+            ("ctrl+Home", Pos::body(0, 0)),
+        ] {
+            key(&ui, &window, stage, value, false).await;
+            stage += 1;
+            let c = ui.current.borrow();
+            assert_eq!(c.as_ref().unwrap().session.sel.focus, expected);
+            drop(c);
+            assert_visible(&ui, value);
+        }
         // Queue a zoom allocation, then a newer navigation request before its idle.
         // A stale view restoration must not override the newer caret reveal.
         let (_, old) = later_position(&ui, 0.1);
@@ -200,7 +244,47 @@ pub(super) fn pending_end_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: 
         selected_command(&ui, "end", false);
         settle(500).await;
         assert_visible(&ui, "newer-navigation-after-queued-zoom");
-        eprintln!("PENDING_END_UI_OK keyboard=true shift=true viewport=true zoom_race=true");
+        // Repeating End at an existing line end must still defeat an old reveal.
+        let line_end = ui
+            .current
+            .borrow()
+            .as_ref()
+            .unwrap()
+            .session
+            .sel
+            .focus
+            .clone();
+        zoom_to(&ui, 1.1);
+        selected_command(&ui, "end", false);
+        assert_eq!(
+            ui.current.borrow().as_ref().unwrap().session.sel.focus,
+            line_end
+        );
+        settle(400).await;
+        assert_visible(&ui, "unchanged-line-end-after-queued-zoom");
+        // Native editable widgets retain their own Home/End and document state.
+        let panel = ui.search.borrow().as_ref().unwrap().clone();
+        panel.show(true);
+        panel.replacement.set_text("Native entry control");
+        panel.replacement.grab_focus();
+        let selection = ui.current.borrow().as_ref().unwrap().session.sel.clone();
+        for (value, expected) in [("End", 20), ("Home", 0)] {
+            panel.replacement.set_position(4);
+            key(&ui, &window, stage, value, false).await;
+            stage += 1;
+            assert_eq!(panel.replacement.position(), expected);
+            assert_eq!(ui.current.borrow().as_ref().unwrap().session.sel, selection);
+        }
+        {
+            let c = ui.current.borrow();
+            let s = &c.as_ref().unwrap().session;
+            assert_eq!(s.doc, after_edit.0);
+            assert_eq!(s.undo_depth(), after_edit.1);
+            assert_eq!(s.dirty, after_edit.2);
+        }
+        eprintln!(
+            "PENDING_END_UI_OK keyboard=true shift=true viewport=true zoom_race=true reflow=true ctrl=true native_entry=true"
+        );
         app.quit();
     });
 }
@@ -228,6 +312,11 @@ pub(super) fn pending_spacing_ui_test(ui: &Rc<Ui>, app: &Application) {
             menu.popup();
             panel.page("spacing");
             settle(150).await;
+            assert!(
+                find_widget(&panel.detail, "paragraph-spacing-hint")
+                    .unwrap()
+                    .is_visible()
+            );
             let spin = find_widget(&panel.detail, "paragraph-spaceBefore")
                 .unwrap()
                 .downcast::<gtk::SpinButton>()
@@ -271,6 +360,15 @@ pub(super) fn pending_spacing_ui_test(ui: &Rc<Ui>, app: &Application) {
                     settle(100).await;
                     assert_eq!(selection_paragraph(&ui)["spaceBefore"], json!(5.5));
                 }
+            }
+            if previous_after == 5.5 && std::env::var_os("LEAF_PENDING_CAPTURE").is_some() {
+                assert!(
+                    std::process::Command::new("scrot")
+                        .arg("pending-spacing-controls.png")
+                        .status()
+                        .unwrap()
+                        .success()
+                );
             }
             menu.popover().unwrap().popdown();
         }

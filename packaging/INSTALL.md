@@ -1,12 +1,12 @@
-# Leaf 0.1.0-alpha.32 (x86_64)
+# Leaf 0.1.0-alpha.33 (x86_64)
 
 This is an experimental GitHub build, not a Flathub release. The interface follows your system language in English and Spanish, with English as the fallback. Document pages follow GNOME’s light/dark appearance. Use copies of important documents.
 
-Open the downloaded `Leaf-0.1.0-alpha.32-x86_64.flatpak` with GNOME Software and choose Install. If the graphical installer does not offer to add the runtime source, use:
+Open the downloaded `Leaf-0.1.0-alpha.33-x86_64.flatpak` with GNOME Software and choose Install. If the graphical installer does not offer to add the runtime source, use:
 
 ```sh
 flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-flatpak install --user ./Leaf-0.1.0-alpha.32-x86_64.flatpak
+flatpak install --user ./Leaf-0.1.0-alpha.33-x86_64.flatpak
 flatpak run --user --branch=alpha io.github.frandavid100.leaf
 ```
 

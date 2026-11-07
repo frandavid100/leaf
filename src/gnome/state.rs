@@ -98,6 +98,7 @@ pub(super) struct Ui {
     pub(super) toasts: ToastOverlay,
     pub(super) selection_data: Rc<RefCell<SelectionGeometry>>,
     pub(super) selection_zoom: Rc<Cell<f32>>,
+    pub(super) caret_navigation_generation: Cell<u64>,
     pub(super) caret_motion: Rc<RefCell<wordcraft_gnome::caret_motion::CaretMotion>>,
     pub(super) caret_tick_active: Cell<bool>,
     pub(super) drag_scroll: RefCell<Option<glib::SourceId>>,

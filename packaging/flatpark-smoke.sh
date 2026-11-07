@@ -78,6 +78,7 @@ timeout 90s flatpak run --socket=x11 --nosocket=wayland \
   "$app_id" --clipboard-ui-test >"$log" 2>&1 || { cat "$log"; exit 1; }
 cat "$log"
 grep -q CLIPBOARD_FORMATS_UI_OK "$log"
+bash tools/pending-installed-test.sh "$app_id" /app/extra/leaf/bin/leaf dist/pending-flatpark
 # Exercise the new candidate interactions in the relocated GNOME 51 build too.
 leaf29_root=$PWD
 leaf29_output=${2:-dist/alpha29-flatpark}
