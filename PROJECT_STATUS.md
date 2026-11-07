@@ -21,6 +21,15 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## Revisión actual: seis issues pendientes
+
+Quedan **#1/#52/#84/#99/#107/#152**. Las correcciones de #1/#99/#107/#152 ya
+están propuestas y probadas en WordCraft, pero sus cuatro PR siguen sin integrar.
+#84 tiene candidata publicada y necesita la comprobación GNOME OS y completar
+el flujo gráfico de Ubuntu. #52 necesita los originales y atribuir el proveedor
+de miniaturas. Esta revisión no cierra informes ni añade cambios de aplicación.
+[Estado comprobado y siguientes pasos](docs/REMAINING_AFTER_ALPHA34.md).
+
 ## Histórica: alpha.33 publicada y verificada — Fin/Inicio y restauración de zoom
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33),

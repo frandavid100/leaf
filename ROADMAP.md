@@ -13,6 +13,14 @@ Actualizada: 7 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## Pendientes actuales tras alpha.34
+
+Seis informes abiertos: cuatro esperan integrar correcciones de WordCraft
+(#1/#99/#107/#152), #84 espera validación real del sistema y #52 necesita los
+originales y diagnóstico del proveedor de miniaturas. La siguiente release se
+publicará automáticamente con arreglos adicionales verificados; esta revisión
+solo documenta los bloqueos. [Detalle](docs/REMAINING_AFTER_ALPHA34.md).
+
 ## Completado: alpha.33 — revisión de #9/#99/#156
 
 [Publicada y verificada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33)
