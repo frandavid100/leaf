@@ -5,6 +5,14 @@ use serde_json::json;
 async fn settle(ms: u64) {
     glib::timeout_future(std::time::Duration::from_millis(ms)).await;
 }
+fn exit_on_assertion() {
+    // A panic in a GLib future otherwise leaves the diagnostic process alive.
+    let previous = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        previous(info);
+        std::process::exit(1);
+    }));
+}
 fn caret_view(ui: &Ui) -> (usize, f64, f64, f64) {
     let mut current = ui.current.borrow_mut();
     let d = current.as_mut().unwrap();
@@ -101,6 +109,7 @@ fn later_position(ui: &Ui, fraction: f32) -> (usize, Pos) {
     )
 }
 pub(super) fn pending_end_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+    exit_on_assertion();
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
         window.set_default_size(1100, 850);
@@ -152,9 +161,15 @@ pub(super) fn pending_end_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: 
                 };
                 key(&ui, &window, stage, value, value == "End").await;
                 stage += 1;
+                let view = caret_view(&ui);
                 {
                     let c = ui.current.borrow();
                     let s = &c.as_ref().unwrap().session;
+                    eprintln!(
+                        "ISSUE156_KEY key={value} from={from:?} expected={expected:?} actual={:?} focus={} view={view:?}",
+                        s.sel.focus,
+                        ui.document_box.has_focus()
+                    );
                     assert_eq!(s.sel.focus, expected, "{value} zoom={zoom}");
                     if extend {
                         assert_eq!(s.sel.anchor, from);
@@ -190,6 +205,7 @@ pub(super) fn pending_end_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: 
     });
 }
 pub(super) fn pending_spacing_ui_test(ui: &Rc<Ui>, app: &Application) {
+    exit_on_assertion();
     let (ui, app) = (ui.clone(), app.clone());
     glib::spawn_future_local(async move {
         let mut baseline = None;
@@ -249,7 +265,9 @@ pub(super) fn pending_spacing_ui_test(ui: &Rc<Ui>, app: &Application) {
                     "ISSUE9_CONTROL after={previous_after} before={value} committed={actual} delta={delta}"
                 );
                 if index == 3 {
-                    spin.spin(gtk::SpinType::StepForward, 1.);
+                    // The native Up action parses pending text before spinning;
+                    // spin() alone bypasses that update and is not a button press.
+                    spin.emit_by_name::<()>("change-value", &[&gtk::ScrollType::StepUp]);
                     settle(100).await;
                     assert_eq!(selection_paragraph(&ui)["spaceBefore"], json!(5.5));
                 }

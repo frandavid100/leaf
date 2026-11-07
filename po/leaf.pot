@@ -45,7 +45,7 @@ msgstr ""
 msgid "Add Comment"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1172
+#: src/gnome/paragraph.rs:1182
 msgid "Add Left Tab Stop"
 msgstr ""
 
@@ -73,7 +73,7 @@ msgstr ""
 msgid "Alignment: {value}"
 msgstr ""
 
-#: src/gnome/navigation.rs:740 src/gnome/paragraph.rs:1070 src/gnome/review.rs:424 src/gnome/tables.rs:378
+#: src/gnome/navigation.rs:740 src/gnome/paragraph.rs:1080 src/gnome/review.rs:424 src/gnome/tables.rs:378
 msgid "All"
 msgstr ""
 
@@ -161,7 +161,7 @@ msgstr ""
 msgid "Apply to All Borders"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1159
+#: src/gnome/paragraph.rs:1169
 msgid "Ascending (A–Z)"
 msgstr ""
 
@@ -203,6 +203,10 @@ msgstr ""
 
 #: src/gnome/paragraph.rs:971
 msgid "Before (pt)"
+msgstr ""
+
+#: src/gnome/paragraph.rs:992
+msgid "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."
 msgstr ""
 
 #: src/gnome/accessibility.rs:106 src/gnome/menus.rs:662 src/gnome/tab.rs:244 src/gnome/text_palette.rs:37
@@ -249,7 +253,7 @@ msgstr ""
 msgid "Borders"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:248 src/gnome/paragraph.rs:1074 src/gnome/tables.rs:383
+#: src/gnome/document_properties_dialog.rs:248 src/gnome/paragraph.rs:1084 src/gnome/tables.rs:383
 msgid "Bottom"
 msgstr ""
 
@@ -421,7 +425,7 @@ msgstr ""
 msgid "Clear All Formatting"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1185
+#: src/gnome/paragraph.rs:1195
 msgid "Clear Tab Stops"
 msgstr ""
 
@@ -741,7 +745,7 @@ msgstr ""
 msgid "Deletion"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1165
+#: src/gnome/paragraph.rs:1175
 msgid "Descending (Z–A)"
 msgstr ""
 
@@ -801,7 +805,7 @@ msgstr ""
 msgid "Distribute Rows Evenly"
 msgstr ""
 
-#: src/gnome/paragraph.rs:457 src/gnome/paragraph.rs:792 src/gnome/paragraph.rs:1105
+#: src/gnome/paragraph.rs:457 src/gnome/paragraph.rs:792 src/gnome/paragraph.rs:1115
 msgid "Distributed Alignment"
 msgstr ""
 
@@ -981,7 +985,7 @@ msgstr ""
 msgid "Enter Six Hexadecimal Characters, for Example 808080"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1222
+#: src/gnome/paragraph.rs:1232
 msgid "Enter Six RGB Digits, for Example 2266AA"
 msgstr ""
 
@@ -1269,7 +1273,7 @@ msgstr ""
 msgid "Horizontal"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1077
+#: src/gnome/paragraph.rs:1087
 msgid "Horizontal Line"
 msgstr ""
 
@@ -1421,7 +1425,7 @@ msgstr ""
 msgid "Insertion"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1072 src/gnome/tables.rs:380
+#: src/gnome/paragraph.rs:1082 src/gnome/tables.rs:380
 msgid "Inside"
 msgstr ""
 
@@ -1457,11 +1461,11 @@ msgstr ""
 msgid "Keep Existing Links"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1140
+#: src/gnome/paragraph.rs:1150
 msgid "Keep Lines Together"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1135
+#: src/gnome/paragraph.rs:1145
 msgid "Keep with Next"
 msgstr ""
 
@@ -1517,7 +1521,7 @@ msgstr ""
 msgid "Leaf is an experimental GTK4 and libadwaita document editor powered by WordCraft."
 msgstr ""
 
-#: src/gnome/paragraph.rs:1075 src/gnome/tables.rs:237 src/gnome/tables.rs:384
+#: src/gnome/paragraph.rs:1085 src/gnome/tables.rs:237 src/gnome/tables.rs:384
 msgid "Left"
 msgstr ""
 
@@ -1529,7 +1533,7 @@ msgstr ""
 msgid "Left (pt)"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1111
+#: src/gnome/paragraph.rs:1121
 msgid "Left to Right"
 msgstr ""
 
@@ -1625,7 +1629,7 @@ msgstr ""
 msgid "Minimum Row Height"
 msgstr ""
 
-#: src/gnome/adaptive.rs:169 src/gnome/adaptive.rs:240 src/gnome/paragraph.rs:458 src/gnome/paragraph.rs:484 src/gnome/paragraph.rs:533 src/gnome/paragraph.rs:540 src/gnome/paragraph.rs:552 src/gnome/paragraph.rs:1006 src/gnome/selection_view.rs:154 src/gnome/text_palette.rs:499 src/gnome/text_palette.rs:519
+#: src/gnome/adaptive.rs:169 src/gnome/adaptive.rs:240 src/gnome/paragraph.rs:458 src/gnome/paragraph.rs:484 src/gnome/paragraph.rs:533 src/gnome/paragraph.rs:540 src/gnome/paragraph.rs:552 src/gnome/paragraph.rs:1016 src/gnome/selection_view.rs:154 src/gnome/text_palette.rs:499 src/gnome/text_palette.rs:519
 msgid "Mixed"
 msgstr ""
 
@@ -1721,7 +1725,7 @@ msgstr ""
 msgid "No Background Color"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1069
+#: src/gnome/paragraph.rs:1079
 msgid "No Borders"
 msgstr ""
 
@@ -1841,7 +1845,7 @@ msgstr ""
 msgid "Outline"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1071 src/gnome/tables.rs:379
+#: src/gnome/paragraph.rs:1081 src/gnome/tables.rs:379
 msgid "Outside"
 msgstr ""
 
@@ -1861,7 +1865,7 @@ msgstr ""
 msgid "Page Break"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1145
+#: src/gnome/paragraph.rs:1155
 msgid "Page Break Before"
 msgstr ""
 
@@ -1897,7 +1901,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:408 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:418 src/gnome/diagnostics/register.rs:197 src/gnome/paragraph.rs:1245 src/gnome/tab.rs:311 src/gnome/tab.rs:583
+#: src/gnome/context.rs:131 src/gnome/context.rs:408 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:418 src/gnome/diagnostics/register.rs:197 src/gnome/paragraph.rs:1255 src/gnome/tab.rs:311 src/gnome/tab.rs:583
 msgid "Paragraph"
 msgstr ""
 
@@ -1961,7 +1965,7 @@ msgstr ""
 msgid "Portrait"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1171
+#: src/gnome/paragraph.rs:1181
 msgid "Position (pt)"
 msgstr ""
 
@@ -1997,7 +2001,7 @@ msgstr ""
 msgid "Quadratic Formula"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1011
+#: src/gnome/paragraph.rs:1021
 msgid "RGB Color, for Example 2266AA"
 msgstr ""
 
@@ -2137,7 +2141,7 @@ msgstr ""
 msgid "Reply to Comment"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1191
+#: src/gnome/paragraph.rs:1201
 msgid "Reset Paragraph Formatting"
 msgstr ""
 
@@ -2197,7 +2201,7 @@ msgstr ""
 msgid "Reviewing Pane"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1076 src/gnome/tables.rs:239 src/gnome/tables.rs:385
+#: src/gnome/paragraph.rs:1086 src/gnome/tables.rs:239 src/gnome/tables.rs:385
 msgid "Right"
 msgstr ""
 
@@ -2209,7 +2213,7 @@ msgstr ""
 msgid "Right (pt)"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1117
+#: src/gnome/paragraph.rs:1127
 msgid "Right to Left"
 msgstr ""
 
@@ -2489,7 +2493,7 @@ msgstr ""
 msgid "Show Caption"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1128
+#: src/gnome/paragraph.rs:1138
 msgid "Show Formatting Marks (¶)"
 msgstr ""
 
@@ -2949,7 +2953,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:245 src/gnome/paragraph.rs:1073 src/gnome/tables.rs:382
+#: src/gnome/document_properties_dialog.rs:245 src/gnome/paragraph.rs:1083 src/gnome/tables.rs:382
 msgid "Top"
 msgstr ""
 
@@ -3121,7 +3125,7 @@ msgstr ""
 msgid "Whole Document"
 msgstr ""
 
-#: src/gnome/paragraph.rs:1150
+#: src/gnome/paragraph.rs:1160
 msgid "Widow and Orphan Control"
 msgstr ""
 
@@ -3133,7 +3137,7 @@ msgstr ""
 msgid "Width (mm)"
 msgstr ""
 
-#: src/gnome/paragraph.rs:995
+#: src/gnome/paragraph.rs:1005
 msgid "Width (pt)"
 msgstr ""
 

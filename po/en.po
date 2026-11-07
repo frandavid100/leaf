@@ -2950,3 +2950,6 @@ msgstr "Save as DOCX to preserve picture effects. The current ODT exporter canno
 
 msgid "Use footnotes, comment threads, floating pictures and basic equations in DOCX and ODT documents. DOCX also preserves every Leaf caption association and the supported automatic contents and cross-reference options."
 msgstr "Use footnotes, comment threads, floating pictures and basic equations in DOCX and ODT documents. DOCX also preserves every Leaf caption association and the supported automatic contents and cross-reference options."
+
+msgid "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."
+msgstr "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."

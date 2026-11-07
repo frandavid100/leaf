@@ -43,10 +43,7 @@ fn bands(s: &mut Session) -> Vec<(usize, f32, f32, f32)> {
             .footer
             .iter()
             .filter_map(|it| {
-                if let Placed::Lines {
-                    y, para, l0, l1, ..
-                } = it
-                {
+                if let Placed::Lines { y, l0, l1, .. } = it {
                     (l1 > l0).then_some(*y)
                 } else {
                     None
@@ -125,6 +122,62 @@ fn fixture(distance: f32, single: bool, footer_lines: usize) -> Session {
         .unwrap();
     s
 }
+fn table_fixture(distance: f32) -> Session {
+    let mut s = Session::new(Document::new());
+    document_properties::apply(
+        &mut s,
+        PageSetup {
+            width: 595.3,
+            height: 841.9,
+            top: 28.35,
+            bottom: 28.35,
+            left: 28.35,
+            right: 28.35,
+        },
+        true,
+    )
+    .unwrap();
+    s.run("layout.columns", &json!({"count":2,"space":14.15}))
+        .unwrap();
+    s.run("insert.table", &json!({"rows":24,"cols":2})).unwrap();
+    let root = s.sel.focus.path.0[0];
+    for row in 0..24 {
+        for cell in 0..2 {
+            let p = Pos {
+                story: StoryRef::Body,
+                path: wordcraft_doc::Path(vec![root, row, cell, 0]),
+                off: 0,
+            };
+            selection::set_caret(&mut s, &p, false).unwrap();
+            s.run(
+                "text.insert",
+                &json!({"text":"Ordinary table cell content. ".repeat(5)}),
+            )
+            .unwrap();
+        }
+    }
+    header_footer::enter(&mut s, 0, Region::Footer).unwrap();
+    s.run("text.insert", &json!({"text":"An ordinary footer."}))
+        .unwrap();
+    header_footer::close(&mut s).unwrap();
+    let mut opt = wordcraft_gnome::page_options::Options::current(&s, 0);
+    opt.footer = distance;
+    wordcraft_gnome::page_options::apply(&mut s, &opt).unwrap();
+    selection::set_caret(
+        &mut s,
+        &Pos {
+            story: StoryRef::Body,
+            path: wordcraft_doc::Path(vec![root, 12, 0, 0]),
+            off: 20,
+        },
+        false,
+    )
+    .unwrap();
+    references::insert_footnote(&mut s).unwrap();
+    s.run("text.insert", &json!({"text":"A short footnote."}))
+        .unwrap();
+    s
+}
 fn exercise(mut s: Session, label: &str) {
     check(&mut s, &format!("{label}:open"));
     let notes = references::footnote_refs(&s);
@@ -163,6 +216,28 @@ fn exercise(mut s: Session, label: &str) {
     }
 }
 fn main() {
+    if let Some(folder) = std::env::var_os("LEAF_NOTE_REPRO_DIR") {
+        let folder = std::path::PathBuf::from(folder);
+        std::fs::create_dir_all(&folder).unwrap();
+        let mut generated = table_fixture(28.35);
+        let layout = generated.layout();
+        std::fs::write(
+            folder.join("table-note.png"),
+            wordcraft_render::render_page(
+                &generated.doc,
+                &layout.pages[0],
+                1.5,
+                &Default::default(),
+            )
+            .to_png(),
+        )
+        .unwrap();
+        wordcraft_gnome::saving::save(&mut generated, &folder.join("table-note.docx")).unwrap();
+        wordcraft_gnome::pdf_export::export(&mut generated, &folder.join("table-note.pdf"))
+            .unwrap();
+        println!("SYNTHETIC_REPRO_EXPORTED");
+    }
+
     for single in [false, true] {
         for lines in [1, 3] {
             for d in [14., 28.35, 35.45, 60.] {
@@ -172,6 +247,12 @@ fn main() {
                 );
             }
         }
+    }
+    for distance in [28.35, 35.45, 60.] {
+        exercise(
+            table_fixture(distance),
+            &format!("synthetic-table:{distance}"),
+        );
     }
     if let Some(file) = std::env::args().nth(1) {
         exercise(
