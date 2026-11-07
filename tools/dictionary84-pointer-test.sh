@@ -46,10 +46,15 @@ PY
     choose)
       dialog=$(chooser_window)
       xdotool windowfocus --sync "$dialog"
+      test -d "${LEAF84_SOURCE:?Missing synthetic source}"
+      printf 'DICTIONARY84_DRIVER_SOURCE %s\n' "$LEAF84_SOURCE"
       xdotool key --clearmodifiers ctrl+l
-      xdotool type --clearmodifiers --delay 5 "${LEAF84_SOURCE:?Missing synthetic source}"
-      xdotool key Return
-      sleep 0.4
+      xdotool key --clearmodifiers ctrl+a
+      xdotool type --clearmodifiers --delay 15 "$LEAF84_SOURCE/"
+      sleep 0.5
+      scrot "${log%.log}-location.png"
+      xdotool key --clearmodifiers Return
+      sleep 1
       xdotool key --clearmodifiers alt+u
       ;;
     cancel)

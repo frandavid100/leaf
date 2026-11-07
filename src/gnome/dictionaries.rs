@@ -172,6 +172,9 @@ impl DictionaryTools {
                     return;
                 }
             };
+            if std::env::args().any(|a| a == "--dictionary84-ui-test") {
+                eprintln!("DICTIONARY84_SELECTED path={:?}", file.path());
+            }
             let result = file
                 .path()
                 .ok_or_else(|| wordcraft_gnome::t!("Choose a local dictionary folder.").to_owned())

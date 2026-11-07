@@ -397,7 +397,7 @@ msgstr ""
 msgid "Choose Columns × Rows"
 msgstr ""
 
-#: src/gnome/dictionaries.rs:239
+#: src/gnome/dictionaries.rs:242
 msgid "Choose Dictionary Folder…"
 msgstr ""
 
@@ -421,7 +421,7 @@ msgstr ""
 msgid "Choose a font family"
 msgstr ""
 
-#: src/gnome/dictionaries.rs:177
+#: src/gnome/dictionaries.rs:180
 msgid "Choose a local dictionary folder."
 msgstr ""
 
@@ -777,7 +777,7 @@ msgstr ""
 msgid "Diamond"
 msgstr ""
 
-#: src/gnome/dictionaries.rs:211
+#: src/gnome/dictionaries.rs:214
 msgid "Dictionaries"
 msgstr ""
 
@@ -1365,7 +1365,7 @@ msgstr ""
 msgid "Images cannot be inserted inside a drawing canvas"
 msgstr ""
 
-#: src/gnome/dictionaries.rs:249
+#: src/gnome/dictionaries.rs:252
 msgid "Import Dictionary Files…"
 msgstr ""
 
@@ -2101,7 +2101,7 @@ msgstr ""
 msgid "Reference Type"
 msgstr ""
 
-#: src/gnome/dictionaries.rs:246
+#: src/gnome/dictionaries.rs:249
 msgid "Refresh Dictionaries"
 msgstr ""
 
@@ -2685,7 +2685,7 @@ msgstr ""
 msgid "Starting Page Number"
 msgstr ""
 
-#: src/gnome/dictionaries.rs:243
+#: src/gnome/dictionaries.rs:246
 msgid "Stop Using This Folder"
 msgstr ""
 
@@ -2741,7 +2741,7 @@ msgstr ""
 msgid "Switch Pane"
 msgstr ""
 
-#: src/gnome/dictionaries.rs:253
+#: src/gnome/dictionaries.rs:256
 msgid "System Language Settings…"
 msgstr ""
 
@@ -3173,7 +3173,7 @@ msgstr ""
 msgid "Use footnotes, comment threads, floating pictures and basic equations in DOCX and ODT documents. DOCX also preserves every Leaf caption association and the supported automatic contents and cross-reference options."
 msgstr ""
 
-#: src/gnome/dictionaries.rs:225
+#: src/gnome/dictionaries.rs:228
 msgid "Use readable system dictionaries, an additional folder or imported Hunspell files. The document language stays independent of the interface language."
 msgstr ""
 
