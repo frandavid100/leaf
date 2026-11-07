@@ -95,12 +95,14 @@ jobs:
             XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 1400x1100x24' timeout 90s ./target/release/wordcraft-gnome --review29-ui-test 2>&1 | tee review29-$language.log
             grep -q REVIEW29_UI_OK review29-$language.log
           done
-      - name: Verify contextual and pinned native menu controls before packaging
+      - name: Verify contextual, pinned and Paragraph native controls before packaging
         run: |
           set -o pipefail
           GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 1280x900x24' timeout 90s bash tools/context-pointer-test.sh
           GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --test-document --pin-ui-test 2>&1 | tee popover-pin.log
           grep -q POPOVER_PIN_OK popover-pin.log
+          GSK_RENDERER=cairo xvfb-run -a timeout 90s ./target/release/wordcraft-gnome --test-document --paragraph-ui-test 2>&1 | tee paragraph-popover.log
+          grep -q PARAGRAPH_POPOVER_OK paragraph-popover.log
       - name: Validate grouped Insert and annotation workflows
         run: |
           set -o pipefail
@@ -361,8 +363,6 @@ jobs:
             run_case vista-preferencias.png --preferences-demo
             GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --search-ui-test 2> search-sidebar.log
             grep -q SEARCH_SIDEBAR_OK search-sidebar.log
-            GSK_RENDERER=cairo ./target/release/wordcraft-gnome --test-document --paragraph-ui-test 2> paragraph-popover.log
-            grep -q PARAGRAPH_POPOVER_OK paragraph-popover.log
             GSK_RENDERER=cairo ./target/release/wordcraft-gnome --document-tools-test 2> document-tools.log &
             tools_pid=$!
             for attempt in $(seq 1 300); do

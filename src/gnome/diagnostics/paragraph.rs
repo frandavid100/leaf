@@ -40,7 +40,8 @@ pub(super) fn paragraph_ui_test(
     click("paragraph-line-1.5");
     assert_eq!(selection_paragraph(&ui)["lineSpacing"]["value"], 1.5);
     click("paragraph-back");
-    click("paragraph-more-borders");
+    click("paragraph-more-shading");
+    assert!(find_widget(&s.detail, "paragraph-border-chooser").is_none());
     test_choose_color(
         &s.popover.upgrade().unwrap(),
         "paragraph-shading-chooser",
@@ -49,6 +50,7 @@ pub(super) fn paragraph_ui_test(
     assert!(selection_paragraph(&ui)["shading"].is_array());
     click("paragraph-back");
     click("paragraph-more-borders");
+    assert!(find_widget(&s.detail, "paragraph-shading-chooser").is_none());
     click("paragraph-border-outside");
     assert!(selection_paragraph(&ui)["borders"].is_object());
     click("paragraph-back");
