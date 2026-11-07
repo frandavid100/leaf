@@ -1897,7 +1897,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:408 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:418 src/gnome/diagnostics/register.rs:185 src/gnome/paragraph.rs:1245 src/gnome/tab.rs:311 src/gnome/tab.rs:583
+#: src/gnome/context.rs:131 src/gnome/context.rs:408 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:418 src/gnome/diagnostics/register.rs:197 src/gnome/paragraph.rs:1245 src/gnome/tab.rs:311 src/gnome/tab.rs:583
 msgid "Paragraph"
 msgstr ""
 
@@ -2633,7 +2633,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:407 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:419 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:184 src/gnome/styles.rs:499 src/gnome/tab.rs:307 src/gnome/tab.rs:582
+#: src/gnome/context.rs:128 src/gnome/context.rs:407 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:419 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:196 src/gnome/styles.rs:499 src/gnome/tab.rs:307 src/gnome/tab.rs:582
 msgid "Style"
 msgstr ""
 
@@ -2733,7 +2733,7 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:409 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:417 src/gnome/diagnostics/register.rs:186 src/gnome/diagnostics/spellcheck.rs:145 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:584
+#: src/gnome/context.rs:134 src/gnome/context.rs:409 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:417 src/gnome/diagnostics/register.rs:198 src/gnome/diagnostics/spellcheck.rs:145 src/gnome/references.rs:335 src/gnome/tab.rs:263 src/gnome/tab.rs:298 src/gnome/tab.rs:584
 msgid "Text"
 msgstr ""
 

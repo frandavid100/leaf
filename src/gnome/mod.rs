@@ -145,6 +145,9 @@ mod workspace;
 use workspace::*;
 
 // Opt-in diagnostics and synthetic fixtures; no normal startup work.
+#[path = "diagnostics/pending_issues.rs"]
+mod pending_issue_checks;
+use pending_issue_checks::*;
 #[path = "diagnostics/clipboard.rs"]
 mod clipboard_checks;
 use clipboard_checks::*;
