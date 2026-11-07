@@ -51,7 +51,8 @@ Real GTK pointer/keyboard checks pass in English light/1× and Spanish dark/2×,
 including native typing, pinned off/on, Undo/Redo, switching identical images,
 table-caption caret context, DOCX reopening, typed navigation and hover/caret
 discovery. Full native and installed CI pass. This delivery completes #121, #124,
-#126 and #127; #132 remains open.
+#126 and #127. Subsequently, #132 was closed on 2026-11-07 after maintainer
+verification of the original document, as recorded below.
 
 Existing imported or earlier captions without explicit object anchors remain
 ordinary editable caption paragraphs. They are not silently assigned to nearby
@@ -126,4 +127,14 @@ separate lines in paragraph 4 (baselines 11 and 27.773901 points), with matching
 PNG/PDF output. Native Alpha.30 and Alpha.31 controls also display separate lines,
 including a Flatpak-style Noto Color Emoji font and opening paragraph spacing.
 The supplied screenshot establishes a real failure, but its exact triggering
-editing state is still missing. #132 remains open; no engine cause is invented.
+editing state is still missing; no engine cause is invented.
+
+### Subsequent maintainer verification — 2026-11-07
+
+David received a byte-identical copy of the original under the simpler name
+`Leaf-issue-132-original.docx` (same SHA-256 above) and reports:
+“Te confirmo que 132 parece arreglado.” The report is closed following his check
+in the affected environment, alongside the earlier independent controls. No
+content was changed to hide the symptom. The original trigger and fixing change
+remain unidentified; no additional zoom/PDF/IME coverage or engine fix is claimed.
+Reopen if the symptom returns with a reproducible sequence.

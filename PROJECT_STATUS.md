@@ -1,6 +1,6 @@
 # Estado actual de Leaf
 
-Actualizado: 6 de noviembre de 2026. Esta página describe el presente;
+Actualizado: 7 de noviembre de 2026. Esta página describe el presente;
 el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.
 
 ## Dónde trabajar
@@ -29,9 +29,9 @@ Fuente del paquete `da5b3f96c672eceb41218855e73ffba0897c126d`; ejecutable nativo
 `486a8b2c2050f09a6ffd31ce47cacab48e5051f8`. No hay publicación automática:
 David debe probar y aprobar estos mismos archivos antes de promoverlos a Releases.
 
-#132 sigue abierto: el documento original no reproduce aquí el solapamiento,
-incluidos los controles Alpha.30/Alpha.31 con emoji en color. No se le atribuye
-una corrección. La creación de leyendas numeradas se limita al cuerpo y DOCX;
+#132 cerrado el 7/11/2026 tras la comprobación de David con una copia idéntica
+del documento original: confirma que parece arreglado en su entorno. No se ha
+identificado el disparador original ni la corrección concreta responsable. La creación de leyendas numeradas se limita al cuerpo y DOCX;
 las leyendas importadas sin asociación explícita no se asignan por proximidad.
 #135 está reabierto; los nuevos #149–#152 y los restantes issues no forman parte
 de estos cuatro cierres.

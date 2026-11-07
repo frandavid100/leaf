@@ -5,7 +5,7 @@ propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funcion
 
 | Tema | Decisión | Consecuencia al modificar código |
 | --- | --- | --- |
-| Tercera candidata alpha.31 validada | Completados #121/#124/#126/#127 mediante propiedad canónica de leyendas, controles compartidos, navegación tipada y decoración temporal. Batería nativa completa y GNOME 49/51 verificados. | [Fuente, sumas y límites](CAPTION_OWNERSHIP.md). Conservar texto/historial, no inferir propiedad por proximidad y mantener #132 abierto. David debe probar y aprobar los mismos archivos antes de publicar. |
+| Tercera candidata alpha.31 validada | Completados #121/#124/#126/#127 mediante propiedad canónica de leyendas, controles compartidos, navegación tipada y decoración temporal. Batería nativa completa y GNOME 49/51 verificados. | [Fuente, sumas y límites](CAPTION_OWNERSHIP.md). Conservar texto/historial, no inferir propiedad por proximidad sin atribuir a #132 una corrección no identificada; David confirmó el original y se cerró el 7/11/2026. David debe probar y aprobar los mismos archivos antes de publicar. |
 | Segunda candidata alpha.31 histórica | En aquella entrega se cerraron #134–#136; #135 se ha reabierto después. Se aisló la captura de eventos de la regla; conserva #133. Batería nativa completa, GNOME 49/51 y menús realmente traducidos verificados sobre los mismos archivos. | [Fuente, sumas y límites](ALPHA31_UI_VALIDATION.md). David debe probar y aprobar antes de promover estos bytes a Releases; no publicar automáticamente. |
 | Primera candidata alpha.31 histórica | Solo cerraba #133; los experimentos de interfaz se retiraron en aquella entrega. | [Identidad histórica](ALPHA31_VALIDATION.md). La segunda candidata la sustituye; no reutilizar su lista de issues como estado actual. |
 | Revisión visual #111–#121 | David autoriza incorporar los once issues nuevos a la misma candidata. Revisión reúne correcciones/cambios/comentarios; modos Editar/Sugerir, filas de formato con casillas mixtas y Elementos en cabecera con creación/propiedades compartidas. | Conservar flotación fijada, selección, herencia y API públicas. #121 sustituye nombre/ubicación de Insertar de #109, #116 el icono anterior, #120 las rejillas anteriores; conservar capacidades. |
@@ -51,8 +51,9 @@ propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funcion
 Las leyendas usan propiedad explícita en el documento canónico: marcadores para
 imágenes y leyendas, controles OOXML desbloqueados para tablas. Mostrar/ocultar
 retiene el texto y el historial nativo; no se atribuyen leyendas por proximidad.
-Navegación y decoración derivan de esos datos. #132 permanece abierto mientras
-el documento original no reproduzca su estado de edición afectado.
+Navegación y decoración derivan de esos datos. #132 se cerró el 7/11/2026 tras
+la confirmación de David con el documento original; el disparador y la corrección
+concreta siguen sin identificar.
 [Implementación y límites](CAPTION_OWNERSHIP.md).
 
 El [historial](history/README.md) conserva el razonamiento y las entregas anteriores.

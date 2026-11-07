@@ -1,6 +1,6 @@
 # Hoja de ruta de Leaf
 
-Actualizada: 6 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
+Actualizada: 7 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
@@ -13,8 +13,8 @@ inglés/español, claro/oscuro y escala 1×/2×. Las once sumas de la descarga e
 verificadas. [Implementación, identidad y límites](docs/CAPTION_OWNERSHIP.md).
 
 David debe probar y aprobar los mismos archivos antes de publicar. No hay
-publicación automática. #132 sigue abierto porque su disparador no se reproduce
-con el documento original. #135 está reabierto y los nuevos #149–#152 siguen
+publicación automática. #132 cerrado el 7/11/2026 tras la comprobación de David
+con el documento original, sin atribuir una causa o corrección no identificada. #135 está reabierto y los nuevos #149–#152 siguen
 pendientes; no quedan resueltos por estos cuatro cierres.
 
 La segunda candidata de interfaz queda como [evidencia histórica](docs/ALPHA31_UI_VALIDATION.md).
