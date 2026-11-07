@@ -161,16 +161,46 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
         selection::set_caret(&mut c.as_mut().unwrap().session, &end, false).unwrap();
     }
     refresh_selection(ui);
+    // Undo refreshes derived TOC entries synchronously. Settle the previously
+    // queued refresh first so both full-document snapshots are equally current.
+    after_history_change(ui);
     para.home();
     let undo = ui.current.borrow().as_ref().unwrap().session.undo_depth();
+    let destination = selection_paragraph(ui);
+    let destination_doc = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     click(&para.main, "paragraph-borders");
     assert_eq!(selection_paragraph(ui)["borders"], props["borders"]);
-    assert_eq!(selection_paragraph(ui)["shading"], props["shading"]);
+    assert_eq!(
+        selection_paragraph(ui)["shading"],
+        destination["shading"],
+        "border repeat preserves the target shading"
+    );
     assert_eq!(
         ui.current.borrow().as_ref().unwrap().session.undo_depth(),
         undo + 1
     );
     apply_user_edit(ui, Edit::Undo);
+    assert_eq!(
+        ui.current.borrow().as_ref().unwrap().session.doc,
+        destination_doc
+    );
+    para.home();
+    click(&para.main, "paragraph-shading");
+    assert_eq!(selection_paragraph(ui)["shading"], props["shading"]);
+    assert_eq!(
+        selection_paragraph(ui)["borders"],
+        destination["borders"],
+        "shading repeat preserves the target borders"
+    );
+    assert_eq!(
+        ui.current.borrow().as_ref().unwrap().session.undo_depth(),
+        undo + 1
+    );
+    apply_user_edit(ui, Edit::Undo);
+    assert_eq!(
+        ui.current.borrow().as_ref().unwrap().session.doc,
+        destination_doc
+    );
     let elements = ui.elements.borrow().as_ref().unwrap().clone();
     elements.show("image");
     assert!(

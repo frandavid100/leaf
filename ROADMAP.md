@@ -4,6 +4,14 @@ Actualizada: 7 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
+## En curso: alpha.31 automática
+
+Autorizada por David el 7/11/2026: corregir y cerrar solo issues verificables,
+validar el paquete y publicar automáticamente. #135/#149/#150/#151/#155 están
+en validación; [resultados y límites restantes](docs/ALPHA31_REMAINING.md).
+#1/#2 se trabajan en WordCraft aparte. Conservar abiertos los casos pendientes
+de reproducción y las limitaciones del motor o del host.
+
 ## Preparada para David: tercera candidata alpha.31
 
 Completados #121/#124/#126/#127 con asociaciones explícitas de objetos y leyendas,
@@ -12,8 +20,8 @@ temporal. Batería nativa completa e instalaciones GNOME 49/51 comprobadas;
 inglés/español, claro/oscuro y escala 1×/2×. Las once sumas de la descarga están
 verificadas. [Implementación, identidad y límites](docs/CAPTION_OWNERSHIP.md).
 
-David debe probar y aprobar los mismos archivos antes de publicar. No hay
-publicación automática. #132 cerrado el 7/11/2026 tras la comprobación de David
+Esta candidata anterior requería aprobación; la autorización de la última
+pasada permite publicar automáticamente después de las comprobaciones. #132 cerrado el 7/11/2026 tras la comprobación de David
 con el documento original, sin atribuir una causa o corrección no identificada. #135 está reabierto y los nuevos #149–#152 siguen
 pendientes; no quedan resueltos por estos cuatro cierres.
 

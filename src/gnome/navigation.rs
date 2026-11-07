@@ -848,16 +848,16 @@ pub(super) fn install_navigation_switching(ui: &Rc<Ui>) {
                 Some("thumbnails") => {
                     ui.last_navigation.set("thumbnails");
                     ui.representation.set_selected(0);
+                    ui.navigation_selector.set_visible(true);
                     ui.sidebar_filters.set_visible_child_name("navigation");
                     ui.navigation_button.set_active(true);
-                    ui.navigation_selector.set_visible(true);
                 }
                 Some("outline") => {
                     ui.last_navigation.set("outline");
                     ui.representation.set_selected(1);
+                    ui.navigation_selector.set_visible(true);
                     ui.sidebar_filters.set_visible_child_name("navigation");
                     ui.navigation_button.set_active(true);
-                    ui.navigation_selector.set_visible(true);
                 }
                 Some("review") => {
                     ui.navigation_selector.set_visible(false);

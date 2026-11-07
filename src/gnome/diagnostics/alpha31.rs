@@ -29,7 +29,8 @@ I recieve text.",
         .unwrap();
     opened(ui, s, "Incremental review");
     let review = ui.review.borrow().as_ref().unwrap().clone();
-    review.show(None);
+    ui.navigation_button.set_active(true);
+    ui.sidebar.set_show_sidebar(false);
     let (u, w, a) = (ui.clone(), window.clone(), app.clone());
     let visited = Rc::new(Cell::new(0u8));
     let visited_signal = visited.clone();
@@ -51,6 +52,16 @@ I recieve text.",
                 if spell.source.borrow().is_some() || spell.debounce.borrow().is_some() {
                     return glib::ControlFlow::Continue;
                 }
+                assert_eq!(
+                    spell.checked.get(),
+                    document_identity(&u),
+                    "opening a document starts proofing with the sidebar hidden"
+                );
+                assert_eq!(
+                    u.navigation_pages.visible_child_name().as_deref(),
+                    Some("thumbnails")
+                );
+                review.show(None);
                 review.refresh();
                 assert!(
                     spell
@@ -212,6 +223,21 @@ I recieve text.",
                     "mouse/keyboard visited both representations"
                 );
                 assert_eq!(u.representation.selected(), 0);
+                if spell.checked.get() != document_identity(&u) {
+                    return glib::ControlFlow::Continue;
+                }
+                assert_eq!(
+                    u.navigation_pages.visible_child_name().as_deref(),
+                    Some("thumbnails")
+                );
+                assert!(
+                    spell
+                        .issues
+                        .borrow()
+                        .iter()
+                        .any(|i| i.text == "qqqhiddenreviewzz"),
+                    "edits are checked before reopening Review"
+                );
                 u.review.borrow().as_ref().unwrap().show(None);
             }
             5 => {

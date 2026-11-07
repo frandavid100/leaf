@@ -2914,3 +2914,21 @@ msgstr "Show Caption"
 
 msgid "Captions are available in the document body."
 msgstr "Captions are available in the document body."
+
+msgid "Split"
+msgstr "Split"
+
+msgid "Left (pt)"
+msgstr "Left (pt)"
+
+msgid "Right (pt)"
+msgstr "Right (pt)"
+
+msgid "First Line (pt; −: Hanging)"
+msgstr "First Line (pt; −: Hanging)"
+
+msgid "Before (pt)"
+msgstr "Before (pt)"
+
+msgid "After (pt)"
+msgstr "After (pt)"

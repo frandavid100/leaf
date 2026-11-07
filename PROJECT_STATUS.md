@@ -12,6 +12,17 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
+## En validación: alpha.31 con publicación automática autorizada
+
+David autoriza el 7/11/2026 cerrar los issues verificables y generar/publicar la
+release sin esperar otro visto bueno. Correcciones de Navegación #135, revisión
+oculta #155 y menús Párrafo/Texto/Tabla #149–#151 en validación. No se modifica
+WordCraft; columnas #1/#2 se trabajan aparte. Los informes no reproducidos y los
+límites de motor/host continúan abiertos. [Resultados y límites](docs/ALPHA31_REMAINING.md).
+La promoción automática debe esperar las pruebas nativas e instaladas y usar
+exactamente los mismos bytes. La última release publicada sigue siendo alpha.30
+hasta verificar la promoción.
+
 ## Preparada: tercera candidata alpha.31 — Leyendas y navegación
 
 Completados #121, #124, #126 y #127: propiedades compartidas de Elementos,
@@ -26,8 +37,8 @@ escala 1×/2×. Se conserva la regresión original de fuente/pegado/canvas sin c
 Se han verificado las once sumas de la descarga. [Fuente, sumas y límites](docs/CAPTION_OWNERSHIP.md).
 
 Fuente del paquete `da5b3f96c672eceb41218855e73ffba0897c126d`; ejecutable nativo de
-`486a8b2c2050f09a6ffd31ce47cacab48e5051f8`. No hay publicación automática:
-David debe probar y aprobar estos mismos archivos antes de promoverlos a Releases.
+`486a8b2c2050f09a6ffd31ce47cacab48e5051f8`. Esta candidata requería aprobación antes de publicarse; la nueva autorización
+de publicación automática para la última pasada sustituye ese requisito.
 
 #132 cerrado el 7/11/2026 tras la comprobación de David con una copia idéntica
 del documento original: confirma que parece arreglado en su entorno. No se ha

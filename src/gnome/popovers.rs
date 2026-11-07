@@ -315,13 +315,8 @@ pub(super) fn embedded_color_chooser(
     let picker = gtk::ColorChooserWidget::new();
     picker.set_widget_name(name);
     picker.set_use_alpha(false);
-    let colors = [
-        "#000000", "#FFFFFF", "#E01B24", "#1C71D8", "#26A269", "#813D9C", "#FFFF00", "#2266AA",
-    ]
-    .iter()
-    .map(|c| gdk::RGBA::parse(*c).unwrap())
-    .collect::<Vec<_>>();
-    picker.add_palette(gtk::Orientation::Horizontal, 4, &colors);
+    // Keep GTK's full native palette, grayscale and custom-color editor.
+    // Adding a replacement palette here hides the standard chooser colors.
     if let Some(color) = initial.and_then(|s| gdk::RGBA::parse(s).ok()) {
         picker.set_rgba(&color);
     }

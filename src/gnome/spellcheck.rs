@@ -173,17 +173,15 @@ impl SpellReview {
             id.remove();
         }
         self.queued.set(false);
-        if self.toggle.is_active() {
-            let weak = Rc::downgrade(self);
-            let id =
-                glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
-                    if let Some(s) = weak.upgrade() {
-                        s.debounce.borrow_mut().take();
-                        s.scan();
-                    }
-                });
-            self.debounce.replace(Some(id));
-        }
+        // Findings belong to the document, independently of the visible panel.
+        let weak = Rc::downgrade(self);
+        let id = glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
+            if let Some(s) = weak.upgrade() {
+                s.debounce.borrow_mut().take();
+                s.scan();
+            }
+        });
+        self.debounce.replace(Some(id));
     }
     pub(super) fn scan(self: &Rc<Self>) {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {

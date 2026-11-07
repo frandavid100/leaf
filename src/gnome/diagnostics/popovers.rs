@@ -128,20 +128,36 @@ pub(super) fn pin_test_step(t: Rc<PinTest>, step: u8) {
             t.tb.popup();
             let table = t.tb.popover().unwrap();
             popover_pin(&table).set_active(true);
-            find_widget(&table.child().unwrap(), "table-action-table.insertRowBelow")
+            let submenu = find_widget(&table.child().unwrap(), "table-add")
                 .unwrap()
-                .downcast::<gtk::Button>()
-                .unwrap()
-                .emit_clicked();
+                .downcast::<gtk::MenuButton>()
+                .unwrap();
+            submenu.popup();
+            find_widget(
+                &submenu.popover().unwrap(),
+                "table-action-table.insertRowBelow",
+            )
+            .unwrap()
+            .downcast::<gtk::Button>()
+            .unwrap()
+            .emit_clicked();
         }
         5 => {
             let table = t.tb.popover().unwrap();
             assert!(table.is_mapped(), "pinned table must stay drawn");
-            find_widget(&table.child().unwrap(), "table-delete")
+            let submenu = find_widget(&table.child().unwrap(), "table-delete")
                 .unwrap()
-                .downcast::<gtk::Button>()
-                .unwrap()
-                .emit_clicked();
+                .downcast::<gtk::MenuButton>()
+                .unwrap();
+            submenu.popup();
+            find_widget(
+                &submenu.popover().unwrap(),
+                "table-action-table.deleteTable",
+            )
+            .unwrap()
+            .downcast::<gtk::Button>()
+            .unwrap()
+            .emit_clicked();
             assert!(
                 !find_widget(&table.child().unwrap(), "table-context")
                     .unwrap()
