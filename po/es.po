@@ -2926,3 +2926,9 @@ msgstr "Derecha (pt)"
 
 msgid "First Line (pt; −: Hanging)"
 msgstr "Primera línea (pt; −: francesa)"
+
+msgid "Before (pt)"
+msgstr "Antes (pt)"
+
+msgid "After (pt)"
+msgstr "Después (pt)"

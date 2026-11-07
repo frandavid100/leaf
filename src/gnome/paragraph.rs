@@ -635,12 +635,11 @@ impl ParagraphPopover {
         );
         self.stack.set_visible_child_name("main");
     }
-    pub(super) fn title(&self, label: &str) {
-        let l = gtk::Label::new(Some(label));
-        l.set_xalign(0.0);
-        l.add_css_class("heading");
-        l.set_margin_top(8);
-        self.detail.append(&l);
+    fn group_separator(&self) {
+        if self.detail.first_child().is_some() {
+            self.detail
+                .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+        }
     }
     pub(super) fn number(&self, label: &str, value: f64, min: f64, max: f64) -> gtk::SpinButton {
         let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
@@ -670,7 +669,7 @@ impl ParagraphPopover {
         self.detail.append(&self.action(label, name, command, args));
     }
     fn shading_controls(self: &Rc<Self>) {
-        self.title(wordcraft_gnome::t!("Shading"));
+        self.group_separator();
         let initial = self
             .ui
             .upgrade()
@@ -782,7 +781,7 @@ impl ParagraphPopover {
                 }
             }
             "columns" => {
-                self.title(wordcraft_gnome::t!("Columns"));
+                self.group_separator();
                 let weak = Rc::downgrade(self);
                 let editor = columns_editor(&ui, move || {
                     if let Some(s) = weak.upgrade() {
@@ -796,11 +795,7 @@ impl ParagraphPopover {
                 self.detail.append(&editor.apply);
             }
             "bullets" | "numbering" => {
-                self.title(if page == "bullets" {
-                    wordcraft_gnome::t!("Bullets")
-                } else {
-                    wordcraft_gnome::t!("Numbering")
-                });
+                self.group_separator();
                 let (command, choices): (&'static str, Vec<(&str, &str)>) = if page == "bullets" {
                     (
                         "para.bullets",
@@ -837,7 +832,7 @@ impl ParagraphPopover {
                     command,
                     serde_json::json!({"off":true}),
                 );
-                self.title(wordcraft_gnome::t!("Multilevel List"));
+                self.group_separator();
                 self.button(
                     "1 / 1.1 / 1.1.1",
                     "paragraph-list-legal",
@@ -916,7 +911,7 @@ impl ParagraphPopover {
                 }
             }
             "spacing" => {
-                self.title(wordcraft_gnome::t!("Line Spacing"));
+                self.group_separator();
                 for (value, label) in [
                     (1.0, wordcraft_gnome::t!("Single")),
                     (1.15, wordcraft_gnome::t!("1.15 Lines")),
@@ -952,15 +947,15 @@ impl ParagraphPopover {
                     exact.set_text("");
                 }
                 self.number_action(&exact, "para.lineSpacing", "exactly", "lineSpacing.value");
-                self.title(wordcraft_gnome::t!("Paragraph Spacing (pt)"));
+                self.group_separator();
                 let before = self.number(
-                    wordcraft_gnome::t!("Before"),
+                    wordcraft_gnome::t!("Before (pt)"),
                     state["spaceBefore"].as_f64().unwrap_or(0.0),
                     0.0,
                     1584.0,
                 );
                 let after = self.number(
-                    wordcraft_gnome::t!("After"),
+                    wordcraft_gnome::t!("After (pt)"),
                     state["spaceAfter"].as_f64().unwrap_or(0.0),
                     0.0,
                     1584.0,
@@ -1086,7 +1081,7 @@ impl ParagraphPopover {
                 }
             }
             _ => {
-                self.title(wordcraft_gnome::t!("Direction and Formatting"));
+                self.group_separator();
                 self.button(
                     wordcraft_gnome::t!("Distributed Alignment"),
                     "paragraph-distribute",
@@ -1115,7 +1110,7 @@ impl ParagraphPopover {
                     marks,
                     "view.marks",
                 );
-                self.title(wordcraft_gnome::t!("Breaks and Pagination"));
+                self.group_separator();
                 for (label, key, cmd) in [
                     (
                         wordcraft_gnome::t!("Keep with Next"),
@@ -1140,7 +1135,7 @@ impl ParagraphPopover {
                 ] {
                     self.toggle(label, state[key].as_bool().unwrap_or(false), cmd);
                 }
-                self.title(wordcraft_gnome::t!("Sort Selected Paragraphs"));
+                self.group_separator();
                 self.button(
                     wordcraft_gnome::t!("Ascending (A–Z)"),
                     "paragraph-sort-asc",
@@ -1153,7 +1148,7 @@ impl ParagraphPopover {
                     "para.sort",
                     serde_json::json!({"descending":true}),
                 );
-                self.title(wordcraft_gnome::t!("Tab Stops"));
+                self.group_separator();
                 let pos = self.number(wordcraft_gnome::t!("Position (pt)"), 36.0, 0.0, 1584.0);
                 let b = style_menu_button(wordcraft_gnome::t!("Add Left Tab Stop"));
                 self.detail.append(&b);

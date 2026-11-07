@@ -2926,3 +2926,9 @@ msgstr "Right (pt)"
 
 msgid "First Line (pt; −: Hanging)"
 msgstr "First Line (pt; −: Hanging)"
+
+msgid "Before (pt)"
+msgstr "Before (pt)"
+
+msgid "After (pt)"
+msgstr "After (pt)"
