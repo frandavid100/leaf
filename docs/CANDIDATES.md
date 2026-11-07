@@ -10,6 +10,14 @@ las notas de versión y las sumas SHA-256 de los paquetes. Su versión interna e
 la Alpha prevista; «candidata 1», «candidata 2», etc. distinguen las compilaciones
 por su ejecución y hash, sin cambiar el paquete antes de publicarlo.
 
+## Alpha.31 publicada
+
+La [candidata 42361339472](https://github.com/frandavid100/leaf/actions/runs/42361339472)
+superó las instalaciones GNOME 49/51 y exigió el éxito de toda la batería nativa
+42360443648. La [promoción automática](https://github.com/frandavid100/leaf/actions/runs/42362957503)
+publicó los mismos archivos el 7/11/2026. Verificados los doce digests públicos.
+[Fuente, sumas y alcance](ALPHA31_REMAINING.md).
+
 ## Generar y probar
 
 El commit de integración en `main` lleva `[candidate-alpha]`. El mismo marcador
@@ -25,7 +33,8 @@ identificador real de una ejecución nativa del mismo repositorio/flujo. No se
 cambian constantes de fuentes en el flujo para cada candidata.
 
 Una compilación nativa puede ceder su ejecutable al empaquetado después de pasar
-los controles nuevos, mientras continúa las regresiones anteriores. El flujo
+los controles nuevos y las regresiones de menú contextual, fijación y Párrafo,
+ejecutadas una sola vez antes de crear el artefacto reutilizable, mientras continúa las regresiones anteriores. El flujo
 comprueba identidad y equivalencia de fuentes; aplica el mismo strip optimizado,
 valida las instalaciones en paralelo y exige el éxito completo de la ejecución
 nativa antes de aceptar la candidata. Finalmente compara ambos ejecutables byte
@@ -53,7 +62,7 @@ Las comprobaciones de la candidata deben cubrir los cambios indicados en sus
 notas y los documentos donde aparecieron los problemas. Un fallo produce otra
 candidata, con nueva fuente, ejecución y sumas.
 
-## Promover después de la aprobación
+## Promover una candidata validada
 
 El flujo `Publish a validated Alpha candidate without rebuilding` se ejecuta
 manualmente con el identificador aprobado por David, o automáticamente mediante

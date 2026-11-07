@@ -12,18 +12,27 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## En validación: alpha.31 con publicación automática autorizada
+## Publicada y verificada: alpha.31
 
-David autoriza el 7/11/2026 cerrar los issues verificables y generar/publicar la
-release sin esperar otro visto bueno. Correcciones de Navegación #135, revisión
-oculta #155 y menús Párrafo/Texto/Tabla #149–#151 en validación. No se modifica
-WordCraft; columnas #1/#2 se trabajan aparte. Los informes no reproducidos y los
-límites de motor/host continúan abiertos. [Resultados y límites](docs/ALPHA31_REMAINING.md).
-La promoción automática debe esperar las pruebas nativas e instaladas y usar
-exactamente los mismos bytes. La última release publicada sigue siendo alpha.30
-hasta verificar la promoción.
+[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.31),
+publicada automáticamente el 7/11/2026 con autorización de David. En esta última
+pasada se cierran #135, #149, #150, #151 y #155: selector de Navegación, revisión
+con el panel oculto y ajustes de Párrafo, Texto y Tabla. Acumula las candidatas
+alpha.31 anteriores. WordCraft y sus dependencias conservan la revisión fijada.
 
-## Preparada: tercera candidata alpha.31 — Leyendas y navegación
+[Batería nativa completa](https://github.com/frandavid100/leaf/actions/runs/42360443648),
+[instalaciones GNOME 49/51](https://github.com/frandavid100/leaf/actions/runs/42361339472)
+y [promoción sin recompilar](https://github.com/frandavid100/leaf/actions/runs/42362957503)
+correctas. 187 pruebas Rust, cuatro Python y 811 mensajes completos inglés/español;
+las once sumas internas y los doce archivos públicos coinciden por SHA-256.
+Fuente publicada `e3bdb1f318cd078d7e24e0a7fef8c84e3a192756`.
+
+Siguen abiertos diez informes: #1, #2, #9, #52, #84, #99, #100, #107, #152 y #156.
+Columnas #1/#2 se trabajan aparte en WordCraft; los límites de motor/host y casos
+sin reproducción no se presentan como resueltos.
+[Implementación, identidad y límites](docs/ALPHA31_REMAINING.md).
+
+## Histórica: tercera candidata alpha.31 — Leyendas y navegación
 
 Completados #121, #124, #126 y #127: propiedades compartidas de Elementos,
 asociación explícita de imágenes/tablas y leyendas, Mostrar leyenda reversible,
@@ -44,8 +53,8 @@ de publicación automática para la última pasada sustituye ese requisito.
 del documento original: confirma que parece arreglado en su entorno. No se ha
 identificado el disparador original ni la corrección concreta responsable. La creación de leyendas numeradas se limita al cuerpo y DOCX;
 las leyendas importadas sin asociación explícita no se asignan por proximidad.
-#135 está reabierto; los nuevos #149–#152 y los restantes issues no forman parte
-de estos cuatro cierres.
+Después de aquella candidata se reabrió #135 y surgieron #149–#152; no formaban
+parte de esos cuatro cierres. La última pasada descrita arriba fija su estado actual.
 
 ## Histórica: segunda candidata alpha.31 — Interfaz nativa
 
@@ -66,8 +75,9 @@ Fuente del paquete `79292491050943559df21d9082657fe38ee46254`; ejecutable de
 `179ef4bec1609c355c3dae325c3358fd6bb948a8`, con equivalencia y bytes comprobados.
 [Alcance, identidad, sumas y límites](docs/ALPHA31_UI_VALIDATION.md).
 En aquella entrega quedaban 13 issues: #1, #2, #9, #52, #84, #99, #100, #107, #121, #124, #126, #127 y #132.
-Alpha.30 sigue siendo la última versión pública. David debe probar la candidata
-y aprobar la promoción de estos mismos archivos, sin recompilar.
+En aquella entrega alpha.30 seguía siendo la última versión pública y se
+requería probar y aprobar la candidata. La autorización posterior de publicación
+automática sustituye ese requisito para la última pasada alpha.31.
 
 ## Primera candidata alpha.31 — Histórica, sustituida por la segunda
 
@@ -79,7 +89,7 @@ Su [identidad y evidencia](docs/ALPHA31_VALIDATION.md) se conservan como histori
 La segunda candidata incorpora esa corrección y resuelve los tres informes de
 interfaz después de aislar la captura de eventos de la regla.
 
-## Última versión publicada: alpha.30
+## Versión anterior publicada: alpha.30
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.30).
 Publicada automáticamente con autorización de David, tras superar la

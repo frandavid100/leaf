@@ -4,15 +4,19 @@ Actualizada: 7 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## En curso: alpha.31 automática
+## Completado: alpha.31 automática
 
-Autorizada por David el 7/11/2026: corregir y cerrar solo issues verificables,
-validar el paquete y publicar automáticamente. #135/#149/#150/#151/#155 están
-en validación; [resultados y límites restantes](docs/ALPHA31_REMAINING.md).
-#1/#2 se trabajan en WordCraft aparte. Conservar abiertos los casos pendientes
-de reproducción y las limitaciones del motor o del host.
+[Publicada y verificada](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.31)
+el 7/11/2026 sin otro visto bueno, conforme a la autorización de David. Últimos
+cierres: #135/#149/#150/#151/#155; integra las candidatas previas. Batería nativa
+completa, GNOME 49 y FlatPark/GNOME 51 superados; promovidos los mismos bytes y
+verificados los doce archivos públicos. [Evidencia y límites](docs/ALPHA31_REMAINING.md).
 
-## Preparada para David: tercera candidata alpha.31
+Quedan #1/#2/#9/#52/#84/#99/#100/#107/#152/#156. Columnas #1/#2 se trabajan en
+WordCraft aparte; #152 reproduce un defecto del modelo upstream. Conservar
+abiertos los casos sin reproducción suficiente y las limitaciones del motor/host.
+
+## Histórica: tercera candidata alpha.31
 
 Completados #121/#124/#126/#127 con asociaciones explícitas de objetos y leyendas,
 Mostrar leyenda reversible, propiedades compartidas, navegación y decoración
@@ -22,8 +26,8 @@ verificadas. [Implementación, identidad y límites](docs/CAPTION_OWNERSHIP.md).
 
 Esta candidata anterior requería aprobación; la autorización de la última
 pasada permite publicar automáticamente después de las comprobaciones. #132 cerrado el 7/11/2026 tras la comprobación de David
-con el documento original, sin atribuir una causa o corrección no identificada. #135 está reabierto y los nuevos #149–#152 siguen
-pendientes; no quedan resueltos por estos cuatro cierres.
+con el documento original, sin atribuir una causa o corrección no identificada. Después de aquella candidata se reabrió #135 y surgieron #149–#152; no quedaban
+resueltos por esos cuatro cierres. El apartado actual recoge los cierres posteriores.
 
 La segunda candidata de interfaz queda como [evidencia histórica](docs/ALPHA31_UI_VALIDATION.md).
 La primera, que solo cerraba #133, conserva su [registro histórico](docs/ALPHA31_VALIDATION.md).
