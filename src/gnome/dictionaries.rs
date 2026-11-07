@@ -314,18 +314,8 @@ pub(super) fn show_dictionary_tools(ui: &Rc<Ui>) -> Option<Rc<DictionaryTools>> 
             }
         }
     });
-    let weak = Rc::downgrade(&panel);
-    panel.window.connect_is_active_notify(move |w| {
-        if w.is_active() {
-            if let Some(p) = weak.upgrade().filter(|p| !p.closed.get()) {
-                match dictionaries::refresh(false) {
-                    Ok(true) => p.show_result(Ok(true)),
-                    Err(e) => p.show_result(Err(e)),
-                    _ => p.summary(),
-                }
-            }
-        }
-    });
+    // Reload explicitly or when opening the language list. Rebuilding language
+    // controls from a window focus notification can re-enter GTK focus handling.
     let weak = Rc::downgrade(&panel);
     panel.window.connect_close_request(move |_| {
         if let Some(p) = weak.upgrade().filter(|p| !p.closed.get()) {

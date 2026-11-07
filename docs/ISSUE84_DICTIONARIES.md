@@ -79,3 +79,14 @@ are still required to match; only this uncompiled pointer driver is excluded
 from the source comparison. The portal test runs before the longer installed
 regressions, which remain mandatory. Actual installed portal success is still
 pending and must be recorded before publication.
+
+## Focus-triggered reload correction
+
+The next installed run loaded the dictionary through its real document-portal
+path, then stalled during window-focus handling after the source file changed.
+A captured main-thread stack enters Leaf from GTK's focus notification; the
+background threads are waiting normally. The manager no longer reloads global
+resources from that notification. Refresh remains explicit and language-list
+opening still rescans sources. Native and installed checks must validate this
+change before publication. Temporary early native artifacts retain symbols for
+diagnostics; final native and packaged executables are stripped as before.
