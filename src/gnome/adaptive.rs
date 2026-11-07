@@ -546,11 +546,17 @@ impl TextTools {
                     let b = style_menu_button(&label);
                     b.set_widget_name(&format!("language-choice-{choice}"));
                     if choice != "off" && choice != "default" {
-                        if wordcraft_gnome::dictionaries::available(&choice) {
+                        if wordcraft_gnome::dictionaries::has_dictionary_files(&choice) {
                             if let Some(path) =
-                                wordcraft_gnome::dictionaries::dictionary_path(&choice)
+                                wordcraft_gnome::dictionaries::dictionary_files(&choice)
                             {
-                                b.set_tooltip_text(Some(&path.to_string_lossy()));
+                                let detail = wordcraft_gnome::t!(
+                                    "Dictionary files found. WordCraft checks them when this language is used."
+                                );
+                                b.set_tooltip_text(Some(&format!(
+                                    "{}\n{detail}",
+                                    path.to_string_lossy()
+                                )));
                             } else {
                                 b.set_tooltip_text(Some(wordcraft_gnome::t!(
                                     "Dictionary included with Leaf."
@@ -559,11 +565,11 @@ impl TextTools {
                         } else {
                             b.add_css_class("dim-label");
                             b.set_tooltip_text(Some(wordcraft_gnome::t!(
-                                "No spelling dictionary is available for this language."
+                                "No spelling dictionary files were found for this language."
                             )));
                             b.update_property(&[gtk::accessible::Property::Description(
                                 wordcraft_gnome::t!(
-                                    "No spelling dictionary is available for this language."
+                                    "No spelling dictionary files were found for this language."
                                 ),
                             )]);
                         }

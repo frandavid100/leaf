@@ -3013,3 +3013,9 @@ msgstr "Use readable system dictionaries, an additional folder or imported Hunsp
 
 msgid "_Use This Folder"
 msgstr "_Use This Folder"
+
+msgid "Dictionary files found. WordCraft checks them when this language is used."
+msgstr "Dictionary files found. WordCraft checks them when this language is used."
+
+msgid "No spelling dictionary files were found for this language."
+msgstr "No spelling dictionary files were found for this language."
