@@ -120,10 +120,14 @@ pub(super) fn context_paste(ui: &Rc<Ui>) {
                 .iter()
                 .any(|m| m.starts_with("image/"))
         {
-            clipboard
-                .read_texture_future()
-                .await
-                .map(|texture| texture.map(External::Image))
+            if let Some(args) = rich_clipboard(&clipboard).await {
+                Ok(Some(External::Text(args)))
+            } else {
+                clipboard
+                    .read_texture_future()
+                    .await
+                    .map(|texture| texture.map(External::Image))
+            }
         } else {
             external_clipboard(&clipboard)
                 .await

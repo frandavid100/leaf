@@ -1,12 +1,7 @@
 //! Engine-owned format painter; callbacks never retain a document.
 use super::*;
 pub(super) fn start(ui: &Rc<Ui>, sticky: bool) {
-    tools_change(ui, |s| {
-        s.painter = None;
-        s.run("edit.formatPainter", &serde_json::json!({"sticky":sticky}))
-            .map(|_| ())
-            .map_err(|e| e.to_string())
-    });
+    tools_change(ui, |s| wordcraft_gnome::format_painter::capture(s, sticky));
     ui.document_box.set_cursor_from_name(Some("crosshair"));
     ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
         "Select a destination to apply formatting. Escape cancels."

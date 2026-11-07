@@ -6,7 +6,7 @@
 #170–#182 creados para las propuestas aprobadas: estilo siguiente, plantillas
 personales, pegado sin formato, movimiento de apartados, pincel de formato,
 búsqueda avanzada, fuentes del documento e imágenes externas.
-La batería completa sin GUI, trece regresiones nuevas, gettext en/es y los
+La batería completa sin GUI, quince regresiones nuevas, gettext en/es y los
 controles GTK y gestos reales locales a escala 1/2 pasan. La CI nativa e instalada
 GNOME 49/51 debe completarse antes de publicar y cerrar los informes.
 [Alcance, validación y límites](docs/ALPHA35_WORKFLOWS.md).
@@ -18,13 +18,13 @@ Actualizada: 7 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.
 
-## Pendientes actuales tras alpha.34
+## Informes anteriores a las nuevas propuestas
 
-Seis informes abiertos: cuatro esperan integrar correcciones de WordCraft
-(#1/#99/#107/#152), #84 espera validación real del sistema y #52 necesita los
-originales y diagnóstico del proveedor de miniaturas. La siguiente release se
-publicará automáticamente con arreglos adicionales verificados; esta revisión
-solo documenta los bloqueos. [Detalle](docs/REMAINING_AFTER_ALPHA34.md).
+#1/#99/#107/#152 esperan la integración de las correcciones propuestas en
+WordCraft. #52 queda aplazado por decisión de David. #84 ya fue probado y cerrado
+en la conversación de validación. Los nuevos #170–#182 siguen el alcance de esta
+alpha y se cerrarán tras verificar su publicación.
+[Auditoría histórica de los bloqueos](docs/REMAINING_AFTER_ALPHA34.md).
 
 ## Completado: alpha.33 — revisión de #9/#99/#156
 

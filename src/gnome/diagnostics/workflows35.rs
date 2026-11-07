@@ -76,6 +76,10 @@ pub(super) fn test(
         search.query.set_text("(");
         search.refresh();
         assert!(!search.replace_all.is_sensitive());
+        search.special.set_active(true);
+        assert!(!search.regex.is_active());
+        search.regex.set_active(true);
+        assert!(!search.special.is_active());
         search.regex.set_active(false);
         search.toggle.set_active(false);
         style.show_detail("Heading1");
@@ -194,6 +198,28 @@ pub(super) fn test(
         ))
         .unwrap();
         let texture = gdk::Texture::from_bytes(&glib::Bytes::from(&bytes)).unwrap();
+        let mixed = gdk::ContentProvider::new_union(&[
+            gdk::ContentProvider::for_value(&texture.to_value()),
+            gdk::ContentProvider::for_bytes(
+                "text/html",
+                &glib::Bytes::from_static(b"<b>Rich text</b>"),
+            ),
+        ]);
+        clipboard.set_content(Some(&mixed)).unwrap();
+        context_paste(&ui);
+        transfer(&ui).await;
+        assert_eq!(text(&ui), "Rich text");
+        assert!(
+            ui.current
+                .borrow()
+                .as_ref()
+                .unwrap()
+                .session
+                .doc
+                .media
+                .is_empty()
+        );
+        apply_user_edit(&ui, Edit::Undo);
         clipboard.set_texture(&texture);
         context_paste(&ui);
         transfer(&ui).await;

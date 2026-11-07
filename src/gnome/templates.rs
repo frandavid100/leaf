@@ -3,6 +3,7 @@ use super::*;
 pub(super) fn show(host: &Rc<Workspace>) {
     let dialog = adw::Window::builder()
         .title(wordcraft_gnome::t!("New from Template"))
+        .destroy_with_parent(true)
         .transient_for(&host.window)
         .modal(true)
         .default_width(440)
@@ -90,9 +91,10 @@ pub(super) fn show(host: &Rc<Workspace>) {
         let chooser = gtk::FileDialog::new();
         let cancel = gio::Cancellable::new();
         let cancel_close = cancel.clone();
-        parent.connect_close_request(move |_| {
-            cancel_close.cancel();
-            glib::Propagation::Proceed
+        parent.connect_visible_notify(move |parent| {
+            if !parent.is_visible() {
+                cancel_close.cancel();
+            }
         });
         let weak = weak.clone();
         let parent = parent.downgrade();

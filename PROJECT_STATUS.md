@@ -6,7 +6,7 @@
 #170–#182 creados para las propuestas aprobadas: estilo siguiente, plantillas
 personales, pegado sin formato, movimiento de apartados, pincel de formato,
 búsqueda avanzada, fuentes del documento e imágenes externas.
-La batería completa sin GUI, trece regresiones nuevas, gettext en/es y los
+La batería completa sin GUI, quince regresiones nuevas, gettext en/es y los
 controles GTK y gestos reales locales a escala 1/2 pasan. La CI nativa e instalada
 GNOME 49/51 debe completarse antes de publicar y cerrar los informes.
 [Alcance, validación y límites](docs/ALPHA35_WORKFLOWS.md).
@@ -26,14 +26,13 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 - [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
   [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
 
-## Revisión actual: seis issues pendientes
+## Informes anteriores a las nuevas propuestas
 
-Quedan **#1/#52/#84/#99/#107/#152**. Las correcciones de #1/#99/#107/#152 ya
-están propuestas y probadas en WordCraft, pero sus cuatro PR siguen sin integrar.
-#84 tiene candidata publicada y necesita la comprobación GNOME OS y completar
-el flujo gráfico de Ubuntu. #52 necesita los originales y atribuir el proveedor
-de miniaturas. Esta revisión no cierra informes ni añade cambios de aplicación.
-[Estado comprobado y siguientes pasos](docs/REMAINING_AFTER_ALPHA34.md).
+#1/#99/#107/#152 esperan la integración de las correcciones propuestas en
+WordCraft. #52 queda aplazado por decisión de David. #84 ya fue probado y cerrado
+en la conversación de validación. Los nuevos #170–#182 siguen el alcance de esta
+alpha y se cerrarán tras verificar su publicación.
+[Auditoría histórica de los bloqueos](docs/REMAINING_AFTER_ALPHA34.md).
 
 ## Histórica: alpha.33 publicada y verificada — Fin/Inicio y restauración de zoom
 

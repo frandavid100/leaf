@@ -395,3 +395,81 @@ fn custom_following_style_and_font_substitution_roundtrip_with_history() {
     );
     std::fs::remove_dir_all(dir).unwrap();
 }
+
+#[test]
+fn regex_capture_expansion_keeps_original_anchor_and_deleted_text_context() {
+    let mut s = session("xfoo foo");
+    let o = Options {
+        regex: true,
+        ..Default::default()
+    };
+    let pattern = "(^foo)|(foo)";
+    let hits = search::query_with(&mut s, pattern, &o, None).unwrap();
+    assert_eq!(hits.len(), 2);
+    search::replace_with(&mut s, &hits, pattern, "$1[$2]", &o, None).unwrap();
+    assert_eq!(text(&s), "x[foo] [foo]");
+    let mut s = session("xxfoo");
+    s.run("review.trackChanges", &json!({"value":true}))
+        .unwrap();
+    selection::select_range(&mut s, &Pos::body(0, 0), &Pos::body(0, 2)).unwrap();
+    s.run("text.delete", &json!({})).unwrap();
+    let hits = search::query_with(&mut s, pattern, &o, None).unwrap();
+    assert_eq!(hits.len(), 1);
+    search::replace_with(&mut s, &hits, pattern, "$1-$2", &o, None).unwrap();
+    let live = s
+        .doc
+        .para_at(&Pos::body(0, 0))
+        .unwrap()
+        .run_ranges()
+        .filter(|(_, chr)| chr.del.is_none())
+        .map(|(range, _)| &s.doc.para_at(&Pos::body(0, 0)).unwrap().text[range])
+        .collect::<String>();
+    assert_eq!(live, "foo-");
+}
+
+#[test]
+fn painter_copies_inherited_appearance_and_does_not_copy_content_or_links() {
+    let mut s = session("Heading source\nNormal target words");
+    selection::set_caret(&mut s, &Pos::body(0, 0), false).unwrap();
+    s.run("para.style", &json!({"style":"Heading1"})).unwrap();
+    let source = s
+        .doc
+        .styles
+        .resolve_char(Some("Heading1"), &Default::default());
+    let before = s.doc.clone();
+    let rev = s.rev();
+    let depth = s.undo_depth();
+    wordcraft_gnome::format_painter::capture(&mut s, false).unwrap();
+    assert_eq!(s.doc, before);
+    assert_eq!(s.rev(), rev);
+    assert_eq!(s.undo_depth(), depth);
+    selection::select_range(&mut s, &Pos::body(1, 7), &Pos::body(1, 13)).unwrap();
+    s.run("edit.pasteFormat", &json!({})).unwrap();
+    let p = s.doc.para_at(&Pos::body(1, 7)).unwrap();
+    let actual = s
+        .doc
+        .styles
+        .resolve_char(p.props.style.as_deref(), p.props_of_char(7));
+    assert_eq!(actual.size, source.size);
+    assert_eq!(actual.bold, source.bold);
+    assert_eq!(actual.color, source.color);
+    assert_eq!(text(&s), "Heading source\nNormal target words");
+    assert_eq!(s.undo_depth(), depth + 1);
+    s.run("edit.undo", &json!({})).unwrap();
+    assert_eq!(s.doc, before);
+    selection::set_caret(&mut s, &Pos::body(1, 0), false).unwrap();
+    wordcraft_gnome::format_painter::capture(&mut s, true).unwrap();
+    selection::select_range(&mut s, &Pos::body(0, 8), &Pos::body(0, 14)).unwrap();
+    s.run("edit.pasteFormat", &json!({})).unwrap();
+    let p = s.doc.para_at(&Pos::body(0, 8)).unwrap();
+    let actual = s
+        .doc
+        .styles
+        .resolve_char(p.props.style.as_deref(), p.props_of_char(8));
+    assert!(!actual.bold);
+    assert_eq!(
+        actual.size,
+        s.doc.styles.resolve_char(None, &Default::default()).size
+    );
+    assert!(s.painter.is_some());
+}

@@ -39,6 +39,7 @@ pub(super) fn show(ui: &Rc<Ui>, parent: &impl IsA<gtk::Window>) {
     };
     let window = adw::Window::builder()
         .title(wordcraft_gnome::t!("Document Fonts"))
+        .destroy_with_parent(true)
         .transient_for(parent)
         .default_width(520)
         .default_height(560)

@@ -1,6 +1,10 @@
 //! Native Find/Replace options; WordCraft remains the matcher and editing engine.
 use crate::selection::{self, Rect};
-use regex::{Regex, RegexBuilder};
+use regex_automata::{
+    Input, PatternID,
+    meta::{self, Regex},
+    util::syntax,
+};
 use serde_json::json;
 use wordcraft_doc::{Document, PartKind, Pos, StoryRef};
 use wordcraft_engine::{Selection, Session, cmd::find_pattern};
@@ -122,10 +126,10 @@ fn pattern_options(o: &Options) -> find_pattern::Opts {
 }
 fn compiled(text: &str, o: &Options) -> Result<Regex, String> {
     let c = find_pattern::compile(text, &pattern_options(o))?;
-    RegexBuilder::new(&c.pattern)
-        .case_insensitive(c.case_insensitive)
-        .size_limit(1 << 20)
-        .build()
+    Regex::builder()
+        .syntax(syntax::Config::new().case_insensitive(c.case_insensitive))
+        .configure(meta::Config::new().nfa_size_limit(Some(1 << 20)))
+        .build(&c.pattern)
         .map_err(|e| e.to_string())
 }
 fn args(text: &str, o: &Options) -> serde_json::Value {
@@ -303,24 +307,92 @@ fn capitalization(source: &str, with: String) -> String {
     }
     with
 }
+/// Disposable paragraph context for capture expansion. The engine omits tracked
+/// deletions and prevents matches crossing their gaps; keep those same boundaries.
+struct RegexText {
+    text: String,
+    runs: Vec<(std::ops::Range<usize>, usize)>,
+    cuts: Vec<usize>,
+}
+impl RegexText {
+    fn new(p: &wordcraft_doc::Paragraph) -> Self {
+        let mut text = String::new();
+        let mut runs = Vec::new();
+        let mut cuts = vec![0];
+        let mut expected = 0;
+        for (range, chr) in p.run_ranges() {
+            if chr.del.is_some() {
+                continue;
+            }
+            if range.start != expected {
+                cuts.push(text.len());
+            }
+            let start = text.len();
+            text.push_str(&p.text[range.clone()]);
+            expected = range.end;
+            runs.push((range, start));
+        }
+        cuts.push(text.len());
+        Self { text, runs, cuts }
+    }
+    fn offset(&self, raw: usize) -> Option<usize> {
+        self.runs
+            .iter()
+            .find(|(range, _)| range.start <= raw && raw <= range.end)
+            .map(|(range, start)| start + raw - range.start)
+    }
+    fn captures(
+        &self,
+        re: &Regex,
+        hit: &Hit,
+    ) -> Result<regex_automata::util::captures::Captures, String> {
+        let invalid = || wordcraft_gnome::t!("The search result no longer matches.").to_owned();
+        let (a, b) = self
+            .offset(hit.start.off)
+            .zip(self.offset(hit.end.off))
+            .ok_or_else(invalid)?;
+        let end = self
+            .cuts
+            .iter()
+            .copied()
+            .find(|cut| *cut >= b && *cut > a)
+            .ok_or_else(invalid)?;
+        let mut captures = re.create_captures();
+        re.search_captures(&Input::new(&self.text).range(a..end), &mut captures);
+        if !captures
+            .get_match()
+            .is_some_and(|m| m.start() == a && m.end() == b)
+        {
+            return Err(invalid());
+        }
+        Ok(captures)
+    }
+}
 fn replacement(
     re: &Regex,
     hit: &Hit,
     with: &str,
     o: &Options,
     clip: &str,
+    context: Option<&RegexText>,
 ) -> Result<String, String> {
     let pieces = find_pattern::resolve_names(
         find_pattern::parse_replace(with, &pattern_options(o)),
-        &|name| re.capture_names().position(|n| n == Some(name)),
+        &|name| re.group_info().to_index(PatternID::ZERO, name),
     );
-    let captures = re
-        .captures(&hit.matched)
-        .ok_or_else(|| wordcraft_gnome::t!("The search result no longer matches.").to_owned())?;
+    let captures = context
+        .map(|context| context.captures(re, hit))
+        .transpose()?;
     let out = find_pattern::expand(
         &pieces,
         &hit.matched,
-        &|i| captures.get(i).map(|m| m.as_str().to_owned()),
+        &|i| {
+            captures
+                .as_ref()
+                .and_then(|c| c.get_group(i))
+                .and_then(|span| context?.text.get(span.range()))
+                .map(str::to_owned)
+        },
         clip,
     );
     Ok(if o.preserve_case {
@@ -350,6 +422,7 @@ pub fn replace_with(
     }
     let re = compiled(text, o)?;
     let mut prepared = Vec::new();
+    let mut contexts = std::collections::BTreeMap::new();
     for hit in hits {
         if hit.document != s.document_id() || hit.revision != s.rev() {
             return Err(wordcraft_gnome::t!(
@@ -372,9 +445,21 @@ pub fn replace_with(
                 .into());
             }
         }
+        let context = if o.regex {
+            let paragraph = s.doc.para_at(&hit.start).ok_or_else(|| {
+                wordcraft_gnome::t!("The search result no longer matches.").to_owned()
+            })?;
+            Some(
+                &*contexts
+                    .entry((hit.start.story, hit.start.path.clone()))
+                    .or_insert_with(|| RegexText::new(paragraph)),
+            )
+        } else {
+            None
+        };
         prepared.push((
             hit.clone(),
-            replacement(&re, hit, with, o, &s.clipboard_text)?,
+            replacement(&re, hit, with, o, &s.clipboard_text, context)?,
         ));
     }
     let old_length = range

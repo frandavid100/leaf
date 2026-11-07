@@ -445,8 +445,15 @@ pub(super) fn install_search_panel(
     });
     for button in [&whole_word, &special, &regex, &preserve_case] {
         let weak = Rc::downgrade(&s);
-        button.connect_toggled(move |_| {
+        button.connect_toggled(move |button| {
             if let Some(s) = weak.upgrade() {
+                if button.is_active() {
+                    if button == &s.regex {
+                        s.special.set_active(false);
+                    } else if button == &s.special {
+                        s.regex.set_active(false);
+                    }
+                }
                 s.refresh();
             }
         });

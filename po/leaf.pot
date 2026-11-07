@@ -45,7 +45,7 @@ msgstr ""
 msgid "Add Comment"
 msgstr ""
 
-#: src/gnome/templates.rs:26
+#: src/gnome/templates.rs:27
 msgid "Add DOCX or ODT files to your templates folder."
 msgstr ""
 
@@ -405,7 +405,7 @@ msgstr ""
 msgid "Checking…"
 msgstr ""
 
-#: src/gnome/templates.rs:82
+#: src/gnome/templates.rs:83
 msgid "Choose Another Folder…"
 msgstr ""
 
@@ -457,7 +457,7 @@ msgstr ""
 msgid "Choose an existing paragraph style"
 msgstr ""
 
-#: src/gnome/templates.rs:70
+#: src/gnome/templates.rs:71
 msgid "Choose your templates folder."
 msgstr ""
 
@@ -905,7 +905,7 @@ msgstr ""
 msgid "Document File"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows35.rs:251 src/gnome/document_fonts.rs:41 src/gnome/document_properties_dialog.rs:373
+#: src/gnome/diagnostics/workflows35.rs:277 src/gnome/document_fonts.rs:41 src/gnome/document_properties_dialog.rs:373
 msgid "Document Fonts"
 msgstr ""
 
@@ -1737,7 +1737,7 @@ msgstr ""
 msgid "Minimum Row Height"
 msgstr ""
 
-#: src/gnome/document_fonts.rs:90
+#: src/gnome/document_fonts.rs:91
 msgid "Missing; displayed as"
 msgstr ""
 
@@ -1809,7 +1809,7 @@ msgstr ""
 msgid "New Comment"
 msgstr ""
 
-#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:147 src/gnome/tab.rs:813 src/gnome/templates.rs:55 src/gnome/workspace.rs:319
+#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:147 src/gnome/tab.rs:813 src/gnome/templates.rs:56 src/gnome/workspace.rs:319
 msgid "New Document"
 msgstr ""
 
@@ -1833,7 +1833,7 @@ msgstr ""
 msgid "New Window"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows35.rs:270 src/gnome/templates.rs:5
+#: src/gnome/diagnostics/workflows35.rs:296 src/gnome/templates.rs:5
 msgid "New from Template"
 msgstr ""
 
@@ -1849,7 +1849,7 @@ msgstr ""
 msgid "Next Page"
 msgstr ""
 
-#: src/gnome/document_fonts.rs:98
+#: src/gnome/document_fonts.rs:99
 msgid "Next Use"
 msgstr ""
 
@@ -1973,7 +1973,7 @@ msgstr ""
 msgid "Open Document"
 msgstr ""
 
-#: src/gnome/templates.rs:72
+#: src/gnome/templates.rs:73
 msgid "Open Templates Folder"
 msgstr ""
 
@@ -1981,7 +1981,7 @@ msgstr ""
 msgid "Open a Document"
 msgstr ""
 
-#: src/gnome/document_fonts.rs:48
+#: src/gnome/document_fonts.rs:49
 msgid "Opening a document preserves its font names. Replace changes the document and can be undone."
 msgstr ""
 
@@ -2081,7 +2081,7 @@ msgstr ""
 msgid "Paste"
 msgstr ""
 
-#: src/gnome/context.rs:405 src/gnome/diagnostics/workflows35.rs:116
+#: src/gnome/context.rs:405 src/gnome/diagnostics/workflows35.rs:120
 msgid "Paste Plain Text"
 msgstr ""
 
@@ -2281,7 +2281,7 @@ msgstr ""
 msgid "Repeated word: {word}"
 msgstr ""
 
-#: src/gnome/document_fonts.rs:125 src/gnome/menus.rs:681 src/gnome/search.rs:318 src/search.rs:384
+#: src/gnome/document_fonts.rs:126 src/gnome/menus.rs:681 src/gnome/search.rs:318 src/search.rs:469
 msgid "Replace"
 msgstr ""
 
@@ -2305,7 +2305,7 @@ msgstr ""
 msgid "Replace With"
 msgstr ""
 
-#: src/gnome/document_fonts.rs:123
+#: src/gnome/document_fonts.rs:124
 msgid "Replacement Font"
 msgstr ""
 
@@ -2609,7 +2609,7 @@ msgstr ""
 msgid "Select Table Cells by Clicking"
 msgstr ""
 
-#: src/gnome/format_painter.rs:11
+#: src/gnome/format_painter.rs:6
 msgid "Select a destination to apply formatting. Escape cancels."
 msgstr ""
 
@@ -2641,7 +2641,7 @@ msgstr ""
 msgid "Select the text to link."
 msgstr ""
 
-#: src/search.rs:111 src/search.rs:162
+#: src/search.rs:115 src/search.rs:166
 msgid "Select the text to search first."
 msgstr ""
 
@@ -2997,7 +2997,7 @@ msgstr ""
 msgid "The cell does not contain a paragraph"
 msgstr ""
 
-#: src/gnome/clipboard.rs:146
+#: src/gnome/clipboard.rs:150
 msgid "The clipboard image is too large."
 msgstr ""
 
@@ -3009,7 +3009,7 @@ msgstr ""
 msgid "The current engine supports one table of contents per document. Edit the existing table of contents instead."
 msgstr ""
 
-#: src/gnome/document_fonts.rs:139
+#: src/gnome/document_fonts.rs:140
 msgid "The document changed. Reopen the font list."
 msgstr ""
 
@@ -3037,7 +3037,7 @@ msgstr ""
 msgid "The document has changed; open this dialog again."
 msgstr ""
 
-#: src/search.rs:262 src/search.rs:355
+#: src/search.rs:266 src/search.rs:428
 msgid "The document has changed; search results have been updated"
 msgstr ""
 
@@ -3093,7 +3093,7 @@ msgstr ""
 msgid "The requested page does not exist"
 msgstr ""
 
-#: src/search.rs:369
+#: src/search.rs:442
 msgid "The result is outside the selected search range."
 msgstr ""
 
@@ -3101,7 +3101,7 @@ msgstr ""
 msgid "The row does not exist"
 msgstr ""
 
-#: src/search.rs:319
+#: src/search.rs:349 src/search.rs:450
 msgid "The search result no longer matches."
 msgstr ""
 
@@ -3113,7 +3113,7 @@ msgstr ""
 msgid "The selected folder is unavailable. Other dictionaries remain available."
 msgstr ""
 
-#: src/search.rs:103
+#: src/search.rs:107
 msgid "The selection changed. Select the search range again."
 msgstr ""
 
@@ -3437,7 +3437,7 @@ msgstr ""
 msgid "Words Only"
 msgstr ""
 
-#: src/search.rs:361
+#: src/search.rs:434
 msgid "Zero-length matches cannot be replaced. Use a pattern that selects text."
 msgstr ""
 
