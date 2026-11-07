@@ -8,6 +8,26 @@ pub fn config_root() -> PathBuf {
         })
         .join("wordcraft-gnome")
 }
+pub fn dictionary_folder() -> Option<PathBuf> {
+    read()["dictionary_folder"]
+        .as_str()
+        .filter(|s| !s.is_empty())
+        .map(PathBuf::from)
+        .filter(|p| p.is_absolute())
+}
+pub fn set_dictionary_folder(folder: Option<&std::path::Path>) -> Result<(), String> {
+    let value = match folder {
+        Some(p) => serde_json::Value::String(
+            p.to_str()
+                .ok_or(wordcraft_gnome::t!(
+                    "The folder path cannot be represented as UTF-8."
+                ))?
+                .to_owned(),
+        ),
+        None => serde_json::Value::Null,
+    };
+    update("dictionary_folder", value)
+}
 pub fn recovery_root() -> PathBuf {
     std::env::var_os("XDG_STATE_HOME")
         .map(PathBuf::from)

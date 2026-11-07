@@ -25,6 +25,18 @@ pub(super) fn install_diagnostics(
     app: &Application,
     controls: DiagnosticControls<'_>,
 ) {
+    for (flag, mode) in [
+        ("--dictionary84-ui-test", "folder"),
+        ("--dictionary84-reopen-test", "reopen"),
+        ("--dictionary84-native-test", "native"),
+    ] {
+        if std::env::args().any(|a| a == flag) && host.tabs.n_pages() == 1 {
+            let (u, a) = (ui.clone(), app.clone());
+            glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+                dictionaries84_ui_test(&u, &a, mode)
+            });
+        }
+    }
     for flag in ["--pending-end-ui-test", "--pending-spacing-ui-test"] {
         if std::env::args().any(|arg| arg == flag) && host.tabs.n_pages() == 1 {
             let (u, w, a) = (ui.clone(), window.clone(), app.clone());

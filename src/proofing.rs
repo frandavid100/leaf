@@ -240,18 +240,8 @@ pub fn state(s: &mut Session) -> Value {
     s.run("format.state", &json!({})).unwrap_or(Value::Null)
 }
 
-fn bundled_dictionaries() -> std::path::PathBuf {
-    std::env::current_exe()
-        .ok()
-        .and_then(|p| p.parent()?.parent().map(|p| p.join("share/hunspell")))
-        .filter(|p| p.is_dir())
-        .unwrap_or_else(|| {
-            std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data/dictionaries")
-        })
-}
-
 fn dictionary_directory() -> std::path::PathBuf {
-    crate::preferences::config_root().join("hunspell")
+    crate::dictionaries::imports()
 }
 
 pub fn install_dictionary(files: &[std::path::PathBuf]) -> Result<(), String> {
@@ -284,20 +274,6 @@ pub fn install_dictionary(files: &[std::path::PathBuf]) -> Result<(), String> {
     let dir = dictionary_directory();
     let io_error = |error: std::io::Error| error.to_string();
     std::fs::create_dir_all(&dir).map_err(io_error)?;
-    if let Ok(bundled) = std::fs::read_dir(bundled_dictionaries()) {
-        for entry in bundled {
-            let entry = entry.map_err(io_error)?;
-            let target = dir.join(entry.file_name());
-            if !target.exists()
-                && entry
-                    .path()
-                    .extension()
-                    .is_some_and(|ext| ext == "aff" || ext == "dic")
-            {
-                std::fs::copy(entry.path(), target).map_err(io_error)?;
-            }
-        }
-    }
     let aff_target = dir.join(format!("{stem}.aff"));
     let dic_target = dir.join(format!("{stem}.dic"));
     if aff_target.exists() || dic_target.exists() {
@@ -311,18 +287,26 @@ pub fn install_dictionary(files: &[std::path::PathBuf]) -> Result<(), String> {
         let _ = std::fs::remove_file(dic_target);
         return Err(error.to_string());
     }
-    wordcraft_engine::proof::set_dictionaries_folder(Some(dir.clone()));
-    let recognised = wordcraft_engine::proof::installed_dictionaries()
-        .iter()
-        .any(|(_, path)| path.as_deref() == Some(dic_target.as_path()));
-    if !recognised {
+    let loaded = crate::dictionaries::refresh(true).and_then(|_| {
+        let tag = stem.replace('_', "-");
+        let recognised = crate::dictionaries::dictionary_path(&tag)
+            .and_then(|p| p.canonicalize().ok())
+            .zip(dic_target.canonicalize().ok())
+            .is_some_and(|(actual, expected)| actual == expected);
+        if recognised {
+            Ok(())
+        } else {
+            Err(wordcraft_gnome::t!(
+                "WordCraft does not use a dictionary with this language or filename."
+            )
+            .into())
+        }
+    });
+    if let Err(error) = loaded {
         let _ = std::fs::remove_file(&aff_target);
         let _ = std::fs::remove_file(&dic_target);
-        wordcraft_engine::proof::set_dictionaries_folder(Some(dir));
-        return Err(wordcraft_gnome::t!(
-            "WordCraft does not use a dictionary with this language or filename."
-        )
-        .into());
+        let _ = crate::dictionaries::refresh(true);
+        return Err(error);
     }
     Ok(())
 }
@@ -330,14 +314,8 @@ pub fn install_dictionary(files: &[std::path::PathBuf]) -> Result<(), String> {
 pub fn initialize() {
     static ONCE: std::sync::Once = std::sync::Once::new();
     ONCE.call_once(|| {
-        let custom = dictionary_directory();
-        let path = if custom.is_dir() {
-            custom
-        } else {
-            bundled_dictionaries()
-        };
-        if path.is_dir() {
-            wordcraft_engine::proof::set_dictionaries_folder(Some(path));
+        if crate::dictionaries::refresh(false).is_err() {
+            wordcraft_engine::proof::set_dictionaries_folder(Some(crate::dictionaries::bundled()));
         }
         wordcraft_engine::proof::load_user_dictionary(
             &crate::preferences::config_root().join("custom-dictionary.txt"),
