@@ -265,8 +265,25 @@ impl OutlinePanel {
                 });
                 row.add_controller(drag);
                 let target = gtk::DropTarget::new(String::static_type(), gdk::DragAction::MOVE);
+                let weak_row = row.downgrade();
+                target.connect_enter(move |_, _, _| {
+                    if let Some(row) = weak_row.upgrade() {
+                        row.add_css_class("outline-drop-before");
+                    }
+                    gdk::DragAction::MOVE
+                });
+                let weak_row = row.downgrade();
+                target.connect_leave(move |_| {
+                    if let Some(row) = weak_row.upgrade() {
+                        row.remove_css_class("outline-drop-before");
+                    }
+                });
+                let weak_row = row.downgrade();
                 let weak = Rc::downgrade(self);
                 target.connect_drop(move |_, value, _, _| {
+                    if let Some(row) = weak_row.upgrade() {
+                        row.remove_css_class("outline-drop-before");
+                    }
                     let Some(panel) = weak.upgrade() else {
                         return false;
                     };
@@ -290,6 +307,21 @@ impl OutlinePanel {
                     if document_identity(&ui) != Some((id, revision)) {
                         return false;
                     }
+                    let headings = panel.headings.borrow();
+                    let Some(origin) = headings.get(source) else {
+                        return false;
+                    };
+                    let end = headings
+                        .iter()
+                        .enumerate()
+                        .skip(source + 1)
+                        .find(|(_, h)| h.level <= origin.level)
+                        .map(|(index, _)| index)
+                        .unwrap_or(headings.len());
+                    if (source..=end).contains(&i) {
+                        return false;
+                    }
+                    drop(headings);
                     let changed = tools_change(&ui, |s| {
                         wordcraft_gnome::navigation::move_section(s, source, i)
                     });

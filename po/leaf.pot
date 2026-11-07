@@ -81,7 +81,7 @@ msgstr ""
 msgid "Alignment: {value}"
 msgstr ""
 
-#: src/gnome/navigation.rs:840 src/gnome/paragraph.rs:1080 src/gnome/review.rs:424 src/gnome/tables.rs:378
+#: src/gnome/navigation.rs:872 src/gnome/paragraph.rs:1080 src/gnome/review.rs:424 src/gnome/tables.rs:378
 msgid "All"
 msgstr ""
 
@@ -193,7 +193,7 @@ msgstr ""
 msgid "Automatic Color"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:156 src/gnome/diagnostics/annotations.rs:168 src/gnome/menus.rs:530 src/gnome/navigation.rs:851 src/navigation.rs:323
+#: src/gnome/diagnostics/annotations.rs:156 src/gnome/diagnostics/annotations.rs:168 src/gnome/menus.rs:530 src/gnome/navigation.rs:883 src/navigation.rs:323
 msgid "Automatic Fields"
 msgstr ""
 
@@ -241,7 +241,7 @@ msgstr ""
 msgid "Bookmark Name"
 msgstr ""
 
-#: src/gnome/navigation.rs:842
+#: src/gnome/navigation.rs:874
 msgid "Bookmarks"
 msgstr ""
 
@@ -293,7 +293,7 @@ msgstr ""
 msgid "Breaks"
 msgstr ""
 
-#: src/gnome/styles.rs:451
+#: src/gnome/styles.rs:454
 msgid "Built-in styles cannot be deleted"
 msgstr ""
 
@@ -325,7 +325,7 @@ msgstr ""
 msgid "Caption"
 msgstr ""
 
-#: src/gnome/navigation.rs:846
+#: src/gnome/navigation.rs:878
 msgid "Captions"
 msgstr ""
 
@@ -485,7 +485,7 @@ msgstr ""
 msgid "Clickable Entries"
 msgstr ""
 
-#: src/gnome/application.rs:141
+#: src/gnome/application.rs:145
 msgid "Close"
 msgstr ""
 
@@ -585,7 +585,7 @@ msgstr ""
 msgid "Continue from Previous Section"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:169 src/gnome/document_properties_dialog.rs:315 src/gnome/document_properties_dialog.rs:783 src/gnome/references.rs:382
+#: src/gnome/document_properties_dialog.rs:169 src/gnome/document_properties_dialog.rs:315 src/gnome/document_properties_dialog.rs:802 src/gnome/references.rs:382
 msgid "Continuous"
 msgstr ""
 
@@ -621,7 +621,7 @@ msgstr ""
 msgid "Could Not Load Recovery List"
 msgstr ""
 
-#: src/gnome/application.rs:138
+#: src/gnome/application.rs:142
 msgid "Could Not Open Document"
 msgstr ""
 
@@ -653,7 +653,7 @@ msgstr ""
 msgid "Count By"
 msgstr ""
 
-#: src/gnome/styles.rs:500
+#: src/gnome/styles.rs:503
 msgid "Create Style"
 msgstr ""
 
@@ -789,7 +789,7 @@ msgstr ""
 msgid "Delete Rows"
 msgstr ""
 
-#: src/gnome/styles.rs:444
+#: src/gnome/styles.rs:447
 msgid "Delete Style"
 msgstr ""
 
@@ -849,7 +849,7 @@ msgstr ""
 msgid "Different Odd & Even Pages"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:379
+#: src/gnome/document_properties_dialog.rs:398
 msgid "Different Odd and Even Pages"
 msgstr ""
 
@@ -889,7 +889,7 @@ msgstr ""
 msgid "Do Not Check"
 msgstr ""
 
-#: src/gnome/application.rs:88 src/gnome/files.rs:158 src/gnome/tab.rs:772
+#: src/gnome/application.rs:92 src/gnome/files.rs:158 src/gnome/tab.rs:772
 msgid "Document"
 msgstr ""
 
@@ -905,11 +905,11 @@ msgstr ""
 msgid "Document File"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows35.rs:246 src/gnome/document_fonts.rs:24
+#: src/gnome/diagnostics/workflows35.rs:251 src/gnome/document_fonts.rs:41 src/gnome/document_properties_dialog.rs:373
 msgid "Document Fonts"
 msgstr ""
 
-#: src/gnome/menus.rs:572
+#: src/gnome/document_properties_dialog.rs:374 src/gnome/menus.rs:572
 msgid "Document Fonts…"
 msgstr ""
 
@@ -969,11 +969,11 @@ msgstr ""
 msgid "Double Strikethrough"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:313 src/gnome/document_properties_dialog.rs:785 src/gnome/references.rs:384
+#: src/gnome/document_properties_dialog.rs:313 src/gnome/document_properties_dialog.rs:804 src/gnome/references.rs:384
 msgid "Each Page"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:314 src/gnome/document_properties_dialog.rs:784 src/gnome/references.rs:383
+#: src/gnome/document_properties_dialog.rs:314 src/gnome/document_properties_dialog.rs:803 src/gnome/references.rs:383
 msgid "Each Section"
 msgstr ""
 
@@ -1045,7 +1045,7 @@ msgstr ""
 msgid "Endnote"
 msgstr ""
 
-#: src/gnome/navigation.rs:848
+#: src/gnome/navigation.rs:880
 msgid "Endnotes"
 msgstr ""
 
@@ -1097,7 +1097,7 @@ msgstr ""
 msgid "Equation"
 msgstr ""
 
-#: src/gnome/navigation.rs:849
+#: src/gnome/navigation.rs:881
 msgid "Equations"
 msgstr ""
 
@@ -1161,7 +1161,7 @@ msgstr ""
 msgid "File Name"
 msgstr ""
 
-#: src/gnome/navigation.rs:854
+#: src/gnome/navigation.rs:886
 msgid "Filter Navigation"
 msgstr ""
 
@@ -1257,7 +1257,7 @@ msgstr ""
 msgid "Footnote Options"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:383 src/gnome/navigation.rs:847
+#: src/gnome/document_properties_dialog.rs:402 src/gnome/navigation.rs:879
 msgid "Footnotes"
 msgstr ""
 
@@ -1321,7 +1321,7 @@ msgstr ""
 msgid "Headers"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:407 src/gnome/header_options.rs:81 src/gnome/search.rs:328
+#: src/gnome/document_properties_dialog.rs:426 src/gnome/header_options.rs:81 src/gnome/search.rs:328
 msgid "Headers and Footers"
 msgstr ""
 
@@ -1333,7 +1333,7 @@ msgstr ""
 msgid "Heading Levels"
 msgstr ""
 
-#: src/gnome/navigation.rs:841
+#: src/gnome/navigation.rs:873
 msgid "Headings"
 msgstr ""
 
@@ -1413,7 +1413,7 @@ msgstr ""
 msgid "Image spacing must be between 0 and 144 points."
 msgstr ""
 
-#: src/gnome/navigation.rs:843
+#: src/gnome/navigation.rs:875
 msgid "Images"
 msgstr ""
 
@@ -1465,7 +1465,7 @@ msgstr ""
 msgid "Independent copies keep the current content. Linking uses the previous section; existing separate content remains available through Undo."
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:373
+#: src/gnome/document_properties_dialog.rs:392
 msgid "Information"
 msgstr ""
 
@@ -1697,7 +1697,7 @@ msgstr ""
 msgid "Linked to Previous Section"
 msgstr ""
 
-#: src/gnome/navigation.rs:850
+#: src/gnome/navigation.rs:882
 msgid "Links"
 msgstr ""
 
@@ -1737,7 +1737,7 @@ msgstr ""
 msgid "Minimum Row Height"
 msgstr ""
 
-#: src/gnome/document_fonts.rs:73
+#: src/gnome/document_fonts.rs:90
 msgid "Missing; displayed as"
 msgstr ""
 
@@ -1765,11 +1765,11 @@ msgstr ""
 msgid "More Text Options…"
 msgstr ""
 
-#: src/gnome/navigation.rs:323
+#: src/gnome/navigation.rs:355
 msgid "Move Section Down"
 msgstr ""
 
-#: src/gnome/navigation.rs:318
+#: src/gnome/navigation.rs:350
 msgid "Move Section Up"
 msgstr ""
 
@@ -1817,11 +1817,11 @@ msgstr ""
 msgid "New Paragraph"
 msgstr ""
 
-#: src/gnome/diagnostics/format136.rs:115 src/gnome/styles.rs:467 src/gnome/styles.rs:474
+#: src/gnome/diagnostics/format136.rs:115 src/gnome/styles.rs:470 src/gnome/styles.rs:477
 msgid "New Style"
 msgstr ""
 
-#: src/gnome/styles.rs:565
+#: src/gnome/styles.rs:568
 msgid "New Style…"
 msgstr ""
 
@@ -1833,7 +1833,7 @@ msgstr ""
 msgid "New Window"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows35.rs:264 src/gnome/templates.rs:5
+#: src/gnome/diagnostics/workflows35.rs:270 src/gnome/templates.rs:5
 msgid "New from Template"
 msgstr ""
 
@@ -1849,7 +1849,7 @@ msgstr ""
 msgid "Next Page"
 msgstr ""
 
-#: src/gnome/document_fonts.rs:81
+#: src/gnome/document_fonts.rs:98
 msgid "Next Use"
 msgstr ""
 
@@ -1865,7 +1865,7 @@ msgstr ""
 msgid "No Comments"
 msgstr ""
 
-#: src/gnome/navigation.rs:833
+#: src/gnome/navigation.rs:865
 msgid "No Headings in This Document"
 msgstr ""
 
@@ -1905,7 +1905,7 @@ msgstr ""
 msgid "No document"
 msgstr ""
 
-#: src/gnome/navigation.rs:454
+#: src/gnome/navigation.rs:486
 msgid "No elements of this type in the document."
 msgstr ""
 
@@ -1933,7 +1933,7 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:771 src/gnome/header_options.rs:100 src/gnome/references.rs:419
+#: src/gnome/document_properties_dialog.rs:790 src/gnome/header_options.rs:100 src/gnome/references.rs:419
 msgid "Number Format"
 msgstr ""
 
@@ -1961,7 +1961,7 @@ msgstr ""
 msgid "Only DOCX and ODT files are supported"
 msgstr ""
 
-#: src/gnome/application.rs:80 src/gnome/tab.rs:761
+#: src/gnome/application.rs:84 src/gnome/tab.rs:761
 msgid "Only local files are supported"
 msgstr ""
 
@@ -1981,7 +1981,7 @@ msgstr ""
 msgid "Open a Document"
 msgstr ""
 
-#: src/gnome/document_fonts.rs:31
+#: src/gnome/document_fonts.rs:48
 msgid "Opening a document preserves its font names. Replace changes the document and can be undone."
 msgstr ""
 
@@ -2013,7 +2013,7 @@ msgstr ""
 msgid "PDF Exported"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:98 src/gnome/document_properties_dialog.rs:375 src/gnome/search.rs:167
+#: src/gnome/document_properties_dialog.rs:98 src/gnome/document_properties_dialog.rs:394 src/gnome/search.rs:167
 msgid "Page"
 msgstr ""
 
@@ -2249,15 +2249,15 @@ msgstr ""
 msgid "Remove the space before the punctuation"
 msgstr ""
 
-#: src/gnome/styles.rs:498
+#: src/gnome/styles.rs:501
 msgid "Rename"
 msgstr ""
 
-#: src/gnome/styles.rs:465 src/gnome/styles.rs:472
+#: src/gnome/styles.rs:468 src/gnome/styles.rs:475
 msgid "Rename Style"
 msgstr ""
 
-#: src/gnome/styles.rs:433
+#: src/gnome/styles.rs:436
 msgid "Rename…"
 msgstr ""
 
@@ -2281,7 +2281,7 @@ msgstr ""
 msgid "Repeated word: {word}"
 msgstr ""
 
-#: src/gnome/document_fonts.rs:108 src/gnome/menus.rs:681 src/gnome/search.rs:318 src/search.rs:384
+#: src/gnome/document_fonts.rs:125 src/gnome/menus.rs:681 src/gnome/search.rs:318 src/search.rs:384
 msgid "Replace"
 msgstr ""
 
@@ -2305,7 +2305,7 @@ msgstr ""
 msgid "Replace With"
 msgstr ""
 
-#: src/gnome/document_fonts.rs:106
+#: src/gnome/document_fonts.rs:123
 msgid "Replacement Font"
 msgstr ""
 
@@ -2345,7 +2345,7 @@ msgstr ""
 msgid "Restart Line Numbers"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:781 src/gnome/references.rs:420
+#: src/gnome/document_properties_dialog.rs:800 src/gnome/references.rs:420
 msgid "Restart Numbering"
 msgstr ""
 
@@ -2457,23 +2457,23 @@ msgstr ""
 msgid "Save a Copy — DOCX or ODT"
 msgstr ""
 
-#: src/saving.rs:120
+#: src/saving.rs:126
 msgid "Save as DOCX to preserve all table of contents and automatic field options."
 msgstr ""
 
-#: src/saving.rs:35
+#: src/saving.rs:41
 msgid "Save as DOCX to preserve caption associations and hidden caption text."
 msgstr ""
 
-#: src/saving.rs:63
+#: src/saving.rs:69
 msgid "Save as DOCX to preserve column breaks and continuous, even-page or odd-page sections."
 msgstr ""
 
-#: src/saving.rs:22
+#: src/saving.rs:23
 msgid "Save as DOCX to preserve inherited language and review settings. The current ODT exporter flattens them."
 msgstr ""
 
-#: src/saving.rs:124
+#: src/saving.rs:130
 msgid "Save as DOCX to preserve picture effects. The current ODT exporter cannot keep them."
 msgstr ""
 
@@ -2481,23 +2481,27 @@ msgstr ""
 msgid "Save as DOCX to preserve the category."
 msgstr ""
 
-#: src/saving.rs:29
+#: src/saving.rs:35
 msgid "Save as DOCX to preserve the document category. The current ODT exporter cannot keep it."
 msgstr ""
 
-#: src/saving.rs:116
+#: src/saving.rs:28
+msgid "Save as DOCX to preserve the following paragraph style. The current ODT exporter cannot keep it."
+msgstr ""
+
+#: src/saving.rs:122
 msgid "Save as DOCX to preserve the original equation structure and formatting."
 msgstr ""
 
-#: src/saving.rs:46
+#: src/saving.rs:52
 msgid "Save as DOCX to preserve the section gutter, alignment, direction or line numbering."
 msgstr ""
 
-#: src/saving.rs:68
+#: src/saving.rs:74
 msgid "Save as DOCX to preserve tracked formatting changes. The current ODT exporter cannot keep them."
 msgstr ""
 
-#: src/saving.rs:73
+#: src/saving.rs:79
 msgid "Save as DOCX to preserve tracked moves. The current ODT exporter cannot keep their association."
 msgstr ""
 
@@ -2537,7 +2541,7 @@ msgstr ""
 msgid "Search Options"
 msgstr ""
 
-#: src/gnome/styles.rs:553
+#: src/gnome/styles.rs:556
 msgid "Search Styles"
 msgstr ""
 
@@ -2569,7 +2573,7 @@ msgstr ""
 msgid "Section Links"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:76 src/gnome/navigation.rs:501 src/gnome/navigation.rs:530
+#: src/gnome/document_properties_dialog.rs:76 src/gnome/navigation.rs:533 src/gnome/navigation.rs:562
 msgid "Section Properties"
 msgstr ""
 
@@ -2581,7 +2585,7 @@ msgstr ""
 msgid "Section Text Direction"
 msgstr ""
 
-#: src/gnome/navigation.rs:480
+#: src/gnome/navigation.rs:512
 msgid "Section {number}"
 msgstr ""
 
@@ -2817,7 +2821,7 @@ msgstr ""
 msgid "Square Root"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:794 src/gnome/document_properties_dialog.rs:799 src/gnome/header_options.rs:115 src/gnome/references.rs:421
+#: src/gnome/document_properties_dialog.rs:813 src/gnome/document_properties_dialog.rs:818 src/gnome/header_options.rs:115 src/gnome/references.rs:421
 msgid "Start At"
 msgstr ""
 
@@ -2845,7 +2849,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:439 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:419 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:232 src/gnome/styles.rs:544 src/gnome/tab.rs:307 src/gnome/tab.rs:585
+#: src/gnome/context.rs:128 src/gnome/context.rs:439 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:419 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:232 src/gnome/styles.rs:547 src/gnome/tab.rs:307 src/gnome/tab.rs:585
 msgid "Style"
 msgstr ""
 
@@ -2853,11 +2857,11 @@ msgstr ""
 msgid "Style Deleted"
 msgstr ""
 
-#: src/gnome/styles.rs:481
+#: src/gnome/styles.rs:484
 msgid "Style Name"
 msgstr ""
 
-#: src/gnome/styles.rs:518
+#: src/gnome/styles.rs:521
 msgid "Style Saved"
 msgstr ""
 
@@ -2929,7 +2933,7 @@ msgstr ""
 msgid "Table Size"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:98 src/gnome/diagnostics/format136.rs:118 src/gnome/elements.rs:110 src/gnome/menus.rs:466 src/gnome/navigation.rs:845 src/gnome/references.rs:209 src/navigation.rs:319
+#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:98 src/gnome/diagnostics/format136.rs:118 src/gnome/elements.rs:110 src/gnome/menus.rs:466 src/gnome/navigation.rs:877 src/gnome/references.rs:209 src/navigation.rs:319
 msgid "Table of Contents"
 msgstr ""
 
@@ -2937,7 +2941,7 @@ msgstr ""
 msgid "Table {number}"
 msgstr ""
 
-#: src/gnome/navigation.rs:844
+#: src/gnome/navigation.rs:876
 msgid "Tables"
 msgstr ""
 
@@ -3005,7 +3009,7 @@ msgstr ""
 msgid "The current engine supports one table of contents per document. Edit the existing table of contents instead."
 msgstr ""
 
-#: src/gnome/document_fonts.rs:122
+#: src/gnome/document_fonts.rs:139
 msgid "The document changed. Reopen the font list."
 msgstr ""
 
@@ -3017,7 +3021,7 @@ msgstr ""
 msgid "The document has changed. Close and reopen Columns."
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:568
+#: src/gnome/document_properties_dialog.rs:587
 msgid "The document has changed. Close and reopen its properties."
 msgstr ""
 
@@ -3057,7 +3061,7 @@ msgstr ""
 msgid "The file does not exist or is not a regular file"
 msgstr ""
 
-#: src/saving.rs:194
+#: src/saving.rs:200
 msgid "The file name must end in .docx or .odt"
 msgstr ""
 
@@ -3081,7 +3085,7 @@ msgstr ""
 msgid "The page exceeds the preview size limit"
 msgstr ""
 
-#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:72 src/saving.rs:142 src/templates.rs:53
+#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:72 src/saving.rs:148 src/templates.rs:53
 msgid "The path is not UTF-8"
 msgstr ""
 
@@ -3101,7 +3105,7 @@ msgstr ""
 msgid "The search result no longer matches."
 msgstr ""
 
-#: src/document_properties.rs:131 src/gnome/document_properties_dialog.rs:855
+#: src/document_properties.rs:131 src/gnome/document_properties_dialog.rs:874
 msgid "The section does not contain an editable paragraph"
 msgstr ""
 
@@ -3125,7 +3129,7 @@ msgstr ""
 msgid "The style no longer exists"
 msgstr ""
 
-#: src/gnome/styles.rs:489
+#: src/gnome/styles.rs:492
 msgid "The style will use the formatting of the current selection."
 msgstr ""
 
@@ -3309,7 +3313,7 @@ msgstr ""
 msgid "Update Style to Match Selection"
 msgstr ""
 
-#: src/gnome/styles.rs:427
+#: src/gnome/styles.rs:430
 msgid "Update from Selection"
 msgstr ""
 
@@ -3329,11 +3333,15 @@ msgstr ""
 msgid "Use Current Selection"
 msgstr ""
 
+#: src/gnome/styles.rs:404
+msgid "Use DOCX to preserve changes to the following paragraph style."
+msgstr ""
+
 #: src/equations.rs:47
 msgid "Use UnicodeMath input, up to 4096 characters. LaTeX commands are not supported here."
 msgstr ""
 
-#: src/saving.rs:138
+#: src/saving.rs:144
 msgid "Use a .docx or .odt extension"
 msgstr ""
 
@@ -3413,7 +3421,7 @@ msgstr ""
 msgid "WordCraft cannot anchor this image on the destination page. Its original position has been kept."
 msgstr ""
 
-#: src/saving.rs:179
+#: src/saving.rs:185
 msgid "WordCraft did not confirm that the document was saved"
 msgstr ""
 

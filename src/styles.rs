@@ -183,3 +183,22 @@ pub fn preview(source: &Session, id: &str) -> Result<PageImage, String> {
         total_pages: 1,
     })
 }
+
+/// The pinned ODT reader restores built-in defaults but the exporter omits next-style.
+/// Compare effective choices, so an explicit self-reference is harmless.
+pub fn odt_loses_next(session: &Session) -> bool {
+    let defaults = wordcraft_doc::styles::StyleSheet::builtin();
+    session
+        .doc
+        .styles
+        .styles
+        .iter()
+        .filter(|s| s.kind == StyleKind::Paragraph)
+        .any(|style| {
+            let expected = defaults
+                .get(&style.id)
+                .and_then(|s| s.next.as_deref())
+                .unwrap_or(&style.id);
+            style.next.as_deref().unwrap_or(&style.id) != expected
+        })
+}

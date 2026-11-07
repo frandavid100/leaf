@@ -341,3 +341,57 @@ fn structural_refusals_preserve_document_selection_and_history() {
     assert_eq!(s.doc, before);
     assert_eq!(s.undo_depth(), depth);
 }
+
+#[test]
+fn custom_following_style_and_font_substitution_roundtrip_with_history() {
+    let mut s = session("Custom heading");
+    let id = styles::edit(&mut s, styles::Edit::Create("Personal heading".into()))
+        .unwrap()
+        .unwrap();
+    let original = s.doc.clone();
+    let depth = s.undo_depth();
+    styles::edit(&mut s, styles::Edit::Next(id.clone(), "Heading2".into())).unwrap();
+    assert_eq!(s.undo_depth(), depth + 1);
+    s.run("edit.undo", &json!({})).unwrap();
+    assert_eq!(s.doc, original);
+    s.run("edit.redo", &json!({})).unwrap();
+    s.run("styles.modify",&json!({"style":id,"chr":{"font":"Leaf35 Missing Font","fontCs":"Leaf35 Missing Font","fontEa":"Leaf35 Missing Font"}})).unwrap();
+    document_fonts::substitute(&mut s, "Leaf35 Missing Font", "DejaVu Sans").unwrap();
+    let dir = folder();
+    for ext in ["docx"] {
+        let path = dir.join(format!("Styles.{ext}"));
+        let mut copy = Session::new(s.doc.clone());
+        saving::save(&mut copy, &path).unwrap();
+        let reopened = open_document(&path).unwrap();
+        let style = reopened.doc.styles.get(&id).unwrap();
+        assert_eq!(style.next.as_deref(), Some("Heading2"), "{ext}");
+        assert_eq!(style.chr.font.as_deref(), Some("DejaVu Sans"));
+        assert!(
+            !document_fonts::inventory(&reopened)
+                .iter()
+                .any(|f| f.name == "Leaf35 Missing Font")
+        );
+    }
+    let odt = dir.join("Guarded.odt");
+    let original = s.doc.clone();
+    let selection = s.sel.clone();
+    let depth = s.undo_depth();
+    assert!(saving::requires_docx(&s));
+    assert!(saving::save(&mut s, &odt).is_err());
+    assert!(!odt.exists());
+    assert_eq!(s.doc, original);
+    assert_eq!(s.sel, selection);
+    assert_eq!(s.undo_depth(), depth);
+    // The font substitution also round-trips through ODT when no next-style choice is lost.
+    let mut copy = Session::new(s.doc.clone());
+    copy.run("styles.modify", &json!({"style":id,"next":id}))
+        .unwrap();
+    assert!(!styles::odt_loses_next(&copy));
+    saving::save(&mut copy, &odt).unwrap();
+    let reopened = open_document(&odt).unwrap();
+    assert_eq!(
+        reopened.doc.styles.get(&id).unwrap().chr.font.as_deref(),
+        Some("DejaVu Sans")
+    );
+    std::fs::remove_dir_all(dir).unwrap();
+}

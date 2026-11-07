@@ -401,6 +401,9 @@ impl StylePopover {
                 .collect::<Vec<_>>();
             let next = gtk::DropDown::from_strings(&names);
             next.set_widget_name("style-next");
+            next.set_tooltip_text(Some(wordcraft_gnome::t!(
+                "Use DOCX to preserve changes to the following paragraph style."
+            )));
             next.set_selected(
                 candidates
                     .iter()

@@ -3154,3 +3154,9 @@ msgstr "The result is outside the selected search range."
 
 msgid "Choose an existing paragraph style"
 msgstr "Choose an existing paragraph style"
+
+msgid "Save as DOCX to preserve the following paragraph style. The current ODT exporter cannot keep it."
+msgstr "Save as DOCX to preserve the following paragraph style. The current ODT exporter cannot keep it."
+
+msgid "Use DOCX to preserve changes to the following paragraph style."
+msgstr "Use DOCX to preserve changes to the following paragraph style."

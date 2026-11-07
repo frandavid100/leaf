@@ -8,6 +8,8 @@ Leaf 0.1.0-alpha.35 — personal templates and editing workflows
 - Inspect document font declarations and uses, see actual fallback fonts, navigate uses, and explicitly substitute a font throughout the document with Undo. Opening documents preserves their authored font names.
 - Paste external images/screenshots and drop image files at a document position; images preserve their proportions and initially fit the text width.
 
+Format preservation: changed following-paragraph styles require DOCX when the pinned ODT exporter would lose the choice. Leaf refuses the lossy save and keeps the document unchanged.
+
 Safety limits: moving a heading inside a table, moving across a page-section break, and moving sections while tracking changes are refused without altering the document. Document-wide font replacement also requires change tracking to be off. A selected search range is invalidated by unrelated document edits. Regex replacements do not insert at empty matches.
 
 WordCraft remains pinned at 0.16.0. No new conflict-protection or symbol-picker workflow is included. Native and installed GNOME 49/51 automated checks are required before publication; they do not claim human GNOME OS validation.

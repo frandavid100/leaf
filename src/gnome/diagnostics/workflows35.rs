@@ -237,7 +237,12 @@ pub(super) fn test(
         apply_user_edit(&ui, Edit::Undo);
         assert!(text(&ui).starts_with("A"));
         let before = document_identity(&ui);
-        document_fonts::show(&ui, &window);
+        let properties = show_document_properties(&ui, &window);
+        find_widget(&properties.window, "properties-document-fonts")
+            .unwrap()
+            .downcast::<gtk::Button>()
+            .unwrap()
+            .emit_clicked();
         assert_eq!(document_identity(&ui), before);
         for window in gtk::Window::list_toplevels()
             .into_iter()
@@ -247,6 +252,7 @@ pub(super) fn test(
                 window.close();
             }
         }
+        properties.window.close();
         // An actual template chooser action opens a new, dirty tab and keeps the source file.
         let folder = wordcraft_gnome::preferences::config_root().join("workflow35-templates");
         std::fs::create_dir_all(&folder).unwrap();
@@ -271,6 +277,18 @@ pub(super) fn test(
         assert_eq!(host.tabs.n_pages(), count + 1);
         assert_eq!(std::fs::read(&path).unwrap(), bytes);
         assert_eq!(text(&selected_ui(&host).unwrap()), "Personal template");
+        let restart = std::process::Command::new(std::env::current_exe().unwrap())
+            .arg("--workflows35-template-restart-test")
+            .output()
+            .unwrap();
+        assert!(
+            restart.status.success(),
+            "{}",
+            String::from_utf8_lossy(&restart.stderr)
+        );
+        assert!(
+            String::from_utf8_lossy(&restart.stdout).contains("WORKFLOWS35_TEMPLATE_RESTART_OK")
+        );
         eprintln!(
             "WORKFLOWS35_UI_OK search=true selection=true regex_error=true next_style=true plain=true painter=true image=true outline=true fonts=true template=true"
         );
@@ -452,4 +470,24 @@ pub(super) fn drag_source() {
         });
     });
     app.run_with_args(&["leaf-workflows35-source"]);
+}
+
+pub(super) fn template_restart() {
+    let folder = wordcraft_gnome::templates::folder().unwrap();
+    assert_eq!(
+        Some(folder.clone()),
+        wordcraft_gnome::preferences::template_folder()
+    );
+    let paths = wordcraft_gnome::templates::list(&folder).unwrap();
+    assert_eq!(paths.len(), 1);
+    let before = std::fs::read(&paths[0]).unwrap();
+    let session = wordcraft_gnome::templates::open(&paths[0]).unwrap();
+    assert!(session.dirty);
+    assert!(session.file_name.is_none());
+    assert_eq!(
+        session.doc.plain_text(wordcraft_doc::StoryRef::Body),
+        "Personal template"
+    );
+    assert_eq!(std::fs::read(&paths[0]).unwrap(), before);
+    println!("WORKFLOWS35_TEMPLATE_RESTART_OK");
 }

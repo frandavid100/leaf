@@ -367,6 +367,25 @@ fn show_properties(
     }
     review_group.add(&language);
     information.add(&review_group);
+    if target.is_none() {
+        let group = adw::PreferencesGroup::new();
+        let row = adw::ActionRow::new();
+        row.set_title(wordcraft_gnome::t!("Document Fonts"));
+        let button = gtk::Button::with_label(wordcraft_gnome::t!("Document Fonts…"));
+        button.set_widget_name("properties-document-fonts");
+        row.add_suffix(&button);
+        row.set_activatable_widget(Some(&button));
+        group.add(&row);
+        information.add(&group);
+        let weak = Rc::downgrade(ui);
+        let parent = window.downgrade();
+        button.connect_clicked(move |_| {
+            if let (Some(ui), Some(parent)) = (weak.upgrade(), parent.upgrade()) {
+                document_fonts::show(&ui, &parent);
+            }
+        });
+    }
+
     stack.add_titled(
         &information,
         Some("information"),

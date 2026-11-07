@@ -1,14 +1,31 @@
 //! Font inventory is read-only until an explicit per-font Replace action.
 use super::*;
-pub(super) fn show(ui: &Rc<Ui>, parent: &ApplicationWindow) {
+pub(super) fn show(ui: &Rc<Ui>, parent: &impl IsA<gtk::Window>) {
+    let parent = parent.as_ref();
     let (fonts, missing, families, identity) = {
         let mut value = ui.current.borrow_mut();
         let Some(d) = value.as_mut() else { return };
         let fonts = wordcraft_gnome::document_fonts::inventory(&d.session);
-        let missing = d
+        let mut missing = d
             .session
             .run("font.missing", &serde_json::json!({}))
             .unwrap_or_default();
+        for font in &fonts {
+            let known = missing["missing"].as_array().is_some_and(|values| {
+                values
+                    .iter()
+                    .any(|v| v["font"].as_str() == Some(&font.name))
+            });
+            if !known {
+                if let Some(fallback) =
+                    wordcraft_engine::cmd::font::shown_as(&d.session.doc, &font.name)
+                {
+                    if let Some(values) = missing["missing"].as_array_mut() {
+                        values.push(serde_json::json!({"font":font.name,"shownAs":[fallback]}));
+                    }
+                }
+            }
+        }
         let families = d
             .session
             .run("font.list", &serde_json::json!({"all":true}))
