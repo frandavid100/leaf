@@ -149,6 +149,7 @@ pub mod search;
 
 pub mod navigation;
 
+pub mod dictionaries;
 pub mod document_properties;
 pub mod header_footer;
 pub mod page_options;

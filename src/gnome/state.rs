@@ -71,6 +71,8 @@ pub(super) struct Ui {
     pub(super) review: RefCell<Option<Rc<ReviewPanel>>>,
     pub(super) annotation_dialog: RefCell<Option<adw::Window>>,
     pub(super) link_dialog: RefCell<Option<adw::Window>>,
+    pub(super) dictionary_tools: RefCell<Option<Rc<DictionaryTools>>>,
+    pub(super) dictionary_chooser: RefCell<Option<gio::Cancellable>>,
     pub(super) host: std::rc::Weak<Workspace>,
     pub(super) open_button: gtk::Button,
     pub(super) search: RefCell<Option<Rc<SearchPanel>>>,

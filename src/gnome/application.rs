@@ -192,6 +192,9 @@ pub(super) fn run() {
             None,
         );
     });
-    app.connect_shutdown(|_| shutdown_workspaces());
+    app.connect_shutdown(|_| {
+        shutdown_workspaces();
+        wordcraft_gnome::dictionaries::shutdown();
+    });
     app.run_with_args(&["wordcraft-gnome"]);
 }

@@ -1,7 +1,8 @@
-Leaf 0.1.0-alpha.33
+Leaf 0.1.0-alpha.34 — dictionary integration test candidate
 
-- Keep Home/End and their Shift/Ctrl variants in the document editor before GTK scrolling bindings can consume them. Native text fields retain their own navigation.
-- Prevent a pending zoom restoration from jumping back to an older page after a newer caret navigation request, including End at an existing line end.
-- Explain how adjoining Before/After paragraph spacing values combine. Real native controls verify fractional and comma input, incrementing and values below 5.5 pt without changing document spacing semantics.
+- Open Dictionary Settings from Text → Language to choose an additional Hunspell folder through the native file chooser, refresh changed dictionaries, remove that source or import a matching .aff/.dic pair.
+- Combine imported, selected-folder, bundled and readable native system dictionaries. Keep document language and Undo unchanged when resources change.
+- Show dictionary availability and add discovered languages recognized by WordCraft. Native Ubuntu may offer its installed Language Support application; Flatpak uses the folder portal and does not request broad host access.
+- Include a separate synthetic dictionary ZIP with Spanish test instructions. Its invented Italian words are test data, never installed automatically.
 
-WordCraft remains pinned at 0.16.0. Issue #99 now has a public synthetic reproduction of table-cell notes below the footer; its engine correction remains pending. The exact edited Portland state in #9 is not claimed reproduced. No private document or screenshot is distributed. Source and binary are validated through the existing native and installed GNOME 49/51 checks before automatic publication.
+Issue #84 remains open pending David’s GNOME OS test. Automated native and installed GNOME-runtime checks are recorded with this candidate; these do not claim human GNOME OS validation. WordCraft remains pinned at 0.16.0.

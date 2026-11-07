@@ -483,6 +483,14 @@ impl TextTools {
                 self.detail.append(&self.font_page);
             }
             "language" => {
+                if wordcraft_gnome::dictionaries::refresh(false).unwrap_or(false) {
+                    let weak = Rc::downgrade(&ui);
+                    glib::idle_add_local_once(move || {
+                        if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
+                            refresh_all_proofing(&ui);
+                        }
+                    });
+                }
                 let search = gtk::SearchEntry::new();
                 search.set_widget_name("language-search");
                 accessible_name(&search, wordcraft_gnome::t!("Language"));
@@ -514,24 +522,54 @@ impl TextTools {
                     .borrow()
                     .as_ref()
                     .map(|d| wordcraft_gnome::proofing_defaults::choice(&d.session));
-                let dictionaries = wordcraft_engine::proof::installed_dictionaries();
-                for (label, choice) in [
-                    (wordcraft_gnome::t!("Do Not Check"), "off"),
-                    (wordcraft_gnome::t!("Default language"), "default"),
-                ]
-                .into_iter()
-                .chain(TEXT_LANGUAGES.iter().map(|(tag, name)| (*name, *tag)))
-                {
-                    let b = style_menu_button(label);
+                let mut languages = vec![
+                    (
+                        wordcraft_gnome::t!("Do Not Check").to_owned(),
+                        "off".to_owned(),
+                    ),
+                    (
+                        wordcraft_gnome::t!("Default language").to_owned(),
+                        "default".to_owned(),
+                    ),
+                ];
+                languages.extend(
+                    TEXT_LANGUAGES
+                        .iter()
+                        .map(|(tag, name)| (name.to_string(), tag.to_string())),
+                );
+                for tag in wordcraft_gnome::dictionaries::additional_languages() {
+                    if !languages.iter().any(|(_, choice)| choice == &tag) {
+                        languages.push((tag.clone(), tag));
+                    }
+                }
+                for (label, choice) in languages {
+                    let b = style_menu_button(&label);
                     b.set_widget_name(&format!("language-choice-{choice}"));
-                    let language = wordcraft_engine::proof::lang::ProofLang::from_tag(Some(choice));
-                    if let Some(path) = dictionaries.iter().find_map(|(lang, path)| {
-                        (*lang == language).then_some(path.as_ref()).flatten()
-                    }) {
-                        b.set_tooltip_text(Some(&path.to_string_lossy()));
+                    if choice != "off" && choice != "default" {
+                        if wordcraft_gnome::dictionaries::available(&choice) {
+                            if let Some(path) =
+                                wordcraft_gnome::dictionaries::dictionary_path(&choice)
+                            {
+                                b.set_tooltip_text(Some(&path.to_string_lossy()));
+                            } else {
+                                b.set_tooltip_text(Some(wordcraft_gnome::t!(
+                                    "Dictionary included with Leaf."
+                                )));
+                            }
+                        } else {
+                            b.add_css_class("dim-label");
+                            b.set_tooltip_text(Some(wordcraft_gnome::t!(
+                                "No spelling dictionary is available for this language."
+                            )));
+                            b.update_property(&[gtk::accessible::Property::Description(
+                                wordcraft_gnome::t!(
+                                    "No spelling dictionary is available for this language."
+                                ),
+                            )]);
+                        }
                     }
 
-                    if selected.as_deref() == Some(choice) {
+                    if selected.as_deref() == Some(choice.as_str()) {
                         b.add_css_class("current-style");
                     }
                     choices.append(&b);
@@ -545,6 +583,18 @@ impl TextTools {
                         }
                     });
                 }
+                let manage = style_menu_button(wordcraft_gnome::t!("Dictionary Settings…"));
+                manage.set_widget_name("dictionary-settings");
+                let weak = Rc::downgrade(self);
+                manage.connect_clicked(move |_| {
+                    let Some(tools) = weak.upgrade() else { return };
+                    let Some(ui) = tools.ui.upgrade() else { return };
+                    if let Some(popover) = tools.popover.upgrade() {
+                        close_format_popover(&popover);
+                    }
+                    show_dictionary_tools(&ui);
+                });
+                self.detail.append(&manage);
                 let install =
                     style_menu_button(wordcraft_gnome::t!("Install Additional Languages…"));
                 install.set_widget_name("install-dictionaries");
@@ -558,33 +608,7 @@ impl TextTools {
                     if let Some(popover) = tools.popover.upgrade() {
                         close_format_popover(&popover);
                     }
-                    let chooser = gtk::FileDialog::new();
-                    chooser.set_title(wordcraft_gnome::t!(
-                        "Select Matching Hunspell .aff and .dic Files"
-                    ));
-                    let weak = Rc::downgrade(&ui);
-                    chooser.open_multiple(
-                        Some(&host.window),
-                        None::<&gio::Cancellable>,
-                        move |result| {
-                            let Some(ui) = weak.upgrade().filter(|ui| !ui.closed.get()) else {
-                                return;
-                            };
-                            let Ok(files) = result else { return };
-                            let paths = (0..files.n_items())
-                                .filter_map(|i| files.item(i)?.downcast::<gio::File>().ok()?.path())
-                                .collect::<Vec<_>>();
-                            match wordcraft_gnome::proofing::install_dictionary(&paths) {
-                                Ok(()) => {
-                                    refresh_all_proofing(&ui);
-                                    ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
-                                        "Dictionary installed."
-                                    )));
-                                }
-                                Err(error) => ui.toasts.add_toast(Toast::new(&error)),
-                            }
-                        },
-                    );
+                    import_dictionary_files(&ui, &host.window);
                 });
                 self.detail.append(&install);
             }

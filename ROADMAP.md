@@ -1,5 +1,10 @@
 # Hoja de ruta de Leaf
 
+
+**En preparación:** candidata alpha.34 para probar diccionarios (#84): carpeta
+autorizada por el selector, recarga y disponibilidad. El issue sigue abierto
+hasta la prueba de David en GNOME OS. [Alcance y límites](docs/ISSUE84_DICTIONARIES.md).
+
 Actualizada: 7 de noviembre de 2026. [Estado actual](PROJECT_STATUS.md) ·
 [Decisiones](docs/DECISIONS.md) · [Historial](docs/history/README.md).
 Esta es la lista vigente; los planes antiguos archivados no añaden tareas.

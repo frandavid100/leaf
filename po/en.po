@@ -2953,3 +2953,63 @@ msgstr "Use footnotes, comment threads, floating pictures and basic equations in
 
 msgid "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."
 msgstr "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."
+
+msgid "Choose Dictionary Folder…"
+msgstr "Choose Dictionary Folder…"
+
+msgid "Choose a Dictionary Folder"
+msgstr "Choose a Dictionary Folder"
+
+msgid "Choose a folder containing only dictionary files."
+msgstr "Choose a folder containing only dictionary files."
+
+msgid "Choose a local dictionary folder."
+msgstr "Choose a local dictionary folder."
+
+msgid "Dictionaries"
+msgstr "Dictionaries"
+
+msgid "Dictionaries refreshed."
+msgstr "Dictionaries refreshed."
+
+msgid "Dictionary Settings…"
+msgstr "Dictionary Settings…"
+
+msgid "Dictionary folder: {folder}"
+msgstr "Dictionary folder: {folder}"
+
+msgid "Dictionary included with Leaf."
+msgstr "Dictionary included with Leaf."
+
+msgid "Import Dictionary Files…"
+msgstr "Import Dictionary Files…"
+
+msgid "No additional dictionary folder selected."
+msgstr "No additional dictionary folder selected."
+
+msgid "No matching Hunspell .aff and .dic pairs were found in this folder."
+msgstr "No matching Hunspell .aff and .dic pairs were found in this folder."
+
+msgid "No spelling dictionary is available for this language."
+msgstr "No spelling dictionary is available for this language."
+
+msgid "Refresh Dictionaries"
+msgstr "Refresh Dictionaries"
+
+msgid "Stop Using This Folder"
+msgstr "Stop Using This Folder"
+
+msgid "System Language Settings…"
+msgstr "System Language Settings…"
+
+msgid "The folder path cannot be represented as UTF-8."
+msgstr "The folder path cannot be represented as UTF-8."
+
+msgid "The selected folder is unavailable. Other dictionaries remain available."
+msgstr "The selected folder is unavailable. Other dictionaries remain available."
+
+msgid "Use readable system dictionaries, an additional folder or imported Hunspell files. The document language stays independent of the interface language."
+msgstr "Use readable system dictionaries, an additional folder or imported Hunspell files. The document language stays independent of the interface language."
+
+msgid "_Use This Folder"
+msgstr "_Use This Folder"

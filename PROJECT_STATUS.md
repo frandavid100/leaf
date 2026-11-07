@@ -1,5 +1,10 @@
 # Estado actual de Leaf
 
+
+**En preparación:** candidata alpha.34 para probar diccionarios (#84): carpeta
+autorizada por el selector, recarga y disponibilidad. El issue sigue abierto
+hasta la prueba de David en GNOME OS. [Alcance y límites](docs/ISSUE84_DICTIONARIES.md).
+
 Actualizado: 7 de noviembre de 2026. Esta página describe el presente;
 el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.
 
