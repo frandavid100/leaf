@@ -229,10 +229,22 @@ impl ParagraphPopover {
     ) -> gtk::Button {
         let b = style_menu_button(label);
         b.set_widget_name(name);
-        let icon = if command.starts_with("para.align") {
-            "format-justify-left-symbolic"
-        } else if command.contains("indent") || command.contains("dent") {
+        let icon = if command == "para.align" {
+            match args["value"].as_str() {
+                Some("center") => "format-justify-center-symbolic",
+                Some("right") => "format-justify-right-symbolic",
+                Some("justify" | "distribute") => "format-justify-fill-symbolic",
+                _ => "format-justify-left-symbolic",
+            }
+        } else if command == "para.outdent" {
+            "format-indent-less-symbolic"
+        } else if command.contains("indent") {
             "format-indent-more-symbolic"
+        } else if command.contains("bullets")
+            || command.contains("numbering")
+            || command.contains("list")
+        {
+            "view-list-symbolic"
         } else if command.contains("shading") {
             "color-select-symbolic"
         } else if command.contains("borders") {
@@ -647,7 +659,14 @@ impl ParagraphPopover {
         l.set_xalign(0.0);
         l.set_hexpand(true);
         l.set_wrap(true);
-        row.append(&gtk::Image::from_icon_name("paragraph-symbolic"));
+        let icon = match self.active_page.borrow().as_deref() {
+            Some("borders") => "view-grid-symbolic",
+            Some("indents") => "format-indent-more-symbolic",
+            Some("spacing") => "format-justify-fill-symbolic",
+            Some("bullets" | "numbering") => "view-list-symbolic",
+            _ => "paragraph-symbolic",
+        };
+        row.append(&gtk::Image::from_icon_name(icon));
         row.append(&l);
         let n = gtk::SpinButton::with_range(min, max, 0.5);
         n.set_digits(2);
