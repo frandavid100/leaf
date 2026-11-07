@@ -77,8 +77,28 @@ PY
   sleep 0.3
   scrot "${log%.log}-$stage.png"
   touch "$LEAF84_ACK/$stage"
+  if [[ "$role" == update-and-refresh && ${LEAF84_GDB:-} == 1 ]]; then
+    (
+      sleep 15
+      if kill -0 "$pid" 2>/dev/null && ! grep -q DICTIONARY84_REFRESH_OK "$log"; then
+        touch "${log%.log}-hang-detected"
+        app_pid=$(pgrep -f '^/app/bin/leaf --dictionary84-ui-test' | head -n1 || true)
+        if [[ -n "$app_pid" ]]; then
+          sudo timeout 25s gdb --batch "$LEAF84_GDB_BINARY" -ex 'set pagination off' -ex 'thread apply all bt' -p "$app_pid" > "${log%.log}-backtrace.log" 2>&1 || true
+        fi
+        folder=$(python3 - "$LEAF84_PROFILE/config/wordcraft-gnome/preferences.json" <<'PYTHON'
+import json,sys
+print(json.load(open(sys.argv[1]))['dictionary_folder'])
+PYTHON
+        )
+        timeout 8s flatpak run --command=sh "$LEAF84_APP_ID" -c 'test -f "$1/1" && cat "$2/it_IT.dic"' leaf "$LEAF84_ACK" "$folder" > "${log%.log}-portal-read.log" 2>&1 || true
+        cat "${log%.log}-backtrace.log" "${log%.log}-portal-read.log" || true
+      fi
+    ) &
+  fi
   last=$((last+1))
 done
 wait "$pid" || { cat "$log"; exit 1; }
 cat "$log"
 grep -q "DICTIONARY84_UI_OK mode=$mode" "$log"
+test ! -f "${log%.log}-hang-detected"

@@ -725,7 +725,7 @@ jobs:
                   path.write_text(uri + '\n')
           PY
           sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
           # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Validate desktop metadata
@@ -742,7 +742,16 @@ jobs:
         run: |
           mkdir -p "$HOME/.config/xdg-desktop-portal"
           printf '[preferred]\ndefault=gtk\n' > "$HOME/.config/xdg-desktop-portal/portals.conf"
+      - uses: actions/download-artifact@v4
+        with:
+          name: leaf-native-unvalidated
+          path: debug-native
+          run-id: ${{ env.LEAF_NATIVE_RUN }}
+          github-token: ${{ github.token }}
       - name: Verify installed dictionary folder portal and restart
+        env:
+          LEAF84_GDB: '1'
+          LEAF84_GDB_BINARY: ${{ github.workspace }}/debug-native/wordcraft-gnome
         run: bash tools/dictionary84-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/dictionary84-installed
       - name: Exercise the installed sandbox and desktop launcher
         run: |
