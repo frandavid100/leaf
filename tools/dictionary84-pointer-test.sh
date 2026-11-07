@@ -48,6 +48,12 @@ PY
       xdotool windowfocus --sync "$dialog"
       test -d "${LEAF84_SOURCE:?Missing synthetic source}"
       printf 'DICTIONARY84_DRIVER_SOURCE %s\n' "$LEAF84_SOURCE"
+      if [[ -n ${LEAF84_APP_ID:-} ]]; then
+        # GTK3's portal chooser disables acceptance in Recent mode. Enter the
+        # folder browser before supplying the requested source; grant only it.
+        xdotool key --clearmodifiers alt+Home
+        sleep 0.5
+      fi
       # GTK's inline completion can change a path during synthetic typing or
       # Return. Paste it atomically and activate the actual accept mnemonic.
       xdotool key --clearmodifiers ctrl+l

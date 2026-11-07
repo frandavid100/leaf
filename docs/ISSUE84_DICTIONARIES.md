@@ -63,3 +63,19 @@ completion, returning a different path; a standalone GtkFileDialog reproduces
 that without Leaf. The test driver pastes its synthetic path atomically and
 activates the translated accept mnemonic. This exercises the real chooser and
 resource loader; it does not replace the installed Flatpak portal checks.
+
+## Portal chooser control correction
+
+The first installed run passed its general sandbox and spacing/navigation tests,
+but the new folder driver tried to confirm GTK3's Recent mode while its accept
+button was disabled. A standalone GTK3 chooser reproduces this without Leaf.
+The Flatpak-only driver now enters the folder browser with Alt+Home before
+pasting its requested path and activating the accept mnemonic. A standalone
+GTK3 control verifies the exact selected source. It never accepts the Home
+folder. The native branch of the driver is unchanged byte for byte.
+
+The binary is reused from the fully successful native run: all compiled inputs
+are still required to match; only this uncompiled pointer driver is excluded
+from the source comparison. The portal test runs before the longer installed
+regressions, which remain mandatory. Actual installed portal success is still
+pending and must be recorded before publication.
