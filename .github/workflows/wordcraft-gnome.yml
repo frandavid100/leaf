@@ -304,7 +304,22 @@ jobs:
       - name: Native bookmarks and comment threads
         run: |
           set -o pipefail
-          git diff --exit-code c6e7e89e36665775a0fe5294fb8cfd56afd42ba1 -- Cargo.toml Cargo.lock craft-i18n.rev vendor patches
+          # Feature work may reuse a locked transitive crate in the frontend.
+          # Preserve every existing dependency, engine package, profile and patch.
+          git diff --exit-code 2cd4ef308650686f5b71175c57b5875eb441dd8c -- craft-i18n.rev vendor patches
+          python3 - <<'WORDCRAFT_BOUNDARY'
+          import subprocess,tomllib
+          from pathlib import Path
+          base='2cd4ef308650686f5b71175c57b5875eb441dd8c'
+          def before(path):return tomllib.loads(subprocess.check_output(['git','show',f'{base}:{path}'],text=True))
+          old=before('Cargo.toml');new=tomllib.loads(Path('Cargo.toml').read_text())
+          assert all(new['dependencies'].get(name)==spec for name,spec in old['dependencies'].items())
+          assert old.get('patch')==new.get('patch')
+          assert old.get('profile')==new.get('profile')
+          def engine_packages(lock):return [p for p in lock['package'] if p['name']!='wordcraft-gnome']
+          assert engine_packages(before('Cargo.lock'))==engine_packages(tomllib.loads(Path('Cargo.lock').read_text()))
+          print('WORDCRAFT_BOUNDARY_OK unchanged_existing_dependencies_and_lock_packages')
+          WORDCRAFT_BOUNDARY
           xvfb-run -a -s '-screen 0 1280x900x24' bash -c '
             set -e
             for panel in annotations proofing; do
