@@ -755,6 +755,11 @@ jobs:
           LEAF84_GDB: '1'
           LEAF84_GDB_BINARY: ${{ github.workspace }}/debug-native/wordcraft-gnome
         run: bash tools/dictionary84-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/dictionary84-installed
+      - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
+        run: |
+          set -o pipefail
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.34-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+          grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
       - name: Exercise the installed sandbox and desktop launcher
         run: |
           set -o pipefail
@@ -937,11 +942,6 @@ jobs:
           grep -q AT_SPI_DOCUMENT_TEXT_OK dist/flatpak-accessibility.log
           grep -q ORCA_DOCUMENT_SPEECH_OK dist/flatpak-accessibility.log
           cp -R a11y-results dist/accessibility-audit
-      - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
-        run: |
-          set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.34-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
-          grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
       - name: Require complete success of the parallel native regression run
         if: contains(github.event.head_commit.message, '[bundle-only]')
         env:
