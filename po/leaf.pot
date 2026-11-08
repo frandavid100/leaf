@@ -413,7 +413,7 @@ msgstr ""
 msgid "Choose Dictionary Folder…"
 msgstr ""
 
-#: src/gnome/templates.rs:217 src/gnome/templates.rs:234
+#: src/gnome/templates.rs:226 src/gnome/templates.rs:246
 msgid "Choose Templates Folder"
 msgstr ""
 
@@ -723,6 +723,10 @@ msgstr ""
 
 #: src/gnome/columns.rs:165
 msgid "Custom Widths"
+msgstr ""
+
+#: src/gnome/templates.rs:222
+msgid "Custom template folders are unavailable in the sandbox. Use the system Templates folder."
 msgstr ""
 
 #: src/gnome/context.rs:363 src/gnome/diagnostics/context.rs:132 src/gnome/diagnostics/spellcheck.rs:143
@@ -3181,10 +3185,6 @@ msgstr ""
 msgid "The table of contents could not be found."
 msgstr ""
 
-#: src/gnome/templates.rs:361
-msgid "The templates folder must be readable without write access."
-msgstr ""
-
 #: src/gnome/context.rs:763 src/proofing.rs:163 src/proofing.rs:173 src/proofing.rs:181
 msgid "The text has changed. Check it again."
 msgstr ""
@@ -3309,7 +3309,7 @@ msgstr ""
 msgid "UPPERCASE"
 msgstr ""
 
-#: src/gnome/templates.rs:212 src/gnome/templates.rs:285
+#: src/gnome/templates.rs:212 src/gnome/templates.rs:288
 msgid "Unavailable"
 msgstr ""
 
@@ -3385,7 +3385,7 @@ msgstr ""
 msgid "Use DOCX to preserve changes to the following paragraph style."
 msgstr ""
 
-#: src/gnome/templates.rs:221
+#: src/gnome/templates.rs:230
 msgid "Use System Templates Folder"
 msgstr ""
 
@@ -3505,7 +3505,7 @@ msgstr ""
 msgid "Zoom Out (Ctrl+-)"
 msgstr ""
 
-#: src/gnome/templates.rs:235
+#: src/gnome/templates.rs:247
 msgid "_Use Folder"
 msgstr ""
 

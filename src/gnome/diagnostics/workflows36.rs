@@ -707,7 +707,7 @@ pub(super) fn pointer(
     });
 }
 
-/// Real Preferences chooser; the driver supplies a host directory unavailable to the sandbox.
+/// Verify read-only XDG access in the sandbox and the native custom chooser.
 pub(super) fn template_folder(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
@@ -717,17 +717,28 @@ pub(super) fn template_folder(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
             .unwrap()
             .downcast::<gtk::Button>()
             .unwrap();
-        choose.grab_focus();
-        choose.emit_clicked();
-        eprintln!("WORKFLOWS36_TEMPLATE_CHOOSER_READY");
-        for _ in 0..1500 {
-            if wordcraft_gnome::preferences::template_folder().is_some() {
-                break;
+        let sandboxed = std::env::var_os("FLATPAK_ID").is_some();
+        if sandboxed {
+            assert!(
+                !choose.is_sensitive(),
+                "do not grant writable portal access for templates"
+            );
+            assert!(choose.tooltip_text().is_some());
+            assert!(wordcraft_gnome::preferences::template_folder().is_none());
+        } else {
+            assert!(choose.is_sensitive());
+            choose.grab_focus();
+            choose.emit_clicked();
+            eprintln!("WORKFLOWS36_TEMPLATE_CHOOSER_READY");
+            for _ in 0..1500 {
+                if wordcraft_gnome::preferences::template_folder().is_some() {
+                    break;
+                }
+                glib::timeout_future(std::time::Duration::from_millis(20)).await;
             }
-            glib::timeout_future(std::time::Duration::from_millis(20)).await;
+            assert!(wordcraft_gnome::preferences::template_folder().is_some());
         }
-        let folder =
-            wordcraft_gnome::templates::folder().expect("chooser must persist a usable folder");
+        let folder = wordcraft_gnome::templates::folder().expect("usable template folder");
         assert!(folder.join("Personal.docx").is_file());
         prefs.close();
         let host = ui.host.upgrade().unwrap();
@@ -774,7 +785,7 @@ pub(super) fn template_folder(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
         );
         eprintln!("{}", String::from_utf8_lossy(&restart.stdout));
         eprintln!(
-            "WORKFLOWS36_TEMPLATE_FOLDER_OK thumbnail=true same_tab=true persisted_read_only=true"
+            "WORKFLOWS36_TEMPLATE_FOLDER_OK thumbnail=true same_tab=true restart=true sandbox_read_only={sandboxed} custom_portal_disabled={sandboxed}"
         );
         app.quit();
     });
