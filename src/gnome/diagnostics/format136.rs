@@ -311,14 +311,6 @@ pub(super) fn format136_ui_test(
                 }
                 if row == "text-language" {
                     assert!(find_widget(&pop, "language-search").unwrap().is_mapped());
-                    let footer = find_widget(&pop, "install-dictionaries").unwrap();
-                    let scroll = footer
-                        .ancestor(gtk::ScrolledWindow::static_type())
-                        .unwrap()
-                        .downcast::<gtk::ScrolledWindow>()
-                        .unwrap();
-                    let ad = scroll.vadjustment();
-                    ad.set_value((ad.upper() - ad.page_size()).max(0.));
                 }
                 if matches!(
                     row,
@@ -338,6 +330,10 @@ pub(super) fn format136_ui_test(
                     assert!(picker.is_mapped());
                     picker.set_show_editor(true);
                     phase.set(4);
+                } else if row == "text-language" {
+                    // The new page is mapped, but its long list has not yet
+                    // received an allocation. Scroll only after that layout.
+                    phase.set(6);
                 } else {
                     phase.set(7);
                 }
@@ -385,6 +381,24 @@ pub(super) fn format136_ui_test(
                 assert_eq!(
                     u.current.borrow().as_ref().unwrap().session.doc,
                     *original.borrow().as_ref().unwrap()
+                );
+                phase.set(7);
+            }
+            6 => {
+                let footer = find_widget(&pop, "install-dictionaries").unwrap();
+                let scroll = footer
+                    .ancestor(gtk::ScrolledWindow::static_type())
+                    .unwrap()
+                    .downcast::<gtk::ScrolledWindow>()
+                    .unwrap();
+                let ad = scroll.vadjustment();
+                assert!(footer.is_mapped() && ad.page_size() > 0.);
+                ad.set_value((ad.upper() - ad.page_size()).max(0.));
+                eprintln!(
+                    "FORMAT136_LANGUAGE_SCROLL upper={} page={} value={}",
+                    ad.upper(),
+                    ad.page_size(),
+                    ad.value()
                 );
                 phase.set(7);
             }
