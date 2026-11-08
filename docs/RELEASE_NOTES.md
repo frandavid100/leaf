@@ -4,6 +4,19 @@ These notes were moved from the README on 2 November 2026. The latest delivery i
 releases and checks recorded at that point. Consult [GitHub Releases](https://github.com/frandavid100/leaf/releases)
 and [project status](../PROJECT_STATUS.md) for the current release and work in progress.
 
+## Alpha.36 — revised native interface
+
+Reclaim hidden tab-bar height, keep Structure folds in place, move heading actions
+into overflow menus, group direct Copy/Paste with their variants, and embed fonts
+in Document Properties. Paste literal tabs/line endings into the compact search
+controls; image drags show and honor their insertion marker.
+
+The new inline template gallery uses the read-only XDG Templates directory.
+Custom folder selection is unavailable in the Flatpak because the folder portal
+cannot provide the required narrowed grant; #171 remains open. Nine other
+reports are closed after native/installed validation and public checksum checks.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36) · [Evidence and limits](ALPHA36_INTERFACE.md).
+
 ## Alpha.35 — accepted editing workflows
 
 Following paragraph style, personal template files, plain paste, complete heading

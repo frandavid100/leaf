@@ -6,7 +6,10 @@ La galería transitoria sustituye el diálogo de plantillas. Fuentes vive dentro
 de Propiedades; la búsqueda recibe caracteres pegados sin selector especial.
 Estructura conserva anclas visuales y usa menús para mover títulos. El cursor de
 arrastre es pasivo y su posición es el único destino válido de la importación.
-[Implementación, verificación y límites](ALPHA36_INTERFACE.md).
+Publicada y verificada con nueve cierres. #171 permanece abierto: se conserva
+`xdg-templates:ro` y se desactiva el selector de otra carpeta en Flatpak mientras
+el portal no permita el acceso mínimo requerido. No sustituirlo por acceso de
+escritura ni por un permiso amplio. [Fuente, verificación y límites](ALPHA36_INTERFACE.md).
 
 
 ## 2026-11-08: ficha, colores y novedades

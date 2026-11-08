@@ -1,7 +1,8 @@
 # Alpha.36 — revised document workflows
 
-The candidate implements #177, #181, #182 and #186–#191, and partially addresses #171. Publication and
-individual issue closure require the native suite and both installed runtimes.
+Published alpha.36 implements #177, #181, #182 and #186–#191; those nine issues
+are closed after native, installed and public-asset verification. #171 remains
+partially addressed and open.
 No engine, renderer, vendor, compatibility patch or dependency pin changes.
 
 ## Behavior
@@ -16,7 +17,10 @@ No engine, renderer, vendor, compatibility patch or dependency pin changes.
   the real GNOME 49 run returned `NotAllowed: Not enough permissions` on
   self-revocation. Alternative folder selection is therefore disabled in the
   sandbox with an explanatory tooltip. It remains available in native builds.
-  #171 stays open; no writable custom portal grant is requested or persisted.
+  #171 stays open; no new writable custom portal grant is requested. Historic
+  saved choices and portal permissions are not retroactively revoked; Reset
+  returns the choice to the system default. Installed read-only checks use a
+  fresh isolated profile.
   Preview/cache data stays outside source storage. Native operation only reads
   ordinary files; the system user retains their existing filesystem permissions.
 - Search options form one contiguous group with scope last. Tabs and line
@@ -84,3 +88,40 @@ sandbox permissions and cannot publish. Failed document comparisons emit bounded
 canonical JSON-path differences; the final candidate still requires optimized
 native and installed validation. The synthetic source uses GDK's native cancel
 signal because GTK 4.14 DragSource cancellation alone omits Xdnd leave/ungrab.
+
+## Navigation diagnostic correction
+
+The GNOME51 candidate exposed a coordinate-space error in the old navigation131
+check: GtkViewport-relative bounds already subtract scrolling. The diagnostic now
+compares content bounds with the content adjustment, retains complete-row and
+selected-target/document/history assertions, and adds mapped/positive-height
+requirements. Production navigation was unchanged by this diagnostic correction.
+
+The final GNOME49 narrow Spanish check also required scrolling the language
+page after its first native allocation, rather than using the previous page's
+scroll range in the callback that opened it. A separate diagnostic layout phase
+now performs that setup; the complete-footer visibility assertion is unchanged.
+Focused installed English/Spanish HiDPI formatting checks pass before integration.
+
+## Immutable publication evidence
+
+- Published source/tag: `13543d8d1534a08669a04bc5a6d5e2ddc23430e6`; native source: `2d205879a151687ddd9b717eaded8857a8b10013`.
+- Optimized full native suite: [run 42473893662](https://github.com/frandavid100/leaf/actions/runs/42473893662).
+- Installed GNOME 49 and relocated GNOME 51, exact final executable comparison:
+  [run 42474525170](https://github.com/frandavid100/leaf/actions/runs/42474525170).
+- Promotion without rebuilding: [run 42476558684](https://github.com/frandavid100/leaf/actions/runs/42476558684).
+- [Published release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36): all thirteen public asset digests match the
+  twelve candidate checksum entries plus SHA256SUMS itself; tag resolves to the
+  recorded source. Candidate identity and source-commit bytes also match.
+- 211 Rust tests, nine Python tests, 892 complete English/Spanish messages.
+  Real controls/gestures run at scale 1 in English and scale 2 in Spanish.
+  Focused formatting checks also passed on GNOME49 in the unpublished diagnostic.
+  Its unoptimized GNOME51 run failed the fixed-time navigation131 hide/show check
+  once (8 versus 411.3), while the same assertion passed in the optimized native
+  and installed candidate. [Auxiliary failure](https://github.com/frandavid100/leaf/actions/runs/42473893771).
+  The cause of that auxiliary timing difference is unconfirmed; it is not counted
+  as a successful full diagnostic run. The published package is the optimized
+  executable validated by the complete native and installed gates.
+
+No engine, vendor, compatibility patch or dependency pin changed. No human
+GNOME OS, physical printer or public screenshot validation is inferred from CI.

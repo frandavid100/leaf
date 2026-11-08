@@ -1,22 +1,34 @@
 # Estado actual de Leaf
 
-## En validación: alpha.36 — revisión de interfaz
+## Publicada y verificada: alpha.36 — revisión de interfaz
 
-Candidata para #177/#181/#182/#186–#191, incluido el nuevo #191.
-#171 queda parcial: galería y carpeta XDG de solo lectura disponibles; selección
-de carpeta alternativa desactivada en Flatpak por el permiso de escritura del portal.
-Se están verificando los controles nativos y los paquetes GNOME 49/51 antes de
-publicar y cerrar individualmente los informes. [Cambios y límites](docs/ALPHA36_INTERFACE.md).
-Conserva la presentación y el generador bilingüe incorporados en la otra conversación.
+[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36). Cerrados #177/#181/#182/#186–#191,
+incluido el nuevo #191: búsqueda literal y opciones compactas, fuentes dentro de
+Propiedades, filas divididas de Copiar/Pegar, recuperación del espacio de pestañas,
+estabilidad y menús de Estructura y marcador exacto para arrastrar imágenes.
 
+#171 queda parcial y abierto. La galería usa miniaturas reales sobre cada nuevo
+documento; el Flatpak usa por defecto la carpeta XDG de plantillas en solo lectura.
+La elección de otra carpeta está desactivada en el sandbox porque el portal
+concede escritura y rechaza retirar ese permiso. No se amplía el acceso al host.
+
+211 pruebas Rust, nueve Python y 892 mensajes completos en/es; batería nativa
+optimizada, GNOME 49 y prefijo GNOME 51 correctos. Mismos bytes validados,
+sin recompilar; tag y trece archivos públicos verificados.
+[Fuente, pruebas y límites](docs/ALPHA36_INTERFACE.md).
+
+Quedan siete: #1/#52/#99/#107/#152/#171/#185. Se conservan los aplazamientos de
+David y los bloqueos de integración del motor. Las nuevas capturas públicas
+siguen a cargo de David; esta entrega ya corrige #186/#191.
 
 ## Ficha de tienda y novedades — #185
 
 Preparados la descripción aprobada en inglés/español, los colores claro/oscuro y
 una fuente común de novedades para AppStream y GitHub. Se conservan las capturas
 anteriores con referencias inmutables. No es una nueva versión del ejecutable.
-La sincronización de FlatPark necesita su propuesta externa; las nuevas capturas
-esperan #186/#191 y falta comprobar el catálogo publicado en Bazaar.
+FlatPark PR #1074 espera autorización/aceptación de sus mantenedores. Las nuevas
+capturas ya pueden prepararse tras corregir #186/#191; falta comprobar el catálogo
+publicado en Bazaar.
 [Proceso, fuente editorial y límites](docs/STORE_METADATA.md).
 
 ## Publicada y verificada: alpha.35 — propuestas aceptadas
@@ -53,7 +65,9 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 
 #1/#99/#107/#152 esperan la integración de las correcciones propuestas en
 WordCraft. #52 queda aplazado por decisión de David. #84 ya fue probado y cerrado
-en la conversación de validación. Los nuevos #170–#182 están cerrados tras verificar la publicación de alpha.35.
+en la conversación de validación. Los nuevos #170–#182 se cerraron inicialmente con alpha.35; #171 se mantiene
+abierto tras revisar el diseño y los permisos. Los demás reabiertos se verificaron
+con alpha.36.
 [Auditoría histórica de los bloqueos](docs/REMAINING_AFTER_ALPHA34.md).
 
 ## Histórica: alpha.33 publicada y verificada — Fin/Inicio y restauración de zoom
