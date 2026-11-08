@@ -1,5 +1,24 @@
 # Hoja de ruta de Leaf
 
+## Publicada y verificada: alpha.37 — desplazamiento, foco y diálogos
+
+[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.37).
+Cerrados #199–#204: galería y página con desplazamiento común, controles del panel
+lateral dentro de su contenido, diálogos adaptativos integrados, restauración de
+posición cancelable por nueva entrada, continuidad del foco y sugerencias de nombre
+al guardar. Los reajustes de una página con galería también recuperan su imagen
+sin mover la posición de exploración.
+
+214 pruebas Rust, nueve Python y 893 mensajes completos en inglés/español.
+Batería nativa optimizada e instalaciones GNOME 49 y GNOME 51 superadas;
+publicados los mismos bytes validados, con tag y trece archivos públicos verificados.
+WordCraft sigue en 0.16.0. Se conservan los límites de #171, los aplazamientos y
+el trabajo de tienda y Windows en sus conversaciones.
+[Fuente, pruebas y límites](docs/ALPHA37_INTERFACE.md).
+
+Quedan ocho informes: los siete anteriores y la nueva propuesta #207 de filas
+de plantillas y recuperación, registrada después de publicar esta alpha.
+
 ## Publicada: primera versión experimental para Windows
 
 [Windows 0.1.0-alpha.36-windows.1](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36-windows.1), publicada el 8/11/2026: instalador por usuario y ZIP x86_64 con GTK/libadwaita,

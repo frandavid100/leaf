@@ -1,5 +1,25 @@
 # Decisiones vigentes
 
+## 8/11/2026 — alpha.37 publicada y verificada
+
+David autoriza crear los informes de salto de Estructura, foco/continuidad y
+nombre de guardado, resolver los bugs recientes y publicar otra alpha.
+Se cierran #199–#204 después de la batería nativa completa, GNOME 49/51,
+comparación del ejecutable y verificación del tag y trece archivos públicos.
+
+Galería y página comparten desplazamiento; cada panel conserva sus propios
+controles y posición. Las restauraciones esperan la asignación de tamaño de GTK
+y se cancelan si interviene el usuario. Los reajustes repintan la página sin
+mover la galería. Los diálogos propios se integran en su ventana; los portales
+siguen siendo nativos y los campos conservan Deshacer/Rehacer.
+
+Para #201 se activa exclusivamente la API v1_5 del crate libadwaita existente,
+sin cambiar su versión, Cargo.lock, motor, perfiles ni parches. Esta excepción
+concreta queda comprobada en CI. Los nombres sugeridos son una operación de
+lectura: no modifican título, selección ni historial. Se conservan Windows,
+los bloqueos anteriores y las capturas públicas de David.
+[Fuente, ejecución y límites](ALPHA37_INTERFACE.md).
+
 ## 8/11/2026 — Windows publicada y comprobada
 
 Publicada `0.1.0-alpha.36-windows.1`: 210 pruebas Rust Windows, 211 Linux y

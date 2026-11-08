@@ -1,8 +1,8 @@
 # Alpha.37 — scrolling, focus and integrated dialogs
 
-Candidate implementation for #199–#204. Publication and issue closures are
-pending optimized native CI, the installed GNOME 49 and relocated GNOME 51
-checks, source/executable identity and public-asset verification.
+Published alpha.37 implements and closes #199–#204 after full optimized native CI,
+installed GNOME 49 and relocated GNOME 51 checks, final executable comparison and
+verification of the tag, release notes and all thirteen public assets.
 
 ## Behavior
 
@@ -11,6 +11,7 @@ checks, source/executable identity and public-asset verification.
   visibility, navigation, caret reveal, image anchors, the ruler and keyboard
   context positioning. Automatic blank-page refits retain gallery browsing;
   the first committed edit removes the gallery once and reclaims its height.
+  Refit invalidation repaints visible pages without moving gallery browsing.
 - Pages, Structure and Review own their scrolling selectors and mode controls.
   Independent adjustments are retained. Native dropdowns share state through
   GTK property bindings instead of moving an open popup between parents.
@@ -38,11 +39,11 @@ checks, source/executable identity and public-asset verification.
   are retained. Constructing the suggestion never changes document metadata,
   contents, selection or history.
 
-## Validation in progress
+## Validation
 
 Headless filename tests cover metadata precedence, heading fallback, unsafe and
 empty names, Unicode truncation, format guards and read-only history/selection.
-The complete local suite passed 214 Rust tests, including the three filename
+The complete local and optimized native CI suites passed 214 Rust tests, including the three filename
 cases. Python: 9 tests. Catalogs:
 893 messages with complete English and Spanish translations.
 
@@ -66,9 +67,38 @@ workaround is never included in distribution or CI.
 
 ## Limits
 
+The new #207 inline recovery/template redesign was recorded after this release
+was published and is pending a separate implementation.
+
 The deferred #52, engine-dependent #1/#99/#107/#152 and read-only custom-folder
 blocker #171 remain outside these fixes. Store/catalog work #185 continues in
 its separate conversation. Public screenshots are not replaced with CI captures.
-Concurrent experimental Windows work is preserved. The compiled-source freshness
+The published experimental Windows 0.1.0-alpha.36-windows.1 is preserved. The compiled-source freshness
 guard also includes its new build.rs; existing source exclusions are unchanged.
 No claim of a manual GNOME OS, Orca, printer or user-system test is made.
+
+## Repaint regression found during validation
+
+The installed localization check failed because a gallery-eligible refit cleared
+page rasters while the branch preserving gallery browsing skipped repainting.
+The same preference sequence reproduced the missing paintable locally. The native
+layout callback now refreshes pages without scrolling; existing English/Spanish
+dark/light pixel and unchanged-document assertions pass. The real gallery check
+also requires a painted page and the same adjustment after a refit.
+
+The historical dependency boundary permits exactly the existing libadwaita
+v1_4-to-v1_5 API feature change. Crate versions, other existing dependency
+specifications, engine packages, profiles and patches remain checked unchanged.
+
+## Published identity
+
+- Source/tag: [`4659acbc0730ebe980a97c9ca802c4666c7f6cdb`](https://github.com/frandavid100/leaf/commit/4659acbc0730ebe980a97c9ca802c4666c7f6cdb).
+- Fully validated native source: [`9ff36ff794d058270c75f791e0a116dcfdd53feb`](https://github.com/frandavid100/leaf/commit/9ff36ff794d058270c75f791e0a116dcfdd53feb).
+- [Full optimized native regression run](https://github.com/frandavid100/leaf/actions/runs/42506559955).
+- [Installed candidate and final binary comparison](https://github.com/frandavid100/leaf/actions/runs/42506617001).
+- [Promotion without rebuilding](https://github.com/frandavid100/leaf/actions/runs/42510045898).
+- [Release and SHA256SUMS](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.37).
+
+The public asset names, sizes, uploaded states and SHA-256 digests match the
+validated candidate. The checksum manifest, source-commit text, candidate JSON
+and bilingual release notes were checked separately.

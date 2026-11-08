@@ -124,6 +124,34 @@ uses a private mount namespace before starting the desktop services as the norma
 user, then checks GNOME 49 and the relocated GNOME 51 prefix. Existing mandatory
 regression drivers remain enabled. These are automated checks, not human testing.
 
+## Alpha37 scrolling, dialogs and save suggestions
+
+`src/gnome/view.rs::document_content_top` separates the shared gallery/page
+viewport from canvas coordinates. Thumbnail raster visibility uses its own
+adjustment and the scrolling selector offset. Gallery-preserving refits still
+refresh invalidated page rasters; preserving position must not skip repainting.
+
+`src/gnome/navigation.rs` restores independent sidebar positions after stable
+native allocation frames. Pending work carries document identity and a generation;
+new pointer, keyboard or scrolling input cancels it. Diagnostic waits observe
+completion of that operation before making their unchanged position assertions.
+
+App-owned modal tools use the existing libadwaita crate's v1_5 dialog API, while
+native file/folder/print flows and pinned formatting popovers retain their roles.
+Window shortcuts defer to a visible modal dialog. Controls and async results
+validate their selected document and foreground dialog; late close callbacks
+cannot clear a newer dialog. The legacy presentation/closing probes live in
+`src/gnome/diagnostics/dialogs.rs`; a mapped sheet needs native presentation
+frames before it can receive input or close.
+
+`src/save_name.rs` computes bounded Unicode names without changing the Session.
+`src/gnome/files.rs::save_chooser` configures the real native chooser, shared by
+production and the first-save cancellation regression. The public engine and
+format preservation guards remain authoritative.
+
+See [behavior, sources and validation](ALPHA37_INTERFACE.md) and the real input
+driver `tools/workflows37-pointer-test.sh`.
+
 ## Invariants to preserve
 
 - Keep engine revisions, Cargo.lock and existing formats patches unchanged for
