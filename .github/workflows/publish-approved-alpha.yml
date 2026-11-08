@@ -69,6 +69,12 @@ jobs:
               f.write('LEAF_APPROVED_SOURCE=' + c['source'] + '\n')
               f.write('LEAF_APPROVED_NATIVE_RUN=' + str(c['native_run_id']) + '\n')
           PY
+      - name: Require the candidate to remain the current main source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current_source=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          test "$current_source" = "$LEAF_APPROVED_SOURCE" || { echo 'The candidate was superseded on main; wait for the current candidate.' >&2; exit 1; }
       - name: Recheck native validation before promotion
         env:
           GH_TOKEN: ${{ github.token }}
