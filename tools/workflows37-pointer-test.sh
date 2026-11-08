@@ -54,6 +54,7 @@ for stage in $(seq 0 5);do
 done
 wait "$pid" || { cat "$log";exit 1; }
 grep -q WORKFLOWS37_UI_OK "$log"
+cp "$LEAF29_ACK_DIR"/workflows37-dialog-*.png .
 cat "$log"
 rm -rf "$LEAF29_ACK_DIR"
 trap - EXIT

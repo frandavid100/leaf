@@ -327,13 +327,14 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             .expect("parent window includes the integrated dialog");
         let texture = window.renderer().unwrap().render_texture(&node, None);
         assert!(texture.width() > 0 && texture.height() > 0);
-        texture
-            .save_to_png(format!(
-                "workflows37-dialog-{}-{}.png",
-                std::env::var("LANGUAGE").unwrap_or_default(),
-                window.scale_factor()
-            ))
-            .unwrap();
+        // The shared diagnostic directory is writable inside the sandbox;
+        // the host driver copies this evidence into its artifact directory.
+        let capture = PathBuf::from(std::env::var_os("LEAF29_ACK_DIR").unwrap()).join(format!(
+            "workflows37-dialog-{}-{}.png",
+            std::env::var("LANGUAGE").unwrap_or_default(),
+            window.scale_factor()
+        ));
+        texture.save_to_png(capture).unwrap();
         let name = find_widget(&prefs, "preferences-user-name").unwrap();
         name.grab_focus();
         input(0, Some(&name), &window).await;
