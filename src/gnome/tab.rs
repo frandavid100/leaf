@@ -119,12 +119,16 @@ pub(super) fn build_tab(
 
     let sidebar_toolbar = ToolbarView::new();
     side_header.set_widget_name("sidebar-primary-header");
-    sidebar_toolbar.add_top_bar(&side_header);
+    // One bar container avoids ToolbarView's multi-bar collapse-spacing inset:
+    // the sidebar selector remains visible when the document tab row disappears.
+    let sidebar_bars = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    sidebar_bars.append(&side_header);
+    sidebar_toolbar.add_top_bar(&sidebar_bars);
     let sidebar_filters = gtk::Stack::new();
     sidebar_filters.set_vhomogeneous(false);
     sidebar_filters.set_hhomogeneous(false);
     sidebar_filters.set_widget_name("sidebar-header-secondary");
-    sidebar_toolbar.add_top_bar(&sidebar_filters);
+    sidebar_bars.append(&sidebar_filters);
     let sidebar_pages = gtk::Stack::new();
     sidebar_pages.set_transition_type(gtk::StackTransitionType::Crossfade);
     sidebar_pages.set_transition_duration(180);
@@ -332,14 +336,16 @@ pub(super) fn build_tab(
     let document_toolbar = ToolbarView::new();
     document_toolbar.set_bottom_bar_style(adw::ToolbarStyle::Flat);
     header.set_widget_name("document-primary-header");
-    document_toolbar.add_top_bar(&header);
+    let document_bars = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    document_bars.append(&header);
+    document_toolbar.add_top_bar(&document_bars);
     let tab_bar = adw::TabBar::new();
     tab_bar.set_view(Some(&host.tabs));
     tab_bar.set_autohide(true);
     let tab_row = gtk::Box::new(gtk::Orientation::Vertical, 0);
     tab_row.set_widget_name("document-header-secondary");
     tab_row.append(&tab_bar);
-    document_toolbar.add_top_bar(&tab_row);
+    document_bars.append(&tab_row);
     let header_heights = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
     header_heights.add_widget(&side_header);
     header_heights.add_widget(&header);

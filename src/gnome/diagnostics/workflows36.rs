@@ -34,6 +34,7 @@ pub(super) fn test(
     );
     glib::spawn_future_local(async move {
         let host = ui.host.upgrade().unwrap();
+        check_headers(&ui, &window);
         let height = ui.scroll.height();
         let first = host.tabs.selected_page().unwrap();
         assert!(
@@ -44,6 +45,7 @@ pub(super) fn test(
         blank_tab(&app, &host);
         settle().await;
         let second = selected_ui(&host).unwrap();
+        check_headers(&second, &window);
         assert!(
             find_widget(&second.sidebar, "document-header-secondary")
                 .unwrap()
@@ -58,6 +60,7 @@ pub(super) fn test(
         host.tabs.close_page(&second_page);
         settle().await;
         assert_eq!(host.tabs.n_pages(), 1);
+        check_headers(&ui, &window);
         assert!(
             !find_widget(&ui.sidebar, "document-header-secondary")
                 .unwrap()

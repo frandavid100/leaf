@@ -650,11 +650,6 @@ pub(super) fn context_model_row(root: &impl IsA<gtk::Widget>, label: &str) -> Op
             }
         }
     }
-    if label == wordcraft_gnome::t!("Back") {
-        if let Some(button) = find_widget(root, "context-variants-back").filter(|b| b.is_mapped()) {
-            return Some(button);
-        }
-    }
     // GtkPopoverMenu keeps identically named rows in hidden GtkStack pages.
     // Search only the active page, as a pointer/keyboard user would.
     if let Some(stack) = root.downcast_ref::<gtk::Stack>() {
@@ -694,7 +689,13 @@ pub(super) fn context_model_row(root: &impl IsA<gtk::Widget>, label: &str) -> Op
 pub(super) fn context_activate_row(pop: &impl IsA<gtk::Widget>, label: &str) {
     let row = context_model_row(pop, label).unwrap_or_else(|| panic!("missing native row {label}"));
     assert!(row.is_sensitive());
-    assert!(row.activate(), "native menu row must activate");
+    if let Some(button) = row.downcast_ref::<gtk::Button>() {
+        // GtkButton::activate animates and emits clicked later. This helper's
+        // callers assert synchronous results; drive the same native click signal.
+        button.emit_clicked();
+    } else {
+        assert!(row.activate(), "native menu row must activate");
+    }
 }
 pub(super) fn context_picture_editor(ui: &Rc<Ui>) {
     if let Some(panel) = ui.elements.borrow().as_ref() {

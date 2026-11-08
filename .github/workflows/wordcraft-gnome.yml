@@ -125,6 +125,14 @@ jobs:
         with:
           name: workflows35-native-controls
           path: workflows35-*.log
+      # Start installed checks after the new controls/gestures pass. This is
+      # explicitly unvalidated: packaging still requires the ENTIRE native run
+      # and compares the final executable before allowing publication.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: leaf-native-unvalidated
+          path: target/release/wordcraft-gnome
+          retention-days: 3
       - name: Investigate spacing and real End viewport behavior
         run: |
           set +e
@@ -212,11 +220,6 @@ jobs:
             alpha28-pointer-*.log
             alpha28-pointer-*.png
           retention-days: 14
-      - uses: actions/upload-artifact@v4
-        with:
-          name: leaf-native-unvalidated
-          path: target/release/wordcraft-gnome
-          retention-days: 3
       - name: Profile upgraded engine before client optimization
         if: contains(github.event.pull_request.title, '[perf-control]')
         run: |
