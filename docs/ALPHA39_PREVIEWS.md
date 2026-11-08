@@ -80,3 +80,13 @@ missing/pending/empty assets, changed digests, manifests, notes and issue plans.
 Alpha.38 baseline: native 38m52s, installed candidate 32m24s, overlapped validation
 about 45 minutes, publication 17s. These are one-run observations; alpha.39 timings
 must be measured after real CI completion, not inferred from the new graph.
+
+## Isolated-runner resource correction
+
+The initial split run detected missing generated gettext catalogs on the text
+runner: Spanish correctly failed its existing translated-label assertion. Every
+runner now checks and compiles the same catalogs before starting GUI checks.
+The original assertion is retained. The stable `test` Rust cache namespace is
+shared by the builder and runners; only the builder saves it, preserving warm
+pre-split dependencies and avoiding competing cache uploads. A complete fresh
+validation is required before publication; the failed candidate is not promoted.
