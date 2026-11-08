@@ -25,6 +25,24 @@ for stage in $(seq 0 5);do
     0)
       xdotool mousemove --window "$window" "$x" "$y" click 1 key ctrl+a
       xdotool type --clearmodifiers 'Leaf QA 37'
+      # GTK groups typing by word; verify native Undo/Redo independently of
+      # the later shortcut-blocking check, without assuming its group size.
+      xdotool key ctrl+a ctrl+c
+      sleep .1
+      before=$(timeout 3s xclip -selection clipboard -o)
+      xdotool key ctrl+z
+      sleep .1
+      xdotool key ctrl+a ctrl+c
+      sleep .1
+      after=$(timeout 3s xclip -selection clipboard -o)
+      [[ "$before" != "$after" ]] || { echo 'Native entry Undo did not change the field';exit 1; }
+      xdotool key ctrl+shift+z
+      sleep .1
+      xdotool key ctrl+a ctrl+c
+      sleep .1
+      redo=$(timeout 3s xclip -selection clipboard -o)
+      [[ "$redo" == "$before" ]] || { echo 'Native entry Redo did not restore the field';exit 1; }
+      echo WORKFLOWS37_ENTRY_UNDO_OK
       xdotool key ctrl+n ctrl+s ctrl+w ctrl+z
       sleep .15
       xdotool key Escape

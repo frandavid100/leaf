@@ -309,7 +309,8 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         closed(&stale).await;
         assert!(stale.root().is_none());
         eprintln!("WORKFLOWS37_STALE_PANEL_OK");
-        let old_author = wordcraft_gnome::preferences::user_name();
+        let preferences_path = wordcraft_gnome::preferences::config_root().join("preferences.json");
+        let saved_preferences = std::fs::read(&preferences_path).ok();
         ui.document_box.grab_focus();
         let prefs = show_preferences(&window);
         presented(&prefs).await;
@@ -350,7 +351,14 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             ui.document_box.has_focus(),
             "closing preferences restores editor focus"
         );
-        wordcraft_gnome::preferences::set_user_name(&old_author).unwrap();
+        // CI accounts can have no real-name fallback. Restore the original
+        // settings bytes, including an unset author, instead of validating a
+        // synthetic name through the user-facing nonempty-name setter.
+        if let Some(bytes) = saved_preferences {
+            std::fs::write(&preferences_path, bytes).unwrap();
+        } else if preferences_path.exists() {
+            std::fs::remove_file(&preferences_path).unwrap();
+        }
 
         let link = show_link(&ui).unwrap();
         presented(&link.window).await;
