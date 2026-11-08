@@ -190,11 +190,22 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                     .selected_row()
                     .unwrap();
                 assert_eq!(row.widget_name(), "outline-heading-0");
-                let bounds = outline
-                    .child()
-                    .and_then(|c| row.compute_bounds(&c))
+                // Adjustments use content coordinates. ScrolledWindow's child
+                // may be a GtkViewport, whose bounds already subtract scroll.
+                let bounds = row
+                    .parent()
+                    .and_then(|list| list.parent())
+                    .and_then(|content| row.compute_bounds(&content))
                     .unwrap();
                 let a = outline.vadjustment();
+                assert!(row.is_mapped() && bounds.height() > 0.);
+                eprintln!(
+                    "NAVIGATION131_REVEAL content_y={} height={} scroll={} page={}",
+                    bounds.y(),
+                    bounds.height(),
+                    a.value(),
+                    a.page_size()
+                );
                 assert!(
                     bounds.y() as f64 >= a.value() - 1.
                         && (bounds.y() + bounds.height()) as f64 <= a.value() + a.page_size() + 1.,
