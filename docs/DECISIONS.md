@@ -16,6 +16,12 @@ las nuevas acciones con pruebas sin GUI, controles GTK y gestos reales, también
 en los paquetes GNOME 49/51. [Detalle](ALPHA35_WORKFLOWS.md).
 
 
+Alpha.35 publicada y verificada el 8/11/2026; los trece informes están cerrados.
+Se conservan la prueba de ciclo de vida de los controles, las regresiones nativas
+e instaladas y la comparación del ejecutable antes de promoverlo sin recompilar.
+La publicación rechaza candidatas superadas por otra fuente en main.
+[Identidad y comprobaciones](ALPHA35_WORKFLOWS.md).
+
 Estas decisiones proceden de David y del trabajo ya aceptado. Prevalecen sobre
 propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funciones.
 

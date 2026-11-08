@@ -1,6 +1,6 @@
 # Alpha35: accepted workflows
 
-Issues [170–182](https://github.com/frandavid100/leaf/issues?q=is%3Aissue+%22Accepted+by+David+in+the+planning+conversation%22) record the accepted proposals. They stay open until the corresponding code passes verification and is shipped.
+Issues [170–182](https://github.com/frandavid100/leaf/issues?q=is%3Aissue+%22Accepted+by+David+in+the+planning+conversation%22) record the accepted proposals. All thirteen were completed after code verification and release asset verification.
 
 WordCraft owns the document, model, protection, revision, history, layout and rendering. Leaf uses public commands and two registered engine commands for atomic block movement and font declaration substitution. It does not modify the engine or formats snapshot. The direct regex-automata dependency reuses the already locked version to expand captures using the engine's public pattern compiler/replacement parser. The CI boundary check compares alpha34’s existing direct dependencies, all non-Leaf lock packages, release profiles, overrides, pinned language revision and vendor/patch files. It allows this frontend reuse of an already locked crate without disabling the optional performance-baseline audits.
 
@@ -15,6 +15,14 @@ The shipped special-character control also has a native lifetime regression: it 
 ## Format painter rules
 
 The ordered source selection’s first character (or the caret) supplies the appearance, including inherited paragraph/character style attributes. Source content, links and revision IDs are not copied. A caret destination receives word and paragraph formatting. A selected range receives text formatting; paragraph properties also apply when it starts at offset zero or spans paragraphs, following WordCraft’s public paste-format command. One-use clears after applying; repeated mode remains until Escape.
+
+## Moving sections
+
+A drag inserts the complete source section before the indicated heading. Drops
+inside the source subtree are no-ops. The labelled Up/Down buttons also move
+whole sections; Down can place a section after its final peer at the document
+end. Heading levels are retained. TOC and navigation refresh from the canonical
+moved blocks through the normal content-change path.
 
 ## Behavioral limits
 
@@ -35,4 +43,38 @@ The publisher also verifies that its candidate remains the current main source, 
 
 ## Verification record
 
-In progress. All 205 local Rust tests pass, including 15 workflow regressions; four Python tests, all 879 en/es messages, document links and native GTK controls/real gestures at scale 1/2 pass. Template restart and the ODT preservation guard are covered. Exact source, CI run identities, release assets and final results are recorded here after publication.
+[Alpha.35](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.35) published automatically on 8 November 2026, after
+[full native validation](https://github.com/frandavid100/leaf/actions/runs/42429643080), [installed GNOME 49/51 checks](https://github.com/frandavid100/leaf/actions/runs/42429972501)
+and [promotion of the same bytes](https://github.com/frandavid100/leaf/actions/runs/42432915547) succeeded.
+
+| Identity | Verified value |
+| --- | --- |
+| Release source/tag target | `1847466203cdaca2788fa15dcc2781788990732e` |
+| Native source | `a738b76fd49b12acd649859626669e05561d7ca6` |
+| Native run | `42429643080` |
+| Candidate run | `42429972501` |
+| Publisher run | `42432915547` |
+| Public assets | 13, including 12 internally checksummed files and `SHA256SUMS` |
+
+205 Rust tests, including 15 new workflow regressions, four Python tests and all
+879 English/Spanish messages pass. Native controls and real pointer/clipboard
+checks pass at scale 1/2; installed GNOME 49 and relocated GNOME 51 repeat the
+portal file transfer, clipboard image, plain-paste shortcut, heading drag,
+Undo/Redo, template restart and control checks. All existing mandatory native
+and installed regressions also pass. This records automated testing, not human
+GNOME OS validation.
+
+The actual special-character popup leaked before the Weak callback fix; the
+same shipped-control test fails before and passes afterwards. It additionally
+verifies insertion over selected entry text. The final native source includes
+this regression, rather than reusing the earlier executable.
+
+The candidate compares its packaged executable byte-for-byte with the final
+fully validated native artifact. The publisher verifies its exact source,
+current-main identity, native success and every internal SHA-256 before creating
+the prerelease without rebuilding. Release tag, candidate metadata and all
+thirteen public asset digests were then checked against the verified files.
+
+Issues #170–#182 were completed with individual implementation/verification
+comments. The engine remains WordCraft 0.16.0. The older upstream issues and
+David's deferred #52 are independent of this delivery.

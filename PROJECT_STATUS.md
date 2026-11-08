@@ -1,20 +1,24 @@
 # Estado actual de Leaf
 
-## En preparación: alpha.35 — propuestas aceptadas
+## Publicada y verificada: alpha.35 — propuestas aceptadas
 
-[PR #183](https://github.com/frandavid100/leaf/pull/183) implementa los issues
-#170–#182 creados para las propuestas aprobadas: estilo siguiente, plantillas
-personales, pegado sin formato, movimiento de apartados, pincel de formato,
-búsqueda avanzada, fuentes del documento e imágenes externas.
-La batería completa sin GUI, quince regresiones nuevas, gettext en/es y los
-controles GTK y gestos reales locales a escala 1/2 pasan. La CI nativa e instalada
-GNOME 49/51 debe completarse antes de publicar y cerrar los informes.
-[Alcance, validación y límites](docs/ALPHA35_WORKFLOWS.md).
+[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.35). Implementados y cerrados los trece issues
+#170–#182: estilo siguiente, plantillas personales, pegado sin formato,
+movimiento de apartados, pincel de formato, búsqueda avanzada, fuentes del
+documento e imágenes externas. [PR #183](https://github.com/frandavid100/leaf/pull/183)
+y [corrección de ciclo de vida #184](https://github.com/frandavid100/leaf/pull/184).
 
-La última publicada es [alpha.34](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34).
-#84 fue comprobado y cerrado por David en la conversación de pruebas.
+205 pruebas Rust (quince regresiones nuevas), cuatro Python y 879 mensajes en/es;
+controles y gestos reales a escala 1/2, instalación GNOME 49 y prefijo FlatPark
+GNOME 51 superados. Publicados los mismos bytes validados, sin recompilar;
+tag, identidad y trece archivos públicos comprobados.
+[Fuente, ejecución, alcance y límites](docs/ALPHA35_WORKFLOWS.md).
 
-Actualizado: 7 de noviembre de 2026. Esta página describe el presente;
+El estilo siguiente modificado requiere DOCX cuando el exportador ODT perdería
+la elección. La carpeta de plantillas se lee sin modificar los originales.
+#84 ya fue comprobado y cerrado por David en la conversación de pruebas.
+
+Actualizado: 8 de noviembre de 2026. Esta página describe el presente;
 el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.
 
 ## Dónde trabajar
@@ -30,8 +34,7 @@ el [historial](docs/history/README.md) conserva entregas y decisiones anteriores
 
 #1/#99/#107/#152 esperan la integración de las correcciones propuestas en
 WordCraft. #52 queda aplazado por decisión de David. #84 ya fue probado y cerrado
-en la conversación de validación. Los nuevos #170–#182 siguen el alcance de esta
-alpha y se cerrarán tras verificar su publicación.
+en la conversación de validación. Los nuevos #170–#182 están cerrados tras verificar la publicación de alpha.35.
 [Auditoría histórica de los bloqueos](docs/REMAINING_AFTER_ALPHA34.md).
 
 ## Histórica: alpha.33 publicada y verificada — Fin/Inicio y restauración de zoom

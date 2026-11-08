@@ -51,6 +51,22 @@ the PR. Existing full-corpus and independent Writer audits are optional when
 justified, not mandatory per release. Do not convert automated success into a
 claim that a person tested GNOME OS, Orca, braille or a physical printer.
 
+## Editing workflow regressions
+
+The accepted alpha35 workflows have focused headless coverage in
+`tests/workflows_alpha35.rs`. With an X11 test display, the optimized binary can
+exercise the actual native controls and gestures:
+
+```sh
+./target/release/wordcraft-gnome --workflows35-ui-test
+bash tools/workflows35-pointer-test.sh ./target/release/wordcraft-gnome
+```
+
+The pointer driver needs the X11 tools installed by CI and a 2800×2200 display;
+it launches a separate native GTK file source. CI repeats it in English/Spanish
+and at HiDPI, then uses `tools/workflows35-installed-test.sh` for the real Flatpak
+portal and relocated-prefix checks. See [workflow behavior and limits](docs/ALPHA35_WORKFLOWS.md).
+
 ## Reporting and translations
 
 [Bug reports](https://github.com/frandavid100/leaf/issues/new/choose) and real

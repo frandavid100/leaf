@@ -4,14 +4,23 @@ These notes were moved from the README on 2 November 2026. The latest delivery i
 releases and checks recorded at that point. Consult [GitHub Releases](https://github.com/frandavid100/leaf/releases)
 and [project status](../PROJECT_STATUS.md) for the current release and work in progress.
 
+## Alpha.35 — accepted editing workflows
+
+Following paragraph style, personal template files, plain paste, complete heading
+section movement, one-use/repeated formatting painter, advanced scoped search
+and replacement, document font inventory/substitution, and external image paste
+and drops. Thirteen issues completed after full native and installed GNOME 49/51
+validation and verification of all thirteen public release assets. Changed next
+styles require DOCX when the pinned ODT exporter cannot preserve the choice.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.35) · [Behavior, verification and limits](ALPHA35_WORKFLOWS.md).
+
 ## Alpha.34 — dictionary integration test candidate
 
 Choose a Hunspell folder through the native/portal chooser, refresh changed
 files, retain access after restart and keep imports and bundled fallbacks.
 Language choices discover readable files without parsing unrelated dictionaries;
 WordCraft validates their format when used. Native checks and installed GNOME
-49/51 controls passed; all thirteen public assets were verified. Issue #84 stays
-open pending David's GNOME OS test.
+49/51 controls passed; all thirteen public assets were verified. David subsequently verified the GNOME OS case and issue #84 is closed.
 [Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34) ·
 [Evidence and limits](ALPHA34_VALIDATION.md) ·
 [Manual test](../tests/fixtures/dictionary84/README.md).

@@ -95,6 +95,29 @@ Graphical checks are grouped under diagnostics with the same existing CLI flags.
 and installs only the explicitly requested diagnostic callbacks. Startup/motion
 checks remain at their original registration points.
 
+## Alpha35 editing workflows
+
+[Accepted workflows and verification](ALPHA35_WORKFLOWS.md) map to these adapters:
+
+| Workflow | Native controls | Document operation |
+| --- | --- | --- |
+| Following style | `src/gnome/styles.rs` | `src/styles.rs`; public `styles.modify`, plus the ODT preservation guard in `src/saving.rs`. |
+| Personal templates | `src/gnome/templates.rs` | `src/templates.rs`; public `file.newFromTemplate`, untitled copy and read-only source access. |
+| Advanced search | `src/gnome/search.rs` | `src/search.rs`; public pattern compiler/matcher, original-paragraph capture expansion and revision-bound selected ranges. |
+| Format painter | `src/gnome/format_painter.rs` | `src/format_painter.rs`; transient engine painter payload and public `edit.pasteFormat`. |
+| Complete heading movement | `src/gnome/navigation.rs` | `src/navigation.rs`; registered block command with canonical engine blocks and one undo transaction. |
+| Document fonts | `src/gnome/document_fonts.rs` | `src/document_fonts.rs`; read-only inventory, actual layout fallback information and explicit registered substitution command. |
+| Plain text and external images | `src/gnome/clipboard.rs`, `src/gnome/image_drop.rs` | Public clipboard/picture commands; cancellable reads, target leases and GDK FileList portal drops. |
+
+`src/operations.rs` wraps multi-step operations with rollback and a single engine
+undo step. `tests/workflows_alpha35.rs` covers the GTK-independent behavior;
+`src/gnome/diagnostics/workflows35.rs` exercises the shipped controls, including
+popup lifetime and selected-text insertion. `tools/workflows35-pointer-test.sh`
+drives real clipboard/file transfers and heading gestures. The installed driver
+uses a private mount namespace before starting the desktop services as the normal
+user, then checks GNOME 49 and the relocated GNOME 51 prefix. Existing mandatory
+regression drivers remain enabled. These are automated checks, not human testing.
+
 ## Invariants to preserve
 
 - Keep engine revisions, Cargo.lock and existing formats patches unchanged for
