@@ -287,5 +287,8 @@ pub(super) fn check_headers(ui: &Rc<Ui>, window: &ApplicationWindow) {
         .unwrap()
         .compute_bounds(window)
         .unwrap();
-    assert!((a.y() - b.y()).abs() < 1.1 && (a.height() - b.height()).abs() < 1.1);
+    assert!(
+        (a.y() - b.y()).abs() < 1.1 && (a.height() - b.height()).abs() < 1.1,
+        "primary header bounds: {a:?} vs {b:?}"
+    );
 }

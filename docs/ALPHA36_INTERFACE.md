@@ -54,6 +54,11 @@ process and verifies denied source writes inside the sandbox and unchanged
 host bytes. Both installed runtime layouts retain the real D-Bus/portal session
 and normal runner UID. The original interaction pointer regression is retained.
 
+The unvalidated executable becomes available after the alpha35/36 workflow
+checks so installed validation can run in parallel with older regressions.
+Publication still requires complete native success and final byte comparison;
+this changes scheduling, not the validation gate.
+
 English/Spanish news is in the shared `data/releases/news.json`; generated
 AppStream and GitHub notes use the store pipeline already merged separately.
 #185 remains incomplete pending David's new captures, FlatPark acceptance and
