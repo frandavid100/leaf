@@ -3,11 +3,11 @@ use super::*;
 pub(super) fn install_menu_demos(text_menu: &gtk::MenuButton, zoom_menu: &gtk::MenuButton) {
     if std::env::args().any(|a| a == "--text-menu-demo") {
         let menu = text_menu.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || menu.popup());
+        capture_ready::after(std::time::Duration::from_millis(1100), move || menu.popup());
     }
     if std::env::args().any(|a| a == "--zoom-menu-demo") {
         let menu = zoom_menu.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || menu.popup());
+        capture_ready::after(std::time::Duration::from_millis(1100), move || menu.popup());
     }
 }
 
@@ -19,7 +19,7 @@ pub(super) fn install_content_demos(
 ) {
     if formatting_demo {
         let ui = ui.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(950), move || {
+        capture_ready::after(std::time::Duration::from_millis(950), move || {
             {
                 let mut borrowed = ui.current.borrow_mut();
                 if let Some(doc) = borrowed.as_mut() {
@@ -37,7 +37,7 @@ pub(super) fn install_content_demos(
     }
     if editing_demo {
         let ui = ui.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(900), move || {
+        capture_ready::after(std::time::Duration::from_millis(900), move || {
             {
                 let mut value = ui.current.borrow_mut();
                 if let Some(doc) = value.as_mut() {
@@ -58,7 +58,7 @@ pub(super) fn install_content_demos(
 
     if selection_demo {
         let ui = ui.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(650), move || {
+        capture_ready::after(std::time::Duration::from_millis(650), move || {
             {
                 let mut value = ui.current.borrow_mut();
                 if let Some(doc) = value.as_mut() {

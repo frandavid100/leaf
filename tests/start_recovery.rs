@@ -55,9 +55,20 @@ fn pending_listing_and_dropped_restore_preserve_original_copies() {
     assert_eq!(inventory.documents.len(), 1);
     assert_eq!(inventory.documents[0].name, "Notas.docx");
     let id = &inventory.documents[0].id;
+    let preview = recovery::preview(&root, id, &inventory.documents[0].saved_at).unwrap();
+    assert_eq!(copies(&root), before);
+    assert_eq!(recovery::inventory(&root).unwrap().documents.len(), 1);
+    assert!(recovery::preview(&root, id, "stale timestamp").is_err());
+    assert!(recovery::preview(&root, "../escape", "").is_err());
     assert!(recovery::restore(&root, "missing").is_err());
     assert_eq!(copies(&root), before);
-    let restored = recovery::restore(&root, id).unwrap();
+    let mut restored = recovery::restore(&root, id).unwrap();
+    let rendered = wordcraft_gnome::templates::page_preview(&mut restored).unwrap();
+    assert_eq!(
+        (preview.width, preview.height),
+        (rendered.width, rendered.height)
+    );
+    assert_eq!(preview.rgba, rendered.rgba, "unsaved snapshot first page");
     assert_eq!(restored.doc.plain_text(StoryRef::Body), "Recovered text ñ");
     assert!(restored.dirty && restored.path.is_none());
     assert!(

@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+      issues: write
       actions: read
     steps:
       - name: Verify candidate run identity and success
@@ -41,12 +42,28 @@ jobs:
           assert r['path'] == '.github/workflows/wordcraft-gnome.yml'
           assert '[candidate-alpha]' in r['head_commit']['message']
           PY
+      - name: Select the verified candidate source
+        run: |
+          python3 - <<'PYTHON'
+          import json, os
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write('LEAF_PUBLISH_SOURCE=' + json.load(open('run.json'))['head_sha'] + '\n')
+          PYTHON
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.LEAF_PUBLISH_SOURCE }}
+          persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
           name: leaf-flatpak-alpha
           path: dist
           run-id: ${{ inputs.candidate_run || github.event.workflow_run.id }}
           github-token: ${{ github.token }}
+      - name: Reload candidate metadata after checkout
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_RUN: ${{ inputs.candidate_run || github.event.workflow_run.id }}
+        run: gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN" > run.json
       - name: Verify exact approved source, version and package checksums
         env:
           CANDIDATE_RUN: ${{ inputs.candidate_run || github.event.workflow_run.id }}
@@ -102,3 +119,13 @@ jobs:
             --repo "$GITHUB_REPOSITORY" --target "$LEAF_APPROVED_SOURCE" \
             --title "Leaf $LEAF_APPROVED_VERSION" --prerelease \
             --notes-file dist/RELEASE_NOTES.md
+      - name: Verify public assets, close completed issues and record published status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/finalize_alpha.py --close-issues --update-docs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-alpha-verification
+          path: dist/public-verification.json
+          if-no-files-found: warn

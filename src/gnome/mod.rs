@@ -30,7 +30,7 @@ use wordcraft_gnome::{
     pdf_export, pictures,
 };
 
-const APP_VERSION: &str = "0.1.0-alpha.38";
+const APP_VERSION: &str = "0.1.0-alpha.39";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -302,3 +302,6 @@ mod workflows37_checks;
 
 #[path = "diagnostics/workflows38.rs"]
 mod workflows38_checks;
+
+#[path = "diagnostics/capture_ready.rs"]
+mod capture_ready;

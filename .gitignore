@@ -47,3 +47,7 @@ text18-*.log
 
 /workflows38-*.log
 /workflows38-*.png
+# Internal native screenshot scenario evidence.
+/err-vista-*.png.log
+/out-vista-*.png.log
+/vista-*.png

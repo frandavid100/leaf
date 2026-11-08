@@ -18,6 +18,8 @@ pub(super) struct Gallery {
     source: RefCell<Option<glib::SourceId>>,
     scan: RefCell<Option<glib::JoinHandle<()>>>,
     rescan: Cell<bool>,
+    previews: RefCell<Option<glib::JoinHandle<()>>>,
+    generation: Cell<u64>,
     load: RefCell<Option<glib::JoinHandle<()>>>,
 }
 impl Drop for Gallery {
@@ -26,7 +28,7 @@ impl Drop for Gallery {
         if let Some(source) = self.source.get_mut().take() {
             source.remove();
         }
-        for task in [&mut self.scan, &mut self.load] {
+        for task in [&mut self.scan, &mut self.load, &mut self.previews] {
             if let Some(task) = task.get_mut().take() {
                 task.abort();
             }
@@ -196,6 +198,48 @@ fn row(title: &str, name: &str) -> (gtk::Box, gtk::Box) {
     group.append(&scroll);
     (group, strip)
 }
+// A label's natural width must never stretch the paper background. The outer
+// slot is common to all cards; only the proportionally sized page owns a card.
+fn preview_slot() -> gtk::Box {
+    let slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    slot.set_size_request(112, 148);
+    let icon = gtk::Image::from_icon_name("text-x-generic-symbolic");
+    icon.set_pixel_size(48);
+    icon.set_vexpand(true);
+    slot.append(&icon);
+    slot
+}
+fn set_preview(slot: &gtk::Box, image: &wordcraft_gnome::PageImage) {
+    let scale = (104. / image.width as f64).min(148. / image.height as f64);
+    let width = (image.width as f64 * scale).round().max(1.) as i32;
+    let height = (image.height as f64 * scale).round().max(1.) as i32;
+    let paintable = page_paintable::new(
+        wordcraft_gnome::PageImage {
+            width: image.width,
+            height: image.height,
+            rgba: image.rgba.clone(),
+            total_pages: image.total_pages,
+        },
+        width,
+        height,
+    );
+    let picture = gtk::Picture::for_paintable(&paintable);
+    picture.set_size_request(width, height);
+    picture.set_halign(gtk::Align::Center);
+    picture.set_valign(gtk::Align::Center);
+    picture.set_vexpand(true);
+    picture.set_content_fit(gtk::ContentFit::Contain);
+    picture.add_css_class("card");
+    clear_box(slot);
+    slot.append(&picture);
+}
+fn card_title(name: &str) -> gtk::Label {
+    let label = gtk::Label::new(Some(name));
+    label.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    label.set_width_chars(16);
+    label.set_max_width_chars(16);
+    label
+}
 fn reload(ui: &Rc<Ui>) {
     if !ui.template_eligible.get() || ui.closed.get() {
         return;
@@ -233,6 +277,8 @@ fn reload(ui: &Rc<Ui>) {
         source: RefCell::new(None),
         scan: RefCell::new(None),
         rescan: Cell::new(false),
+        previews: RefCell::new(None),
+        generation: Cell::new(0),
         load: RefCell::new(None),
     });
     ui.template_gallery.replace(Some(gallery.clone()));
@@ -336,36 +382,47 @@ impl Gallery {
                         return;
                     }
                     gallery.inventory.replace(key);
+                    let generation = gallery.generation.get().wrapping_add(1);
+                    gallery.generation.set(generation);
+                    if let Some(task) = gallery.previews.borrow_mut().take() {
+                        task.abort();
+                    }
                     clear_box(&gallery.recovery_strip);
                     gallery
                         .recovery_group
                         .set_visible(!inventory.documents.is_empty());
+                    let mut previews = Vec::new();
                     for record in inventory.documents {
                         let button = gtk::Button::new();
                         button.set_widget_name("start-recovery-document");
                         button.add_css_class("flat");
                         let content = gtk::Box::new(gtk::Orientation::Vertical, 6);
-                        let icon = gtk::Image::from_icon_name("document-open-recent-symbolic");
-                        icon.set_pixel_size(48);
-                        content.append(&icon);
+                        let slot = preview_slot();
+                        slot.set_widget_name("recovery-preview");
+                        content.append(&slot);
+                        previews.push((
+                            record.id.clone(),
+                            record.saved_at.clone(),
+                            slot.downgrade(),
+                        ));
                         let name = if record.name == "Untitled draft" {
                             wordcraft_gnome::t!("Recovered Document").to_owned()
                         } else {
                             record.name.clone()
                         };
-                        let title = gtk::Label::new(Some(&name));
-                        title.set_max_width_chars(24);
-                        title.set_ellipsize(gtk::pango::EllipsizeMode::End);
-                        content.append(&title);
+                        content.append(&card_title(&name));
                         let date = glib::DateTime::from_iso8601(&record.saved_at, None)
                             .and_then(|d| d.to_local())
                             .and_then(|d| d.format("%x %X"))
                             .map(|d| d.to_string())
                             .unwrap_or(record.saved_at);
                         let timestamp = gtk::Label::new(Some(&date));
+                        timestamp.set_max_width_chars(16);
+                        timestamp.set_ellipsize(gtk::pango::EllipsizeMode::End);
                         timestamp.add_css_class("dim-label");
                         content.append(&timestamp);
                         button.set_child(Some(&content));
+                        button.set_tooltip_text(Some(&format!("{name} — {date}")));
                         accessible_name(&button, &format!("{name} — {date}"));
                         let weak = Rc::downgrade(&gallery);
                         button.connect_clicked(move |_| {
@@ -375,6 +432,33 @@ impl Gallery {
                         });
                         gallery.recovery_strip.append(&button);
                     }
+                    let weak = Rc::downgrade(&gallery);
+                    let root = wordcraft_gnome::preferences::recovery_root();
+                    let task = glib::spawn_future_local(async move {
+                        for (id, stamp, slot) in previews {
+                            let Some(g) = weak.upgrade().filter(|g| {
+                                g.valid_ui().is_some() && g.generation.get() == generation
+                            }) else {
+                                return;
+                            };
+                            drop(g);
+                            let root = root.clone();
+                            let result = gio::spawn_blocking(move || {
+                                wordcraft_gnome::recovery::preview(&root, &id, &stamp)
+                            })
+                            .await;
+                            let Some(g) = weak.upgrade().filter(|g| {
+                                g.valid_ui().is_some() && g.generation.get() == generation
+                            }) else {
+                                return;
+                            };
+                            if let (Some(slot), Ok(Ok(image))) = (slot.upgrade(), result) {
+                                set_preview(&slot, &image);
+                            }
+                            drop(g);
+                        }
+                    });
+                    gallery.previews.replace(Some(task));
                 }
                 Ok(Err(error)) => gallery.warning(Some(error)),
                 Err(_) => gallery.warning(Some(
@@ -396,20 +480,11 @@ impl Gallery {
         button.set_tooltip_text(Some(&name));
         accessible_name(&button, &name);
         let content = gtk::Box::new(gtk::Orientation::Vertical, 6);
-        let picture = gtk::Picture::for_paintable(&texture(wordcraft_gnome::PageImage {
-            width: image.width,
-            height: image.height,
-            rgba: image.rgba.clone(),
-            total_pages: image.total_pages,
-        }));
-        picture.set_size_request(104, 148);
-        picture.set_content_fit(gtk::ContentFit::Contain);
-        picture.add_css_class("card");
-        content.append(&picture);
-        let title = gtk::Label::new(Some(&name));
-        title.set_ellipsize(gtk::pango::EllipsizeMode::End);
-        title.set_max_width_chars(16);
-        content.append(&title);
+        let slot = preview_slot();
+        slot.set_widget_name("template-preview");
+        set_preview(&slot, image);
+        content.append(&slot);
+        content.append(&card_title(&name));
         button.set_child(Some(&content));
         self.strip.append(&button);
         let weak = Rc::downgrade(self);
