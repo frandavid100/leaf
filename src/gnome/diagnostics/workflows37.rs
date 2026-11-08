@@ -614,8 +614,21 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             Some("review")
         );
         assert!((fixed_modes(&ui, &window) - bar_y).abs() < 1.1);
+        ui.search.borrow().as_ref().unwrap().show(false);
+        settle().await;
+        input(10, Some(&review_button), &window).await;
+        settle().await;
+        assert_eq!(
+            ui.sidebar_pages.visible_child_name().as_deref(),
+            Some("navigation")
+        );
+        assert_eq!(
+            ui.navigation_pages.visible_child_name().as_deref(),
+            Some("review")
+        );
+        assert!((fixed_modes(&ui, &window) - bar_y).abs() < 1.1);
         eprintln!(
-            "SIDEBAR208_OK fixed-bottom=true long-pages=true structure=true long-review=true search=true empty=true native-clicks=true readonly=true"
+            "SIDEBAR208_OK fixed-bottom=true long-pages=true structure=true long-review=true search-both-modes=true empty=true native-clicks=true readonly=true"
         );
         eprintln!(
             "WORKFLOWS37_UI_OK dialogs-integrated=true nested-escape=true modal-shortcuts=true focus=true selection-history=true first-save=true"

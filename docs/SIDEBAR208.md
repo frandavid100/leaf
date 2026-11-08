@@ -7,8 +7,9 @@ inside their respective scroll content.
 
 `tab.rs` adds the existing mode bar to the common sidebar `AdwToolbarView` as a
 flat bottom bar, outside the Pages/Structure/Review and Search stacks. Structure
-and Review no longer construct proxy bars inside their result lists. Navigation
-reactivation retains its selected state, including returning from Search.
+and Review no longer construct proxy bars inside their result lists. Both modes
+reactivate their selected view when returning from Search, even if the chosen
+mode tab was already active below the search view.
 
 This is frontend widget composition only. WordCraft, dependencies, document data,
 undo history, upper selector placement and hover styling are unchanged.
@@ -21,6 +22,8 @@ and checks real pointer switching from long Pages and Review views, Search and a
 empty document. Geometry is measured relative to the actual window/sidebar,
 including start/middle/end scrolling, with read-only document/history assertions.
 Existing view diagnostics also reject a mode bar inside any scroll container.
+The annotation diagnostic locates Review in the common bar instead of the old
+page stack; its comment/bookmark behavior assertions are retained.
 The normal workflow repeats these checks in English and Spanish at scale 1/2.
 
 Validation is in progress. No new package is published by this source change.

@@ -470,6 +470,14 @@ pub(super) fn install_review(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Revi
             }
         }
     });
+    // Search can cover Review while its mode tab remains selected. Activating
+    // that same tab must return to Review even without an active-state change.
+    let weak = Rc::downgrade(&s);
+    toggle.connect_clicked(move |_| {
+        if let Some(s) = weak.upgrade() {
+            s.show(None);
+        }
+    });
     let weak = Rc::downgrade(&s);
     s.filter.connect_selected_notify(move |_| {
         if let Some(s) = weak.upgrade() {
