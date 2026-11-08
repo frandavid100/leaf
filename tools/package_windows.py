@@ -19,7 +19,10 @@ def main():
     prefix = Path(run('cygpath', '-m', os.environ['MINGW_PREFIX']).strip())
     version = re.search(r'const APP_VERSION: &str = "([^"]+)"',
                         (ROOT / 'src/gnome/mod.rs').read_text(encoding='utf-8'))[1]
-    version += '-windows.1'
+    sequence = (ROOT / 'packaging/windows/sequence.txt').read_text().strip()
+    if not sequence.isdigit():
+        raise ValueError('Windows sequence must be an integer')
+    version += f'-windows.{sequence}'
     output = ROOT / 'dist/windows'
     output.mkdir(parents=True, exist_ok=True)
     package = output / f'Leaf-{version}-x86_64'
@@ -35,6 +38,10 @@ def main():
             shutil.copytree(source, package / relative, dirs_exist_ok=True)
     for relative in ['share/locale', 'share/hunspell', 'share/licenses/Leaf']:
         (package / relative).mkdir(parents=True, exist_ok=True)
+    for language in ['en', 'es']:
+        source = prefix / 'share/locale' / language
+        if source.exists():
+            shutil.copytree(source, package / 'share/locale' / language, dirs_exist_ok=True)
     shutil.copytree(ROOT / 'po/locale', package / 'share/locale', dirs_exist_ok=True)
     shutil.copytree(ROOT / 'data/icons', package / 'share/icons', dirs_exist_ok=True)
     shutil.copy2(ROOT / 'data/icons/hicolor/scalable/apps/leaf.svg',
@@ -66,6 +73,8 @@ def main():
                     queue.append(destination)
             elif not key.startswith(('api-ms-win-', 'ext-ms-win-')) and not (system / name).exists():
                 raise RuntimeError(f'Unresolved DLL {name}, required by {binary.name}')
+    (package / 'share/licenses/Leaf/Language-data.txt').write_text(
+        run(str(package / 'bin/leaf.exe'), '--language-data-licenses'), encoding='utf-8')
     revision = run('git', 'rev-parse', 'HEAD').strip()
     manifest = {'version': version, 'source': revision,
                 'packages': run('pacman', '-Q').splitlines(),

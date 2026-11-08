@@ -18,6 +18,7 @@ OutputBaseFilename=Leaf-{#LeafVersion}-x86_64-setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=leaf.ico
 UninstallDisplayIcon={app}\bin\leaf.exe
 CloseApplications=yes
 LicenseFile=..\..\LICENSE
