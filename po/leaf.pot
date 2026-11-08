@@ -29,7 +29,7 @@ msgstr ""
 msgid "Accept"
 msgstr ""
 
-#: src/gnome/tab.rs:64 src/gnome/tab.rs:548 src/gnome/tab.rs:549
+#: src/gnome/tab.rs:64 src/gnome/tab.rs:549 src/gnome/tab.rs:550
 msgid "Actual Size (100%)"
 msgstr ""
 
@@ -193,7 +193,7 @@ msgstr ""
 msgid "Autosave"
 msgstr ""
 
-#: src/gnome/context_clipboard.rs:83 src/gnome/diagnostics/workflows36.rs:350
+#: src/gnome/context_clipboard.rs:83 src/gnome/diagnostics/workflows36.rs:356
 msgid "Back"
 msgstr ""
 
@@ -645,7 +645,7 @@ msgstr ""
 msgid "Could Not Print: {e}"
 msgstr ""
 
-#: src/gnome/image_drop.rs:124 src/gnome/image_drop.rs:212
+#: src/gnome/image_drop.rs:125 src/gnome/image_drop.rs:210
 msgid "Could Not Read Image"
 msgstr ""
 
@@ -733,7 +733,7 @@ msgstr ""
 msgid "DOCUMENTS\nOpen DOCX/ODT documents from the main menu. Ctrl+S saves; Ctrl+Shift+S saves a copy. Use DOCX for notes, equations, automatic references, comments and advanced tracked changes.\n\nNAVIGATION AND REVIEW\nF9 shows or hides Pages, Navigation and Review. Ctrl+F searches; Ctrl+H replaces. Review filters corrections, tracked changes and comments. Apply or ignore a correction occurrence, accept/reject changes, and reply to or resolve comments. F7 opens corrections. Edit/Suggest controls whether new edits are tracked.\n\nFORMATTING AND ELEMENTS\nStyle, Paragraph, Text and Elements are in the adaptive header or bottom toolbar. Format rows show current values; mixed checkboxes enable the option across the selection. Arrows open internal options with Back. Reapply remembers that feature’s applied settings. Pins keep panels floating. Elements shares table, image and contents tools with right-click, while keeping Insert available. Ctrl+Z undoes; Ctrl+Shift+Z redoes. Ruler drags snap to 0.5 cm; Escape cancels.\n\nAUTOSAVE\nPreferences can disable autosave, use recovery copies or save directly to the document. Recover Documents is in the main menu."
 msgstr ""
 
-#: src/gnome/tab.rs:775
+#: src/gnome/tab.rs:776
 msgid "DOCX and ODT Documents"
 msgstr ""
 
@@ -901,7 +901,7 @@ msgstr ""
 msgid "Do Not Check"
 msgstr ""
 
-#: src/gnome/application.rs:122 src/gnome/files.rs:158 src/gnome/tab.rs:811
+#: src/gnome/application.rs:122 src/gnome/files.rs:158 src/gnome/tab.rs:812
 msgid "Document"
 msgstr ""
 
@@ -1189,7 +1189,7 @@ msgstr ""
 msgid "Fit Contents"
 msgstr ""
 
-#: src/gnome/tab.rs:63 src/gnome/tab.rs:552 src/gnome/tab.rs:553 src/gnome/tables.rs:248
+#: src/gnome/tab.rs:63 src/gnome/tab.rs:553 src/gnome/tab.rs:554 src/gnome/tables.rs:248
 msgid "Fit Width"
 msgstr ""
 
@@ -1497,7 +1497,7 @@ msgstr ""
 msgid "Insert Below"
 msgstr ""
 
-#: src/gnome/image_drop.rs:239 src/gnome/picture_controls.rs:136 src/pictures.rs:49
+#: src/gnome/image_drop.rs:237 src/gnome/picture_controls.rs:136 src/pictures.rs:49
 msgid "Insert Image"
 msgstr ""
 
@@ -1837,7 +1837,7 @@ msgstr ""
 msgid "New Comment"
 msgstr ""
 
-#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:147 src/gnome/tab.rs:852 src/gnome/templates.rs:182 src/gnome/workspace.rs:321
+#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:147 src/gnome/tab.rs:853 src/gnome/templates.rs:182 src/gnome/workspace.rs:321
 msgid "New Document"
 msgstr ""
 
@@ -1981,7 +1981,7 @@ msgstr ""
 msgid "Only DOCX and ODT files are supported"
 msgstr ""
 
-#: src/gnome/application.rs:114 src/gnome/tab.rs:800
+#: src/gnome/application.rs:114 src/gnome/tab.rs:801
 msgid "Only local files are supported"
 msgstr ""
 
@@ -1989,7 +1989,7 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: src/gnome/tab.rs:773
+#: src/gnome/tab.rs:774
 msgid "Open Document"
 msgstr ""
 
@@ -2077,7 +2077,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:392 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:418 src/gnome/diagnostics/register.rs:271 src/gnome/paragraph.rs:1255 src/gnome/tab.rs:321 src/gnome/tab.rs:625
+#: src/gnome/context.rs:131 src/gnome/context.rs:392 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:418 src/gnome/diagnostics/register.rs:271 src/gnome/paragraph.rs:1255 src/gnome/tab.rs:321 src/gnome/tab.rs:626
 msgid "Paragraph"
 msgstr ""
 
@@ -2201,7 +2201,7 @@ msgstr ""
 msgid "RGB Color, for Example 2266AA"
 msgstr ""
 
-#: src/gnome/tab.rs:924
+#: src/gnome/tab.rs:925
 msgid "Recover"
 msgstr ""
 
@@ -2881,7 +2881,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:391 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:419 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:270 src/gnome/styles.rs:547 src/gnome/tab.rs:317 src/gnome/tab.rs:624
+#: src/gnome/context.rs:128 src/gnome/context.rs:391 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:419 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:270 src/gnome/styles.rs:547 src/gnome/tab.rs:317 src/gnome/tab.rs:625
 msgid "Style"
 msgstr ""
 
@@ -2993,7 +2993,7 @@ msgstr ""
 msgid "Templates Folder"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:393 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:417 src/gnome/diagnostics/register.rs:272 src/gnome/diagnostics/spellcheck.rs:145 src/gnome/references.rs:335 src/gnome/tab.rs:273 src/gnome/tab.rs:308 src/gnome/tab.rs:626
+#: src/gnome/context.rs:134 src/gnome/context.rs:393 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:417 src/gnome/diagnostics/register.rs:272 src/gnome/diagnostics/spellcheck.rs:145 src/gnome/references.rs:335 src/gnome/tab.rs:273 src/gnome/tab.rs:308 src/gnome/tab.rs:627
 msgid "Text"
 msgstr ""
 
@@ -3117,7 +3117,7 @@ msgstr ""
 msgid "The footnote reference could not be found."
 msgstr ""
 
-#: src/gnome/image_drop.rs:117 src/gnome/image_drop.rs:121 src/gnome/image_drop.rs:218
+#: src/gnome/image_drop.rs:118 src/gnome/image_drop.rs:122 src/gnome/image_drop.rs:216
 msgid "The image is too large."
 msgstr ""
 
@@ -3189,7 +3189,7 @@ msgstr ""
 msgid "The text has changed. Check it again."
 msgstr ""
 
-#: src/gnome/tab.rs:923
+#: src/gnome/tab.rs:924
 msgid "There Are Documents to Recover"
 msgstr ""
 

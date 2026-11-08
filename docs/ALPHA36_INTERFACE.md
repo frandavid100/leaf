@@ -35,7 +35,9 @@ No engine, renderer, vendor, compatibility patch or dependency pin changes.
   independent.
 - External image drags paint a passive insertion caret without moving the typing
   selection. The actual drop uses that displayed position. Edge scrolling
-  updates the marker; cancellation and obsolete async targets do not edit.
+  updates the marker, including crossing page gaps. Native drag lifetime is
+  independent of temporary marker visibility; cancellation and obsolete async
+  targets do not edit.
 
 ## Validation
 
@@ -46,7 +48,11 @@ allocations, scope capture, font navigation/substitution with pending metadata,
 outline offsets, split menu Back and IME/rapid-input gallery dismissal.
 
 `tools/workflows36-pointer-test.sh` uses a separate native GTK file source,
-external clipboard and real X11 gestures. The native delayed-read case uses a
+external clipboard and real X11 gestures. The edge-scroll probe requires an
+actual page-gap crossing and a recovered marker before dropping; it waits for
+native drag completion rather than interpreting a hidden marker as a drop.
+The separate source harness binds Escape to GTK DragSource cancellation and
+acknowledges the native cancellation signal before the driver releases the mouse. The native delayed-read case uses a
 FIFO and edits the document before releasing bytes, proving stale rejection.
 `tools/workflows36-template-folder-test.sh` selects an actual external directory
 through Preferences, checks thumbnails and same-tab creation, restarts the

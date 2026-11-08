@@ -120,7 +120,10 @@ pub(super) fn test(
             );
             search.refresh();
             assert_eq!(search.hits.borrow().len(), 1);
-            assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, original);
+            assert!(
+                ui.current.borrow().as_ref().unwrap().session.doc == original,
+                "hover/cancel must preserve the complete document"
+            );
         }
         selection::select_range(
             &mut ui.current.borrow_mut().as_mut().unwrap().session,
@@ -156,7 +159,10 @@ pub(super) fn test(
                 <= props.window.width()
         );
         assert!(host.window.lookup_action("document-fonts").is_none());
-        assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, original);
+        assert!(
+            ui.current.borrow().as_ref().unwrap().session.doc == original,
+            "hover/cancel must preserve the complete document"
+        );
         props.window.close();
         let mut font_doc = wordcraft_doc::Document::from_text(
             &(0..24)
@@ -555,25 +561,70 @@ pub(super) fn pointer(
                 selection,
                 "hover must not move the typing selection"
             );
-            assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, original);
+            assert!(
+                ui.current.borrow().as_ref().unwrap().session.doc == original,
+                "hover/cancel must preserve the complete document"
+            );
+            let controllers = ui.document_box.observe_controllers();
+            let target = (0..controllers.n_items())
+                .find_map(|i| {
+                    controllers
+                        .item(i)
+                        .and_then(|o| o.downcast::<gtk::DropTarget>().ok())
+                })
+                .unwrap();
+            assert!(target.current_drop().is_some());
+            let mut final_target = false;
+            let mut crossed_gap = false;
+            let mut resumed_after_gap = false;
             eprintln!("WORKFLOWS36_MARKER {stage}");
             for _ in 0..700 {
                 let preview = ui.image_drop.borrow().clone();
-                match preview {
-                    Some(p) => last = p,
-                    None => break,
+                if let Some(p) = preview {
+                    if stage == 2 && crossed_gap && !resumed_after_gap {
+                        resumed_after_gap = true;
+                        eprintln!("WORKFLOWS36_GAP_RESUMED {stage}");
+                    }
+                    if let Some(b) = ui.document_box.compute_bounds(&ui.scroll) {
+                        let y = p.point.1 + b.y() as f64;
+                        if stage == 2
+                            && !final_target
+                            && y > 40.
+                            && y < ui.scroll.height() as f64 - 40.
+                        {
+                            final_target = true;
+                            eprintln!("WORKFLOWS36_TARGET_READY {stage}");
+                        }
+                    }
+                    last = p;
+                } else if stage == 2 && ui.image_drag_active.get() {
+                    crossed_gap = true;
+                }
+                // An absent marker can mean the pointer is between pages,
+                // while the native drag is still active. Only native completion
+                // ends this observation; the last displayed valid target is kept.
+                if target.current_drop().is_none() {
+                    break;
                 }
                 glib::timeout_future(std::time::Duration::from_millis(10)).await;
             }
+            assert!(target.current_drop().is_none());
             assert!(ui.image_drop.borrow().is_none());
             if stage == 1 {
-                assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, original);
+                assert!(
+                    ui.current.borrow().as_ref().unwrap().session.doc == original,
+                    "hover/cancel must preserve the complete document"
+                );
                 assert_eq!(ui.current.borrow().as_ref().unwrap().session.sel, selection);
                 assert_eq!(
                     ui.current.borrow().as_ref().unwrap().session.undo_depth(),
                     depth
                 );
             } else if stage == 2 {
+                assert!(
+                    resumed_after_gap,
+                    "edge scrolling must cross a gap and regain a valid marker"
+                );
                 for _ in 0..700 {
                     if ui.image_read.borrow().is_none() {
                         break;
@@ -623,7 +674,10 @@ pub(super) fn pointer(
                     depth + 1
                 );
                 apply_user_edit(&ui, Edit::Undo);
-                assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, original);
+                assert!(
+                    ui.current.borrow().as_ref().unwrap().session.doc == original,
+                    "hover/cancel must preserve the complete document"
+                );
             }
             eprintln!("WORKFLOWS36_STAGE_OK {stage}");
         }

@@ -301,7 +301,7 @@ pub(super) fn copy_selection(ui: &Rc<Ui>) {
 
 pub(super) fn caret_is_shown(ui: &Rc<Ui>) -> bool {
     !ui.closed.get()
-        && ui.image_drop.borrow().is_none()
+        && !ui.image_drag_active.get()
         && ui.document_box.has_focus()
         && ui.host.upgrade().is_some_and(|h| {
             h.window.is_active() && selected_ui(&h).is_some_and(|u| Rc::ptr_eq(&u, ui))
