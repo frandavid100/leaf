@@ -25,6 +25,13 @@ pub(super) fn install_diagnostics(
     app: &Application,
     controls: DiagnosticControls<'_>,
 ) {
+    if std::env::args().any(|arg| arg.starts_with("--workflows36-")) {
+        let previous = std::panic::take_hook();
+        std::panic::set_hook(Box::new(move |info| {
+            previous(info);
+            std::process::exit(1);
+        }));
+    }
     if std::env::args().any(|arg| arg == "--workflows35-pointer-test") && host.tabs.n_pages() == 1 {
         let (u, w, a, outline) = (
             ui.clone(),
@@ -34,6 +41,37 @@ pub(super) fn install_diagnostics(
         );
         glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
             workflows35_checks::pointer(&u, &w, &a, &outline)
+        });
+    }
+    if std::env::args().any(|arg| arg == "--workflows36-template-folder-test")
+        && host.tabs.n_pages() == 1
+    {
+        let (u, w, a) = (ui.clone(), window.clone(), app.clone());
+        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+            workflows36_checks::template_folder(&u, &w, &a)
+        });
+    }
+    if std::env::args().any(|arg| arg == "--workflows36-pointer-test") && host.tabs.n_pages() == 1 {
+        let (u, w, a, s) = (
+            ui.clone(),
+            window.clone(),
+            app.clone(),
+            controls.search_panel.clone(),
+        );
+        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+            workflows36_checks::pointer(&u, &w, &a, &s)
+        });
+    }
+    if std::env::args().any(|arg| arg == "--workflows36-ui-test") && host.tabs.n_pages() == 1 {
+        let (u, w, a, s, o) = (
+            ui.clone(),
+            window.clone(),
+            app.clone(),
+            controls.search_panel.clone(),
+            controls.outline_panel.clone(),
+        );
+        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+            workflows36_checks::test(&u, &w, &a, &s, &o)
         });
     }
     if std::env::args().any(|arg| arg == "--workflows35-ui-test") && host.tabs.n_pages() == 1 {

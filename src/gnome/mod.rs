@@ -30,7 +30,7 @@ use wordcraft_gnome::{
     pdf_export, pictures,
 };
 
-const APP_VERSION: &str = "0.1.0-alpha.35";
+const APP_VERSION: &str = "0.1.0-alpha.36";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -63,6 +63,7 @@ use comment_composer::*;
 mod commands;
 use commands::*;
 mod context;
+mod context_clipboard;
 use context::*;
 mod document_properties_dialog;
 use document_properties_dialog::*;
@@ -286,3 +287,6 @@ mod image_drop;
 
 #[path = "diagnostics/workflows35.rs"]
 mod workflows35_checks;
+
+#[path = "diagnostics/workflows36.rs"]
+mod workflows36_checks;

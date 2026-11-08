@@ -248,6 +248,9 @@ pub(super) fn show_document_context(
     let pop = gtk::PopoverMenu::from_model(Some(&root));
     pop.set_widget_name("document-context-menu");
     pop.set_has_arrow(false);
+    // Closing a nested variants popover returns to this menu. Editing actions
+    // still explicitly close this owner before dispatch.
+    pop.set_cascade_popdown(false);
     pop.set_halign(gtk::Align::Start);
     pop.set_parent(&ui.document_box);
     pop.set_pointing_to(Some(&gdk::Rectangle::new(x, y, 1, 1)));
@@ -331,6 +334,7 @@ pub(super) fn show_document_context(
         }
     }
     let edit = gio::Menu::new();
+    root.append_section(None, &edit);
     let link_position = pos_at_canvas(ui, x as f64, y as f64);
     let link_identity = document_identity(ui);
     context_item(
@@ -365,28 +369,8 @@ pub(super) fn show_document_context(
             }
         },
     );
-    context_item(
-        &edit,
-        &group,
-        &pop,
-        ui,
-        wordcraft_gnome::t!("Copy"),
-        "copy",
-        selected,
-        |u| {
-            context_copy(u);
-        },
-    );
-    context_item(
-        &edit,
-        &group,
-        &pop,
-        ui,
-        wordcraft_gnome::t!("Paste"),
-        "paste",
-        clipboard_can_paste(ui),
-        context_paste,
-    );
+    context_clipboard::append(&edit, &group, &pop, ui, true, selected);
+    context_clipboard::append(&edit, &group, &pop, ui, false, selected);
     context_item(
         &edit,
         &group,
@@ -397,41 +381,9 @@ pub(super) fn show_document_context(
         true,
         |u| selected_command(u, "select-all", false),
     );
-    context_item(
-        &edit,
-        &group,
-        &pop,
-        ui,
-        wordcraft_gnome::t!("Paste Plain Text"),
-        "paste-plain",
-        clipboard_can_paste(ui),
-        clipboard::paste_plain,
-    );
-    context_item(
-        &edit,
-        &group,
-        &pop,
-        ui,
-        wordcraft_gnome::t!("Copy Formatting"),
-        "copy-format",
-        true,
-        |ui| format_painter::start(ui, false),
-    );
-    context_item(
-        &edit,
-        &group,
-        &pop,
-        ui,
-        wordcraft_gnome::t!("Keep Copying Formatting"),
-        "copy-format-sticky",
-        true,
-        |ui| format_painter::start(ui, true),
-    );
-    root.append_section(None, &edit);
     if let Some(host) = ui.host.upgrade() {
         refresh_main_actions(&host);
     }
-    append_insert_menu(&root);
     let specific = gio::Menu::new();
     match kind {
         DocumentContext::Text => {
@@ -617,6 +569,7 @@ pub(super) fn show_document_context(
             );
         }
     }
+    append_insert_menu(&specific);
     root.append_section(None, &specific);
     let lease = if kind == DocumentContext::Text {
         Some(mount_context_formats(ui, &pop))
@@ -687,6 +640,21 @@ pub(super) fn install_table_context_menu(ui: &Rc<Ui>, parent: &ApplicationWindow
 
 pub(super) fn context_model_row(root: &impl IsA<gtk::Widget>, label: &str) -> Option<gtk::Widget> {
     let root = root.as_ref();
+    for (text, name) in [
+        (wordcraft_gnome::t!("Copy"), "context-copy-primary"),
+        (wordcraft_gnome::t!("Paste"), "context-paste-primary"),
+    ] {
+        if label == text {
+            if let Some(button) = find_widget(root, name) {
+                return Some(button);
+            }
+        }
+    }
+    if label == wordcraft_gnome::t!("Back") {
+        if let Some(button) = find_widget(root, "context-variants-back").filter(|b| b.is_mapped()) {
+            return Some(button);
+        }
+    }
     // GtkPopoverMenu keeps identically named rows in hidden GtkStack pages.
     // Search only the active page, as a pointer/keyboard user would.
     if let Some(stack) = root.downcast_ref::<gtk::Stack>() {
@@ -723,7 +691,7 @@ pub(super) fn context_model_row(root: &impl IsA<gtk::Widget>, label: &str) -> Op
     }
     None
 }
-pub(super) fn context_activate_row(pop: &gtk::PopoverMenu, label: &str) {
+pub(super) fn context_activate_row(pop: &impl IsA<gtk::Widget>, label: &str) {
     let row = context_model_row(pop, label).unwrap_or_else(|| panic!("missing native row {label}"));
     assert!(row.is_sensitive());
     assert!(row.activate(), "native menu row must activate");

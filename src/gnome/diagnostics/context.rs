@@ -70,7 +70,7 @@ pub(super) fn context_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
                 !ui.document_box.has_focus(),
                 "context menu must receive keyboard focus"
             );
-            assert_eq!(pop.menu_model().unwrap().n_items(), 3);
+            assert_eq!(pop.menu_model().unwrap().n_items(), 2);
             let row = context_model_row(&pop, wordcraft_gnome::t!("Copy")).unwrap();
             let r = row.compute_bounds(&pop).unwrap();
             let surface = pop.surface().unwrap().downcast::<gdk::Popup>().unwrap();

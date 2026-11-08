@@ -1,5 +1,13 @@
 # Estado actual de Leaf
 
+## En validación: alpha.36 — revisión de interfaz
+
+Candidata para #171/#177/#181/#182/#186–#191, incluido el nuevo #191.
+Se están verificando los controles nativos y los paquetes GNOME 49/51 antes de
+publicar y cerrar individualmente los informes. [Cambios y límites](docs/ALPHA36_INTERFACE.md).
+Conserva la presentación y el generador bilingüe incorporados en la otra conversación.
+
+
 ## Ficha de tienda y novedades — #185
 
 Preparados la descripción aprobada en inglés/español, los colores claro/oscuro y

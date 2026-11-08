@@ -150,7 +150,6 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
             blank_tab(&app, h);
         }
     });
-    window_action(host, "new-template", templates::show);
     window_action(host, "new-window", |h| {
         if let Some(app) = host_app(h) {
             make_window(&app, false, false, false, false, false, false, false, None);
@@ -264,11 +263,6 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
     window_action(host, "document-properties", |h| {
         if let Some(ui) = selected_ui(h) {
             show_document_properties(&ui, &h.window);
-        }
-    });
-    window_action(host, "document-fonts", |h| {
-        if let Some(ui) = selected_ui(h) {
-            document_fonts::show(&ui, &h.window);
         }
     });
     window_action(host, "print", |h| {
@@ -544,14 +538,6 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
     let root = gio::Menu::new();
     let controls = ui.history_controls.borrow().as_ref().unwrap().clone();
     root.append_section(None, &controls.document_model);
-    let templates = gio::Menu::new();
-    menu_item(
-        &templates,
-        wordcraft_gnome::t!("New from Template…"),
-        "new-template",
-        None,
-    );
-    root.append_section(None, &templates);
     let save = gio::Menu::new();
     menu_item(
         &save,
@@ -567,12 +553,6 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
     );
     root.append_section(None, &save);
     let properties = gio::Menu::new();
-    menu_item(
-        &properties,
-        wordcraft_gnome::t!("Document Fonts…"),
-        "document-fonts",
-        None,
-    );
     menu_item(
         &properties,
         wordcraft_gnome::t!("Document Properties"),

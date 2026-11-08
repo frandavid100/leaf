@@ -20,6 +20,8 @@ pub(super) fn after_history_change(ui: &Rc<Ui>) {
     refresh_after_content_change(ui);
 }
 pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
+    templates::dismiss(ui);
+    image_drop::clear_preview(ui);
     let _perf = perf_scope("leaf.after_content_change");
     // A formatting entry owns its edit even when pagination rebuilds the canvas.
     let was_canvas_focused = ui.document_box.has_focus();
