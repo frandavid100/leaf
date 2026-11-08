@@ -3181,7 +3181,7 @@ msgstr ""
 msgid "The table of contents could not be found."
 msgstr ""
 
-#: src/gnome/templates.rs:356
+#: src/gnome/templates.rs:361
 msgid "The templates folder must be readable without write access."
 msgstr ""
 
@@ -3309,7 +3309,7 @@ msgstr ""
 msgid "UPPERCASE"
 msgstr ""
 
-#: src/gnome/templates.rs:212 src/gnome/templates.rs:280
+#: src/gnome/templates.rs:212 src/gnome/templates.rs:285
 msgid "Unavailable"
 msgstr ""
 

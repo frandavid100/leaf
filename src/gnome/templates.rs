@@ -262,7 +262,12 @@ pub(super) fn preferences(parent: &adw::PreferencesWindow) -> adw::PreferencesGr
                         }
                         refresh_folders();
                     }
-                    Err(e) => parent.add_toast(Toast::new(&e)),
+                    Err(e) => {
+                        if std::env::args().any(|a| a == "--workflows36-template-folder-test") {
+                            eprintln!("WORKFLOWS36_TEMPLATE_FOLDER_ERROR {e}");
+                        }
+                        parent.add_toast(Toast::new(&e));
+                    }
                 }
             });
         });
