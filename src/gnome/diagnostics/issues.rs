@@ -77,6 +77,7 @@ pub(super) fn issue_sweep_ui_test(
         "context row opens link editor"
     );
     let link_window = ui.link_dialog.borrow().as_ref().unwrap().clone();
+    wait_dialog_presented(&link_window);
     link_window.close();
     assert_dialog_closed(&link_window);
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, original);

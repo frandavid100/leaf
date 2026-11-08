@@ -163,6 +163,18 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert!((offset(&gallery, &window) - gallery_y + delta as f32).abs() < 1.1);
         assert!((offset(&page, &window) - page_y + delta as f32).abs() < 1.1);
         assert!(blank.template_eligible.get());
+        let browsing_position = a.value();
+        let zoom = blank.current.borrow().as_ref().unwrap().zoom;
+        zoom_to(&blank, zoom * 0.9);
+        native_frames(&blank.document_box, 4).await;
+        settle().await;
+        assert!((a.value() - browsing_position).abs() < 1.1);
+        assert!(
+            blank.current.borrow().as_ref().unwrap().pages[0]
+                .paintable()
+                .is_some(),
+            "refitting an eligible gallery must repaint the visible page without scrolling"
+        );
         caret_ensure_visible(&blank);
         blank.document_box.grab_focus();
         apply_user_edit(&blank, Edit::Insert("First edit".into()));
@@ -186,7 +198,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert_eq!(host.tabs.n_pages(), 1);
         std::fs::remove_dir_all(directory).unwrap();
         eprintln!(
-            "WORKFLOWS37_GALLERY_OK same-scroll=true dismissed-once=true source-unchanged=true"
+            "WORKFLOWS37_GALLERY_OK same-scroll=true refit-painted=true dismissed-once=true source-unchanged=true"
         );
 
         let content = (0..450)
