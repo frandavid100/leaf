@@ -1,0 +1,31 @@
+{
+  "release_report": "docs/ALPHA39_PREVIEWS.md",
+  "verified": true,
+  "version": "0.1.0-alpha.39",
+  "source": "b9b0edc16a6f814634d86a66e877648b1e982c79",
+  "native_source": "cc4c3d7ab8218b6176e78a535f189b99f4cf6a32",
+  "native_run": 42531382692,
+  "candidate_run": 42531440034,
+  "release_url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.39",
+  "published_at": "2026-11-08T23:12:48Z",
+  "closed_issues": [
+    212,
+    213,
+    214
+  ],
+  "asset_sha256": {
+    "Leaf-0.1.0-alpha.39-x86_64.flatpak": "432d62c3648d59f3193da39417db580c274e9004a1845744374de474f879161a",
+    "Leaf-0.1.0-alpha.39-flatpark-x86_64.tar.xz": "eabb1c4e6a6b88876b09ed841e5c2809d314d19924709505e34d63b5a508fe3e",
+    "Leaf-0.1.0-alpha.39-dictionary-test.zip": "b8fcc9ff0923fe1e5ef06f4fc30d098dc4a80f91566ba40ec95d68d44ca64de7",
+    "INSTALL.md": "a8f346c6c9f6d30a7750f3a03ece772563c23bbf1c548a85c8d91193a9e8acf8",
+    "source-commit.txt": "530a79f21da264319383499e13cd3fd01c664dffa38624e2a0b18e9a4639a1d7",
+    "runtime.txt": "cc98943bf0d0696d69c2e647f51ef070a92528714cd03342e77b1d45a92efa3c",
+    "runtime-commit.txt": "588c80c4d5d01ba6871ca2336d2c615e16c8d0fdbdcc8c6707bdbe1ce3173499",
+    "flatpak-metadata.txt": "9aa37128546ce1881b58a36ab3b877360bc1361caddda1de462e3e36f8bc6d48",
+    "flatpak-smoke.log": "7d2cab42fd728d17ce944f60b44ed732a471e91e7e706067ecb6ad5531c45b72",
+    "flatpark-smoke.log": "24f124b1c6285908586a15e4b81e793dedef533efe9825a78e7ac4e60eff8364",
+    "candidate.json": "ae0987de7f79699612fbfe7f1e3cd56769ea9edfd2b6562285a840e65af009c1",
+    "RELEASE_NOTES.md": "9cc2b8093743354cc6eeea24f3782514bba94ae12b58b12a3b28de7f767d9636",
+    "SHA256SUMS": "d16f54a1cb90a91a39c610cdb986c4cb9b033883241bca183c3082ec73803e7f"
+  }
+}

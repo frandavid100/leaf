@@ -1,18 +1,15 @@
 # Hoja de ruta de Leaf
 
 
-<!-- candidate-alpha:start -->
-## Candidata alpha.39 — miniaturas y validación en paralelo
 
-David autoriza optimizar el proceso de release y cerrar los nuevos #212/#213/#214.
-Implementados miniaturas de recuperación sin tocar originales, proporciones de
-folio independientes del nombre y selección visible de Navegación/Revisión.
-La CI conserva todas las comprobaciones en grupos independientes y ambos runtimes;
-el cierre automático requiere comprobar primero los archivos públicos publicados.
-Publicación, validación final y cierres pendientes.
-[Comportamiento, cobertura y límites](docs/ALPHA39_PREVIEWS.md).
 
-<!-- candidate-alpha:end -->
+<!-- published-alpha:start -->
+## Última publicación verificada: 0.1.0-alpha.39
+
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.39). Issues cerrados: #212, #213, #214.
+Permanecen abiertos: #1, #52, #99, #107, #152, #171, #185, #213, #214.
+[Fuente, validación y límites](docs/LATEST_RELEASE.md).
+<!-- published-alpha:end -->
 
 ## Publicada y verificada: alpha.38 — vista inicial y recuperación
 

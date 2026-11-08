@@ -1,9 +1,6 @@
 # Alpha.39 — start previews and parallel release validation
 
-Candidate for #212/#213/#214. Publication and closure remain gated by complete
-native and installed GNOME 49/51 success, final binary comparison and verification
-of the thirteen public assets. The publisher records the verified identity and
-completed issue closures in `docs/LATEST_RELEASE.md` after publication.
+Published and verified: #212, #213, #214 are completed. See [published identity and validation](LATEST_RELEASE.md).
 
 ## Resulting behavior
 

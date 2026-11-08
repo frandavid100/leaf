@@ -1,6 +1,12 @@
 # Decisiones vigentes
 
 
+## Publicada y verificada automáticamente: 0.1.0-alpha.39
+
+Se publican los mismos bytes de la candidata tras superar todas las pruebas
+nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
+de cerrar #212, #213, #214. [Identidad y límites](LATEST_RELEASE.md).
+
 ## 8/11/2026 — alpha.39: miniaturas y proceso de publicación
 
 David autoriza aplicar la aceleración de CI, resolver los issues nuevos y publicar
