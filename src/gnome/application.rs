@@ -36,6 +36,10 @@ pub(super) fn run() {
         );
         return;
     }
+    if std::env::args().any(|arg| arg == "--windows-package-test") {
+        windows_checks::package_test();
+        return;
+    }
     if std::env::args().any(|arg| arg == "--version") {
         println!("Leaf {APP_VERSION}");
         return;

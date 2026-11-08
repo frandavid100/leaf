@@ -9,12 +9,12 @@ p=argparse.ArgumentParser();p.add_argument('--check',action='store_true');p.add_
 refs={}
 for file in sorted((ROOT/'src').rglob('*.rs')):
  if file.name=='i18n.rs':continue
- text=file.read_text()
+ text=file.read_text(encoding="utf-8")
  for value,line in messages(text):
-  refs.setdefault(value,[]).append(f'{file.relative_to(ROOT)}:{line}')
+  refs.setdefault(value,[]).append(f'{file.relative_to(ROOT).as_posix()}:{line}')
 desktop=ROOT/'data/io.github.frandavid100.leaf.desktop'
 meta=ROOT/'data/io.github.frandavid100.leaf.metainfo.xml'
-desktop_source=pathlib.Path(str(desktop)+'.in').read_text()
+desktop_source=pathlib.Path(str(desktop)+'.in').read_text(encoding="utf-8")
 meta_root=ET.parse(str(meta)+'.in').getroot()
 metadata_messages=[]
 for line in desktop_source.splitlines():
@@ -30,8 +30,8 @@ messages='pub const MESSAGES: &[&str] = &[\n'+''.join('    '+q(key)+',\n' for ke
 for name,content in [('po/leaf.pot',pot),('po/messages.rs',messages)]:
  path=ROOT/name
  if a.check:
-  if not path.exists() or path.read_text()!=content:sys.exit(f'{name} is outdated; run tools/update_translations.py')
- else:path.write_text(content)
+  if not path.exists() or path.read_text(encoding="utf-8")!=content:sys.exit(f'{name} is outdated; run tools/update_translations.py')
+ else:path.write_text(content,encoding="utf-8")
 catalogs={}
 for path in sorted((ROOT/'po').glob('*.po')):
  locale=path.stem
@@ -59,6 +59,6 @@ ET.indent(meta_root,space='  ')
 meta_out='<?xml version="1.0" encoding="UTF-8"?>\n'+ET.tostring(meta_root,encoding='unicode')+'\n'
 for path,content in [(desktop,'\n'.join(desktop_out)+'\n'),(meta,meta_out)]:
  if a.check:
-  if path.read_text()!=content:sys.exit(f'{path} is outdated; regenerate translations')
- else:path.write_text(content)
+  if path.read_text(encoding="utf-8")!=content:sys.exit(f'{path} is outdated; regenerate translations')
+ else:path.write_text(content,encoding="utf-8")
 print(f'{len(refs)} source messages; complete English and Spanish catalogs')

@@ -1,0 +1,177 @@
+name: Leaf — experimental Windows package
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the verified package as a Windows prerelease
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/windows.yml'
+      - 'packaging/windows/**'
+      - 'tools/package_windows.py'
+      - 'tools/test_windows.ps1'
+
+concurrency:
+  group: leaf-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    env:
+      PYTHONUTF8: "1"
+    runs-on: windows-2022
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            git
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-pkgconf
+            mingw-w64-ucrt-x86_64-gtk4
+            mingw-w64-ucrt-x86_64-libadwaita
+            mingw-w64-ucrt-x86_64-librsvg
+            mingw-w64-ucrt-x86_64-adwaita-icon-theme
+            mingw-w64-ucrt-x86_64-gettext-tools
+            mingw-w64-ucrt-x86_64-python
+      - name: Install Rust GNU toolchain
+        shell: pwsh
+        run: rustup toolchain install stable-x86_64-pc-windows-gnu --profile minimal --component rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: windows-gnu
+          cache-on-failure: true
+      - name: Configure native build
+        run: |
+          echo "$(cygpath -u "$USERPROFILE")/.cargo/bin" >> /tmp/leaf-cargo-path
+          bash tools/prepare-language-data.sh
+          echo "CRAFT_I18N_DIR=$(cygpath -m "$PWD/.build-deps/craft-i18n")" >> "$GITHUB_ENV"
+          echo "CRAFT_I18N_REQUIRED=1" >> "$GITHUB_ENV"
+      - name: Compile translations and check formatting
+        run: |
+          export PATH="$(cat /tmp/leaf-cargo-path):$PATH"
+          cargo +stable-gnu fmt --package wordcraft-gnome -- --check
+          python tools/update_translations.py --check --compile
+      - name: Build optimized Windows application
+        run: |
+          export PATH="$(cat /tmp/leaf-cargo-path):$PATH"
+          cargo +stable-gnu build --release --locked --features gui --bin wordcraft-gnome
+      - name: Test document engine adapters on Windows
+        run: |
+          export PATH="$(cat /tmp/leaf-cargo-path):$PATH"
+          cargo +stable-gnu test --locked
+      - name: Assemble self-contained portable package
+        run: python tools/package_windows.py
+      - name: Test relocated package without MSYS2 on PATH
+        shell: pwsh
+        run: ./tools/test_windows.ps1
+      - name: Build per-user installer
+        shell: pwsh
+        run: |
+          $compiler = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (!(Test-Path $compiler)) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE -ne 0) { throw 'Inno Setup installation failed' }
+          }
+          $version = Get-Content dist/windows/version.txt
+          & $compiler "/DLeafVersion=$version" packaging/windows/leaf.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+      - name: Test installed application and uninstaller
+        shell: pwsh
+        run: ./tools/test_windows.ps1 -Installer
+      - name: Final checksums and build identity
+        shell: pwsh
+        run: |
+          Get-ChildItem dist/windows -File | Where-Object { $_.Extension -in '.zip','.exe' } | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash  $($_.Name)"
+          } | Set-Content dist/windows/SHA256SUMS -Encoding ascii
+          "source=$env:GITHUB_SHA`nrun=$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID" | Set-Content dist/windows/BUILD.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Leaf-Windows-x86_64
+          path: |
+            dist/windows/*.zip
+            dist/windows/*.exe
+            dist/windows/SHA256SUMS
+            dist/windows/BUILD.txt
+            dist/windows/version.txt
+            dist/windows/*.log
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: Windows-diagnostics
+          path: dist/windows/*.log
+          if-no-files-found: ignore
+
+  linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: test
+          cache-on-failure: true
+      - name: Install GNOME dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-4-dev libadwaita-1-dev gettext xvfb dbus-x11 locales
+          sudo locale-gen en_US.UTF-8
+      - run: bash tools/prepare-language-data.sh
+      - name: Check Linux compatibility
+        run: |
+          export LC_ALL=en_US.UTF-8
+          cargo fmt --package wordcraft-gnome -- --check
+          python3 -m unittest discover -s tools -p 'test_*.py'
+          python3 tools/check_project_docs.py
+          python3 tools/update_translations.py --check --compile
+          cargo test --locked
+          cargo build --release --locked --features gui --bin wordcraft-gnome
+          LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a dbus-run-session -- target/release/wordcraft-gnome --localization-ui-test
+          LANGUAGE=es GSK_RENDERER=cairo xvfb-run -a dbus-run-session -- target/release/wordcraft-gnome --localization-ui-test
+
+  publish:
+    needs: [windows, linux]
+    if: (github.event_name == 'workflow_dispatch' && inputs.publish) || contains(github.event.head_commit.message, '[windows-release]')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Leaf-Windows-x86_64
+          path: release
+      - name: Publish tested Windows prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          version=$(cat release/version.txt)
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+-windows\.[0-9]+$ ]]
+          cat > notes.md <<'NOTES'
+          First experimental Windows x86_64 package of Leaf, based on alpha.36.
+
+          Download **setup.exe** for a per-user installation, or extract **portable.zip** and open `bin/leaf.exe`. GTK and its runtime libraries are included.
+
+          English and Spanish; Windows settings/recovery folders, DOCX/ODT editing and PDF export. Automated checks cover the relocated package, both translations, saving/reopening Unicode paths, preferences, multiple windows, silent installation and removal, plus Linux regressions.
+
+          This unsigned alpha may trigger Windows reputation warnings. Physical printing, screen readers and hardware-specific graphics behavior have not been verified on Windows. Use copies of important documents. Windows releases are occasional and need not accompany every Linux alpha.
+          NOTES
+          gh release create "v$version" release/*.zip release/*.exe release/SHA256SUMS release/BUILD.txt --target "$GITHUB_SHA" --title "Leaf $version — Windows preview" --notes-file notes.md --prerelease --latest=false

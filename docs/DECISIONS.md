@@ -1,5 +1,15 @@
 # Decisiones vigentes
 
+## 8/11/2026 — primera versión para Windows
+
+David solicita preparar una primera versión experimental del estado actual.
+Se mantiene el cliente GTK/libadwaita, WordCraft y los parches fijados.
+Las entregas Windows se generan de forma ocasional, sin exigir paridad con cada
+alpha Linux. El instalador es por usuario, sin privilegios administrativos;
+el ZIP usa las mismas carpetas de configuración y recuperación del usuario.
+Publicar solo los bytes comprobados en Windows, registrando las limitaciones
+de impresión, accesibilidad y pruebas humanas. [Detalle](WINDOWS.md).
+
 ## 8/11/2026 — revisión de interfaz alpha.36
 
 La galería transitoria sustituye el diálogo de plantillas. Fuentes vive dentro

@@ -38,6 +38,15 @@ async fn closed(dialog: &impl IsA<adw::Dialog>) {
         dialog.as_ref().title()
     );
 }
+async fn restored(ui: &Ui) {
+    for _ in 0..500 {
+        if ui.hidden_navigation_scroll.borrow().is_none() {
+            return;
+        }
+        glib::timeout_future(std::time::Duration::from_millis(10)).await;
+    }
+    panic!("navigation restoration did not finish its allocation lifecycle");
+}
 fn unchanged(ui: &Ui, before: &(wordcraft_doc::Document, wordcraft_engine::Selection, usize)) {
     let current = ui.current.borrow();
     let s = &current.as_ref().unwrap().session;
@@ -182,6 +191,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             ui.sidebar.set_show_sidebar(false);
             settle().await;
             ui.sidebar.set_show_sidebar(true);
+            restored(&ui).await;
             settle().await;
             assert!(
                 (a.value() - delta).abs() < 1.,

@@ -481,7 +481,7 @@ msgstr ""
 msgid "Clickable Entries"
 msgstr ""
 
-#: src/gnome/application.rs:174
+#: src/gnome/application.rs:178
 msgid "Close"
 msgstr ""
 
@@ -621,7 +621,7 @@ msgstr ""
 msgid "Could Not Load Recovery List"
 msgstr ""
 
-#: src/gnome/application.rs:171
+#: src/gnome/application.rs:175
 msgid "Could Not Open Document"
 msgstr ""
 
@@ -905,7 +905,7 @@ msgstr ""
 msgid "Do Not Check"
 msgstr ""
 
-#: src/gnome/application.rs:122 src/gnome/tab.rs:790 src/save_name.rs:41 src/save_name.rs:109
+#: src/gnome/application.rs:126 src/gnome/tab.rs:790 src/save_name.rs:41 src/save_name.rs:109
 msgid "Document"
 msgstr ""
 
@@ -1085,7 +1085,7 @@ msgstr ""
 msgid "Enter some comment text."
 msgstr ""
 
-#: src/preferences.rs:144
+#: src/preferences.rs:174
 msgid "Enter your name."
 msgstr ""
 
@@ -1833,7 +1833,7 @@ msgstr ""
 msgid "Narrow Right Column"
 msgstr ""
 
-#: src/gnome/diagnostics/navigation131.rs:79 src/gnome/navigation.rs:16 src/gnome/navigation.rs:37 src/gnome/navigation.rs:80 src/gnome/tab.rs:166 src/gnome/tab.rs:167 src/gnome/tab.rs:184
+#: src/gnome/diagnostics/navigation131.rs:83 src/gnome/navigation.rs:16 src/gnome/navigation.rs:37 src/gnome/navigation.rs:80 src/gnome/tab.rs:166 src/gnome/tab.rs:167 src/gnome/tab.rs:184
 msgid "Navigation"
 msgstr ""
 
@@ -1985,7 +1985,7 @@ msgstr ""
 msgid "Only DOCX and ODT files are supported"
 msgstr ""
 
-#: src/gnome/application.rs:114 src/gnome/tab.rs:779
+#: src/gnome/application.rs:118 src/gnome/tab.rs:779
 msgid "Only local files are supported"
 msgstr ""
 
@@ -2397,7 +2397,7 @@ msgstr ""
 msgid "Restore Original Size"
 msgstr ""
 
-#: src/gnome/annotations.rs:155 src/gnome/diagnostics/navigation131.rs:70 src/gnome/diagnostics/review29.rs:31 src/gnome/document_properties_dialog.rs:358 src/gnome/navigation.rs:42 src/gnome/navigation.rs:78 src/gnome/review.rs:268 src/gnome/tab.rs:198 src/gnome/tab.rs:200
+#: src/gnome/annotations.rs:155 src/gnome/diagnostics/navigation131.rs:74 src/gnome/diagnostics/review29.rs:31 src/gnome/document_properties_dialog.rs:358 src/gnome/navigation.rs:42 src/gnome/navigation.rs:78 src/gnome/review.rs:268 src/gnome/tab.rs:198 src/gnome/tab.rs:200
 msgid "Review"
 msgstr ""
 
@@ -3117,7 +3117,7 @@ msgstr ""
 msgid "The file path cannot be represented as UTF-8"
 msgstr ""
 
-#: src/preferences.rs:22
+#: src/preferences.rs:25
 msgid "The folder path cannot be represented as UTF-8."
 msgstr ""
 
@@ -3137,7 +3137,7 @@ msgstr ""
 msgid "The page exceeds the preview size limit"
 msgstr ""
 
-#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:72 src/saving.rs:148 src/templates.rs:85
+#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:72 src/saving.rs:148 src/templates.rs:95
 msgid "The path is not UTF-8"
 msgstr ""
 
@@ -3349,7 +3349,7 @@ msgstr ""
 msgid "Unknown Author"
 msgstr ""
 
-#: src/preferences.rs:55
+#: src/preferences.rs:61
 msgid "Unknown Autosave Mode"
 msgstr ""
 
@@ -3401,7 +3401,7 @@ msgstr ""
 msgid "Use a .docx or .odt extension"
 msgstr ""
 
-#: src/preferences.rs:79 src/proofing.rs:189
+#: src/preferences.rs:85 src/proofing.rs:189
 msgid "Use a language tag such as es-ES or en-GB."
 msgstr ""
 

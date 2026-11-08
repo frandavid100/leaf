@@ -293,6 +293,8 @@ mod workflows36_checks;
 
 #[path = "diagnostics/dialogs.rs"]
 mod dialog_checks;
+#[path = "diagnostics/windows.rs"]
+mod windows_checks;
 use dialog_checks::*;
 
 #[path = "diagnostics/workflows37.rs"]
