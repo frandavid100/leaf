@@ -63,7 +63,10 @@ changing archive digests; mismatched IDs/versions, empty notes or invalid
 AppStream fail before writes. The import has regression tests and does not
 change the runtime, wrappers, sandbox permissions or application bytes.
 
-The FlatPark change needs acceptance by its maintainers. After publication,
+The [ready proposal and validation record](FLATPARK_STORE_PR.md) preserve the
+complete external patch. It has not been submitted: the connected GitHub
+operations cannot create the required fork. The FlatPark change needs acceptance
+by its maintainers. After publication,
 verify the served catalogue and the actual FlatPark origin in Bazaar: translated
 description, colours, gallery, version and nonempty news. Do not mark #185
 complete while new captures, distribution acceptance or client verification
