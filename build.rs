@@ -22,7 +22,10 @@ fn main() {
     let sequence = std::fs::read_to_string("packaging/windows/sequence.txt").unwrap();
     let resource = std::fs::read_to_string("packaging/windows/leaf.rc")
         .unwrap()
-        .replace("@LEAF_VERSION@", &format!("{version}-windows.{}", sequence.trim()));
+        .replace(
+            "@LEAF_VERSION@",
+            &format!("{version}-windows.{}", sequence.trim()),
+        );
     let rc = output.join("leaf.rc");
     std::fs::write(&rc, resource).unwrap();
     let icon = output.join("leaf-icon.o");
@@ -34,5 +37,8 @@ fn main() {
         .status()
         .expect("Windows packaging requires MinGW windres");
     assert!(status.success(), "could not compile the Windows icon");
-    println!("cargo:rustc-link-arg-bin=wordcraft-gnome={}", icon.display());
+    println!(
+        "cargo:rustc-link-arg-bin=wordcraft-gnome={}",
+        icon.display()
+    );
 }

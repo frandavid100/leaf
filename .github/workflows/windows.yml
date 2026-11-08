@@ -14,6 +14,10 @@ on:
       - 'tools/package_windows.py'
       - 'tools/test_windows.ps1'
 
+concurrency:
+  group: leaf-windows-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -122,6 +126,9 @@ jobs:
         with:
           components: rustfmt
       - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: test
+          cache-on-failure: true
       - name: Install GNOME dependencies
         run: |
           sudo apt-get update
