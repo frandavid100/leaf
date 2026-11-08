@@ -23,52 +23,6 @@ fn navigation_choice(ui: &Ui) -> gtk::Box {
     row
 }
 
-pub(super) fn sidebar_mode_selector(ui: &Ui) -> gtk::Box {
-    let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
-    row.add_css_class("sidebar-selector");
-    row.set_margin_start(6);
-    row.set_margin_end(6);
-    row.set_margin_top(5);
-    row.set_margin_bottom(5);
-    for (name, icon, label) in [
-        (
-            "sidebar-navigation",
-            "compass-symbolic",
-            wordcraft_gnome::t!("Navigation"),
-        ),
-        (
-            "sidebar-review",
-            "document-edit-symbolic",
-            wordcraft_gnome::t!("Review"),
-        ),
-    ] {
-        let target = find_widget(&ui.sidebar_selector, name)
-            .unwrap()
-            .downcast::<gtk::ToggleButton>()
-            .unwrap();
-        let button = gtk::ToggleButton::new();
-        button.set_widget_name(name);
-        button.set_icon_name(icon);
-        button.set_hexpand(true);
-        button.add_css_class("flat");
-        button.set_tooltip_text(Some(label));
-        accessible_name(&button, label);
-        target
-            .bind_property("active", &button, "active")
-            .sync_create()
-            .build();
-        let weak = target.downgrade();
-        button.connect_clicked(move |button| {
-            if let Some(target) = weak.upgrade() {
-                target.set_active(true);
-                button.set_active(target.is_active());
-            }
-        });
-        row.append(&button);
-    }
-    row
-}
-
 // Shared native Navigation and Review sidebar.
 pub(super) fn refresh_sidebar_title(ui: &Ui) {
     let label = if ui.sidebar_pages.visible_child_name().as_deref() == Some("search") {
@@ -1123,7 +1077,6 @@ pub(super) fn install_outline(
         }
     });
     box_.append(&list);
-    box_.append(&sidebar_mode_selector(ui));
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
     scroll.set_vexpand(true);
@@ -1419,6 +1372,7 @@ fn trace_navigation(ui: &Ui, event: &str) {
 }
 
 fn show_navigation(ui: &Rc<Ui>) {
+    ui.navigation_button.set_active(true);
     if let Some(search) = ui.search.borrow().as_ref() {
         search.toggle.set_active(false);
     }

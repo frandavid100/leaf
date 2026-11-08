@@ -112,6 +112,34 @@ fn offset(widget: &impl IsA<gtk::Widget>, window: &ApplicationWindow) -> f32 {
     widget.compute_bounds(window).unwrap().y()
 }
 
+fn fixed_modes(ui: &Ui, window: &ApplicationWindow) -> f32 {
+    assert!(ui.sidebar_selector.is_mapped());
+    assert!(
+        ui.sidebar_selector
+            .ancestor(gtk::ScrolledWindow::static_type())
+            .is_none(),
+        "mode tabs must be outside every sidebar scroll container"
+    );
+    let bar = ui.sidebar_selector.compute_bounds(window).unwrap();
+    let sidebar = ui
+        .sidebar
+        .sidebar()
+        .unwrap()
+        .compute_bounds(window)
+        .unwrap();
+    assert!(
+        (bar.y() + bar.height() - sidebar.y() - sidebar.height()).abs() < 1.1,
+        "mode tabs must stay flush with the sidebar bottom: {bar:?} in {sidebar:?}"
+    );
+    for name in ["sidebar-navigation", "sidebar-review"] {
+        let button = find_widget(&ui.sidebar_selector, name).unwrap();
+        assert!(button.is_mapped() && button.is_sensitive());
+        let r = button.compute_bounds(window).unwrap();
+        assert!(r.y() >= bar.y() && r.y() + r.height() <= bar.y() + bar.height());
+    }
+    bar.y()
+}
+
 pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     if STARTED.with(|s| s.replace(true)) {
         return;
@@ -231,10 +259,11 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         let delta = pages.value();
         assert!(delta > 30.);
         assert!((offset(&ui.navigation_selector, &window) - choice_y + delta as f32).abs() < 1.1);
-        assert!((offset(&ui.sidebar_selector, &window) - modes_y + delta as f32).abs() < 1.1);
+        assert!((fixed_modes(&ui, &window) - modes_y).abs() < 1.1);
         pages.set_value((pages.upper() - pages.page_size()).max(0.));
         refresh_thumbnails(&ui);
         settle().await;
+        assert!((fixed_modes(&ui, &window) - modes_y).abs() < 1.1);
         let last = ui.current.borrow().as_ref().unwrap().sizes.len() - 1;
         assert!(last > 4);
         assert!(
@@ -268,7 +297,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         );
         jump_to(&ui, 0);
         eprintln!(
-            "WORKFLOWS37_THUMBNAILS_OK selectors-scroll=true independent-raster=true actual-bounds=true readonly=true"
+            "WORKFLOWS37_THUMBNAILS_OK upper-selectors-scroll=true mode-tabs-fixed=true independent-raster=true actual-bounds=true readonly=true"
         );
         ui.representation.set_selected(1);
         ui.sidebar_button.set_active(true);
@@ -280,14 +309,14 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             .downcast::<gtk::ScrolledWindow>()
             .unwrap();
         let choice = find_widget(&outline, "navigation-representation-choice").unwrap();
-        let modes = find_widget(&outline, "sidebar-navigation").unwrap();
-        let (choice_y, modes_y) = (offset(&choice, &window), offset(&modes, &window));
+        assert!(find_widget(&outline, "sidebar-navigation").is_none());
+        let (choice_y, modes_y) = (offset(&choice, &window), fixed_modes(&ui, &window));
         let a = outline.vadjustment();
         a.set_value(210.);
         settle().await;
         let delta = a.value();
         assert!((offset(&choice, &window) - choice_y + delta as f32).abs() < 1.1);
-        assert!((offset(&modes, &window) - modes_y + delta as f32).abs() < 1.1);
+        assert!((fixed_modes(&ui, &window) - modes_y).abs() < 1.1);
         for _ in 0..5 {
             ui.sidebar.set_show_sidebar(false);
             settle().await;
@@ -318,7 +347,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         settle().await;
         assert!((a.value() - 80.).abs() < 1.);
         eprintln!(
-            "WORKFLOWS37_SIDEBAR_OK selectors-scroll=true repeated-restore=true input-cancels=true"
+            "WORKFLOWS37_SIDEBAR_OK upper-selectors-scroll=true mode-tabs-fixed=true repeated-restore=true input-cancels=true"
         );
 
         let mut s = Session::new(wordcraft_doc::Document::from_text("Focus alpha beta."));
@@ -502,6 +531,105 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         settle().await;
         unchanged(&ui, &before);
         assert!(ui.save_path.borrow().is_none());
+        // Regression #208: the shared mode bar stays reachable at any scroll
+        // position; real pointer clicks switch long, search and empty views.
+        let mut s = Session::new(wordcraft_doc::Document::from_text(&content));
+        for i in 0..30 {
+            selection::select_range(&mut s, &Pos::body(i, 0), &Pos::body(i, 9)).unwrap();
+            wordcraft_gnome::annotations::add_comment(&mut s, "Check this passage.").unwrap();
+        }
+        selection::set_caret(&mut s, &Pos::body(0, 0), false).unwrap();
+        opened(&ui, s, "Fixed sidebar modes");
+        ui.representation.set_selected(0);
+        ui.sidebar_button.set_active(true);
+        settle().await;
+        let readonly = {
+            let c = ui.current.borrow();
+            let s = &c.as_ref().unwrap().session;
+            (s.doc.clone(), s.sel.clone(), s.undo_depth())
+        };
+        let bar_y = fixed_modes(&ui, &window);
+        let pages = ui.thumbnails_scroll.vadjustment();
+        let maximum = pages.upper() - pages.page_size();
+        assert!(maximum > 100.);
+        for value in [0., maximum / 2., maximum] {
+            pages.set_value(value);
+            settle().await;
+            assert!((fixed_modes(&ui, &window) - bar_y).abs() < 1.1);
+        }
+        let review_button = find_widget(&ui.sidebar_selector, "sidebar-review").unwrap();
+        let navigation_button = find_widget(&ui.sidebar_selector, "sidebar-navigation").unwrap();
+        input(6, Some(&review_button), &window).await;
+        settle().await;
+        assert_eq!(
+            ui.navigation_pages.visible_child_name().as_deref(),
+            Some("review")
+        );
+        let review_scroll = ui
+            .navigation_pages
+            .child_by_name("review")
+            .unwrap()
+            .downcast::<gtk::ScrolledWindow>()
+            .unwrap();
+        let a = review_scroll.vadjustment();
+        let maximum = a.upper() - a.page_size();
+        assert!(maximum > 100.);
+        for value in [0., maximum / 2., maximum] {
+            a.set_value(value);
+            settle().await;
+            assert!((fixed_modes(&ui, &window) - bar_y).abs() < 1.1);
+        }
+        input(7, Some(&navigation_button), &window).await;
+        settle().await;
+        assert_eq!(
+            ui.navigation_pages.visible_child_name().as_deref(),
+            Some("thumbnails")
+        );
+        ui.search.borrow().as_ref().unwrap().show(false);
+        settle().await;
+        assert_eq!(
+            ui.sidebar_pages.visible_child_name().as_deref(),
+            Some("search")
+        );
+        assert!((fixed_modes(&ui, &window) - bar_y).abs() < 1.1);
+        input(8, Some(&navigation_button), &window).await;
+        settle().await;
+        assert_eq!(
+            ui.sidebar_pages.visible_child_name().as_deref(),
+            Some("navigation")
+        );
+        assert!(ui.navigation_button.is_active());
+        unchanged(&ui, &readonly);
+        opened(
+            &ui,
+            Session::new(wordcraft_doc::Document::from_text("")),
+            "Empty sidebar",
+        );
+        settle().await;
+        assert!((fixed_modes(&ui, &window) - bar_y).abs() < 1.1);
+        input(9, Some(&review_button), &window).await;
+        settle().await;
+        assert_eq!(
+            ui.navigation_pages.visible_child_name().as_deref(),
+            Some("review")
+        );
+        assert!((fixed_modes(&ui, &window) - bar_y).abs() < 1.1);
+        ui.search.borrow().as_ref().unwrap().show(false);
+        settle().await;
+        input(10, Some(&review_button), &window).await;
+        settle().await;
+        assert_eq!(
+            ui.sidebar_pages.visible_child_name().as_deref(),
+            Some("navigation")
+        );
+        assert_eq!(
+            ui.navigation_pages.visible_child_name().as_deref(),
+            Some("review")
+        );
+        assert!((fixed_modes(&ui, &window) - bar_y).abs() < 1.1);
+        eprintln!(
+            "SIDEBAR208_OK fixed-bottom=true long-pages=true structure=true long-review=true search-both-modes=true empty=true native-clicks=true readonly=true"
+        );
         eprintln!(
             "WORKFLOWS37_UI_OK dialogs-integrated=true nested-escape=true modal-shortcuts=true focus=true selection-history=true first-save=true"
         );

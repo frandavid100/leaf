@@ -37,7 +37,7 @@ fn composer(ui: &Rc<Ui>) -> (gtk::Widget, gtk::TextView, gtk::Button) {
 }
 
 pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
-    let toggle = find_widget(&ui.sidebar_pages, "sidebar-review")
+    let toggle = find_widget(&ui.sidebar_selector, "sidebar-review")
         .unwrap()
         .downcast::<gtk::ToggleButton>()
         .unwrap();
