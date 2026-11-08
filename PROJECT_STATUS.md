@@ -1,5 +1,13 @@
 # Estado actual de Leaf
 
+## Corrección urgente posterior a alpha.37 — #208
+
+La barra inferior de Navegación/Revisión vuelve a pertenecer al contenedor fijo
+del panel lateral. Los selectores superiores conservan su desplazamiento; se
+retiran las barras de modo duplicadas de Estructura y Revisión. La aclaración de
+David corrige el alcance anterior de #200. Esta corrección está en validación y
+todavía no forma parte de una versión publicada. [Alcance y pruebas](docs/SIDEBAR208.md).
+
 ## Publicada y verificada: alpha.37 — desplazamiento, foco y diálogos
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.37).

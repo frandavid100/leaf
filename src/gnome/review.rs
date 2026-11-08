@@ -441,13 +441,12 @@ pub(super) fn install_review(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Revi
     status.set_margin_start(8);
     status.set_margin_end(8);
     body.append(&status);
-    // Keep one adjustment for filter, results and mode controls. The cards
+    // Keep one adjustment for the filter and results. The cards
     // retain their own container because rebuilding results must keep controls.
     if let Some(viewport) = annotations.scroll.child().and_downcast::<gtk::Viewport>() {
         viewport.set_child(None::<&gtk::Widget>);
     }
     body.append(&annotations.content);
-    body.append(&sidebar_mode_selector(ui));
     annotations.scroll.set_child(Some(&body));
     ui.navigation_pages
         .add_named(&annotations.scroll, Some("review"));

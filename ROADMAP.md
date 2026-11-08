@@ -1,5 +1,13 @@
 # Hoja de ruta de Leaf
 
+## Prioridad posterior a alpha.37 — barra inferior fija
+
+La regresión [#208](https://github.com/frandavid100/leaf/issues/208) corrige la
+interpretación de #200: solo los controles superiores se desplazan con los
+resultados; Navegación/Revisión queda fija y compartida por todas las vistas.
+Corrección en validación, sin nueva publicación todavía.
+[Alcance y pruebas](docs/SIDEBAR208.md).
+
 ## Publicada y verificada: alpha.37 — desplazamiento, foco y diálogos
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.37).

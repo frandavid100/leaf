@@ -28,7 +28,7 @@ pub(super) fn view_pointer_test(
             assert!(
                 ui.sidebar_selector
                     .ancestor(gtk::ScrolledWindow::static_type())
-                    .is_some()
+                    .is_none()
             );
             let value = ui.current.borrow();
             let d = value.as_ref().unwrap();
@@ -155,7 +155,7 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     assert!(
         ui.sidebar_selector
             .ancestor(gtk::ScrolledWindow::static_type())
-            .is_some()
+            .is_none()
     );
     assert!(menu.popover().unwrap().is::<gtk::PopoverMenu>());
     let model = menu.menu_model().unwrap();

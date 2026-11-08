@@ -209,7 +209,10 @@ pub(super) fn build_tab(
     selector_bar.add_css_class("toolbar");
     selector_bar.append(&selector);
     thumbnail_column.prepend(&navigation_selector);
-    thumbnail_column.append(&selector_bar);
+    // Mode tabs belong to the sidebar, not to any representation's scroll.
+    // Keep the same controls reachable in Pages, Structure, Review and Search.
+    sidebar_toolbar.set_bottom_bar_style(adw::ToolbarStyle::Flat);
+    sidebar_toolbar.add_bottom_bar(&selector_bar);
     sidebar_pages.add_named(&navigation, Some("navigation"));
     sidebar_toolbar.set_content(Some(&sidebar_pages));
 

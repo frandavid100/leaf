@@ -1,5 +1,14 @@
 # Decisiones vigentes
 
+## 8/11/2026 — Navegación/Revisión fija al pie del panel
+
+David aclara #200 tras observar la regresión #208: las dos pestañas inferiores
+deben permanecer fijas; los selectores superiores sí pertenecen al contenido
+desplazable. Se mantiene una sola barra en el AdwToolbarView común, accesible
+también desde Búsqueda, sin copias en las listas. La prueba geométrica anterior
+esperaba erróneamente que se desplazase y se corrige junto con la interfaz.
+[Implementación y validación](SIDEBAR208.md).
+
 ## 8/11/2026 — alpha.37 publicada y verificada
 
 David autoriza crear los informes de salto de Estructura, foco/continuidad y

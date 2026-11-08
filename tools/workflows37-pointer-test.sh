@@ -16,7 +16,7 @@ wait_marker() {
   done
   cat "$log";exit 1
 }
-for stage in $(seq 0 5);do
+for stage in $(seq 0 9);do
   wait_marker "$stage"
   read -r _ _ x y < <(grep "^WORKFLOWS37_POINT $stage " "$log" | tail -n1)
   window=$(xdotool search --onlyvisible --name '^Leaf Workflows37$' | head -n1)
@@ -55,6 +55,10 @@ for stage in $(seq 0 5);do
     2) xdotool key Escape ;;
     3) xdotool mousemove --window "$window" "$x" "$y" click 1 ;;
     4) xdotool key ctrl+z ;;
+    6|7|8|9)
+      if [[ $stage == 7 ]]; then scrot "${log%.log}-sidebar.png"; fi
+      xdotool mousemove --window "$window" "$x" "$y" click 1
+      ;;
     5)
       xdotool key ctrl+s
       chooser=
