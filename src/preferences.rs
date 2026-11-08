@@ -1,6 +1,9 @@
 //! Host preferences, separate from the pinned WordCraft engine.
 use std::path::PathBuf;
 pub fn config_root() -> PathBuf {
+    #[cfg(windows)]
+    return windows_data_root("APPDATA").join("Leaf");
+    #[cfg(not(windows))]
     std::env::var_os("XDG_CONFIG_HOME")
         .map(PathBuf::from)
         .unwrap_or_else(|| {
@@ -29,6 +32,9 @@ pub fn set_dictionary_folder(folder: Option<&std::path::Path>) -> Result<(), Str
     update("dictionary_folder", value)
 }
 pub fn recovery_root() -> PathBuf {
+    #[cfg(windows)]
+    return windows_data_root("LOCALAPPDATA").join("Leaf/recovery");
+    #[cfg(not(windows))]
     std::env::var_os("XDG_STATE_HOME")
         .map(PathBuf::from)
         .or_else(|| {
@@ -88,6 +94,29 @@ pub fn set_check_spelling(on: bool) -> Result<(), String> {
     update("spelling", serde_json::json!(on))
 }
 
+#[cfg(windows)]
+fn windows_data_root(variable: &str) -> PathBuf {
+    std::env::var_os(variable)
+        .map(PathBuf::from)
+        .filter(|p| p.is_absolute())
+        .or_else(|| {
+            std::env::var_os("USERPROFILE").map(|p| {
+                PathBuf::from(p).join(if variable == "APPDATA" {
+                    "AppData/Roaming"
+                } else {
+                    "AppData/Local"
+                })
+            })
+        })
+        .unwrap_or_else(std::env::temp_dir)
+}
+
+#[cfg(windows)]
+pub fn system_user_name() -> String {
+    // A Windows login is not necessarily the author's full name. Ask in Preferences.
+    String::new()
+}
+#[cfg(not(windows))]
 pub fn system_user_name() -> String {
     let uid = std::fs::read_to_string("/proc/self/status")
         .ok()
@@ -105,6 +134,7 @@ pub fn system_user_name() -> String {
     }
     String::new()
 }
+#[cfg(any(not(windows), test))]
 fn real_name_from_passwd(passwd: &str, uid: &str) -> Option<String> {
     passwd.lines().find_map(|line| {
         let f: Vec<_> = line.split(':').collect();

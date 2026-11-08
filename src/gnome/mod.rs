@@ -290,3 +290,6 @@ mod workflows35_checks;
 
 #[path = "diagnostics/workflows36.rs"]
 mod workflows36_checks;
+
+#[path = "diagnostics/windows.rs"]
+mod windows_checks;

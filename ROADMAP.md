@@ -1,5 +1,14 @@
 # Hoja de ruta de Leaf
 
+## Primera versión experimental para Windows — en preparación
+
+David autoriza preparar una primera versión para Windows el 8/11/2026.
+Se conserva GTK4/libadwaita y el motor fijado. La compilación es ocasional,
+con instalador por usuario y ZIP que incluyen las bibliotecas necesarias.
+La publicación exige comprobar ambos paquetes y las regresiones de Linux.
+[Alcance, uso y límites](docs/WINDOWS.md).
+
+
 ## Publicada y verificada: alpha.36 — revisión de interfaz
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36). Cerrados #177/#181/#182/#186–#191,

@@ -5,6 +5,16 @@ pub fn folder() -> Option<PathBuf> {
     if let Some(path) = crate::preferences::template_folder() {
         return Some(path);
     }
+    system_folder()
+}
+#[cfg(windows)]
+fn system_folder() -> Option<PathBuf> {
+    let path = PathBuf::from(std::env::var_os("APPDATA")?)
+        .join("Microsoft/Windows/Templates");
+    (path.is_absolute() && path.is_dir()).then_some(path)
+}
+#[cfg(not(windows))]
+fn system_folder() -> Option<PathBuf> {
     // Parse only the single XDG assignment; never evaluate shell configuration.
     let home = PathBuf::from(std::env::var_os("HOME")?);
     let config = std::env::var_os("XDG_CONFIG_HOME")
@@ -13,6 +23,7 @@ pub fn folder() -> Option<PathBuf> {
     let dirs = std::fs::read_to_string(config.join("user-dirs.dirs")).ok();
     xdg_folder(&home, dirs.as_deref())
 }
+#[cfg(not(windows))]
 fn xdg_folder(home: &Path, config: Option<&str>) -> Option<PathBuf> {
     // Missing or disabled XDG entries do not turn $HOME into a template library.
     let value = config?
@@ -31,7 +42,7 @@ fn xdg_folder(home: &Path, config: Option<&str>) -> Option<PathBuf> {
     };
     (path.is_absolute() && path != home).then_some(path)
 }
-#[cfg(test)]
+#[cfg(all(test, not(windows)))]
 mod tests {
     use super::*;
     #[test]
