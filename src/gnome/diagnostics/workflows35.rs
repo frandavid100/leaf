@@ -490,7 +490,12 @@ pub(super) fn drag_source() {
             if key == gdk::Key::Escape {
                 if let Some(drag) = weak_drag.upgrade() {
                     eprintln!("WORKFLOWS35_SOURCE_ESCAPE");
-                    drag.drag_cancel();
+                    // Cancel the native drag too. GTK 4.14 DragSource::drag_cancel
+                    // only ends its source bookkeeping and can leave Xdnd active.
+                    if let Some(native) = drag.drag() {
+                        native
+                            .emit_by_name::<()>("cancel", &[&gdk::DragCancelReason::UserCancelled]);
+                    }
                 }
                 glib::Propagation::Stop
             } else {

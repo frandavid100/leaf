@@ -51,8 +51,8 @@ outline offsets, split menu Back and IME/rapid-input gallery dismissal.
 external clipboard and real X11 gestures. The edge-scroll probe requires an
 actual page-gap crossing and a recovered marker before dropping; it waits for
 native drag completion rather than interpreting a hidden marker as a drop.
-The separate source harness binds Escape to GTK DragSource cancellation and
-acknowledges the native cancellation signal before the driver releases the mouse. The native delayed-read case uses a
+The separate source harness binds Escape to native GDK drag cancellation and
+acknowledges the cancellation signal before the driver releases the mouse. The native delayed-read case uses a
 FIFO and edits the document before releasing bytes, proving stale rejection.
 `tools/workflows36-template-folder-test.sh` selects an actual external directory
 through Preferences, checks thumbnails and same-tab creation, restarts the
@@ -71,3 +71,10 @@ AppStream and GitHub notes use the store pipeline already merged separately.
 actual catalogue/client verification. #1/#99 await upstream PR integration;
 #107/#152 are merged upstream but absent from the pinned published 0.16.0.
 #52 remains deferred. Automated checks do not establish human GNOME OS testing.
+
+The optional `portal-diagnostic.yml` workflow is enabled only by an explicit
+`[portal-debug]` PR title. It runs an unpublished diagnostic binary with identical
+sandbox permissions and cannot publish. Failed document comparisons emit bounded
+canonical JSON-path differences; the final candidate still requires optimized
+native and installed validation. The synthetic source uses GDK's native cancel
+signal because GTK 4.14 DragSource cancellation alone omits Xdnd leave/ungrab.
