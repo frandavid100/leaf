@@ -104,6 +104,10 @@ pub(super) fn build_tab(
     viewport.set_scroll_to_focus(false);
     let document_content = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let template_slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    let template_revealer = gtk::Revealer::new();
+    template_revealer.set_transition_type(gtk::RevealerTransitionType::SlideUp);
+    template_revealer.set_transition_duration(180);
+    template_slot.append(&template_revealer);
     template_slot.set_visible(false);
     document_content.append(&template_slot);
     document_content.append(&document_box);
@@ -449,6 +453,8 @@ pub(super) fn build_tab(
         size_input: size_input.clone(),
         document_box,
         template_slot,
+        template_revealer,
+        template_dismissal: RefCell::new(None),
         template_eligible: Cell::new(false),
         template_gallery: RefCell::new(None),
         thumbnails_box,
@@ -823,6 +829,22 @@ pub(super) fn build_tab(
         ));
     }
 
+    {
+        let weak = Rc::downgrade(&ui);
+        ui.template_slot.connect_map(move |_| {
+            if let Some(ui) = weak.upgrade() {
+                templates::refresh_if_visible(&ui);
+            }
+        });
+        let weak = Rc::downgrade(&ui);
+        window.connect_is_active_notify(move |window| {
+            if window.is_active() {
+                if let Some(ui) = weak.upgrade() {
+                    templates::refresh_if_visible(&ui);
+                }
+            }
+        });
+    }
     if let Some((session, label)) = initial_document {
         opened(&ui, session, &label);
     } else if sample_on_start {
@@ -874,54 +896,6 @@ pub(super) fn build_tab(
             search_panel: &search_panel,
         },
     );
-    {
-        let ui = ui.clone();
-        let app = app.clone();
-        let host = host.clone();
-        let parent = window.clone();
-        glib::timeout_add_local_once(
-            std::time::Duration::from_secs(3),
-            glib::clone!(
-                #[weak]
-                ui,
-                #[weak]
-                app,
-                #[weak]
-                host,
-                #[weak]
-                parent,
-                move || {
-                    if ui.closed.get() {
-                        return;
-                    }
-                    let records = ui
-                        .current
-                        .borrow()
-                        .as_ref()
-                        .map(|d| d.session.recovery_documents())
-                        .unwrap_or_default();
-                    if !records.is_empty() {
-                        let toast =
-                            Toast::new(wordcraft_gnome::t!("There Are Documents to Recover"));
-                        toast.set_button_label(Some(wordcraft_gnome::t!("Recover")));
-                        let next = ui.clone();
-                        toast.connect_button_clicked(glib::clone!(
-                            #[weak]
-                            next,
-                            #[weak]
-                            parent,
-                            #[weak]
-                            app,
-                            #[weak]
-                            host,
-                            move |_| show_recovery(&next, &parent, &app, &host)
-                        ));
-                        ui.toasts.add_toast(toast);
-                    }
-                }
-            ),
-        );
-    }
     install_menu_demos(&text_menu, &menu_button);
     if sample_on_start || initial_loaded {
         let ui = ui.clone();

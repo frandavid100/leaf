@@ -367,7 +367,6 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             "shortcuts",
             "help",
             "about",
-            "recover",
             "document-properties",
             "columns",
             "insert-page-number",
@@ -400,7 +399,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             window.set_default_size(1100, 850);
             settle().await;
         }
-        eprintln!("WORKFLOWS37_DIALOG_BOUNDS_OK integrated=9 narrow=true readonly=true");
+        eprintln!("WORKFLOWS37_DIALOG_BOUNDS_OK integrated=8 narrow=true readonly=true");
         let other = make_window(&app, false, false, false, false, false, false, false, None);
         let other_prefs = show_preferences(&other);
         presented(&other_prefs).await;

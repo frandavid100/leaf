@@ -7,7 +7,7 @@ importantes en otro editor. [Instalación Flatpak](../packaging/INSTALL.md).
 ## Documentos y guardado
 
 - El menú principal del panel lateral contiene Abrir, pestaña/ventana nueva,
-  todas las pestañas, recuperación, preferencias y ayuda.
+  todas las pestañas, preferencias y ayuda.
 - Ctrl+O abre; Ctrl+N/Ctrl+T crean otra pestaña; Ctrl+Mayús+N crea otra ventana;
   Ctrl+W cierra la pestaña. Los documentos conservan sus estados independientes.
 - El menú de tres puntos corresponde al documento: Guardar, Guardar como,
@@ -21,8 +21,14 @@ importantes en otro editor. [Instalación Flatpak](../packaging/INSTALL.md).
 
 Preferencias permite desactivar el autoguardado, usar un archivo de recuperación
 (predeterminado) o guardar periódicamente en el propio archivo. Esta última opción
-puede modificar el original abierto; actívala conscientemente. Recuperar documentos
-está en el menú principal. Una operación cancelada o fallida conserva los cambios.
+puede modificar el original abierto; actívala conscientemente. En cada ventana o
+pestaña nueva aparecen, por este orden, las plantillas disponibles, los documentos
+pendientes de recuperar y el folio en blanco. Las dos primeras filas y sus títulos
+solo aparecen si contienen elementos. Puedes escribir directamente en el folio;
+las filas superiores se retiran con una animación breve, respetando la preferencia
+del sistema sobre animaciones. Esto no borra las copias pendientes. Al elegir una
+recuperación se abre como documento nuevo con cambios por guardar. Una operación
+cancelada o fallida conserva los cambios.
 
 Para conservar ecuaciones editables, notas al pie, índice automático e imágenes
 flotantes con ajuste del texto, usa DOCX. Leaf rechaza guardar esas estructuras

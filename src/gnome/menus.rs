@@ -167,11 +167,6 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
             ui.open_button.emit_clicked();
         }
     });
-    window_action(host, "recover", |h| {
-        if let (Some(ui), Some(app)) = (selected_ui(h), host_app(h)) {
-            show_recovery(&ui, &h.window, &app, h);
-        }
-    });
     window_action(host, "undo", |h| {
         if let Some(ui) = selected_ui(h) {
             apply_user_edit(&ui, Edit::Undo);
@@ -370,12 +365,6 @@ pub(super) fn install_main_menu(button: &gtk::MenuButton) {
         wordcraft_gnome::t!("Open…"),
         "open",
         Some("<Control>o"),
-    );
-    menu_item(
-        &files,
-        wordcraft_gnome::t!("Recover Documents…"),
-        "recover",
-        None,
     );
     root.append_section(None, &files);
     let help = gio::Menu::new();
@@ -624,7 +613,7 @@ pub(super) fn show_editor_help(parent: &ApplicationWindow) {
     let toolbar = ToolbarView::new();
     toolbar.add_top_bar(&HeaderBar::new());
     let text = wordcraft_gnome::t!(
-        "DOCUMENTS\nOpen DOCX/ODT documents from the main menu. Ctrl+S saves; Ctrl+Shift+S saves a copy. Use DOCX for notes, equations, automatic references, comments and advanced tracked changes.\n\nNAVIGATION AND REVIEW\nF9 shows or hides Pages, Navigation and Review. Ctrl+F searches; Ctrl+H replaces. Review filters corrections, tracked changes and comments. Apply or ignore a correction occurrence, accept/reject changes, and reply to or resolve comments. F7 opens corrections. Edit/Suggest controls whether new edits are tracked.\n\nFORMATTING AND ELEMENTS\nStyle, Paragraph, Text and Elements are in the adaptive header or bottom toolbar. Format rows show current values; mixed checkboxes enable the option across the selection. Arrows open internal options with Back. Reapply remembers that feature’s applied settings. Pins keep panels floating. Elements shares table, image and contents tools with right-click, while keeping Insert available. Ctrl+Z undoes; Ctrl+Shift+Z redoes. Ruler drags snap to 0.5 cm; Escape cancels.\n\nAUTOSAVE\nPreferences can disable autosave, use recovery copies or save directly to the document. Recover Documents is in the main menu."
+        "DOCUMENTS\nOpen DOCX/ODT documents from the main menu. Ctrl+S saves; Ctrl+Shift+S saves a copy. Use DOCX for notes, equations, automatic references, comments and advanced tracked changes.\n\nNAVIGATION AND REVIEW\nF9 shows or hides Pages, Navigation and Review. Ctrl+F searches; Ctrl+H replaces. Review filters corrections, tracked changes and comments. Apply or ignore a correction occurrence, accept/reject changes, and reply to or resolve comments. F7 opens corrections. Edit/Suggest controls whether new edits are tracked.\n\nFORMATTING AND ELEMENTS\nStyle, Paragraph, Text and Elements are in the adaptive header or bottom toolbar. Format rows show current values; mixed checkboxes enable the option across the selection. Arrows open internal options with Back. Reapply remembers that feature’s applied settings. Pins keep panels floating. Elements shares table, image and contents tools with right-click, while keeping Insert available. Ctrl+Z undoes; Ctrl+Shift+Z redoes. Ruler drags snap to 0.5 cm; Escape cancels.\n\nAUTOSAVE\nPreferences can disable autosave, use recovery copies or save directly to the document. Pending recovery documents appear above the blank page in each new tab or window."
     );
     let l = gtk::Label::new(Some(text));
     l.set_wrap(true);

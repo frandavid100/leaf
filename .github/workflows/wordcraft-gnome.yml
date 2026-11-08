@@ -95,6 +95,21 @@ jobs:
         # Keep symbols in the temporary early artifact for portal diagnostics.
         # Both final native output and the packaged executable are stripped later.
         run: cargo rustc --release --locked --features gui --bin wordcraft-gnome -- -C strip=none
+      - name: Verify alpha38 start rows, recovery, restart and animated input
+        run: |
+          set -o pipefail
+          for language in en es; do
+            scale=1
+            if test "$language" = es; then scale=2; fi
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 180s bash tools/workflows38-pointer-test.sh
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workflows38-native-controls
+          path: |
+            workflows38-*.log
+            workflows38-*.png
       - name: Verify alpha37 scrolling, integrated dialogs and real modal input
         run: |
           set -o pipefail
@@ -409,7 +424,7 @@ jobs:
       - name: Identificar versión de prueba
         run: |
           ./target/release/wordcraft-gnome --version | tee version.txt
-          grep -q "Leaf 0.1.0-alpha.37" version.txt
+          grep -q "Leaf 0.1.0-alpha.38" version.txt
       - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
         run: |
           python -m pip install --disable-pip-version-check pillow==11.3.0
@@ -828,7 +843,7 @@ jobs:
       - name: Download previous alpha for upgrade verification
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release download v0.1.0-alpha.36 --pattern 'Leaf-0.1.0-alpha.36-x86_64.flatpak' --dir prior-release
+        run: gh release download v0.1.0-alpha.37 --pattern 'Leaf-0.1.0-alpha.37-x86_64.flatpak' --dir prior-release
       - name: Build and install the bundle
         run: bash packaging/build-bundle.sh native-artifact/wordcraft-gnome
       - name: Configure GTK portal backend for the folder test
@@ -855,7 +870,7 @@ jobs:
       - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
         run: |
           set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.37-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.38-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
           grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
       - name: Exercise the installed sandbox and desktop launcher
         run: |
@@ -1076,7 +1091,7 @@ jobs:
           python3 - <<'PYTHON'
           import json, os, pathlib
           pathlib.Path('dist/candidate.json').write_text(json.dumps({
-              'version': '0.1.0-alpha.37', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+              'version': '0.1.0-alpha.38', 'source': os.environ['LEAF_CANDIDATE_SHA'],
               'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
               'native_source': os.environ['LEAF_NATIVE_SHA'],
               'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
@@ -1088,7 +1103,7 @@ jobs:
           python3 - <<'PYTHON'
           from pathlib import Path
           from zipfile import ZipFile, ZIP_DEFLATED
-          with ZipFile("dist/Leaf-0.1.0-alpha.37-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
+          with ZipFile("dist/Leaf-0.1.0-alpha.38-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
               for source in sorted(Path("tests/fixtures/dictionary84").iterdir()):
                   if source.is_file(): archive.write(source, "Leaf-dictionary-test/" + source.name)
           PYTHON

@@ -28,6 +28,7 @@ set -euo pipefail
 root=$1;runner=$2;output=$3
 cd "$output"
 export LEAF29_ACK_PARENT="$HOME/.var/app/$LEAF35_APP_ID/cache"
+bash "$root/tools/workflows38-pointer-test.sh" "$runner"
 bash "$root/tools/workflows37-pointer-test.sh" "$runner"
 "$runner" --workflows35-ui-test > "workflows35-ui-${LANGUAGE}.log" 2>&1 || { cat "workflows35-ui-${LANGUAGE}.log"; exit 1; }
 grep -q WORKFLOWS35_UI_OK "workflows35-ui-${LANGUAGE}.log"
@@ -54,6 +55,6 @@ for language in en es; do
       --reuid="$LEAF35_TEST_UID" --regid="$(id -g)" --init-groups --)
   fi
   LANGUAGE=$language GDK_SCALE=$scale xvfb-run -a -s '-screen 0 2800x2200x24' \
-    "${session[@]}" dbus-run-session -- timeout 420s bash "$temporary/check.sh" "$root" "$temporary/installed.sh" "$output"
+    "${session[@]}" dbus-run-session -- timeout 600s bash "$temporary/check.sh" "$root" "$temporary/installed.sh" "$output"
 done
 echo WORKFLOWS35_INSTALLED_OK
