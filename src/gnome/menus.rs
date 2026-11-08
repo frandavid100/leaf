@@ -86,7 +86,10 @@ pub(super) fn window_action(
     let action = gio::SimpleAction::new(name, None);
     let weak = Rc::downgrade(host);
     action.connect_activate(move |_, _| {
-        if let Some(h) = weak.upgrade() {
+        if let Some(h) = weak
+            .upgrade()
+            .filter(|h| h.window.visible_dialog().is_none())
+        {
             callback(&h);
         }
     });
@@ -104,6 +107,9 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
     let weak = Rc::downgrade(host);
     mode.connect_activate(move |_, value| {
         let Some(host) = weak.upgrade() else { return };
+        if host.window.visible_dialog().is_some() {
+            return;
+        }
         let Some(ui) = selected_ui(&host) else { return };
         let Some(value) = value
             .and_then(|v| v.str())
@@ -281,8 +287,7 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
     window_action(host, "shortcuts", |h| show_keyboard_shortcuts(&h.window));
     window_action(host, "help", |h| show_editor_help(&h.window));
     window_action(host, "about", |h| {
-        let w = adw::AboutWindow::new();
-        w.set_transient_for(Some(&h.window));
+        let w = adw::AboutDialog::new();
         w.set_application_name("Leaf");
         w.set_application_icon(APP_ID);
         w.set_version(APP_VERSION);
@@ -308,7 +313,7 @@ pub(super) fn setup_main_actions(host: &Rc<Workspace>, app: &Application) {
             wordcraft_gnome::t!("Help Translate Leaf"),
             "https://github.com/frandavid100/leaf/blob/main/docs/TRANSLATING.md",
         );
-        w.present();
+        w.present(Some(&h.window));
     });
     for (name, keys) in [
         ("new-tab", vec!["<Control>n", "<Control>t"]),
@@ -611,11 +616,10 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
     }
 }
 pub(super) fn show_editor_help(parent: &ApplicationWindow) {
-    let w = adw::Window::builder()
-        .transient_for(parent)
+    let w = adw::Dialog::builder()
         .title(wordcraft_gnome::t!("Leaf Help"))
-        .default_width(520)
-        .default_height(520)
+        .content_width(520)
+        .content_height(520)
         .build();
     let toolbar = ToolbarView::new();
     toolbar.add_top_bar(&HeaderBar::new());
@@ -633,8 +637,8 @@ pub(super) fn show_editor_help(parent: &ApplicationWindow) {
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_child(Some(&l));
     toolbar.set_content(Some(&scroll));
-    w.set_content(Some(&toolbar));
-    w.present();
+    w.set_child(Some(&toolbar));
+    w.present(Some(parent));
 }
 pub(super) fn show_keyboard_shortcuts(parent: &ApplicationWindow) {
     let groups = [
@@ -676,22 +680,22 @@ pub(super) fn show_keyboard_shortcuts(parent: &ApplicationWindow) {
             ],
         ),
     ];
-    let mut xml = String::from(
-        "<interface><object class=\"GtkShortcutsWindow\" id=\"shortcuts\"><child><object class=\"GtkShortcutsSection\"><property name=\"section-name\">editor</property><property name=\"title\">Leaf</property>",
-    );
+    let dialog = adw::PreferencesDialog::new();
+    dialog.set_title(wordcraft_gnome::t!("Keyboard Shortcuts"));
+    dialog.set_content_width(640);
+    dialog.set_content_height(600);
+    let page = adw::PreferencesPage::new();
     for (title, shortcuts) in groups {
-        xml.push_str(&format!(
-            "<child><object class=\"GtkShortcutsGroup\"><property name=\"title\">{}</property>",
-            glib::markup_escape_text(title)
-        ));
+        let group = adw::PreferencesGroup::new();
+        group.set_title(title);
         for (title, key) in shortcuts {
-            xml.push_str(&format!("<child><object class=\"GtkShortcutsShortcut\"><property name=\"title\">{}</property><property name=\"accelerator\">{}</property></object></child>",glib::markup_escape_text(title),glib::markup_escape_text(key)));
+            let row = adw::ActionRow::new();
+            row.set_title(title);
+            row.add_suffix(&gtk::ShortcutLabel::new(key));
+            group.add(&row);
         }
-        xml.push_str("</object></child>");
+        page.add(&group);
     }
-    xml.push_str("</object></child></object></interface>");
-    let builder = gtk::Builder::from_string(&xml);
-    let w = builder.object::<gtk::ShortcutsWindow>("shortcuts").unwrap();
-    w.set_transient_for(Some(parent));
-    w.present();
+    dialog.add(&page);
+    dialog.present(Some(parent));
 }

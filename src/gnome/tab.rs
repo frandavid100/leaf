@@ -102,7 +102,12 @@ pub(super) fn build_tab(
     // its whole allocation into view before pointer hit testing runs.
     let viewport = gtk::Viewport::new(None::<&gtk::Adjustment>, None::<&gtk::Adjustment>);
     viewport.set_scroll_to_focus(false);
-    viewport.set_child(Some(&document_box));
+    let document_content = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    let template_slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    template_slot.set_visible(false);
+    document_content.append(&template_slot);
+    document_content.append(&document_box);
+    viewport.set_child(Some(&document_content));
     scroll.set_child(Some(&viewport));
 
     let thumbnails_box = gtk::Box::new(gtk::Orientation::Vertical, 0);
@@ -124,11 +129,6 @@ pub(super) fn build_tab(
     let sidebar_bars = gtk::Box::new(gtk::Orientation::Vertical, 0);
     sidebar_bars.append(&side_header);
     sidebar_toolbar.add_top_bar(&sidebar_bars);
-    let sidebar_filters = gtk::Stack::new();
-    sidebar_filters.set_vhomogeneous(false);
-    sidebar_filters.set_hhomogeneous(false);
-    sidebar_filters.set_widget_name("sidebar-header-secondary");
-    sidebar_bars.append(&sidebar_filters);
     let sidebar_pages = gtk::Stack::new();
     sidebar_pages.set_transition_type(gtk::StackTransitionType::Crossfade);
     sidebar_pages.set_transition_duration(180);
@@ -183,7 +183,8 @@ pub(super) fn build_tab(
     representation.set_hexpand(true);
     accessible_name(&representation, wordcraft_gnome::t!("Navigation"));
     navigation_selector.append(&representation);
-    sidebar_filters.add_named(&navigation_selector, Some("navigation"));
+    representation.add_css_class("sidebar-choice");
+    representation.add_css_class("flat");
     let pages = pages_toggle.clone();
     let titles = titles_toggle.clone();
     representation.connect_selected_notify(move |d| {
@@ -207,16 +208,14 @@ pub(super) fn build_tab(
     let selector_bar = gtk::Box::new(gtk::Orientation::Vertical, 0);
     selector_bar.add_css_class("toolbar");
     selector_bar.append(&selector);
-    navigation.add_bottom_bar(&selector_bar);
+    thumbnail_column.prepend(&navigation_selector);
+    thumbnail_column.append(&selector_bar);
     sidebar_pages.add_named(&navigation, Some("navigation"));
     sidebar_toolbar.set_content(Some(&sidebar_pages));
 
     let canvas_overlay = gtk::Overlay::new();
     canvas_overlay.set_child(Some(&scroll));
-    let template_slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    template_slot.set_visible(false);
     let editor = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    editor.append(&template_slot);
     canvas_overlay.set_vexpand(true);
     editor.append(&canvas_overlay);
     stack.add_named(&editor, Some("pages"));
@@ -330,9 +329,6 @@ pub(super) fn build_tab(
     format_toolbar.add_css_class("toolbar");
     format_toolbar.set_visible(false);
 
-    let bottom_heights = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
-    bottom_heights.add_widget(&selector_bar);
-    bottom_heights.add_widget(&format_toolbar);
     let document_toolbar = ToolbarView::new();
     document_toolbar.set_bottom_bar_style(adw::ToolbarStyle::Flat);
     header.set_widget_name("document-primary-header");
@@ -349,29 +345,13 @@ pub(super) fn build_tab(
     let header_heights = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
     header_heights.add_widget(&side_header);
     header_heights.add_widget(&header);
-    let secondary_header_heights = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
-    secondary_header_heights.add_widget(&sidebar_filters);
-    secondary_header_heights.add_widget(&tab_row);
-    // TabBar autohide hides its contents, not an external wrapper. Collapse
-    // that wrapper too so the sidebar selector cannot reserve an empty row.
+    // The tab row follows TabBar autohide. Sidebar controls belong to each
+    // scrolling page, so no secondary header reserves their previous height.
     tab_row.set_visible(tab_bar.is_tabs_revealed());
-    secondary_header_heights.set_mode(if tab_bar.is_tabs_revealed() {
-        gtk::SizeGroupMode::Vertical
-    } else {
-        gtk::SizeGroupMode::None
-    });
     let weak_row = tab_row.downgrade();
-    let weak_heights = secondary_header_heights.downgrade();
     tab_bar.connect_tabs_revealed_notify(move |bar| {
         if let Some(row) = weak_row.upgrade() {
             row.set_visible(bar.is_tabs_revealed());
-        }
-        if let Some(heights) = weak_heights.upgrade() {
-            heights.set_mode(if bar.is_tabs_revealed() {
-                gtk::SizeGroupMode::Vertical
-            } else {
-                gtk::SizeGroupMode::None
-            });
         }
     });
     document_toolbar.add_bottom_bar(&format_toolbar);
@@ -449,9 +429,7 @@ pub(super) fn build_tab(
         format_reflowing: Cell::new(false),
         pages_button: pages_toggle.clone(),
         sidebar_selector: selector_bar.clone(),
-        _bottom_heights: bottom_heights,
         _header_heights: header_heights,
-        _secondary_header_heights: secondary_header_heights,
         format_bold: bold_button.clone(),
         format_italic: italic_button.clone(),
         format_syncing: Cell::new(false),
@@ -481,8 +459,8 @@ pub(super) fn build_tab(
         navigation_button: navigation_toggle.clone(),
         navigation_selector,
         representation,
-        sidebar_filters,
         last_navigation: Cell::new("thumbnails"),
+        navigation_restore_generation: Cell::new(0),
         hidden_navigation_scroll: RefCell::new(None),
         thumbnail_reveal_pending: Cell::new(true),
         outline: RefCell::new(None),

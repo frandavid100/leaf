@@ -171,13 +171,12 @@ pub(super) fn run() {
                         }
                         let window =
                             make_window(app, false, true, false, false, false, false, false, None);
-                        let dialog = adw::MessageDialog::new(
-                            Some(&window),
+                        let dialog = adw::AlertDialog::new(
                             Some(wordcraft_gnome::t!("Could Not Open Document")),
                             Some(&error),
                         );
                         dialog.add_response("close", wordcraft_gnome::t!("Close"));
-                        dialog.present();
+                        dialog.present(Some(&window));
                     }
                 }
             }

@@ -10,6 +10,7 @@ pub(super) fn page_options_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app:
     opened(ui, Session::new(d), "Sections");
     let original = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     let dialog = show_document_properties(ui, parent);
+    wait_dialog_presented(&dialog.window);
     for (row, value) in dialog.metadata.iter().zip([
         "Tutoría entre iguales",
         "Tutoría",
@@ -23,6 +24,7 @@ pub(super) fn page_options_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app:
     dialog.apply.emit_clicked();
     let after_metadata = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     let dialog = show_section_properties(ui, parent, 1);
+    wait_dialog_presented(&dialog.window);
     let switcher = find_widget(&dialog.window, "document-properties-switcher").unwrap();
     let expected = if adw::minor_version() >= 7 {
         "AdwInlineViewSwitcher"
@@ -40,7 +42,7 @@ pub(super) fn page_options_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app:
     dialog.headers.headers.set_selected(2);
     dialog.headers.footers.set_selected(2);
     dialog.apply.emit_clicked();
-    assert!(!dialog.window.is_visible());
+    assert_dialog_closed(&dialog.window);
     {
         let v = ui.current.borrow();
         let s = &v.as_ref().unwrap().session;
@@ -71,18 +73,22 @@ pub(super) fn page_options_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app:
     apply_user_edit(ui, Edit::Redo);
     let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     let cancelled = show_document_properties(ui, parent);
+    wait_dialog_presented(&cancelled.window);
     assert_eq!(cancelled.metadata[0].text(), "Tutoría entre iguales");
     cancelled.metadata[0].set_text("Cancelled title");
     cancelled.headers.first.set_active(false);
     cancelled.window.close();
+    assert_dialog_closed(&cancelled.window);
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, before);
     let stale = show_document_properties(ui, parent);
+    wait_dialog_presented(&stale.window);
     opened(ui, Session::new(before.clone()), "Replacement");
     stale.metadata[0].set_text("Wrong document");
     stale.apply.emit_clicked();
-    assert!(stale.window.is_visible());
+    assert!(stale.window.root().is_some());
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, before);
     stale.window.close();
+    assert_dialog_closed(&stale.window);
     eprintln!("DOCUMENT_METADATA_UI_OK fields=5 undo=true cancel=true stale=true");
     eprintln!("PAGE_OPTIONS_UI_OK");
     app.quit();

@@ -28,6 +28,7 @@ pub(super) fn issue_sweep_ui_test(
         "Issues",
     );
     let props = show_section_properties(ui, window, 0);
+    wait_dialog_presented(&props.window);
     let pages = find_widget(&props.window, "document-properties-pages")
         .unwrap()
         .downcast::<adw::ViewStack>()
@@ -59,6 +60,7 @@ pub(super) fn issue_sweep_ui_test(
     sizes.set_selected(0);
     assert!(props.width.is_sensitive() && props.height.is_sensitive());
     props.window.close();
+    assert_dialog_closed(&props.window);
     eprintln!("ISSUE_PAPER_PRESETS_OK");
 
     {
@@ -76,18 +78,23 @@ pub(super) fn issue_sweep_ui_test(
     );
     let link_window = ui.link_dialog.borrow().as_ref().unwrap().clone();
     link_window.close();
+    assert_dialog_closed(&link_window);
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, original);
     let link = show_link(ui).unwrap();
+    wait_dialog_presented(&link.window);
     assert!(link.destination.text().is_empty());
     link.destination.set_text("https://example.org/leaf");
     link.apply.emit_clicked();
     let edited = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     let link = show_link(ui).unwrap();
+    wait_dialog_presented(&link.window);
     assert_eq!(link.destination.text(), "https://example.org/leaf");
     link.destination.set_text("https://example.org/cancelled");
     link.window.close();
+    assert_dialog_closed(&link.window);
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, edited);
     let stale = show_link(ui).unwrap();
+    wait_dialog_presented(&stale.window);
     {
         let mut current = ui.current.borrow_mut();
         selection::set_caret(
@@ -99,9 +106,10 @@ pub(super) fn issue_sweep_ui_test(
     }
     stale.destination.set_text("https://example.org/stale");
     stale.apply.emit_clicked();
-    assert!(stale.window.is_visible());
+    assert!(stale.window.root().is_some());
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.doc, edited);
     stale.window.close();
+    assert_dialog_closed(&stale.window);
     eprintln!("ISSUE_LINK_DIALOG_OK");
 
     let selection = ui.current.borrow().as_ref().unwrap().session.sel.clone();
@@ -220,10 +228,12 @@ pub(super) fn issue_sweep_ui_test(
     }
     let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     show_preferences(window);
-    let prefs = gtk::Window::list_toplevels()
-        .into_iter()
-        .find_map(|w| w.downcast::<adw::PreferencesWindow>().ok())
+    let prefs = window
+        .visible_dialog()
+        .unwrap()
+        .downcast::<adw::PreferencesDialog>()
         .unwrap();
+    wait_dialog_presented(&prefs);
     let name = find_widget(&prefs, "preferences-user-name")
         .unwrap()
         .downcast::<adw::EntryRow>()
@@ -246,6 +256,7 @@ pub(super) fn issue_sweep_ui_test(
     name.set_text("");
     assert_eq!(wordcraft_gnome::preferences::user_name(), "Leaf QA");
     prefs.close();
+    assert_dialog_closed(&prefs);
     {
         let mut current = ui.current.borrow_mut();
         wordcraft_gnome::annotations::add_comment(

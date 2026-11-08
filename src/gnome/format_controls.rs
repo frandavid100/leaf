@@ -39,15 +39,46 @@ pub(super) fn format_execute(
     }
     Ok(())
 }
-pub(super) fn panel_window(parent: &ApplicationWindow, title: &str) -> adw::PreferencesWindow {
-    let w = adw::PreferencesWindow::new();
-    w.set_transient_for(Some(parent));
-    w.set_modal(true);
-    w.set_title(Some(title));
-    w.set_default_size(620, 620);
+/// A modal formatting panel belongs to one document and one selected tab.
+/// A hidden/closed dialog or a replaced document cannot apply a late control edit.
+pub(super) fn panel_target(
+    ui: &Rc<Ui>,
+    dialog: &impl IsA<adw::Dialog>,
+) -> impl Fn() -> bool + 'static {
+    let id = ui
+        .current
+        .borrow()
+        .as_ref()
+        .map(|d| d.session.document_id());
+    let weak_ui = Rc::downgrade(ui);
+    let weak_dialog = dialog.as_ref().downgrade();
+    move || {
+        let Some(ui) = weak_ui.upgrade().filter(|u| !u.closed.get()) else {
+            return false;
+        };
+        let Some(dialog) = weak_dialog.upgrade().filter(|w| w.is_mapped()) else {
+            return false;
+        };
+        ui.current
+            .borrow()
+            .as_ref()
+            .map(|d| d.session.document_id())
+            == id
+            && ui.host.upgrade().is_some_and(|h| {
+                h.window.visible_dialog().as_ref() == Some(&dialog)
+                    && selected_ui(&h).is_some_and(|active| Rc::ptr_eq(&active, &ui))
+            })
+    }
+}
+
+pub(super) fn preferences_dialog(title: &str) -> adw::PreferencesDialog {
+    let w = adw::PreferencesDialog::new();
+    w.set_title(title);
+    w.set_content_width(620);
+    w.set_content_height(620);
     w
 }
-pub(super) fn panel_page(w: &adw::PreferencesWindow, title: &str) -> adw::PreferencesPage {
+pub(super) fn panel_page(w: &adw::PreferencesDialog, title: &str) -> adw::PreferencesPage {
     let p = adw::PreferencesPage::new();
     p.set_title(title);
     w.add(&p);
@@ -63,7 +94,7 @@ pub(super) fn panel_action(
     g: &adw::PreferencesGroup,
     label: &str,
     ui: &Rc<Ui>,
-    w: &adw::PreferencesWindow,
+    w: &adw::PreferencesDialog,
     command: &'static str,
     args: serde_json::Value,
 ) {
@@ -71,6 +102,7 @@ pub(super) fn panel_action(
     b.set_halign(gtk::Align::Fill);
     accessible_name(&b, label);
     g.add(&b);
+    let valid = panel_target(ui, w);
     let ui = ui.clone();
     let w = w.clone();
     b.connect_clicked(glib::clone!(
@@ -79,6 +111,9 @@ pub(super) fn panel_action(
         #[weak]
         w,
         move |_| {
+            if !valid() {
+                return;
+            }
             if let Err(e) = format_execute(&ui, command, args.clone()) {
                 w.add_toast(Toast::new(&e));
             }
@@ -122,7 +157,7 @@ pub(super) fn panel_choice(
     label: &str,
     options: &[(&str, &str)],
     ui: &Rc<Ui>,
-    w: &adw::PreferencesWindow,
+    w: &adw::PreferencesDialog,
     command: &'static str,
     key: &'static str,
 ) {
@@ -135,6 +170,7 @@ pub(super) fn panel_choice(
     row.set_selected(0);
     g.add(&row);
     let values: Vec<String> = options.iter().map(|x| x.1.to_string()).collect();
+    let valid = panel_target(ui, w);
     let ui = ui.clone();
     let w = w.clone();
     row.connect_selected_notify(glib::clone!(
@@ -143,6 +179,9 @@ pub(super) fn panel_choice(
         #[weak]
         w,
         move |r| {
+            if !valid() {
+                return;
+            }
             if let Some(v) = r
                 .selected()
                 .checked_sub(1)
@@ -160,7 +199,7 @@ pub(super) fn panel_color(
     g: &adw::PreferencesGroup,
     label: &str,
     ui: &Rc<Ui>,
-    w: &adw::PreferencesWindow,
+    w: &adw::PreferencesDialog,
     command: &'static str,
 ) {
     let title = gtk::Label::new(Some(label));
@@ -179,16 +218,20 @@ pub(super) fn panel_color(
     } else {
         None
     };
+    let valid = panel_target(ui, w);
     let weak_ui = Rc::downgrade(ui);
     let weak_window = w.downgrade();
     let picker = embedded_color_chooser(
         "element-background-chooser",
         initial.as_deref(),
         move |hex| {
+            if !valid() {
+                return false;
+            }
             let Some(ui) = weak_ui.upgrade().filter(|u| !u.closed.get()) else {
                 return false;
             };
-            let Some(window) = weak_window.upgrade().filter(|w| w.is_visible()) else {
+            let Some(window) = weak_window.upgrade().filter(|w| w.is_mapped()) else {
                 return false;
             };
             match immediate_format(&ui, command, serde_json::json!({"color":hex})) {

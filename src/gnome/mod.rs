@@ -30,7 +30,7 @@ use wordcraft_gnome::{
     pdf_export, pictures,
 };
 
-const APP_VERSION: &str = "0.1.0-alpha.36";
+const APP_VERSION: &str = "0.1.0-alpha.37";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -291,5 +291,11 @@ mod workflows35_checks;
 #[path = "diagnostics/workflows36.rs"]
 mod workflows36_checks;
 
+#[path = "diagnostics/dialogs.rs"]
+mod dialog_checks;
 #[path = "diagnostics/windows.rs"]
 mod windows_checks;
+use dialog_checks::*;
+
+#[path = "diagnostics/workflows37.rs"]
+mod workflows37_checks;

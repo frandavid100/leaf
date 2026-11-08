@@ -95,6 +95,21 @@ jobs:
         # Keep symbols in the temporary early artifact for portal diagnostics.
         # Both final native output and the packaged executable are stripped later.
         run: cargo rustc --release --locked --features gui --bin wordcraft-gnome -- -C strip=none
+      - name: Verify alpha37 scrolling, integrated dialogs and real modal input
+        run: |
+          set -o pipefail
+          for language in en es; do
+            scale=1
+            if test "$language" = es; then scale=2; fi
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 150s bash tools/workflows37-pointer-test.sh
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workflows37-native-controls
+          path: |
+            workflows37-*.log
+            workflows37-*.png
       - name: Verify accepted alpha35 workflows in native English and Spanish HiDPI
         run: |
           set -o pipefail
@@ -388,7 +403,7 @@ jobs:
       - name: Identificar versión de prueba
         run: |
           ./target/release/wordcraft-gnome --version | tee version.txt
-          grep -q "Leaf 0.1.0-alpha.36" version.txt
+          grep -q "Leaf 0.1.0-alpha.37" version.txt
       - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
         run: |
           python -m pip install --disable-pip-version-check pillow==11.3.0
@@ -752,7 +767,7 @@ jobs:
           git cat-file -e "$native_source^{commit}" || git fetch origin "$native_source"
           # These two Flatpak test drivers are not binary inputs. Sandbox-only
           # control/profile changes may reuse the identical native executable.
-          git diff --exit-code "$native_source" -- src Cargo.toml Cargo.lock craft-i18n.rev tests vendor po data examples tools patches ':(exclude)tools/dictionary84-pointer-test.sh' ':(exclude)tools/dictionary84-installed-test.sh'
+          git diff --exit-code "$native_source" -- src build.rs Cargo.toml Cargo.lock craft-i18n.rev tests vendor po data examples tools patches ':(exclude)tools/dictionary84-pointer-test.sh' ':(exclude)tools/dictionary84-installed-test.sh'
       - name: Wait for the reusable native executable without bypassing validation
         if: contains(github.event.head_commit.message, '[bundle-only]')
         timeout-minutes: 21
@@ -807,7 +822,7 @@ jobs:
       - name: Download previous alpha for upgrade verification
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release download v0.1.0-alpha.35 --pattern 'Leaf-0.1.0-alpha.35-x86_64.flatpak' --dir prior-release
+        run: gh release download v0.1.0-alpha.36 --pattern 'Leaf-0.1.0-alpha.36-x86_64.flatpak' --dir prior-release
       - name: Build and install the bundle
         run: bash packaging/build-bundle.sh native-artifact/wordcraft-gnome
       - name: Configure GTK portal backend for the folder test
@@ -834,7 +849,7 @@ jobs:
       - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
         run: |
           set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.36-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.37-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
           grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
       - name: Exercise the installed sandbox and desktop launcher
         run: |
@@ -1055,7 +1070,7 @@ jobs:
           python3 - <<'PYTHON'
           import json, os, pathlib
           pathlib.Path('dist/candidate.json').write_text(json.dumps({
-              'version': '0.1.0-alpha.36', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+              'version': '0.1.0-alpha.37', 'source': os.environ['LEAF_CANDIDATE_SHA'],
               'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
               'native_source': os.environ['LEAF_NATIVE_SHA'],
               'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
@@ -1067,7 +1082,7 @@ jobs:
           python3 - <<'PYTHON'
           from pathlib import Path
           from zipfile import ZipFile, ZIP_DEFLATED
-          with ZipFile("dist/Leaf-0.1.0-alpha.36-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
+          with ZipFile("dist/Leaf-0.1.0-alpha.37-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
               for source in sorted(Path("tests/fixtures/dictionary84").iterdir()):
                   if source.is_file(): archive.write(source, "Leaf-dictionary-test/" + source.name)
           PYTHON

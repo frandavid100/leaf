@@ -101,7 +101,7 @@ pub(super) fn enter_empty_header_at(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
 }
 
 pub(super) struct PageNumberDialog {
-    pub(super) window: adw::Window,
+    pub(super) window: adw::Dialog,
     pub(super) total: gtk::Switch,
     pub(super) insert: gtk::Button,
 }
@@ -112,12 +112,10 @@ pub(super) fn show_page_number(ui: &Rc<Ui>, parent: &ApplicationWindow) -> PageN
         let d = value.as_ref().unwrap();
         (d.active, d.session.sel.clone())
     };
-    let window = adw::Window::builder()
+    let window = adw::Dialog::builder()
         .title(wordcraft_gnome::t!("Page Number"))
-        .transient_for(parent)
-        .modal(true)
-        .default_width(430)
-        .default_height(350)
+        .content_width(430)
+        .content_height(350)
         .build();
     let toolbar = ToolbarView::new();
     let header = HeaderBar::new();
@@ -151,7 +149,7 @@ pub(super) fn show_page_number(ui: &Rc<Ui>, parent: &ApplicationWindow) -> PageN
         g
     });
     toolbar.set_content(Some(&body));
-    window.set_content(Some(&toolbar));
+    window.set_child(Some(&toolbar));
     {
         let w = window.downgrade();
         cancel.connect_clicked(move |_| {
@@ -208,7 +206,7 @@ pub(super) fn show_page_number(ui: &Rc<Ui>, parent: &ApplicationWindow) -> PageN
             }
         });
     }
-    window.present();
+    window.present(Some(parent));
     PageNumberDialog {
         window,
         total,

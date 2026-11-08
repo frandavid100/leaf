@@ -91,16 +91,13 @@ pub(super) fn install_reference_actions(host: &Rc<Workspace>) {
 }
 
 pub(super) fn reference_window(
-    parent: &ApplicationWindow,
+    _parent: &ApplicationWindow,
     title: &str,
     inserting: bool,
-) -> (adw::Window, gtk::Box, gtk::Button) {
-    let window = adw::Window::builder()
-        .transient_for(parent)
-        .modal(true)
+) -> (adw::Dialog, gtk::Box, gtk::Button) {
+    let window = adw::Dialog::builder()
         .title(title)
-        .default_width(440)
-        .resizable(false)
+        .content_width(440)
         .build();
     let view = ToolbarView::new();
     let header = HeaderBar::new();
@@ -122,7 +119,7 @@ pub(super) fn reference_window(
     content.set_margin_start(18);
     content.set_margin_end(18);
     view.set_content(Some(&content));
-    window.set_content(Some(&view));
+    window.set_child(Some(&view));
     let weak = window.downgrade();
     cancel.connect_clicked(move |_| {
         if let Some(w) = weak.upgrade() {
@@ -143,7 +140,7 @@ pub(super) fn reference_row(root: &gtk::Box, label: &str, control: &impl IsA<gtk
 
 pub(super) fn reference_apply(
     ui: &Rc<Ui>,
-    window: &adw::Window,
+    window: &adw::Dialog,
     root: &gtk::Box,
     apply: &gtk::Button,
     action: impl Fn(&mut Session) -> Result<(), String> + 'static,
@@ -184,7 +181,9 @@ pub(super) fn reference_apply(
             Err(e) => error.set_text(&e),
         }
     });
-    window.present();
+    if let Some(host) = ui.host.upgrade() {
+        window.present(Some(&host.window));
+    }
 }
 
 pub(super) fn show_contents_dialog(ui: &Rc<Ui>, parent: &ApplicationWindow) {
@@ -440,14 +439,15 @@ pub(super) fn schedule_derived_refresh(ui: &Rc<Ui>) {
         };
         ui.derived_source.borrow_mut().take();
         let modal = ui.host.upgrade().is_some_and(|h| {
-            gtk::Window::list_toplevels()
-                .iter()
-                .filter_map(|w| w.downcast_ref::<gtk::Window>())
-                .any(|w| {
-                    w.is_visible()
-                        && w.is_modal()
-                        && w.transient_for().as_ref() == Some(h.window.upcast_ref())
-                })
+            h.window.visible_dialog().is_some()
+                || gtk::Window::list_toplevels()
+                    .iter()
+                    .filter_map(|w| w.downcast_ref::<gtk::Window>())
+                    .any(|w| {
+                        w.is_visible()
+                            && w.is_modal()
+                            && w.transient_for().as_ref() == Some(h.window.upcast_ref())
+                    })
         });
         if modal || ui.picture_drag.borrow().is_some() || table_pointer_active(&ui) {
             schedule_derived_refresh(&ui);

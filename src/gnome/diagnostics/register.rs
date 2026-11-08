@@ -25,12 +25,20 @@ pub(super) fn install_diagnostics(
     app: &Application,
     controls: DiagnosticControls<'_>,
 ) {
-    if std::env::args().any(|arg| arg.starts_with("--workflows36-")) {
+    if std::env::args()
+        .any(|arg| arg.starts_with("--workflows36-") || arg.starts_with("--workflows37-"))
+    {
         let previous = std::panic::take_hook();
         std::panic::set_hook(Box::new(move |info| {
             previous(info);
             std::process::exit(1);
         }));
+    }
+    if std::env::args().any(|arg| arg == "--workflows37-ui-test") && host.tabs.n_pages() == 1 {
+        let (u, w, a) = (ui.clone(), window.clone(), app.clone());
+        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+            workflows37_checks::test(&u, &w, &a)
+        });
     }
     if std::env::args().any(|arg| arg == "--workflows35-pointer-test") && host.tabs.n_pages() == 1 {
         let (u, w, a, outline) = (

@@ -40,8 +40,7 @@ pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
                 .compute_bounds(&ui.document_box)?;
             Some((
                 old.page,
-                frame.y() as f64 + old.y * d.page_zoom(old.page) as f64
-                    - ui.scroll.vadjustment().value(),
+                frame.y() as f64 + old.y * d.page_zoom(old.page) as f64 - document_scroll_y(ui),
             ))
         })
     };
@@ -231,7 +230,8 @@ fn restore_picture_anchor(ui: &Rc<Ui>, anchor: Option<(usize, f64)>) {
     if let Some(top) = top {
         let adjustment = ui.scroll.vadjustment();
         adjustment.set_value(
-            (top - offset).clamp(0., (adjustment.upper() - adjustment.page_size()).max(0.)),
+            (top + document_content_top(ui) - offset)
+                .clamp(0., (adjustment.upper() - adjustment.page_size()).max(0.)),
         );
     }
 }

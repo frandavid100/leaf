@@ -259,6 +259,7 @@ pub(super) fn caret_ensure_visible(ui: &Rc<Ui>) {
             })
     };
     if let Some(y) = target {
+        let y = y + document_content_top(ui);
         let adjustment = ui.scroll.vadjustment();
         let top = adjustment.value();
         let bottom = top + adjustment.page_size();

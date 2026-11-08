@@ -1,5 +1,74 @@
 use super::*;
 
+/// Each representation owns its controls. Sharing state, rather than
+/// reparenting the open dropdown, preserves GTK's popup grab and focus.
+fn navigation_choice(ui: &Ui) -> gtk::Box {
+    let row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    row.set_margin_start(6);
+    row.set_margin_end(6);
+    row.set_margin_top(6);
+    row.set_margin_bottom(6);
+    let choice = gtk::DropDown::new(ui.representation.model(), None::<gtk::Expression>);
+    choice.set_widget_name("navigation-representation-choice");
+    choice.set_hexpand(true);
+    choice.add_css_class("flat");
+    choice.add_css_class("sidebar-choice");
+    accessible_name(&choice, wordcraft_gnome::t!("Navigation"));
+    ui.representation
+        .bind_property("selected", &choice, "selected")
+        .bidirectional()
+        .sync_create()
+        .build();
+    row.append(&choice);
+    row
+}
+
+pub(super) fn sidebar_mode_selector(ui: &Ui) -> gtk::Box {
+    let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    row.add_css_class("sidebar-selector");
+    row.set_margin_start(6);
+    row.set_margin_end(6);
+    row.set_margin_top(5);
+    row.set_margin_bottom(5);
+    for (name, icon, label) in [
+        (
+            "sidebar-navigation",
+            "compass-symbolic",
+            wordcraft_gnome::t!("Navigation"),
+        ),
+        (
+            "sidebar-review",
+            "document-edit-symbolic",
+            wordcraft_gnome::t!("Review"),
+        ),
+    ] {
+        let target = find_widget(&ui.sidebar_selector, name)
+            .unwrap()
+            .downcast::<gtk::ToggleButton>()
+            .unwrap();
+        let button = gtk::ToggleButton::new();
+        button.set_widget_name(name);
+        button.set_icon_name(icon);
+        button.set_hexpand(true);
+        button.add_css_class("flat");
+        button.set_tooltip_text(Some(label));
+        accessible_name(&button, label);
+        target
+            .bind_property("active", &button, "active")
+            .sync_create()
+            .build();
+        let weak = target.downgrade();
+        button.connect_clicked(move |button| {
+            if let Some(target) = weak.upgrade() {
+                target.set_active(true);
+                button.set_active(target.is_active());
+            }
+        });
+        row.append(&button);
+    }
+    row
+}
+
 // Shared native Navigation and Review sidebar.
 pub(super) fn refresh_sidebar_title(ui: &Ui) {
     let label = if ui.sidebar_pages.visible_child_name().as_deref() == Some("search") {
@@ -987,7 +1056,7 @@ impl OutlinePanel {
             };
             if let Some(y) = y {
                 let adj = ui.scroll.vadjustment();
-                adj.set_value(y.clamp(
+                adj.set_value((y + document_content_top(&ui)).clamp(
                     adj.lower(),
                     (adj.upper() - adj.page_size()).max(adj.lower()),
                 ));
@@ -1001,6 +1070,7 @@ pub(super) fn install_outline(
     titles: &gtk::ToggleButton,
 ) -> Rc<OutlinePanel> {
     let box_ = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    box_.append(&navigation_choice(ui));
     let status = gtk::Label::new(Some(wordcraft_gnome::t!("No Headings in This Document")));
     status.set_wrap(true);
     status.set_margin_start(12);
@@ -1022,6 +1092,8 @@ pub(super) fn install_outline(
         wordcraft_gnome::t!("Automatic Fields"),
     ]);
     filter.set_widget_name("navigation-filter");
+    filter.add_css_class("flat");
+    filter.add_css_class("sidebar-choice");
     accessible_name(&filter, wordcraft_gnome::t!("Filter Navigation"));
     filter.set_margin_start(8);
     filter.set_margin_end(8);
@@ -1051,6 +1123,7 @@ pub(super) fn install_outline(
         }
     });
     box_.append(&list);
+    box_.append(&sidebar_mode_selector(ui));
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
     scroll.set_vexpand(true);
@@ -1125,14 +1198,37 @@ pub(super) fn install_outline(
 }
 
 pub(super) fn install_navigation_switching(ui: &Rc<Ui>) {
+    let scroll = gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::BOTH_AXES);
+    scroll.set_propagation_phase(gtk::PropagationPhase::Capture);
     let weak = Rc::downgrade(ui);
-    ui.sidebar_pages
-        .connect_visible_child_name_notify(move |stack| {
-            if let Some(ui) = weak.upgrade() {
-                ui.sidebar_filters
-                    .set_visible(stack.visible_child_name().as_deref() == Some("navigation"));
-            }
-        });
+    scroll.connect_scroll(move |_, _, _| {
+        if let Some(ui) = weak.upgrade() {
+            cancel_navigation_restore(&ui);
+        }
+        glib::Propagation::Proceed
+    });
+    ui.navigation_pages.add_controller(scroll);
+    let keys = gtk::EventControllerKey::new();
+    keys.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let weak = Rc::downgrade(ui);
+    keys.connect_key_pressed(move |_, _, _, _| {
+        if let Some(ui) = weak.upgrade() {
+            cancel_navigation_restore(&ui);
+        }
+        glib::Propagation::Proceed
+    });
+    ui.navigation_pages.add_controller(keys);
+    let clicks = gtk::GestureClick::new();
+    clicks.set_button(0);
+    clicks.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let weak = Rc::downgrade(ui);
+    clicks.connect_pressed(move |_, _, _, _| {
+        if let Some(ui) = weak.upgrade() {
+            cancel_navigation_restore(&ui);
+        }
+    });
+    ui.navigation_pages.add_controller(clicks);
+
     let weak = Rc::downgrade(ui);
     ui.navigation_pages
         .connect_visible_child_name_notify(move |stack| {
@@ -1142,19 +1238,16 @@ pub(super) fn install_navigation_switching(ui: &Rc<Ui>) {
                     ui.last_navigation.set("thumbnails");
                     ui.representation.set_selected(0);
                     ui.navigation_selector.set_visible(true);
-                    ui.sidebar_filters.set_visible_child_name("navigation");
                     ui.navigation_button.set_active(true);
                 }
                 Some("outline") => {
                     ui.last_navigation.set("outline");
                     ui.representation.set_selected(1);
                     ui.navigation_selector.set_visible(true);
-                    ui.sidebar_filters.set_visible_child_name("navigation");
                     ui.navigation_button.set_active(true);
                 }
                 Some("review") => {
                     ui.navigation_selector.set_visible(false);
-                    ui.sidebar_filters.set_visible_child_name("review");
                 }
                 _ => {}
             }
@@ -1197,8 +1290,27 @@ pub(super) fn install_navigation_switching(ui: &Rc<Ui>) {
         }
     });
 }
+fn cancel_navigation_restore(ui: &Ui) {
+    ui.navigation_restore_generation
+        .set(ui.navigation_restore_generation.get().wrapping_add(1));
+    ui.hidden_navigation_scroll.borrow_mut().take();
+}
+
 fn save_navigation_browsing(ui: &Rc<Ui>) {
-    if ui.hidden_navigation_scroll.borrow().is_some() {
+    trace_navigation(ui, "save");
+    ui.navigation_restore_generation
+        .set(ui.navigation_restore_generation.get().wrapping_add(1));
+    let same =
+        ui.hidden_navigation_scroll
+            .borrow()
+            .as_ref()
+            .is_some_and(|(identity, focus, _, _)| {
+                ui.current.borrow().as_ref().is_some_and(|d| {
+                    (d.session.document_id(), d.session.rev()) == *identity
+                        && d.session.sel.focus == *focus
+                })
+            });
+    if same {
         return;
     }
     let state = ui.current.borrow().as_ref().map(|d| {
@@ -1215,35 +1327,95 @@ fn save_navigation_browsing(ui: &Rc<Ui>) {
     ui.hidden_navigation_scroll.replace(state);
 }
 fn restore_navigation_browsing(ui: &Rc<Ui>) {
-    let Some((identity, focus, pages, outline)) = ui.hidden_navigation_scroll.borrow_mut().take()
+    trace_navigation(ui, "schedule");
+    let Some((identity, focus, pages, outline)) = ui.hidden_navigation_scroll.borrow().clone()
     else {
         return;
     };
+    let generation = ui.navigation_restore_generation.get().wrapping_add(1);
+    ui.navigation_restore_generation.set(generation);
     let weak = Rc::downgrade(ui);
-    // Mapping a tab or the split view can clamp adjustments during allocation.
-    // Restore only an unchanged editing target after the native transition.
-    glib::timeout_add_local_once(std::time::Duration::from_millis(220), move || {
-        let Some(ui) = weak
-            .upgrade()
-            .filter(|u| !u.closed.get() && u.sidebar.shows_sidebar() && u.sidebar.is_mapped())
-        else {
-            return;
+    let previous = Cell::new(None);
+    let stable = Cell::new(0);
+    // GTK may focus/reallocate a selected row while mapping the sidebar. Use
+    // its frame lifecycle, not a wall-clock timeout that can race another source.
+    ui.sidebar.add_tick_callback(move |_, _| {
+        let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+            return glib::ControlFlow::Break;
         };
         let same = ui.current.borrow().as_ref().is_some_and(|d| {
             (d.session.document_id(), d.session.rev()) == identity && d.session.sel.focus == focus
         });
-        if !same {
-            return;
-        }
-        ui.thumbnails_scroll.vadjustment().set_value(pages);
-        if let Some(scroll) = ui
-            .navigation_pages
-            .child_by_name("outline")
-            .and_then(|w| w.downcast::<gtk::ScrolledWindow>().ok())
+        if generation != ui.navigation_restore_generation.get()
+            || !same
+            || !ui.sidebar.shows_sidebar()
+            || !ui.sidebar.is_mapped()
         {
-            scroll.vadjustment().set_value(outline);
+            if generation == ui.navigation_restore_generation.get() && !same {
+                ui.hidden_navigation_scroll.borrow_mut().take();
+            }
+            return glib::ControlFlow::Break;
         }
+        let a = ui.thumbnails_scroll.vadjustment();
+        let panel = ui.outline.borrow();
+        let Some(panel) = panel.as_ref() else {
+            return glib::ControlFlow::Break;
+        };
+        let b = panel.scroll.vadjustment();
+        let geometry = (a.upper(), a.page_size(), b.upper(), b.page_size());
+        let active = ui.navigation_pages.visible_child();
+        if active.is_some_and(|w| w.is_mapped() && w.width() > 0 && w.height() > 0)
+            && previous.get() == Some(geometry)
+        {
+            stable.set(stable.get() + 1);
+        } else {
+            stable.set(0);
+        }
+        previous.set(Some(geometry));
+        if stable.get() < 3 {
+            return glib::ControlFlow::Continue;
+        }
+        trace_navigation(&ui, "frame-before");
+        a.set_value(pages);
+        b.set_value(outline);
+        ui.hidden_navigation_scroll.borrow_mut().take();
+        trace_navigation(&ui, "frame-after");
+        glib::ControlFlow::Break
     });
+}
+
+fn trace_navigation(ui: &Ui, event: &str) {
+    if std::env::var_os("LEAF_NAVIGATION_TRACE").is_none()
+        && !std::env::args().any(|a| a == "--alpha30-ui-test")
+    {
+        return;
+    }
+    let outline = ui.outline.borrow();
+    let a = outline.as_ref().map(|p| p.scroll.vadjustment());
+    eprintln!(
+        "NAVIGATION_TRACE {event} time={:?} identity={:?} shown={} mapped={} mode={:?} saved={:?} outline={:?} generation={} pane={:?} focus={:?}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis(),
+        document_identity(ui),
+        ui.sidebar.shows_sidebar(),
+        ui.sidebar.is_mapped(),
+        ui.navigation_pages.visible_child_name(),
+        ui.hidden_navigation_scroll
+            .borrow()
+            .as_ref()
+            .map(|s| (s.2, s.3)),
+        a.map(|a| (a.value(), a.upper(), a.page_size())),
+        ui.navigation_restore_generation.get(),
+        outline
+            .as_ref()
+            .map(|p| (p.scroll.width(), p.scroll.height(), p.scroll.is_mapped())),
+        ui.host
+            .upgrade()
+            .and_then(|h| gtk::prelude::GtkWindowExt::focus(&h.window))
+            .map(|w| (w.type_().name(), w.widget_name()))
+    );
 }
 
 fn show_navigation(ui: &Rc<Ui>) {

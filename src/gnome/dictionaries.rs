@@ -3,7 +3,7 @@ use super::*;
 use wordcraft_gnome::dictionaries;
 
 pub(super) struct DictionaryTools {
-    pub(super) window: adw::Window,
+    pub(super) window: adw::Dialog,
     ui: std::rc::Weak<Ui>,
     folder: gtk::Label,
     forget: gtk::Button,
@@ -151,37 +151,43 @@ impl DictionaryTools {
         let c = begin_chooser(&ui);
         let lease = c.clone();
         let weak = Rc::downgrade(self);
-        chooser.select_folder(Some(&self.window), Some(&c), move |result| {
-            let Some(panel) = weak.upgrade().filter(|p| !p.closed.get()) else {
-                return;
-            };
-            let Some(ui) = panel.ui.upgrade() else { return };
-            if !finish_chooser(&ui, &lease) {
-                return;
-            }
-            let file = match result {
-                Ok(file) => file,
-                Err(e)
-                    if e.matches(gtk::DialogError::Dismissed)
-                        || e.matches(gtk::DialogError::Cancelled) =>
-                {
+        chooser.select_folder(
+            self.window.root().and_downcast::<gtk::Window>().as_ref(),
+            Some(&c),
+            move |result| {
+                let Some(panel) = weak.upgrade().filter(|p| !p.closed.get()) else {
+                    return;
+                };
+                let Some(ui) = panel.ui.upgrade() else { return };
+                if !finish_chooser(&ui, &lease) {
                     return;
                 }
-                Err(e) => {
-                    panel.show_result(Err(e.to_string()));
-                    return;
+                let file = match result {
+                    Ok(file) => file,
+                    Err(e)
+                        if e.matches(gtk::DialogError::Dismissed)
+                            || e.matches(gtk::DialogError::Cancelled) =>
+                    {
+                        return;
+                    }
+                    Err(e) => {
+                        panel.show_result(Err(e.to_string()));
+                        return;
+                    }
+                };
+                if std::env::args().any(|a| a == "--dictionary84-ui-test") {
+                    eprintln!("DICTIONARY84_SELECTED path={:?}", file.path());
                 }
-            };
-            if std::env::args().any(|a| a == "--dictionary84-ui-test") {
-                eprintln!("DICTIONARY84_SELECTED path={:?}", file.path());
-            }
-            let result = file
-                .path()
-                .ok_or_else(|| wordcraft_gnome::t!("Choose a local dictionary folder.").to_owned())
-                .and_then(|p| dictionaries::use_folder(Some(&p)))
-                .map(|_| true);
-            panel.show_result(result);
-        });
+                let result = file
+                    .path()
+                    .ok_or_else(|| {
+                        wordcraft_gnome::t!("Choose a local dictionary folder.").to_owned()
+                    })
+                    .and_then(|p| dictionaries::use_folder(Some(&p)))
+                    .map(|_| true);
+                panel.show_result(result);
+            },
+        );
     }
 }
 /// Ubuntu Language Support installs Hunspell packages visible to native Leaf.
@@ -206,18 +212,17 @@ pub(super) fn show_dictionary_tools(ui: &Rc<Ui>) -> Option<Rc<DictionaryTools>> 
         return None;
     }
     if let Some(panel) = ui.dictionary_tools.borrow().as_ref() {
-        panel.window.present();
+        if let Some(host) = ui.host.upgrade() {
+            panel.window.present(Some(&host.window));
+        }
         return Some(panel.clone());
     }
-    let host = ui.host.upgrade()?;
-    let window = adw::Window::builder()
+    let window = adw::Dialog::builder()
         .title(wordcraft_gnome::t!("Dictionaries"))
-        .transient_for(&host.window)
-        .modal(true)
-        .default_width(460)
-        .default_height(480)
+        .content_width(460)
+        .content_height(480)
         .build();
-    window.set_destroy_with_parent(true);
+
     let toolbar = ToolbarView::new();
     toolbar.add_top_bar(&HeaderBar::new());
     let content = gtk::Box::new(gtk::Orientation::Vertical, 12);
@@ -279,7 +284,7 @@ pub(super) fn show_dictionary_tools(ui: &Rc<Ui>) -> Option<Rc<DictionaryTools>> 
     scroll.set_propagate_natural_height(true);
     scroll.set_child(Some(&content));
     toolbar.set_content(Some(&scroll));
-    window.set_content(Some(&toolbar));
+    window.set_child(Some(&toolbar));
     let panel = Rc::new(DictionaryTools {
         window,
         ui: Rc::downgrade(ui),
@@ -310,14 +315,16 @@ pub(super) fn show_dictionary_tools(ui: &Rc<Ui>) -> Option<Rc<DictionaryTools>> 
     import.connect_clicked(move |_| {
         if let Some(p) = weak.upgrade().filter(|p| !p.closed.get()) {
             if let Some(ui) = p.ui.upgrade().filter(|u| !u.closed.get()) {
-                import_dictionary_files(&ui, &p.window);
+                if let Some(host) = ui.host.upgrade() {
+                    import_dictionary_files(&ui, &host.window);
+                }
             }
         }
     });
     // Reload explicitly or when opening the language list. Rebuilding language
     // controls from a window focus notification can re-enter GTK focus handling.
     let weak = Rc::downgrade(&panel);
-    panel.window.connect_close_request(move |_| {
+    panel.window.connect_closed(move |_| {
         if let Some(p) = weak.upgrade().filter(|p| !p.closed.get()) {
             p.closed.set(true);
             if let Some(ui) = p.ui.upgrade() {
@@ -325,10 +332,11 @@ pub(super) fn show_dictionary_tools(ui: &Rc<Ui>) -> Option<Rc<DictionaryTools>> 
                 ui.dictionary_tools.borrow_mut().take();
             }
         }
-        glib::Propagation::Proceed
     });
     panel.summary();
     ui.dictionary_tools.replace(Some(panel.clone()));
-    panel.window.present();
+    if let Some(host) = ui.host.upgrade() {
+        panel.window.present(Some(&host.window));
+    }
     Some(panel)
 }

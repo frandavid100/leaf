@@ -53,12 +53,14 @@ pub(super) fn table_navigate(ui: &Rc<Ui>, backwards: bool, literal: bool) {
 }
 
 pub(super) fn show_insert_table(ui: &Rc<Ui>, parent: &ApplicationWindow) {
-    let w = panel_window(parent, wordcraft_gnome::t!("Insert Table"));
-    w.set_default_size(440, 640);
+    let w = preferences_dialog(wordcraft_gnome::t!("Insert Table"));
+    w.set_content_width(440);
+    w.set_content_height(640);
     w.set_search_enabled(false);
     let p = panel_page(&w, wordcraft_gnome::t!("Table"));
     let g = panel_group(&p, wordcraft_gnome::t!("Table Size"));
     let grid = gtk::Grid::new();
+    grid.set_widget_name("insert-table-grid");
     grid.set_row_spacing(3);
     grid.set_column_spacing(3);
     grid.set_halign(gtk::Align::Center);
@@ -84,12 +86,16 @@ pub(super) fn show_insert_table(ui: &Rc<Ui>, parent: &ApplicationWindow) {
             b.add_controller(motion);
             let ui = ui.clone();
             let win = w.clone();
+            let valid = panel_target(&ui, &win);
             b.connect_clicked(glib::clone!(
                 #[weak]
                 ui,
                 #[weak]
                 win,
                 move |_| {
+                    if !valid() {
+                        return;
+                    }
                     if let Err(e) = format_execute(
                         &ui,
                         "insert.table",
@@ -118,12 +124,16 @@ pub(super) fn show_insert_table(ui: &Rc<Ui>, parent: &ApplicationWindow) {
     g.add(&b);
     let ui = ui.clone();
     let win = w.clone();
+    let valid = panel_target(&ui, &win);
     b.connect_clicked(glib::clone!(
         #[weak]
         ui,
         #[weak]
         win,
         move |_| {
+            if !valid() {
+                return;
+            }
             rows.update();
             cols.update();
             if let Err(e) = format_execute(
@@ -139,7 +149,7 @@ pub(super) fn show_insert_table(ui: &Rc<Ui>, parent: &ApplicationWindow) {
             }
         }
     ));
-    w.present();
+    w.present(Some(parent));
 }
 
 pub(super) fn table_property_toggle(
@@ -148,7 +158,7 @@ pub(super) fn table_property_toggle(
     on: bool,
     key: &'static str,
     ui: &Rc<Ui>,
-    w: &adw::PreferencesWindow,
+    w: &adw::PreferencesDialog,
 ) {
     let row = adw::SwitchRow::new();
     row.set_title(label);
@@ -156,12 +166,16 @@ pub(super) fn table_property_toggle(
     g.add(&row);
     let ui = ui.clone();
     let w = w.clone();
+    let valid = panel_target(&ui, &w);
     row.connect_active_notify(glib::clone!(
         #[weak]
         ui,
         #[weak]
         w,
         move |r| {
+            if !valid() {
+                return;
+            }
             if let Err(e) = format_execute(
                 &ui,
                 "table.properties",
@@ -179,7 +193,7 @@ pub(super) fn table_measurement(
     value: f64,
     min: f64,
     ui: &Rc<Ui>,
-    w: &adw::PreferencesWindow,
+    w: &adw::PreferencesDialog,
     command: &'static str,
     key: &'static str,
     extra: serde_json::Value,
@@ -196,7 +210,13 @@ pub(super) fn table_measurement(
     g.add(&row);
     let weak = Rc::downgrade(ui);
     let weak_window = w.downgrade();
+    let valid = panel_target(ui, w);
     bind_numeric(ui, &n, move |value| {
+        if !valid() {
+            return Err(
+                wordcraft_gnome::t!("The document has changed; open this dialog again.").into(),
+            );
+        }
         let ui = weak.upgrade().ok_or("Document closed")?;
         let mut args = extra.clone();
         args[key] = serde_json::json!(value);
@@ -226,7 +246,7 @@ pub(super) fn show_table_properties(ui: &Rc<Ui>, parent: &ApplicationWindow) {
             }
         }
     };
-    let w = panel_window(parent, wordcraft_gnome::t!("Table Properties"));
+    let w = preferences_dialog(wordcraft_gnome::t!("Table Properties"));
     w.set_search_enabled(false);
     let p = panel_page(&w, wordcraft_gnome::t!("Size"));
     let g = panel_group(&p, wordcraft_gnome::t!("Table"));
@@ -412,12 +432,16 @@ pub(super) fn show_table_properties(ui: &Rc<Ui>, parent: &ApplicationWindow) {
     {
         let ui = ui.clone();
         let w = w.clone();
+        let valid = panel_target(&ui, &w);
         b.connect_clicked(glib::clone!(
             #[weak]
             ui,
             #[weak]
             w,
             move |_| {
+                if !valid() {
+                    return;
+                }
                 width.update();
                 let c = color.text().trim().to_string();
                 if c.len() != 6 || !c.bytes().all(|b| b.is_ascii_hexdigit()) {
@@ -436,11 +460,11 @@ pub(super) fn show_table_properties(ui: &Rc<Ui>, parent: &ApplicationWindow) {
             }
         ));
     }
-    w.present();
+    w.present(Some(parent));
 }
 
 pub(super) fn show_split_cells(ui: &Rc<Ui>, parent: &ApplicationWindow) {
-    let w = panel_window(parent, wordcraft_gnome::t!("Split Cells"));
+    let w = preferences_dialog(wordcraft_gnome::t!("Split Cells"));
     w.set_search_enabled(false);
     let p = panel_page(&w, wordcraft_gnome::t!("Split Cells"));
     let g = panel_group(&p, wordcraft_gnome::t!("Split Cells"));
@@ -461,12 +485,16 @@ pub(super) fn show_split_cells(ui: &Rc<Ui>, parent: &ApplicationWindow) {
     {
         let ui = ui.clone();
         let w = w.clone();
+        let valid = panel_target(&ui, &w);
         b.connect_clicked(glib::clone!(
             #[weak]
             ui,
             #[weak]
             w,
             move |_| {
+                if !valid() {
+                    return;
+                }
                 cols.update();
                 rows.update();
                 if let Err(e) = format_execute(
@@ -479,7 +507,7 @@ pub(super) fn show_split_cells(ui: &Rc<Ui>, parent: &ApplicationWindow) {
             }
         ));
     }
-    w.present();
+    w.present(Some(parent));
 }
 
 fn table_submenu(

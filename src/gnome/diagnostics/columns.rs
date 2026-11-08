@@ -23,6 +23,7 @@ pub(super) fn columns_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
         (s.doc.clone(), s.undo_depth(), s.rev(), s.selected_text())
     };
     let dialog = show_columns(ui, parent);
+    wait_dialog_presented(&dialog.window);
     assert_eq!(
         dialog.controls.scopes[dialog.controls.scope.selected() as usize],
         ColumnScope::Selection
@@ -32,7 +33,7 @@ pub(super) fn columns_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
     dialog.controls.separator.set_active(true);
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.rev(), rev);
     dialog.apply.emit_clicked();
-    assert!(!dialog.window.is_visible());
+    assert_dialog_closed(&dialog.window);
     {
         let d = ui.current.borrow();
         let s = &d.as_ref().unwrap().session;
@@ -56,8 +57,10 @@ pub(super) fn columns_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
     paragraph.home();
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.rev(), rev);
     let dialog = show_columns(ui, parent);
+    wait_dialog_presented(&dialog.window);
     dialog.controls.count.set_value(3.0);
     dialog.window.close();
+    assert_dialog_closed(&dialog.window);
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.rev(), rev);
     for menu in ui.format_buttons.borrow().iter() {
         if let Some(name) = menu.icon_name() {

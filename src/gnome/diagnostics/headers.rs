@@ -53,9 +53,10 @@ pub(super) fn header_footer_ui_test(
     );
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.sel, back);
     let dialog = show_page_number(ui, parent);
+    wait_dialog_presented(&dialog.window);
     dialog.total.set_active(true);
     dialog.insert.emit_clicked();
-    assert!(!dialog.window.is_visible());
+    assert_dialog_closed(&dialog.window);
     assert_eq!(
         ui.current
             .borrow()
@@ -70,6 +71,7 @@ pub(super) fn header_footer_ui_test(
     apply_user_edit(ui, Edit::Undo);
     header_change(ui, |s| header_footer::enter(s, 1, Region::Footer));
     let dialog = show_page_number(ui, parent);
+    wait_dialog_presented(&dialog.window);
     dialog.total.set_active(true);
     dialog.insert.emit_clicked();
     assert_eq!(

@@ -149,12 +149,13 @@ pub(super) fn host_cache_ui_test(ui: &Rc<Ui>, app: &Application) {
             let d = d.as_ref().unwrap();
             let top = adj.value();
             let bottom = top + adj.page_size().max(600.0);
+            let content = ui.thumbnails_box.parent().unwrap();
             let expected: HashSet<_> = d
                 .thumb_buttons
                 .iter()
                 .enumerate()
                 .filter_map(|(i, b)| {
-                    let r = b.compute_bounds(&ui.thumbnails_box).unwrap();
+                    let r = b.compute_bounds(&content).unwrap();
                     let start = r.y() as f64;
                     let end = (r.y() + r.height()) as f64;
                     (start <= bottom + 250.0 && end >= top - 250.0).then_some(i)

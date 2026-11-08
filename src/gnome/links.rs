@@ -2,7 +2,7 @@ use super::*;
 use wordcraft_gnome::links::{self, LinkState};
 
 pub(super) struct LinkDialog {
-    pub(super) window: adw::Window,
+    pub(super) window: adw::Dialog,
     pub(super) destination: gtk::Entry,
     pub(super) apply: gtk::Button,
 }
@@ -55,12 +55,10 @@ fn show_link_for(ui: &Rc<Ui>, pointer: Option<&Pos>) -> Option<LinkDialog> {
     if let Some(old) = old {
         old.close();
     }
-    let window = adw::Window::builder()
+    let window = adw::Dialog::builder()
         .title(wordcraft_gnome::t!("Link"))
-        .transient_for(&host.window)
-        .modal(true)
-        .default_width(460)
-        .default_height(260)
+        .content_width(460)
+        .content_height(260)
         .build();
     let toolbar = ToolbarView::new();
     let header = HeaderBar::new();
@@ -188,7 +186,7 @@ fn show_link_for(ui: &Rc<Ui>, pointer: Option<&Pos>) -> Option<LinkDialog> {
     error.add_css_class("error");
     body.append(&error);
     toolbar.set_content(Some(&body));
-    window.set_content(Some(&toolbar));
+    window.set_child(Some(&toolbar));
     let weak = apply.downgrade();
     let text = display_text.as_ref().map(|e| e.downgrade());
     destination.connect_changed(move |e| {
@@ -279,14 +277,16 @@ fn show_link_for(ui: &Rc<Ui>, pointer: Option<&Pos>) -> Option<LinkDialog> {
         }
     });
     let weak = Rc::downgrade(ui);
-    window.connect_close_request(move |_| {
+    window.connect_closed(move |dialog| {
         if let Some(ui) = weak.upgrade() {
-            ui.link_dialog.borrow_mut().take();
+            let owns = ui.link_dialog.borrow().as_ref() == Some(dialog);
+            if owns {
+                ui.link_dialog.borrow_mut().take();
+            }
         }
-        glib::Propagation::Proceed
     });
     ui.link_dialog.replace(Some(window.clone()));
-    window.present();
+    window.present(Some(&host.window));
     Some(LinkDialog {
         window,
         destination,

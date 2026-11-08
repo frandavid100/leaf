@@ -9,7 +9,7 @@ is available in Spanish for moving work between conversations.
 
 ## Build and check
 
-Linux, Rust 1.95 or newer, pkg-config, GTK 4.14+ and libadwaita 1.4+ development
+Linux, Rust 1.95 or newer, pkg-config, GTK 4.14+ and libadwaita 1.5+ development
 libraries are required. Ubuntu CI installs libgtk-4-dev/libadwaita-1-dev, Xvfb,
 gettext and the other tools declared by the workflow. GNOME OS users can test
 the published Flatpak without installing development packages on the host.

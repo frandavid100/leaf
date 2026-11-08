@@ -267,18 +267,10 @@ I recieve text.",
     });
 }
 pub(super) fn check_headers(ui: &Rc<Ui>, window: &ApplicationWindow) {
-    let secondary = find_widget(&ui.sidebar, "document-header-secondary").unwrap();
-    if secondary.is_visible() {
-        let a = find_widget(&ui.sidebar, "sidebar-header-secondary")
-            .unwrap()
-            .compute_bounds(window)
-            .unwrap();
-        let b = secondary.compute_bounds(window).unwrap();
-        assert!(
-            (a.y() + a.height() - b.y() - b.height()).abs() < 1.1,
-            "visible tab/header bounds: {a:?} vs {b:?}"
-        );
-    }
+    assert!(
+        find_widget(&ui.sidebar, "sidebar-header-secondary").is_none(),
+        "selectors must not reserve a fixed header band"
+    );
     let a = find_widget(&ui.sidebar, "sidebar-primary-header")
         .unwrap()
         .compute_bounds(window)

@@ -620,6 +620,7 @@ pub const MESSAGES: &[&str] = &[
     "Save As",
     "Save As…",
     "Save Changes?",
+    "Save Document — DOCX or ODT",
     "Save a Copy — DOCX or ODT",
     "Save as DOCX to preserve all table of contents and automatic field options.",
     "Save as DOCX to preserve caption associations and hidden caption text.",
