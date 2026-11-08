@@ -37,6 +37,59 @@ fn make(app: &Application) -> (Rc<Workspace>, Rc<Ui>) {
     let ui = selected_ui(&host).unwrap();
     (host, ui)
 }
+fn background(window: &ApplicationWindow, widget: &gtk::Widget) -> [u8; 4] {
+    let paintable = gtk::WidgetPaintable::new(Some(window));
+    let snapshot = gtk::Snapshot::new();
+    paintable.snapshot(&snapshot, window.width() as f64, window.height() as f64);
+    let node = snapshot.to_node().unwrap();
+    let image = window.renderer().unwrap().render_texture(&node, None);
+    let bounds = widget.compute_bounds(window).unwrap();
+    let x = (bounds.x() + bounds.width() * 0.25) as usize;
+    let y = (bounds.y() + bounds.height() * 0.5) as usize;
+    let stride = image.width() as usize * 4;
+    let mut pixels = vec![0; stride * image.height() as usize];
+    image.download(&mut pixels, stride);
+    pixels[y * stride + x * 4..y * stride + x * 4 + 4]
+        .try_into()
+        .unwrap()
+}
+async fn selected_modes(ui: &Rc<Ui>, window: &ApplicationWindow) {
+    let navigation = &ui.navigation_button;
+    let review = find_widget(window, "sidebar-review")
+        .unwrap()
+        .downcast::<gtk::ToggleButton>()
+        .unwrap();
+    let manager = adw::StyleManager::default();
+    let previous = manager.color_scheme();
+    let identity = document_identity(ui);
+    for theme in [adw::ColorScheme::ForceLight, adw::ColorScheme::ForceDark] {
+        manager.set_color_scheme(theme);
+        for (active, inactive) in [(navigation, &review), (&review, navigation)] {
+            active.emit_clicked();
+            ui.document_box.grab_focus();
+            settle().await;
+            assert!(active.is_active() && !inactive.is_active());
+            assert!(active.state_flags().contains(gtk::StateFlags::CHECKED));
+            assert_ne!(
+                background(window, active.upcast_ref()),
+                background(window, inactive.upcast_ref()),
+                "active mode lacks persistent background"
+            );
+            inactive.set_state_flags(gtk::StateFlags::PRELIGHT, false);
+            settle().await;
+            assert!(active.is_active() && !inactive.is_active());
+            inactive.unset_state_flags(gtk::StateFlags::PRELIGHT);
+            active.grab_focus();
+            assert!(active.has_focus());
+        }
+    }
+    navigation.set_active(true);
+    manager.set_color_scheme(previous);
+    assert_eq!(document_identity(ui), identity);
+    eprintln!(
+        "WORKFLOWS39_MODES_OK persistent=true checked=true light-dark=true hover=true focus=true"
+    );
+}
 async fn check(ui: &Rc<Ui>, has_templates: bool, has_recovery: bool) {
     until(|| {
         ui.template_gallery
@@ -48,7 +101,33 @@ async fn check(ui: &Rc<Ui>, has_templates: bool, has_recovery: bool) {
     if has_templates {
         until(|| find_widget(&ui.template_slot, "personal-template").is_some()).await;
     }
+    if has_recovery {
+        until(|| {
+            find_widget(&ui.template_slot, "recovery-preview").is_some_and(|slot| {
+                slot.first_child()
+                    .is_some_and(|child| child.is::<gtk::Picture>())
+            })
+        })
+        .await;
+    }
     settle().await;
+    for name in ["template-preview", "recovery-preview"] {
+        if let Some(slot) = find_widget(&ui.template_slot, name) {
+            let picture = slot
+                .first_child()
+                .unwrap()
+                .downcast::<gtk::Picture>()
+                .unwrap();
+            let paintable = picture.paintable().unwrap();
+            let ratio = paintable.intrinsic_width() as f64 / paintable.intrinsic_height() as f64;
+            let bounds = picture.compute_bounds(&slot).unwrap();
+            assert!(bounds.width() <= 105. && bounds.height() <= 149.);
+            assert!(
+                (bounds.width() as f64 / bounds.height() as f64 - ratio).abs() < 0.015,
+                "label stretched first-page paper: {bounds:?}, ratio={ratio}"
+            );
+        }
+    }
     let templates = find_widget(&ui.template_slot, "start-templates").unwrap();
     let recoveries = find_widget(&ui.template_slot, "start-recovery").unwrap();
     assert_eq!(templates.is_visible(), has_templates);
@@ -191,6 +270,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     glib::spawn_future_local(async move {
         window.set_title(Some("Leaf Workflows38"));
         window.set_default_size(1100, 850);
+        selected_modes(&ui, &window).await;
         let host = ui.host.upgrade().unwrap();
         let root = wordcraft_gnome::preferences::recovery_root();
         let folder = root.parent().unwrap().join(format!(
@@ -205,7 +285,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         wordcraft_gnome::preferences::set_template_folder(&folder).unwrap();
         templates::offer(&ui);
         check(&ui, false, false).await;
-        let template = folder.join("Sample.docx");
+        let template = folder.join("Sample template with a deliberately long name.docx");
         let mut source = Session::new(wordcraft_doc::Document::from_text("Original template ñ"));
         let mut source_bytes = Vec::new();
         for (t, r) in [(false, false), (true, false), (false, true), (true, true)] {

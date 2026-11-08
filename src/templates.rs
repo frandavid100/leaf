@@ -117,11 +117,20 @@ pub fn preview(path: &Path) -> Result<std::sync::Arc<crate::PageImage>, String> 
         return Ok(image.clone());
     }
     let mut session = open(path)?;
-    let image = Arc::new(crate::render_page_premultiplied(&mut session, 0, 0.18)?);
+    let image = Arc::new(page_preview(&mut session)?);
     let mut cache = cache.lock().unwrap();
     cache.push_back((key, image.clone()));
     while cache.len() > 24 {
         cache.pop_front();
     }
     Ok(image)
+}
+
+/// Render the complete first page at twice the gallery's logical card density.
+/// Layout stays in the canonical Session; GTK controls the final allocation.
+pub fn page_preview(session: &mut Session) -> Result<crate::PageImage, String> {
+    let layout = session.layout();
+    let page = layout.pages.first().ok_or("The document is empty")?;
+    let scale = (104.0 / page.w).min(148.0 / page.h) * 2.0;
+    crate::render_page_premultiplied(session, 0, scale)
 }

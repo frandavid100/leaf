@@ -38,19 +38,19 @@ pub(super) fn install_diagnostics(
     }
     if std::env::args().any(|arg| arg == "--workflows38-startup-test") {
         let (u, a) = (ui.clone(), app.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
             workflows38_checks::startup(&u, &a)
         });
     }
     if std::env::args().any(|arg| arg == "--workflows38-ui-test") && host.tabs.n_pages() == 1 {
         let (u, w, a) = (ui.clone(), window.clone(), app.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
             workflows38_checks::test(&u, &w, &a)
         });
     }
     if std::env::args().any(|arg| arg == "--workflows37-ui-test") && host.tabs.n_pages() == 1 {
         let (u, w, a) = (ui.clone(), window.clone(), app.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
             workflows37_checks::test(&u, &w, &a)
         });
     }
@@ -61,7 +61,7 @@ pub(super) fn install_diagnostics(
             app.clone(),
             controls.outline_panel.clone(),
         );
-        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
             workflows35_checks::pointer(&u, &w, &a, &outline)
         });
     }
@@ -69,7 +69,7 @@ pub(super) fn install_diagnostics(
         && host.tabs.n_pages() == 1
     {
         let (u, w, a) = (ui.clone(), window.clone(), app.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
             workflows36_checks::template_folder(&u, &w, &a)
         });
     }
@@ -80,7 +80,7 @@ pub(super) fn install_diagnostics(
             app.clone(),
             controls.search_panel.clone(),
         );
-        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
             workflows36_checks::pointer(&u, &w, &a, &s)
         });
     }
@@ -92,7 +92,7 @@ pub(super) fn install_diagnostics(
             controls.search_panel.clone(),
             controls.outline_panel.clone(),
         );
-        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
             workflows36_checks::test(&u, &w, &a, &s, &o)
         });
     }
@@ -105,7 +105,7 @@ pub(super) fn install_diagnostics(
             controls.style_popover.clone(),
             controls.outline_panel.clone(),
         );
-        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
             workflows35_checks::test(&u, &w, &a, &s, &style, &outline)
         });
     }
@@ -116,7 +116,7 @@ pub(super) fn install_diagnostics(
     ] {
         if std::env::args().any(|a| a == flag) && host.tabs.n_pages() == 1 {
             let (u, a) = (ui.clone(), app.clone());
-            glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+            capture_ready::after(std::time::Duration::from_millis(800), move || {
                 dictionaries84_ui_test(&u, &a, mode)
             });
         }
@@ -124,7 +124,7 @@ pub(super) fn install_diagnostics(
     for flag in ["--pending-end-ui-test", "--pending-spacing-ui-test"] {
         if std::env::args().any(|arg| arg == flag) && host.tabs.n_pages() == 1 {
             let (u, w, a) = (ui.clone(), window.clone(), app.clone());
-            glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+            capture_ready::after(std::time::Duration::from_millis(800), move || {
                 if flag == "--pending-end-ui-test" {
                     pending_end_ui_test(&u, &w, &a)
                 } else {
@@ -167,7 +167,7 @@ pub(super) fn install_diagnostics(
     }
     if std::env::args().any(|a| a == "--sweep20-pointer-test") {
         let (u, w, a) = (ui.clone(), window.clone(), app.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             sweep20_pointer_test(&u, &w, &a)
         });
     }
@@ -191,19 +191,19 @@ pub(super) fn install_diagnostics(
         std::env::args().find_map(|a| a.strip_prefix("--followup19-").map(str::to_owned))
     {
         let (u, w, a, m) = (ui.clone(), window.clone(), app.clone(), text_menu.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             followup_pointer_test(&u, &w, &a, &m, mode)
         });
     }
     if std::env::args().any(|a| a == "--text18-pointer-test") {
         let (u, a) = (ui.clone(), app.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             text18_pointer_test(&u, &a)
         });
     }
     if std::env::args().any(|a| a == "--sweep18-ui-test") {
         let (u, a) = (ui.clone(), app.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             sweep18_ui_test(&u, &a)
         });
     }
@@ -211,25 +211,25 @@ pub(super) fn install_diagnostics(
         std::env::args().find_map(|a| a.strip_prefix("--table18-").map(str::to_owned))
     {
         let (u, a) = (ui.clone(), app.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             table_pointer_ui_test(&u, &a, case)
         });
     }
     if std::env::args().any(|a| a == "--heading-top-test") {
         let (u, s, a) = (ui.clone(), outline_panel.clone(), app.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             heading_top_ui_test(&u, &s, &a)
         });
     }
     if std::env::args().any(|a| a == "--uri-launch-test") {
         let u = ui.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1000), move || {
+        capture_ready::after(std::time::Duration::from_millis(1000), move || {
             launch_document_link(&u, "https://example.org/leaf-launch-test")
         });
     }
     if std::env::args().any(|a| a == "--interaction-pointer-test") {
         let (u, w, a, m) = (ui.clone(), window.clone(), app.clone(), text_menu.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             interaction_pointer_test(&u, &w, &a, &m)
         });
     }
@@ -244,19 +244,19 @@ pub(super) fn install_diagnostics(
             align_menu.clone(),
             text_menu.clone(),
         );
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             issue_sweep_ui_test(&u, &w, &h, &a, &m, &main, &pm, &tm)
         });
     }
     if std::env::args().any(|a| a == "--comment-pointer-test") {
         let (u, w, a) = (ui.clone(), window.clone(), app.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             comment_pointer_ui_test(&u, &w, &a)
         });
     }
     if std::env::args().any(|a| a == "--save-current-file-test") {
         let (u, w, a) = (ui.clone(), window.clone(), app.clone());
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             save_current_file_ui_test(&u, &w, &a)
         });
     }
@@ -269,14 +269,14 @@ pub(super) fn install_diagnostics(
         let u = ui.clone();
         let w = window.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1000), move || {
+        capture_ready::after(std::time::Duration::from_millis(1000), move || {
             annotations_ui_test(&u, &w, &a);
         });
     }
     if std::env::args().any(|a| a == "--localization-ui-test") {
         let u = ui.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(700), move || {
+        capture_ready::after(std::time::Duration::from_millis(700), move || {
             localization_ui_test(&u, &a)
         });
     }
@@ -284,7 +284,7 @@ pub(super) fn install_diagnostics(
         let u = ui.clone();
         let w = window.clone();
         let app = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1400), move || {
+        capture_ready::after(std::time::Duration::from_millis(1400), move || {
             adaptive_ui_test(&u, &w, &app)
         });
     }
@@ -296,7 +296,7 @@ pub(super) fn install_diagnostics(
     }) {
         let u = ui.clone();
         let w = window.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1400), move || {
+        capture_ready::after(std::time::Duration::from_millis(1400), move || {
             let p = show_document_context(&u, &w, 140, 160, DocumentContext::Text);
             context_activate_row(&p, label);
         });
@@ -305,7 +305,7 @@ pub(super) fn install_diagnostics(
     if std::env::args().any(|a| a == "--clipboard-ui-test") {
         let ui = ui.clone();
         let app = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(800), move || {
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
             clipboard_ui_test(&ui, &app)
         });
     }
@@ -313,14 +313,14 @@ pub(super) fn install_diagnostics(
         let u = ui.clone();
         let w = window.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             context_ui_test(&u, &w, &a)
         });
     }
     if std::env::args().any(|a| a == "--table-keyboard-test") {
         let u = ui.clone();
         let app = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             opened(
                 &u,
                 Session::new(wordcraft_doc::Document::new()),
@@ -328,7 +328,7 @@ pub(super) fn install_diagnostics(
             );
             table_command(&u, "insert.table", serde_json::json!({"rows":1,"cols":2}));
             eprintln!("TABLE_KEYBOARD_READY");
-            glib::timeout_add_local_once(std::time::Duration::from_secs(6), move || {
+            capture_ready::after(std::time::Duration::from_secs(6), move || {
                 {
                     let s = u.current.borrow();
                     let d = s.as_ref().unwrap();
@@ -361,7 +361,7 @@ pub(super) fn install_diagnostics(
         let u = ui.clone();
         let w = window.clone();
         let m = table_menu.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             if std::env::args().any(|a| a == "--table-insert-demo") {
                 show_insert_table(&u, &w);
                 return;
@@ -394,10 +394,10 @@ pub(super) fn install_diagnostics(
         let s = paragraph_popover.clone();
         window.set_title(Some("Leaf Split Button Regression"));
         // Supply coordinates only: extra capture controllers change native routing.
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             s.execute("para.indents", serde_json::json!({"left":18.}));
             m.popup();
-            glib::timeout_add_local_once(std::time::Duration::from_millis(400), move || {
+            capture_ready::after(std::time::Duration::from_millis(400), move || {
                 use gdk::prelude::PopupExt;
                 let pop = s.popover.upgrade().unwrap();
                 let body = find_widget(&s.main, "paragraph-more-indents-apply")
@@ -431,7 +431,7 @@ pub(super) fn install_diagnostics(
             let u = ui.clone();
             let w = window.clone();
             let a = app.clone();
-            glib::timeout_add_local_once(std::time::Duration::from_millis(900), move || {
+            capture_ready::after(std::time::Duration::from_millis(900), move || {
                 if proof {
                     proofing_ui_test(&u, &w, &a);
                 } else {
@@ -444,7 +444,7 @@ pub(super) fn install_diagnostics(
         let u = ui.clone();
         let w = window.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(900), move || {
+        capture_ready::after(std::time::Duration::from_millis(900), move || {
             header_footer_ui_test(
                 &u,
                 &w,
@@ -461,7 +461,7 @@ pub(super) fn install_diagnostics(
         let m = picture_menu.clone();
         let w = window.clone();
         let app = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             document_tools_fixture(&u);
             if std::env::args().any(|a| a == "--document-tools-test") {
                 document_tools_ui_test(&u, &p, &m, &w, &app);
@@ -475,7 +475,7 @@ pub(super) fn install_diagnostics(
     if std::env::args().any(|a| a == "--columns-demo") {
         let u = ui.clone();
         let m = align_menu.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             m.popup();
             if let Some(s) = u.paragraph.borrow().as_ref() {
                 s.page("columns");
@@ -486,28 +486,28 @@ pub(super) fn install_diagnostics(
         let u = ui.clone();
         let w = window.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(900), move || {
+        capture_ready::after(std::time::Duration::from_millis(900), move || {
             print_ui_test(&u, &w, &a)
         });
     }
     if std::env::args().any(|a| a == "--host-cache-ui-test") {
         let u = ui.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(900), move || {
+        capture_ready::after(std::time::Duration::from_millis(900), move || {
             host_cache_ui_test(&u, &a)
         });
     }
     if std::env::args().any(|a| a == "--performance-ui-test") {
         let u = ui.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(900), move || {
+        capture_ready::after(std::time::Duration::from_millis(900), move || {
             performance_ui_test(&u, &a)
         });
     }
     if std::env::args().any(|a| a == "--a11y-ui-test") {
         let u = ui.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(900), move || {
+        capture_ready::after(std::time::Duration::from_millis(900), move || {
             accessible_document_ui_test(&u, &a)
         });
     }
@@ -516,14 +516,14 @@ pub(super) fn install_diagnostics(
         let w = window.clone();
         let m = app_menu.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(900), move || {
+        capture_ready::after(std::time::Duration::from_millis(900), move || {
             keyboard_ui_test(&u, &w, &m, &a)
         });
     }
     if std::env::args().any(|a| a == "--hidpi-ui-test") {
         let u = ui.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1300), move || {
+        capture_ready::after(std::time::Duration::from_millis(1300), move || {
             hidpi_ui_test(&u, &a)
         });
     }
@@ -531,14 +531,14 @@ pub(super) fn install_diagnostics(
         let u = ui.clone();
         let w = window.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             columns_ui_test(&u, &w, &a)
         });
     }
     if std::env::args().any(|a| a == "--paragraph-demo" || a == "--paragraph-spacing-demo") {
         let m = align_menu.clone();
         let s = paragraph_popover.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             m.popup();
             if std::env::args().any(|a| a == "--paragraph-spacing-demo") {
                 s.page("spacing");
@@ -549,7 +549,7 @@ pub(super) fn install_diagnostics(
         let s = paragraph_popover.clone();
         let m = align_menu.clone();
         let app = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             paragraph_ui_test(&s, &m, &app)
         });
     }
@@ -558,7 +558,7 @@ pub(super) fn install_diagnostics(
         let ui = ui.clone();
         let app = app.clone();
         let host = host.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             search_ui_test(&ui, &s, &app, &host)
         });
     }
@@ -567,14 +567,14 @@ pub(super) fn install_diagnostics(
         let m = style_menu.clone();
         let w = window.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1300), move || {
+        capture_ready::after(std::time::Duration::from_millis(1300), move || {
             view_pointer_test(&u, &m, &w, &a)
         });
     }
     if std::env::args().any(|a| a == "--spreads-demo") {
         window.set_default_size(1800, 950);
         let u = ui.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1300), move || {
+        capture_ready::after(std::time::Duration::from_millis(1300), move || {
             if let Some(d) = u.current.borrow_mut().as_mut() {
                 d.fit_to_width = false;
             }
@@ -583,7 +583,7 @@ pub(super) fn install_diagnostics(
     }
     if std::env::args().any(|a| a == "--outline-demo") {
         let b = titles_toggle.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             b.set_active(true)
         });
     }
@@ -597,7 +597,7 @@ pub(super) fn install_diagnostics(
         let tp = text_popover.clone();
         let tb = table_menu.clone();
         let app = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             pin_ui_test(&u, &sm, &sp, &pm, &pp, &tm, &tp, &tb, &app)
         });
     }
@@ -605,22 +605,22 @@ pub(super) fn install_diagnostics(
         let u = ui.clone();
         let m = menu_button.clone();
         let app = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             chrome_ui_test(&u, &m, &app)
         });
     }
     if std::env::args().any(|a| a == "--document-menu-demo") {
         let m = menu_button.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || m.popup());
+        capture_ready::after(std::time::Duration::from_millis(1200), move || m.popup());
     }
     if std::env::args().any(|a| a == "--main-menu-demo") {
         let m = app_menu.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || m.popup());
+        capture_ready::after(std::time::Duration::from_millis(1200), move || m.popup());
     }
     if std::env::args().any(|a| a == "--overview-demo") && host.tabs.n_pages() == 1 {
         let h = host.clone();
         let app = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             blank_tab(&app, &h);
             h.overview.set_open(true);
         });
@@ -631,21 +631,21 @@ pub(super) fn install_diagnostics(
         let app = app.clone();
         let s = outline_panel.clone();
         let b = titles_toggle.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1200), move || {
+        capture_ready::after(std::time::Duration::from_millis(1200), move || {
             navigation_ui_test(&u, &s, &b, &h, &app)
         });
     }
     if std::env::args().any(|a| a == "--advanced-text-demo") {
         let w = window.clone();
         let u = ui.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             show_text_options(&u, &w)
         });
     }
     if std::env::args().any(|a| a == "--advanced-paragraph-demo") {
         let w = window.clone();
         let u = ui.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             show_paragraph_options(&u, &w)
         });
     }
@@ -653,7 +653,7 @@ pub(super) fn install_diagnostics(
         let s = style_popover.clone();
         let m = style_menu.clone();
         let a = app.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             style_ui_test(&s, &m, &a)
         });
     }
@@ -662,7 +662,7 @@ pub(super) fn install_diagnostics(
     {
         let menu = style_menu.clone();
         let s = style_popover.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             menu.popup();
             if std::env::args().any(|a| a == "--pin-demo") {
                 popover_pin(&menu.popover().unwrap()).set_active(true);
@@ -678,13 +678,13 @@ pub(super) fn install_diagnostics(
     }
     if std::env::args().any(|a| a == "--preferences-demo") {
         let w = window.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             show_preferences(&w);
         });
     }
     if std::env::args().any(|a| a == "--search-demo") {
         let s = search_panel.clone();
-        glib::timeout_add_local_once(std::time::Duration::from_millis(1100), move || {
+        capture_ready::after(std::time::Duration::from_millis(1100), move || {
             s.show(true);
             s.query.set_text("the");
             s.replacement.set_text("THE");

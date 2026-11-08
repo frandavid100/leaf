@@ -54,3 +54,73 @@ pub fn restore(root: &Path, id: &str) -> Result<Session, String> {
     wait(&mut session, |s| s.document_id() != before)?;
     Ok(session)
 }
+
+/// Preview a private byte-for-byte copy through the public recovery API.
+/// The original record is never opened for writing, locked, restored or pruned.
+/// Copying opaque snapshot files avoids depending on the engine's JSON schema.
+pub fn preview(root: &Path, id: &str, saved_at: &str) -> Result<crate::PageImage, String> {
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static NEXT: AtomicU64 = AtomicU64::new(0);
+    if id.is_empty() || !id.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-') {
+        return Err("Invalid recovery record".into());
+    }
+    struct Temporary(std::path::PathBuf);
+    impl Drop for Temporary {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.0);
+        }
+    }
+    let temporary = loop {
+        let path = std::env::temp_dir().join(format!(
+            "leaf-recovery-preview-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        let mut builder = std::fs::DirBuilder::new();
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+            builder.mode(0o700);
+        }
+        match builder.create(&path) {
+            Ok(()) => break Temporary(path),
+            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(e) => return Err(e.to_string()),
+        }
+    };
+    let source = root.join(id);
+    if !std::fs::symlink_metadata(&source)
+        .map_err(|e| e.to_string())?
+        .is_dir()
+    {
+        return Err("Recovery record is unavailable".into());
+    }
+    let destination = temporary.0.join(id);
+    std::fs::create_dir(&destination).map_err(|e| e.to_string())?;
+    let mut total = 0u64;
+    let mut count = 0;
+    for entry in std::fs::read_dir(source).map_err(|e| e.to_string())? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        if entry.path().extension().is_none_or(|e| e != "json") {
+            continue;
+        }
+        let metadata = entry.path().symlink_metadata().map_err(|e| e.to_string())?;
+        total = total.saturating_add(metadata.len());
+        count += 1;
+        if !metadata.is_file() || count > 16 || total > 32 * 1024 * 1024 {
+            return Err("Recovery exceeds the preview size limit".into());
+        }
+        std::fs::copy(entry.path(), destination.join(entry.file_name()))
+            .map_err(|e| e.to_string())?;
+    }
+    let inventory = inventory(&temporary.0)?;
+    if !inventory
+        .documents
+        .iter()
+        .any(|d| d.id == id && d.saved_at == saved_at)
+    {
+        return Err("Recovery record changed".into());
+    }
+    let mut session = restore(&temporary.0, id)?;
+    crate::templates::page_preview(&mut session)
+}

@@ -1,5 +1,16 @@
 # Decisiones vigentes
 
+
+## 8/11/2026 — alpha.39: miniaturas y proceso de publicación
+
+David autoriza aplicar la aceleración de CI, resolver los issues nuevos y publicar
+otra alpha. Se conservan las comprobaciones completas y los bytes del único build;
+se reparten trabajos y runtimes, y las capturas esperan a la escena renderizada.
+Las recuperaciones se previsualizan sobre copias privadas mediante API pública;
+los registros originales conservan sus bytes y disponibilidad. La publicación
+verifica trece archivos antes de cerrar el plan explícito y actualizar documentos.
+[Alcance y medición pendiente](ALPHA39_PREVIEWS.md).
+
 ## 8/11/2026 — alpha.38 publicada y verificada
 
 David autoriza otra release cerrando lo verificable e incluyendo PR #210.

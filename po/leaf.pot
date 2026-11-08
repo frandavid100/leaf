@@ -213,7 +213,7 @@ msgstr ""
 msgid "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."
 msgstr ""
 
-#: src/gnome/templates.rs:213
+#: src/gnome/templates.rs:257
 msgid "Blank Document"
 msgstr ""
 
@@ -417,7 +417,7 @@ msgstr ""
 msgid "Choose Dictionary Folder…"
 msgstr ""
 
-#: src/gnome/templates.rs:551 src/gnome/templates.rs:571
+#: src/gnome/templates.rs:626 src/gnome/templates.rs:646
 msgid "Choose Templates Folder"
 msgstr ""
 
@@ -621,7 +621,7 @@ msgstr ""
 msgid "Could Not Export PDF"
 msgstr ""
 
-#: src/gnome/templates.rs:381 src/gnome/templates.rs:494
+#: src/gnome/templates.rs:465 src/gnome/templates.rs:569
 msgid "Could Not Load Recovery List"
 msgstr ""
 
@@ -633,7 +633,7 @@ msgstr ""
 msgid "Could Not Open Save Dialog: {e}"
 msgstr ""
 
-#: src/gnome/templates.rs:468
+#: src/gnome/templates.rs:543
 msgid "Could Not Open Template"
 msgstr ""
 
@@ -729,7 +729,7 @@ msgstr ""
 msgid "Custom Widths"
 msgstr ""
 
-#: src/gnome/templates.rs:547
+#: src/gnome/templates.rs:622
 msgid "Custom template folders are unavailable in the sandbox. Use the system Templates folder."
 msgstr ""
 
@@ -961,7 +961,7 @@ msgstr ""
 msgid "Documents (.docx, .odt)"
 msgstr ""
 
-#: src/gnome/templates.rs:207
+#: src/gnome/templates.rs:251
 msgid "Documents to Recover"
 msgstr ""
 
@@ -1849,7 +1849,7 @@ msgstr ""
 msgid "New Comment"
 msgstr ""
 
-#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:145 src/gnome/tab.rs:856 src/gnome/templates.rs:433 src/gnome/workspace.rs:321
+#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:145 src/gnome/tab.rs:856 src/gnome/templates.rs:508 src/gnome/workspace.rs:321
 msgid "New Document"
 msgstr ""
 
@@ -2213,7 +2213,7 @@ msgstr ""
 msgid "RGB Color, for Example 2266AA"
 msgstr ""
 
-#: src/gnome/templates.rs:352 src/gnome/templates.rs:431 src/gnome/workspace.rs:492
+#: src/gnome/templates.rs:409 src/gnome/templates.rs:506 src/gnome/workspace.rs:492
 msgid "Recovered Document"
 msgstr ""
 
@@ -2993,11 +2993,11 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
-#: src/gnome/templates.rs:205 src/gnome/templates.rs:530
+#: src/gnome/templates.rs:249 src/gnome/templates.rs:605
 msgid "Templates"
 msgstr ""
 
-#: src/gnome/templates.rs:532
+#: src/gnome/templates.rs:607
 msgid "Templates Folder"
 msgstr ""
 
@@ -3305,7 +3305,7 @@ msgstr ""
 msgid "UPPERCASE"
 msgstr ""
 
-#: src/gnome/templates.rs:537 src/gnome/templates.rs:616
+#: src/gnome/templates.rs:612 src/gnome/templates.rs:691
 msgid "Unavailable"
 msgstr ""
 
@@ -3381,7 +3381,7 @@ msgstr ""
 msgid "Use DOCX to preserve changes to the following paragraph style."
 msgstr ""
 
-#: src/gnome/templates.rs:555
+#: src/gnome/templates.rs:630
 msgid "Use System Templates Folder"
 msgstr ""
 
@@ -3501,7 +3501,7 @@ msgstr ""
 msgid "Zoom Out (Ctrl+-)"
 msgstr ""
 
-#: src/gnome/templates.rs:572
+#: src/gnome/templates.rs:647
 msgid "_Use Folder"
 msgstr ""
 

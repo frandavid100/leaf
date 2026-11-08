@@ -1,0 +1,9 @@
+{
+  "version": "0.1.0-alpha.39",
+  "issues": [
+    212,
+    213,
+    214
+  ],
+  "report": "docs/ALPHA39_PREVIEWS.md"
+}
