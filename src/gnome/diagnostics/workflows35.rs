@@ -484,6 +484,20 @@ pub(super) fn drag_source() {
             eprintln!("WORKFLOWS35_SOURCE_CANCEL {why:?}");
             false
         });
+        let keys = gtk::EventControllerKey::new();
+        let weak_drag = drag.downgrade();
+        keys.connect_key_pressed(move |_, key, _, _| {
+            if key == gdk::Key::Escape {
+                if let Some(drag) = weak_drag.upgrade() {
+                    eprintln!("WORKFLOWS35_SOURCE_ESCAPE");
+                    drag.drag_cancel();
+                }
+                glib::Propagation::Stop
+            } else {
+                glib::Propagation::Proceed
+            }
+        });
+        window.add_controller(keys);
         source.add_controller(drag);
         window.present();
         let weak = window.downgrade();

@@ -403,6 +403,7 @@ pub(super) fn build_tab(
     let ui = Rc::new(Ui {
         table_pointer: RefCell::new(TablePointer::default()),
         picture_drag: RefCell::new(None),
+        image_drag_active: Cell::new(false),
         image_drop: RefCell::new(None),
         image_read: RefCell::new(None),
         reference_hover: RefCell::new(None),

@@ -5,7 +5,7 @@ pub(super) struct Preview {
     pub(super) identity: Option<(u64, u64)>,
     pub(super) pos: Pos,
     pub(super) rect: selection::Rect,
-    point: (f64, f64),
+    pub(super) point: (f64, f64),
 }
 fn file_path(value: &glib::Value) -> Option<PathBuf> {
     let files = value.get::<gdk::FileList>().ok()?.files();
@@ -25,8 +25,9 @@ fn supported(value: Option<glib::Value>) -> bool {
     value.is_some_and(|v| file_path(&v).is_some() || v.get::<gdk::Texture>().is_ok())
 }
 pub(super) fn clear_preview(ui: &Rc<Ui>) {
+    let was_active = ui.image_drag_active.replace(false);
     let was_visible = ui.image_drop.borrow_mut().take().is_some();
-    if was_visible {
+    if was_visible || was_active {
         refresh_overlay_layers(ui);
     }
     if ui.drag_anchor.borrow().is_none() && ui.picture_drag.borrow().is_none() {
@@ -40,6 +41,7 @@ pub(super) fn cancel(ui: &Rc<Ui>) {
     }
 }
 pub(super) fn motion(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
+    ui.image_drag_active.set(true);
     let inside = ui.current.borrow().as_ref().is_some_and(|d| {
         d.page_frames.iter().any(|f| {
             f.compute_bounds(&ui.document_box).is_some_and(|b| {
@@ -76,12 +78,11 @@ pub(super) fn motion(ui: &Rc<Ui>, x: f64, y: f64) -> bool {
     let valid = preview.is_some();
     ui.image_drop.replace(preview);
     refresh_overlay_layers(ui);
-    if valid {
-        if let Some(b) = ui.document_box.compute_bounds(&ui.scroll) {
-            ui.drag_point
-                .set(Some((x + b.x() as f64, y + b.y() as f64)));
-            schedule_drag_scroll(ui);
-        }
+    // A page gap has no insertion target but must not terminate edge scrolling.
+    if let Some(b) = ui.document_box.compute_bounds(&ui.scroll) {
+        ui.drag_point
+            .set(Some((x + b.x() as f64, y + b.y() as f64)));
+        schedule_drag_scroll(ui);
     }
     valid
 }
@@ -144,10 +145,13 @@ pub(super) fn install(ui: &Rc<Ui>) {
                 clear_preview(&ui);
                 return gdk::DragAction::COPY;
             }
-            if supported(target.value()) && motion(&ui, x, y) {
+            if !supported(target.value()) {
+                clear_preview(&ui);
+                return gdk::DragAction::empty();
+            }
+            if motion(&ui, x, y) {
                 gdk::DragAction::COPY
             } else {
-                clear_preview(&ui);
                 gdk::DragAction::empty()
             }
         };
@@ -188,12 +192,6 @@ pub(super) fn install(ui: &Rc<Ui>) {
             || (preview.point.1 - y).abs() > 3.
             || !supported(Some(value.clone()))
         {
-            eprintln!(
-                "DROP36 rejected point={:?} identity={:?} actual={:?}",
-                preview.point,
-                preview.identity,
-                document_identity(&ui)
-            );
             clear_preview(&ui);
             return false;
         }

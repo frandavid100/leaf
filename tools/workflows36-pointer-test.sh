@@ -60,15 +60,19 @@ for stage in $(seq 0 "$stages");do
     sleep .2
     xdotool mousemove_relative --sync 2 0
     wait_marker "^WORKFLOWS36_MARKER $stage" "$log"
-    sleep .5
+    wait_marker "^WORKFLOWS36_GAP_RESUMED $stage" "$log"
   fi
   xdotool mousemove --sync --window "$window" "$ax" "$ay"
   sleep .3
   xdotool mousemove_relative --sync 2 0
   sleep .3
   wait_marker "^WORKFLOWS36_MARKER $stage" "$log"
+  if [[ $role == image ]];then wait_marker "^WORKFLOWS36_TARGET_READY $stage" "$log";fi
   scrot "${log%.log}-marker-$stage.png"
-  if [[ $role == cancel ]];then xdotool key Escape;fi
+  if [[ $role == cancel ]];then
+    xdotool key --window "$source_window" Escape
+    wait_marker '^WORKFLOWS35_SOURCE_CANCEL ' "$source_log"
+  fi
   xdotool mouseup 1
   if [[ $role == delayed ]];then
     wait_marker "^WORKFLOWS36_READ_PENDING $stage" "$log"

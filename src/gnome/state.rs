@@ -37,6 +37,7 @@ impl Current {
 pub(super) struct Ui {
     pub(super) table_pointer: RefCell<TablePointer>,
     pub(super) picture_drag: RefCell<Option<PictureDrag>>,
+    pub(super) image_drag_active: Cell<bool>,
     pub(super) image_drop: RefCell<Option<image_drop::Preview>>,
     pub(super) image_read: RefCell<Option<glib::JoinHandle<()>>>,
     pub(super) reference_hover: RefCell<Option<Pos>>,
