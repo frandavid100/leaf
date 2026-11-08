@@ -345,9 +345,15 @@ fn apply_zoom(ui: &Rc<Ui>, zoom: f32) {
                     && doc.session.sel == selection
                     && doc.active == current_page
             };
-            if restore_page && !ui.template_eligible.get() {
-                scroll_to_page(&ui, current_page);
-            } else if !restore_page {
+            if restore_page {
+                if ui.template_eligible.get() {
+                    // A refit invalidates page rasters even while gallery browsing
+                    // keeps the viewport in place. Repaint without moving it.
+                    refresh_pages(&ui);
+                } else {
+                    scroll_to_page(&ui, current_page);
+                }
+            } else {
                 // Resolve newer navigation against the now allocated geometry.
                 caret_ensure_visible(&ui);
             }
