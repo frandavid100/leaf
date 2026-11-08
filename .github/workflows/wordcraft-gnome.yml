@@ -800,6 +800,10 @@ jobs:
           path: debug-native
           run-id: ${{ env.LEAF_NATIVE_RUN }}
           github-token: ${{ github.token }}
+      - name: Restore executable permission on the downloaded native drag source
+        run: |
+          chmod 0755 debug-native/wordcraft-gnome
+          debug-native/wordcraft-gnome --version
       - name: Verify alpha35 native controls and real portal image transfer on GNOME 49
         run: bash tools/workflows35-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/workflows35-installed
       - name: Verify installed dictionary folder portal and restart
