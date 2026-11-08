@@ -1,0 +1,58 @@
+name: Optional installed portal diagnostic
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  portal-debug:
+    if: contains(github.event.pull_request.title, '[portal-debug]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      LC_ALL: en_US.UTF-8
+      LANGUAGE: en
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_INCREMENTAL: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: test
+          cache-on-failure: true
+      - name: Install native and sandbox diagnostic dependencies
+        run: |
+          sudo python3 - <<'PY'
+          from pathlib import Path
+          for path in [Path('/etc/apt/sources.list'), *Path('/etc/apt/sources.list.d').glob('*.list'), *Path('/etc/apt/sources.list.d').glob('*.sources')]:
+              if path.is_file():
+                  path.write_text(path.read_text().replace('http://azure.archive.ubuntu.com/ubuntu','https://archive.ubuntu.com/ubuntu').replace('https://azure.archive.ubuntu.com/ubuntu','https://archive.ubuntu.com/ubuntu'))
+          PY
+          sudo timeout 180s apt-get -o Acquire::Retries=1 update
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev flatpak gettext xvfb xauth scrot xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 fuse3 locales librsvg2-common adwaita-icon-theme libgtk-3-bin
+          sudo locale-gen en_US.UTF-8
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Build an unpublished diagnostic binary with the pinned engine
+        run: |
+          bash tools/prepare-language-data.sh
+          export CRAFT_I18N_DIR="$PWD/.build-deps/craft-i18n" CRAFT_I18N_REQUIRED=1
+          python tools/update_translations.py --check --compile
+          cargo build --locked --features gui --bin wordcraft-gnome
+          cp target/debug/wordcraft-gnome /tmp/leaf-portal-debug
+          strip --strip-unneeded /tmp/leaf-portal-debug
+      - name: Install the same sandbox permissions on GNOME 49
+        run: |
+          bash packaging/build-bundle.sh /tmp/leaf-portal-debug
+          mkdir -p "$HOME/.config/xdg-desktop-portal"
+          printf '[preferred]\ndefault=gtk\n' > "$HOME/.config/xdg-desktop-portal/portals.conf"
+      - name: Reproduce the portal interaction with bounded document differences
+        env:
+          LEAF35_NATIVE_SOURCE: ${{ github.workspace }}/target/debug/wordcraft-gnome
+        run: bash tools/workflows35-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/portal-debug
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: portal-debug-evidence
+          path: dist/portal-debug/
+          retention-days: 5

@@ -2,7 +2,9 @@
 
 ## En validación: alpha.36 — revisión de interfaz
 
-Candidata para #171/#177/#181/#182/#186–#191, incluido el nuevo #191.
+Candidata para #177/#181/#182/#186–#191, incluido el nuevo #191.
+#171 queda parcial: galería y carpeta XDG de solo lectura disponibles; selección
+de carpeta alternativa desactivada en Flatpak por el permiso de escritura del portal.
 Se están verificando los controles nativos y los paquetes GNOME 49/51 antes de
 publicar y cerrar individualmente los informes. [Cambios y límites](docs/ALPHA36_INTERFACE.md).
 Conserva la presentación y el generador bilingüe incorporados en la otra conversación.

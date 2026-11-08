@@ -611,6 +611,25 @@ pub(super) fn pointer(
             assert!(target.current_drop().is_none());
             assert!(ui.image_drop.borrow().is_none());
             if stage == 1 {
+                {
+                    let current = ui.current.borrow();
+                    let d = current.as_ref().unwrap();
+                    if d.session.doc != original {
+                        eprintln!(
+                            "WORKFLOWS36_CANCEL_STATE undo={} expected={} image={:?} rev={}",
+                            d.session.undo_depth(),
+                            depth,
+                            pictures::selected(&d.session).map(|v| v.0),
+                            d.session.rev()
+                        );
+                        report_difference(
+                            &serde_json::to_value(&original).unwrap(),
+                            &serde_json::to_value(&d.session.doc).unwrap(),
+                            "document",
+                            &mut 8,
+                        );
+                    }
+                }
                 assert!(
                     ui.current.borrow().as_ref().unwrap().session.doc == original,
                     "hover/cancel must preserve the complete document"
@@ -688,7 +707,7 @@ pub(super) fn pointer(
     });
 }
 
-/// Real Preferences chooser; the driver supplies a host directory unavailable to the sandbox.
+/// Verify read-only XDG access in the sandbox and the native custom chooser.
 pub(super) fn template_folder(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
@@ -698,17 +717,28 @@ pub(super) fn template_folder(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
             .unwrap()
             .downcast::<gtk::Button>()
             .unwrap();
-        choose.grab_focus();
-        choose.emit_clicked();
-        eprintln!("WORKFLOWS36_TEMPLATE_CHOOSER_READY");
-        for _ in 0..1500 {
-            if wordcraft_gnome::preferences::template_folder().is_some() {
-                break;
+        let sandboxed = std::env::var_os("FLATPAK_ID").is_some();
+        if sandboxed {
+            assert!(
+                !choose.is_sensitive(),
+                "do not grant writable portal access for templates"
+            );
+            assert!(choose.tooltip_text().is_some());
+            assert!(wordcraft_gnome::preferences::template_folder().is_none());
+        } else {
+            assert!(choose.is_sensitive());
+            choose.grab_focus();
+            choose.emit_clicked();
+            eprintln!("WORKFLOWS36_TEMPLATE_CHOOSER_READY");
+            for _ in 0..1500 {
+                if wordcraft_gnome::preferences::template_folder().is_some() {
+                    break;
+                }
+                glib::timeout_future(std::time::Duration::from_millis(20)).await;
             }
-            glib::timeout_future(std::time::Duration::from_millis(20)).await;
+            assert!(wordcraft_gnome::preferences::template_folder().is_some());
         }
-        let folder =
-            wordcraft_gnome::templates::folder().expect("chooser must persist a usable folder");
+        let folder = wordcraft_gnome::templates::folder().expect("usable template folder");
         assert!(folder.join("Personal.docx").is_file());
         prefs.close();
         let host = ui.host.upgrade().unwrap();
@@ -755,8 +785,49 @@ pub(super) fn template_folder(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
         );
         eprintln!("{}", String::from_utf8_lossy(&restart.stdout));
         eprintln!(
-            "WORKFLOWS36_TEMPLATE_FOLDER_OK thumbnail=true same_tab=true persisted_read_only=true"
+            "WORKFLOWS36_TEMPLATE_FOLDER_OK thumbnail=true same_tab=true restart=true sandbox_read_only={sandboxed} custom_portal_disabled={sandboxed}"
         );
         app.quit();
     });
+}
+
+// Bounded failure evidence is useful across different installed runtimes.
+fn report_difference(
+    before: &serde_json::Value,
+    after: &serde_json::Value,
+    path: &str,
+    remaining: &mut usize,
+) {
+    if before == after || *remaining == 0 {
+        return;
+    }
+    match (before, after) {
+        (serde_json::Value::Object(a), serde_json::Value::Object(b)) => {
+            let keys = a
+                .keys()
+                .chain(b.keys())
+                .collect::<std::collections::BTreeSet<_>>();
+            for key in keys {
+                report_difference(
+                    &a.get(key).unwrap_or(&serde_json::Value::Null),
+                    &b.get(key).unwrap_or(&serde_json::Value::Null),
+                    &format!("{path}.{key}"),
+                    remaining,
+                );
+            }
+        }
+        (serde_json::Value::Array(a), serde_json::Value::Array(b)) if a.len() == b.len() => {
+            for (i, (a, b)) in a.iter().zip(b).enumerate() {
+                report_difference(a, b, &format!("{path}[{i}]"), remaining);
+            }
+        }
+        _ => {
+            *remaining -= 1;
+            eprintln!(
+                "WORKFLOWS36_DELTA {path} before={} after={}",
+                before.to_string().chars().take(240).collect::<String>(),
+                after.to_string().chars().take(240).collect::<String>()
+            );
+        }
+    }
 }

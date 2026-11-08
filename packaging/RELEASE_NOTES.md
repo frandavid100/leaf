@@ -1,10 +1,12 @@
 ## Leaf 0.1.0-alpha.36 — A simpler editing interface
 
-- Choose a personal template from actual page thumbnails above a new blank document. Configure its folder in Preferences, or start typing straight away.
+- Choose a personal template from actual page thumbnails above a new blank document, or start typing straight away. The Flatpak reads the system Templates folder without write access.
 - Keep ordinary Copy and Paste one click away, with formatting and plain-text variants grouped in their own menus. The context menu follows Style, Paragraph, Text, Elements. Inspect and replace document fonts inside Document Properties, with navigation, available fallback information and Undo.
 - Search options share one compact group, with the scope selector at the bottom. Paste tabs or line endings directly; the special-character picker has been removed.
 - Hidden tabs reclaim their row. Structure preserves your position when branches fold, separates document sections and places heading move actions in three-dot menus.
 - Image drags show an insertion caret. Cancelling a drag preserves the selection, and delayed imports reject obsolete document targets.
+
+Custom template folder selection is unavailable in the Flatpak because the folder portal grants write access and rejects self-revocation. The read-only system Templates folder remains usable; issue #171 remains open.
 
 Plain-text clipboard data cannot distinguish soft line breaks from paragraph boundaries. Pasted line endings find both; ordinary replacement line endings create paragraphs.
 
@@ -12,11 +14,13 @@ DOCX is required when ODT cannot preserve a selected feature, including changed 
 
 ## Leaf 0.1.0-alpha.36 — Una interfaz de edición más sencilla
 
-- Elige una plantilla personal desde miniaturas reales de sus páginas, encima de un documento nuevo en blanco. Configura su carpeta en Preferencias o empieza a escribir directamente.
+- Elige una plantilla personal desde miniaturas reales de sus páginas, encima de un documento nuevo en blanco, o empieza a escribir directamente. El Flatpak lee la carpeta de plantillas del sistema sin permiso de escritura.
 - Copiar y Pegar siguen disponibles con un clic, con sus variantes de formato y texto sin formato agrupadas en menús propios. El menú contextual sigue el orden Estilo, Párrafo, Texto, Elementos. Consulta y sustituye las fuentes dentro de Propiedades del documento, con navegación, información disponible sobre fuentes de sustitución y Deshacer.
 - Las opciones de búsqueda comparten un grupo compacto, con el selector de ámbito al final. Pega tabulaciones o saltos directamente; se ha eliminado el selector de caracteres especiales.
 - Las pestañas ocultas recuperan su espacio. Estructura conserva la posición al plegar ramas, separa las secciones y reúne las acciones para mover títulos en menús de tres puntos.
 - Al arrastrar una imagen se muestra el punto de inserción. Cancelar conserva la selección y las importaciones demoradas rechazan destinos del documento que hayan quedado obsoletos.
+
+La selección de otra carpeta de plantillas no está disponible en el Flatpak: el portal concede escritura y rechaza que la aplicación retire ese permiso. Se conserva la carpeta de plantillas del sistema en solo lectura; el issue #171 sigue abierto.
 
 El texto plano del portapapeles no distingue los saltos de línea de los saltos de párrafo. La búsqueda de saltos pegados encuentra ambos; los saltos de un reemplazo normal crean párrafos.
 

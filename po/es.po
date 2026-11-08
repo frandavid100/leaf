@@ -3264,3 +3264,6 @@ msgstr "_Usar carpeta"
 msgid "The templates folder must be readable without write access."
 msgstr "La carpeta de plantillas debe permitir la lectura sin acceso de escritura."
 
+
+msgid "Custom template folders are unavailable in the sandbox. Use the system Templates folder."
+msgstr "Las carpetas de plantillas personalizadas no están disponibles en el entorno aislado. Usa la carpeta de plantillas del sistema."

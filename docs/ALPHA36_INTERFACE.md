@@ -1,6 +1,6 @@
 # Alpha.36 — revised document workflows
 
-The candidate covers #171, #177, #181, #182 and #186–#191. Publication and
+The candidate implements #177, #181, #182 and #186–#191, and partially addresses #171. Publication and
 individual issue closure require the native suite and both installed runtimes.
 No engine, renderer, vendor, compatibility patch or dependency pin changes.
 
@@ -10,9 +10,13 @@ No engine, renderer, vendor, compatibility patch or dependency pin changes.
   above the editable page. Choosing fills the same untitled tab. First committed
   input, including IME and paste, permanently dismisses that gallery; Undo and
   late preview completion cannot revive it. Preferences chooses or resets the
-  folder. Missing/disabled XDG entries never fall back to the entire home.
+  folder in native builds. Missing/disabled XDG entries never fall back to the entire home.
 - The default sandbox permission remains `xdg-templates:ro`. A chosen portal
-  directory is narrowed to read-only before its returned path is persisted.
+  folder cannot currently receive a read-only grant from the folder portal:
+  the real GNOME 49 run returned `NotAllowed: Not enough permissions` on
+  self-revocation. Alternative folder selection is therefore disabled in the
+  sandbox with an explanatory tooltip. It remains available in native builds.
+  #171 stays open; no writable custom portal grant is requested or persisted.
   Preview/cache data stays outside source storage. Native operation only reads
   ordinary files; the system user retains their existing filesystem permissions.
 - Search options form one contiguous group with scope last. Tabs and line
@@ -51,13 +55,15 @@ outline offsets, split menu Back and IME/rapid-input gallery dismissal.
 external clipboard and real X11 gestures. The edge-scroll probe requires an
 actual page-gap crossing and a recovered marker before dropping; it waits for
 native drag completion rather than interpreting a hidden marker as a drop.
-The separate source harness binds Escape to GTK DragSource cancellation and
-acknowledges the native cancellation signal before the driver releases the mouse. The native delayed-read case uses a
+The separate source harness binds Escape to native GDK drag cancellation and
+acknowledges the cancellation signal before the driver releases the mouse. The native delayed-read case uses a
 FIFO and edits the document before releasing bytes, proving stale rejection.
-`tools/workflows36-template-folder-test.sh` selects an actual external directory
-through Preferences, checks thumbnails and same-tab creation, restarts the
-process and verifies denied source writes inside the sandbox and unchanged
-host bytes. Both installed runtime layouts retain the real D-Bus/portal session
+`tools/workflows36-template-folder-test.sh` checks the native custom chooser.
+Inside the sandbox it configures an actual localized XDG Templates directory,
+using the unchanged production `xdg-templates:ro` mount, checks thumbnails and
+same-tab creation, restarts the process and verifies denied source writes and
+unchanged host bytes. It also checks that the unsupported custom chooser is
+unavailable, rather than declaring its failed permission requirement satisfied. Both installed runtime layouts retain the real D-Bus/portal session
 and normal runner UID. The original interaction pointer regression is retained.
 
 The unvalidated executable becomes available after the alpha35/36 workflow
@@ -71,3 +77,10 @@ AppStream and GitHub notes use the store pipeline already merged separately.
 actual catalogue/client verification. #1/#99 await upstream PR integration;
 #107/#152 are merged upstream but absent from the pinned published 0.16.0.
 #52 remains deferred. Automated checks do not establish human GNOME OS testing.
+
+The optional `portal-diagnostic.yml` workflow is enabled only by an explicit
+`[portal-debug]` PR title. It runs an unpublished diagnostic binary with identical
+sandbox permissions and cannot publish. Failed document comparisons emit bounded
+canonical JSON-path differences; the final candidate still requires optimized
+native and installed validation. The synthetic source uses GDK's native cancel
+signal because GTK 4.14 DragSource cancellation alone omits Xdnd leave/ungrab.

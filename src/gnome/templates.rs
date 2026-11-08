@@ -214,6 +214,15 @@ pub(super) fn preferences(parent: &adw::PreferencesWindow) -> adw::PreferencesGr
     let choose = gtk::Button::from_icon_name("folder-open-symbolic");
     choose.set_valign(gtk::Align::Center);
     choose.set_widget_name("preferences-template-choose");
+    // The folder portal grants write access and cannot revoke its own grant.
+    // Keep the production XDG :ro mount until a read-only chooser is supported.
+    let sandboxed = std::env::var_os("FLATPAK_ID").is_some();
+    choose.set_sensitive(!sandboxed);
+    if sandboxed {
+        choose.set_tooltip_text(Some(wordcraft_gnome::t!(
+            "Custom template folders are unavailable in the sandbox. Use the system Templates folder."
+        )));
+    }
     accessible_name(&choose, wordcraft_gnome::t!("Choose Templates Folder"));
     let reset = gtk::Button::from_icon_name("edit-undo-symbolic");
     reset.set_valign(gtk::Align::Center);
@@ -227,6 +236,9 @@ pub(super) fn preferences(parent: &adw::PreferencesWindow) -> adw::PreferencesGr
     let row_ref = row.downgrade();
     let reset_ref = reset.downgrade();
     choose.connect_clicked(move |_| {
+        if sandboxed {
+            return;
+        }
         let Some(parent) = weak.upgrade() else {
             return;
         };
@@ -246,25 +258,21 @@ pub(super) fn preferences(parent: &adw::PreferencesWindow) -> adw::PreferencesGr
         chooser.select_folder(Some(&parent), Some(&cancel), move |result| {
             let Ok(file) = result else { return };
             let Some(path) = file.path() else { return };
-            glib::spawn_future_local(async move {
-                let result = read_only_grant(&path).await;
-                let Some(parent) = parent_ref.upgrade().filter(|p| p.is_visible()) else {
-                    return;
-                };
-                match result.and_then(|()| wordcraft_gnome::preferences::set_template_folder(&path))
-                {
-                    Ok(()) => {
-                        if let Some(row) = row_ref.upgrade() {
-                            row.set_subtitle(&path.display().to_string());
-                        }
-                        if let Some(reset) = reset_ref.upgrade() {
-                            reset.set_sensitive(true);
-                        }
-                        refresh_folders();
+            let Some(parent) = parent_ref.upgrade().filter(|p| p.is_visible()) else {
+                return;
+            };
+            match wordcraft_gnome::preferences::set_template_folder(&path) {
+                Ok(()) => {
+                    if let Some(row) = row_ref.upgrade() {
+                        row.set_subtitle(&path.display().to_string());
                     }
-                    Err(e) => parent.add_toast(Toast::new(&e)),
+                    if let Some(reset) = reset_ref.upgrade() {
+                        reset.set_sensitive(true);
+                    }
+                    refresh_folders();
                 }
-            });
+                Err(e) => parent.add_toast(Toast::new(&e)),
+            }
         });
     });
     let weak = parent.downgrade();
@@ -290,73 +298,4 @@ pub(super) fn preferences(parent: &adw::PreferencesWindow) -> adw::PreferencesGr
         }
     });
     group
-}
-
-// GTK's generic OpenFile folder chooser may grant write access. Templates only
-// need read: narrow this app's selected document-portal entry before persisting it.
-async fn read_only_grant(path: &Path) -> Result<(), String> {
-    let Ok(app_id) = std::env::var("FLATPAK_ID") else {
-        return Ok(());
-    };
-    let connection = gio::bus_get_future(gio::BusType::Session)
-        .await
-        .map_err(|e| e.to_string())?;
-    let bus = "org.freedesktop.portal.Documents";
-    let object = "/org/freedesktop/portal/documents";
-    let mount = connection
-        .call_future(
-            Some(bus),
-            object,
-            bus,
-            "GetMountPoint",
-            None,
-            None,
-            gio::DBusCallFlags::NONE,
-            5000,
-        )
-        .await
-        .map_err(|e| e.to_string())?;
-    let (bytes,) = mount
-        .get::<(Vec<u8>,)>()
-        .ok_or_else(|| "Invalid document portal mount point".to_owned())?;
-    use std::os::unix::ffi::OsStringExt;
-    let mount = PathBuf::from(std::ffi::OsString::from_vec(
-        bytes.into_iter().take_while(|b| *b != 0).collect(),
-    ));
-    if let Ok(relative) = path.strip_prefix(mount) {
-        let id = relative
-            .components()
-            .next()
-            .and_then(|v| v.as_os_str().to_str())
-            .ok_or_else(|| "Invalid document portal path".to_owned())?;
-        let parameters = (id, app_id, vec!["write", "delete", "grant-permissions"]).to_variant();
-        connection
-            .call_future(
-                Some(bus),
-                object,
-                bus,
-                "RevokePermissions",
-                Some(&parameters),
-                None,
-                gio::DBusCallFlags::NONE,
-                5000,
-            )
-            .await
-            .map_err(|e| e.to_string())?;
-    }
-    let info = gio::File::for_path(path)
-        .query_info_future(
-            "access::can-read,access::can-write",
-            gio::FileQueryInfoFlags::NONE,
-            glib::Priority::DEFAULT,
-        )
-        .await
-        .map_err(|e| e.to_string())?;
-    if !info.boolean("access::can-read") || info.boolean("access::can-write") {
-        return Err(wordcraft_gnome::t!(
-            "The templates folder must be readable without write access."
-        )
-        .into());
-    }
-    Ok(())
 }

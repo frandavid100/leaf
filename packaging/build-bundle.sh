@@ -44,14 +44,14 @@ flatpak build-finish --filesystem=xdg-templates:ro --command=leaf --share=ipc --
 tar -C "$work/files" -cJf "$out/Leaf-$version-flatpark-x86_64.tar.xz" .
 flatpak build-export "$repo" "$work" alpha
 flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo "$repo" "$out/Leaf-$version-x86_64.flatpak" "$app_id" alpha
-if test -f prior-release/Leaf-0.1.0-alpha.32-x86_64.flatpak; then
-  flatpak --user install -y --noninteractive prior-release/Leaf-0.1.0-alpha.32-x86_64.flatpak
+if test -f prior-release/Leaf-0.1.0-alpha.35-x86_64.flatpak; then
+  flatpak --user install -y --noninteractive prior-release/Leaf-0.1.0-alpha.35-x86_64.flatpak
   # Seed persistent data without starting a document portal outside the smoke-test bus.
   mkdir -p "$HOME/.var/app/$app_id/data"
   printf retained > "$HOME/.var/app/$app_id/data/upgrade-test"
 fi
 flatpak --user install -y --noninteractive "$out/Leaf-$version-x86_64.flatpak"
-if test -f prior-release/Leaf-0.1.0-alpha.32-x86_64.flatpak; then
+if test -f prior-release/Leaf-0.1.0-alpha.35-x86_64.flatpak; then
   grep -q retained "$HOME/.var/app/$app_id/data/upgrade-test"
   echo FLATPAK_UPGRADE_OK
 fi
