@@ -42,11 +42,12 @@ checks, source/executable identity and public-asset verification.
 
 Headless filename tests cover metadata precedence, heading fallback, unsafe and
 empty names, Unicode truncation, format guards and read-only history/selection.
-The previous complete local suite passed 213 Rust tests before the extra heading
-case; focused filename tests pass all three cases. Python: 9 tests. Catalogs:
+The complete local suite passed 214 Rust tests, including the three filename
+cases. Python: 9 tests. Catalogs:
 893 messages with complete English and Spanish translations.
 
-`tools/workflows37-pointer-test.sh` checks real gallery/sidebar deltas, repeated
+`tools/workflows37-pointer-test.sh` checks real gallery/sidebar deltas, independent thumbnail rasterization and active-page
+visibility in actual native bounds, repeated
 hide/show, user-input cancellation, nine integrated dialog bounds at narrow
 window sizes, stale table targets, native keyboard/mouse Escape, modal shortcuts,
 focus, Undo and a real first-save chooser cancellation. It runs in native and
@@ -68,4 +69,6 @@ workaround is never included in distribution or CI.
 The deferred #52, engine-dependent #1/#99/#107/#152 and read-only custom-folder
 blocker #171 remain outside these fixes. Store/catalog work #185 continues in
 its separate conversation. Public screenshots are not replaced with CI captures.
+Concurrent experimental Windows work is preserved. The compiled-source freshness
+guard also includes its new build.rs; existing source exclusions are unchanged.
 No claim of a manual GNOME OS, Orca, printer or user-system test is made.

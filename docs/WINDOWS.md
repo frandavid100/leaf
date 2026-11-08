@@ -1,7 +1,8 @@
 # Leaf for Windows — experimental
 
-The first Windows x86_64 package is being prepared from alpha.36. This page does
-not claim it is published until the release and checks have been verified.
+[Download 0.1.0-alpha.36-windows.1](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36-windows.1), published and verified on 8 November 2026. Windows 10/11 x86_64 is the target;
+automated checks ran on Windows Server 2022 x64. The installer is about 34 MB and
+the ZIP about 52 MB. This is based on Linux alpha.36 and is an occasional release.
 
 ## Use
 
@@ -36,6 +37,12 @@ and persists preferences. The workflow tests installation, the installed program
 and removal. A separate Linux job checks formatting, catalogs, Python/Rust tests,
 optimized GUI compilation and localized windows before publication.
 
+The [promotion workflow](../.github/workflows/publish-windows.yml) also accepts a
+successful candidate run ID. It verifies source ancestry and candidate digests,
+adds current notices, retains the executable unchanged, rechecks both final
+packages and publishes those exact bytes. Increment `packaging/windows/sequence.txt`
+for a second Windows package of the same Linux alpha.
+
 Use **Actions → Leaf — experimental Windows package → Run workflow** when a new
 Windows build is wanted. Enable `publish` to release its verified artifacts. Ordinary
 Linux releases do not trigger Windows builds. During setup, changes to this Windows
@@ -53,3 +60,15 @@ with third-party apps and real printer drivers still need interactive testing.
 Use copies of important documents; the existing DOCX/ODT preservation limits apply.
 An unsigned build may show a Windows reputation warning. Runtime package versions
 are recorded in BUILD.json, with licenses and source links in the package.
+
+## Verified first release
+
+- Executable source/tag: `3f16eac843e91a9a725ddf27ff91faaa32ce5b4d`.
+- [Build, 210 Windows/211 Linux tests, portable and installed checks](https://github.com/frandavid100/leaf/actions/runs/42496853724).
+- [Final package checks and publication](https://github.com/frandavid100/leaf/actions/runs/42499295215), packaging source `54114e38f9134e6d8c6a08b40913ace4b35eaa0e`.
+- 63 native DLLs; no separately installed GTK/MSYS2 was used by the relocated or installed checks.
+- Final installer SHA-256: `6377a35c58b6104aff1279b5157e222bef303b85aa4259e0007a6ab66b8a2422`.
+- Final ZIP SHA-256: `375b60ef91291b68355a4009f7adc0668d07a1a732eea0b9e948bbd7096867c5`.
+
+The public release is a prerelease and does not replace the latest Linux release.
+Its four assets, digests and source tag were confirmed through GitHub's API.

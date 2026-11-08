@@ -1097,7 +1097,7 @@ msgstr ""
 msgid "Equal"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha29.rs:168 src/gnome/equations.rs:10 src/navigation.rs:315
+#: src/gnome/diagnostics/alpha29.rs:171 src/gnome/equations.rs:10 src/navigation.rs:315
 msgid "Equation"
 msgstr ""
 
@@ -1833,7 +1833,7 @@ msgstr ""
 msgid "Narrow Right Column"
 msgstr ""
 
-#: src/gnome/diagnostics/navigation131.rs:83 src/gnome/navigation.rs:16 src/gnome/navigation.rs:37 src/gnome/navigation.rs:80 src/gnome/tab.rs:166 src/gnome/tab.rs:167 src/gnome/tab.rs:184
+#: src/gnome/diagnostics/navigation131.rs:102 src/gnome/navigation.rs:16 src/gnome/navigation.rs:37 src/gnome/navigation.rs:80 src/gnome/tab.rs:166 src/gnome/tab.rs:167 src/gnome/tab.rs:184
 msgid "Navigation"
 msgstr ""
 
@@ -2229,7 +2229,7 @@ msgstr ""
 msgid "Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved."
 msgstr ""
 
-#: src/gnome/view.rs:511
+#: src/gnome/view.rs:519
 msgid "Recovery: {e}"
 msgstr ""
 
@@ -2397,7 +2397,7 @@ msgstr ""
 msgid "Restore Original Size"
 msgstr ""
 
-#: src/gnome/annotations.rs:155 src/gnome/diagnostics/navigation131.rs:74 src/gnome/diagnostics/review29.rs:31 src/gnome/document_properties_dialog.rs:358 src/gnome/navigation.rs:42 src/gnome/navigation.rs:78 src/gnome/review.rs:268 src/gnome/tab.rs:198 src/gnome/tab.rs:200
+#: src/gnome/annotations.rs:155 src/gnome/diagnostics/navigation131.rs:93 src/gnome/diagnostics/review29.rs:31 src/gnome/document_properties_dialog.rs:358 src/gnome/navigation.rs:42 src/gnome/navigation.rs:78 src/gnome/review.rs:268 src/gnome/tab.rs:198 src/gnome/tab.rs:200
 msgid "Review"
 msgstr ""
 
@@ -2973,7 +2973,7 @@ msgstr ""
 msgid "Table Size"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:98 src/gnome/diagnostics/format136.rs:118 src/gnome/elements.rs:110 src/gnome/menus.rs:465 src/gnome/navigation.rs:1086 src/gnome/references.rs:208 src/navigation.rs:319
+#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:101 src/gnome/diagnostics/format136.rs:118 src/gnome/elements.rs:110 src/gnome/menus.rs:465 src/gnome/navigation.rs:1086 src/gnome/references.rs:208 src/navigation.rs:319
 msgid "Table of Contents"
 msgstr ""
 
@@ -3061,7 +3061,7 @@ msgstr ""
 msgid "The document changed. Reopen the font list."
 msgstr ""
 
-#: src/gnome/view.rs:522
+#: src/gnome/view.rs:530
 msgid "The document contains no pages"
 msgstr ""
 
@@ -3545,7 +3545,7 @@ msgstr ""
 msgid "{count}Y"
 msgstr ""
 
-#: src/gnome/diagnostics/view_tests.rs:53 src/gnome/view.rs:665
+#: src/gnome/diagnostics/view_tests.rs:53 src/gnome/view.rs:673
 msgid "{current} of {total}"
 msgstr ""
 

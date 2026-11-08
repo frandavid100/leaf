@@ -1,5 +1,15 @@
 # Decisiones vigentes
 
+## 8/11/2026 — Windows publicada y comprobada
+
+Publicada `0.1.0-alpha.36-windows.1`: 210 pruebas Rust Windows, 211 Linux y
+comprobaciones reales de los paquetes portátiles e instalados en/es, incluido
+traslado a ruta Unicode, guardado/reapertura, SVG, PDF, preferencias y ventanas.
+Los avisos finales se completan sin alterar el ejecutable; después se repiten
+las pruebas de ambos paquetes y se publican esos bytes, con cuatro assets y tag
+verificados. Impresión física, accesibilidad y GPU reales quedan sin validación.
+[Identidad, ejecuciones y digests](WINDOWS.md).
+
 ## 8/11/2026 — primera versión para Windows
 
 David solicita preparar una primera versión experimental del estado actual.

@@ -1,12 +1,16 @@
 # Estado actual de Leaf
 
-## Primera versión experimental para Windows — en preparación
+## Publicada: primera versión experimental para Windows
 
-David autoriza preparar una primera versión para Windows el 8/11/2026.
-Se conserva GTK4/libadwaita y el motor fijado. La compilación es ocasional,
-con instalador por usuario y ZIP que incluyen las bibliotecas necesarias.
-La publicación exige comprobar ambos paquetes y las regresiones de Linux.
-[Alcance, uso y límites](docs/WINDOWS.md).
+[Windows 0.1.0-alpha.36-windows.1](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36-windows.1), publicada el 8/11/2026: instalador por usuario y ZIP x86_64 con GTK/libadwaita,
+diccionarios y traducciones incluidos. 210 pruebas Rust en Windows y 211 en Linux;
+nueve Python y 892 mensajes completos. ZIP trasladado a ruta con espacios/ñ,
+interfaz en/es, DOCX/ODT/PDF, preferencias, ventanas, instalación y eliminación
+comprobados automáticamente. Avisos completos añadidos sin cambiar el ejecutable,
+y paquetes finales comprobados otra vez antes de publicar; cuatro assets públicos
+con digests SHA-256 y tag de la fuente verificados. Entregas Windows ocasionales;
+no se inicia otra alpha Linux ni se cierran issues por este port.
+[Fuentes, ejecución y límites](docs/WINDOWS.md).
 
 
 ## Publicada y verificada: alpha.36 — revisión de interfaz

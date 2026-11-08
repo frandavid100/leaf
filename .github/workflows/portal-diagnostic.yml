@@ -60,10 +60,6 @@ jobs:
             scale=1; if test "$language" = es; then scale=2; fi
             LANGUAGE=$language GDK_SCALE=$scale xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s bash "$root/tools/format136-pointer-test.sh" "$RUNNER_TEMP/leaf-format49.sh"
           done
-      - name: Reproduce the portal interaction with bounded document differences
-        env:
-          LEAF35_NATIVE_SOURCE: ${{ github.workspace }}/target/debug/wordcraft-gnome
-        run: bash tools/workflows35-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/portal-debug
       - name: Check the same unpublished archive at the relocated GNOME 51 prefix
         env:
           LEAF35_NATIVE_SOURCE: ${{ github.workspace }}/target/debug/wordcraft-gnome
@@ -71,6 +67,10 @@ jobs:
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.37-flatpark-x86_64.tar.xz 2>&1 | tee dist/portal-gnome51.log
           grep -q FLATPARK_GNOME51_RELOCATION_OK dist/portal-gnome51.log
+      - name: Reproduce the portal interaction with bounded document differences
+        env:
+          LEAF35_NATIVE_SOURCE: ${{ github.workspace }}/target/debug/wordcraft-gnome
+        run: bash tools/workflows35-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/portal-debug
       - uses: actions/upload-artifact@v4
         if: always()
         with:

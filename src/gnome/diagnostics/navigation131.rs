@@ -20,6 +20,7 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
     let phase = Cell::new(0);
     let thumbs = Cell::new(0.);
     let structure = Cell::new(0.);
+    let restore_waits = Cell::new(0);
     let finish = RefCell::new(Some(Box::new(finish) as Box<dyn FnOnce()>));
     let other: RefCell<Option<(adw::TabPage, Rc<Ui>)>> = RefCell::new(None);
     // Observe after GTK frame/layout sources, including pending restoration.
@@ -45,6 +46,24 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                     outline.vadjustment().value()
                 );
             }
+            // Await the restoration lifecycle, never the desired numeric value.
+            // A slow installed renderer may need more than 400 ms for GTK's
+            // allocation frames. The exact scroll assertion below is unchanged.
+            if matches!(phase.get(), 8 | 10) && u.hidden_navigation_scroll.borrow().is_some() {
+                restore_waits.set(restore_waits.get() + 1);
+                eprintln!(
+                    "NAVIGATION131_RESTORE_PENDING phase={} ticks={} value={}",
+                    phase.get(),
+                    restore_waits.get(),
+                    outline.vadjustment().value()
+                );
+                assert!(
+                    restore_waits.get() <= 25,
+                    "navigation restoration did not finish its allocation lifecycle"
+                );
+                return glib::ControlFlow::Continue;
+            }
+            restore_waits.set(0);
             match phase.get() {
                 0 => {
                     u.navigation_button.set_active(true);

@@ -33,6 +33,9 @@ Format the Leaf package only; do not reformat or modify vendor as part of a
 frontend cleanup. The installed application is Leaf; the internal Cargo target
 keeps its existing wordcraft-gnome name.
 
+For Windows build, packaging and validation, see [the Windows guide](docs/WINDOWS.md).
+Windows packages are generated occasionally rather than for every Linux alpha.
+
 ## Making a focused change
 
 Use public WordCraft Session/layout/command APIs. Keep the engine, renderer,

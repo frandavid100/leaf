@@ -1,0 +1,132 @@
+name: Publish a verified Windows package without rebuilding
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Successful experimental Windows package workflow run
+        required: true
+        type: string
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-windows.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: leaf-windows-publish
+  cancel-in-progress: false
+jobs:
+  package:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[windows-promote]')
+    runs-on: windows-2022
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      CANDIDATE_RUN: ${{ inputs.run_id || '42496853724' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify candidate and original package checksums
+        shell: pwsh
+        run: |
+          if ($env:CANDIDATE_RUN -notmatch '^\d+$') { throw 'Invalid candidate run' }
+          $run = gh api "repos/$env:GH_REPO/actions/runs/$env:CANDIDATE_RUN" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or $run.status -ne 'completed' -or $run.conclusion -ne 'success' -or $run.path -ne '.github/workflows/windows.yml' -or $run.head_branch -ne 'main' -or $run.repository.full_name -ne $env:GH_REPO) { throw 'Candidate did not pass Windows and Linux validation' }
+          git merge-base --is-ancestor $run.head_sha HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Candidate source is not an ancestor of this checkout' }
+          "CANDIDATE_SHA=$($run.head_sha)" >> $env:GITHUB_ENV
+          gh run download $env:CANDIDATE_RUN --name Leaf-Windows-x86_64 --dir dist/windows
+          if ($LASTEXITCODE -ne 0) { throw 'Candidate download failed' }
+          foreach ($line in Get-Content dist/windows/SHA256SUMS) {
+            if ($line -notmatch '^([0-9a-f]{64})  ([A-Za-z0-9._-]+)$') { throw 'Invalid checksum record' }
+            $expected, $filename = $Matches[1], $Matches[2]
+            if ((Get-FileHash "dist/windows/$filename" -Algorithm SHA256).Hash.ToLower() -ne $expected) { throw "Checksum mismatch: $filename" }
+          }
+          if (!(Get-Content dist/windows/BUILD.txt).Contains("source=$($run.head_sha)")) { throw 'Build source mismatch' }
+      - name: Complete runtime notices without changing the tested executable
+        shell: pwsh
+        run: |
+          $version = (Get-Content dist/windows/version.txt).Trim()
+          if ($version -notmatch '^\d+\.\d+\.\d+-alpha\.\d+-windows\.\d+$') { throw 'Invalid package version' }
+          $folder = "$PWD/dist/windows/Leaf-$version-x86_64"
+          $archive = "${folder}-portable.zip"
+          Expand-Archive $archive "$PWD/dist/windows"
+          $executableHash = (Get-FileHash "$folder/bin/leaf.exe" -Algorithm SHA256).Hash
+          New-Item "$folder/share/licenses/WordCraft" -ItemType Directory -Force | Out-Null
+          Copy-Item vendor/wordcraft-formats/LICENSE-* "$folder/share/licenses/WordCraft/"
+          Copy-Item data/icons/ICON_DEV_KIT_LICENSE.md,data/THEME_SELECTOR_SOURCES.md "$folder/share/licenses/Leaf/"
+          $manifest = Get-Content "$folder/BUILD.json" -Raw | ConvertFrom-Json
+          $manifest | Add-Member -NotePropertyName package_source -NotePropertyValue $env:GITHUB_SHA -Force
+          $manifest | ConvertTo-Json -Depth 5 | Set-Content "$folder/BUILD.json" -Encoding utf8
+          Remove-Item $archive
+          [System.IO.Compression.ZipFile]::CreateFromDirectory($folder, $archive, [System.IO.Compression.CompressionLevel]::Optimal, $true)
+          if ((Get-FileHash "$folder/bin/leaf.exe" -Algorithm SHA256).Hash -ne $executableHash) { throw 'Executable changed during packaging' }
+          "source=$env:CANDIDATE_SHA`npackage_source=$env:GITHUB_SHA`nexecutable_sha256=$($executableHash.ToLower())`nrun=$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID" | Set-Content dist/windows/BUILD.txt
+      - name: Verify final portable package
+        shell: pwsh
+        run: ./tools/test_windows.ps1
+      - name: Wrap those same files in the installer
+        shell: pwsh
+        run: |
+          $version = (Get-Content dist/windows/version.txt).Trim()
+          Remove-Item "dist/windows/Leaf-$version-x86_64-setup.exe"
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DLeafVersion=$version" packaging/windows/leaf.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+      - name: Verify final installation and removal
+        shell: pwsh
+        run: ./tools/test_windows.ps1 -Installer
+      - name: Record final checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem dist/windows -File | Where-Object { $_.Extension -in '.zip','.exe' } | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash  $($_.Name)"
+          } | Set-Content dist/windows/SHA256SUMS -Encoding ascii
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Leaf-Windows-ready
+          path: |
+            dist/windows/*.zip
+            dist/windows/*.exe
+            dist/windows/SHA256SUMS
+            dist/windows/BUILD.txt
+            dist/windows/version.txt
+            dist/windows/*.log
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: Windows-publication-diagnostics
+          path: dist/windows/*.log
+          if-no-files-found: ignore
+
+  publish:
+    needs: package
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Leaf-Windows-ready
+          path: release
+      - name: Publish the exact verified Windows packages
+        run: |
+          (cd release && sha256sum --check SHA256SUMS)
+          source=$(sed -n 's/^source=//p' release/BUILD.txt | tr -d '\r')
+          [[ "$source" =~ ^[0-9a-f]{40}$ ]]
+          version=$(cat release/version.txt)
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+-windows\.[0-9]+$ ]]
+          printf 'Experimental Windows x86_64 package of Leaf, based on %s.\n\n' "${version%-windows.*}" > notes.md
+          cat >> notes.md <<'NOTES'
+          Download **setup.exe** for a per-user installation, or extract **portable.zip** and open `bin/leaf.exe`. GTK and its runtime libraries are included.
+
+          English and Spanish; Windows settings/recovery folders, DOCX/ODT editing and PDF export. Automated checks cover both translations, saving/reopening Unicode paths, preferences, multiple windows, the relocated package, silent installation and removal, plus Linux regressions.
+
+          This unsigned alpha may trigger Windows reputation warnings. Physical printing, screen readers and hardware-specific graphics behavior have not been verified on Windows. Use copies of important documents. Windows releases are occasional and need not accompany every Linux alpha.
+          NOTES
+          gh release create "v$version" release/*.zip release/*.exe release/SHA256SUMS release/BUILD.txt --target "$source" --title "Leaf $version — Windows preview" --notes-file notes.md --prerelease --latest=false

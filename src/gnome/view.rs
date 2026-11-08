@@ -110,6 +110,14 @@ pub(super) fn document_content_top(ui: &Ui) -> f64 {
     }
 }
 
+/// Thumbnail bounds are local to their list, below the scrolling selector.
+fn thumbnail_content_top(ui: &Ui) -> f64 {
+    ui.thumbnails_box
+        .parent()
+        .and_then(|p| ui.thumbnails_box.compute_bounds(&p))
+        .map_or(0., |r| f64::from(r.y()))
+}
+
 pub(super) fn document_scroll_y(ui: &Ui) -> f64 {
     ui.scroll.vadjustment().value() - document_content_top(ui)
 }
@@ -181,7 +189,7 @@ pub(super) fn refresh_thumbnails(ui: &Rc<Ui>) {
         return;
     }
     let adj = ui.thumbnails_scroll.vadjustment();
-    let top = document_scroll_y(ui);
+    let top = adj.value() - thumbnail_content_top(ui);
     let bottom = top + adj.page_size().max(600.0);
     if let Ok(mut borrowed) = ui.current.try_borrow_mut() {
         if let Some(doc) = borrowed.as_mut() {
@@ -852,8 +860,9 @@ fn reveal_active_thumbnail_now(ui: &Rc<Ui>) {
     });
     if let Some(r) = target {
         let a = ui.thumbnails_scroll.vadjustment();
-        let top = r.y() as f64;
-        let bottom = (r.y() + r.height()) as f64;
+        let offset = thumbnail_content_top(ui);
+        let top = r.y() as f64 + offset;
+        let bottom = (r.y() + r.height()) as f64 + offset;
         let value = if top < a.value() {
             top
         } else if bottom > a.value() + a.page_size() {

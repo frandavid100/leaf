@@ -6,25 +6,56 @@ thread_local! { static STARTED: Cell<bool> = const { Cell::new(false) }; }
 async fn settle() {
     glib::timeout_future(std::time::Duration::from_millis(400)).await;
 }
-async fn presented(dialog: &impl IsA<adw::Dialog>) {
-    let dialog = dialog.as_ref();
-    let frames = Rc::new(Cell::new(0));
-    let count = frames.clone();
-    dialog.add_tick_callback(move |_, _| {
+async fn native_frames(widget: &impl IsA<gtk::Widget>, minimum: u32) {
+    let ticks = Rc::new(Cell::new(0));
+    let count = ticks.clone();
+    widget.add_tick_callback(move |_, _| {
         count.set(count.get() + 1);
-        if count.get() >= 4 {
+        if count.get() >= minimum {
             glib::ControlFlow::Break
         } else {
             glib::ControlFlow::Continue
         }
     });
     for _ in 0..500 {
-        if dialog.is_mapped() && frames.get() >= 4 {
+        if ticks.get() >= minimum {
+            glib::timeout_future_with_priority(
+                glib::Priority::DEFAULT_IDLE,
+                std::time::Duration::ZERO,
+            )
+            .await;
             return;
         }
         glib::timeout_future(std::time::Duration::from_millis(10)).await;
     }
-    panic!("dialog did not become interactive: {:?}", dialog.title());
+    panic!(
+        "native allocation frames did not finish: {:?}",
+        widget.as_ref().widget_name()
+    );
+}
+async fn presented(dialog: &impl IsA<adw::Dialog>) {
+    native_frames(dialog.as_ref(), 4).await;
+    assert!(
+        dialog.as_ref().is_mapped() && dialog.as_ref().root().is_some(),
+        "dialog did not become interactive: {:?}",
+        dialog.as_ref().title()
+    );
+}
+async fn thumbnail_revealed(ui: &Ui) {
+    // update_status queues a native idle reveal. Wait for that operation and
+    // its two allocation corrections, not for a particular adjustment value.
+    for _ in 0..500 {
+        if !ui.thumbnail_reveal_pending.get() {
+            native_frames(&ui.thumbnails_box, 3).await;
+            return;
+        }
+        glib::timeout_future_with_priority(
+            glib::Priority::DEFAULT_IDLE,
+            std::time::Duration::from_millis(10),
+        )
+        .await;
+    }
+    panic!("active thumbnail reveal did not run");
 }
 async fn closed(dialog: &impl IsA<adw::Dialog>) {
     for _ in 0..500 {
@@ -158,17 +189,75 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             "WORKFLOWS37_GALLERY_OK same-scroll=true dismissed-once=true source-unchanged=true"
         );
 
-        let content = (0..150)
+        let content = (0..450)
             .map(|i| format!("Paragraph {i}: structure scrolling and continuity.\n"))
             .collect::<String>();
         let mut s = Session::new(wordcraft_doc::Document::from_text(&content));
-        for i in (0..150).step_by(6) {
+        for i in (0..450).step_by(6) {
             selection::set_caret(&mut s, &Pos::body(i, 0), false).unwrap();
             s.run("para.style", &serde_json::json!({"style":"Heading1"}))
                 .unwrap();
         }
         selection::set_caret(&mut s, &Pos::body(0, 0), false).unwrap();
         opened(&ui, s, "Scrolling controls");
+        ui.representation.set_selected(0);
+        ui.sidebar_button.set_active(true);
+        settle().await;
+        let readonly = {
+            let c = ui.current.borrow();
+            let s = &c.as_ref().unwrap().session;
+            (s.doc.clone(), s.sel.clone(), s.undo_depth())
+        };
+        let main_scroll = ui.scroll.vadjustment().value();
+        let pages = ui.thumbnails_scroll.vadjustment();
+        let (choice_y, modes_y) = (
+            offset(&ui.navigation_selector, &window),
+            offset(&ui.sidebar_selector, &window),
+        );
+        pages.set_value(80.);
+        settle().await;
+        let delta = pages.value();
+        assert!(delta > 30.);
+        assert!((offset(&ui.navigation_selector, &window) - choice_y + delta as f32).abs() < 1.1);
+        assert!((offset(&ui.sidebar_selector, &window) - modes_y + delta as f32).abs() < 1.1);
+        pages.set_value((pages.upper() - pages.page_size()).max(0.));
+        refresh_thumbnails(&ui);
+        settle().await;
+        let last = ui.current.borrow().as_ref().unwrap().sizes.len() - 1;
+        assert!(last > 4);
+        assert!(
+            ui.current.borrow().as_ref().unwrap().thumbs[last]
+                .paintable()
+                .is_some(),
+            "manual sidebar scrolling rasterizes its last thumbnail independently of the document viewport"
+        );
+        assert!((ui.scroll.vadjustment().value() - main_scroll).abs() < 1.);
+        unchanged(&ui, &readonly);
+        pages.set_value(0.);
+        jump_to(&ui, last);
+        thumbnail_revealed(&ui).await;
+        eprintln!(
+            "WORKFLOWS37_ACTIVE_THUMB requested={last} active={} scroll={} upper={} page={} collapsed={} shown={} mapped={}",
+            ui.current.borrow().as_ref().unwrap().active,
+            pages.value(),
+            pages.upper(),
+            pages.page_size(),
+            ui.sidebar.is_collapsed(),
+            ui.sidebar.shows_sidebar(),
+            ui.thumbnails_scroll.is_mapped()
+        );
+        let bounds = ui.current.borrow().as_ref().unwrap().thumb_buttons[last]
+            .compute_bounds(&ui.thumbnails_scroll)
+            .unwrap();
+        assert!(
+            bounds.y() >= -1.
+                && bounds.y() + bounds.height() <= ui.thumbnails_scroll.height() as f32 + 1.,
+            "active thumbnail must remain fully inside the actual viewport: {bounds:?}"
+        );
+        jump_to(&ui, 0);
+        eprintln!(
+            "WORKFLOWS37_THUMBNAILS_OK selectors-scroll=true independent-raster=true actual-bounds=true readonly=true"
+        );
         ui.representation.set_selected(1);
         ui.sidebar_button.set_active(true);
         settle().await;

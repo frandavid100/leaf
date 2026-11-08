@@ -1385,13 +1385,15 @@ fn restore_navigation_browsing(ui: &Rc<Ui>) {
 }
 
 fn trace_navigation(ui: &Ui, event: &str) {
-    if std::env::var_os("LEAF_NAVIGATION_TRACE").is_none() {
+    if std::env::var_os("LEAF_NAVIGATION_TRACE").is_none()
+        && !std::env::args().any(|a| a == "--alpha30-ui-test")
+    {
         return;
     }
     let outline = ui.outline.borrow();
     let a = outline.as_ref().map(|p| p.scroll.vadjustment());
     eprintln!(
-        "NAVIGATION_TRACE {event} time={:?} identity={:?} shown={} mapped={} mode={:?} saved={:?} outline={:?}",
+        "NAVIGATION_TRACE {event} time={:?} identity={:?} shown={} mapped={} mode={:?} saved={:?} outline={:?} generation={} pane={:?} focus={:?}",
         std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
@@ -1404,7 +1406,15 @@ fn trace_navigation(ui: &Ui, event: &str) {
             .borrow()
             .as_ref()
             .map(|s| (s.2, s.3)),
-        a.map(|a| (a.value(), a.upper(), a.page_size()))
+        a.map(|a| (a.value(), a.upper(), a.page_size())),
+        ui.navigation_restore_generation.get(),
+        outline
+            .as_ref()
+            .map(|p| (p.scroll.width(), p.scroll.height(), p.scroll.is_mapped())),
+        ui.host
+            .upgrade()
+            .and_then(|h| gtk::prelude::GtkWindowExt::focus(&h.window))
+            .map(|w| (w.type_().name(), w.widget_name()))
     );
 }
 

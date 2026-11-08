@@ -17,9 +17,8 @@ while kill -0 "$pid" 2>/dev/null; do
   line=$(grep '^ISSUE19_READY ' "$log" | sed -n "$((last+1))p")
   read -r _ stage role ax ay bx by cx cy <<< "$line"
   window=$(xdotool search --onlyvisible --name '^Leaf Followup Regression$' | head -n1)
-  if [[ "$role" = edit || "$role" = cancel || "$role" = insert ]]; then
-    window=$(xdotool search --onlyvisible --name '^Link$' | head -n1)
-  fi
+  # Link is now an integrated dialog. The diagnostic emits coordinates in
+  # this same parent surface for both editor and dialog controls.
   if [[ "$mode" != font ]] || (( last == 0 )); then
     xdotool windowfocus --sync "$window"
   fi

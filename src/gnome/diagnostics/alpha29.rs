@@ -36,12 +36,11 @@ pub(super) fn alpha29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
                 let c = u.current.borrow();
                 let d = c.as_ref().unwrap();
                 let r = d.thumb_buttons[d.active]
-                    .compute_bounds(&u.thumbnails_box)
+                    .compute_bounds(&u.thumbnails_scroll)
                     .unwrap();
                 let v = u.thumbnails_scroll.vadjustment();
                 assert!(
-                    r.y() as f64 >= v.value() - 1.
-                        && (r.y() + r.height()) as f64 <= v.value() + v.page_size() + 1.,
+                    r.y() >= -1. && r.y() + r.height() <= u.thumbnails_scroll.height() as f32 + 1.,
                     "active={} bounds={r:?} scroll={} page={} upper={} sidebar={} collapsed={}",
                     d.active,
                     v.value(),
@@ -49,6 +48,10 @@ pub(super) fn alpha29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
                     v.upper(),
                     u.sidebar.shows_sidebar(),
                     u.sidebar.is_collapsed()
+                );
+                assert!(
+                    d.thumbs[d.active].paintable().is_some(),
+                    "the revealed thumbnail must be rasterized"
                 );
                 let label = d.thumb_buttons[d.active]
                     .child()
