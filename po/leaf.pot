@@ -57,7 +57,7 @@ msgstr ""
 msgid "Add to Dictionary"
 msgstr ""
 
-#: src/gnome/search.rs:336
+#: src/gnome/search.rs:370
 msgid "Advanced"
 msgstr ""
 
@@ -217,7 +217,7 @@ msgstr ""
 msgid "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."
 msgstr ""
 
-#: src/gnome/search.rs:326
+#: src/gnome/search.rs:360
 msgid "Body Text"
 msgstr ""
 
@@ -333,7 +333,7 @@ msgstr ""
 msgid "Captions are available in the document body."
 msgstr ""
 
-#: src/gnome/search.rs:317
+#: src/gnome/search.rs:351
 msgid "Case Sensitive"
 msgstr ""
 
@@ -905,7 +905,7 @@ msgstr ""
 msgid "Document File"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows35.rs:277 src/gnome/document_fonts.rs:41 src/gnome/document_properties_dialog.rs:373
+#: src/gnome/diagnostics/workflows35.rs:300 src/gnome/document_fonts.rs:41 src/gnome/document_properties_dialog.rs:373
 msgid "Document Fonts"
 msgstr ""
 
@@ -1085,7 +1085,7 @@ msgstr ""
 msgid "Enter your name."
 msgstr ""
 
-#: src/gnome/search.rs:325
+#: src/gnome/search.rs:359
 msgid "Entire Document"
 msgstr ""
 
@@ -1321,7 +1321,7 @@ msgstr ""
 msgid "Headers"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:426 src/gnome/header_options.rs:81 src/gnome/search.rs:328
+#: src/gnome/document_properties_dialog.rs:426 src/gnome/header_options.rs:81 src/gnome/search.rs:362
 msgid "Headers and Footers"
 msgstr ""
 
@@ -1501,7 +1501,7 @@ msgstr ""
 msgid "Insert Row or Column by Clicking"
 msgstr ""
 
-#: src/gnome/search.rs:375
+#: src/gnome/search.rs:292
 msgid "Insert Special Character"
 msgstr ""
 
@@ -1665,7 +1665,7 @@ msgstr ""
 msgid "Line Between Columns"
 msgstr ""
 
-#: src/gnome/menus.rs:411 src/gnome/search.rs:380 src/history.rs:197
+#: src/gnome/menus.rs:411 src/gnome/search.rs:297 src/history.rs:197
 msgid "Line Break"
 msgstr ""
 
@@ -1833,7 +1833,7 @@ msgstr ""
 msgid "New Window"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows35.rs:296 src/gnome/templates.rs:5
+#: src/gnome/diagnostics/workflows35.rs:319 src/gnome/templates.rs:5
 msgid "New from Template"
 msgstr ""
 
@@ -1929,7 +1929,7 @@ msgstr ""
 msgid "Normal Style"
 msgstr ""
 
-#: src/gnome/search.rs:327
+#: src/gnome/search.rs:361
 msgid "Notes"
 msgstr ""
 
@@ -2061,7 +2061,7 @@ msgstr ""
 msgid "Paragraph"
 msgstr ""
 
-#: src/gnome/search.rs:381
+#: src/gnome/search.rs:298
 msgid "Paragraph Break"
 msgstr ""
 
@@ -2081,7 +2081,7 @@ msgstr ""
 msgid "Paste"
 msgstr ""
 
-#: src/gnome/context.rs:405 src/gnome/diagnostics/workflows35.rs:120
+#: src/gnome/context.rs:405 src/gnome/diagnostics/workflows35.rs:143
 msgid "Paste Plain Text"
 msgstr ""
 
@@ -2149,7 +2149,7 @@ msgstr ""
 msgid "Preparing to Print…"
 msgstr ""
 
-#: src/gnome/search.rs:341
+#: src/gnome/search.rs:375
 msgid "Preserve Capitalization"
 msgstr ""
 
@@ -2221,7 +2221,7 @@ msgstr ""
 msgid "Refresh Dictionaries"
 msgstr ""
 
-#: src/gnome/search.rs:339
+#: src/gnome/search.rs:373
 msgid "Regular Expressions"
 msgstr ""
 
@@ -2281,11 +2281,11 @@ msgstr ""
 msgid "Repeated word: {word}"
 msgstr ""
 
-#: src/gnome/document_fonts.rs:126 src/gnome/menus.rs:681 src/gnome/search.rs:318 src/search.rs:469
+#: src/gnome/document_fonts.rs:126 src/gnome/menus.rs:681 src/gnome/search.rs:352 src/search.rs:469
 msgid "Replace"
 msgstr ""
 
-#: src/gnome/search.rs:401 src/gnome/search.rs:404
+#: src/gnome/search.rs:410 src/gnome/search.rs:413
 msgid "Replace All Matches"
 msgstr ""
 
@@ -2301,7 +2301,7 @@ msgstr ""
 msgid "Replace This Match"
 msgstr ""
 
-#: src/gnome/search.rs:357 src/gnome/search.rs:360
+#: src/gnome/search.rs:391 src/gnome/search.rs:394
 msgid "Replace With"
 msgstr ""
 
@@ -2525,7 +2525,7 @@ msgstr ""
 msgid "Search (Ctrl+F)"
 msgstr ""
 
-#: src/gnome/search.rs:294 src/gnome/search.rs:298 src/gnome/tab.rs:31 src/gnome/tab.rs:54
+#: src/gnome/search.rs:328 src/gnome/search.rs:332 src/gnome/tab.rs:31 src/gnome/tab.rs:54
 msgid "Search Document"
 msgstr ""
 
@@ -2533,11 +2533,11 @@ msgstr ""
 msgid "Search Document (Ctrl+F)"
 msgstr ""
 
-#: src/gnome/search.rs:332
+#: src/gnome/search.rs:366
 msgid "Search In"
 msgstr ""
 
-#: src/gnome/search.rs:305 src/gnome/search.rs:308
+#: src/gnome/search.rs:339 src/gnome/search.rs:342
 msgid "Search Options"
 msgstr ""
 
@@ -2653,7 +2653,7 @@ msgstr ""
 msgid "Selected Image"
 msgstr ""
 
-#: src/gnome/columns.rs:212 src/gnome/columns.rs:225 src/gnome/search.rs:329
+#: src/gnome/columns.rs:212 src/gnome/columns.rs:225 src/gnome/search.rs:363
 msgid "Selected Text"
 msgstr ""
 
@@ -2777,11 +2777,11 @@ msgstr ""
 msgid "Spanish (Spain)"
 msgstr ""
 
-#: src/gnome/search.rs:338
+#: src/gnome/search.rs:372
 msgid "Special Characters"
 msgstr ""
 
-#: src/gnome/search.rs:345
+#: src/gnome/search.rs:379
 msgid "Special: ^t tab, ^l line break, ^p paragraph. Regex: ([0-9]+), replacement: $1. Zero-length replacements are disabled."
 msgstr ""
 
@@ -2897,7 +2897,7 @@ msgstr ""
 msgid "System Language Settings…"
 msgstr ""
 
-#: src/gnome/search.rs:379 src/history.rs:217
+#: src/gnome/search.rs:296 src/history.rs:217
 msgid "Tab"
 msgstr ""
 
@@ -3249,7 +3249,7 @@ msgstr ""
 msgid "Type Text"
 msgstr ""
 
-#: src/gnome/search.rs:119 src/gnome/search.rs:412
+#: src/gnome/search.rs:119 src/gnome/search.rs:421
 msgid "Type to Search"
 msgstr ""
 
@@ -3329,7 +3329,7 @@ msgstr ""
 msgid "Use 1 to 12 columns with spacing between 0 and 105.83 mm."
 msgstr ""
 
-#: src/gnome/search.rs:334
+#: src/gnome/search.rs:368
 msgid "Use Current Selection"
 msgstr ""
 
@@ -3385,7 +3385,7 @@ msgstr ""
 msgid "Whole Document"
 msgstr ""
 
-#: src/gnome/search.rs:321
+#: src/gnome/search.rs:355
 msgid "Whole Words"
 msgstr ""
 
