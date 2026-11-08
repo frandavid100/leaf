@@ -86,4 +86,26 @@ runner now checks and compiles the same catalogs before starting GUI checks.
 The original assertion is retained. The stable `test` Rust cache namespace is
 shared by the builder and runners; only the builder saves it, preserving warm
 pre-split dependencies and avoiding competing cache uploads. A complete fresh
-validation is required before publication; the failed candidate is not promoted.
+validation passed before publication; the failed candidate was not promoted.
+
+## Completed validation and observed time
+
+216 Rust tests, 15 Python tests and 891 complete English/Spanish messages passed.
+Every native group and both installed runtimes passed, followed by the exact
+executable comparison and verification of all thirteen public assets. Issues
+#212/#213/#214 were closed after that verification.
+
+- Final successful validation to publication: 32m32s; alpha.38: 45m24s.
+- Same forty-scene desktop sweep: 2m00s; alpha.38: 5m21s.
+- Corrected shared-cache build: 9m12s; the initial cold build was 12m52s.
+- [Complete native run](https://github.com/frandavid100/leaf/actions/runs/42531382692).
+- [Installed candidate](https://github.com/frandavid100/leaf/actions/runs/42531440034).
+- [Verified publication and automatic closure](https://github.com/frandavid100/leaf/actions/runs/42534051115).
+- [Observed timing data and limits](ALPHA39_CI_METRICS.json).
+
+The initial configuration attempt correctly failed the Spanish-label check
+because generated catalogs were missing on the isolated runner. It was discarded,
+the setup was corrected, and a complete fresh validation passed. The final-run
+duration above excludes that discarded attempt and implementation time. These
+are individual CI observations, not a guaranteed time for every future release
+or a claim of improved document editing performance.

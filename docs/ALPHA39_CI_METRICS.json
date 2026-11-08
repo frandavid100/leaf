@@ -1,0 +1,22 @@
+{
+  "alpha38_visual_seconds": 321,
+  "alpha39_visual_seconds": 120,
+  "visual_cases": 40,
+  "comparison": "Same named broad native scenario step, required assertions/captures retained; one-run timing, not app-performance benchmark.",
+  "corrected_build_seconds": 552,
+  "initial_cold_build_seconds": 772,
+  "corrected_gui_compile_seconds": 218,
+  "initial_cold_gui_compile_seconds": 449,
+  "alpha38_native_run_seconds": 2335,
+  "alpha39_native_run_seconds": 1201,
+  "version": "0.1.0-alpha.39",
+  "source": "b9b0edc16a6f814634d86a66e877648b1e982c79",
+  "native_run": 42531382692,
+  "candidate_run": 42531440034,
+  "publisher_run": 42534051115,
+  "final_successful_validation_seconds": 1952.0,
+  "alpha38_validation_seconds": 2724,
+  "initial_failed_native_run": 42529224467,
+  "limits": "One successful run per version; the final successful duration excludes implementation and the initial discarded configuration attempt. All previous checks remain; timings describe CI rather than application performance.",
+  "total_ci_seconds_including_discarded_attempt": 3512.0
+}
