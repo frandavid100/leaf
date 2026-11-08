@@ -6,6 +6,36 @@ pub(super) fn run() {
         workflows35_checks::template_restart();
         return;
     }
+    if std::env::args().any(|arg| arg == "--workflows36-template-create") {
+        let folder = PathBuf::from(std::env::var_os("LEAF36_TEMPLATE_SOURCE").unwrap());
+        std::fs::create_dir_all(&folder).unwrap();
+        let mut session = Session::new(wordcraft_doc::Document::from_text("Read-only template"));
+        wordcraft_gnome::saving::save(&mut session, &folder.join("Personal.docx")).unwrap();
+        return;
+    }
+    if std::env::args().any(|arg| arg == "--workflows36-template-restart-test") {
+        let folder = wordcraft_gnome::templates::folder().unwrap();
+        let session = wordcraft_gnome::templates::open(&folder.join("Personal.docx")).unwrap();
+        assert_eq!(
+            session.doc.plain_text(wordcraft_doc::StoryRef::Body),
+            "Read-only template"
+        );
+        assert!(session.file_name.is_none());
+        if std::env::var_os("FLATPAK_ID").is_some() {
+            assert!(
+                std::fs::OpenOptions::new()
+                    .write(true)
+                    .open(folder.join("Personal.docx"))
+                    .is_err(),
+                "portal must deny writing to the source"
+            );
+        }
+        println!(
+            "WORKFLOWS36_TEMPLATE_RESTART_OK sandbox_read_only={}",
+            std::env::var_os("FLATPAK_ID").is_some()
+        );
+        return;
+    }
     if std::env::args().any(|arg| arg == "--version") {
         println!("Leaf {APP_VERSION}");
         return;

@@ -1,8 +1,18 @@
 //! Font inventory is read-only until an explicit per-font Replace action.
 use super::*;
-pub(super) fn show(ui: &Rc<Ui>, parent: &impl IsA<gtk::Window>) {
-    let parent = parent.as_ref();
-    let (fonts, missing, families, identity) = {
+pub(super) fn section(
+    ui: &Rc<Ui>,
+    identity: Rc<Cell<Option<(u64, u64)>>>,
+) -> adw::PreferencesGroup {
+    let group = adw::PreferencesGroup::new();
+    group.set_widget_name("properties-document-fonts");
+    group.set_title(wordcraft_gnome::t!("Fonts"));
+    group.set_description(Some(wordcraft_gnome::t!("Opening a document preserves its font names. Replace changes the document and can be undone.")));
+    refresh(ui, &group, identity);
+    group
+}
+fn refresh(ui: &Rc<Ui>, group: &adw::PreferencesGroup, identity: Rc<Cell<Option<(u64, u64)>>>) {
+    let (fonts, missing, families) = {
         let mut value = ui.current.borrow_mut();
         let Some(d) = value.as_mut() else { return };
         let fonts = wordcraft_gnome::document_fonts::inventory(&d.session);
@@ -30,32 +40,12 @@ pub(super) fn show(ui: &Rc<Ui>, parent: &impl IsA<gtk::Window>) {
             .session
             .run("font.list", &serde_json::json!({"all":true}))
             .unwrap_or_default();
-        (
-            fonts,
-            missing,
-            families,
-            Some((d.session.document_id(), d.session.rev())),
-        )
+        (fonts, missing, families)
     };
-    let window = adw::Window::builder()
-        .title(wordcraft_gnome::t!("Document Fonts"))
-        .destroy_with_parent(true)
-        .transient_for(parent)
-        .default_width(520)
-        .default_height(560)
-        .build();
-    let content = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    content.append(&adw::HeaderBar::new());
-    let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
-        "Opening a document preserves its font names. Replace changes the document and can be undone."
-    )));
-    hint.set_wrap(true);
-    content.append(&hint);
+    // The surrounding PreferencesPage owns scrolling; no secondary window.
     let list = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    let scroll = gtk::ScrolledWindow::new();
-    scroll.set_vexpand(true);
-    scroll.set_child(Some(&list));
-    content.append(&scroll);
+    list.set_widget_name("document-font-list");
+    group.add(&list);
     let choices = families["families"]
         .as_array()
         .map(|v| {
@@ -66,10 +56,12 @@ pub(super) fn show(ui: &Rc<Ui>, parent: &impl IsA<gtk::Window>) {
         .unwrap_or_default();
     for font in fonts {
         let box_ = gtk::Box::new(gtk::Orientation::Vertical, 4);
+        box_.set_widget_name(&format!("document-font-{}", font.name));
         box_.set_margin_start(12);
         box_.set_margin_end(12);
         let title = gtk::Label::new(Some(&font.name));
         title.set_xalign(0.);
+        title.set_wrap(true);
         title.add_css_class("heading");
         box_.append(&title);
         if let Some(missing) = missing["missing"].as_array().and_then(|values| {
@@ -86,25 +78,41 @@ pub(super) fn show(ui: &Rc<Ui>, parent: &impl IsA<gtk::Window>) {
                         .join(", ")
                 })
                 .unwrap_or_default();
-            let label = gtk::Label::new(Some(&format!(
-                "{}: {}",
-                wordcraft_gnome::t!("Missing; displayed as"),
-                shown
-            )));
+            let status = if shown.is_empty() {
+                wordcraft_gnome::t!("Missing; fallback information unavailable").to_owned()
+            } else {
+                format!(
+                    "{}: {}",
+                    wordcraft_gnome::t!("Missing; displayed as"),
+                    shown
+                )
+            };
+            let label = gtk::Label::new(Some(&status));
             label.set_xalign(0.);
             label.set_wrap(true);
             box_.append(&label);
+        } else if choices
+            .iter()
+            .any(|name| name.eq_ignore_ascii_case(&font.name))
+        {
+            let label = gtk::Label::new(Some(wordcraft_gnome::t!("Installed")));
+            label.set_xalign(0.);
+            label.add_css_class("dim-label");
+            box_.append(&label);
         }
-        let actions = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+        let actions = gtk::Box::new(gtk::Orientation::Vertical, 6);
+        let substitution = gtk::Box::new(gtk::Orientation::Horizontal, 6);
         let next = gtk::Button::with_label(wordcraft_gnome::t!("Next Use"));
+        next.set_widget_name("font-next-use");
         next.set_sensitive(!font.uses.is_empty());
         actions.append(&next);
         let weak = Rc::downgrade(ui);
+        let use_identity = identity.clone();
         let uses = font.uses;
         let index = Cell::new(0usize);
         next.connect_clicked(move |_| {
             if let Some(ui) = weak.upgrade() {
-                if document_identity(&ui) != identity {
+                if document_identity(&ui) != use_identity.get() {
                     return;
                 }
                 if let Some((a, b)) = uses.get(index.get() % uses.len().max(1)) {
@@ -119,24 +127,36 @@ pub(super) fn show(ui: &Rc<Ui>, parent: &impl IsA<gtk::Window>) {
         });
         let replacement =
             gtk::DropDown::from_strings(&choices.iter().map(String::as_str).collect::<Vec<_>>());
+        replacement.set_widget_name("font-replacement");
         replacement.set_enable_search(true);
         replacement.set_hexpand(true);
+        if let Some(label) = replacement
+            .first_child()
+            .and_then(|w| w.first_child())
+            .and_then(|w| w.downcast::<gtk::Label>().ok())
+        {
+            label.set_ellipsize(gtk::pango::EllipsizeMode::End);
+            label.set_max_width_chars(18);
+        }
         accessible_name(&replacement, wordcraft_gnome::t!("Replacement Font"));
-        actions.append(&replacement);
+        substitution.append(&replacement);
         let replace = gtk::Button::with_label(wordcraft_gnome::t!("Replace"));
+        replace.set_widget_name("font-replace");
         replace.set_sensitive(!choices.is_empty());
-        actions.append(&replace);
+        substitution.append(&replace);
+        actions.append(&substitution);
         let choices = choices.clone();
         let weak = Rc::downgrade(ui);
-        let parent = parent.downgrade();
-        let dialog = window.downgrade();
+        let group = group.downgrade();
+        let list_ref = list.downgrade();
+        let identity = identity.clone();
         replace.connect_clicked(move |_| {
-            let (Some(ui), Some(parent), Some(dialog)) =
-                (weak.upgrade(), parent.upgrade(), dialog.upgrade())
+            let (Some(ui), Some(group), Some(list)) =
+                (weak.upgrade(), group.upgrade(), list_ref.upgrade())
             else {
                 return;
             };
-            if document_identity(&ui) != identity {
+            if document_identity(&ui) != identity.get() {
                 ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
                     "The document changed. Reopen the font list."
                 )));
@@ -146,8 +166,9 @@ pub(super) fn show(ui: &Rc<Ui>, parent: &impl IsA<gtk::Window>) {
                 if tools_change(&ui, |s| {
                     wordcraft_gnome::document_fonts::substitute(s, &font.name, to)
                 }) {
-                    dialog.close();
-                    show(&ui, &parent);
+                    identity.set(document_identity(&ui));
+                    group.remove(&list);
+                    refresh(&ui, &group, identity.clone());
                 }
             }
         });
@@ -155,6 +176,4 @@ pub(super) fn show(ui: &Rc<Ui>, parent: &impl IsA<gtk::Window>) {
         list.append(&box_);
         list.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     }
-    window.set_content(Some(&content));
-    window.present();
 }

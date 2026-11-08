@@ -26,6 +26,8 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
         ruler.stop();
     }
     stop_document_drag(ui);
+    templates::dismiss(ui);
+    image_drop::cancel(ui);
     ui.input_context.focus_out();
     ui.input_context.set_client_widget(None::<&gtk::Widget>);
     ui.selection_rasters.borrow_mut().clear();
@@ -319,6 +321,9 @@ pub(super) fn blank_tab(app: &Application, host: &Rc<Workspace>) {
             wordcraft_gnome::t!("New Document").into(),
         )),
     );
+    if let Some(ui) = selected_ui(host) {
+        templates::offer(&ui);
+    }
 }
 
 pub(super) fn show_preferences(parent: &ApplicationWindow) -> adw::PreferencesWindow {
@@ -412,6 +417,7 @@ pub(super) fn show_preferences(parent: &ApplicationWindow) -> adw::PreferencesWi
         }
     });
     page.add(&proofing);
+    page.add(&templates::preferences(&dialog));
     dialog.add(&page);
     dialog.present();
     dialog

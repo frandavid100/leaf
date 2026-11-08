@@ -93,6 +93,7 @@ pub(super) fn refresh_overlay_layers(ui: &Rc<Ui>) {
     let Some(doc) = current.as_mut() else {
         return;
     };
+    next.extend(ui.image_drop.borrow().as_ref().map(|p| p.rect.page));
     next.extend(caption_cue_pages(ui, doc));
     if let Some((a, b)) = cached_toc_span(ui, &doc.session, &doc.session.sel.focus) {
         next.extend(
@@ -300,6 +301,7 @@ pub(super) fn copy_selection(ui: &Rc<Ui>) {
 
 pub(super) fn caret_is_shown(ui: &Rc<Ui>) -> bool {
     !ui.closed.get()
+        && ui.image_drop.borrow().is_none()
         && ui.document_box.has_focus()
         && ui.host.upgrade().is_some_and(|h| {
             h.window.is_active() && selected_ui(&h).is_some_and(|u| Rc::ptr_eq(&u, ui))

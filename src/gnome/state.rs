@@ -37,6 +37,8 @@ impl Current {
 pub(super) struct Ui {
     pub(super) table_pointer: RefCell<TablePointer>,
     pub(super) picture_drag: RefCell<Option<PictureDrag>>,
+    pub(super) image_drop: RefCell<Option<image_drop::Preview>>,
+    pub(super) image_read: RefCell<Option<glib::JoinHandle<()>>>,
     pub(super) reference_hover: RefCell<Option<Pos>>,
     pub(super) caption_hover: RefCell<Option<String>>,
     pub(super) caption_cues: RefCell<Option<(u64, u64, Rc<[wordcraft_gnome::captions::Cue]>)>>,
@@ -46,6 +48,9 @@ pub(super) struct Ui {
     pub(super) printing: PrintState,
     pub(super) spelling: RefCell<Option<Rc<SpellReview>>>,
     pub(super) document_box: DocumentCanvas,
+    pub(super) template_slot: gtk::Box,
+    pub(super) template_eligible: Cell<bool>,
+    pub(super) template_gallery: RefCell<Option<Rc<templates::Gallery>>>,
     pub(super) input_context: gtk::IMMulticontext,
     pub(super) selection_rasters: RefCell<Vec<(String, gtk::cairo::ImageSurface)>>,
     pub(super) thumbnails_box: gtk::Box,

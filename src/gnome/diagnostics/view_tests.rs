@@ -159,14 +159,14 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     }
     assert!(menu.popover().unwrap().is::<gtk::PopoverMenu>());
     let model = menu.menu_model().unwrap();
-    assert_eq!(model.n_items(), 6);
+    assert_eq!(model.n_items(), 5);
     let history = model.item_link(1, "section").unwrap();
     assert_eq!(history.n_items(), 2);
     for i in 0..2 {
         assert_eq!(history.item_link(i, "submenu").unwrap().n_items(), 0);
     }
     assert!(find_widget(&ui.format_toolbar, "ruler-pin").is_none());
-    for (section, actions) in [(3, ["win.save", "win.save-as"])] {
+    for (section, actions) in [(2, ["win.save", "win.save-as"])] {
         let part = model.item_link(section, "section").unwrap();
         assert_eq!(part.n_items(), 2);
         for (i, action) in actions.iter().enumerate() {
@@ -179,15 +179,13 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
             );
         }
     }
-    let templates = model.item_link(2, "section").unwrap();
-    assert_eq!(templates.n_items(), 1);
-    assert_eq!(
-        templates
-            .item_attribute_value(0, "action", None)
+    assert!(
+        ui.host
+            .upgrade()
             .unwrap()
-            .get::<String>()
-            .unwrap(),
-        "win.new-template"
+            .window
+            .lookup_action("new-template")
+            .is_none()
     );
     assert!(find_widget(&ui.format_toolbar, "table-menu").is_none());
     assert!(find_widget(&ui.format_toolbar, "picture-menu").is_none());
@@ -248,13 +246,8 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     );
     assert_eq!(sections.item_link(2, "submenu").unwrap().n_items(), 7);
     assert_eq!(
-        actions(model.item_link(4, "section").unwrap()),
-        [
-            "win.document-fonts",
-            "win.document-properties",
-            "win.export-pdf",
-            "win.print"
-        ]
+        actions(model.item_link(3, "section").unwrap()),
+        ["win.document-properties", "win.export-pdf", "win.print"]
     );
     let h = ui.host.upgrade().unwrap();
     assert!(h.window.lookup_action("print").unwrap().is_enabled());

@@ -57,7 +57,8 @@ jobs:
           python tools/check_project_docs.py
           python tools/release_metadata.py --check
       - name: Validate and compile gettext catalogs
-        run: python tools/update_translations.py --check --compile
+        run: |
+          python tools/update_translations.py --check --compile
       - name: Tests sin interfaz
         run: cargo test --locked
       - name: Recheck ODT corpus for this preservation fix only
@@ -104,6 +105,21 @@ jobs:
             grep -q WORKFLOWS35_UI_OK workflows35-$language.log
             XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 180s bash tools/workflows35-pointer-test.sh
           done
+      - name: Verify revised alpha36 controls and real external gestures
+        run: |
+          set -o pipefail
+          for language in en es; do
+            scale=1
+            if test "$language" = es; then scale=2; fi
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 120s ./target/release/wordcraft-gnome --workflows36-ui-test 2>&1 | tee workflows36-ui-$language.log
+            grep -q WORKFLOWS36_UI_OK workflows36-ui-$language.log
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 180s bash tools/workflows36-pointer-test.sh
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workflows36-native-controls
+          path: workflows36-*.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -369,7 +385,7 @@ jobs:
       - name: Identificar versión de prueba
         run: |
           ./target/release/wordcraft-gnome --version | tee version.txt
-          grep -q "Leaf 0.1.0-alpha.35" version.txt
+          grep -q "Leaf 0.1.0-alpha.36" version.txt
       - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
         run: |
           python -m pip install --disable-pip-version-check pillow==11.3.0
@@ -788,7 +804,7 @@ jobs:
       - name: Download previous alpha for upgrade verification
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release download v0.1.0-alpha.32 --pattern 'Leaf-0.1.0-alpha.32-x86_64.flatpak' --dir prior-release
+        run: gh release download v0.1.0-alpha.35 --pattern 'Leaf-0.1.0-alpha.35-x86_64.flatpak' --dir prior-release
       - name: Build and install the bundle
         run: bash packaging/build-bundle.sh native-artifact/wordcraft-gnome
       - name: Configure GTK portal backend for the folder test
@@ -815,7 +831,7 @@ jobs:
       - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
         run: |
           set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.35-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.36-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
           grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
       - name: Exercise the installed sandbox and desktop launcher
         run: |
@@ -1036,7 +1052,7 @@ jobs:
           python3 - <<'PYTHON'
           import json, os, pathlib
           pathlib.Path('dist/candidate.json').write_text(json.dumps({
-              'version': '0.1.0-alpha.35', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+              'version': '0.1.0-alpha.36', 'source': os.environ['LEAF_CANDIDATE_SHA'],
               'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
               'native_source': os.environ['LEAF_NATIVE_SHA'],
               'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
@@ -1048,7 +1064,7 @@ jobs:
           python3 - <<'PYTHON'
           from pathlib import Path
           from zipfile import ZipFile, ZIP_DEFLATED
-          with ZipFile("dist/Leaf-0.1.0-alpha.35-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
+          with ZipFile("dist/Leaf-0.1.0-alpha.36-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
               for source in sorted(Path("tests/fixtures/dictionary84").iterdir()):
                   if source.is_file(): archive.write(source, "Leaf-dictionary-test/" + source.name)
           PYTHON

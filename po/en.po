@@ -3200,3 +3200,67 @@ msgstr "Leaf uses the WordCraft engine. Its development, documentation and artwo
 #: data/*.in
 msgid "Create and edit documents in GNOME"
 msgstr "Create and edit documents in GNOME"
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Copy Options"
+msgstr "Copy Options"
+
+msgid "Paste Options"
+msgstr "Paste Options"
+
+msgid "Fonts"
+msgstr "Fonts"
+
+msgid "Missing; fallback information unavailable"
+msgstr "Missing; fallback information unavailable"
+
+msgid "Installed"
+msgstr "Installed"
+
+msgid "The image is too large."
+msgstr "The image is too large."
+
+msgid "Could Not Read Image"
+msgstr "Could Not Read Image"
+
+msgid "Heading Actions: {heading}"
+msgstr "Heading Actions: {heading}"
+
+msgid "Paste tabs or line endings directly. Plain-text line endings find both soft breaks and paragraph boundaries."
+msgstr "Paste tabs or line endings directly. Plain-text line endings find both soft breaks and paragraph boundaries."
+
+msgid "Example: ([0-9]+), replacement: $1. Patterns must select text; empty matches cannot be replaced."
+msgstr "Example: ([0-9]+), replacement: $1. Patterns must select text; empty matches cannot be replaced."
+
+msgid "Selected Text uses the document selection. Edits outside this search invalidate that range."
+msgstr "Selected Text uses the document selection. Edits outside this search invalidate that range."
+
+msgid "Pasted line endings create paragraphs. Text such as ^p and $1 stays literal unless Regular Expressions is enabled."
+msgstr "Pasted line endings create paragraphs. Text such as ^p and $1 stays literal unless Regular Expressions is enabled."
+
+msgid "Could Not Open Template"
+msgstr "Could Not Open Template"
+
+msgid "Templates"
+msgstr "Templates"
+
+msgid "Templates Folder"
+msgstr "Templates Folder"
+
+msgid "Unavailable"
+msgstr "Unavailable"
+
+msgid "Choose Templates Folder"
+msgstr "Choose Templates Folder"
+
+msgid "Use System Templates Folder"
+msgstr "Use System Templates Folder"
+
+msgid "_Use Folder"
+msgstr "_Use Folder"
+
+msgid "The templates folder must be readable without write access."
+msgstr "The templates folder must be readable without write access."
+

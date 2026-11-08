@@ -3200,3 +3200,67 @@ msgstr "Leaf utiliza el motor WordCraft. Su desarrollo, documentación e ilustra
 #: data/*.in
 msgid "Create and edit documents in GNOME"
 msgstr "Crea y edita documentos en GNOME"
+
+msgid "Back"
+msgstr "Atrás"
+
+msgid "Copy Options"
+msgstr "Opciones de copia"
+
+msgid "Paste Options"
+msgstr "Opciones de pegado"
+
+msgid "Fonts"
+msgstr "Fuentes"
+
+msgid "Missing; fallback information unavailable"
+msgstr "No disponible; sin información sobre la fuente de sustitución"
+
+msgid "Installed"
+msgstr "Instalada"
+
+msgid "The image is too large."
+msgstr "La imagen es demasiado grande."
+
+msgid "Could Not Read Image"
+msgstr "No se ha podido leer la imagen"
+
+msgid "Heading Actions: {heading}"
+msgstr "Acciones del título: {heading}"
+
+msgid "Paste tabs or line endings directly. Plain-text line endings find both soft breaks and paragraph boundaries."
+msgstr "Pega tabulaciones o saltos directamente. Los saltos del texto plano encuentran tanto saltos de línea como de párrafo."
+
+msgid "Example: ([0-9]+), replacement: $1. Patterns must select text; empty matches cannot be replaced."
+msgstr "Ejemplo: ([0-9]+), reemplazo: $1. Los patrones deben seleccionar texto; no se pueden reemplazar coincidencias vacías."
+
+msgid "Selected Text uses the document selection. Edits outside this search invalidate that range."
+msgstr "Texto seleccionado utiliza la selección del documento. Las ediciones fuera de esta búsqueda invalidan ese intervalo."
+
+msgid "Pasted line endings create paragraphs. Text such as ^p and $1 stays literal unless Regular Expressions is enabled."
+msgstr "Los saltos pegados crean párrafos. El texto como ^p y $1 se conserva literalmente salvo que se activen las expresiones regulares."
+
+msgid "Could Not Open Template"
+msgstr "No se ha podido abrir la plantilla"
+
+msgid "Templates"
+msgstr "Plantillas"
+
+msgid "Templates Folder"
+msgstr "Carpeta de plantillas"
+
+msgid "Unavailable"
+msgstr "No disponible"
+
+msgid "Choose Templates Folder"
+msgstr "Elegir carpeta de plantillas"
+
+msgid "Use System Templates Folder"
+msgstr "Usar la carpeta de plantillas del sistema"
+
+msgid "_Use Folder"
+msgstr "_Usar carpeta"
+
+msgid "The templates folder must be readable without write access."
+msgstr "La carpeta de plantillas debe permitir la lectura sin acceso de escritura."
+

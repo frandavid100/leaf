@@ -471,6 +471,8 @@ pub(super) fn clear_canvas(canvas: &impl IsA<gtk::Fixed>) {
 }
 
 pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
+    templates::dismiss(ui);
+    image_drop::cancel(ui);
     cancel_clipboard_read(ui);
     let _perf = perf_scope("leaf.opened");
     *ui.table_pointer.borrow_mut() = TablePointer::default();
@@ -599,6 +601,7 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
                     paint_selection(&ui, widget, cr, i, z, &selection.highlights);
                     paint_table_pointer(&ui, widget, cr, i, z);
                     paint_picture_frame(&ui, cr, i, z);
+                    image_drop::paint(&ui, cr, i, z);
                 }
                 if let Some(ui) = weak.upgrade().filter(caret_is_shown) {
                     let now = widget.frame_clock().map(|c| c.frame_time()).unwrap_or(0);

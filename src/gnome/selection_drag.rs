@@ -56,7 +56,9 @@ pub(super) fn schedule_drag_scroll(ui: &Rc<Ui>) {
         };
         if ui.closed.get()
             || document_identity(&ui) != identity
-            || (ui.drag_anchor.borrow().is_none() && ui.picture_drag.borrow().is_none())
+            || (ui.drag_anchor.borrow().is_none()
+                && ui.picture_drag.borrow().is_none()
+                && ui.image_drop.borrow().is_none())
         {
             ui.drag_scroll.borrow_mut().take();
             return glib::ControlFlow::Break;
@@ -93,7 +95,10 @@ pub(super) fn schedule_drag_scroll(ui: &Rc<Ui>) {
             return glib::ControlFlow::Break;
         }
         if let Some(r) = ui.document_box.compute_bounds(&ui.scroll) {
-            if !picture_drag_at(&ui, x - r.x() as f64, y - r.y() as f64) {
+            let external_image = ui.image_drop.borrow().is_some();
+            if external_image {
+                image_drop::motion(&ui, x - r.x() as f64, y - r.y() as f64);
+            } else if !picture_drag_at(&ui, x - r.x() as f64, y - r.y() as f64) {
                 update_document_drag(&ui, x - r.x() as f64, y - r.y() as f64);
             }
         }

@@ -168,3 +168,6 @@ pub fn set_template_folder(path: &std::path::Path) -> Result<(), String> {
         serde_json::json!(path.to_str().ok_or("The path is not UTF-8")?),
     )
 }
+pub fn reset_template_folder() -> Result<(), String> {
+    update("template_folder", serde_json::Value::Null)
+}

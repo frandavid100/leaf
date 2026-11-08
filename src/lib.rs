@@ -182,3 +182,5 @@ pub mod templates;
 pub mod document_fonts;
 
 pub mod format_painter;
+
+mod search_lines;

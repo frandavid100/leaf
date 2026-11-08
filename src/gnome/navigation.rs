@@ -14,10 +14,21 @@ pub(super) fn refresh_sidebar_title(ui: &Ui) {
     ui.sidebar_title.set_text(label);
 }
 
+struct OutlineAnchor {
+    row: String,
+    offset: f64,
+    scroll: f64,
+    focus: bool,
+    identity: Option<(u64, u64)>,
+    caret: Pos,
+}
 pub(super) struct OutlinePanel {
     pub(super) ui: std::rc::Weak<Ui>,
     toggle: gtk::ToggleButton,
     pub(super) list: gtk::ListBox,
+    scroll: gtk::ScrolledWindow,
+    anchor: RefCell<Option<OutlineAnchor>>,
+    anchor_generation: Cell<u64>,
     pub(super) status: gtk::Label,
     pub(super) collapsed: RefCell<std::collections::HashSet<String>>,
     pub(super) positions: RefCell<Vec<Pos>>,
@@ -140,7 +151,7 @@ impl OutlinePanel {
                 .or_else(|| owner_of(&focus).map(|i| headings[i].pos.clone()))
                 .or_else(|| sections.get(section_of(&focus)).map(|(_, p)| p.clone()))
         };
-        if previous_target != active_target {
+        if previous_target != active_target && self.anchor.borrow().is_none() {
             self.reveal_pending.set(true);
         }
         let matches = if filter == 1 {
@@ -207,7 +218,7 @@ impl OutlinePanel {
                     wordcraft_gnome::navigation::containing_heading(&headings, &e.pos) == Some(i)
                 });
             let key = format!("{:?}:{}", h.pos.path, h.text);
-            let collapsed = filter == 0 && self.collapsed.borrow().contains(&key);
+            let collapsed = self.collapsed.borrow().contains(&key);
             if collapsed && has_children {
                 hidden = Some(h.level);
             }
@@ -344,36 +355,45 @@ impl OutlinePanel {
                         .map(|(index, _)| index)
                         .unwrap_or(headings.len())
                 });
-                for (name, label, destination) in [
+                let menu = gtk::MenuButton::new();
+                menu.set_widget_name(&format!("outline-heading-menu-{i}"));
+                menu.set_icon_name("view-more-symbolic");
+                menu.add_css_class("flat");
+                menu.set_valign(gtk::Align::Center);
+                accessible_name(
+                    &menu,
+                    &wordcraft_gnome::i18n::interpolate(
+                        wordcraft_gnome::t!("Heading Actions: {heading}"),
+                        &[("heading", h.text.clone())],
+                    ),
+                );
+                let actions = gio::SimpleActionGroup::new();
+                let model = gio::Menu::new();
+                for (name, label, destination, enabled) in [
                     (
-                        "section-up",
+                        "move-up",
                         wordcraft_gnome::t!("Move Section Up"),
                         i.saturating_sub(1),
+                        i > 0,
                     ),
                     (
-                        "section-down",
+                        "move-down",
                         wordcraft_gnome::t!("Move Section Down"),
                         after_peer.unwrap_or(headings.len()),
+                        next_peer.is_some(),
                     ),
                 ] {
-                    let button = gtk::Button::from_icon_name(if name == "section-up" {
-                        "go-up-symbolic"
-                    } else {
-                        "go-down-symbolic"
-                    });
-                    button.add_css_class("flat");
-                    button.set_widget_name(name);
-                    accessible_name(&button, label);
-                    button.set_tooltip_text(Some(label));
-                    button.set_sensitive(if name == "section-up" {
-                        i > 0
-                    } else {
-                        next_peer.is_some()
-                    });
+                    let action = gio::SimpleAction::new(name, None);
+                    action.set_enabled(enabled);
                     let weak = Rc::downgrade(self);
-                    button.connect_clicked(move |_| {
+                    let identity = document_identity(&ui);
+                    action.connect_activate(move |_, _| {
                         if let Some(panel) = weak.upgrade() {
-                            if let Some(ui) = panel.ui.upgrade() {
+                            if let Some(ui) = panel
+                                .ui
+                                .upgrade()
+                                .filter(|u| document_identity(u) == identity)
+                            {
                                 tools_change(&ui, |s| {
                                     wordcraft_gnome::navigation::move_section(s, i, destination)
                                 });
@@ -381,20 +401,23 @@ impl OutlinePanel {
                             }
                         }
                     });
-                    content.append(&button);
+                    actions.add_action(&action);
+                    model.append(Some(label), Some(&format!("heading.{name}")));
                 }
+                menu.insert_action_group("heading", Some(&actions));
+                menu.set_menu_model(Some(&model));
+                content.append(&menu);
             }
             row.set_child(Some(&content));
             self.list.append(&row);
             let weak = Rc::downgrade(self);
+            let weak_row = row.downgrade();
+            let weak_arrow = arrow.downgrade();
             arrow.connect_clicked(move |_| {
-                if let Some(s) = weak.upgrade() {
-                    let mut keys = s.collapsed.borrow_mut();
-                    if !keys.remove(&key) {
-                        keys.insert(key.clone());
-                    }
-                    drop(keys);
-                    s.refresh();
+                if let (Some(panel), Some(row), Some(arrow)) =
+                    (weak.upgrade(), weak_row.upgrade(), weak_arrow.upgrade())
+                {
+                    panel.toggle_branch(&key, &row, arrow.has_focus());
                 }
             });
             self.positions.borrow_mut().push(h.pos.clone());
@@ -574,6 +597,106 @@ impl OutlinePanel {
             self.list.unselect_all();
         }
         self.sync_caret();
+        self.restore_branch();
+    }
+    fn toggle_branch(self: &Rc<Self>, key: &str, row: &gtk::ListBoxRow, focus: bool) {
+        let ui = self.ui.upgrade().unwrap();
+        let value = self.scroll.vadjustment().value();
+        let y = self
+            .list
+            .parent()
+            .and_then(|c| row.compute_bounds(&c))
+            .map_or(value, |b| b.y() as f64);
+        let caret = ui
+            .current
+            .borrow()
+            .as_ref()
+            .unwrap()
+            .session
+            .sel
+            .focus
+            .clone();
+        self.anchor_generation
+            .set(self.anchor_generation.get().wrapping_add(1));
+        self.anchor.replace(Some(OutlineAnchor {
+            row: row.widget_name().to_string(),
+            offset: y - value,
+            scroll: value,
+            focus,
+            identity: document_identity(&ui),
+            caret,
+        }));
+        let mut collapsed = self.collapsed.borrow_mut();
+        if !collapsed.remove(key) {
+            collapsed.insert(key.to_owned());
+        }
+        drop(collapsed);
+        self.reveal_pending.set(false);
+        self.refresh();
+    }
+    fn restore_branch(self: &Rc<Self>) {
+        if self.anchor.borrow().is_none() {
+            return;
+        }
+        let weak = Rc::downgrade(self);
+        let frames = Cell::new(0);
+        let generation = self.anchor_generation.get();
+        self.list.add_tick_callback(move |_, _| {
+            let Some(panel) = weak.upgrade() else {
+                return glib::ControlFlow::Break;
+            };
+            if panel.anchor_generation.get() != generation {
+                return glib::ControlFlow::Break;
+            }
+            let Some(ui) = panel.ui.upgrade() else {
+                return glib::ControlFlow::Break;
+            };
+            let mut saved = panel.anchor.borrow_mut();
+            let Some(anchor) = saved.as_ref() else {
+                return glib::ControlFlow::Break;
+            };
+            if ui.closed.get()
+                || document_identity(&ui) != anchor.identity
+                || ui
+                    .current
+                    .borrow()
+                    .as_ref()
+                    .is_none_or(|d| d.session.sel.focus != anchor.caret)
+            {
+                saved.take();
+                return glib::ControlFlow::Break;
+            }
+            let count = frames.get() + 1;
+            frames.set(count);
+            if count == 1 {
+                return glib::ControlFlow::Continue;
+            }
+            let row = find_widget(&panel.list, &anchor.row);
+            if count == 2 && anchor.focus {
+                if let Some(button) = row
+                    .as_ref()
+                    .and_then(|r| r.first_child())
+                    .and_then(|c| c.first_child())
+                {
+                    button.grab_focus();
+                }
+            }
+            let adj = panel.scroll.vadjustment();
+            let target = row
+                .and_then(|r| panel.list.parent().and_then(|c| r.compute_bounds(&c)))
+                .map_or(anchor.scroll, |b| b.y() as f64 - anchor.offset);
+            adj.set_value(target.clamp(
+                adj.lower(),
+                (adj.upper() - adj.page_size()).max(adj.lower()),
+            ));
+            if count >= 4 {
+                saved.take();
+                panel.reveal_pending.set(false);
+                glib::ControlFlow::Break
+            } else {
+                glib::ControlFlow::Continue
+            }
+        });
     }
     pub(super) fn sync_caret(self: &Rc<Self>) {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
@@ -593,6 +716,14 @@ impl OutlinePanel {
         }) else {
             return;
         };
+        let invalid_anchor = self
+            .anchor
+            .borrow()
+            .as_ref()
+            .is_some_and(|a| a.identity != Some((key.0, key.1)) || a.caret != key.2);
+        if invalid_anchor {
+            self.anchor.borrow_mut().take();
+        }
         let moved = self.caret.borrow().as_ref() != Some(&key);
         self.caret.replace(Some(key.clone()));
         let element = {
@@ -672,6 +803,10 @@ impl OutlinePanel {
         }
     }
     fn select_outline_row(&self, row: &gtk::ListBoxRow) {
+        if self.anchor.borrow().is_some() {
+            self.list.select_row(Some(row));
+            return;
+        }
         let changed = self.list.selected_row().as_ref() != Some(row);
         self.list.select_row(Some(row));
         if !changed && !self.reveal_pending.get() {
@@ -726,7 +861,11 @@ impl OutlinePanel {
             else {
                 return;
             };
-            let Some(bounds) = scroll.child().and_then(|c| row.compute_bounds(&c)) else {
+            let Some(bounds) = row
+                .parent()
+                .and_then(|l| l.parent())
+                .and_then(|c| row.compute_bounds(&c))
+            else {
                 return;
             };
             let adj = scroll.vadjustment();
@@ -892,6 +1031,25 @@ pub(super) fn install_outline(
     let list = gtk::ListBox::new();
     list.set_activate_on_single_click(true);
     list.add_css_class("navigation-sidebar");
+    list.set_header_func(|row, _| {
+        row.set_header(None::<&gtk::Widget>);
+        if !row.widget_name().starts_with("outline-section-") {
+            return;
+        }
+        let mut previous = row.prev_sibling();
+        while let Some(widget) = previous {
+            if widget.widget_name().starts_with("outline-section-") {
+                let separator = gtk::Separator::new(gtk::Orientation::Horizontal);
+                separator.set_margin_start(12);
+                separator.set_margin_end(12);
+                separator.set_margin_top(8);
+                separator.set_margin_bottom(8);
+                row.set_header(Some(&separator));
+                break;
+            }
+            previous = widget.prev_sibling();
+        }
+    });
     box_.append(&list);
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
@@ -902,6 +1060,9 @@ pub(super) fn install_outline(
         ui: Rc::downgrade(ui),
         toggle: titles.clone(),
         list,
+        scroll,
+        anchor: RefCell::new(None),
+        anchor_generation: Cell::new(0),
         status,
         collapsed: RefCell::new(Default::default()),
         positions: RefCell::new(Vec::new()),

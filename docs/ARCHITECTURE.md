@@ -1,5 +1,11 @@
 # Leaf architecture and code map
 
+La revisión alpha.36 añade `context_clipboard.rs` para las acciones divididas,
+`search_lines.rs` para el índice efímero de saltos pegados y diagnósticos en
+`diagnostics/workflows36.rs`. Plantillas y arrastre conservan identidad/revisión,
+callbacks débiles y cancelación por ciclo de vida. [Contrato](ALPHA36_INTERFACE.md).
+
+
 Leaf is a GTK4/libadwaita host for the pinned WordCraft document engine.
 The active branch is **main**. Start with [current state](../PROJECT_STATUS.md)
 and [contribution instructions](../CONTRIBUTING.md); past release details live

@@ -38,3 +38,6 @@ text18-*.log
 # Alpha35 native interaction evidence
 /workflows35-*.log
 /workflows35-*.png
+
+/workflows36-*.log
+/workflows36-*.png

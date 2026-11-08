@@ -125,6 +125,13 @@ fn pattern_options(o: &Options) -> find_pattern::Opts {
     }
 }
 fn compiled(text: &str, o: &Options) -> Result<Regex, String> {
+    let normalized;
+    let text = if !o.special && !o.regex {
+        normalized = text.replace("\r\n", "\n").replace('\r', "\n");
+        normalized.as_str()
+    } else {
+        text
+    };
     let c = find_pattern::compile(text, &pattern_options(o))?;
     Regex::builder()
         .syntax(syntax::Config::new().case_insensitive(c.case_insensitive))
@@ -159,7 +166,7 @@ pub fn query_with(
         s.find.results.clear();
         return Ok(Vec::new());
     }
-    compiled(text, o)?;
+    let pattern = compiled(text, o)?;
     let bounds = if o.scope == Scope::Selection {
         Some(
             range
@@ -189,6 +196,18 @@ pub fn query_with(
     let result = (|| {
         let mut positions = Vec::new();
         for story in stories {
+            if !o.special && !o.regex && text.contains(['\n', '\r']) {
+                positions.extend(
+                    crate::search_lines::find(&s.doc, story, &pattern)
+                        .into_iter()
+                        .filter(|(a, b)| {
+                            bounds
+                                .as_ref()
+                                .is_none_or(|(from, to)| a >= from && b <= to)
+                        }),
+                );
+                continue;
+            }
             let Some(path) = s.doc.para_paths(story).into_iter().next() else {
                 continue;
             };
@@ -395,6 +414,11 @@ fn replacement(
         },
         clip,
     );
+    let out = if !o.special && !o.regex {
+        out.replace("\r\n", "\r").replace('\n', "\r")
+    } else {
+        out
+    };
     Ok(if o.preserve_case {
         capitalization(&hit.matched, out)
     } else {

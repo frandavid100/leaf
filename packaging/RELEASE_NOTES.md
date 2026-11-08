@@ -1,19 +1,23 @@
-## Leaf 0.1.0-alpha.35 — Personal templates and editing tools
+## Leaf 0.1.0-alpha.36 — A simpler editing interface
 
-- Start documents from your own templates and choose the style for the following paragraph.
-- Paste plain text, copy formatting and insert images from the clipboard or by dropping a file.
-- Reorder complete sections from the document outline, with a single Undo to restore the move.
-- Search whole words or a selection, preserve capitalization and include notes, headers and footers. Advanced options support regular expressions.
-- Inspect the fonts used in a document and replace a font throughout the document.
+- Choose a personal template from actual page thumbnails above a new blank document. Configure its folder in Preferences, or start typing straight away.
+- Keep ordinary Copy and Paste one click away, with formatting and plain-text variants grouped in their own menus. The context menu follows Style, Paragraph, Text, Elements. Inspect and replace document fonts inside Document Properties, with navigation, available fallback information and Undo.
+- Search options share one compact group, with the scope selector at the bottom. Paste tabs or line endings directly; the special-character picker has been removed.
+- Hidden tabs reclaim their row. Structure preserves your position when branches fold, separates document sections and places heading move actions in three-dot menus.
+- Image drags show an insertion caret. Cancelling a drag preserves the selection, and delayed imports reject obsolete document targets.
 
-Changes to the following paragraph style require DOCX when ODT cannot preserve them. Section movement and font replacement have additional restrictions while tracking changes. A selected search range is cleared after unrelated edits; regular-expression replacements skip empty matches.
+Plain-text clipboard data cannot distinguish soft line breaks from paragraph boundaries. Pasted line endings find both; ordinary replacement line endings create paragraphs.
 
-## Leaf 0.1.0-alpha.35 — Plantillas personales y herramientas de edición
+DOCX is required when ODT cannot preserve a selected feature, including changed following-paragraph styles. WordCraft remains at 0.16.0.
 
-- Crea documentos desde tus propias plantillas y elige el estilo del párrafo siguiente.
-- Pega texto sin formato, copia el formato e inserta imágenes desde el portapapeles o arrastrando un archivo.
-- Reordena apartados completos desde la estructura del documento y restaura el movimiento con un solo paso de Deshacer.
-- Busca palabras completas o dentro de una selección, conserva las mayúsculas e incluye notas, encabezados y pies. Las opciones avanzadas admiten expresiones regulares.
-- Consulta las fuentes utilizadas y sustituye una fuente en todo el documento.
+## Leaf 0.1.0-alpha.36 — Una interfaz de edición más sencilla
 
-Los cambios del estilo siguiente requieren DOCX cuando ODT no puede conservarlos. El movimiento de apartados y la sustitución de fuentes tienen restricciones adicionales al registrar cambios. Una selección de búsqueda se invalida tras otras ediciones; los reemplazos con expresiones regulares omiten coincidencias vacías.
+- Elige una plantilla personal desde miniaturas reales de sus páginas, encima de un documento nuevo en blanco. Configura su carpeta en Preferencias o empieza a escribir directamente.
+- Copiar y Pegar siguen disponibles con un clic, con sus variantes de formato y texto sin formato agrupadas en menús propios. El menú contextual sigue el orden Estilo, Párrafo, Texto, Elementos. Consulta y sustituye las fuentes dentro de Propiedades del documento, con navegación, información disponible sobre fuentes de sustitución y Deshacer.
+- Las opciones de búsqueda comparten un grupo compacto, con el selector de ámbito al final. Pega tabulaciones o saltos directamente; se ha eliminado el selector de caracteres especiales.
+- Las pestañas ocultas recuperan su espacio. Estructura conserva la posición al plegar ramas, separa las secciones y reúne las acciones para mover títulos en menús de tres puntos.
+- Al arrastrar una imagen se muestra el punto de inserción. Cancelar conserva la selección y las importaciones demoradas rechazan destinos del documento que hayan quedado obsoletos.
+
+El texto plano del portapapeles no distingue los saltos de línea de los saltos de párrafo. La búsqueda de saltos pegados encuentra ambos; los saltos de un reemplazo normal crean párrafos.
+
+Se requiere DOCX cuando ODT no puede conservar una función elegida, incluidos los cambios de estilo del párrafo siguiente. WordCraft se mantiene en 0.16.0.

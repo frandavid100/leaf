@@ -36,29 +36,7 @@ pub(super) fn test(
         outline.clone(),
     );
     glib::spawn_future_local(async move {
-        let entry = gtk::Entry::new();
-        entry.set_text("Replace this query");
-        entry.select_region(0, -1);
-        let special = gtk::CheckButton::new();
-        let codes = search::special_code_menu(&entry.clone().upcast::<gtk::Editable>(), &special);
-        {
-            let pop = codes.popover().unwrap();
-            pop.child()
-                .unwrap()
-                .first_child()
-                .unwrap()
-                .downcast::<gtk::Button>()
-                .unwrap()
-                .emit_clicked();
-            assert_eq!(entry.text(), "^t");
-            assert!(special.is_active());
-        }
-        let popup = codes.popover().unwrap().downgrade();
-        drop(codes);
-        assert!(
-            popup.upgrade().is_none(),
-            "a closed search control must release its special-character popup"
-        );
+        assert!(find_widget(&ui.sidebar_pages, "search-whole-words").is_some());
         opened(
             &ui,
             Session::new(wordcraft_doc::Document::from_text("cat catch CAT Cat")),
@@ -99,10 +77,7 @@ pub(super) fn test(
         search.query.set_text("(");
         search.refresh();
         assert!(!search.replace_all.is_sensitive());
-        search.special.set_active(true);
-        assert!(!search.regex.is_active());
-        search.regex.set_active(true);
-        assert!(!search.special.is_active());
+
         search.regex.set_active(false);
         search.toggle.set_active(false);
         style.show_detail("Heading1");
@@ -277,30 +252,22 @@ pub(super) fn test(
         outline.show();
         outline.refresh();
         let row = find_widget(&outline.list, "outline-heading-0").unwrap();
-        find_widget(&row, "section-down")
+        find_widget(&row, "outline-heading-menu-0")
             .unwrap()
-            .downcast::<gtk::Button>()
-            .unwrap()
-            .emit_clicked();
+            .activate_action("heading.move-down", None)
+            .unwrap();
         assert_eq!(text(&ui), "B\nbody B\nA\nbody A");
         apply_user_edit(&ui, Edit::Undo);
         assert!(text(&ui).starts_with("A"));
         let before = document_identity(&ui);
         let properties = show_document_properties(&ui, &window);
-        find_widget(&properties.window, "properties-document-fonts")
-            .unwrap()
-            .downcast::<gtk::Button>()
-            .unwrap()
-            .emit_clicked();
+        assert!(
+            find_widget(&properties.window, "properties-document-fonts")
+                .unwrap()
+                .is::<adw::PreferencesGroup>()
+        );
+        assert!(find_widget(&properties.window, "document-font-list").is_some());
         assert_eq!(document_identity(&ui), before);
-        for window in gtk::Window::list_toplevels()
-            .into_iter()
-            .filter_map(|w| w.downcast::<gtk::Window>().ok())
-        {
-            if window.title().as_deref() == Some(wordcraft_gnome::t!("Document Fonts")) {
-                window.close();
-            }
-        }
         properties.window.close();
         // An actual template chooser action opens a new, dirty tab and keeps the source file.
         let folder = wordcraft_gnome::preferences::config_root().join("workflow35-templates");
@@ -312,20 +279,29 @@ pub(super) fn test(
         wordcraft_gnome::preferences::set_template_folder(&folder).unwrap();
         let host = ui.host.upgrade().unwrap();
         let count = host.tabs.n_pages();
-        templates::show(&host);
-        let dialog = gtk::Window::list_toplevels()
-            .into_iter()
-            .filter_map(|w| w.downcast::<gtk::Window>().ok())
-            .find(|w| w.title().as_deref() == Some(wordcraft_gnome::t!("New from Template")))
-            .unwrap();
-        find_widget(&dialog, "personal-template")
+        blank_tab(&app, &host);
+        let blank = selected_ui(&host).unwrap();
+        for _ in 0..300 {
+            if find_widget(&blank.template_slot, "personal-template").is_some() {
+                break;
+            }
+            glib::timeout_future(std::time::Duration::from_millis(20)).await;
+        }
+        find_widget(&blank.template_slot, "personal-template")
             .unwrap()
             .downcast::<gtk::Button>()
             .unwrap()
             .emit_clicked();
+        for _ in 0..300 {
+            if text(&blank) == "Personal template" {
+                break;
+            }
+            glib::timeout_future(std::time::Duration::from_millis(20)).await;
+        }
         assert_eq!(host.tabs.n_pages(), count + 1);
         assert_eq!(std::fs::read(&path).unwrap(), bytes);
-        assert_eq!(text(&selected_ui(&host).unwrap()), "Personal template");
+        assert_eq!(text(&blank), "Personal template");
+        assert!(!blank.template_slot.is_visible());
         let restart = std::process::Command::new(std::env::current_exe().unwrap())
             .arg("--workflows35-template-restart-test")
             .output()

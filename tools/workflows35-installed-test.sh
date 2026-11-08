@@ -31,6 +31,11 @@ cd "$output"
 grep -q WORKFLOWS35_UI_OK "workflows35-ui-${LANGUAGE}.log"
 cat "workflows35-ui-${LANGUAGE}.log"
 bash "$root/tools/workflows35-pointer-test.sh" "$runner"
+"$runner" --workflows36-ui-test > "workflows36-ui-${LANGUAGE}.log" 2>&1 || { cat "workflows36-ui-${LANGUAGE}.log"; exit 1; }
+grep -q WORKFLOWS36_UI_OK "workflows36-ui-${LANGUAGE}.log"
+cat "workflows36-ui-${LANGUAGE}.log"
+bash "$root/tools/workflows36-pointer-test.sh" "$runner"
+bash "$root/tools/workflows36-template-folder-test.sh" "$runner"
 CHECK
 chmod +x "$temporary/installed.sh"
 if [[ ${CI:-} == true ]]; then export LEAF35_TEST_UID; LEAF35_TEST_UID=$(id -u); fi

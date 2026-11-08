@@ -209,7 +209,13 @@ pub(super) fn build_tab(
 
     let canvas_overlay = gtk::Overlay::new();
     canvas_overlay.set_child(Some(&scroll));
-    stack.add_named(&canvas_overlay, Some("pages"));
+    let template_slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    template_slot.set_visible(false);
+    let editor = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    editor.append(&template_slot);
+    canvas_overlay.set_vexpand(true);
+    editor.append(&canvas_overlay);
+    stack.add_named(&editor, Some("pages"));
     stack.set_visible_child_name("empty");
 
     let toasts = ToastOverlay::new();
@@ -340,6 +346,28 @@ pub(super) fn build_tab(
     let secondary_header_heights = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
     secondary_header_heights.add_widget(&sidebar_filters);
     secondary_header_heights.add_widget(&tab_row);
+    // TabBar autohide hides its contents, not an external wrapper. Collapse
+    // that wrapper too so the sidebar selector cannot reserve an empty row.
+    tab_row.set_visible(tab_bar.is_tabs_revealed());
+    secondary_header_heights.set_mode(if tab_bar.is_tabs_revealed() {
+        gtk::SizeGroupMode::Vertical
+    } else {
+        gtk::SizeGroupMode::None
+    });
+    let weak_row = tab_row.downgrade();
+    let weak_heights = secondary_header_heights.downgrade();
+    tab_bar.connect_tabs_revealed_notify(move |bar| {
+        if let Some(row) = weak_row.upgrade() {
+            row.set_visible(bar.is_tabs_revealed());
+        }
+        if let Some(heights) = weak_heights.upgrade() {
+            heights.set_mode(if bar.is_tabs_revealed() {
+                gtk::SizeGroupMode::Vertical
+            } else {
+                gtk::SizeGroupMode::None
+            });
+        }
+    });
     document_toolbar.add_bottom_bar(&format_toolbar);
     document_toolbar.set_content(Some(&toasts));
 
@@ -369,6 +397,8 @@ pub(super) fn build_tab(
     let ui = Rc::new(Ui {
         table_pointer: RefCell::new(TablePointer::default()),
         picture_drag: RefCell::new(None),
+        image_drop: RefCell::new(None),
+        image_read: RefCell::new(None),
         reference_hover: RefCell::new(None),
         caption_hover: RefCell::new(None),
         caption_cues: RefCell::new(None),
@@ -430,6 +460,9 @@ pub(super) fn build_tab(
         format_sequence: RefCell::new(None),
         size_input: size_input.clone(),
         document_box,
+        template_slot,
+        template_eligible: Cell::new(false),
+        template_gallery: RefCell::new(None),
         thumbnails_box,
         scroll,
         thumbnails_scroll,
@@ -812,6 +845,7 @@ pub(super) fn build_tab(
             wordcraft_gnome::proofing_defaults::new_document(),
             wordcraft_gnome::t!("New Document"),
         );
+        templates::offer(&ui);
     }
     {
         let weak = Rc::downgrade(&ui);
