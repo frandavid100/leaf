@@ -55,6 +55,7 @@ jobs:
           cargo fmt --package wordcraft-gnome -- --check
           python -m unittest discover -s tools -p 'test_*.py'
           python tools/check_project_docs.py
+          python tools/release_metadata.py --check
       - name: Validate and compile gettext catalogs
         run: python tools/update_translations.py --check --compile
       - name: Tests sin interfaz

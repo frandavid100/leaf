@@ -6,7 +6,8 @@ is historical. A source/documentation cleanup does not by itself require a relea
 
 ## For a new binary release
 
-- [ ] Define the actual changes and known limitations; retain AI-assistance/license disclosure.
+- [ ] Define the actual changes and known limitations in [reviewed release news](../data/releases/news.json); retain AI-assistance/license disclosure.
+- [ ] Run `python3 tools/release_metadata.py`, regenerate translations, then check both with `--check`. [Store metadata process](STORE_METADATA.md) covers version/date/news checks and FlatPark synchronization.
 - [ ] Update APP_VERSION in [native module](../src/gnome/mod.rs), version assertions,
   package filenames/scripts, release notes and AppStream metadata together.
 - [ ] Preserve the pinned engine/dependencies or document an explicitly authorized upgrade.

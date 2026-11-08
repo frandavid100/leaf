@@ -1,5 +1,16 @@
 # Decisiones vigentes
 
+## 2026-11-08: ficha, colores y novedades
+
+David aprueba la descripción y los colores claro `#E4F2E8` y oscuro `#1B3327`,
+y autoriza implementar las novedades y su sincronización. Las nuevas capturas
+siguen a su cargo y esperan corregir el espacio de la barra de título; se
+revisarán una a una. No se inicia una release de binarios por este cambio.
+La fuente editorial bilingüe genera AppStream y las notas utilizadas por la
+publicación de GitHub. FlatPark debe importar metadatos de la versión exacta
+que distribuye, conservando su política y los detalles de instalación.
+[Proceso y límites](STORE_METADATA.md).
+
 ## 2026-11-07: propuestas aceptadas para alpha.35
 
 David autoriza crear los trece issues #170–#182, implementarlos, cerrar solo los

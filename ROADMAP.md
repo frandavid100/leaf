@@ -1,5 +1,14 @@
 # Hoja de ruta de Leaf
 
+## Ficha de tienda y novedades — #185
+
+Preparados la descripción aprobada en inglés/español, los colores claro/oscuro y
+una fuente común de novedades para AppStream y GitHub. Se conservan las capturas
+anteriores con referencias inmutables. No es una nueva versión del ejecutable.
+La sincronización de FlatPark necesita su propuesta externa; las nuevas capturas
+esperan #186/#191 y falta comprobar el catálogo publicado en Bazaar.
+[Proceso, fuente editorial y límites](docs/STORE_METADATA.md).
+
 ## Publicada y verificada: alpha.35 — propuestas aceptadas
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.35). Implementados y cerrados los trece issues
