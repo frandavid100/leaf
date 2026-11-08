@@ -348,7 +348,13 @@ jobs:
           base='2cd4ef308650686f5b71175c57b5875eb441dd8c'
           def before(path):return tomllib.loads(subprocess.check_output(['git','show',f'{base}:{path}'],text=True))
           old=before('Cargo.toml');new=tomllib.loads(Path('Cargo.toml').read_text())
-          assert all(new['dependencies'].get(name)==spec for name,spec in old['dependencies'].items())
+          expected_dependencies = dict(old['dependencies'])
+          # Adaptive dialogs use the existing libadwaita crate's 1.5 API.
+          # Allow precisely this feature change, preserving its version and all
+          # other dependency specifications, profiles, patches and lock entries.
+          assert expected_dependencies['adw']['features'] == ['v1_4']
+          expected_dependencies['adw'] = {**expected_dependencies['adw'], 'features': ['v1_5']}
+          assert all(new['dependencies'].get(name)==spec for name,spec in expected_dependencies.items())
           assert old.get('patch')==new.get('patch')
           assert old.get('profile')==new.get('profile')
           def engine_packages(lock):return [p for p in lock['package'] if p['name']!='wordcraft-gnome']
