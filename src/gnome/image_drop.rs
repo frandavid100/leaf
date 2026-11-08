@@ -181,6 +181,12 @@ pub(super) fn install(ui: &Rc<Ui>) {
     });
     let weak = Rc::downgrade(ui);
     target.connect_drop(move |_, value, x, y| {
+        if std::env::args().any(|a| a == "--workflows36-pointer-test") {
+            eprintln!(
+                "WORKFLOWS36_NATIVE_DROP at={} point={x},{y}",
+                glib::monotonic_time()
+            );
+        }
         let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
             return false;
         };

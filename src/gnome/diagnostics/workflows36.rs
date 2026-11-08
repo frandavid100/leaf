@@ -611,6 +611,25 @@ pub(super) fn pointer(
             assert!(target.current_drop().is_none());
             assert!(ui.image_drop.borrow().is_none());
             if stage == 1 {
+                {
+                    let current = ui.current.borrow();
+                    let d = current.as_ref().unwrap();
+                    if d.session.doc != original {
+                        eprintln!(
+                            "WORKFLOWS36_CANCEL_STATE undo={} expected={} image={:?} rev={}",
+                            d.session.undo_depth(),
+                            depth,
+                            pictures::selected(&d.session).map(|v| v.0),
+                            d.session.rev()
+                        );
+                        report_difference(
+                            &serde_json::to_value(&original).unwrap(),
+                            &serde_json::to_value(&d.session.doc).unwrap(),
+                            "document",
+                            &mut 8,
+                        );
+                    }
+                }
                 assert!(
                     ui.current.borrow().as_ref().unwrap().session.doc == original,
                     "hover/cancel must preserve the complete document"
@@ -759,4 +778,45 @@ pub(super) fn template_folder(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
         );
         app.quit();
     });
+}
+
+// Bounded failure evidence is useful across different installed runtimes.
+fn report_difference(
+    before: &serde_json::Value,
+    after: &serde_json::Value,
+    path: &str,
+    remaining: &mut usize,
+) {
+    if before == after || *remaining == 0 {
+        return;
+    }
+    match (before, after) {
+        (serde_json::Value::Object(a), serde_json::Value::Object(b)) => {
+            let keys = a
+                .keys()
+                .chain(b.keys())
+                .collect::<std::collections::BTreeSet<_>>();
+            for key in keys {
+                report_difference(
+                    &a.get(key).unwrap_or(&serde_json::Value::Null),
+                    &b.get(key).unwrap_or(&serde_json::Value::Null),
+                    &format!("{path}.{key}"),
+                    remaining,
+                );
+            }
+        }
+        (serde_json::Value::Array(a), serde_json::Value::Array(b)) if a.len() == b.len() => {
+            for (i, (a, b)) in a.iter().zip(b).enumerate() {
+                report_difference(a, b, &format!("{path}[{i}]"), remaining);
+            }
+        }
+        _ => {
+            *remaining -= 1;
+            eprintln!(
+                "WORKFLOWS36_DELTA {path} before={} after={}",
+                before.to_string().chars().take(240).collect::<String>(),
+                after.to_string().chars().take(240).collect::<String>()
+            );
+        }
+    }
 }

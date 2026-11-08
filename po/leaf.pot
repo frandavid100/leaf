@@ -645,7 +645,7 @@ msgstr ""
 msgid "Could Not Print: {e}"
 msgstr ""
 
-#: src/gnome/image_drop.rs:125 src/gnome/image_drop.rs:210
+#: src/gnome/image_drop.rs:125 src/gnome/image_drop.rs:216
 msgid "Could Not Read Image"
 msgstr ""
 
@@ -1497,7 +1497,7 @@ msgstr ""
 msgid "Insert Below"
 msgstr ""
 
-#: src/gnome/image_drop.rs:237 src/gnome/picture_controls.rs:136 src/pictures.rs:49
+#: src/gnome/image_drop.rs:243 src/gnome/picture_controls.rs:136 src/pictures.rs:49
 msgid "Insert Image"
 msgstr ""
 
@@ -3117,7 +3117,7 @@ msgstr ""
 msgid "The footnote reference could not be found."
 msgstr ""
 
-#: src/gnome/image_drop.rs:118 src/gnome/image_drop.rs:122 src/gnome/image_drop.rs:216
+#: src/gnome/image_drop.rs:118 src/gnome/image_drop.rs:122 src/gnome/image_drop.rs:222
 msgid "The image is too large."
 msgstr ""
 
