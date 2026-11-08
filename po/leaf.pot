@@ -1025,7 +1025,7 @@ msgstr ""
 msgid "Effects"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:149 src/gnome/diagnostics/annotations.rs:167 src/gnome/diagnostics/annotations.rs:182 src/gnome/diagnostics/format136.rs:420 src/gnome/elements.rs:111 src/gnome/elements.rs:253 src/gnome/elements.rs:254 src/gnome/elements.rs:271 src/gnome/menus.rs:534
+#: src/gnome/diagnostics/annotations.rs:149 src/gnome/diagnostics/annotations.rs:167 src/gnome/diagnostics/annotations.rs:182 src/gnome/diagnostics/format136.rs:434 src/gnome/elements.rs:111 src/gnome/elements.rs:253 src/gnome/elements.rs:254 src/gnome/elements.rs:271 src/gnome/menus.rs:534
 msgid "Elements"
 msgstr ""
 
@@ -2081,7 +2081,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:392 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:418 src/gnome/diagnostics/register.rs:271 src/gnome/paragraph.rs:1255 src/gnome/tab.rs:321 src/gnome/tab.rs:626
+#: src/gnome/context.rs:131 src/gnome/context.rs:392 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:432 src/gnome/diagnostics/register.rs:271 src/gnome/paragraph.rs:1255 src/gnome/tab.rs:321 src/gnome/tab.rs:626
 msgid "Paragraph"
 msgstr ""
 
@@ -2885,7 +2885,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:391 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:419 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:270 src/gnome/styles.rs:547 src/gnome/tab.rs:317 src/gnome/tab.rs:625
+#: src/gnome/context.rs:128 src/gnome/context.rs:391 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/adaptive.rs:50 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:433 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:270 src/gnome/styles.rs:547 src/gnome/tab.rs:317 src/gnome/tab.rs:625
 msgid "Style"
 msgstr ""
 
@@ -2997,7 +2997,7 @@ msgstr ""
 msgid "Templates Folder"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:393 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:417 src/gnome/diagnostics/register.rs:272 src/gnome/diagnostics/spellcheck.rs:145 src/gnome/references.rs:335 src/gnome/tab.rs:273 src/gnome/tab.rs:308 src/gnome/tab.rs:627
+#: src/gnome/context.rs:134 src/gnome/context.rs:393 src/gnome/diagnostics/adaptive.rs:68 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/register.rs:272 src/gnome/diagnostics/spellcheck.rs:145 src/gnome/references.rs:335 src/gnome/tab.rs:273 src/gnome/tab.rs:308 src/gnome/tab.rs:627
 msgid "Text"
 msgstr ""
 

@@ -46,6 +46,20 @@ jobs:
           bash packaging/build-bundle.sh /tmp/leaf-portal-debug
           mkdir -p "$HOME/.config/xdg-desktop-portal"
           printf '[preferred]\ndefault=gtk\n' > "$HOME/.config/xdg-desktop-portal/portals.conf"
+      - name: Check long formatting pages in the installed GNOME 49 build first
+        run: |
+          root=$PWD
+          mkdir -p dist/portal-format49 "$HOME/.var/app/io.github.frandavid100.leaf/cache"
+          cat > "$RUNNER_TEMP/leaf-format49.sh" <<'RUNNER'
+          #!/usr/bin/env bash
+          exec flatpak run --socket=x11 --nosocket=wayland --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=LEAF29_ACK_DIR="$LEAF29_ACK_DIR" --command=sh io.github.frandavid100.leaf -c 'export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d); exec /app/bin/leaf "$@"' leaf "$@"
+          RUNNER
+          export LEAF29_ACK_PARENT="$HOME/.var/app/io.github.frandavid100.leaf/cache"
+          cd dist/portal-format49
+          for language in en es; do
+            scale=1; if test "$language" = es; then scale=2; fi
+            LANGUAGE=$language GDK_SCALE=$scale xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s bash "$root/tools/format136-pointer-test.sh" "$RUNNER_TEMP/leaf-format49.sh"
+          done
       - name: Reproduce the portal interaction with bounded document differences
         env:
           LEAF35_NATIVE_SOURCE: ${{ github.workspace }}/target/debug/wordcraft-gnome
@@ -63,6 +77,7 @@ jobs:
           name: portal-debug-evidence
           path: |
             dist/portal-debug/
+            dist/portal-format49/
             dist/portal-gnome51.log
             dist/alpha29-flatpark/
             dist/workflows35-flatpark/
