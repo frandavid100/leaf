@@ -8,7 +8,7 @@ pub(super) enum AnnotationEdit {
 }
 
 pub(super) struct AnnotationDialog {
-    pub(super) window: adw::Window,
+    pub(super) window: adw::Dialog,
     pub(super) name: gtk::Entry,
     pub(super) text: gtk::TextView,
     pub(super) submit: gtk::Button,
@@ -53,12 +53,10 @@ pub(super) fn show_annotation_dialog(
         AnnotationEdit::Bookmark => wordcraft_gnome::t!("Add Bookmark"),
         AnnotationEdit::Edit(_) => wordcraft_gnome::t!("Edit Comment"),
     };
-    let window = adw::Window::builder()
+    let window = adw::Dialog::builder()
         .title(title)
-        .transient_for(&host.window)
-        .modal(true)
-        .default_width(440)
-        .default_height(if matches!(edit, AnnotationEdit::Bookmark) {
+        .content_width(440)
+        .content_height(if matches!(edit, AnnotationEdit::Bookmark) {
             240
         } else {
             360
@@ -147,7 +145,7 @@ pub(super) fn show_annotation_dialog(
     error.add_css_class("error");
     body.append(&error);
     toolbar.set_content(Some(&body));
-    window.set_content(Some(&toolbar));
+    window.set_child(Some(&toolbar));
     window.set_default_widget(Some(&submit));
     let weak_window = window.downgrade();
     cancel.connect_clicked(move |_| {
@@ -207,24 +205,20 @@ pub(super) fn show_annotation_dialog(
         }
     });
     let weak = Rc::downgrade(ui);
-    window.connect_close_request(move |_| {
+    window.connect_closed(move |dialog| {
         if let Some(ui) = weak.upgrade() {
-            ui.annotation_dialog.borrow_mut().take();
+            let owns = ui.annotation_dialog.borrow().as_ref() == Some(dialog);
+            if owns {
+                ui.annotation_dialog.borrow_mut().take();
+            }
         }
-        glib::Propagation::Proceed
     });
-    // Escape cancels; Ctrl+Enter submits multiline comments without inserting a line.
+    // AdwDialog handles Escape after nested controls. Ctrl+Enter submits
+    // multiline comments without inserting a line.
     let keys = gtk::EventControllerKey::new();
     keys.set_propagation_phase(gtk::PropagationPhase::Capture);
-    let w = window.downgrade();
     let button = submit.downgrade();
     keys.connect_key_pressed(move |_, key, _, mods| {
-        if key == gdk::Key::Escape {
-            if let Some(w) = w.upgrade() {
-                w.close();
-            }
-            return glib::Propagation::Stop;
-        }
         if key == gdk::Key::Return && mods.contains(gdk::ModifierType::CONTROL_MASK) {
             if let Some(button) = button.upgrade().filter(|b| b.is_sensitive()) {
                 button.emit_clicked();
@@ -235,7 +229,7 @@ pub(super) fn show_annotation_dialog(
     });
     window.add_controller(keys);
     ui.annotation_dialog.replace(Some(window.clone()));
-    window.present();
+    window.present(Some(&host.window));
     if matches!(edit, AnnotationEdit::Bookmark) {
         name.grab_focus();
     } else {

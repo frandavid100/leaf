@@ -1,27 +1,23 @@
-## Leaf 0.1.0-alpha.36 — A simpler editing interface
+## Leaf 0.1.0-alpha.37 — Smoother navigation and integrated dialogs
 
-- Choose a personal template from actual page thumbnails above a new blank document, or start typing straight away. The Flatpak reads the system Templates folder without write access.
-- Keep ordinary Copy and Paste one click away, with formatting and plain-text variants grouped in their own menus. The context menu follows Style, Paragraph, Text, Elements. Inspect and replace document fonts inside Document Properties, with navigation, available fallback information and Undo.
-- Search options share one compact group, with the scope selector at the bottom. Paste tabs or line endings directly; the special-character picker has been removed.
-- Hidden tabs reclaim their row. Structure preserves your position when branches fold, separates document sections and places heading move actions in three-dot menus.
-- Image drags show an insertion caret. Cancelling a drag preserves the selection, and delayed imports reject obsolete document targets.
+- The personal template gallery scrolls together with the blank page. Starting to type dismisses it once and reclaims the space.
+- Sidebar representation, filter and mode controls scroll with their content. Their background appears on hover, while keyboard focus and selected state remain accessible.
+- Preferences and document tools use integrated adaptive dialogs that fit their parent window. File, folder and print choosers keep their native system workflows.
+- Structure restores manual browsing after GTK allocation, cancels obsolete restoration on input and preserves independent sidebar positions. Modal dialogs keep document shortcuts out of their entries and restore editing focus.
+- First Save suggests the document title, first heading or a localized generic name. Copy saves retain a localized copy suffix, with bounded Unicode filenames and the required document format.
 
-Custom template folder selection is unavailable in the Flatpak because the folder portal grants write access and rejects self-revocation. The read-only system Templates folder remains usable; issue #171 remains open.
+WordCraft remains at 0.16.0. Existing engine-dependent issues and the deferred issue #52 are unchanged.
 
-Plain-text clipboard data cannot distinguish soft line breaks from paragraph boundaries. Pasted line endings find both; ordinary replacement line endings create paragraphs.
+The Flatpak continues to use the read-only system Templates folder; custom template folder selection remains unavailable (#171).
 
-DOCX is required when ODT cannot preserve a selected feature, including changed following-paragraph styles. WordCraft remains at 0.16.0.
+## Leaf 0.1.0-alpha.37 — Navegación más fluida y diálogos integrados
 
-## Leaf 0.1.0-alpha.36 — Una interfaz de edición más sencilla
+- La galería de plantillas personales se desplaza junto con la página en blanco. Al empezar a escribir desaparece una sola vez y recupera ese espacio.
+- Los selectores de vista, filtros y modos del panel lateral se desplazan con su contenido. El fondo aparece al pasar el puntero, conservando el foco de teclado y el estado seleccionado accesible.
+- Las preferencias y las herramientas del documento usan diálogos adaptativos integrados en su ventana. Los selectores de archivos, carpetas e impresión conservan su funcionamiento nativo.
+- Estructura recupera la posición de exploración tras estabilizarse el tamaño del panel y cancela las restauraciones pendientes si intervienes. Los diálogos conservan el foco de edición y evitan que sus atajos actúen sobre el documento.
+- El primer guardado propone el título del documento, el primer encabezado o un nombre genérico traducido. Las copias conservan un sufijo traducido, con nombres Unicode de longitud limitada y el formato requerido.
 
-- Elige una plantilla personal desde miniaturas reales de sus páginas, encima de un documento nuevo en blanco, o empieza a escribir directamente. El Flatpak lee la carpeta de plantillas del sistema sin permiso de escritura.
-- Copiar y Pegar siguen disponibles con un clic, con sus variantes de formato y texto sin formato agrupadas en menús propios. El menú contextual sigue el orden Estilo, Párrafo, Texto, Elementos. Consulta y sustituye las fuentes dentro de Propiedades del documento, con navegación, información disponible sobre fuentes de sustitución y Deshacer.
-- Las opciones de búsqueda comparten un grupo compacto, con el selector de ámbito al final. Pega tabulaciones o saltos directamente; se ha eliminado el selector de caracteres especiales.
-- Las pestañas ocultas recuperan su espacio. Estructura conserva la posición al plegar ramas, separa las secciones y reúne las acciones para mover títulos en menús de tres puntos.
-- Al arrastrar una imagen se muestra el punto de inserción. Cancelar conserva la selección y las importaciones demoradas rechazan destinos del documento que hayan quedado obsoletos.
+WordCraft sigue en 0.16.0. Se mantienen los límites de los issues dependientes del motor y el aplazamiento del #52.
 
-La selección de otra carpeta de plantillas no está disponible en el Flatpak: el portal concede escritura y rechaza que la aplicación retire ese permiso. Se conserva la carpeta de plantillas del sistema en solo lectura; el issue #171 sigue abierto.
-
-El texto plano del portapapeles no distingue los saltos de línea de los saltos de párrafo. La búsqueda de saltos pegados encuentra ambos; los saltos de un reemplazo normal crean párrafos.
-
-Se requiere DOCX cuando ODT no puede conservar una función elegida, incluidos los cambios de estilo del párrafo siguiente. WordCraft se mantiene en 0.16.0.
+El Flatpak sigue usando la carpeta de plantillas del sistema en modo de solo lectura; la elección de carpetas personalizadas permanece desactivada (#171).

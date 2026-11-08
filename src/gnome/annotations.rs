@@ -664,8 +664,7 @@ fn confirm_delete_comment(ui: &Rc<Ui>, id: u32) {
     let Some(host) = ui.host.upgrade() else {
         return;
     };
-    let dialog = adw::MessageDialog::new(
-        Some(&host.window),
+    let dialog = adw::AlertDialog::new(
         Some(wordcraft_gnome::t!("Delete Comment?")),
         Some(wordcraft_gnome::t!(
             "This also deletes its replies. You can undo this change."
@@ -685,7 +684,7 @@ fn confirm_delete_comment(ui: &Rc<Ui>, id: u32) {
             }
         }
     });
-    dialog.present();
+    dialog.present(Some(&host.window));
 }
 
 pub(super) fn install_annotations(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<AnnotationPanel> {

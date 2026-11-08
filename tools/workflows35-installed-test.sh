@@ -18,7 +18,7 @@ if [[ -n ${LEAF35_TEST_UID:-} ]]; then test "$(id -u)" = "$LEAF35_TEST_UID"; fi
 exec flatpak run --socket=x11 --nosocket=wayland \
   --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" \
   --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo \
-  --env=LEAF35_PROFILE="$LEAF35_PROFILE" --command=sh "$LEAF35_APP_ID" \
+  --env=LEAF29_ACK_DIR="${LEAF29_ACK_DIR:-}" --env=LEAF35_PROFILE="$LEAF35_PROFILE" --command=sh "$LEAF35_APP_ID" \
   -c 'export XDG_CONFIG_HOME="$LEAF35_PROFILE/config" XDG_STATE_HOME="$LEAF35_PROFILE/state"; exec "$@"' \
   leaf "$LEAF35_BINARY" "$@"
 RUNNER
@@ -27,6 +27,8 @@ cat > "$temporary/check.sh" <<'CHECK'
 set -euo pipefail
 root=$1;runner=$2;output=$3
 cd "$output"
+export LEAF29_ACK_PARENT="$HOME/.var/app/$LEAF35_APP_ID/cache"
+bash "$root/tools/workflows37-pointer-test.sh" "$runner"
 "$runner" --workflows35-ui-test > "workflows35-ui-${LANGUAGE}.log" 2>&1 || { cat "workflows35-ui-${LANGUAGE}.log"; exit 1; }
 grep -q WORKFLOWS35_UI_OK "workflows35-ui-${LANGUAGE}.log"
 cat "workflows35-ui-${LANGUAGE}.log"
@@ -52,6 +54,6 @@ for language in en es; do
       --reuid="$LEAF35_TEST_UID" --regid="$(id -g)" --init-groups --)
   fi
   LANGUAGE=$language GDK_SCALE=$scale xvfb-run -a -s '-screen 0 2800x2200x24' \
-    "${session[@]}" dbus-run-session -- timeout 300s bash "$temporary/check.sh" "$root" "$temporary/installed.sh" "$output"
+    "${session[@]}" dbus-run-session -- timeout 420s bash "$temporary/check.sh" "$root" "$temporary/installed.sh" "$output"
 done
 echo WORKFLOWS35_INSTALLED_OK

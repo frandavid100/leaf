@@ -7,7 +7,7 @@ use wordcraft_doc::{
 use wordcraft_gnome::document_properties::{ColumnKind, ColumnSetup, DocumentInfo};
 
 pub(super) struct DocumentProperties {
-    pub(super) window: adw::Window,
+    pub(super) window: adw::Dialog,
     pub(super) metadata: [adw::EntryRow; 5],
     pub(super) width: gtk::SpinButton,
     pub(super) height: gtk::SpinButton,
@@ -71,17 +71,14 @@ fn show_properties(
         )
     };
     let identity = Rc::new(Cell::new(document_identity(ui)));
-    let window = adw::Window::builder()
+    let window = adw::Dialog::builder()
         .title(if target.is_some() {
             wordcraft_gnome::t!("Section Properties")
         } else {
             wordcraft_gnome::t!("Document Properties")
         })
-        .transient_for(parent)
-        .destroy_with_parent(true)
-        .modal(true)
-        .default_width(480)
-        .default_height(650)
+        .content_width(480)
+        .content_height(650)
         .build();
     let toolbar = ToolbarView::new();
     let header = HeaderBar::new();
@@ -468,7 +465,7 @@ fn show_properties(
     content.append(&stack);
     content.append(&message);
     toolbar.set_content(Some(&content));
-    window.set_content(Some(&toolbar));
+    window.set_child(Some(&toolbar));
     let syncing = Rc::new(Cell::new(false));
     {
         let width = width.downgrade();
@@ -723,7 +720,7 @@ fn show_properties(
             }
         ));
     }
-    window.present();
+    window.present(Some(parent));
     DocumentProperties {
         window,
         metadata,

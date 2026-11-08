@@ -326,11 +326,9 @@ pub(super) fn blank_tab(app: &Application, host: &Rc<Workspace>) {
     }
 }
 
-pub(super) fn show_preferences(parent: &ApplicationWindow) -> adw::PreferencesWindow {
-    let dialog = adw::PreferencesWindow::new();
-    dialog.set_transient_for(Some(parent));
-    dialog.set_modal(true);
-    dialog.set_title(Some(wordcraft_gnome::t!("Preferences")));
+pub(super) fn show_preferences(parent: &ApplicationWindow) -> adw::PreferencesDialog {
+    let dialog = adw::PreferencesDialog::new();
+    dialog.set_title(wordcraft_gnome::t!("Preferences"));
     let page = adw::PreferencesPage::new();
     let identity = adw::PreferencesGroup::new();
     let name = adw::EntryRow::new();
@@ -419,7 +417,7 @@ pub(super) fn show_preferences(parent: &ApplicationWindow) -> adw::PreferencesWi
     page.add(&proofing);
     page.add(&templates::preferences(&dialog));
     dialog.add(&page);
-    dialog.present();
+    dialog.present(Some(parent));
     dialog
 }
 
@@ -543,12 +541,10 @@ pub(super) fn show_recovery(
         .as_ref()
         .map(|d| d.session.recovery_documents())
         .unwrap_or_default();
-    let dialog = adw::Window::builder()
-        .transient_for(parent)
-        .modal(true)
+    let dialog = adw::Dialog::builder()
         .title(wordcraft_gnome::t!("Recover Documents"))
-        .default_width(420)
-        .default_height(240)
+        .content_width(420)
+        .content_height(240)
         .build();
     let toolbar = ToolbarView::new();
     toolbar.add_top_bar(&HeaderBar::new());
@@ -623,6 +619,6 @@ pub(super) fn show_recovery(
         list.append(&button);
     }
     toolbar.set_content(Some(&list));
-    dialog.set_content(Some(&toolbar));
-    dialog.present();
+    dialog.set_child(Some(&toolbar));
+    dialog.present(Some(parent));
 }

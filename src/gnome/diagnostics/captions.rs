@@ -278,6 +278,7 @@ pub(super) fn captions_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
                 elements.pop.popdown();
                 opened(&u, reopened, "Reopened caption ownership");
                 let link = show_link(&u).unwrap();
+                wait_dialog_presented(&link.window);
                 find_widget(&link.window, "link-kind")
                     .unwrap()
                     .downcast::<gtk::DropDown>()

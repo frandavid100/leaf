@@ -97,6 +97,11 @@ pub(super) fn install_keyboard_input(
             #[upgrade_or]
             glib::Propagation::Proceed,
             move |_, key, _, modifiers| {
+                // Adaptive dialogs share this root window. Their entries and
+                // shortcuts own input until libadwaita closes the modal surface.
+                if save_parent.visible_dialog().is_some() {
+                    return glib::Propagation::Proceed;
+                }
                 if key == gdk::Key::Escape
                     && ui.document_box.has_focus()
                     && format_painter::cancel(&ui)
@@ -157,7 +162,7 @@ pub(super) fn install_keyboard_input(
                         return glib::Propagation::Stop;
                     }
                     if key == gdk::Key::Menu || (shift && key == gdk::Key::F10) {
-                        let y = ui.scroll.vadjustment().value() as i32 + 40;
+                        let y = document_scroll_y(&ui).max(0.) as i32 + 40;
                         show_table_context_at(&ui, &save_parent, 60, y);
                         return glib::Propagation::Stop;
                     }

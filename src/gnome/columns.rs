@@ -86,7 +86,7 @@ pub(super) struct ColumnEditor {
     pub(super) apply: gtk::Button,
 }
 pub(super) struct ColumnsDialog {
-    pub(super) window: adw::Window,
+    pub(super) window: adw::Dialog,
     pub(super) controls: Rc<ColumnControls>,
     pub(super) apply: gtk::Button,
 }
@@ -398,12 +398,10 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
     }
 }
 pub(super) fn show_columns(ui: &Rc<Ui>, parent: &ApplicationWindow) -> ColumnsDialog {
-    let window = adw::Window::builder()
+    let window = adw::Dialog::builder()
         .title(wordcraft_gnome::t!("Columns"))
-        .transient_for(parent)
-        .modal(true)
-        .default_width(480)
-        .default_height(620)
+        .content_width(480)
+        .content_height(620)
         .build();
     let weak = window.downgrade();
     let editor = columns_editor(ui, move || {
@@ -420,14 +418,14 @@ pub(super) fn show_columns(ui: &Rc<Ui>, parent: &ApplicationWindow) -> ColumnsDi
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_child(Some(&editor.root));
     toolbar.set_content(Some(&scroll));
-    window.set_content(Some(&toolbar));
+    window.set_child(Some(&toolbar));
     let weak = window.downgrade();
     cancel.connect_clicked(move |_| {
         if let Some(w) = weak.upgrade() {
             w.close();
         }
     });
-    window.present();
+    window.present(Some(parent));
     ColumnsDialog {
         window,
         controls: editor.controls,

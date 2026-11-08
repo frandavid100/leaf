@@ -223,7 +223,7 @@ impl Ruler {
         if self.focused.get() {
             return doc.active;
         }
-        let top = ui.scroll.vadjustment().value();
+        let top = document_scroll_y(ui);
         let visible = doc
             .arrangement
             .visible(top, top + ui.scroll.vadjustment().page_size());

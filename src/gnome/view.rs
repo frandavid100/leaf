@@ -98,11 +98,27 @@ pub(super) fn refresh_document_appearance(ui: &Rc<Ui>) {
     refresh_selection(ui);
 }
 
+/// Canvas coordinates exclude the gallery that scrolls above the first page.
+pub(super) fn document_content_top(ui: &Ui) -> f64 {
+    if ui.template_slot.is_visible() {
+        ui.document_box
+            .parent()
+            .and_then(|p| ui.document_box.compute_bounds(&p))
+            .map_or(0., |r| f64::from(r.y()))
+    } else {
+        0.0
+    }
+}
+
+pub(super) fn document_scroll_y(ui: &Ui) -> f64 {
+    ui.scroll.vadjustment().value() - document_content_top(ui)
+}
+
 /// Viewport geometry is separate from the canonical editing/thumbnail target.
 pub(super) fn viewport_page(ui: &Ui, doc: &Current) -> usize {
     doc.arrangement.page_at(
         ui.scroll.hadjustment().value() + ui.scroll.hadjustment().page_size() * 0.3,
-        ui.scroll.vadjustment().value() + ui.scroll.vadjustment().page_size() * 0.3,
+        document_scroll_y(ui) + ui.scroll.vadjustment().page_size() * 0.3,
     )
 }
 
@@ -110,7 +126,7 @@ pub(super) fn refresh_pages(ui: &Rc<Ui>) {
     let _perf = perf_scope("leaf.refresh_pages");
     sync_raster_scale(ui);
     let adj = ui.scroll.vadjustment();
-    let top = adj.value();
+    let top = document_scroll_y(ui);
     let bottom = top + adj.page_size().max(600.0);
     let mut errors = Vec::new();
     if let Ok(mut borrowed) = ui.current.try_borrow_mut() {
@@ -165,7 +181,7 @@ pub(super) fn refresh_thumbnails(ui: &Rc<Ui>) {
         return;
     }
     let adj = ui.thumbnails_scroll.vadjustment();
-    let top = adj.value();
+    let top = document_scroll_y(ui);
     let bottom = top + adj.page_size().max(600.0);
     if let Ok(mut borrowed) = ui.current.try_borrow_mut() {
         if let Some(doc) = borrowed.as_mut() {
@@ -270,7 +286,7 @@ pub(super) fn scroll_to_page(ui: &Rc<Ui>, index: usize) {
     if let Some(top) = target {
         let adj = ui.scroll.vadjustment();
         let max = (adj.upper() - adj.page_size()).max(0.0);
-        adj.set_value((top - 10.0).max(0.0).min(max));
+        adj.set_value((top + document_content_top(ui) - 10.0).max(0.0).min(max));
         refresh_pages(ui);
     }
 }
@@ -321,9 +337,9 @@ fn apply_zoom(ui: &Rc<Ui>, zoom: f32) {
                     && doc.session.sel == selection
                     && doc.active == current_page
             };
-            if restore_page {
+            if restore_page && !ui.template_eligible.get() {
                 scroll_to_page(&ui, current_page);
-            } else {
+            } else if !restore_page {
                 // Resolve newer navigation against the now allocated geometry.
                 caret_ensure_visible(&ui);
             }

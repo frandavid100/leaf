@@ -25,13 +25,11 @@ pub(super) fn view_pointer_test(
     let app = app.clone();
     glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
         {
-            if ui.format_toolbar.is_visible() {
-                assert_eq!(
-                    ui.sidebar_selector.height(),
-                    ui.format_toolbar.height(),
-                    "bottom bars must align"
-                );
-            }
+            assert!(
+                ui.sidebar_selector
+                    .ancestor(gtk::ScrolledWindow::static_type())
+                    .is_some()
+            );
             let value = ui.current.borrow();
             let d = value.as_ref().unwrap();
             assert_eq!(d.arrangement.columns, 2);
@@ -154,9 +152,11 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
             .session
             .is_untouched_blank()
     );
-    if ui.format_toolbar.is_visible() {
-        assert_eq!(ui.sidebar_selector.height(), ui.format_toolbar.height());
-    }
+    assert!(
+        ui.sidebar_selector
+            .ancestor(gtk::ScrolledWindow::static_type())
+            .is_some()
+    );
     assert!(menu.popover().unwrap().is::<gtk::PopoverMenu>());
     let model = menu.menu_model().unwrap();
     assert_eq!(model.n_items(), 5);

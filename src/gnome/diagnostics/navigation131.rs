@@ -33,6 +33,14 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
             .unwrap()
             .downcast::<gtk::DropDown>()
             .unwrap();
+        if std::env::var_os("LEAF_NAVIGATION_TRACE").is_some() {
+            eprintln!(
+                "NAVIGATION131_PHASE {} time={:?} value={}",
+                phase.get(),
+                std::time::SystemTime::now(),
+                outline.vadjustment().value()
+            );
+        }
         match phase.get() {
             0 => {
                 u.navigation_button.set_active(true);
@@ -70,10 +78,6 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
                 );
                 assert_eq!(u.sidebar_title.text(), wordcraft_gnome::t!("Navigation"));
                 assert!(u.navigation_selector.is_visible());
-                assert_eq!(
-                    u.sidebar_filters.visible_child_name().as_deref(),
-                    Some("navigation")
-                );
                 assert!(u.representation.is_mapped());
                 assert_eq!(u.representation.model().unwrap().n_items(), 2);
                 u.representation.set_selected(1);
@@ -101,11 +105,11 @@ pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
             }
             6 => {
                 assert!(
-                    !u.sidebar_filters.is_visible(),
+                    !u.navigation_pages.is_mapped(),
                     "Search does not show Navigation/Review filters"
                 );
                 u.search.borrow().as_ref().unwrap().toggle.set_active(false);
-                assert!(u.sidebar_filters.is_visible());
+                assert!(u.navigation_pages.is_mapped());
                 assert_eq!(
                     u.navigation_pages.visible_child_name().as_deref(),
                     Some("outline")

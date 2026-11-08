@@ -1,13 +1,14 @@
 use super::*;
 use serde_json::json;
 
-fn apply_reference_dialog(window: &gtk::Window) {
+fn apply_reference_dialog(window: &adw::Dialog) {
+    wait_dialog_presented(window);
     find_widget(window, "reference-apply")
         .unwrap()
         .downcast::<gtk::Button>()
         .unwrap()
         .emit_clicked();
-    assert!(!window.is_visible(), "reference dialog did not commit");
+    assert_dialog_closed(window);
 }
 
 pub(super) fn alpha29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
@@ -77,6 +78,7 @@ fn alpha29_controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     selection::set_caret(&mut s, &Pos::body(1, 0), false).unwrap();
     opened(ui, s, "References");
     let link = show_link(ui).unwrap();
+    wait_dialog_presented(&link.window);
     find_widget(&link.window, "link-kind")
         .unwrap()
         .downcast::<gtk::DropDown>()
@@ -84,19 +86,16 @@ fn alpha29_controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
         .set_selected(1);
     assert!(link.apply.is_sensitive());
     link.apply.emit_clicked();
-    assert!(!link.window.is_visible());
+    assert_dialog_closed(&link.window);
     assert!(
         serde_json::to_string(&ui.current.borrow().as_ref().unwrap().session.doc)
             .unwrap()
             .contains("REF _Ref")
     );
     show_contents_dialog(ui, window);
-    let toc = gtk::Window::list_toplevels()
-        .into_iter()
-        .filter_map(|w| w.downcast::<gtk::Window>().ok())
-        .find(|w| {
-            w.is_visible() && w.title().as_deref() == Some(wordcraft_gnome::t!("Table of Contents"))
-        })
+    let toc = window
+        .visible_dialog()
+        .filter(|w| w.title() == wordcraft_gnome::t!("Table of Contents"))
         .unwrap();
     apply_reference_dialog(&toc);
     {
@@ -164,10 +163,9 @@ fn alpha29_controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
         "Equations",
     );
     show_equation(ui, window);
-    let eq = gtk::Window::list_toplevels()
-        .into_iter()
-        .filter_map(|w| w.downcast::<gtk::Window>().ok())
-        .find(|w| w.is_visible() && w.title().as_deref() == Some(wordcraft_gnome::t!("Equation")))
+    let eq = window
+        .visible_dialog()
+        .filter(|w| w.title() == wordcraft_gnome::t!("Equation"))
         .unwrap();
     find_widget(&eq, "equation-input")
         .unwrap()
@@ -198,13 +196,14 @@ fn alpha29_controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     assert!(draws.iter().filter(|d|matches!(d,wordcraft_engine::layout::display::Draw::Glyphs{text,..} if text=="1")).count()>=2,"both note numbers must render");
     opened(ui, s, "Footnotes");
     let props = show_document_properties(ui, window);
+    wait_dialog_presented(&props.window);
     find_widget(&props.window, "properties-footnote-start")
         .unwrap()
         .downcast::<gtk::SpinButton>()
         .unwrap()
         .set_value(4.);
     props.apply.emit_clicked();
-    assert!(!props.window.is_visible());
+    assert_dialog_closed(&props.window);
     {
         let c = ui.current.borrow();
         let s = &c.as_ref().unwrap().session;
@@ -241,13 +240,14 @@ fn alpha29_controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     let before = s.doc.clone();
     opened(ui, s, "Section note settings");
     let properties = show_section_properties(ui, window, 1);
+    wait_dialog_presented(&properties.window);
     find_widget(&properties.window, "properties-footnote-start")
         .unwrap()
         .downcast::<gtk::SpinButton>()
         .unwrap()
         .set_value(9.);
     properties.apply.emit_clicked();
-    assert!(!properties.window.is_visible());
+    assert_dialog_closed(&properties.window);
     {
         let mut c = ui.current.borrow_mut();
         let s = &mut c.as_mut().unwrap().session;

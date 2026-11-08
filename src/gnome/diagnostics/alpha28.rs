@@ -93,20 +93,18 @@ pub(super) fn alpha28_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
                     ("footnote-options", wordcraft_gnome::t!("Footnote Options")),
                 ] {
                     host.window.lookup_action(action).unwrap().activate(None);
-                    let window = gtk::Window::list_toplevels()
-                        .into_iter()
-                        .filter_map(|w| w.downcast::<gtk::Window>().ok())
-                        .find(|w| w.is_visible() && w.title().as_deref() == Some(title))
+                    let window = host
+                        .window
+                        .visible_dialog()
+                        .filter(|w| w.title() == title)
                         .unwrap();
+                    wait_dialog_presented(&window);
                     find_widget(&window, "reference-apply")
                         .unwrap()
                         .downcast::<gtk::Button>()
                         .unwrap()
                         .emit_clicked();
-                    assert!(
-                        !window.is_visible(),
-                        "reference dialog must commit without an error"
-                    );
+                    assert_dialog_closed(&window);
                 }
                 host.window
                     .lookup_action("update-references")

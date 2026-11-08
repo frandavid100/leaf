@@ -10,15 +10,19 @@ struct Followup {
     body: String,
     initial_pages: usize,
 }
-fn followup_point(w: &impl IsA<gtk::Widget>, root: &impl IsA<gtk::Window>) -> (i32, i32) {
+fn followup_point(w: &impl IsA<gtk::Widget>, root: &impl IsA<gtk::Widget>) -> (i32, i32) {
     followup_point_at(w, root, 0.5)
 }
 fn followup_point_at(
     w: &impl IsA<gtk::Widget>,
-    root: &impl IsA<gtk::Window>,
+    root: &impl IsA<gtk::Widget>,
     fraction: f64,
 ) -> (i32, i32) {
-    let root = root.as_ref();
+    let root = root
+        .as_ref()
+        .root()
+        .and_downcast::<gtk::Window>()
+        .expect("mapped native root");
     let scale = root.scale_factor() as f64;
     let (x, y) = if let Some(pop) = w.native().and_then(|n| n.downcast::<gtk::Popover>().ok()) {
         use gdk::prelude::PopupExt;
@@ -36,7 +40,7 @@ fn followup_point_at(
         }
         (x, y)
     } else {
-        let r = w.compute_bounds(root).expect("mapped window control");
+        let r = w.compute_bounds(&root).expect("mapped window control");
         let (tx, ty) = root.surface_transform();
         (
             r.x() as f64 + r.width() as f64 * fraction + tx,

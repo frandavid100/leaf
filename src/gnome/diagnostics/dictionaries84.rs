@@ -9,9 +9,10 @@ async fn ready(panel: &Rc<DictionaryTools>, stage: usize, role: &str, name: &str
     let button = find_widget(&panel.window, name).unwrap();
     button.grab_focus();
     pause(120).await;
-    let r = button.compute_bounds(&panel.window).unwrap();
-    let (tx, ty) = panel.window.surface_transform();
-    let scale = panel.window.scale_factor() as f64;
+    let root = panel.window.root().and_downcast::<gtk::Window>().unwrap();
+    let r = button.compute_bounds(&root).unwrap();
+    let (tx, ty) = root.surface_transform();
+    let scale = root.scale_factor() as f64;
     let x = ((r.x() as f64 + r.width() as f64 / 2. + tx) * scale).round() as i32;
     let y = ((r.y() as f64 + r.height() as f64 / 2. + ty) * scale).round() as i32;
     eprintln!("DICTIONARY84_READY {stage} {role} {x} {y}");
@@ -52,7 +53,12 @@ pub(super) fn dictionaries84_ui_test(ui: &Rc<Ui>, app: &Application, mode: &'sta
             )
         };
         let panel = show_dictionary_tools(&ui).unwrap();
-        panel.window.set_title(Some("Leaf Dictionary Probe"));
+        panel.window.set_title("Leaf Dictionary Probe");
+        ui.host
+            .upgrade()
+            .unwrap()
+            .window
+            .set_title(Some("Leaf Dictionary Probe"));
         pause(180).await;
         if std::env::var_os("FLATPAK_ID").is_some() {
             assert!(find_widget(&panel.window, "dictionary-system-settings").is_none());

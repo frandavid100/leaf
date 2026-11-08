@@ -432,16 +432,25 @@ pub(super) fn install_review(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Revi
     filter.set_margin_top(6);
     filter.set_margin_bottom(6);
     accessible_name(&filter, wordcraft_gnome::t!("Review Filter"));
-    ui.sidebar_filters.add_named(&filter, Some("review"));
+    filter.add_css_class("flat");
+    filter.add_css_class("sidebar-choice");
+    body.append(&filter);
     let status = gtk::Label::new(None);
     status.set_widget_name("review-status");
     status.set_wrap(true);
     status.set_margin_start(8);
     status.set_margin_end(8);
     body.append(&status);
-    annotations.scroll.set_vexpand(true);
-    body.append(&annotations.scroll);
-    ui.navigation_pages.add_named(&body, Some("review"));
+    // Keep one adjustment for filter, results and mode controls. The cards
+    // retain their own container because rebuilding results must keep controls.
+    if let Some(viewport) = annotations.scroll.child().and_downcast::<gtk::Viewport>() {
+        viewport.set_child(None::<&gtk::Widget>);
+    }
+    body.append(&annotations.content);
+    body.append(&sidebar_mode_selector(ui));
+    annotations.scroll.set_child(Some(&body));
+    ui.navigation_pages
+        .add_named(&annotations.scroll, Some("review"));
     let s = Rc::new(ReviewPanel {
         ui: Rc::downgrade(ui),
         toggle: toggle.clone(),

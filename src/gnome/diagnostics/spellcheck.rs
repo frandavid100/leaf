@@ -37,6 +37,7 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
     }
     language.popdown();
     let prefs = show_preferences(parent);
+    wait_dialog_presented(&prefs);
     let live = find_widget(&prefs, "preferences-live-proofing")
         .unwrap()
         .downcast::<gtk::Switch>()
@@ -48,6 +49,7 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
         "preferences do not disable existing document review"
     );
     prefs.close();
+    assert_dialog_closed(&prefs);
     assert!(find_widget(&ui.navigation_pages, "preferences-live-proofing").is_none());
     let before = ui.current.borrow().as_ref().unwrap().session.sel.clone();
     show_spelling(ui, parent);
@@ -77,10 +79,10 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                 );
                 assert!(s.issues.borrow().len() >= 2);
                 assert!(!s.status.is_visible(), "no introductory text above issues");
-                let filter = find_widget(&ui.sidebar_filters, "review-filter").unwrap();
+                let filter = find_widget(&ui.navigation_pages, "review-filter").unwrap();
                 assert!(
                     filter.is_mapped(),
-                    "Review filter remains in the visible header"
+                    "Review filter remains in the scrolling content"
                 );
                 assert!(find_widget(&ui.navigation_pages, "proofing-panel").is_none());
                 let rev = ui.current.borrow().as_ref().unwrap().session.rev();
@@ -197,12 +199,14 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
                     assert_eq!(session.doc, doc);
                 }
                 let prefs = show_preferences(&parent);
+                wait_dialog_presented(&prefs);
                 let live = find_widget(&prefs, "preferences-live-proofing")
                     .unwrap()
                     .downcast::<gtk::Switch>()
                     .unwrap();
                 live.set_active(true);
                 prefs.close();
+                assert_dialog_closed(&prefs);
                 assert!(wordcraft_gnome::preferences::check_spelling());
                 apply_user_edit(&ui, Edit::Insert(" qqqbrandnewzz".into()));
                 phase.set(2);

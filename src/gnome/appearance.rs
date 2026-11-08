@@ -88,7 +88,8 @@ pub(super) fn install_css() {
       .comment-thread .comment-body { font-weight: normal; }
       .comment-thread separator.comment-divider { background: alpha(@window_fg_color, 0.16); min-height: 1px; }
       button.mixed { background: alpha(@accent_bg_color, 0.18); }
-      .sidebar-selector button:checked { background: alpha(@window_fg_color, 0.12); }
+      .sidebar-selector button:not(:hover), .sidebar-choice > button:not(:hover) { background: transparent; box-shadow: none; }
+      .sidebar-selector button:hover, .sidebar-choice > button:hover { background: alpha(@window_fg_color, 0.08); }
       button.outline-expander { min-width: 18px; min-height: 24px; padding: 0; }
       .search-options > button { background: transparent; box-shadow: none; }
       button.search-replace { min-width: 24px; min-height: 24px; padding: 0; }

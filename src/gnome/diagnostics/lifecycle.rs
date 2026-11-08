@@ -52,7 +52,7 @@ pub(super) struct LifecycleAudit {
     pub(super) wave: Cell<u32>,
     pub(super) strict: bool,
     pub(super) extra: bool,
-    pub(super) dialogs: RefCell<Vec<glib::WeakRef<adw::Window>>>,
+    pub(super) dialogs: RefCell<Vec<glib::WeakRef<adw::Dialog>>>,
     pub(super) columns: RefCell<Vec<std::rc::Weak<ColumnControls>>>,
 }
 impl LifecycleAudit {
@@ -123,14 +123,18 @@ impl LifecycleAudit {
                 assert!(spell.toggle.is_active());
                 spell.toggle.set_active(false);
                 let props = show_document_properties(&ui, &host.window);
+                wait_dialog_presented(&props.window);
                 self.dialogs.borrow_mut().push(props.window.downgrade());
                 props.window.close();
+                assert_dialog_closed(&props.window);
                 let columns = show_columns(&ui, &host.window);
+                wait_dialog_presented(&columns.window);
                 self.dialogs.borrow_mut().push(columns.window.downgrade());
                 self.columns
                     .borrow_mut()
                     .push(Rc::downgrade(&columns.controls));
                 columns.window.close();
+                assert_dialog_closed(&columns.window);
                 {
                     let mut d = ui.current.borrow_mut();
                     d.as_mut()

@@ -9,8 +9,7 @@ pub(super) fn ask_discard(
         action();
         return;
     }
-    let dialog = adw::MessageDialog::new(
-        Some(parent),
+    let dialog = adw::AlertDialog::new(
         Some(wordcraft_gnome::t!("Save Changes?")),
         Some(wordcraft_gnome::t!(
             "If you continue without saving, your changes will be lost."
@@ -61,7 +60,7 @@ pub(super) fn ask_discard(
             }
         ),
     );
-    dialog.present();
+    dialog.present(Some(&parent));
 }
 
 pub(super) fn save_to(ui: &Rc<Ui>, path: &Path) -> bool {
@@ -140,32 +139,9 @@ pub(super) fn save_document(
             return;
         }
     }
-    let dialog = gtk::FileDialog::new();
-    dialog.set_title(wordcraft_gnome::t!("Save a Copy — DOCX or ODT"));
-    dialog.set_modal(true);
-    let filter = gtk::FileFilter::new();
-    filter.set_name(Some(wordcraft_gnome::t!("Documents (.docx, .odt)")));
-    filter.add_pattern("*.docx");
-    filter.add_pattern("*.odt");
-    let filters = gio::ListStore::new::<gtk::FileFilter>();
-    filters.append(&filter);
-    dialog.set_filters(Some(&filters));
     let source = existing.or_else(|| ui.source_path.borrow().clone());
-    let name = source
-        .as_ref()
-        .and_then(|p| p.file_stem())
-        .map(|x| x.to_string_lossy().into_owned())
-        .unwrap_or_else(|| wordcraft_gnome::t!("Document").into());
-    let ext = source
-        .as_ref()
-        .and_then(|p| p.extension())
-        .and_then(|x| x.to_str())
-        .unwrap_or("docx");
-    let ext = if needs_docx { "docx" } else { ext };
-    dialog.set_initial_name(Some(&format!("{name}-copia.{ext}")));
-    if let Some(folder) = source.as_ref().and_then(|p| p.parent()) {
-        dialog.set_initial_folder(Some(&gio::File::for_path(folder)));
-    }
+    let dialog = save_chooser(ui, source.as_deref(), needs_docx);
+    let identity = document_identity(ui);
     let ui = ui.clone();
     dialog.save(
         Some(parent),
@@ -175,6 +151,13 @@ pub(super) fn save_document(
             ui,
             move |result| {
                 if ui.closed.get() {
+                    return;
+                }
+                if document_identity(&ui) != identity {
+                    cancel_tab_close(&ui);
+                    ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
+                        "The document has changed; open this dialog again."
+                    )));
                     return;
                 }
                 match result {
@@ -217,4 +200,32 @@ pub(super) fn save_document(
             }
         ),
     );
+}
+
+/// Native file chooser configuration is shared with the integration probe.
+pub(super) fn save_chooser(ui: &Ui, source: Option<&Path>, needs_docx: bool) -> gtk::FileDialog {
+    let dialog = gtk::FileDialog::new();
+    dialog.set_title(if source.is_some() {
+        wordcraft_gnome::t!("Save a Copy — DOCX or ODT")
+    } else {
+        wordcraft_gnome::t!("Save Document — DOCX or ODT")
+    });
+    dialog.set_modal(true);
+    let filter = gtk::FileFilter::new();
+    filter.set_name(Some(wordcraft_gnome::t!("Documents (.docx, .odt)")));
+    filter.add_pattern("*.docx");
+    filter.add_pattern("*.odt");
+    let filters = gio::ListStore::new::<gtk::FileFilter>();
+    filters.append(&filter);
+    dialog.set_filters(Some(&filters));
+    let name = wordcraft_gnome::save_name::suggestion(
+        &ui.current.borrow().as_ref().unwrap().session,
+        source,
+        needs_docx,
+    );
+    dialog.set_initial_name(Some(&name));
+    if let Some(folder) = source.and_then(|p| p.parent()) {
+        dialog.set_initial_folder(Some(&gio::File::for_path(folder)));
+    }
+    dialog
 }

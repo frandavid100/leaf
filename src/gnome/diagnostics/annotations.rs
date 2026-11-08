@@ -3,6 +3,7 @@ use wordcraft_gnome::annotations as model;
 
 fn form(ui: &Rc<Ui>) -> AnnotationDialog {
     let window = ui.annotation_dialog.borrow().as_ref().unwrap().clone();
+    wait_dialog_presented(&window);
     AnnotationDialog {
         name: find_widget(&window, "bookmark-name")
             .and_then(|w| w.downcast().ok())
@@ -62,7 +63,7 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
     assert!(!bookmark.submit.is_sensitive());
     bookmark.name.set_text("Café_1");
     bookmark.submit.emit_clicked();
-    assert!(!bookmark.window.is_visible());
+    assert_dialog_closed(&bookmark.window);
     assert_eq!(
         model::bookmarks(&ui.current.borrow().as_ref().unwrap().session),
         ["Café_1"]
@@ -130,10 +131,12 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
         .emit_clicked();
     assert_eq!(ui.current.borrow().as_ref().unwrap().session.rev(), rev);
     let duplicate = show_annotation_dialog(ui, AnnotationEdit::Bookmark).unwrap();
+    wait_dialog_presented(&duplicate.window);
     duplicate.name.set_text("Café_1");
     duplicate.submit.emit_clicked();
     assert!(!duplicate.error.text().is_empty());
     duplicate.window.close();
+    assert_dialog_closed(&duplicate.window);
 
     let anchor = {
         let mut current = ui.current.borrow_mut();
@@ -362,11 +365,9 @@ pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: 
         return;
     }
     let dialog = show_annotation_dialog(ui, AnnotationEdit::Bookmark).unwrap();
+    wait_dialog_presented(&dialog.window);
     release_document(ui);
-    assert!(
-        !dialog.window.is_visible(),
-        "closing a tab closes its annotation editor"
-    );
+    assert_dialog_closed(&dialog.window);
     eprintln!("ANNOTATIONS_UI_OK");
     app.quit();
 }

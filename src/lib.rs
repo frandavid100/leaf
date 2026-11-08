@@ -135,6 +135,7 @@ pub mod editing;
 
 pub mod formatting;
 
+pub mod save_name;
 pub mod saving;
 
 pub mod preferences;

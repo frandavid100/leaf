@@ -3267,3 +3267,6 @@ msgstr "The templates folder must be readable without write access."
 
 msgid "Custom template folders are unavailable in the sandbox. Use the system Templates folder."
 msgstr "Custom template folders are unavailable in the sandbox. Use the system Templates folder."
+
+msgid "Save Document — DOCX or ODT"
+msgstr "Save Document — DOCX or ODT"

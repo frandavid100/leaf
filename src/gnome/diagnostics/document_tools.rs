@@ -96,6 +96,7 @@ pub(super) fn document_tools_ui_test(
             assert!(panel.context.is_visible() && panel.context.is_sensitive());
             panel.pop.popdown();
             let props = show_section_properties(&ui, &parent, 0);
+            wait_dialog_presented(&props.window);
             props.width.set_value(297.0);
             props.height.set_value(210.0);
             props.top.set_value(20.0);
@@ -125,7 +126,7 @@ pub(super) fn document_tools_ui_test(
                     (id, dirty, depth, rev)
                 );
             }
-            assert!(!props.window.is_visible());
+            assert_dialog_closed(&props.window);
             assert_eq!(app.windows().len(), 1);
             eprintln!("DOCUMENT_TOOLS_OK");
             app.quit();

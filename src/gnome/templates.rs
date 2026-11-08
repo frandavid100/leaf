@@ -25,10 +25,12 @@ impl Drop for Gallery {
     }
 }
 pub(super) fn dismiss(ui: &Ui) {
+    let top = document_scroll_y(ui).max(0.);
     ui.template_eligible.set(false);
     ui.template_gallery.borrow_mut().take();
     clear_box(&ui.template_slot);
     ui.template_slot.set_visible(false);
+    ui.scroll.vadjustment().set_value(top);
 }
 pub(super) fn offer(ui: &Rc<Ui>) {
     dismiss(ui);
@@ -200,7 +202,7 @@ fn refresh_folders() {
         }
     });
 }
-pub(super) fn preferences(parent: &adw::PreferencesWindow) -> adw::PreferencesGroup {
+pub(super) fn preferences(parent: &adw::PreferencesDialog) -> adw::PreferencesGroup {
     let group = adw::PreferencesGroup::new();
     group.set_title(wordcraft_gnome::t!("Templates"));
     let row = adw::ActionRow::new();
@@ -247,18 +249,21 @@ pub(super) fn preferences(parent: &adw::PreferencesWindow) -> adw::PreferencesGr
         chooser.set_accept_label(Some(wordcraft_gnome::t!("_Use Folder")));
         let cancel = gio::Cancellable::new();
         let cancel_ref = cancel.clone();
-        parent.connect_visible_notify(move |p| {
-            if !p.is_visible() {
-                cancel_ref.cancel();
-            }
-        });
+        parent.connect_closed(move |_| cancel_ref.cancel());
+        let lease = cancel.clone();
         let parent_ref = parent.downgrade();
         let row_ref = row_ref.clone();
         let reset_ref = reset_ref.clone();
-        chooser.select_folder(Some(&parent), Some(&cancel), move |result| {
+        let Some(root) = parent.root().and_downcast::<gtk::Window>() else {
+            return;
+        };
+        chooser.select_folder(Some(&root), Some(&cancel), move |result| {
+            if lease.is_cancelled() {
+                return;
+            }
             let Ok(file) = result else { return };
             let Some(path) = file.path() else { return };
-            let Some(parent) = parent_ref.upgrade().filter(|p| p.is_visible()) else {
+            let Some(parent) = parent_ref.upgrade().filter(|p| p.root().is_some()) else {
                 return;
             };
             match wordcraft_gnome::preferences::set_template_folder(&path) {
