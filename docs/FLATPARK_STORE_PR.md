@@ -3,8 +3,13 @@
 The complete change is preserved in
 [packaging/flatpark/store-sync.patch](../packaging/flatpark/store-sync.patch),
 based on FlatPark `03438192ca16eee4343f26301d1a4c2bb24e7ec1`.
-It has not been submitted to FlatPark or published in its catalogue.
-Apply it to a fork with `git am` and open a PR against `flatpark/flatpark:main`.
+The complete tested tree is now pushed to
+[frandavid100/flatpark:fix/leaf-store-sync](https://github.com/frandavid100/flatpark/tree/fix/leaf-store-sync)
+at `8f54ac57f042702e0ed3b6f56af0c72bd05ce0e0`.
+The integration rejects creating a PR on the external FlatPark repository (403),
+and the browser backend cannot start. The PR has not been created or published.
+Open the [comparison](https://github.com/flatpark/flatpark/compare/main...frandavid100:fix/leaf-store-sync?expand=1)
+using the title and body below.
 Changes to shared automation require a FlatPark maintainer's review.
 
 ## Proposed title
