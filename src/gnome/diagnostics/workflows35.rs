@@ -36,6 +36,29 @@ pub(super) fn test(
         outline.clone(),
     );
     glib::spawn_future_local(async move {
+        let entry = gtk::Entry::new();
+        entry.set_text("Replace this query");
+        entry.select_region(0, -1);
+        let special = gtk::CheckButton::new();
+        let codes = search::special_code_menu(&entry.clone().upcast::<gtk::Editable>(), &special);
+        {
+            let pop = codes.popover().unwrap();
+            pop.child()
+                .unwrap()
+                .first_child()
+                .unwrap()
+                .downcast::<gtk::Button>()
+                .unwrap()
+                .emit_clicked();
+            assert_eq!(entry.text(), "^t");
+            assert!(special.is_active());
+        }
+        let popup = codes.popover().unwrap().downgrade();
+        drop(codes);
+        assert!(
+            popup.upgrade().is_none(),
+            "a closed search control must release its special-character popup"
+        );
         opened(
             &ui,
             Session::new(wordcraft_doc::Document::from_text("cat catch CAT Cat")),
@@ -316,7 +339,7 @@ pub(super) fn test(
             String::from_utf8_lossy(&restart.stdout).contains("WORKFLOWS35_TEMPLATE_RESTART_OK")
         );
         eprintln!(
-            "WORKFLOWS35_UI_OK search=true selection=true regex_error=true next_style=true plain=true painter=true image=true outline=true fonts=true template=true"
+            "WORKFLOWS35_UI_OK search=true selection=true regex_error=true next_style=true plain=true painter=true image=true outline=true fonts=true template=true ownership=true"
         );
         app.quit();
     });

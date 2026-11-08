@@ -283,6 +283,40 @@ impl SearchPanel {
         ui.document_box.grab_focus();
     }
 }
+pub(super) fn special_code_menu(
+    entry: &gtk::Editable,
+    special: &gtk::CheckButton,
+) -> gtk::MenuButton {
+    let menu = gtk::MenuButton::new();
+    menu.set_icon_name("insert-text-symbolic");
+    accessible_name(&menu, wordcraft_gnome::t!("Insert Special Character"));
+    let pop = gtk::Popover::new();
+    let items = gtk::Box::new(gtk::Orientation::Vertical, 4);
+    for (label, code) in [
+        (wordcraft_gnome::t!("Tab"), "^t"),
+        (wordcraft_gnome::t!("Line Break"), "^l"),
+        (wordcraft_gnome::t!("Paragraph Break"), "^p"),
+    ] {
+        let button = gtk::Button::with_label(label);
+        items.append(&button);
+        let entry = entry.clone();
+        let special = special.clone();
+        let pop = pop.downgrade();
+        button.connect_clicked(move |_| {
+            let Some(pop) = pop.upgrade() else { return };
+            special.set_active(true);
+            entry.delete_selection();
+            let mut position = entry.position();
+            entry.insert_text(code, &mut position);
+            entry.set_position(position);
+            pop.popdown();
+        });
+    }
+    pop.set_child(Some(&items));
+    menu.set_popover(Some(&pop));
+    menu
+}
+
 pub(super) fn install_search_panel(
     ui: &Rc<Ui>,
     toggle: &gtk::ToggleButton,
@@ -370,32 +404,7 @@ pub(super) fn install_search_panel(
             replacement_row.clone(),
         ),
     ] {
-        let menu = gtk::MenuButton::new();
-        menu.set_icon_name("insert-text-symbolic");
-        accessible_name(&menu, wordcraft_gnome::t!("Insert Special Character"));
-        let pop = gtk::Popover::new();
-        let items = gtk::Box::new(gtk::Orientation::Vertical, 4);
-        for (label, code) in [
-            (wordcraft_gnome::t!("Tab"), "^t"),
-            (wordcraft_gnome::t!("Line Break"), "^l"),
-            (wordcraft_gnome::t!("Paragraph Break"), "^p"),
-        ] {
-            let button = gtk::Button::with_label(label);
-            items.append(&button);
-            let entry = entry.clone();
-            let special = special.clone();
-            let pop = pop.clone();
-            button.connect_clicked(move |_| {
-                special.set_active(true);
-                let mut position = entry.position();
-                entry.insert_text(code, &mut position);
-                entry.set_position(position);
-                pop.popdown();
-            });
-        }
-        pop.set_child(Some(&items));
-        menu.set_popover(Some(&pop));
-        row.append(&menu);
+        row.append(&special_code_menu(&entry, &special));
     }
     let replace_all = gtk::Button::new();
     accessible_name(&replace_all, wordcraft_gnome::t!("Replace All Matches"));

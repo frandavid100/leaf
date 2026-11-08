@@ -10,6 +10,8 @@ New headless coverage: `tests/workflows_alpha35.rs`; native and installed contro
 
 Regex capture expansion retains the original paragraph context, including anchors and tracked-deleted gaps, before any edits. Special-code and regex UI modes are mutually exclusive. Rich HTML/RTF clipboard formats retain priority when an external provider also advertises an image.
 
+The shipped special-character control also has a native lifetime regression: it replaces selected entry text with the chosen code and releases its popup when the owner is dropped. Signal callbacks retain only a weak popup reference.
+
 ## Format painter rules
 
 The ordered source selection’s first character (or the caret) supplies the appearance, including inherited paragraph/character style attributes. Source content, links and revision IDs are not copied. A caret destination receives word and paragraph formatting. A selected range receives text formatting; paragraph properties also apply when it starts at offset zero or spans paragraphs, following WordCraft’s public paste-format command. One-use clears after applying; repeated mode remains until Escape.
@@ -28,6 +30,8 @@ The ordered source selection’s first character (or the caret) supplies the app
 ## Automatic delivery
 
 The candidate waits up to 20 minutes for its exact native executable while the mandatory native suite continues. It still requires full native success and compares the stripped executable with the final validated artifact before publication. The package job has a 60-minute ceiling to include this bounded wait and the two installed runtimes.
+
+The publisher also verifies that its candidate remains the current main source, so a superseded run cannot race a newer correction.
 
 ## Verification record
 
