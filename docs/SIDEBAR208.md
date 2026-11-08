@@ -26,7 +26,24 @@ The annotation diagnostic locates Review in the common bar instead of the old
 page stack; its comment/bookmark behavior assertions are retained.
 The normal workflow repeats these checks in English and Spanish at scale 1/2.
 
-Validation is in progress. No new package is published by this source change.
+Merged in [PR #210](https://github.com/frandavid100/leaf/pull/210) as
+`ef703952d0d9b65318688cb48cfb69cc2d5eb779`. The verified source head was
+`94103bc19f681cac0d43cd1b296f1c04448b1c6c`, tree
+`53156c3940e2f0184cf90ed470a57bec9bf2e7e6`; the merge preserves that tree.
+
+The [complete native CI](https://github.com/frandavid100/leaf/actions/runs/42513401094)
+and store metadata checks passed. Local validation also passed 214 Rust tests,
+nine Python tests, 893 complete English/Spanish messages, Leaf formatting,
+project links and release metadata checks. Debug and optimized GUI builds passed;
+optimized pointer checks passed with the normal driver deadline in English at
+scale 1 and Spanish at scale 2, and complete annotation checks passed in both
+languages. CI additionally covered the native regression suite, window sizes,
+dark theme, raster and geometry at 100%/200% scaling.
+
+An earlier CI run exposed the annotation diagnostic's obsolete mode-bar lookup;
+the final source corrects that lookup without dropping behavior assertions.
+Installed Flatpak and portal checks were not rerun for this source-only fix.
+No new package is published by this change.
 
 ## Scope
 

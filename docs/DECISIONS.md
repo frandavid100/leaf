@@ -7,6 +7,9 @@ deben permanecer fijas; los selectores superiores sí pertenecen al contenido
 desplazable. Se mantiene una sola barra en el AdwToolbarView común, accesible
 también desde Búsqueda, sin copias en las listas. La prueba geométrica anterior
 esperaba erróneamente que se desplazase y se corrige junto con la interfaz.
+Integrada en main mediante PR #210 después de superar la batería nativa completa;
+no se publica una nueva alpha. #209 registra por separado la retirada animada
+hacia arriba de las filas transitorias al empezar a editar.
 [Implementación y validación](SIDEBAR208.md).
 
 ## 8/11/2026 — alpha.37 publicada y verificada

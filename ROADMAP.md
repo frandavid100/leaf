@@ -5,7 +5,11 @@
 La regresión [#208](https://github.com/frandavid100/leaf/issues/208) corrige la
 interpretación de #200: solo los controles superiores se desplazan con los
 resultados; Navegación/Revisión queda fija y compartida por todas las vistas.
-Corrección en validación, sin nueva publicación todavía.
+Corrección integrada en main mediante
+[PR #210](https://github.com/frandavid100/leaf/pull/210), con la batería nativa
+completa superada; sin nueva publicación todavía. La animación de retirada
+hacia arriba queda registrada en [#209](https://github.com/frandavid100/leaf/issues/209),
+separada del rediseño de filas #207.
 [Alcance y pruebas](docs/SIDEBAR208.md).
 
 ## Publicada y verificada: alpha.37 — desplazamiento, foco y diálogos

@@ -5,8 +5,9 @@
 La barra inferior de Navegación/Revisión vuelve a pertenecer al contenedor fijo
 del panel lateral. Los selectores superiores conservan su desplazamiento; se
 retiran las barras de modo duplicadas de Estructura y Revisión. La aclaración de
-David corrige el alcance anterior de #200. Esta corrección está en validación y
-todavía no forma parte de una versión publicada. [Alcance y pruebas](docs/SIDEBAR208.md).
+David corrige el alcance anterior de #200. Integrada en main mediante
+[PR #210](https://github.com/frandavid100/leaf/pull/210), con la batería nativa
+completa superada. Todavía no forma parte de una versión publicada. [Alcance y pruebas](docs/SIDEBAR208.md).
 
 ## Publicada y verificada: alpha.37 — desplazamiento, foco y diálogos
 
