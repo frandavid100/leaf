@@ -1,15 +1,32 @@
 # Hoja de ruta de Leaf
 
-## Prioridad posterior a alpha.37 — barra inferior fija
+## Publicada y verificada: alpha.38 — vista inicial y recuperación
+
+[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.38).
+Cerrados #207 y #209. Incluye la corrección de #208/PR #210: las pestañas
+Navegación/Revisión permanecen fijas y compartidas por todas las vistas.
+Las ventanas y pestañas nuevas ofrecen filas con título para plantillas y
+recuperaciones solo cuando contienen elementos, seguidas del folio editable.
+La recuperación sustituye su antiguo menú/diálogo; al escribir, las filas se
+retiran suavemente hacia arriba sin borrar copias pendientes ni bloquear la entrada.
+
+215 pruebas Rust, nueve Python y 891 mensajes completos en inglés/español.
+Batería nativa optimizada, instalación GNOME 49 y prefijo GNOME 51 superados;
+comparación final del ejecutable, tag y trece archivos públicos verificados.
+Se conservan WordCraft 0.16.0, permisos, parches y la versión ocasional de Windows.
+[Fuentes, ejecución, digests y límites](docs/ALPHA38_START_VIEW.md).
+
+Informes que permanecen abiertos: #1, #52, #99, #107, #152, #171, #185.
+
+## Completado con alpha.38 — barra inferior fija
 
 La regresión [#208](https://github.com/frandavid100/leaf/issues/208) corrige la
 interpretación de #200: solo los controles superiores se desplazan con los
 resultados; Navegación/Revisión queda fija y compartida por todas las vistas.
 Corrección integrada en main mediante
 [PR #210](https://github.com/frandavid100/leaf/pull/210), con la batería nativa
-completa superada; sin nueva publicación todavía. La animación de retirada
-hacia arriba queda registrada en [#209](https://github.com/frandavid100/leaf/issues/209),
-separada del rediseño de filas #207.
+completa superada. La corrección se distribuye con alpha.38, junto con los
+rediseños de filas #207 y retirada animada #209 ya completados.
 [Alcance y pruebas](docs/SIDEBAR208.md).
 
 ## Publicada y verificada: alpha.37 — desplazamiento, foco y diálogos

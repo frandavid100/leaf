@@ -1,8 +1,8 @@
 # Alpha.38 — start rows, recovery and upward dismissal
 
-Candidate for #207/#209, also shipping the fixed sidebar bar from #208/PR #210.
-Publication and new issue closures require complete optimized native CI,
-installed GNOME 49/51 checks, final executable comparison and public-asset proof.
+Published and verified: #207/#209 are closed, and the #208 fixed sidebar bar from
+PR #210 is included. Full optimized native CI, installed GNOME 49/51 checks,
+final executable comparison and all thirteen public assets passed verification.
 
 ## Behavior and ownership
 
@@ -40,6 +40,10 @@ and real-pointer checks for the stationary bar remain enabled.
 
 ## Validation
 
+215 Rust tests, nine Python tests and 891 complete English/Spanish messages.
+Optimized real-input and restart checks passed in both languages and runtime
+layouts, with no reduction of existing behavior assertions.
+
 Local headless coverage checks pending inventory, actual restoration, a stale or
 abandoned restore, live-record locking and unchanged original recovery JSON.
 `tools/workflows38-pointer-test.sh` exercises all optional-row combinations in
@@ -65,3 +69,18 @@ The engine-dependent #1/#99/#107/#152, deferred #52, read-only folder portal #17
 and store/catalog #185 remain outside these verified fixes. WordCraft's latest
 published stable is still the pinned 0.16.0; FlatPark metadata PR #1074 is open.
 Public captures and Weblate retain David's existing decisions.
+
+## Published identity
+
+- Source/tag: [`8e89b527609fcb35f1075f45e618286db7385761`](https://github.com/frandavid100/leaf/commit/8e89b527609fcb35f1075f45e618286db7385761).
+- Native source: [`d917729f8377906f187f7c5e07b37ab76b5b96b5`](https://github.com/frandavid100/leaf/commit/d917729f8377906f187f7c5e07b37ab76b5b96b5).
+- [Complete optimized native run](https://github.com/frandavid100/leaf/actions/runs/42521980829).
+- [Installed candidate and final binary comparison](https://github.com/frandavid100/leaf/actions/runs/42523008136).
+- [Promotion without rebuilding](https://github.com/frandavid100/leaf/actions/runs/42525809423).
+- [Verified public identity and all asset digests](ALPHA38_PUBLIC_ASSETS.json).
+- [Release and checksum manifest](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.38).
+
+The release/tag, source text, candidate JSON, checksum manifest and bilingual
+notes match the approved candidate. Each public asset has the expected name,
+uploaded state, nonzero size and SHA-256 digest. These are automated checks,
+not a claim of manual GNOME OS, Orca or physical printer testing.

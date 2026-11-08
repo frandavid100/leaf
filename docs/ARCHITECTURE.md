@@ -152,6 +152,22 @@ format preservation guards remain authoritative.
 See [behavior, sources and validation](ALPHA37_INTERFACE.md) and the real input
 driver `tools/workflows37-pointer-test.sh`.
 
+## Alpha38 start recovery and dismissal
+
+`src/gnome/templates.rs` owns the transient start rows and their weak/cancellable
+workers. `src/recovery.rs` inventories and restores through isolated canonical
+engine Sessions off GTK; it does not parse or maintain a second document model.
+The adopted Session retains its recovery record and is marked dirty in the host.
+Eligibility and identity/revision guard acceptance; focus follows the selected tab.
+Overlapping refresh requests trigger a fresh scan after the current one.
+
+A native GtkRevealer owns the upward collapse. A temporary frame-clock handler
+reads its updated size request after update and before layout, compensating only
+scrolling already consumed by the start area. Completion/closure releases both
+signal handlers and the child; disabled animations clear it immediately. The
+same-document pagination path retains the current transition. New tabs, windows,
+real inputs and process restart are covered by the [alpha38 driver and report](ALPHA38_START_VIEW.md).
+
 ## Invariants to preserve
 
 - Keep engine revisions, Cargo.lock and existing formats patches unchanged for

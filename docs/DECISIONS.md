@@ -1,5 +1,20 @@
 # Decisiones vigentes
 
+## 8/11/2026 — alpha.38 publicada y verificada
+
+David autoriza otra release cerrando lo verificable e incluyendo PR #210.
+Se completan #207/#209 y se distribuye #208: filas iniciales condicionales,
+recuperación directa y retirada nativa de 180 ms al escribir, con Navegación/Revisión
+fija. El folio sigue editable; cargar, cancelar o retirar las filas no descarta
+copias pendientes. Los resultados obsoletos no sustituyen ediciones ni quitan el
+foco a otra pestaña. La compensación observa la solicitud de tamaño de GTK antes
+de asignar posiciones; no usa el tamaño del fotograma anterior.
+
+Cierres posteriores a validación nativa, GNOME 49/51, comparación del ejecutable
+y verificación de trece assets. Permanecen los bloqueos del motor/portal/tienda y
+los aplazamientos de David. Se conserva la entrega Windows ocasional; esta alpha
+es Linux. [Fuente, pruebas y límites](ALPHA38_START_VIEW.md).
+
 ## 8/11/2026 — Navegación/Revisión fija al pie del panel
 
 David aclara #200 tras observar la regresión #208: las dos pestañas inferiores

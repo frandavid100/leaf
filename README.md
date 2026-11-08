@@ -8,7 +8,7 @@ Leaf is a word processor for Linux with a native GNOME interface. Its goal is to
 
 [![Get it on FlatPark](https://flatpark.org/badges/get-it-on-flatpark.svg)](https://flatpark.org/apps/io.github.frandavid100.leaf/)
 
-**[Try the Flatpak alpha](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.37)** · [Installation](docs/INSTALLING.md)
+**[Try the Flatpak alpha](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.38)** · [Installation](docs/INSTALLING.md)
 
 **[Experimental Windows version](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36-windows.1)** · [Windows installation and limits](docs/WINDOWS.md)
 
@@ -19,7 +19,7 @@ Leaf is a word processor for Linux with a native GNOME interface. Its goal is to
 ## Write and organise
 
 - Edit DOCX and ODT files with styles, tables and images.
-- Start new documents from your personal template files.
+- Start from personal templates and recover unsaved documents directly in a new tab.
 - Use footnotes, comments, floating pictures and basic equations in DOCX and ODT.
 - Add automatic contents, numbered captions and cross-references to DOCX documents.
 - Paste or drop images; position and resize floating pictures, control text wrapping and adjust spacing.

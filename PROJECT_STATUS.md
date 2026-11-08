@@ -1,5 +1,23 @@
 # Estado actual de Leaf
 
+## Publicada y verificada: alpha.38 — vista inicial y recuperación
+
+[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.38).
+Cerrados #207 y #209. Incluye la corrección de #208/PR #210: las pestañas
+Navegación/Revisión permanecen fijas y compartidas por todas las vistas.
+Las ventanas y pestañas nuevas ofrecen filas con título para plantillas y
+recuperaciones solo cuando contienen elementos, seguidas del folio editable.
+La recuperación sustituye su antiguo menú/diálogo; al escribir, las filas se
+retiran suavemente hacia arriba sin borrar copias pendientes ni bloquear la entrada.
+
+215 pruebas Rust, nueve Python y 891 mensajes completos en inglés/español.
+Batería nativa optimizada, instalación GNOME 49 y prefijo GNOME 51 superados;
+comparación final del ejecutable, tag y trece archivos públicos verificados.
+Se conservan WordCraft 0.16.0, permisos, parches y la versión ocasional de Windows.
+[Fuentes, ejecución, digests y límites](docs/ALPHA38_START_VIEW.md).
+
+Informes que permanecen abiertos: #1, #52, #99, #107, #152, #171, #185.
+
 ## Corrección urgente posterior a alpha.37 — #208
 
 La barra inferior de Navegación/Revisión vuelve a pertenecer al contenedor fijo
@@ -7,7 +25,7 @@ del panel lateral. Los selectores superiores conservan su desplazamiento; se
 retiran las barras de modo duplicadas de Estructura y Revisión. La aclaración de
 David corrige el alcance anterior de #200. Integrada en main mediante
 [PR #210](https://github.com/frandavid100/leaf/pull/210), con la batería nativa
-completa superada. Todavía no forma parte de una versión publicada. [Alcance y pruebas](docs/SIDEBAR208.md).
+completa superada. Distribuida y comprobada también como Flatpak con alpha.38. [Alcance y pruebas](docs/SIDEBAR208.md).
 
 ## Publicada y verificada: alpha.37 — desplazamiento, foco y diálogos
 
