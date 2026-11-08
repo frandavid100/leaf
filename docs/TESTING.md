@@ -39,7 +39,7 @@ From the document menu or Ctrl+P, open Print with unsaved text, then cancel. The
 
 Try a long document, a document with mixed section sizes, lists, tables across pages, and documents created by different editors. Test missing fonts separately from missing content. Keep these variables separate when possible.
 
-For recovery, use a disposable document: enable recovery mode, edit, wait at least 15 seconds, terminate Leaf unexpectedly, reopen and use Recover Documents. Record the installed build and exact outcome. Explicitly discarded changes should not be offered for recovery again. Never force-terminate an editor containing unsaved work you care about.
+For recovery, use a disposable document: enable recovery mode, edit, wait at least 15 seconds, terminate Leaf unexpectedly, reopen a blank tab/window and choose its entry under **Documents to Recover**. Confirm that empty template/recovery rows leave no headings or reserved space, and that starting to type retracts optional content without deleting recovery data. Record the installed build and exact outcome. Explicitly discarded changes should not be offered for recovery again. Never force-terminate an editor containing unsaved work you care about.
 
 Export a PDF and inspect it in Papers, including page dimensions, image placement and text. Exporting must not change the editable file's destination or undo history.
 

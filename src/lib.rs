@@ -178,6 +178,7 @@ pub mod review;
 
 pub mod operations;
 
+pub mod recovery;
 pub mod templates;
 
 pub mod document_fonts;

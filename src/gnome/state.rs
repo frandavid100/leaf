@@ -50,6 +50,8 @@ pub(super) struct Ui {
     pub(super) spelling: RefCell<Option<Rc<SpellReview>>>,
     pub(super) document_box: DocumentCanvas,
     pub(super) template_slot: gtk::Box,
+    pub(super) template_revealer: gtk::Revealer,
+    pub(super) template_dismissal: RefCell<Option<Rc<templates::Dismissal>>>,
     pub(super) template_eligible: Cell<bool>,
     pub(super) template_gallery: RefCell<Option<Rc<templates::Gallery>>>,
     pub(super) input_context: gtk::IMMulticontext,

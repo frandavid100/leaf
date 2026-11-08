@@ -501,7 +501,9 @@ pub(super) fn clear_canvas(canvas: &impl IsA<gtk::Fixed>) {
 }
 
 pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
-    templates::dismiss(ui);
+    if !templates::keeps_dismissal(ui, session.document_id()) {
+        templates::dismiss(ui);
+    }
     image_drop::cancel(ui);
     cancel_clipboard_read(ui);
     let _perf = perf_scope("leaf.opened");

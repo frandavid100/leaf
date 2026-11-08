@@ -2,6 +2,10 @@ use super::*;
 
 pub(super) fn run() {
     wordcraft_gnome::i18n::init();
+    if std::env::args().any(|a| a == "--workflows38-prepare-startup") {
+        workflows38_checks::prepare_startup();
+        return;
+    }
     if std::env::args().any(|arg| arg == "--workflows35-template-restart-test") {
         workflows35_checks::template_restart();
         return;
