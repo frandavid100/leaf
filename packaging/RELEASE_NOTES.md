@@ -1,15 +1,19 @@
-Leaf 0.1.0-alpha.35 — personal templates and editing workflows
+## Leaf 0.1.0-alpha.35 — Personal templates and editing tools
 
-- Choose the following paragraph style from the existing Style details. The document remains the source of each style's appearance.
-- Create untitled copies from the system Templates folder or a folder chosen through the native chooser. Manage the original files in Files.
-- Paste plain text with Ctrl+Shift+V or the context menu. Copy formatting once, or keep the painter active for multiple destinations; Escape cancels.
-- Move complete heading sections, with their children, tables, images and references, from Structure by dragging or using the arrow buttons. One Undo restores the move.
-- Search and replace whole words, restrict operations to a captured selection, preserve capitalization, and search notes, headers and footers. Advanced options support regular expressions and tab, soft-break and paragraph-break codes, with inline examples and errors.
-- Inspect document font declarations and uses, see actual fallback fonts, navigate uses, and explicitly substitute a font throughout the document with Undo. Opening documents preserves their authored font names.
-- Paste external images/screenshots and drop image files at a document position; images preserve their proportions and initially fit the text width.
+- Start documents from your own templates and choose the style for the following paragraph.
+- Paste plain text, copy formatting and insert images from the clipboard or by dropping a file.
+- Reorder complete sections from the document outline, with a single Undo to restore the move.
+- Search whole words or a selection, preserve capitalization and include notes, headers and footers. Advanced options support regular expressions.
+- Inspect the fonts used in a document and replace a font throughout the document.
 
-Format preservation: changed following-paragraph styles require DOCX when the pinned ODT exporter would lose the choice. Leaf refuses the lossy save and keeps the document unchanged.
+Changes to the following paragraph style require DOCX when ODT cannot preserve them. Section movement and font replacement have additional restrictions while tracking changes. A selected search range is cleared after unrelated edits; regular-expression replacements skip empty matches.
 
-Safety limits: moving a heading inside a table, moving across a page-section break, and moving sections while tracking changes are refused without altering the document. Document-wide font replacement also requires change tracking to be off. A selected search range is invalidated by unrelated document edits. Regex replacements do not insert at empty matches.
+## Leaf 0.1.0-alpha.35 — Plantillas personales y herramientas de edición
 
-WordCraft remains pinned at 0.16.0. No new conflict-protection or symbol-picker workflow is included. Native and installed GNOME 49/51 automated checks are required before publication; they do not claim human GNOME OS validation.
+- Crea documentos desde tus propias plantillas y elige el estilo del párrafo siguiente.
+- Pega texto sin formato, copia el formato e inserta imágenes desde el portapapeles o arrastrando un archivo.
+- Reordena apartados completos desde la estructura del documento y restaura el movimiento con un solo paso de Deshacer.
+- Busca palabras completas o dentro de una selección, conserva las mayúsculas e incluye notas, encabezados y pies. Las opciones avanzadas admiten expresiones regulares.
+- Consulta las fuentes utilizadas y sustituye una fuente en todo el documento.
+
+Los cambios del estilo siguiente requieren DOCX cuando ODT no puede conservarlos. El movimiento de apartados y la sustitución de fuentes tienen restricciones adicionales al registrar cambios. Una selección de búsqueda se invalida tras otras ediciones; los reemplazos con expresiones regulares omiten coincidencias vacías.

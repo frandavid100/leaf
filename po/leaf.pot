@@ -393,6 +393,10 @@ msgstr ""
 msgid "Character Style"
 msgstr ""
 
+#: data/*.in
+msgid "Check spelling and work with comments and tracked changes."
+msgstr ""
+
 #: src/page_options.rs:187
 msgid "Check the header/footer distances and starting page number."
 msgstr ""
@@ -661,8 +665,12 @@ msgstr ""
 msgid "Create a Style"
 msgstr ""
 
-#: data/*.in data/*.in
+#: data/*.in
 msgid "Create and edit documents"
+msgstr ""
+
+#: data/*.in
+msgid "Create and edit documents in GNOME"
 msgstr ""
 
 #: src/gnome/columns.rs:226
@@ -993,10 +1001,6 @@ msgstr ""
 msgid "Edit DOCX and ODT documents"
 msgstr ""
 
-#: data/*.in
-msgid "Edit DOCX and ODT files, use text and paragraph styles, work with tables and inline images, and export PDFs. Browse page thumbnails or headings, search and replace text, and open multiple documents."
-msgstr ""
-
 #: src/gnome/context.rs:300
 msgid "Edit Equation…"
 msgstr ""
@@ -1259,6 +1263,10 @@ msgstr ""
 
 #: src/gnome/document_properties_dialog.rs:402 src/gnome/navigation.rs:879
 msgid "Footnotes"
+msgstr ""
+
+#: data/*.in
+msgid "Format text and paragraphs with native controls."
 msgstr ""
 
 #: src/gnome/review.rs:303
@@ -1525,6 +1533,10 @@ msgstr ""
 msgid "Insert and Edit Tables"
 msgstr ""
 
+#: data/*.in
+msgid "Insert images and adjust their size and position alongside text."
+msgstr ""
+
 #: src/gnome/review.rs:299
 msgid "Insertion"
 msgstr ""
@@ -1622,11 +1634,15 @@ msgid "Leaf Project"
 msgstr ""
 
 #: data/*.in
-msgid "Leaf follows your system language in English and Spanish. Other languages can be contributed using gettext catalogs. Development, documentation and artwork have used substantial AI assistance."
+msgid "Leaf is a free word processor with a simple interface that integrates with GNOME. Write from scratch, work with DOCX and ODT documents and export the result to PDF."
 msgstr ""
 
 #: data/*.in
-msgid "Leaf is an experimental GTK4 and libadwaita document editor powered by WordCraft."
+msgid "Leaf is under development and its current versions are alphas. DOCX and ODT compatibility continues to improve: some documents may have formatting differences or contain features that are not yet supported. Keep a copy of important files."
+msgstr ""
+
+#: data/*.in
+msgid "Leaf uses the WordCraft engine. Its development, documentation and artwork have used artificial intelligence assistance."
 msgstr ""
 
 #: src/gnome/paragraph.rs:1085 src/gnome/tables.rs:237 src/gnome/tables.rs:384
@@ -1979,6 +1995,10 @@ msgstr ""
 
 #: src/gnome/tab.rs:85
 msgid "Open a Document"
+msgstr ""
+
+#: data/*.in
+msgid "Open several documents in tabs and use your own templates."
 msgstr ""
 
 #: src/gnome/document_fonts.rs:49
@@ -2545,6 +2565,10 @@ msgstr ""
 msgid "Search Styles"
 msgstr ""
 
+#: data/*.in
+msgid "Search and replace text throughout the document or within a selection."
+msgstr ""
+
 #: src/gnome/header_options.rs:72 src/gnome/header_options.rs:76
 msgid "Section"
 msgstr ""
@@ -2675,6 +2699,10 @@ msgstr ""
 
 #: src/gnome/adaptive.rs:741
 msgid "Shadow"
+msgstr ""
+
+#: data/*.in
+msgid "Shape your documents with styles, tables, images and columns. Add headers, footers, footnotes and tables of contents, and find each section using page thumbnails and the document outline."
 msgstr ""
 
 #: src/history.rs:214
@@ -3351,10 +3379,6 @@ msgstr ""
 
 #: src/annotations.rs:49
 msgid "Use a name beginning with a letter, with letters, numbers or underscores, and at most 40 characters."
-msgstr ""
-
-#: data/*.in
-msgid "Use footnotes, comment threads, floating pictures and basic equations in DOCX and ODT documents. DOCX also preserves every Leaf caption association and the supported automatic contents and cross-reference options."
 msgstr ""
 
 #: src/gnome/dictionaries.rs:228

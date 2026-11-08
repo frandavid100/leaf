@@ -1,0 +1,213 @@
+{
+  "releases": [
+    {
+      "version": "0.1.0-alpha.35",
+      "date": "2026-11-08",
+      "type": "development",
+      "url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.35",
+      "evidence": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.35",
+      "en": {
+        "title": "Personal templates and editing tools",
+        "highlights": [
+          "Start documents from your own templates and choose the style for the following paragraph.",
+          "Paste plain text, copy formatting and insert images from the clipboard or by dropping a file.",
+          "Reorder complete sections from the document outline, with a single Undo to restore the move.",
+          "Search whole words or a selection, preserve capitalization and include notes, headers and footers. Advanced options support regular expressions.",
+          "Inspect the fonts used in a document and replace a font throughout the document."
+        ],
+        "limitations": [
+          "Changes to the following paragraph style require DOCX when ODT cannot preserve them. Section movement and font replacement have additional restrictions while tracking changes. A selected search range is cleared after unrelated edits; regular-expression replacements skip empty matches."
+        ]
+      },
+      "es": {
+        "title": "Plantillas personales y herramientas de edición",
+        "highlights": [
+          "Crea documentos desde tus propias plantillas y elige el estilo del párrafo siguiente.",
+          "Pega texto sin formato, copia el formato e inserta imágenes desde el portapapeles o arrastrando un archivo.",
+          "Reordena apartados completos desde la estructura del documento y restaura el movimiento con un solo paso de Deshacer.",
+          "Busca palabras completas o dentro de una selección, conserva las mayúsculas e incluye notas, encabezados y pies. Las opciones avanzadas admiten expresiones regulares.",
+          "Consulta las fuentes utilizadas y sustituye una fuente en todo el documento."
+        ],
+        "limitations": [
+          "Los cambios del estilo siguiente requieren DOCX cuando ODT no puede conservarlos. El movimiento de apartados y la sustitución de fuentes tienen restricciones adicionales al registrar cambios. Una selección de búsqueda se invalida tras otras ediciones; los reemplazos con expresiones regulares omiten coincidencias vacías."
+        ]
+      }
+    },
+    {
+      "version": "0.1.0-alpha.34",
+      "date": "2026-11-07",
+      "type": "development",
+      "url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34",
+      "evidence": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34",
+      "en": {
+        "title": "Additional spelling dictionaries",
+        "highlights": [
+          "Choose an additional Hunspell dictionary folder through the native file chooser.",
+          "Refresh the selected folder, remove it or import a matching dictionary file pair.",
+          "See which spelling languages are available without changing the document language or its Undo history."
+        ],
+        "limitations": [
+          "Dictionaries must use a Hunspell dialect supported by the document engine. Some system dictionaries may not be compatible."
+        ]
+      },
+      "es": {
+        "title": "Diccionarios ortográficos adicionales",
+        "highlights": [
+          "Elige una carpeta adicional de diccionarios Hunspell con el selector de archivos nativo.",
+          "Actualiza la carpeta elegida, retírala o importa una pareja de archivos de diccionario.",
+          "Consulta los idiomas disponibles para la revisión sin cambiar el idioma del documento ni su historial de Deshacer."
+        ],
+        "limitations": [
+          "Los diccionarios deben utilizar una variante de Hunspell compatible con el motor. Algunos diccionarios del sistema pueden no ser compatibles."
+        ]
+      }
+    },
+    {
+      "version": "0.1.0-alpha.33",
+      "date": "2026-11-07",
+      "type": "development",
+      "url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33",
+      "evidence": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33",
+      "en": {
+        "title": "More reliable keyboard navigation",
+        "highlights": [
+          "Use Home and End, including their selection shortcuts, directly in the document.",
+          "Keep newer cursor navigation when a pending zoom adjustment finishes.",
+          "See how paragraph spacing before and after adjoining paragraphs combines."
+        ],
+        "limitations": []
+      },
+      "es": {
+        "title": "Navegación con teclado más fiable",
+        "highlights": [
+          "Utiliza Inicio y Fin, incluidos sus atajos de selección, directamente en el documento.",
+          "Conserva la navegación más reciente del cursor al terminar un ajuste de zoom pendiente.",
+          "Consulta cómo se combina el espacio anterior y posterior de párrafos contiguos."
+        ],
+        "limitations": []
+      }
+    },
+    {
+      "version": "0.1.0-alpha.32",
+      "date": "2026-11-07",
+      "type": "development",
+      "url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.32",
+      "evidence": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.32",
+      "en": {
+        "title": "Improved ODT preservation and rich paste",
+        "highlights": [
+          "Preserve editable footnotes, comments, floating images and newly created basic equations when saving supported ODT documents.",
+          "Paste formatted content from other applications using HTML or RTF.",
+          "Preserve custom column widths and reduce repeated work when navigating documents."
+        ],
+        "limitations": [
+          "Some document features still require DOCX. Leaf continues to block ODT saves that would lose unsupported content."
+        ]
+      },
+      "es": {
+        "title": "Mejor conservación de ODT y pegado con formato",
+        "highlights": [
+          "Conserva notas al pie editables, comentarios, imágenes flotantes y ecuaciones básicas nuevas al guardar documentos ODT compatibles.",
+          "Pega contenido con formato de otras aplicaciones mediante HTML o RTF.",
+          "Conserva las anchuras de columna personalizadas y reduce el trabajo repetido al navegar por documentos."
+        ],
+        "limitations": [
+          "Algunas funciones siguen requiriendo DOCX. Leaf continúa bloqueando los guardados ODT que perderían contenido no compatible."
+        ]
+      }
+    },
+    {
+      "version": "0.1.0-alpha.31",
+      "date": "2026-11-07",
+      "type": "development",
+      "url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.31",
+      "evidence": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.31",
+      "en": {
+        "title": "Clearer navigation and formatting controls",
+        "highlights": [
+          "Switch between Pages and Structure with a native selector that remembers each document’s view.",
+          "Show or hide numbered image and table captions while retaining their text and Undo history.",
+          "Use more consistent text, paragraph and table controls, including searchable font and language lists.",
+          "Continue spelling checks while the review panel is hidden."
+        ],
+        "limitations": [
+          "Creating numbered captions requires DOCX and objects in the document body."
+        ]
+      },
+      "es": {
+        "title": "Navegación y controles de formato más claros",
+        "highlights": [
+          "Alterna entre Páginas y Estructura con un selector nativo que recuerda la vista de cada documento.",
+          "Muestra u oculta leyendas numeradas de imágenes y tablas conservando su texto y el historial de Deshacer.",
+          "Utiliza controles de texto, párrafo y tabla más coherentes, con listas de fuentes e idiomas que permiten buscar.",
+          "Mantén la revisión ortográfica aunque el panel de revisión esté oculto."
+        ],
+        "limitations": [
+          "La creación de leyendas numeradas requiere DOCX y objetos situados en el cuerpo del documento."
+        ]
+      }
+    },
+    {
+      "version": "0.1.0-alpha.30",
+      "date": "2026-11-06",
+      "type": "development",
+      "url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.30",
+      "evidence": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.30",
+      "en": {
+        "title": "Document navigation and review",
+        "highlights": [
+          "Keep the active page and thumbnail linked to the editing cursor.",
+          "Follow automatic contents entries with a click and keep the viewport stable while editing images.",
+          "Review corrections, suggested changes and comments together; choose whether new edits are suggestions.",
+          "Use improved image resize handles, document references and basic equation editing."
+        ],
+        "limitations": [
+          "Advanced references, notes, floating images and equations require DOCX in this version."
+        ]
+      },
+      "es": {
+        "title": "Navegación y revisión de documentos",
+        "highlights": [
+          "Mantén la página y la miniatura activas vinculadas al cursor de edición.",
+          "Sigue las entradas del índice automático con un clic y conserva la vista al editar imágenes.",
+          "Revisa correcciones, cambios sugeridos y comentarios en el mismo panel; elige si las nuevas ediciones se registran como sugerencias.",
+          "Utiliza controles de tamaño de imagen mejorados, referencias de documento y edición de ecuaciones básicas."
+        ],
+        "limitations": [
+          "Las referencias avanzadas, las notas, las imágenes flotantes y las ecuaciones requieren DOCX en esta versión."
+        ]
+      }
+    },
+    {
+      "version": "0.1.0-alpha.28",
+      "date": "2026-11-05",
+      "type": "development",
+      "url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.28",
+      "evidence": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.28",
+      "en": {
+        "title": "Footnotes and document references",
+        "highlights": [
+          "Insert and edit numbered footnotes directly on the page.",
+          "Create an automatic table of contents from headings and add captions and cross-references.",
+          "Place images beside text, adjust their spacing and move or resize them with the pointer.",
+          "Fit portrait and landscape sections independently while keeping thumbnails at a common width."
+        ],
+        "limitations": [
+          "Use DOCX for footnotes, automatic contents, cross-references, captions and floating images in this version."
+        ]
+      },
+      "es": {
+        "title": "Notas al pie y referencias de documento",
+        "highlights": [
+          "Inserta y edita notas al pie numeradas directamente en la página.",
+          "Crea un índice automático a partir de los títulos y añade leyendas y referencias cruzadas.",
+          "Coloca imágenes junto al texto, ajusta su separación y muévelas o cambia su tamaño con el ratón.",
+          "Ajusta por separado las secciones verticales y apaisadas manteniendo una anchura común de las miniaturas."
+        ],
+        "limitations": [
+          "Utiliza DOCX para las notas, los índices automáticos, las referencias cruzadas, las leyendas y las imágenes flotantes en esta versión."
+        ]
+      }
+    }
+  ]
+}

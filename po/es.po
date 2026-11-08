@@ -3160,3 +3160,43 @@ msgstr "Guarda como DOCX para conservar el estilo del párrafo siguiente. El exp
 
 msgid "Use DOCX to preserve changes to the following paragraph style."
 msgstr "Usa DOCX para conservar los cambios en el estilo del párrafo siguiente."
+
+#: data/*.in
+msgid "Leaf is a free word processor with a simple interface that integrates with GNOME. Write from scratch, work with DOCX and ODT documents and export the result to PDF."
+msgstr "Leaf es un procesador de textos libre con una interfaz sencilla e integrada en GNOME. Escribe desde cero, trabaja con documentos DOCX y ODT y exporta el resultado a PDF."
+
+#: data/*.in
+msgid "Shape your documents with styles, tables, images and columns. Add headers, footers, footnotes and tables of contents, and find each section using page thumbnails and the document outline."
+msgstr "Da forma a tus documentos con estilos, tablas, imágenes y columnas. Añade encabezados, pies de página, notas al pie e índices de contenido, y encuentra cada apartado mediante las miniaturas y la estructura del documento."
+
+#: data/*.in
+msgid "Format text and paragraphs with native controls."
+msgstr "Aplica formato al texto y a los párrafos con controles nativos."
+
+#: data/*.in
+msgid "Insert images and adjust their size and position alongside text."
+msgstr "Inserta imágenes y ajusta su tamaño y su disposición junto al texto."
+
+#: data/*.in
+msgid "Check spelling and work with comments and tracked changes."
+msgstr "Revisa la ortografía y trabaja con comentarios y seguimiento de cambios."
+
+#: data/*.in
+msgid "Search and replace text throughout the document or within a selection."
+msgstr "Busca y reemplaza texto en todo el documento o en una selección."
+
+#: data/*.in
+msgid "Open several documents in tabs and use your own templates."
+msgstr "Abre varios documentos en pestañas y utiliza tus propias plantillas."
+
+#: data/*.in
+msgid "Leaf is under development and its current versions are alphas. DOCX and ODT compatibility continues to improve: some documents may have formatting differences or contain features that are not yet supported. Keep a copy of important files."
+msgstr "Leaf está en desarrollo y sus versiones actuales son alfa. La compatibilidad con DOCX y ODT sigue mejorando: algunos documentos pueden presentar diferencias de formato o contener funciones todavía no compatibles. Conserva una copia de los archivos importantes."
+
+#: data/*.in
+msgid "Leaf uses the WordCraft engine. Its development, documentation and artwork have used artificial intelligence assistance."
+msgstr "Leaf utiliza el motor WordCraft. Su desarrollo, documentación e ilustraciones han contado con asistencia de inteligencia artificial."
+
+#: data/*.in
+msgid "Create and edit documents in GNOME"
+msgstr "Crea y edita documentos en GNOME"

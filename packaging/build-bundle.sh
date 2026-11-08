@@ -8,6 +8,7 @@ binary=${1:?Usage: build-bundle.sh TESTED_BINARY}
 work=flatpak-build
 repo=flatpak-repo
 out=dist
+python tools/release_metadata.py --check
 mkdir -p "$out"
 flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak --user install -y --noninteractive flathub "org.gnome.Platform//$runtime_version"

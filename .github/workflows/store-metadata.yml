@@ -1,0 +1,38 @@
+name: Store metadata
+on:
+  pull_request:
+    paths:
+      - 'data/**'
+      - 'po/**'
+      - 'tools/*metadata*'
+      - 'tools/metainfo_translations.py'
+      - 'tools/update_translations.py'
+      - 'packaging/**'
+      - '.github/workflows/store-metadata.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/**'
+      - 'po/**'
+      - 'tools/*metadata*'
+      - 'tools/metainfo_translations.py'
+      - 'tools/update_translations.py'
+      - 'packaging/**'
+      - '.github/workflows/store-metadata.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install metadata validators
+        run: sudo apt-get update && sudo apt-get install -y appstream gettext
+      - name: Check reviewed news, generated metadata and translations
+        run: |
+          python3 -m unittest discover -s tools -p 'test_*.py'
+          python3 tools/release_metadata.py --check --check-urls
+          python3 tools/update_translations.py --check --compile
+          python3 tools/check_project_docs.py
+          appstreamcli validate --no-net data/io.github.frandavid100.leaf.metainfo.xml

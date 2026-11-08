@@ -2,6 +2,7 @@
 """Extract Leaf's literal t! messages for gettext/Weblate; deterministic output."""
 import argparse,json,pathlib,re,subprocess,sys,gettext,xml.etree.ElementTree as ET
 from translation_source import messages
+from metainfo_translations import text_nodes, translate
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser();p.add_argument('--check',action='store_true');p.add_argument('--compile',action='store_true');a=p.parse_args()
@@ -18,7 +19,7 @@ meta_root=ET.parse(str(meta)+'.in').getroot()
 metadata_messages=[]
 for line in desktop_source.splitlines():
  if line.startswith(('GenericName=','Comment=','Keywords=')):metadata_messages.append(line.split('=',1)[1])
-for node in list(meta_root.findall('summary'))+list(meta_root.findall('description/p')):
+for node in text_nodes(meta_root):
  metadata_messages.append(node.text or '')
 for msg in metadata_messages:refs.setdefault(msg,[]).append('data/*.in')
 def q(s):return json.dumps(s,ensure_ascii=False)
@@ -53,13 +54,7 @@ for line in desktop_source.splitlines():
   key,value=line.split('=',1)
   for lang,cat in catalogs.items():
    if lang!='en' and cat.gettext(value)!=value:desktop_out.append(f'{key}[{lang}]={cat.gettext(value)}')
-for summary in list(meta_root.findall('summary')):
- for lang,cat in catalogs.items():
-  if lang!='en' and cat.gettext(summary.text)!=summary.text:ET.SubElement(meta_root,'summary',{'{http://www.w3.org/XML/1998/namespace}lang':lang}).text=cat.gettext(summary.text)
-for desc in meta_root.findall('description'):
- for child in list(desc):
-  for lang,cat in catalogs.items():
-   if lang!='en' and cat.gettext(child.text)!=child.text:ET.SubElement(desc,child.tag,{'{http://www.w3.org/XML/1998/namespace}lang':lang}).text=cat.gettext(child.text)
+translate(meta_root, catalogs)
 ET.indent(meta_root,space='  ')
 meta_out='<?xml version="1.0" encoding="UTF-8"?>\n'+ET.tostring(meta_root,encoding='unicode')+'\n'
 for path,content in [(desktop,'\n'.join(desktop_out)+'\n'),(meta,meta_out)]:
