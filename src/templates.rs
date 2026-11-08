@@ -9,8 +9,7 @@ pub fn folder() -> Option<PathBuf> {
 }
 #[cfg(windows)]
 fn system_folder() -> Option<PathBuf> {
-    let path = PathBuf::from(std::env::var_os("APPDATA")?)
-        .join("Microsoft/Windows/Templates");
+    let path = PathBuf::from(std::env::var_os("APPDATA")?).join("Microsoft/Windows/Templates");
     (path.is_absolute() && path.is_dir()).then_some(path)
 }
 #[cfg(not(windows))]

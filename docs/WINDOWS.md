@@ -21,7 +21,7 @@ another folder through Preferences when needed.
 ## Build and release
 
 [Windows workflow](../.github/workflows/windows.yml) installs GTK/libadwaita from
-MSYS2 MINGW64 and uses Rust's GNU Windows target. WordCraft and Cargo.lock remain
+MSYS2 UCRT64 and uses Rust's GNU Windows target. WordCraft and Cargo.lock remain
 pinned. The optimized binary is assembled by
 [package_windows.py](../tools/package_windows.py) with transitive native DLLs,
 icons, gettext catalogs, schemas, dictionaries, runtime licenses and a package

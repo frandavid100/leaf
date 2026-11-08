@@ -3133,7 +3133,7 @@ msgstr ""
 msgid "The page exceeds the preview size limit"
 msgstr ""
 
-#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:72 src/saving.rs:148 src/templates.rs:96
+#: src/pdf_export.rs:14 src/pictures.rs:38 src/pictures.rs:72 src/saving.rs:148 src/templates.rs:95
 msgid "The path is not UTF-8"
 msgstr ""
 
