@@ -41,7 +41,9 @@ grep -q WORKFLOWS36_UI_OK "workflows36-ui-${LANGUAGE}.log"
 cat "workflows36-ui-${LANGUAGE}.log"
 bash "$root/tools/workflows36-pointer-test.sh" "$runner"
 bash "$root/tools/workflows36-template-folder-test.sh" "$runner"
-"$runner" --workflows40-ui-test > "workflows40-ui-${LANGUAGE}.log" 2>&1 || { cat "workflows40-ui-${LANGUAGE}.log"; exit 1; }
+# Legacy probes deliberately persist the supported all-overflow layout. The
+# default-toolbar acceptance needs its own profile, just like the native matrix.
+LEAF35_PROFILE="$LEAF35_PROFILE/workflows40" "$runner" --workflows40-ui-test > "workflows40-ui-${LANGUAGE}.log" 2>&1 || { cat "workflows40-ui-${LANGUAGE}.log"; exit 1; }
 grep -q WORKFLOWS40_UI_OK "workflows40-ui-${LANGUAGE}.log"
 cat "workflows40-ui-${LANGUAGE}.log"
 export LEAF35_PROFILE="$LEAF35_PROFILE/toolbar41"
