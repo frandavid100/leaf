@@ -8,7 +8,7 @@ Leaf is a word processor for Linux with a native GNOME interface. Its goal is to
 
 [![Get it on FlatPark](https://flatpark.org/badges/get-it-on-flatpark.svg)](https://flatpark.org/apps/io.github.frandavid100.leaf/)
 
-**[Try the Flatpak alpha](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.39)** · [Installation](docs/INSTALLING.md)
+**[Try the Flatpak alpha](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.40)** · [Installation](docs/INSTALLING.md)
 
 **[Experimental Windows version](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36-windows.1)** · [Windows installation and limits](docs/WINDOWS.md)
 

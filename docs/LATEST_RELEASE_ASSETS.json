@@ -1,31 +1,33 @@
 {
-  "release_report": "docs/ALPHA39_PREVIEWS.md",
+  "release_report": "docs/ALPHA40_INTERFACE.md",
   "verified": true,
-  "version": "0.1.0-alpha.39",
-  "source": "b9b0edc16a6f814634d86a66e877648b1e982c79",
-  "native_source": "cc4c3d7ab8218b6176e78a535f189b99f4cf6a32",
-  "native_run": 42531382692,
-  "candidate_run": 42531440034,
-  "release_url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.39",
-  "published_at": "2026-11-08T23:12:48Z",
+  "version": "0.1.0-alpha.40",
+  "source": "beca342212ec1556b26d9121a5ed6cfe62f6afbd",
+  "native_source": "937d1aa4f00a74159b7e85a035deed6297a0d2ac",
+  "native_run": 42599649931,
+  "candidate_run": 42599694647,
+  "release_url": "https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.40",
+  "published_at": "2026-11-09T10:54:58Z",
   "closed_issues": [
-    212,
-    213,
-    214
+    218,
+    219,
+    220,
+    221,
+    222
   ],
   "asset_sha256": {
-    "Leaf-0.1.0-alpha.39-x86_64.flatpak": "432d62c3648d59f3193da39417db580c274e9004a1845744374de474f879161a",
-    "Leaf-0.1.0-alpha.39-flatpark-x86_64.tar.xz": "eabb1c4e6a6b88876b09ed841e5c2809d314d19924709505e34d63b5a508fe3e",
-    "Leaf-0.1.0-alpha.39-dictionary-test.zip": "b8fcc9ff0923fe1e5ef06f4fc30d098dc4a80f91566ba40ec95d68d44ca64de7",
+    "Leaf-0.1.0-alpha.40-x86_64.flatpak": "4ef848bcbaa3db3163b801f6d345ceb436502fcddba09d63404db6a359dc97b5",
+    "Leaf-0.1.0-alpha.40-flatpark-x86_64.tar.xz": "1cfc6bec204a93b681afef72cbe8580f6f42f9cf9477a6b7417e9f033cc17c2d",
+    "Leaf-0.1.0-alpha.40-dictionary-test.zip": "99646bda0158a3b3eafd8b10d662c23c2f0634d1710243fce0916a48d6c5df96",
     "INSTALL.md": "a8f346c6c9f6d30a7750f3a03ece772563c23bbf1c548a85c8d91193a9e8acf8",
-    "source-commit.txt": "530a79f21da264319383499e13cd3fd01c664dffa38624e2a0b18e9a4639a1d7",
+    "source-commit.txt": "c2a083e6efa58103bc2671c063320a8f09edbbf8626afe1b632d4eb85f3064ab",
     "runtime.txt": "cc98943bf0d0696d69c2e647f51ef070a92528714cd03342e77b1d45a92efa3c",
     "runtime-commit.txt": "588c80c4d5d01ba6871ca2336d2c615e16c8d0fdbdcc8c6707bdbe1ce3173499",
     "flatpak-metadata.txt": "9aa37128546ce1881b58a36ab3b877360bc1361caddda1de462e3e36f8bc6d48",
-    "flatpak-smoke.log": "7d2cab42fd728d17ce944f60b44ed732a471e91e7e706067ecb6ad5531c45b72",
-    "flatpark-smoke.log": "24f124b1c6285908586a15e4b81e793dedef533efe9825a78e7ac4e60eff8364",
-    "candidate.json": "ae0987de7f79699612fbfe7f1e3cd56769ea9edfd2b6562285a840e65af009c1",
-    "RELEASE_NOTES.md": "9cc2b8093743354cc6eeea24f3782514bba94ae12b58b12a3b28de7f767d9636",
-    "SHA256SUMS": "d16f54a1cb90a91a39c610cdb986c4cb9b033883241bca183c3082ec73803e7f"
+    "flatpak-smoke.log": "fe8e6d33d3262ca44960fbb33dacf761b0c043c5322be7cef943add338e9e9b5",
+    "flatpark-smoke.log": "837fee2c447993e0ea88831b470594a67c16efe4bfe199563d06a347af3995f7",
+    "candidate.json": "351151febda71b17f282c72a0dde493420be1e4c1a820c7497cd8a41c17157f1",
+    "RELEASE_NOTES.md": "e84c616d33dc37e03f254eb127a061dac2c2fa628246c11c2e07bed510fc2165",
+    "SHA256SUMS": "4908a9a3450e3724fe78445d30873e28d1b1e647b7c1a01a8915b222222445cf"
   }
 }

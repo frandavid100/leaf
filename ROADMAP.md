@@ -1,19 +1,11 @@
 # Hoja de ruta de Leaf
 
-<!-- candidate-alpha:start -->
-## Interfaz alpha.40 — revisión de #218–#222
-
-Inicio pasa al lateral y vuelve al borrar el contenido; la barra inferior muestra
-los cuatro grupos y sus accesos directos. Descarte por documento con confirmación
-y apertura nativa de la carpeta de plantillas. El cierre depende de validar y
-publicar la candidata. [Alcance y límites](docs/ALPHA40_INTERFACE.md).
-<!-- candidate-alpha:end -->
 
 <!-- published-alpha:start -->
-## Última publicación verificada: 0.1.0-alpha.39
+## Última publicación verificada: 0.1.0-alpha.40
 
-[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.39). Issues cerrados: #212, #213, #214.
-Permanecen abiertos: #1, #52, #99, #107, #152, #171, #185, #213, #214.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.40). Issues cerrados: #218, #219, #220, #221, #222.
+Permanecen abiertos: #1, #52, #99, #107, #152, #171, #185, #217, #220, #221, #222.
 [Fuente, validación y límites](docs/LATEST_RELEASE.md).
 <!-- published-alpha:end -->
 

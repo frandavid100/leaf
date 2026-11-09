@@ -1,8 +1,6 @@
 # Alpha.40 — panel inicial y barra de formato
 
-David autoriza el 9/11/2026 revisar los issues nuevos, resolver lo verificable y
-publicar otra alpha sin pedir un visto bueno adicional. El alcance de esta entrega
-es #218–#222; el plan de cierre solo se ejecuta después de verificar la publicación.
+Published and verified: #218, #219, #220, #221, #222 are completed. See [published identity and validation](LATEST_RELEASE.md).
 
 ## Comportamiento
 
