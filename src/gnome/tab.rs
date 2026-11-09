@@ -618,6 +618,9 @@ pub(super) fn build_tab(
         bottom: format_bar.clone(),
         separator: history_separator,
         narrow: Cell::new(true),
+        width_band: Cell::new(u8::MAX),
+        generation: Cell::new(0),
+        pending: RefCell::new(Vec::new()),
     });
     for (menu, label, kind) in [
         (&style_menu, wordcraft_gnome::t!("Style"), "style"),

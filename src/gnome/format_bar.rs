@@ -70,7 +70,7 @@ fn shortcut(
 
 impl QuickTools {
     pub(super) fn width(&self, width: i32) {
-        // The menus never move or unmap, including when pinned during resize.
+        // The menu anchors stay put; hidden shortcuts remain in their menus.
         self.elements.set_visible(width >= 850);
         self.paragraph.set_visible(width >= 680);
         self.text.set_visible(width >= 520);
