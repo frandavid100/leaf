@@ -16,6 +16,22 @@ wait_marker() {
   done
   cat "$log";exit 1
 }
+copy_entry() {
+  # GTK transfers clipboard ownership asynchronously. A fixed 100 ms delay can
+  # return the previous copy on a busy HiDPI runtime. Require this copy's reply.
+  local pending="leaf-entry-copy-pending-$$-$RANDOM" value
+  printf '%s' "$pending" | xclip -selection clipboard >/dev/null 2>&1
+  xdotool key ctrl+a ctrl+c
+  for _ in $(seq 1 150); do
+    if value=$(timeout 1s xclip -selection clipboard -o 2>/dev/null) && [[ "$value" != "$pending" ]]; then
+      printf '%s' "$value"
+      return 0
+    fi
+    sleep .02
+  done
+  echo 'Native entry copy did not reach the clipboard' >&2
+  return 1
+}
 for stage in $(seq 0 10);do
   wait_marker "$stage"
   read -r _ _ x y < <(grep "^WORKFLOWS37_POINT $stage " "$log" | tail -n1)
@@ -27,21 +43,14 @@ for stage in $(seq 0 10);do
       xdotool type --clearmodifiers 'Leaf QA 37'
       # GTK groups typing by word; verify native Undo/Redo independently of
       # the later shortcut-blocking check, without assuming its group size.
-      xdotool key ctrl+a ctrl+c
-      sleep .1
-      before=$(timeout 3s xclip -selection clipboard -o)
+      before=$(copy_entry)
+      [[ "$before" == 'Leaf QA 37' ]] || { printf 'Native entry typing mismatch: <%s>\n' "$before";exit 1; }
       xdotool key ctrl+z
-      sleep .1
-      xdotool key ctrl+a ctrl+c
-      sleep .1
-      after=$(timeout 3s xclip -selection clipboard -o)
+      after=$(copy_entry)
       [[ "$before" != "$after" ]] || { echo 'Native entry Undo did not change the field';exit 1; }
       xdotool key ctrl+shift+z
-      sleep .1
-      xdotool key ctrl+a ctrl+c
-      sleep .1
-      redo=$(timeout 3s xclip -selection clipboard -o)
-      [[ "$redo" == "$before" ]] || { echo 'Native entry Redo did not restore the field';exit 1; }
+      redo=$(copy_entry)
+      [[ "$redo" == "$before" ]] || { printf 'Native entry Redo mismatch: before=<%s> undo=<%s> redo=<%s>\n' "$before" "$after" "$redo";exit 1; }
       echo WORKFLOWS37_ENTRY_UNDO_OK
       xdotool key ctrl+n ctrl+s ctrl+w ctrl+z
       sleep .15

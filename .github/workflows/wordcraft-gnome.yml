@@ -1062,7 +1062,7 @@ jobs:
         git cat-file -e "$native_source^{commit}" || git fetch origin "$native_source"
         # Flatpak test drivers are not binary inputs. Sandbox-only control/profile
         # isolation changes may reuse the identical validated native executable.
-        git diff --exit-code "$native_source" -- src build.rs Cargo.toml Cargo.lock craft-i18n.rev tests vendor po data examples tools patches ':(exclude)tools/dictionary84-pointer-test.sh' ':(exclude)tools/dictionary84-installed-test.sh' ':(exclude)tools/workflows35-installed-test.sh'
+        git diff --exit-code "$native_source" -- src build.rs Cargo.toml Cargo.lock craft-i18n.rev tests vendor po data examples tools patches ':(exclude)tools/dictionary84-pointer-test.sh' ':(exclude)tools/dictionary84-installed-test.sh' ':(exclude)tools/workflows35-installed-test.sh' ':(exclude)tools/workflows37-pointer-test.sh'
     - name: Wait for the reusable native executable without bypassing validation
       if: contains(github.event.head_commit.message, '[bundle-only]')
       timeout-minutes: 21
