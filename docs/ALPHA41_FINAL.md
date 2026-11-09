@@ -45,6 +45,16 @@ and the same tested executable; it publishes the existing candidate bytes. The
 publisher records the final run/source/checksum evidence in
 [LATEST_RELEASE](LATEST_RELEASE.md) after verifying the public release assets.
 
+## Follow-up from the first remote run
+
+The initial remote run exposed a one-pixel Start preview rounding difference and
+a duplicate overflow preparation that triggered an extra stack transition. Start
+now uses Navigation’s same f32 rounding, and existing show handlers alone prepare
+overflow home. Local spacing and real text-color pointer checks pass after this
+correction. The four Start inventory combinations use isolated fixture folders,
+so an earlier template session cannot repopulate the next empty-folder fixture.
+The changed source must complete the full remote pipeline before publication.
+
 ## Remaining reports
 
 | Issue | Evidence / remaining work |

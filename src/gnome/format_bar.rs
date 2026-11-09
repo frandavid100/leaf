@@ -575,6 +575,11 @@ fn connect_picker(
         if let Some(header) = header {
             header.entry_page.replace(page.map(str::to_owned));
         }
+        // Existing show handlers prepare overflow home; doing it twice can
+        // start a second stack transition when the popup is reopened.
+        if page.is_none() && group != "elements" {
+            return;
+        }
         match group {
             "paragraph" => {
                 if let Some(panel) = ui.paragraph.borrow().clone() {

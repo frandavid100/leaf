@@ -138,9 +138,9 @@ fn preview_slot() -> gtk::Box {
     slot
 }
 fn set_preview(slot: &gtk::Box, image: &wordcraft_gnome::PageImage) {
-    let scale = viewer_layout::thumbnail_scale(image.width as f32) as f64;
-    let width = (image.width as f64 * scale).ceil().max(1.) as i32;
-    let height = (image.height as f64 * scale).ceil().max(1.) as i32;
+    let scale = viewer_layout::thumbnail_scale(image.width as f32);
+    let width = (image.width as f32 * scale).ceil().max(1.) as i32;
+    let height = (image.height as f32 * scale).ceil().max(1.) as i32;
     slot.set_size_request(width, height);
     let paintable = page_paintable::new(
         wordcraft_gnome::PageImage {

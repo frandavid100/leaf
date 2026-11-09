@@ -121,7 +121,15 @@ async fn check(ui: &Rc<Ui>, has_templates: bool, has_recovery: bool) {
             let paintable = picture.paintable().unwrap();
             let ratio = paintable.intrinsic_width() as f64 / paintable.intrinsic_height() as f64;
             let bounds = picture.compute_bounds(&slot).unwrap();
-            assert!((168.0..=170.0).contains(&bounds.width()));
+            assert!(
+                (168.0..=170.0).contains(&bounds.width()),
+                "{name}: bounds={bounds:?} content={}x{} slot={}x{} mapped={}",
+                picture.width(),
+                picture.height(),
+                slot.width(),
+                slot.height(),
+                picture.is_mapped()
+            );
             assert!(bounds.height() >= 210.);
             assert!(
                 (bounds.width() as f64 / bounds.height() as f64 - ratio).abs() < 0.015,
@@ -131,7 +139,16 @@ async fn check(ui: &Rc<Ui>, has_templates: bool, has_recovery: bool) {
     }
     let templates = find_widget(&ui.template_slot, "start-templates").unwrap();
     let recoveries = find_widget(&ui.template_slot, "start-recovery").unwrap();
-    assert_eq!(templates.is_visible(), has_templates);
+    assert_eq!(
+        templates.is_visible(),
+        has_templates,
+        "templates: folder={:?} children={:?}",
+        wordcraft_gnome::templates::folder(),
+        std::fs::read_dir(wordcraft_gnome::templates::folder().unwrap())
+            .unwrap()
+            .map(|e| e.unwrap().path())
+            .collect::<Vec<_>>()
+    );
     assert_eq!(recoveries.is_visible(), has_recovery);
     assert_eq!(button(ui).is_some(), has_recovery);
     for (group, present) in [(&templates, has_templates), (&recoveries, has_recovery)] {
@@ -307,10 +324,15 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         wordcraft_gnome::preferences::set_template_folder(&folder).unwrap();
         templates::offer(&ui);
         check(&ui, false, false).await;
-        let template = folder.join("Sample template with a deliberately long name.docx");
+        let mut template = folder.join("Sample template with a deliberately long name.docx");
         let mut source = Session::new(wordcraft_doc::Document::from_text("Original template ñ"));
         let mut source_bytes = Vec::new();
         for (t, r) in [(false, false), (true, false), (false, true), (true, true)] {
+            // Isolate fixture inventories from earlier windows and template sessions.
+            let case_folder = folder.join(format!("templates-{t}-recovery-{r}"));
+            std::fs::create_dir_all(&case_folder).unwrap();
+            wordcraft_gnome::preferences::set_template_folder(&case_folder).unwrap();
+            template = case_folder.join("Sample template with a deliberately long name.docx");
             if t {
                 wordcraft_gnome::saving::save(&mut source, &template).unwrap();
                 source_bytes = std::fs::read(&template).unwrap();

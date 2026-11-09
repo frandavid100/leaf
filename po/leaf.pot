@@ -1877,7 +1877,7 @@ msgstr ""
 msgid "Narrow Right Column"
 msgstr ""
 
-#: src/gnome/diagnostics/navigation131.rs:102 src/gnome/diagnostics/workflows38.rs:160 src/gnome/navigation.rs:16 src/gnome/navigation.rs:41 src/gnome/tab.rs:177 src/gnome/tab.rs:178 src/gnome/tab.rs:195
+#: src/gnome/diagnostics/navigation131.rs:102 src/gnome/diagnostics/workflows38.rs:177 src/gnome/navigation.rs:16 src/gnome/navigation.rs:41 src/gnome/tab.rs:177 src/gnome/tab.rs:178 src/gnome/tab.rs:195
 msgid "Navigation"
 msgstr ""
 
@@ -2901,7 +2901,7 @@ msgstr ""
 msgid "Square Root"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows38.rs:158 src/gnome/diagnostics/workflows40.rs:83 src/gnome/diagnostics/workflows40.rs:322 src/gnome/diagnostics/workflows40.rs:616 src/gnome/navigation.rs:34
+#: src/gnome/diagnostics/workflows38.rs:175 src/gnome/diagnostics/workflows40.rs:83 src/gnome/diagnostics/workflows40.rs:322 src/gnome/diagnostics/workflows40.rs:616 src/gnome/navigation.rs:34
 msgid "Start"
 msgstr ""
 
