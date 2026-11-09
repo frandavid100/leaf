@@ -1,5 +1,16 @@
 # Decisiones vigentes
 
+## 9/11/2026 — nueva revisión y alpha.40
+
+David autoriza resolver los issues nuevos verificables y publicar otra alpha.
+#218 sustituye la galería sobre el folio por un Inicio reversible en el lateral;
+#219–#222 devuelven el formato a una barra inferior con cuatro grupos. Se conserva
+el motor y los permisos. El descarte exige confirmación porque la API pública
+no ofrece una retención reversible que permita Deshacer con garantías. Las
+capturas públicas, Windows ocasional y los bloqueos externos conservan su alcance.
+[Implementación, pruebas y límites](ALPHA40_INTERFACE.md).
+
+
 
 ## Publicada y verificada automáticamente: 0.1.0-alpha.39
 

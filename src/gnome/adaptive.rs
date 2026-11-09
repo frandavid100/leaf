@@ -10,76 +10,37 @@ pub(super) struct AdaptiveTools {
     pub(super) bottom: gtk::Box,
     pub(super) separator: gtk::Separator,
     pub(super) narrow: Cell<bool>,
-    pub(super) generation: Cell<u64>,
 }
 impl AdaptiveTools {
     pub(super) fn sync_width(self: &Rc<Self>, width: i32) {
         if width <= 0 {
             return;
         }
-        let narrow = tool_diagnostics()
-            || if self.narrow.get() {
-                width < 680
-            } else {
-                width < 640
-            };
-        let Some(ui) = self.ui.upgrade() else {
-            return;
-        };
-        if self.narrow.replace(narrow) == narrow {
-            ui.format_toolbar.set_visible(narrow);
-            return;
-        }
-        let generation = self.generation.get() + 1;
-        self.generation.set(generation);
-        ui.format_reflowing.set(true);
-        let open = ui
-            .format_buttons
-            .borrow()
-            .iter()
-            .filter_map(|m| {
-                m.popover().filter(|p| p.is_visible()).map(|p| {
-                    p.popdown();
-                    m.clone()
-                })
-            })
-            .collect::<Vec<_>>();
-        for group in [&self.history, &self.formats] {
-            if let Some(parent) = group.parent().and_then(|p| p.downcast::<gtk::Box>().ok()) {
-                parent.remove(group);
+        let Some(ui) = self.ui.upgrade() else { return };
+        self.narrow.set(width < 640);
+        // History stays in the header; document formatting always has the same
+        // bottom anchor. Resizing never reparents an open or pinned popover.
+        if self.history.parent().as_ref() != Some(self.top_history.upcast_ref()) {
+            if let Some(parent) = self.history.parent().and_downcast::<gtk::Box>() {
+                parent.remove(&self.history);
             }
-        }
-        if narrow {
-            self.bottom.prepend(&self.history);
-            self.bottom
-                .insert_child_after(&self.formats, Some(&self.separator));
-        } else {
             self.top_history.append(&self.history);
-            self.top_formats.append(&self.formats);
         }
-        ui.format_toolbar.set_visible(narrow);
-        self.separator.set_visible(narrow);
-        for m in ui.format_buttons.borrow().iter() {
-            m.set_direction(if narrow {
-                gtk::ArrowType::Up
-            } else {
-                gtk::ArrowType::Down
-            });
-        }
-        let weak = Rc::downgrade(self);
-        glib::timeout_add_local_once(std::time::Duration::from_millis(40), move || {
-            if let Some(a) = weak.upgrade() {
-                if a.generation.get() != generation {
-                    return;
-                }
-                if let Some(ui) = a.ui.upgrade() {
-                    for menu in open {
-                        menu.popup();
-                    }
-                    ui.format_reflowing.set(false);
-                }
+        if self.formats.parent().as_ref() != Some(self.bottom.upcast_ref()) {
+            if let Some(parent) = self.formats.parent().and_downcast::<gtk::Box>() {
+                parent.remove(&self.formats);
             }
-        });
+            self.bottom.append(&self.formats);
+        }
+        self.top_formats.set_visible(false);
+        self.separator.set_visible(false);
+        ui.format_toolbar.set_visible(true);
+        for menu in ui.format_buttons.borrow().iter() {
+            menu.set_direction(gtk::ArrowType::Up);
+        }
+        if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+            tools.width(width);
+        }
     }
 }
 pub(super) fn history_icon(redo: bool) -> gtk::Image {

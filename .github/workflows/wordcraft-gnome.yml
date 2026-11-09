@@ -51,7 +51,7 @@ jobs:
                 path.write_text(uri + '\n')
         PY
         sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xclip xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11
+        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xclip xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11 python3-gi
         sudo locale-gen en_US.UTF-8
     - name: Check Leaf formatting and contributor entry points
       run: |
@@ -155,7 +155,7 @@ jobs:
                 path.write_text(uri + '\n')
         PY
         sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xclip xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11
+        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xclip xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11 python3-gi
         sudo locale-gen en_US.UTF-8
     - uses: actions/download-artifact@v4
       with:
@@ -176,6 +176,25 @@ jobs:
           XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 180s bash tools/workflows38-pointer-test.sh
         done
       if: ${{ matrix.group == 'editing' }}
+    - name: Verify alpha40 sidebar, direct formatting and native folder launch
+      if: ${{ matrix.group == 'editing' }}
+      run: |
+        set -o pipefail
+        for language in en es; do
+          scale=1
+          if test "$language" = es; then scale=2; fi
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s target/release/wordcraft-gnome --workflows40-ui-test 2>&1 | tee "workflows40-native-$language.log"
+          grep -q WORKFLOWS40_UI_OK "workflows40-native-$language.log"
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 120s bash tools/workflows40-folder-test.sh
+        done
+    - uses: actions/upload-artifact@v4
+      if: ${{ matrix.group == 'editing' && (always()) }}
+      with:
+        name: leaf-alpha40-native
+        path: |
+          workflows40-*.log
+          folder40-*.log
+        retention-days: 7
     - uses: actions/upload-artifact@v4
       if: ${{ matrix.group == 'editing' && (always()) }}
       with:

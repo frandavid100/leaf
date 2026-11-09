@@ -8,6 +8,16 @@ use wordcraft_gnome::{
 fn session() -> Session {
     Session::new(Document::from_text("Texto de prueba"))
 }
+
+#[test]
+fn current_style_includes_selected_empty_paragraphs() {
+    let mut session = Session::new(Document::from_text("\nNormal text"));
+    if let wordcraft_doc::Block::Para(p) = std::sync::Arc::make_mut(&mut session.doc.body[0]) {
+        p.props.style = Some("Heading1".into());
+    }
+    selection::select_all(&mut session).unwrap();
+    assert_eq!(styles::current(&session), None);
+}
 #[test]
 fn full_style_list_and_preview_are_non_destructive() {
     let mut s = session();

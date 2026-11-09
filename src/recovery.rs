@@ -55,6 +55,25 @@ pub fn restore(root: &Path, id: &str) -> Result<Session, String> {
     Ok(session)
 }
 
+/// Discard only a listed, unlocked record through the engine's public command.
+/// The caller must obtain confirmation before requesting this irreversible action.
+pub fn discard(root: &Path, id: &str, saved_at: &str) -> Result<(), String> {
+    let mut session = ready(root)?;
+    if !session
+        .recovery_documents()
+        .iter()
+        .any(|record| record.id == id && record.saved_at == saved_at)
+    {
+        return Err("Recovery record changed".into());
+    }
+    session
+        .run("file.recover", &serde_json::json!({"discard":id}))
+        .map_err(|e| e.to_string())?;
+    wait(&mut session, |s| {
+        !s.recovery_busy() && !s.recovery_documents().iter().any(|record| record.id == id)
+    })
+}
+
 /// Preview a private byte-for-byte copy through the public recovery API.
 /// The original record is never opened for writing, locked, restored or pruned.
 /// Copying opaque snapshot files avoids depending on the engine's JSON schema.

@@ -163,6 +163,9 @@ pub(super) fn refresh_format_controls(ui: &Rc<Ui>) {
         }
     }
     ui.format_syncing.set(false);
+    if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+        tools.sync(ui, &state);
+    }
 }
 
 pub(super) fn pos_at_canvas(ui: &Rc<Ui>, x: f64, y: f64) -> Option<Pos> {

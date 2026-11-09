@@ -175,7 +175,8 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         let gallery = find_widget(&blank.template_slot, "personal-template-gallery").unwrap();
         let page = blank.current.borrow().as_ref().unwrap().page_frames[0].clone();
         let (gallery_y, page_y) = (offset(&gallery, &window), offset(&page, &window));
-        assert!(page_y > gallery_y + 30.);
+        assert!(gallery.is_ancestor(&blank.sidebar_pages));
+        assert!(!gallery.is_ancestor(&blank.scroll));
         let a = blank.scroll.vadjustment();
         let old_scroll = a.value();
         a.set_value(old_scroll + 100.);
@@ -188,7 +189,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             offset(&page, &window)
         );
         assert!(delta > 30.);
-        assert!((offset(&gallery, &window) - gallery_y + delta as f32).abs() < 1.1);
+        assert!((offset(&gallery, &window) - gallery_y).abs() < 1.1);
         assert!((offset(&page, &window) - page_y + delta as f32).abs() < 1.1);
         assert!(blank.template_eligible.get());
         let browsing_position = a.value();
@@ -211,7 +212,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert_eq!(document_content_top(&blank), 0.);
         apply_user_edit(&blank, Edit::Undo);
         settle().await;
-        assert!(!blank.template_slot.is_visible());
+        assert!(blank.template_slot.is_visible());
         assert_eq!(std::fs::read(&template).unwrap(), bytes);
         if let Some(folder) = previous_folder {
             wordcraft_gnome::preferences::set_template_folder(&folder).unwrap();

@@ -109,7 +109,6 @@ pub(super) fn build_tab(
     template_revealer.set_transition_duration(180);
     template_slot.append(&template_revealer);
     template_slot.set_visible(false);
-    document_content.append(&template_slot);
     document_content.append(&document_box);
     viewport.set_child(Some(&document_content));
     scroll.set_child(Some(&viewport));
@@ -136,6 +135,10 @@ pub(super) fn build_tab(
     let sidebar_pages = gtk::Stack::new();
     sidebar_pages.set_transition_type(gtk::StackTransitionType::Crossfade);
     sidebar_pages.set_transition_duration(180);
+    let start_scroll = gtk::ScrolledWindow::new();
+    start_scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+    start_scroll.set_child(Some(&template_slot));
+    sidebar_pages.add_named(&start_scroll, Some("start"));
     let navigation_pages = gtk::Stack::new();
     navigation_pages.set_vexpand(true);
     navigation_pages.add_named(&thumbnails_scroll, Some("thumbnails"));
@@ -218,6 +221,7 @@ pub(super) fn build_tab(
     sidebar_toolbar.set_bottom_bar_style(adw::ToolbarStyle::Flat);
     sidebar_toolbar.add_bottom_bar(&selector_bar);
     sidebar_pages.add_named(&navigation, Some("navigation"));
+    sidebar_pages.set_visible_child_name("navigation");
     sidebar_toolbar.set_content(Some(&sidebar_pages));
 
     let canvas_overlay = gtk::Overlay::new();
@@ -430,6 +434,7 @@ pub(super) fn build_tab(
         spelling: RefCell::new(None),
         format_toolbar,
         adaptive: RefCell::new(None),
+        quick_tools: RefCell::new(None),
         format_buttons: RefCell::new(Vec::new()),
         style: RefCell::new(None),
         text_tools: RefCell::new(None),
@@ -454,8 +459,8 @@ pub(super) fn build_tab(
         document_box,
         template_slot,
         template_revealer,
-        template_dismissal: RefCell::new(None),
         template_eligible: Cell::new(false),
+        template_document: Cell::new(None),
         template_gallery: RefCell::new(None),
         thumbnails_box,
         scroll,
@@ -510,6 +515,13 @@ pub(super) fn build_tab(
         });
     }
     install_navigation_switching(&ui);
+    let weak = Rc::downgrade(&ui);
+    ui.sidebar_pages
+        .connect_transition_running_notify(move |_| {
+            if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
+                templates::finish_transition(&ui);
+            }
+        });
     refresh_sidebar_title(&ui);
     ui.history_controls
         .replace(Some(install_history_controls(&ui, &history_tools)));
@@ -606,7 +618,6 @@ pub(super) fn build_tab(
         bottom: format_bar.clone(),
         separator: history_separator,
         narrow: Cell::new(true),
-        generation: Cell::new(0),
     });
     for (menu, label, kind) in [
         (&style_menu, wordcraft_gnome::t!("Style"), "style"),
@@ -635,7 +646,16 @@ pub(super) fn build_tab(
     }
     let elements = install_elements(&ui, &adaptive.formats);
     ui.format_buttons.borrow_mut().push(elements.menu.clone());
+    ui.quick_tools.replace(Some(format_bar::install_quick_tools(
+        &ui,
+        &adaptive.formats,
+        &style_menu,
+        &align_menu,
+        &text_menu,
+        &elements,
+    )));
     ui.elements.replace(Some(elements));
+    adaptive.sync_width(if narrow_on_start { 420 } else { 900 });
     host.docs.borrow_mut().push((tab_page, ui.clone()));
     install_main_menu(&app_menu);
     install_main_menu(&compact_app_menu);

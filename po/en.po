@@ -3282,3 +3282,39 @@ msgstr "Blank Document"
 
 msgid "Recovery did not finish in time."
 msgstr "Recovery did not finish in time."
+
+msgid "Add documents to this folder to use them as templates."
+msgstr "Add documents to this folder to use them as templates."
+
+msgid "Current Style Actions"
+msgstr "Current Style Actions"
+
+msgid "Discard"
+msgstr "Discard"
+
+msgid "Discard Recovery?"
+msgstr "Discard Recovery?"
+
+msgid "Discard recovery of “{name}”"
+msgstr "Discard recovery of “{name}”"
+
+msgid "Edit Style"
+msgstr "Edit Style"
+
+msgid "More elements"
+msgstr "More elements"
+
+msgid "More paragraph options"
+msgstr "More paragraph options"
+
+msgid "More text options"
+msgstr "More text options"
+
+msgid "Start"
+msgstr "Start"
+
+msgid "The Templates folder is unavailable."
+msgstr "The Templates folder is unavailable."
+
+msgid "The recovery copy of “{name}” will be permanently deleted. This cannot be undone."
+msgstr "The recovery copy of “{name}” will be permanently deleted. This cannot be undone."

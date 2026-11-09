@@ -8,11 +8,15 @@ use wordcraft_engine::Session;
 use wordcraft_gnome::recovery;
 
 fn seed(root: &Path) {
+    seed_named(root, "Notas.docx");
+}
+fn seed_named(root: &Path, name: &str) {
+    let before = copies(root).len();
     let mut session = Session::new(Document::new());
     session
         .enable_recovery(root.into(), Arc::new(|| {}))
         .unwrap();
-    session.path = Some(PathBuf::from("Notas.docx"));
+    session.path = Some(PathBuf::from(name));
     session
         .run(
             "text.insert",
@@ -22,7 +26,7 @@ fn seed(root: &Path) {
     let deadline = Instant::now() + Duration::from_secs(15);
     loop {
         session.recovery_tick();
-        if session.recovery_ready() && !session.recovery_busy() && !copies(root).is_empty() {
+        if session.recovery_ready() && !session.recovery_busy() && copies(root).len() > before {
             break;
         }
         assert!(Instant::now() < deadline);
@@ -79,5 +83,41 @@ fn pending_listing_and_dropped_restore_preserve_original_copies() {
     drop(restored); // A stale asynchronous UI result must retain the recovery data.
     assert_eq!(recovery::inventory(&root).unwrap().documents.len(), 1);
     assert_eq!(copies(&root), before);
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn confirmed_discard_rejects_stale_and_live_records_and_preserves_other_drafts() {
+    let root = std::env::temp_dir().join(format!(
+        "leaf-discard-recovery-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    std::fs::create_dir_all(&root).unwrap();
+    seed(&root);
+    seed_named(&root, "Other draft.docx");
+    let records = recovery::inventory(&root).unwrap().documents;
+    assert_eq!(records.len(), 2);
+    let (first, second) = (&records[0], &records[1]);
+    let before = copies(&root);
+    assert!(recovery::discard(&root, &first.id, "stale snapshot").is_err());
+    assert!(recovery::discard(&root, "../escape", &first.saved_at).is_err());
+    assert_eq!(copies(&root), before);
+    let live = recovery::restore(&root, &first.id).unwrap();
+    assert!(recovery::discard(&root, &first.id, &first.saved_at).is_err());
+    assert_eq!(copies(&root), before);
+    drop(live);
+    recovery::discard(&root, &first.id, &first.saved_at).unwrap();
+    let remaining = recovery::inventory(&root).unwrap().documents;
+    assert_eq!(remaining.len(), 1);
+    assert_eq!(remaining[0].id, second.id);
+    assert!(!root.join(&first.id).exists());
+    let restored = recovery::restore(&root, &second.id).unwrap();
+    assert_eq!(restored.doc.plain_text(StoryRef::Body), "Recovered text ñ");
+    drop(restored);
+    assert_eq!(recovery::inventory(&root).unwrap().documents.len(), 1);
     std::fs::remove_dir_all(root).unwrap();
 }

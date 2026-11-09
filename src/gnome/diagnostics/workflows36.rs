@@ -401,10 +401,10 @@ pub(super) fn test(
         settle().await;
         assert_eq!(text(&fresh), "á");
         assert!(!fresh.template_slot.is_visible());
-        assert!(!fresh.template_eligible.get());
+        assert!(fresh.template_eligible.get());
         apply_user_edit(&fresh, Edit::Undo);
         settle().await;
-        assert!(!fresh.template_slot.is_visible());
+        assert!(fresh.template_slot.is_visible());
         assert_eq!(std::fs::read(&path).unwrap(), bytes);
         let prefs = show_preferences(&host.window);
         wait_dialog_presented(&prefs);
@@ -429,7 +429,7 @@ pub(super) fn test(
         assert!(gallery.upgrade().is_none());
         apply_user_edit(&rapid, Edit::Undo);
         settle().await;
-        assert!(!rapid.template_slot.is_visible());
+        assert!(rapid.template_slot.is_visible());
         assert_eq!(std::fs::read(&path).unwrap(), bytes);
         eprintln!(
             "WORKFLOWS36_UI_OK tabs=true search=true fonts=true outline=true context=true template=true"

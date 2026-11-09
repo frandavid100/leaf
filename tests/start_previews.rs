@@ -4,6 +4,49 @@ use wordcraft_engine::Session;
 use wordcraft_gnome::{saving, templates};
 
 #[test]
+fn start_choices_follow_content_through_delete_undo_and_non_text_objects() {
+    let mut session = Session::new(Document::new());
+    let run = |s: &mut Session, command, args| {
+        s.run(command, &args).unwrap();
+    };
+    assert!(templates::is_empty(&session));
+    run(
+        &mut session,
+        "format.bold",
+        serde_json::json!({"value":true}),
+    );
+    run(
+        &mut session,
+        "text.insert",
+        serde_json::json!({"text":"\n\n", "paragraphs":true}),
+    );
+    assert!(templates::is_empty(&session));
+    run(&mut session, "text.insert", serde_json::json!({"text":"ñ"}));
+    assert!(!templates::is_empty(&session));
+    run(
+        &mut session,
+        "select.all",
+        serde_json::json!({"whole":true}),
+    );
+    run(&mut session, "text.delete", serde_json::json!({}));
+    assert!(templates::is_empty(&session));
+    run(&mut session, "edit.undo", serde_json::json!({}));
+    assert!(!templates::is_empty(&session));
+    let mut session = Session::new(Document::new());
+    let png =
+        wordcraft_engine::cmd::insert::base64_decode(include_str!("fixtures/picture.b64")).unwrap();
+    wordcraft_gnome::pictures::insert_data(&mut session, &png).unwrap();
+    assert!(!templates::is_empty(&session));
+    let mut session = Session::new(Document::new());
+    run(
+        &mut session,
+        "insert.table",
+        serde_json::json!({"rows":1,"cols":1}),
+    );
+    assert!(!templates::is_empty(&session));
+}
+
+#[test]
 fn whole_first_page_pixels_and_geometry_survive_cache_and_file_replacement() {
     let folder = std::env::temp_dir().join(format!("leaf-preview-{}", std::process::id()));
     std::fs::create_dir_all(&folder).unwrap();

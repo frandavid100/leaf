@@ -3282,3 +3282,39 @@ msgstr "Documento en blanco"
 
 msgid "Recovery did not finish in time."
 msgstr "La recuperación no ha terminado a tiempo."
+
+msgid "Add documents to this folder to use them as templates."
+msgstr "Añade documentos a esta carpeta para usarlos como plantillas."
+
+msgid "Current Style Actions"
+msgstr "Acciones del estilo actual"
+
+msgid "Discard"
+msgstr "Descartar"
+
+msgid "Discard Recovery?"
+msgstr "¿Descartar recuperación?"
+
+msgid "Discard recovery of “{name}”"
+msgstr "Descartar recuperación de «{name}»"
+
+msgid "Edit Style"
+msgstr "Editar estilo"
+
+msgid "More elements"
+msgstr "Más elementos"
+
+msgid "More paragraph options"
+msgstr "Más opciones de párrafo"
+
+msgid "More text options"
+msgstr "Más opciones de texto"
+
+msgid "Start"
+msgstr "Inicio"
+
+msgid "The Templates folder is unavailable."
+msgstr "La carpeta de plantillas no está disponible."
+
+msgid "The recovery copy of “{name}” will be permanently deleted. This cannot be undone."
+msgstr "La copia de recuperación de «{name}» se eliminará permanentemente. Esta acción no se puede deshacer."

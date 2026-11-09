@@ -1,6 +1,18 @@
 //! Personal templates are ordinary files, opened by the engine as untitled copies.
 use std::path::{Path, PathBuf};
 use wordcraft_engine::Session;
+
+/// Start choices may return after deleting content. Formatting and empty
+/// paragraphs do not count, but tables, fields, pictures and other objects do.
+pub fn is_empty(session: &Session) -> bool {
+    let empty = |blocks: &wordcraft_doc::Blocks| {
+        blocks.iter().all(|block| match block.as_ref() {
+            wordcraft_doc::Block::Para(p) => p.text.is_empty() && p.objects.is_empty(),
+            wordcraft_doc::Block::Table(_) => false,
+        })
+    };
+    empty(&session.doc.body) && session.doc.parts.values().all(|part| empty(&part.blocks))
+}
 pub fn folder() -> Option<PathBuf> {
     if let Some(path) = crate::preferences::template_folder() {
         return Some(path);
