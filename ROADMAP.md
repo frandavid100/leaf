@@ -1,14 +1,13 @@
 # Hoja de ruta de Leaf
 
+<!-- candidate-alpha:start -->
 ## Interfaz alpha.40 — revisión de #218–#222
 
 Inicio pasa al lateral y vuelve al borrar el contenido; la barra inferior muestra
 los cuatro grupos y sus accesos directos. Descarte por documento con confirmación
 y apertura nativa de la carpeta de plantillas. El cierre depende de validar y
 publicar la candidata. [Alcance y límites](docs/ALPHA40_INTERFACE.md).
-
-
-
+<!-- candidate-alpha:end -->
 
 <!-- published-alpha:start -->
 ## Última publicación verificada: 0.1.0-alpha.39
