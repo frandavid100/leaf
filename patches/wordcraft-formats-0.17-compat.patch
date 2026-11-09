@@ -1,0 +1,520 @@
+diff --git a/src/model/from_doc.rs b/src/model/from_doc.rs
+index 6197307..ae67535 100644
+--- a/src/model/from_doc.rs
++++ b/src/model/from_doc.rs
+@@ -132,6 +132,7 @@ fn extra_of(e: &CharProps) -> Option<Box<CharProps>> {
+         engrave: set(e.engrave),
+         border: e.border.filter(|b| b.is_visible()),
+         lang: e.lang.clone().filter(|l| !l.is_empty()),
++        no_proof: e.no_proof,
+         font_cs: e.font_cs.clone().filter(|f| !f.is_empty()),
+         font_ea: e.font_ea.clone().filter(|f| !f.is_empty()),
+         size_cs: e.size_cs.filter(|s| s.is_finite()),
+diff --git a/src/model/to_doc.rs b/src/model/to_doc.rs
+index cfeee50..a305d8c 100644
+--- a/src/model/to_doc.rs
++++ b/src/model/to_doc.rs
+@@ -72,6 +72,7 @@ impl WithExtra for CharProps {
+             b
+         });
+         self.lang = x.lang.as_deref().map(clean_text).filter(|l| !l.is_empty() && l.len() <= 64);
++        self.no_proof = x.no_proof;
+         let name = |s: &Option<String>, max: usize| s.as_deref().map(clean_text).filter(|v| !v.is_empty() && v.len() <= max);
+         self.font_cs = name(&x.font_cs, super::types::MAX_FONT_NAME);
+         self.font_ea = name(&x.font_ea, super::types::MAX_FONT_NAME);
+diff --git a/src/odt/import.rs b/src/odt/import.rs
+index c863452..25ec6ed 100644
+--- a/src/odt/import.rs
++++ b/src/odt/import.rs
+@@ -1079,7 +1079,9 @@ impl Band {
+     /// height, an unstated height is none (as tall as its text), and unstated dynamic spacing is
+     /// off (on, with no height stated, it would always drop the spacing the file states).
+     fn room(&self) -> (f32, f32) {
+-        let room = self.height.unwrap_or(0.0) + self.spacing;
++        // Writer's dynamic spacing consumes the reserved band before growing it.
++        let height = self.height.unwrap_or(0.0);
++        let room = if self.dynamic == Some(true) { height.max(self.spacing) } else { height + self.spacing };
+         let gap = if self.dynamic.unwrap_or(false) { 0.0 } else { self.spacing };
+         (room, gap)
+     }
+@@ -1250,6 +1252,18 @@ fn read_pages(xml: &[u8], paper: (f32, f32)) -> Pages {
+             sec.margin_bottom = (sec.margin_bottom + room).min(limit);
+             sec.footer_gap = gap;
+         }
++        // Retain only overlapping nominal margins; standard ODF geometry wins after edits.
++        for (edge, margin, distance, nominal) in [
++            (sec.header, &mut sec.margin_top, "leaf:header-distance", "leaf:body-margin-top"),
++            (sec.footer, &mut sec.margin_bottom, "leaf:footer-distance", "leaf:body-margin-bottom"),
++        ] {
++            let value = |key| get(a, key).and_then(length).filter(|v| v.is_finite() && *v >= 0.0 && *v <= limit);
++            if value(distance).is_some_and(|cached| (cached - edge).abs() < 0.02)
++                && let Some(original) = value(nominal)
++            {
++                *margin = original;
++            }
++        }
+         // A one-column layout keeps the default columns (and their gap).
+         if let Some(c) = cols.as_ref().filter(|c| c.count > 1) {
+             sec.columns = super::styles::with_widths(c.clone(), column_specs, sec.text_width());
+@@ -1305,6 +1319,9 @@ fn apply_layout(a: &Attrs, sec: &mut SectionProps) {
+         sec.page_w = w;
+         sec.page_h = h;
+     }
++    // Disabled page parts have no standard geometry; retain their editable distances.
++    sec.header = len("leaf:header-distance").filter(|v| v.is_finite()).unwrap_or(sec.header).min(1584.0);
++    sec.footer = len("leaf:footer-distance").filter(|v| v.is_finite()).unwrap_or(sec.footer).min(1584.0);
+     sec.landscape = match get(a, "style:print-orientation") {
+         Some("landscape") => true,
+         Some("portrait") => false,
+diff --git a/src/odt/package.rs b/src/odt/package.rs
+index 57b81b2..c5fc78f 100644
+--- a/src/odt/package.rs
++++ b/src/odt/package.rs
+@@ -256,13 +256,13 @@ fn page_parts(doc: &Document, sec: &SectionProps, w: &mut Writer) -> PageParts {
+     for (set, name) in [(&sec.headers, "header"), (&sec.footers, "footer")] {
+         let wanted =
+             set.default.is_some() || (even && set.even.is_some()) || (sec.title_page && set.first.is_some()) || (name == "header" && wm.is_some());
+-        if !wanted {
++        if !wanted && set.default.is_none() && set.even.is_none() && set.first.is_none() {
+             continue;
+         }
+         for (id, el, on) in
+             [(set.default, name.to_string(), true), (set.even, format!("{name}-left"), even), (set.first, format!("{name}-first"), sec.title_page)]
+         {
+-            if !on {
++            if !on && id.is_none() {
+                 continue;
+             }
+             let mut body = String::new();
+@@ -283,12 +283,13 @@ fn page_parts(doc: &Document, sec: &SectionProps, w: &mut Writer) -> PageParts {
+             {
+                 body = with_watermark(&body, &w.watermark(wm, (sec.page_w, sec.page_h), area));
+             }
+-            out.xml.push_str(&format!("<style:{el}>{body}</style:{el}>"));
++            let display = if on { "" } else { " style:display=\"false\"" };
++            out.xml.push_str(&format!("<style:{el}{display}>{body}</style:{el}>"));
+         }
+         if name == "header" {
+-            out.header = true;
++            out.header = wanted;
+         } else {
+-            out.footer = true;
++            out.footer = wanted;
+         }
+     }
+     out
+@@ -322,6 +323,7 @@ fn styles_xml(
+     doc: &Document,
+     pages: &[(String, wordcraft_doc::SectionProps)],
+     parts: &[PageParts],
++    links: &[(u8, u8)],
+     part_styles: &str,
+     named: &std::collections::BTreeSet<String>,
+ ) -> String {
+@@ -359,7 +361,7 @@ fn styles_xml(
+             _ => String::new(),
+         },
+         tab = pt(tab),
+-        scripts = super::writer::script_attrs(&doc.styles.default_chr)
++        scripts = format!("{}{}", super::writer::script_attrs(&doc.styles.default_chr), super::writer::proof_language_attrs(&doc.styles.default_chr))
+     ));
+     s.push_str("<style:style style:name=\"Standard\" style:family=\"paragraph\" style:class=\"text\"/>");
+     s.push_str(&kind_styles(doc));
+@@ -398,7 +400,7 @@ fn styles_xml(
+         let header = if pp.header {
+             format!(
+                 "<style:header-style><style:header-footer-properties fo:min-height=\"{}\" fo:margin-bottom=\"{}\"{}/></style:header-style>",
+-                pt(header_h),
++                pt((header_h - gap(sec.header_gap, header_h)).max(0.0)),
+                 pt(gap(sec.header_gap, header_h)),
+                 keeps(sec.header_gap)
+             )
+@@ -408,13 +410,19 @@ fn styles_xml(
+         let footer = if pp.footer {
+             format!(
+                 "<style:footer-style><style:header-footer-properties fo:min-height=\"{}\" fo:margin-top=\"{}\"{}/></style:footer-style>",
+-                pt(footer_h),
++                pt((footer_h - gap(sec.footer_gap, footer_h)).max(0.0)),
+                 pt(gap(sec.footer_gap, footer_h)),
+                 keeps(sec.footer_gap)
+             )
+         } else {
+             String::new()
+         };
++        let compatibility = format!(
++            " leaf:header-distance=\"{}\" leaf:footer-distance=\"{}\"{}{}",
++            pt(sec.header), pt(sec.footer),
++            if pp.header && sec.header > sec.margin_top { format!(" leaf:body-margin-top=\"{}\"", pt(sec.margin_top)) } else { String::new() },
++            if pp.footer && sec.footer > sec.margin_bottom { format!(" leaf:body-margin-bottom=\"{}\"", pt(sec.margin_bottom)) } else { String::new() },
++        );
+         s.push_str(&format!(
+             "<style:page-layout style:name=\"{pm}{}\"><style:page-layout-properties fo:page-width=\"{}\" fo:page-height=\"{}\" fo:margin-top=\"{}\" fo:margin-bottom=\"{}\" fo:margin-left=\"{}\" fo:margin-right=\"{}\" style:print-orientation=\"{}\"{}>{cols}</style:page-layout-properties>{header}{footer}</style:page-layout>",
+             i + 1,
+@@ -425,13 +433,14 @@ fn styles_xml(
+             pt(left),
+             pt(right),
+             if sec.page_w > sec.page_h { "landscape" } else { "portrait" },
+-            page_look(doc, sec) + &borders
++            page_look(doc, sec) + &borders + &compatibility
+         ));
+     }
+     s.push_str("</office:automatic-styles><office:master-styles>");
+-    for (i, (name, _)) in pages.iter().enumerate() {
++    for (i, (name, sec)) in pages.iter().enumerate() {
+         let xml = parts.get(i).map(|p| p.xml.as_str()).unwrap_or("");
+-        s.push_str(&format!("<style:master-page style:name=\"{}\" style:page-layout-name=\"{pm}{}\">{xml}</style:master-page>", x(name), i + 1));
++        let (headers, footers) = links.get(i).copied().unwrap_or_default();
++        s.push_str(&format!("<style:master-page style:name=\"{}\" style:page-layout-name=\"{pm}{}\" leaf:header-links=\"{headers}\" leaf:footer-links=\"{footers}\" leaf:first-page=\"{}\" leaf:odd-even=\"{}\">{xml}</style:master-page>", x(name), i + 1, sec.title_page, doc.settings.even_odd_headers));
+     }
+     s.push_str("</office:master-styles></office:document-styles>\n");
+     s
+@@ -737,6 +746,73 @@ fn flow_sections(blocks: &[FBlock], last: &SectionProps) -> Vec<(SectionProps, s
+     out
+ }
+ 
++/// Preserve editable section links and dormant parts beside ODF's independent master pages.
++fn page_links(doc: &Document, pages: &mut Vec<(String, SectionProps)>) -> Vec<(u8, u8)> {
++    // ODF master pages stand alone; copy inherited content but retain editable links.
++    let mut links = Vec::with_capacity(pages.len());
++    let mut previous = SectionProps::default();
++    for (index, (_, sec)) in pages.iter_mut().enumerate() {
++        let mask = |set: wordcraft_doc::section::HeaderSet| {
++            if index == 0 {
++                0
++            } else {
++                u8::from(set.default.is_none())
++                    | (u8::from(set.even.is_none()) << 1)
++                    | (u8::from(set.first.is_none()) << 2)
++            }
++        };
++        links.push((mask(sec.headers), mask(sec.footers)));
++        for (set, inherited) in [
++            (&mut sec.headers, previous.headers),
++            (&mut sec.footers, previous.footers),
++        ] {
++            set.default = set.default.or(inherited.default);
++            set.even = set.even.or(inherited.even);
++            set.first = set.first.or(inherited.first);
++        }
++        previous = sec.clone();
++    }
++    // Unreferenced page parts remain recoverable without activating them in the body.
++    let used: std::collections::HashSet<_> = pages
++        .iter()
++        .flat_map(|(_, sec)| {
++            [
++                sec.headers.default,
++                sec.headers.even,
++                sec.headers.first,
++                sec.footers.default,
++                sec.footers.even,
++                sec.footers.first,
++            ]
++            .into_iter()
++            .flatten()
++        })
++        .collect();
++    for (id, part) in &doc.parts {
++        if used.contains(id)
++            || !matches!(
++                part.kind,
++                wordcraft_doc::PartKind::Header | wordcraft_doc::PartKind::Footer
++            )
++        {
++            continue;
++        }
++        let mut sec = SectionProps::default();
++        if part.kind == wordcraft_doc::PartKind::Header {
++            sec.headers.default = Some(*id);
++        } else {
++            sec.footers.default = Some(*id);
++        }
++        let mut name = format!("LeafUnused{id}");
++        while pages.iter().any(|(existing, _)| existing == &name) {
++            name.push('_');
++        }
++        pages.push((name, sec));
++        links.push((0, 0));
++    }
++    links
++}
++
+ /// Write an `.odt` package.
+ /// The kinds of the shapes with drawing ids in `blocks` (paragraphs, tables, groups), by id.
+ fn conn_kinds(blocks: &[FBlock]) -> super::HashMap<u32, wordcraft_doc::para::ShapeKind> {
+@@ -1120,6 +1196,7 @@ fn export_as(doc: &Document, mime: &str) -> Result<Vec<u8>, String> {
+     hw.reserved = std::sync::Arc::clone(&w.reserved);
+     hw.accents = accents;
+     hw.variables.clone_from(&w.variables);
++    let links = page_links(doc, &mut pages);
+     let parts: Vec<PageParts> = pages.iter().map(|(_, sec)| page_parts(doc, sec, &mut hw)).collect();
+     // A custom style kept paragraphs name is written from the model (as edited), not as read.
+     for st in &doc.styles.styles {
+@@ -1145,7 +1222,7 @@ fn export_as(doc: &Document, mime: &str) -> Result<Vec<u8>, String> {
+     if w.indexes + hw.indexes > 0 {
+         draw_xml.push_str("<style:style style:name=\"Index_20_Link\" style:display-name=\"Index Link\" style:family=\"text\"/>");
+     }
+-    let styles = page_background(doc, &mut w, styles_xml(doc, &pages, &parts, &hw.style_defs(), &named));
++    let styles = page_background(doc, &mut w, styles_xml(doc, &pages, &parts, &links, &hw.style_defs(), &named));
+     let styles = styles.replacen(
+         "</office:styles>",
+         // The Frame style text boxes derive from (it states nothing: their own styles do).
+diff --git a/src/odt/page_parts.rs b/src/odt/page_parts.rs
+index d19e915..639f26e 100644
+--- a/src/odt/page_parts.rs
++++ b/src/odt/page_parts.rs
+@@ -43,7 +43,7 @@ impl Slot {
+             Self::HeaderLeft | Self::FooterLeft => set.even = Some(id),
+             Self::HeaderFirst | Self::FooterFirst => {
+                 set.first = Some(id);
+-                sec.title_page = true;
++
+             }
+         }
+     }
+@@ -54,6 +54,7 @@ impl Slot {
+ pub(super) struct Parts {
+     parts: Vec<(PartKind, Vec<FBlock>)>,
+     even_odd: bool,
++    discard: HashSet<u32>,
+     /// The watermark a header holds (the first found).
+     pub(super) watermark: Option<wordcraft_doc::Watermark>,
+ }
+@@ -79,7 +80,9 @@ pub(super) fn read(
+     objects: (&[String], &std::collections::HashMap<String, String>),
+     spaces_left: &mut usize,
+ ) -> Parts {
+-    let mut found: Vec<(String, Slot, Vec<Ev>)> = Vec::new();
++    let mut found: Vec<(String, Slot, bool, Vec<Ev>)> = Vec::new();
++    let mut links = Vec::new();
++    let mut leaf_namespace = false;
+     let mut master: Option<String> = None;
+     // The slot being read, its nesting depth and whether it is kept.
+     let mut slot: Option<(usize, bool)> = None;
+@@ -107,15 +110,25 @@ pub(super) fn read(
+             return;
+         }
+         match ev {
++            Ev::Start(q, a) if q == "office:document-styles" => {
++                leaf_namespace = get(&a, "xmlns:leaf") == Some("https://github.com/frandavid100/leaf/ns/odt/1.0");
++            }
+             Ev::Start(q, a) if q == "style:master-page" => {
+                 master = get(&a, "style:name").filter(|n| pages.masters.contains_key(*n)).map(str::to_string);
++                if leaf_namespace && let Some(name) = &master {
++                    let mask = |key| get(&a, key).and_then(|v| v.parse::<u8>().ok()).filter(|v| *v <= 7);
++                    if let (Some(h), Some(f)) = (mask("leaf:header-links"), mask("leaf:footer-links")) {
++                        links.push((name.clone(), h, f, get(&a, "leaf:first-page") == Some("true"), get(&a, "leaf:odd-even") == Some("true")));
++                    }
++                }
+             }
+             Ev::End(q) if q == "style:master-page" => master = None,
+             Ev::Start(q, a) => {
+                 if let (Some(m), Some(kind)) = (&master, Slot::of(&q)) {
+-                    let keep = get(&a, "style:display") != Some("false") && seen.insert((m.clone(), q.clone()));
++                    let enabled = get(&a, "style:display") != Some("false");
++                    let keep = (enabled || leaf_namespace) && seen.insert((m.clone(), q.clone()));
+                     if keep {
+-                        found.push((m.clone(), kind, Vec::new()));
++                        found.push((m.clone(), kind, enabled, Vec::new()));
+                     }
+                     slot = Some((0, keep));
+                 }
+@@ -125,7 +138,7 @@ pub(super) fn read(
+     });
+     let none = Pages::default();
+     let mut out = Parts::default();
+-    for (name, kind, evs) in found {
++    for (name, kind, enabled, evs) in found {
+         let mut reader = Body::new(styles, &none, fetch);
+         reader.in_text = true;
+         (reader.entries, reader.manifest) = (objects.0, Some(objects.1));
+@@ -138,8 +151,9 @@ pub(super) fn read(
+         out.parts.push((if kind.footer() { PartKind::Footer } else { PartKind::Header }, reader.take_blocks()));
+         if let Some(sec) = pages.masters.get_mut(&name) {
+             kind.set(sec, out.parts.len() as u32);
++            sec.title_page |= enabled && matches!(kind, Slot::HeaderFirst | Slot::FooterFirst);
+         }
+-        out.even_odd |= matches!(kind, Slot::HeaderLeft | Slot::FooterLeft);
++        out.even_odd |= enabled && matches!(kind, Slot::HeaderLeft | Slot::FooterLeft);
+     }
+     // Each master page stands alone, but a section without its own header or footer continues
+     // the previous one's: give those an empty one, and left pages the right pages' one.
+@@ -162,12 +176,79 @@ pub(super) fn read(
+             }
+         }
+     }
++    restore_links(pages, &mut out, links);
+     if let Some(first) = pages.first_name.as_ref().and_then(|n| pages.masters.get(n)) {
+         pages.first = Some(first.clone());
+     }
+     out
+ }
+ 
++
++/// Restore only links whose exported copy still agrees with its predecessor.
++/// An independently edited master page must keep its own content.
++fn restore_links(pages: &mut Pages, out: &mut Parts, links: Vec<(String, u8, u8, bool, bool)>) {
++    let mut previous_headers = wordcraft_doc::section::HeaderSet::default();
++    let mut previous_footers = wordcraft_doc::section::HeaderSet::default();
++    for (name, headers, footers, first, odd) in links {
++        let Some(sec) = pages.masters.get_mut(&name) else {
++            continue;
++        };
++        let current_headers = sec.headers;
++        let current_footers = sec.footers;
++        for (set, mask, previous) in [
++            (&mut sec.headers, headers, previous_headers),
++            (&mut sec.footers, footers, previous_footers),
++        ] {
++            for (slot, bit, old) in [
++                (&mut set.default, 1, previous.default),
++                (&mut set.even, 2, previous.even),
++                (&mut set.first, 4, previous.first),
++            ] {
++                if mask & bit == 0 {
++                    continue;
++                }
++                let same = match (*slot, old) {
++                    (Some(a), Some(b)) => out
++                        .parts
++                        .get(a as usize - 1)
++                        .zip(out.parts.get(b as usize - 1))
++                        .is_some_and(|(a, b)| a == b),
++                    (Some(a), None) => out.parts.get(a as usize - 1).is_some_and(|(_, blocks)| {
++                        blocks
++                            .iter()
++                            .all(|b| matches!(b, FBlock::Para(p) if p.is_empty()))
++                    }),
++                    (None, _) => true,
++                };
++                if same && let Some(id) = slot.take() {
++                    out.discard.insert(id);
++                }
++            }
++        }
++        previous_headers = current_headers;
++        previous_footers = current_footers;
++        sec.title_page = first;
++        out.even_odd |= odd;
++    }
++    let referenced: HashSet<_> = pages
++        .masters
++        .values()
++        .flat_map(|s| {
++            [
++                s.headers.default,
++                s.headers.first,
++                s.headers.even,
++                s.footers.default,
++                s.footers.first,
++                s.footers.even,
++            ]
++            .into_iter()
++            .flatten()
++        })
++        .collect();
++    out.discard.retain(|id| !referenced.contains(id));
++}
++
+ /// Put the parts [`read`] found into `doc`. The sections name them 1, 2…, in the order read;
+ /// `doc`'s notes, comments and text boxes already hold ids, so each part takes a free one and
+ /// the sections are pointed at it.
+@@ -176,7 +257,11 @@ pub(super) fn add(doc: &mut Document, parts: Parts) {
+         doc.settings.watermark.clone_from(&parts.watermark);
+     }
+     let mut ids: Vec<Option<u32>> = Vec::with_capacity(parts.parts.len());
+-    for (kind, blocks) in parts.parts {
++    for (index, (kind, blocks)) in parts.parts.into_iter().enumerate() {
++        if parts.discard.contains(&(index as u32 + 1)) {
++            ids.push(None);
++            continue;
++        }
+         let blocks = model::part_blocks(doc, &blocks);
+         ids.push(doc.try_add_part(kind, blocks).ok());
+     }
+diff --git a/src/odt/styles.rs b/src/odt/styles.rs
+index aff6237..e49191e 100644
+--- a/src/odt/styles.rs
++++ b/src/odt/styles.rs
+@@ -127,6 +127,14 @@ fn script_properties(a: &Attrs, x: &mut wordcraft_doc::props::CharProps, faces:
+         v.map(str::trim).filter(|v| (1..=8).contains(&v.len()) && v.chars().all(|c| c.is_ascii_alphanumeric()) && *v != "none" && *v != "zxx")
+     }
+     let lang = |l: &str, c: &str| tag(get(a, l)).map(|l| tag(get(a, c)).map_or_else(|| l.to_string(), |c| format!("{l}-{c}")));
++    if let Some(language) = get(a, "fo:language").filter(|v| *v != "none" && *v != "zxx") {
++        x.lang = Some(get(a, "fo:country").filter(|v| *v != "none").map_or_else(|| language.to_string(), |region| format!("{language}-{region}")));
++    }
++    if matches!(get(a, "fo:language"), Some("none" | "zxx")) {
++        x.no_proof = Some(true);
++        x.lang = get(a, "leaf:language").filter(|tag| tag.len() <= 64 && tag.split('-').all(|part| !part.is_empty() && part.len() <= 8 && part.bytes().all(|c| c.is_ascii_alphanumeric()))).map(str::to_owned);
++    }
++    x.no_proof = match get(a, "leaf:no-proof") { Some("true") => Some(true), Some("false") => Some(false), _ => x.no_proof };
+     if let Some(l) = lang("style:language-asian", "style:country-asian") {
+         x.lang_ea = Some(l);
+     }
+diff --git a/src/odt/writer/props.rs b/src/odt/writer/props.rs
+index a80a24a..13115cc 100644
+--- a/src/odt/writer/props.rs
++++ b/src/odt/writer/props.rs
+@@ -53,16 +53,7 @@ pub(in crate::odt) fn extra_props(x: &wordcraft_doc::props::CharProps, size: Opt
+         p.push_str(" style:font-relief=\"engraved\"");
+     }
+     p.push_str(&script_attrs(x));
+-    if let Some(l) = x.lang.as_deref() {
+-        let mut parts = l.split(['-', '_']);
+-        let ok = |s: &&str| (1..=8).contains(&s.len()) && s.chars().all(|c| c.is_ascii_alphanumeric());
+-        if let Some(lang) = parts.next().filter(ok) {
+-            p.push_str(&format!(" fo:language=\"{lang}\""));
+-            if let Some(country) = parts.next().filter(ok) {
+-                p.push_str(&format!(" fo:country=\"{country}\""));
+-            }
+-        }
+-    }
++    p.push_str(&proof_language_attrs(x));
+     p
+ }
+ 
+@@ -136,6 +127,23 @@ pub(in crate::odt) fn lang_attrs(tag: &str, suffix: &str) -> String {
+     p
+ }
+ 
++/// Standard unchecked-text language with its original language retained for re-enabling review.
++pub(in crate::odt) fn proof_language_attrs(props: &wordcraft_doc::props::CharProps) -> String {
++    let mut attrs = props
++        .no_proof
++        .map(|value| format!(" leaf:no-proof=\"{value}\""))
++        .unwrap_or_default();
++    if props.no_proof == Some(true) {
++        attrs.push_str(" fo:language=\"zxx\"");
++        if let Some(tag) = &props.lang {
++            attrs.push_str(&format!(" leaf:language=\"{}\"", x(tag)));
++        }
++    } else if let Some(tag) = &props.lang {
++        attrs.push_str(&lang_attrs(tag, ""));
++    }
++    attrs
++}
++
+ /// The Asian and complex-script attributes of `x`: fonts, complex size, weight, posture and the
+ /// two languages.
+ pub(in crate::odt) fn script_attrs(x: &wordcraft_doc::props::CharProps) -> String {
+diff --git a/src/odt/writer.rs b/src/odt/writer.rs
+index 014023e..b686512 100644
+--- a/src/odt/writer.rs
++++ b/src/odt/writer.rs
+@@ -16,7 +16,7 @@ use indexes::index_at;
+ pub(super) use indexes::{IndexKind, index_instr};
+ use notes::annotation_name;
+ pub(super) use props::{
+-    align_attr, border_attrs, generated_style, generating_style, odf_border, odf_name, props_text, script_attrs, spacing_props, tab_stops,
++    align_attr, border_attrs, generated_style, generating_style, odf_border, odf_name, proof_language_attrs, props_text, script_attrs, spacing_props, tab_stops,
+ };
+ use props::{parent_style, text_props};
+ use tracked::{Item, join_deleted_marks};
+@@ -64,6 +64,7 @@ pub(super) fn x(s: &str) -> String {
+ }
+ 
+ pub(super) const NS: &str = concat!(
++    "xmlns:leaf=\"https://github.com/frandavid100/leaf/ns/odt/1.0\" ",
+     "xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\" ",
+     "xmlns:style=\"urn:oasis:names:tc:opendocument:xmlns:style:1.0\" ",
+     "xmlns:text=\"urn:oasis:names:tc:opendocument:xmlns:text:1.0\" ",

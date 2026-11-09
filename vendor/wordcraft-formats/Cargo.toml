@@ -1,15 +1,15 @@
-# Standalone snapshot of WordCraft 0.16.0; compatibility delta: patches/README.md.
+# Standalone snapshot of WordCraft 0.17.0; compatibility delta: patches/README.md.
 [package]
 name = "wordcraft-formats"
-version = "0.16.0"
+version = "0.17.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Pinned WordCraft formats with Leaf ODT compatibility preservation"
 
 [dependencies]
-wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
-wordcraft-geom = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251", features = ["image"] }
-wordcraft-metafile = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
+wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "5574b32600aa7d782c64f5a6c6bb24696152220d" }
+wordcraft-geom = { git = "https://github.com/storytold/wordcraft", rev = "5574b32600aa7d782c64f5a6c6bb24696152220d", features = ["image"] }
+wordcraft-metafile = { git = "https://github.com/storytold/wordcraft", rev = "5574b32600aa7d782c64f5a6c6bb24696152220d" }
 base64 = { version = "0.23" }
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp", "gif", "bmp", "tiff"] }
 quick-xml = { version = "0.41" }
@@ -32,5 +32,5 @@ js-sys = { version = "0.3" }
 getrandom = { version = "0.3", features = ["wasm_js"] }
 
 [dev-dependencies]
-wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251", features = ["test-support"] }
+wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "5574b32600aa7d782c64f5a6c6bb24696152220d", features = ["test-support"] }
 proptest = { version = "1" }

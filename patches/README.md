@@ -1,16 +1,16 @@
 # WordCraft formats compatibility delta
 
-## Current: WordCraft 0.16.0
+## Current: WordCraft 0.17.0
 
 Upstream: https://github.com/storytold/wordcraft at
-`02a802cbafe45b5c8fecc00490c8f6b78c5ba251`, crate wordcraft-formats 0.16.0
+`5574b32600aa7d782c64f5a6c6bb24696152220d`, crate wordcraft-formats 0.17.0
 (MIT OR Apache-2.0). The complete formats crate was recopied from that revision;
 its licenses are retained. Engine, document, layout and rendering crates are
 unmodified upstream dependencies at the same revision.
 
 The four 0.14 patches below are historical and are **not** applied to this tree.
 Their replacements are the smaller source delta in
-[wordcraft-formats-0.16-compat.patch](wordcraft-formats-0.16-compat.patch).
+[wordcraft-formats-0.17-compat.patch](wordcraft-formats-0.17-compat.patch).
 The standalone Cargo manifest resolves upstream workspace dependencies at the
 same WordCraft revision and preserves their ranges/features, including the new
 ODT crypto dependencies. It is recorded separately from the source patch.

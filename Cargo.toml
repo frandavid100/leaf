@@ -23,9 +23,12 @@ path = "src/main.rs"
 
 [dependencies]
 # Anclado a una revisión concreta para reproducir cada compilación.
-wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
-wordcraft-engine = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
-wordcraft-render = { git = "https://github.com/storytold/wordcraft", rev = "02a802cbafe45b5c8fecc00490c8f6b78c5ba251" }
+wordcraft-doc = { git = "https://github.com/storytold/wordcraft", rev = "5574b32600aa7d782c64f5a6c6bb24696152220d" }
+wordcraft-engine = { git = "https://github.com/storytold/wordcraft", rev = "5574b32600aa7d782c64f5a6c6bb24696152220d" }
+wordcraft-render = { git = "https://github.com/storytold/wordcraft", rev = "5574b32600aa7d782c64f5a6c6bb24696152220d" }
+wordcraft-formats = { git = "https://github.com/storytold/wordcraft", rev = "5574b32600aa7d782c64f5a6c6bb24696152220d" }
+# Reuse the locked tokenizer for bounded native clipboard attribute adaptation.
+quick-xml = "0.41"
 serde_json = "1"
 # Reuse the locked matcher to expand WordCraft regex captures before case adaptation.
 regex-automata = "0.4"
@@ -37,7 +40,7 @@ adw = { package = "libadwaita", version = "0.8", features = ["v1_5"], optional =
 # WordCraft usa un backend PDF modificado. Los [patch] de una dependencia
 # no se heredan: el proyecto consumidor debe declarar el mismo reemplazo.
 [patch.crates-io]
-krilla = { git = "https://github.com/storytold/craft-libs", rev = "c5a1cbfb5f9049f9270955caffb5bee5997aebf7" }
+krilla = { git = "https://github.com/storytold/craft-libs", rev = "1b34eba41e62138fc2438d2734523b302840b45d" }
 
 # Production binaries optimize the renderer and engine as well as the GTK host.
 # Keep unwinding: upstream uses catch_unwind in file/recovery operations.
