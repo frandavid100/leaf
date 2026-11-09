@@ -10,6 +10,7 @@ pub(super) struct QuickTools {
     width: Cell<i32>,
     groups: Vec<(&'static str, gtk::Box, Vec<(String, gtk::Widget)>)>,
     toggles: Vec<(gtk::ToggleButton, gtk::Label, &'static str)>,
+    swatches: Vec<(&'static str, gtk::DrawingArea)>,
 }
 
 fn icon_button(icon: &str, label: &str, name: &str) -> gtk::Button {
@@ -140,7 +141,7 @@ impl QuickTools {
             if let Some(root) = root {
                 for (id, widget) in tools {
                     if let Some(row) = find_widget(&root, &format!("format-row-{group}-{id}")) {
-                        row.set_visible(!widget.is_visible());
+                        row.set_visible(!widget.get_visible());
                     }
                 }
             }
@@ -190,6 +191,44 @@ impl QuickTools {
                     }
                 }
             }
+        }
+        for (key, swatch) in &self.swatches {
+            let value = if *key == "ink" {
+                &character["color"]["Rgb"]
+            } else {
+                &character["highlight"]
+            };
+            let rgb = value.as_array().filter(|v| v.len() == 3).map(|v| {
+                (
+                    v[0].as_f64().unwrap_or(0.) / 255.,
+                    v[1].as_f64().unwrap_or(0.) / 255.,
+                    v[2].as_f64().unwrap_or(0.) / 255.,
+                )
+            });
+            let none = *key == "highlight" && rgb.is_none();
+            swatch.set_draw_func(move |w, c, width, height| {
+                if let Some((r, g, b)) = rgb {
+                    c.set_source_rgb(r, g, b);
+                } else {
+                    let color = w.color();
+                    c.set_source_rgba(
+                        color.red() as f64,
+                        color.green() as f64,
+                        color.blue() as f64,
+                        color.alpha() as f64,
+                    );
+                }
+                if none {
+                    c.set_line_width(1.);
+                    c.move_to(0., height as f64);
+                    c.line_to(width as f64, 0.);
+                    let _ = c.stroke();
+                } else {
+                    c.rectangle(0., 0., width as f64, height as f64);
+                    let _ = c.fill();
+                }
+            });
+            swatch.queue_draw();
         }
         let paragraph = selection_paragraph(ui);
         let alignment = paragraph["align"].as_str();
@@ -404,6 +443,7 @@ pub(super) fn install_quick_tools(
     let mut groups = Vec::new();
     let mut toggles = Vec::new();
     let mut alignment = None;
+    let mut swatches = Vec::new();
     for (group, container) in [
         ("paragraph", &paragraph_group),
         ("text", &text_group),
@@ -457,7 +497,21 @@ pub(super) fn install_quick_tools(
                 } else {
                     // One target opens choices; the small indicator never changes click semantics.
                     let content = gtk::Box::new(gtk::Orientation::Horizontal, 2);
-                    content.append(&gtk::Image::from_icon_name(tool.icon));
+                    let image = gtk::Image::from_icon_name(tool.icon);
+                    if group == "text" && matches!(tool.id, "ink" | "highlight") {
+                        let icon = gtk::Overlay::new();
+                        icon.set_child(Some(&image));
+                        let swatch = gtk::DrawingArea::new();
+                        swatch.set_widget_name(&format!("format-quick-{}-swatch", tool.id));
+                        swatch.set_content_width(16);
+                        swatch.set_content_height(3);
+                        swatch.set_valign(gtk::Align::End);
+                        icon.add_overlay(&swatch);
+                        swatches.push((tool.id, swatch));
+                        content.append(&icon);
+                    } else {
+                        content.append(&image);
+                    }
                     let arrow = gtk::Image::from_icon_name("pan-down-symbolic");
                     arrow.set_pixel_size(10);
                     content.append(&arrow);
@@ -510,6 +564,7 @@ pub(super) fn install_quick_tools(
         width: Cell::new(0),
         groups,
         toggles,
+        swatches,
     })
 }
 
@@ -548,7 +603,11 @@ fn connect_picker(
         if let Some(header) = header {
             header.entry_page.replace(Some(page.into()));
         }
-        menu.popup();
+        // Elements prepares and presents its borrowed body itself. Opening its
+        // empty host first can race the previous element's closed callback.
+        if group != "elements" {
+            menu.popup();
+        }
         match group {
             "paragraph" => {
                 let panel = ui.paragraph.borrow().clone();

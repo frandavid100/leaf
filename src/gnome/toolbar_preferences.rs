@@ -63,6 +63,8 @@ fn populate(dialog: &adw::PreferencesDialog, list: &gtk::ListBox, group: &'stati
         row.set_focusable(true);
         let handle = gtk::Image::from_icon_name("list-drag-handle-symbolic");
         handle.set_cursor_from_name(Some("grab"));
+        handle.set_can_target(true);
+        handle.set_size_request(24, 24);
         row.add_prefix(&handle);
         row.add_prefix(&gtk::Image::from_icon_name(tool.icon));
         let switch = gtk::Switch::new();

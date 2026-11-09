@@ -61,11 +61,11 @@ msgstr ""
 msgid "After (pt)"
 msgstr ""
 
-#: src/gnome/format_bar.rs:199 src/gnome/paragraph.rs:458 src/gnome/paragraph.rs:798
+#: src/gnome/format_bar.rs:238 src/gnome/paragraph.rs:458 src/gnome/paragraph.rs:798
 msgid "Align Left"
 msgstr ""
 
-#: src/gnome/format_bar.rs:203 src/gnome/paragraph.rs:460 src/gnome/paragraph.rs:800
+#: src/gnome/format_bar.rs:242 src/gnome/paragraph.rs:460 src/gnome/paragraph.rs:800
 msgid "Align Right"
 msgstr ""
 
@@ -73,7 +73,7 @@ msgstr ""
 msgid "Alignment"
 msgstr ""
 
-#: src/gnome/format_bar.rs:225 src/gnome/paragraph.rs:467
+#: src/gnome/format_bar.rs:264 src/gnome/paragraph.rs:467
 msgid "Alignment: {value}"
 msgstr ""
 
@@ -273,7 +273,7 @@ msgstr ""
 msgid "Bottom (mm)"
 msgstr ""
 
-#: src/gnome/toolbar_preferences.rs:148
+#: src/gnome/toolbar_preferences.rs:150
 msgid "Bottom Toolbar"
 msgstr ""
 
@@ -353,7 +353,7 @@ msgstr ""
 msgid "Cells"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:244 src/gnome/format_bar.rs:207 src/gnome/paragraph.rs:459 src/gnome/paragraph.rs:799 src/gnome/tables.rs:353
+#: src/gnome/document_properties_dialog.rs:244 src/gnome/format_bar.rs:246 src/gnome/paragraph.rs:459 src/gnome/paragraph.rs:799 src/gnome/tables.rs:353
 msgid "Center"
 msgstr ""
 
@@ -705,7 +705,7 @@ msgstr ""
 msgid "Current Style"
 msgstr ""
 
-#: src/gnome/format_bar.rs:304 src/gnome/format_bar.rs:305
+#: src/gnome/format_bar.rs:343 src/gnome/format_bar.rs:344
 msgid "Current Style Actions"
 msgstr ""
 
@@ -1037,7 +1037,7 @@ msgstr ""
 msgid "Edit Header"
 msgstr ""
 
-#: src/gnome/format_bar.rs:339
+#: src/gnome/format_bar.rs:378
 msgid "Edit Style"
 msgstr ""
 
@@ -1053,7 +1053,7 @@ msgstr ""
 msgid "Effects"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:152 src/gnome/diagnostics/annotations.rs:170 src/gnome/diagnostics/annotations.rs:185 src/gnome/diagnostics/format136.rs:432 src/gnome/elements.rs:111 src/gnome/elements.rs:260 src/gnome/elements.rs:261 src/gnome/elements.rs:278 src/gnome/menus.rs:528 src/gnome/toolbar_preferences.rs:154
+#: src/gnome/diagnostics/annotations.rs:152 src/gnome/diagnostics/annotations.rs:170 src/gnome/diagnostics/annotations.rs:185 src/gnome/diagnostics/format136.rs:432 src/gnome/elements.rs:111 src/gnome/elements.rs:260 src/gnome/elements.rs:261 src/gnome/elements.rs:278 src/gnome/menus.rs:528 src/gnome/toolbar_preferences.rs:156
 msgid "Elements"
 msgstr ""
 
@@ -1065,7 +1065,7 @@ msgstr ""
 msgid "Embossed"
 msgstr ""
 
-#: src/gnome/toolbar_preferences.rs:159
+#: src/gnome/toolbar_preferences.rs:161
 msgid "Enabled items appear from left to right in list order. Other items are available in each group’s ⋮ menu. Drag rows or use Move Up and Move Down to reorder them."
 msgstr ""
 
@@ -1613,7 +1613,7 @@ msgstr ""
 msgid "Italic (Ctrl+I)"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:245 src/gnome/format_bar.rs:211 src/gnome/paragraph.rs:461 src/gnome/paragraph.rs:801
+#: src/gnome/document_properties_dialog.rs:245 src/gnome/format_bar.rs:250 src/gnome/paragraph.rs:461 src/gnome/paragraph.rs:801
 msgid "Justify"
 msgstr ""
 
@@ -1809,7 +1809,7 @@ msgstr ""
 msgid "Missing; fallback information unavailable"
 msgstr ""
 
-#: src/gnome/adaptive.rs:186 src/gnome/adaptive.rs:257 src/gnome/format_bar.rs:159 src/gnome/format_bar.rs:213 src/gnome/paragraph.rs:463 src/gnome/paragraph.rs:489 src/gnome/paragraph.rs:538 src/gnome/paragraph.rs:545 src/gnome/paragraph.rs:557 src/gnome/paragraph.rs:1026 src/gnome/selection_view.rs:155 src/gnome/text_palette.rs:526 src/gnome/text_palette.rs:546
+#: src/gnome/adaptive.rs:186 src/gnome/adaptive.rs:257 src/gnome/format_bar.rs:160 src/gnome/format_bar.rs:252 src/gnome/paragraph.rs:463 src/gnome/paragraph.rs:489 src/gnome/paragraph.rs:538 src/gnome/paragraph.rs:545 src/gnome/paragraph.rs:557 src/gnome/paragraph.rs:1026 src/gnome/selection_view.rs:155 src/gnome/text_palette.rs:526 src/gnome/text_palette.rs:546
 msgid "Mixed"
 msgstr ""
 
@@ -1833,19 +1833,19 @@ msgstr ""
 msgid "More Text Options…"
 msgstr ""
 
-#: src/gnome/format_bar.rs:496
+#: src/gnome/format_bar.rs:550
 msgid "More elements"
 msgstr ""
 
-#: src/gnome/format_bar.rs:490
+#: src/gnome/format_bar.rs:544
 msgid "More paragraph options"
 msgstr ""
 
-#: src/gnome/format_bar.rs:492
+#: src/gnome/format_bar.rs:546
 msgid "More text options"
 msgstr ""
 
-#: src/gnome/toolbar_preferences.rs:96
+#: src/gnome/toolbar_preferences.rs:98
 msgid "Move Down"
 msgstr ""
 
@@ -1861,7 +1861,7 @@ msgstr ""
 msgid "Move Table by Dragging"
 msgstr ""
 
-#: src/gnome/toolbar_preferences.rs:95
+#: src/gnome/toolbar_preferences.rs:97
 msgid "Move Up"
 msgstr ""
 
@@ -1897,7 +1897,7 @@ msgstr ""
 msgid "New Comment"
 msgstr ""
 
-#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:145 src/gnome/tab.rs:883 src/gnome/templates.rs:599 src/gnome/workspace.rs:321
+#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:146 src/gnome/tab.rs:883 src/gnome/templates.rs:599 src/gnome/workspace.rs:321
 msgid "New Document"
 msgstr ""
 
@@ -2073,7 +2073,7 @@ msgstr ""
 msgid "Open…"
 msgstr ""
 
-#: src/gnome/format_bar.rs:436 src/gnome/text_palette.rs:102
+#: src/gnome/format_bar.rs:476 src/gnome/text_palette.rs:102
 msgid "Options for {label}"
 msgstr ""
 
@@ -2141,7 +2141,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:392 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:337 src/gnome/paragraph.rs:1265 src/gnome/tab.rs:335 src/gnome/tab.rs:631 src/gnome/toolbar_preferences.rs:152
+#: src/gnome/context.rs:131 src/gnome/context.rs:392 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:337 src/gnome/paragraph.rs:1265 src/gnome/tab.rs:335 src/gnome/tab.rs:631 src/gnome/toolbar_preferences.rs:154
 msgid "Paragraph"
 msgstr ""
 
@@ -2813,7 +2813,7 @@ msgstr ""
 msgid "Show or Hide Sidebar (F9)"
 msgstr ""
 
-#: src/gnome/toolbar_preferences.rs:75
+#: src/gnome/toolbar_preferences.rs:77
 msgid "Show {label} in toolbar"
 msgstr ""
 
@@ -2945,7 +2945,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:391 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:336 src/gnome/format_bar.rs:312 src/gnome/styles.rs:524 src/gnome/tab.rs:331 src/gnome/tab.rs:630
+#: src/gnome/context.rs:128 src/gnome/context.rs:391 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:336 src/gnome/format_bar.rs:351 src/gnome/styles.rs:524 src/gnome/tab.rs:331 src/gnome/tab.rs:630
 msgid "Style"
 msgstr ""
 
@@ -3057,7 +3057,7 @@ msgstr ""
 msgid "Templates Folder"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:393 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:429 src/gnome/diagnostics/register.rs:338 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/references.rs:334 src/gnome/tab.rs:287 src/gnome/tab.rs:322 src/gnome/tab.rs:632 src/gnome/toolbar_preferences.rs:153
+#: src/gnome/context.rs:134 src/gnome/context.rs:393 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:429 src/gnome/diagnostics/register.rs:338 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/references.rs:334 src/gnome/tab.rs:287 src/gnome/tab.rs:322 src/gnome/tab.rs:632 src/gnome/toolbar_preferences.rs:155
 msgid "Text"
 msgstr ""
 
@@ -3137,7 +3137,7 @@ msgstr ""
 msgid "The document has changed; export it again"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:166 src/gnome/elements.rs:208 src/gnome/elements.rs:231 src/gnome/files.rs:158 src/gnome/format_bar.rs:359 src/gnome/headers.rs:170 src/gnome/links.rs:241 src/gnome/references.rs:164 src/gnome/tables.rs:217 src/history.rs:131
+#: src/gnome/annotation_dialog.rs:166 src/gnome/elements.rs:208 src/gnome/elements.rs:231 src/gnome/files.rs:158 src/gnome/format_bar.rs:398 src/gnome/headers.rs:170 src/gnome/links.rs:241 src/gnome/references.rs:164 src/gnome/tables.rs:217 src/history.rs:131
 msgid "The document has changed; open this dialog again."
 msgstr ""
 
@@ -3421,7 +3421,7 @@ msgstr ""
 msgid "Update Style to Match Selection"
 msgstr ""
 
-#: src/gnome/format_bar.rs:337 src/gnome/styles.rs:407
+#: src/gnome/format_bar.rs:376 src/gnome/styles.rs:407
 msgid "Update from Selection"
 msgstr ""
 

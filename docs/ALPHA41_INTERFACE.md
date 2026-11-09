@@ -35,7 +35,7 @@ passes all three tests, including live/normal-close/interruption semantics.
 15 Python checks, gettext generation/check and project links passed locally.
 Native and installed candidate validation are still required before declaring the
 requested issues complete. The normal distribution build preserves the release
-profile and panic unwinding. A local diagnostic executable may omit cross-crate
+profile and panic unwinding. A local diagnostic executable may override host optimization and cross-crate
 LTO; only the default release-profile CI bytes are eligible for distribution.
 
 Browser capture provenance is recorded in the fixture metadata and

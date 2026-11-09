@@ -45,7 +45,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert!(
             !find_widget(&paragraph.main, "format-row-paragraph-alignment")
                 .unwrap()
-                .is_visible()
+                .get_visible()
         );
         paragraph.popover.upgrade().unwrap().popdown();
         click(&ui.format_toolbar, "format-quick-list");
@@ -70,7 +70,20 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             } else {
                 "table-insert"
             };
-            let insert = find_widget(&elements.pop, insert_name).unwrap();
+            let origin = if name == "image" {
+                ui.picture.borrow().as_ref().unwrap().pop.clone()
+            } else {
+                ui.table_popover.borrow().as_ref().unwrap().clone()
+            };
+            eprintln!(
+                "TOOLBAR41_ELEMENT {name} title={} visible={} borrowed={} source_child={}",
+                elements.header.label.text(),
+                elements.pop.is_visible(),
+                elements.body_for(&origin).is_some(),
+                origin.child().is_some()
+            );
+            let insert = find_widget(&elements.pop, insert_name)
+                .unwrap_or_else(|| panic!("missing insertion footer for {name}"));
             assert!(insert.is_mapped());
             // Only ancestors inside this popover count, not the toolbar scroller.
             let mut ancestor = insert.parent();
@@ -131,7 +144,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert!(
             find_widget(&elements.pop, "format-row-elements-image")
                 .unwrap()
-                .is_visible()
+                .get_visible()
         );
         switch.set_active(true);
         assert!(
@@ -146,7 +159,24 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             table.compute_bounds(&ui.format_toolbar).unwrap().x()
                 < image.compute_bounds(&ui.format_toolbar).unwrap().x()
         );
+        let ink_switch = find_widget(&dialog, "toolbar-visible-text-ink")
+            .unwrap()
+            .downcast::<gtk::Switch>()
+            .unwrap();
+        ink_switch.set_active(true);
         dialog.close();
+        settle().await;
+        let color_before = state(&ui);
+        click(&ui.format_toolbar, "format-quick-ink");
+        settle().await;
+        assert!(!text.header.arrow.is_visible());
+        assert_eq!(
+            state(&ui),
+            color_before,
+            "opening a color picker cannot create an undo step"
+        );
+        assert!(find_widget(&ui.format_toolbar, "format-quick-ink-swatch").is_some());
+        text.popover.upgrade().unwrap().popdown();
         settle().await;
         let saved = wordcraft_gnome::preferences::toolbar("elements");
         window.set_default_size(420, 850);
@@ -155,7 +185,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert!(
             find_widget(&elements.pop, "format-row-elements-table")
                 .unwrap()
-                .is_visible()
+                .get_visible()
         );
         assert_eq!(wordcraft_gnome::preferences::toolbar("elements"), saved);
         format_button(&ui, "paragraph-menu").unwrap().popup();
@@ -227,6 +257,18 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             .unwrap()
             .downcast::<gtk::Button>()
             .unwrap();
+        assert!(
+            button.is_mapped(),
+            "Start templates must be rendered, not merely present in a hidden widget tree"
+        );
+        assert_eq!(
+            blank.sidebar_pages.visible_child_name().as_deref(),
+            Some("start")
+        );
+        assert!(
+            find_widget(&blank.template_slot, "start-recovery-document").is_none(),
+            "live work must not be offered for recovery or discard"
+        );
         let content = button.child().unwrap();
         let title = content
             .last_child()
@@ -234,6 +276,11 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             .downcast::<gtk::Label>()
             .unwrap();
         assert_eq!(title.lines(), 2);
+        assert_eq!(
+            title.layout().line_count(),
+            2,
+            "the template name must actually use two lines"
+        );
         let preview = content.first_child().unwrap();
         assert!(preview.width() <= 30 && preview.height() <= 42);
         apply_user_edit(&blank, Edit::Insert("x".into()));
