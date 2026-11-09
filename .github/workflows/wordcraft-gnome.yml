@@ -754,6 +754,7 @@ jobs:
           sweep18-*.log
           table18-*.log
           text18-*.log
+          text18-*.png
           issues-*.log
           uri-launch.log
           interactions-pointer.log
@@ -892,6 +893,7 @@ jobs:
           sweep18-*.log
           table18-*.log
           text18-*.log
+          text18-*.png
           issues-*.log
           uri-launch.log
           interactions-pointer.log
