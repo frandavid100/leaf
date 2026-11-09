@@ -523,11 +523,11 @@ pub(super) fn pointer(
                 )
             };
             assert!(page > 0);
-            if stage > 1 {
-                ui.scroll
-                    .vadjustment()
-                    .set_value(cy - ui.scroll.vadjustment().page_size() * 0.35);
-            }
+            // Reveal the target for every zoom, including the cancellation
+            // stage. Toolbar and tab rows change the editor's visible height.
+            ui.scroll
+                .vadjustment()
+                .set_value(cy - ui.scroll.vadjustment().page_size() * 0.35);
             settle().await;
             let (x, y) = {
                 let mut v = ui.current.borrow_mut();
@@ -542,6 +542,11 @@ pub(super) fn pointer(
             };
             let scroll_bounds = ui.scroll.compute_bounds(&window).unwrap();
             let scale = window.scale_factor() as f32;
+            assert!(
+                y as f32 > scroll_bounds.y() * scale
+                    && (y as f32) < (scroll_bounds.y() + scroll_bounds.height()) * scale,
+                "external drag target must be inside the actual editor viewport"
+            );
             let edge_y = ((scroll_bounds.y() + scroll_bounds.height() - 12.) * scale) as i32;
             let original = ui.current.borrow().as_ref().unwrap().session.doc.clone();
             let selection = ui.current.borrow().as_ref().unwrap().session.sel.clone();
