@@ -109,10 +109,13 @@ fn heading(text: &str, name: &str) -> gtk::Label {
 }
 fn row(title: &str, name: &str) -> (gtk::Box, gtk::Box) {
     let group = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    group.set_vexpand(false);
     group.set_widget_name(name);
     group.set_visible(false);
     group.append(&heading(title, &format!("{name}-heading")));
     let strip = gtk::Box::new(gtk::Orientation::Vertical, 4);
+    strip.set_vexpand(false);
+    strip.set_valign(gtk::Align::Start);
     strip.set_margin_start(6);
     strip.set_margin_end(6);
     strip.set_margin_bottom(12);
@@ -131,9 +134,11 @@ fn row(title: &str, name: &str) -> (gtk::Box, gtk::Box) {
 fn preview_slot() -> gtk::Box {
     let slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
     slot.set_size_request(48, 68);
+    slot.set_vexpand(false);
+    slot.set_valign(gtk::Align::Center);
     let icon = gtk::Image::from_icon_name("text-x-generic-symbolic");
     icon.set_pixel_size(24);
-    icon.set_vexpand(true);
+    icon.set_vexpand(false);
     slot.append(&icon);
     slot
 }
@@ -155,7 +160,7 @@ fn set_preview(slot: &gtk::Box, image: &wordcraft_gnome::PageImage) {
     picture.set_size_request(width, height);
     picture.set_halign(gtk::Align::Center);
     picture.set_valign(gtk::Align::Center);
-    picture.set_vexpand(true);
+    picture.set_vexpand(false);
     picture.set_content_fit(gtk::ContentFit::Contain);
     picture.add_css_class("card");
     clear_box(slot);
@@ -273,7 +278,9 @@ fn reload(ui: &Rc<Ui>) {
 impl Gallery {
     fn present(&self) {
         let Some(ui) = self.valid_ui() else { return };
-        let visible = self.template_group.is_visible() || self.recovery_group.is_visible();
+        // Read each section's own flag: the Start page is hidden until this
+        // decision, so ancestor visibility would keep it hidden forever.
+        let visible = self.template_group.get_visible() || self.recovery_group.get_visible();
         ui.template_slot.set_visible(visible);
         if visible {
             ui.sidebar_pages.set_visible_child_name("start");

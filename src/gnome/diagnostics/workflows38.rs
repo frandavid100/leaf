@@ -338,7 +338,11 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert_eq!(records(&root), before);
         apply_user_edit(&target, Edit::Undo);
         settle().await;
-        assert!(!target.template_slot.is_visible());
+        assert!(target.template_slot.is_visible());
+        assert_eq!(
+            target.sidebar_pages.visible_child_name().as_deref(),
+            Some("start")
+        );
         target.dirty.set(false);
         let page = host.tabs.selected_page().unwrap();
         host.tabs.close_page(&page);
