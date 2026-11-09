@@ -149,7 +149,7 @@ msgstr ""
 msgid "Apply Style"
 msgstr ""
 
-#: src/gnome/styles.rs:204
+#: src/gnome/styles.rs:207
 msgid "Apply Style {}"
 msgstr ""
 
@@ -293,7 +293,7 @@ msgstr ""
 msgid "Breaks"
 msgstr ""
 
-#: src/gnome/styles.rs:428
+#: src/gnome/styles.rs:431
 msgid "Built-in styles cannot be deleted"
 msgstr ""
 
@@ -661,7 +661,7 @@ msgstr ""
 msgid "Count By"
 msgstr ""
 
-#: src/gnome/styles.rs:477
+#: src/gnome/styles.rs:480
 msgid "Create Style"
 msgstr ""
 
@@ -697,7 +697,7 @@ msgstr ""
 msgid "Current Section"
 msgstr ""
 
-#: src/gnome/styles.rs:199
+#: src/gnome/styles.rs:202
 msgid "Current Style"
 msgstr ""
 
@@ -809,7 +809,7 @@ msgstr ""
 msgid "Delete Rows"
 msgstr ""
 
-#: src/gnome/styles.rs:421
+#: src/gnome/styles.rs:424
 msgid "Delete Style"
 msgstr ""
 
@@ -1233,7 +1233,7 @@ msgstr ""
 msgid "Follow System"
 msgstr ""
 
-#: src/gnome/styles.rs:369
+#: src/gnome/styles.rs:372
 msgid "Following Paragraph Style"
 msgstr ""
 
@@ -1769,7 +1769,7 @@ msgstr ""
 msgid "Make Independent Copies"
 msgstr ""
 
-#: src/gnome/styles.rs:214
+#: src/gnome/styles.rs:217
 msgid "Manage “{style}”"
 msgstr ""
 
@@ -1809,7 +1809,7 @@ msgstr ""
 msgid "More Paragraph Options"
 msgstr ""
 
-#: src/gnome/styles.rs:249
+#: src/gnome/styles.rs:252
 msgid "More Styles…"
 msgstr ""
 
@@ -1885,11 +1885,11 @@ msgstr ""
 msgid "New Paragraph"
 msgstr ""
 
-#: src/gnome/diagnostics/format136.rs:115 src/gnome/styles.rs:444 src/gnome/styles.rs:451
+#: src/gnome/diagnostics/format136.rs:115 src/gnome/styles.rs:447 src/gnome/styles.rs:454
 msgid "New Style"
 msgstr ""
 
-#: src/gnome/styles.rs:542
+#: src/gnome/styles.rs:545
 msgid "New Style…"
 msgstr ""
 
@@ -1945,7 +1945,7 @@ msgstr ""
 msgid "No Shading"
 msgstr ""
 
-#: src/gnome/styles.rs:260
+#: src/gnome/styles.rs:263
 msgid "No Styles Found"
 msgstr ""
 
@@ -2309,15 +2309,15 @@ msgstr ""
 msgid "Remove the space before the punctuation"
 msgstr ""
 
-#: src/gnome/styles.rs:475
+#: src/gnome/styles.rs:478
 msgid "Rename"
 msgstr ""
 
-#: src/gnome/styles.rs:442 src/gnome/styles.rs:449
+#: src/gnome/styles.rs:445 src/gnome/styles.rs:452
 msgid "Rename Style"
 msgstr ""
 
-#: src/gnome/styles.rs:410
+#: src/gnome/styles.rs:413
 msgid "Rename…"
 msgstr ""
 
@@ -2605,7 +2605,7 @@ msgstr ""
 msgid "Search Options"
 msgstr ""
 
-#: src/gnome/styles.rs:530
+#: src/gnome/styles.rs:533
 msgid "Search Styles"
 msgstr ""
 
@@ -2889,7 +2889,7 @@ msgstr ""
 msgid "Square Root"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows38.rs:157 src/gnome/diagnostics/workflows40.rs:69 src/gnome/diagnostics/workflows40.rs:255 src/gnome/diagnostics/workflows40.rs:397 src/gnome/navigation.rs:31
+#: src/gnome/diagnostics/workflows38.rs:157 src/gnome/diagnostics/workflows40.rs:72 src/gnome/diagnostics/workflows40.rs:297 src/gnome/diagnostics/workflows40.rs:461 src/gnome/navigation.rs:31
 msgid "Start"
 msgstr ""
 
@@ -2921,23 +2921,23 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:391 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:433 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:305 src/gnome/format_bar.rs:202 src/gnome/styles.rs:521 src/gnome/tab.rs:327 src/gnome/tab.rs:623
+#: src/gnome/context.rs:128 src/gnome/context.rs:391 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:433 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:305 src/gnome/format_bar.rs:202 src/gnome/styles.rs:524 src/gnome/tab.rs:327 src/gnome/tab.rs:623
 msgid "Style"
 msgstr ""
 
-#: src/gnome/styles.rs:311
+#: src/gnome/styles.rs:314
 msgid "Style Deleted"
 msgstr ""
 
-#: src/gnome/styles.rs:458
+#: src/gnome/styles.rs:461
 msgid "Style Name"
 msgstr ""
 
-#: src/gnome/styles.rs:495
+#: src/gnome/styles.rs:498
 msgid "Style Saved"
 msgstr ""
 
-#: src/gnome/styles.rs:308
+#: src/gnome/styles.rs:311
 msgid "Style Updated"
 msgstr ""
 
@@ -3217,7 +3217,7 @@ msgstr ""
 msgid "The style no longer exists"
 msgstr ""
 
-#: src/gnome/styles.rs:466
+#: src/gnome/styles.rs:469
 msgid "The style will use the formatting of the current selection."
 msgstr ""
 
@@ -3397,7 +3397,7 @@ msgstr ""
 msgid "Update Style to Match Selection"
 msgstr ""
 
-#: src/gnome/format_bar.rs:227 src/gnome/styles.rs:404
+#: src/gnome/format_bar.rs:227 src/gnome/styles.rs:407
 msgid "Update from Selection"
 msgstr ""
 
@@ -3413,7 +3413,7 @@ msgstr ""
 msgid "Use 1 to 12 columns with spacing between 0 and 105.83 mm."
 msgstr ""
 
-#: src/gnome/styles.rs:378
+#: src/gnome/styles.rs:381
 msgid "Use DOCX to preserve changes to the following paragraph style."
 msgstr ""
 

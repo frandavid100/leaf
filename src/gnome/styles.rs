@@ -151,6 +151,9 @@ impl StylePopover {
             let label = gtk::Label::new(Some(&st.name));
             let attributes = gtk::pango::AttrList::new();
             attributes.insert(gtk::pango::AttrString::new_family(&resolved.font));
+            attributes.insert(gtk::pango::AttrSize::new(
+                (resolved.size.clamp(8., 28.) * gtk::pango::SCALE as f32).round() as i32,
+            ));
             if resolved.bold {
                 attributes.insert(gtk::pango::AttrInt::new_weight(gtk::pango::Weight::Bold));
             }

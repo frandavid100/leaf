@@ -3,14 +3,18 @@ set -euo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)
 runner=${1:-$root/target/release/wordcraft-gnome}
 if [[ ${LEAF40_PRIVATE_BUS:-} != 1 ]]; then
-  exec dbus-run-session -- env LEAF40_PRIVATE_BUS=1 bash "$0" "$runner"
+  exec dbus-run-session -- env LEAF40_PRIVATE_BUS=1 bash "$0" "$@"
 fi
 command=("$runner"); [[ "$runner" != *.sh ]] || command=(bash "$runner")
 export LEAF40_FOLDER LEAF29_ACK_DIR GTK_USE_PORTAL=1
 parent=${LEAF29_ACK_PARENT:-/tmp}
-LEAF40_FOLDER=$(mktemp -d "$parent/Plantillas personales.XXXXXX")
+own_folder=false
+if [[ -n ${2:-} ]]; then LEAF40_FOLDER=$2; else
+  LEAF40_FOLDER=$(mktemp -d "$parent/Plantillas personales.XXXXXX")
+  own_folder=true
+fi
 LEAF29_ACK_DIR=$(mktemp -d "$parent/leaf40-folder-ack.XXXXXX")
-cleanup() { kill "${portal_pid:-}" 2>/dev/null || true; rm -rf "$LEAF40_FOLDER" "$LEAF29_ACK_DIR"; }
+cleanup() { kill "${portal_pid:-}" 2>/dev/null || true; rm -rf "$LEAF29_ACK_DIR"; [[ "$own_folder" != true ]] || rm -rf "$LEAF40_FOLDER"; }
 trap cleanup EXIT
 for mode in success error; do
   rm -f "$LEAF29_ACK_DIR/folder40-response"

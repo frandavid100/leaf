@@ -43,7 +43,6 @@ bash "$root/tools/workflows36-template-folder-test.sh" "$runner"
 "$runner" --workflows40-ui-test > "workflows40-ui-${LANGUAGE}.log" 2>&1 || { cat "workflows40-ui-${LANGUAGE}.log"; exit 1; }
 grep -q WORKFLOWS40_UI_OK "workflows40-ui-${LANGUAGE}.log"
 cat "workflows40-ui-${LANGUAGE}.log"
-bash "$root/tools/workflows40-folder-test.sh" "$runner"
 CHECK
 chmod +x "$temporary/installed.sh"
 if [[ ${CI:-} == true ]]; then export LEAF35_TEST_UID; LEAF35_TEST_UID=$(id -u); fi

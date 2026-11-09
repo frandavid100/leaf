@@ -52,6 +52,9 @@ pub(super) fn folder(ui: &Rc<Ui>, app: &Application) {
             PathBuf::from(std::env::var_os("LEAF29_ACK_DIR").unwrap()).join("folder40-response");
         assert!(folder.is_dir());
         wordcraft_gnome::preferences::set_template_folder(&folder).unwrap();
+        if std::env::var_os("FLATPAK_ID").is_some() {
+            assert!(std::fs::File::create(folder.join("leaf40-must-not-write")).is_err());
+        }
         let host = ui.host.upgrade().unwrap();
         blank_tab(&app, &host);
         let target = selected_ui(&host).unwrap();
@@ -176,11 +179,50 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             .downcast::<gtk::Button>()
             .unwrap()
             .emit_clicked();
+        let actions = format_button(&ui, "style-actions").unwrap();
+        format_execute(&ui, "format.bold", serde_json::json!({"value":false})).unwrap();
+        let normal_before = ui
+            .current
+            .borrow()
+            .as_ref()
+            .unwrap()
+            .session
+            .doc
+            .styles
+            .resolve_char(Some("Normal"), &Default::default());
+        actions.popup();
+        find_widget(&actions.popover().unwrap(), "style-current-update")
+            .unwrap()
+            .downcast::<gtk::Button>()
+            .unwrap()
+            .emit_clicked();
+        assert!(
+            !ui.current
+                .borrow()
+                .as_ref()
+                .unwrap()
+                .session
+                .doc
+                .styles
+                .resolve_char(Some("Heading1"), &Default::default())
+                .bold
+        );
+        assert_eq!(
+            ui.current
+                .borrow()
+                .as_ref()
+                .unwrap()
+                .session
+                .doc
+                .styles
+                .resolve_char(Some("Normal"), &Default::default()),
+            normal_before
+        );
+        apply_user_edit(&ui, Edit::Undo);
         let state = (
             document_identity(&ui),
             ui.current.borrow().as_ref().unwrap().session.sel.clone(),
         );
-        let actions = format_button(&ui, "style-actions").unwrap();
         actions.popup();
         find_widget(&actions.popover().unwrap(), "style-current-edit")
             .unwrap()
@@ -280,6 +322,28 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             apply_user_edit(&start, Edit::Undo);
         }
         settle().await;
+        apply_user_edit(&start, Edit::Insert("x".into()));
+        apply_user_edit(&start, Edit::Backspace);
+        settle().await;
+        assert_eq!(
+            start.sidebar_pages.visible_child_name().as_deref(),
+            Some("start")
+        );
+        apply_user_edit(&start, Edit::Insert("Delete all".into()));
+        start
+            .current
+            .borrow_mut()
+            .as_mut()
+            .unwrap()
+            .session
+            .run("select.all", &serde_json::json!({"whole":true}))
+            .unwrap();
+        apply_user_edit(&start, Edit::Delete);
+        settle().await;
+        assert_eq!(
+            start.sidebar_pages.visible_child_name().as_deref(),
+            Some("start")
+        );
         let png = wordcraft_engine::cmd::insert::base64_decode(include_str!(
             "../../../tests/fixtures/picture.b64"
         ))
