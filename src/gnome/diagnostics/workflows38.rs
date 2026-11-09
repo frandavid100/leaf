@@ -189,9 +189,17 @@ pub(super) fn write_pending(root: PathBuf) {
     let end = std::time::Instant::now() + std::time::Duration::from_secs(15);
     loop {
         s.recovery_tick();
-        if s.recovery_ready() && !s.recovery_busy() && records(&root).len() > before {
+        // Another live test document may write its own snapshot concurrently.
+        // The public wait API becomes idle only after this session's revision
+        // has its copy; a global file count alone can finish too early.
+        if s.recovery_ready()
+            && !s.recovery_busy()
+            && s.recovery_wait().is_none()
+            && records(&root).len() > before
+        {
             break;
         }
+        assert!(s.recovery_error().is_none(), "{:?}", s.recovery_error());
         assert!(std::time::Instant::now() < end);
         std::thread::sleep(std::time::Duration::from_millis(10));
     }

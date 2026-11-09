@@ -415,6 +415,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         gio::spawn_blocking(move || workflows38_checks::write_pending(recovery_root))
             .await
             .unwrap();
+        eprintln!("WORKFLOWS40_RECOVERY_SEEDED");
         start
             .template_gallery
             .borrow()
@@ -422,6 +423,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             .unwrap()
             .refresh_recovery();
         until(|| find_widget(&start.template_slot, "start-recovery-discard").is_some()).await;
+        eprintln!("WORKFLOWS40_RECOVERY_LISTED");
         let before = gio::spawn_blocking(|| {
             wordcraft_gnome::recovery::inventory(&wordcraft_gnome::preferences::recovery_root())
                 .unwrap()
@@ -452,6 +454,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         .await
         .unwrap();
         assert_eq!(before, after);
+        eprintln!("WORKFLOWS40_RECOVERY_CANCEL_OK");
         find_widget(&start.template_slot, "start-recovery-discard")
             .unwrap()
             .downcast::<gtk::Button>()
