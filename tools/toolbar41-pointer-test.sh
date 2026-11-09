@@ -8,6 +8,32 @@ if [[ "$leaf_runner" = *.sh ]]; then leaf_cmd=(bash "$leaf_runner"); fi
 LEAF_TOOLBAR_DND=1 "${leaf_cmd[@]}" --toolbar41-ui-test >"$log" 2>&1 &
 leaf_pid=$!
 trap 'kill "$leaf_pid" 2>/dev/null || true' EXIT
+for picker in alignment list underline-options image; do
+  for attempt in $(seq 1 500); do
+    if grep -q "^TOOLBAR41_TOGGLE $picker " "$log"; then break; fi
+    kill -0 "$leaf_pid" || { cat "$log"; exit 1; }
+    sleep 0.05
+  done
+  read -r _ _ px py < <(grep "^TOOLBAR41_TOGGLE $picker " "$log" | tail -n1)
+  scale=${GDK_SCALE:-1}
+  leaf_window=$(xdotool search --onlyvisible --name '^Leaf Toolbar41$' | head -n1)
+  xdotool windowfocus --sync "$leaf_window"
+  xdotool mousemove --window "$leaf_window" "$((px*scale))" "$((py*scale))" click 1
+  for attempt in $(seq 1 200); do
+    grep -q "^TOOLBAR41_OPEN $picker" "$log" && break
+    kill -0 "$leaf_pid" || { cat "$log"; exit 1; }
+    sleep 0.03
+  done
+  grep -q "^TOOLBAR41_OPEN $picker" "$log" || { cat "$log"; exit 1; }
+  sleep 0.55
+  xdotool mousemove --window "$leaf_window" "$((px*scale))" "$((py*scale))" click 1
+  for attempt in $(seq 1 200); do
+    grep -q "^TOOLBAR41_CLOSED $picker" "$log" && break
+    kill -0 "$leaf_pid" || { cat "$log"; exit 1; }
+    sleep 0.03
+  done
+  grep -q "^TOOLBAR41_CLOSED $picker" "$log" || { cat "$log"; exit 1; }
+done
 for attempt in $(seq 1 500); do
   if grep -q '^TOOLBAR41_DRAG ' "$log"; then break; fi
   kill -0 "$leaf_pid" || { cat "$log"; exit 1; }

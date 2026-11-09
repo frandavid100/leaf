@@ -252,7 +252,11 @@ impl ParagraphPopover {
         } else {
             "paragraph-symbolic"
         };
-        b.set_child(Some(&property_content(label, icon).0));
+        if args["off"] == true && matches!(command, "para.bullets" | "para.numbering") {
+            b.set_child(Some(&list_choice_content(label, "list-remove")));
+        } else {
+            b.set_child(Some(&property_content(label, icon).0));
+        }
         let weak = Rc::downgrade(self);
         b.connect_clicked(move |_| {
             if let Some(s) = weak.upgrade() {
@@ -777,6 +781,14 @@ impl ParagraphPopover {
                     (wordcraft_gnome::t!("Numbered List"), "numbering"),
                 ] {
                     let b = style_menu_button(title);
+                    b.set_child(Some(&list_choice_content(
+                        title,
+                        if target == "bullets" {
+                            "view-list-bullet-symbolic"
+                        } else {
+                            "view-list-ordered-symbolic"
+                        },
+                    )));
                     b.set_widget_name(&format!("paragraph-more-{target}"));
                     self.detail.append(&b);
                     let weak = Rc::downgrade(self);
@@ -1318,7 +1330,17 @@ pub(super) fn install_paragraph_popover(
         state,
         move |_| {
             if !state.ui.upgrade().is_some_and(|u| u.format_reflowing.get()) {
-                state.home();
+                let entry = state.header.entry_page.borrow().clone();
+                if let Some(page) = entry {
+                    let transition = state.stack.transition_type();
+                    state
+                        .stack
+                        .set_transition_type(gtk::StackTransitionType::None);
+                    state.page(&page);
+                    state.stack.set_transition_type(transition);
+                } else {
+                    state.home();
+                }
             }
         }
     ));

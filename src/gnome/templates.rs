@@ -96,57 +96,52 @@ pub(super) fn offer(ui: &Rc<Ui>) {
         .set(document_identity(ui).map(|id| id.0));
     reload(ui);
 }
-fn heading(text: &str, name: &str) -> gtk::Label {
-    let label = gtk::Label::new(Some(text));
-    label.set_widget_name(name);
-    label.set_xalign(0.);
-    label.set_wrap(true);
-    label.add_css_class("heading");
-    label.set_margin_start(20);
-    label.set_margin_end(20);
-    label.set_margin_top(12);
-    label.set_margin_bottom(8);
-    label
-}
-fn row(title: &str, name: &str) -> (gtk::Box, gtk::Box) {
+fn row(_title: &str, name: &str) -> (gtk::Box, gtk::Box) {
     let group = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    group.set_vexpand(false);
     group.set_widget_name(name);
     group.set_visible(false);
-    group.append(&heading(title, &format!("{name}-heading")));
-    let strip = gtk::Box::new(gtk::Orientation::Vertical, 4);
-    strip.set_vexpand(false);
+    let strip = gtk::Box::new(gtk::Orientation::Vertical, 0);
     strip.set_valign(gtk::Align::Start);
-    strip.set_margin_start(6);
-    strip.set_margin_end(6);
-    strip.set_margin_bottom(12);
-    let scroll = gtk::ScrolledWindow::new();
-    scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Never);
-    scroll.set_propagate_natural_height(true);
-    scroll.set_child(Some(&strip));
+    // Both kinds live in the one outer Start scroller; no section chrome.
     if name == "start-templates" {
-        scroll.set_widget_name("personal-template-gallery");
+        strip.set_widget_name("personal-template-gallery");
     }
-    group.append(&scroll);
+    group.append(&strip);
     (group, strip)
+}
+fn card_layout() -> gtk::Box {
+    let content = gtk::Box::new(gtk::Orientation::Vertical, 5);
+    content.set_halign(gtk::Align::Center);
+    content.set_vexpand(false);
+    content
+}
+fn thumbnail_button(button: &gtk::Button) {
+    button.add_css_class("flat");
+    button.add_css_class("thumbnail-button");
+    button.set_halign(gtk::Align::Center);
+    button.set_valign(gtk::Align::Start);
+    button.set_vexpand(false);
+    button.set_margin_top(6);
+    button.set_margin_bottom(10);
 }
 // A label's natural width must never stretch the paper background. The outer
 // slot is common to all cards; only the proportionally sized page owns a card.
 fn preview_slot() -> gtk::Box {
     let slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    slot.set_size_request(30, 42);
+    slot.set_size_request(168, 238);
     slot.set_vexpand(false);
     slot.set_valign(gtk::Align::Center);
     let icon = gtk::Image::from_icon_name("text-x-generic-symbolic");
-    icon.set_pixel_size(24);
+    icon.set_pixel_size(32);
     icon.set_vexpand(false);
     slot.append(&icon);
     slot
 }
 fn set_preview(slot: &gtk::Box, image: &wordcraft_gnome::PageImage) {
-    let scale = (30. / image.width as f64).min(42. / image.height as f64);
-    let width = (image.width as f64 * scale).round().max(1.) as i32;
-    let height = (image.height as f64 * scale).round().max(1.) as i32;
+    let scale = viewer_layout::thumbnail_scale(image.width as f32) as f64;
+    let width = (image.width as f64 * scale).ceil().max(1.) as i32;
+    let height = (image.height as f64 * scale).ceil().max(1.) as i32;
+    slot.set_size_request(width, height);
     let paintable = page_paintable::new(
         wordcraft_gnome::PageImage {
             width: image.width,
@@ -163,14 +158,15 @@ fn set_preview(slot: &gtk::Box, image: &wordcraft_gnome::PageImage) {
     picture.set_valign(gtk::Align::Center);
     picture.set_vexpand(false);
     picture.set_content_fit(gtk::ContentFit::Contain);
-    picture.add_css_class("start-paper-preview");
+    picture.add_css_class("thumbnail-sheet");
+    picture.set_overflow(gtk::Overflow::Hidden);
     clear_box(slot);
     slot.append(&picture);
 }
 fn card_title(name: &str) -> gtk::Label {
     let label = gtk::Label::new(Some(name));
     label.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    label.set_xalign(0.);
+    label.set_xalign(0.5);
     label.set_hexpand(true);
     label.set_max_width_chars(20);
     label.set_width_chars(1);
@@ -225,14 +221,10 @@ fn reload(ui: &Rc<Ui>) {
     });
     ui.template_gallery.replace(Some(gallery.clone()));
     gallery.refresh_recovery();
-    let Some(folder) = wordcraft_gnome::templates::folder() else {
-        return;
-    };
-    if folder.is_dir() {
-        gallery.folder_footer(&folder);
-        gallery.template_group.set_visible(true);
-        gallery.present();
-    }
+    let folder = wordcraft_gnome::templates::folder();
+    gallery.folder_footer(folder.as_deref());
+    gallery.present();
+    let Some(folder) = folder else { return };
     let (send, receive) = std::sync::mpsc::channel();
     std::thread::spawn(move || {
         let Ok(paths) = wordcraft_gnome::templates::list(&folder) else {
@@ -283,39 +275,28 @@ fn reload(ui: &Rc<Ui>) {
 impl Gallery {
     fn present(&self) {
         let Some(ui) = self.valid_ui() else { return };
-        // Read each section's own flag: the Start page is hidden until this
-        // decision, so ancestor visibility would keep it hidden forever.
-        let visible = self.template_group.get_visible() || self.recovery_group.get_visible();
-        ui.template_slot.set_visible(visible);
-        if visible {
-            ui.sidebar_pages.set_visible_child_name("start");
-        } else if ui.sidebar_pages.visible_child_name().as_deref() == Some("start") {
-            ui.sidebar_pages.set_visible_child_name("navigation");
-        }
+        // Empty Start lists still retain their fixed folder action.
+        ui.template_slot.set_visible(true);
+        ui.sidebar_pages.set_visible_child_name("start");
     }
-    fn folder_footer(self: &Rc<Self>, folder: &Path) {
-        let footer = gtk::Box::new(gtk::Orientation::Vertical, 6);
-        footer.set_margin_start(12);
-        footer.set_margin_end(12);
-        footer.set_margin_bottom(12);
-        let text = gtk::Label::new(Some(wordcraft_gnome::t!(
-            "Add documents to this folder to use them as templates."
-        )));
-        text.set_wrap(true);
-        text.set_xalign(0.);
-        text.add_css_class("dim-label");
-        footer.append(&text);
+    fn folder_footer(self: &Rc<Self>, folder: Option<&Path>) {
+        let Some(ui) = self.valid_ui() else { return };
+        clear_box(&ui.start_footer);
         let button = gtk::Button::new();
         let label = gtk::Label::new(Some(wordcraft_gnome::t!("Open Templates Folder")));
         label.set_wrap(true);
         label.set_max_width_chars(20);
+        label.set_width_chars(1);
         button.set_child(Some(&label));
         button.set_widget_name("start-open-template-folder");
-        button.set_tooltip_text(Some(&folder.display().to_string()));
+        button.set_margin_start(6);
+        button.set_margin_end(6);
+        button.set_margin_top(5);
+        button.set_margin_bottom(5);
+        button.set_tooltip_text(folder.map(|p| p.display().to_string()).as_deref());
         accessible_name(&button, wordcraft_gnome::t!("Open Templates Folder"));
-        footer.append(&button);
-        self.template_group.append(&footer);
-        let path = folder.to_path_buf();
+        ui.start_footer.append(&button);
+        let path = folder.map(Path::to_path_buf);
         let weak = Rc::downgrade(self);
         button.connect_clicked(move |_| {
             let Some(ui) = weak.upgrade().and_then(|g| g.valid_ui()) else {
@@ -324,12 +305,12 @@ impl Gallery {
             let Some(host) = ui.host.upgrade() else {
                 return;
             };
-            if !path.is_dir() {
+            let Some(path) = path.as_ref().filter(|p| p.is_dir()) else {
                 ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
                     "The Templates folder is unavailable."
                 )));
                 return;
-            }
+            };
             let launcher = gtk::FileLauncher::new(Some(&gio::File::for_path(&path)));
             launcher.set_writable(false);
             let weak = Rc::downgrade(&ui);
@@ -434,7 +415,10 @@ impl Gallery {
                 return;
             }
             match result {
-                Ok(Ok(inventory)) => {
+                Ok(Ok(mut inventory)) => {
+                    inventory
+                        .documents
+                        .sort_by(|a, b| b.saved_at.cmp(&a.saved_at).then_with(|| a.id.cmp(&b.id)));
                     gallery.warning(inventory.warning);
                     let key: Vec<_> = inventory
                         .documents
@@ -458,9 +442,8 @@ impl Gallery {
                     for record in inventory.documents {
                         let button = gtk::Button::new();
                         button.set_widget_name("start-recovery-document");
-                        button.add_css_class("flat");
-                        let content = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-                        button.set_hexpand(true);
+                        thumbnail_button(&button);
+                        let content = card_layout();
                         let slot = preview_slot();
                         slot.set_widget_name("recovery-preview");
                         content.append(&slot);
@@ -485,7 +468,7 @@ impl Gallery {
                             .unwrap_or_else(|_| record.saved_at.clone());
                         let timestamp = gtk::Label::new(Some(&date));
                         timestamp.set_max_width_chars(20);
-                        timestamp.set_xalign(0.);
+                        timestamp.set_xalign(0.5);
                         timestamp.set_ellipsize(gtk::pango::EllipsizeMode::End);
                         timestamp.add_css_class("dim-label");
                         labels.append(&timestamp);
@@ -493,11 +476,14 @@ impl Gallery {
                         button.set_child(Some(&content));
                         button.set_tooltip_text(Some(&format!("{name} — {date}")));
                         accessible_name(&button, &format!("{name} — {date}"));
-                        let row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-                        row.append(&button);
+                        let row = gtk::Overlay::new();
+                        row.set_child(Some(&button));
                         let discard = gtk::Button::from_icon_name("user-trash-symbolic");
                         discard.add_css_class("flat");
-                        discard.set_valign(gtk::Align::Center);
+                        discard.set_valign(gtk::Align::Start);
+                        discard.set_halign(gtk::Align::End);
+                        discard.set_margin_top(6);
+                        discard.set_margin_end(6);
                         discard.set_widget_name("start-recovery-discard");
                         let label = wordcraft_gnome::i18n::interpolate(
                             wordcraft_gnome::t!("Discard recovery of “{name}”"),
@@ -505,7 +491,7 @@ impl Gallery {
                         );
                         discard.set_tooltip_text(Some(&label));
                         accessible_name(&discard, &label);
-                        row.append(&discard);
+                        row.add_overlay(&discard);
                         let weak = Rc::downgrade(&gallery);
                         let (id, stamp) = (record.id.clone(), record.saved_at.clone());
                         discard.connect_clicked(move |_| {
@@ -566,11 +552,10 @@ impl Gallery {
             .into_owned();
         let button = gtk::Button::new();
         button.set_widget_name("personal-template");
-        button.add_css_class("flat");
+        thumbnail_button(&button);
         button.set_tooltip_text(Some(&name));
         accessible_name(&button, &name);
-        let content = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-        button.set_hexpand(true);
+        let content = card_layout();
         let slot = preview_slot();
         slot.set_widget_name("template-preview");
         set_preview(&slot, image);

@@ -27,6 +27,9 @@ fn navigation_choice(ui: &Ui) -> gtk::Box {
 pub(super) fn refresh_sidebar_title(ui: &Ui) {
     let start = ui.sidebar_pages.visible_child_name().as_deref() == Some("start");
     ui.sidebar_selector.set_visible(!start);
+    ui.start_footer.set_visible(start);
+    ui.sidebar_footer
+        .set_visible_child_name(if start { "start" } else { "navigation" });
     let label = if start {
         wordcraft_gnome::t!("Start")
     } else if ui.sidebar_pages.visible_child_name().as_deref() == Some("search") {

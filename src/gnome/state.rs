@@ -139,6 +139,8 @@ pub(super) struct Ui {
     pub(super) format_reflowing: Cell<bool>,
     pub(super) pages_button: gtk::ToggleButton,
     pub(super) sidebar_selector: gtk::Box,
+    pub(super) start_footer: gtk::Box,
+    pub(super) sidebar_footer: gtk::Stack,
     pub(super) format_bold: gtk::CheckButton,
     pub(super) format_italic: gtk::CheckButton,
     pub(super) format_syncing: Cell<bool>,

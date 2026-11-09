@@ -13,14 +13,25 @@ async fn until(mut ready: impl FnMut() -> bool) {
     }
     panic!("alpha40 native operation did not complete");
 }
-fn click(ui: &Ui, name: &str) {
-    find_widget(&ui.format_toolbar, name)
-        .unwrap_or_else(|| panic!("missing toolbar action {name}"))
-        .downcast::<gtk::Button>()
-        .unwrap()
-        .emit_clicked();
+fn children(root: &impl IsA<gtk::Widget>) -> Vec<gtk::Widget> {
+    let mut result = Vec::new();
+    let mut child = root.first_child();
+    while let Some(widget) = child {
+        child = widget.next_sibling();
+        result.push(widget);
+    }
+    result
 }
-fn toggle(ui: &Ui, name: &str) -> gtk::ToggleButton {
+fn click(ui: &Ui, name: &str) {
+    let widget = find_widget(&ui.format_toolbar, name)
+        .unwrap_or_else(|| panic!("missing toolbar action {name}"));
+    if let Ok(menu) = widget.clone().downcast::<gtk::MenuButton>() {
+        menu.popup();
+    } else {
+        widget.downcast::<gtk::Button>().unwrap().emit_clicked();
+    }
+}
+fn toggle(ui: &Ui, name: &str) -> gtk::Button {
     find_widget(&ui.format_toolbar, &format!("format-quick-{name}"))
         .unwrap()
         .downcast()
@@ -58,9 +69,9 @@ pub(super) fn folder(ui: &Rc<Ui>, app: &Application) {
         let host = ui.host.upgrade().unwrap();
         blank_tab(&app, &host);
         let target = selected_ui(&host).unwrap();
-        until(|| find_widget(&target.template_slot, "start-open-template-folder").is_some()).await;
+        until(|| find_widget(&target.start_footer, "start-open-template-folder").is_some()).await;
         let identity = document_identity(&target);
-        find_widget(&target.template_slot, "start-open-template-folder")
+        find_widget(&target.start_footer, "start-open-template-folder")
             .unwrap()
             .downcast::<gtk::Button>()
             .unwrap()
@@ -182,7 +193,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             .downcast::<gtk::Button>()
             .unwrap()
             .emit_clicked();
-        let actions = format_button(&ui, "style-actions").unwrap();
+        assert!(format_button(&ui, "style-actions").is_none());
         format_execute(&ui, "format.bold", serde_json::json!({"value":false})).unwrap();
         let normal_before = ui
             .current
@@ -193,8 +204,9 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             .doc
             .styles
             .resolve_char(Some("Normal"), &Default::default());
-        actions.popup();
-        find_widget(&actions.popover().unwrap(), "style-current-update")
+        style_menu.popup();
+        style.show_detail("Heading1");
+        find_widget(&style.detail, "style-update")
             .unwrap()
             .downcast::<gtk::Button>()
             .unwrap()
@@ -226,8 +238,8 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             document_identity(&ui),
             ui.current.borrow().as_ref().unwrap().session.sel.clone(),
         );
-        actions.popup();
-        find_widget(&actions.popover().unwrap(), "style-current-edit")
+        style_menu.popup();
+        find_widget(&style.list, "style-manage-Heading1")
             .unwrap()
             .downcast::<gtk::Button>()
             .unwrap()
@@ -305,11 +317,12 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         blank_tab(&app, &host);
         let start = selected_ui(&host).unwrap();
         start.sidebar.set_show_sidebar(true);
-        until(|| find_widget(&start.template_slot, "start-open-template-folder").is_some()).await;
+        until(|| find_widget(&start.start_footer, "start-open-template-folder").is_some()).await;
         settle().await;
         assert_eq!(start.sidebar_title.text(), wordcraft_gnome::t!("Start"));
         assert!(!start.sidebar_selector.is_visible());
-        assert_eq!(start.sidebar_selector.height(), 0);
+        assert!(start.start_footer.is_mapped());
+        assert!(start.sidebar_footer.height() > 0);
         let y = first_page_y(&start);
         for _ in 0..3 {
             start.document_box.grab_focus();
@@ -417,9 +430,13 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         );
 
         let recovery_root = wordcraft_gnome::preferences::recovery_root();
-        gio::spawn_blocking(move || workflows38_checks::write_pending(recovery_root))
-            .await
-            .unwrap();
+        gio::spawn_blocking(move || {
+            workflows38_checks::write_pending(recovery_root.clone());
+            std::thread::sleep(std::time::Duration::from_millis(1100));
+            workflows38_checks::write_pending(recovery_root);
+        })
+        .await
+        .unwrap();
         eprintln!("WORKFLOWS40_RECOVERY_SEEDED");
         start
             .template_gallery
@@ -429,6 +446,124 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             .refresh_recovery();
         until(|| find_widget(&start.template_slot, "start-recovery-discard").is_some()).await;
         eprintln!("WORKFLOWS40_RECOVERY_LISTED");
+        let template_bytes = wordcraft_engine::io::save_bytes(
+            "sample.docx",
+            &wordcraft_doc::Document::from_text("Newest personal template"),
+        )
+        .unwrap();
+        for i in 0..6 {
+            let path = folder.join(format!("Template {i}.docx"));
+            std::fs::write(&path, &template_bytes).unwrap();
+            std::fs::File::options()
+                .write(true)
+                .open(&path)
+                .unwrap()
+                .set_modified(std::time::SystemTime::now() + std::time::Duration::from_secs(i))
+                .unwrap();
+        }
+        templates::offer(&start);
+        until(|| {
+            find_widget(&start.template_slot, "personal-template-gallery")
+                .is_some_and(|strip| children(&strip).len() == 6)
+        })
+        .await;
+        until(|| find_widget(&start.template_slot, "start-recovery-discard").is_some()).await;
+        settle().await;
+        let recovery = find_widget(&start.template_slot, "start-recovery").unwrap();
+        let templates_group = find_widget(&start.template_slot, "start-templates").unwrap();
+        assert_eq!(recovery.next_sibling().as_ref(), Some(&templates_group));
+        let rows = children(&recovery.first_child().unwrap());
+        assert_eq!(rows.len(), 2);
+        let dates: Vec<_> = rows
+            .iter()
+            .map(|row| {
+                let button = find_widget(row, "start-recovery-document")
+                    .unwrap()
+                    .downcast::<gtk::Button>()
+                    .unwrap();
+                button
+                    .child()
+                    .unwrap()
+                    .last_child()
+                    .unwrap()
+                    .last_child()
+                    .unwrap()
+                    .downcast::<gtk::Label>()
+                    .unwrap()
+                    .text()
+                    .to_string()
+            })
+            .collect();
+        let mut expected = gio::spawn_blocking(|| {
+            wordcraft_gnome::recovery::inventory(&wordcraft_gnome::preferences::recovery_root())
+                .unwrap()
+                .documents
+        })
+        .await
+        .unwrap();
+        expected.sort_by(|a, b| b.saved_at.cmp(&a.saved_at));
+        let expected: Vec<_> = expected
+            .iter()
+            .map(|d| {
+                glib::DateTime::from_iso8601(&d.saved_at, None)
+                    .unwrap()
+                    .to_local()
+                    .unwrap()
+                    .format("%x %X")
+                    .unwrap()
+                    .to_string()
+            })
+            .collect();
+        assert_eq!(dates, expected);
+        let strip = find_widget(&start.template_slot, "personal-template-gallery").unwrap();
+        let names: Vec<_> = children(&strip)
+            .iter()
+            .map(|row| {
+                row.clone()
+                    .downcast::<gtk::Button>()
+                    .unwrap()
+                    .child()
+                    .unwrap()
+                    .last_child()
+                    .unwrap()
+                    .downcast::<gtk::Label>()
+                    .unwrap()
+                    .text()
+                    .to_string()
+            })
+            .collect();
+        assert_eq!(
+            names,
+            (0..6)
+                .rev()
+                .map(|i| format!("Template {i}"))
+                .collect::<Vec<_>>()
+        );
+        let footer_before = start.start_footer.compute_bounds(&window).unwrap();
+        let scroller = start
+            .sidebar_pages
+            .child_by_name("start")
+            .unwrap()
+            .downcast::<gtk::ScrolledWindow>()
+            .unwrap();
+        let adj = scroller.vadjustment();
+        assert!(adj.upper() > adj.page_size());
+        adj.set_value(adj.upper() - adj.page_size());
+        settle().await;
+        assert_eq!(
+            start.start_footer.compute_bounds(&window).unwrap(),
+            footer_before
+        );
+        assert!(
+            find_widget(&start.start_footer, "start-open-template-folder")
+                .unwrap()
+                .is_mapped()
+        );
+        adj.set_value(0.);
+        settle().await;
+        eprintln!(
+            "WORKFLOWS40_START_ORDER_OK recoveries=2 templates=6 newest-first=true continuous=true fixed-footer=true scroll=true"
+        );
         let before = gio::spawn_blocking(|| {
             wordcraft_gnome::recovery::inventory(&wordcraft_gnome::preferences::recovery_root())
                 .unwrap()
@@ -473,7 +608,11 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             .unwrap();
         dialog.emit_by_name::<()>("response", &[&"discard"]);
         dialog.close();
-        until(|| find_widget(&start.template_slot, "start-recovery-discard").is_none()).await;
+        until(|| children(&recovery.first_child().unwrap()).len() == before - 1).await;
+        assert!(
+            find_widget(&start.template_slot, "start-recovery-discard").is_some(),
+            "discarding one recovery preserves the other"
+        );
         assert_eq!(start.sidebar_title.text(), wordcraft_gnome::t!("Start"));
         eprintln!(
             "WORKFLOWS40_UI_OK confirmation=true cancel-preserves=true discard=true start-footer-retained=true"

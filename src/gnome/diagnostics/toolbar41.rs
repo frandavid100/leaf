@@ -4,11 +4,12 @@ async fn settle() {
     glib::timeout_future(std::time::Duration::from_millis(400)).await;
 }
 fn click(root: &impl IsA<gtk::Widget>, name: &str) {
-    find_widget(root, name)
-        .unwrap_or_else(|| panic!("missing {name}"))
-        .downcast::<gtk::Button>()
-        .unwrap()
-        .emit_clicked();
+    let widget = find_widget(root, name).unwrap_or_else(|| panic!("missing {name}"));
+    if let Ok(menu) = widget.clone().downcast::<gtk::MenuButton>() {
+        menu.popup();
+    } else {
+        widget.downcast::<gtk::Button>().unwrap().emit_clicked();
+    }
 }
 fn state(ui: &Ui) -> (wordcraft_doc::Document, usize) {
     let current = ui.current.borrow();
@@ -37,20 +38,94 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         let text = ui.text_tools.borrow().as_ref().unwrap().clone();
         let elements = ui.elements.borrow().as_ref().unwrap().clone();
         let before = state(&ui);
+        let style = format_button(&ui, "style-menu").unwrap();
+        assert!(style.has_css_class("raised") && style.has_frame());
+        assert!(format_button(&ui, "style-actions").is_none());
+        let underline = find_widget(&ui.format_toolbar, "format-quick-underline").unwrap();
+        assert!(underline.parent().unwrap().is::<adw::SplitButton>());
+        let bold = find_widget(&ui.format_toolbar, "format-quick-bold").unwrap();
+        let italic = find_widget(&ui.format_toolbar, "format-quick-italic").unwrap();
+        let a = bold.compute_bounds(&ui.format_toolbar).unwrap();
+        let b = italic.compute_bounds(&ui.format_toolbar).unwrap();
+        assert!(
+            b.x() - a.x() - a.width() >= 5.,
+            "independent buttons need native spacing"
+        );
+        if std::env::var_os("LEAF_TOOLBAR_DND").is_some() {
+            window.set_title(Some("Leaf Toolbar41"));
+            for (name, pop) in [
+                ("alignment", paragraph.popover.upgrade().unwrap()),
+                ("list", paragraph.popover.upgrade().unwrap()),
+                ("underline-options", text.popover.upgrade().unwrap()),
+                ("image", elements.pop.clone()),
+            ] {
+                let launcher =
+                    find_widget(&ui.format_toolbar, &format!("format-quick-{name}")).unwrap();
+                let bounds = launcher.compute_bounds(&window).unwrap();
+                eprintln!(
+                    "TOOLBAR41_TOGGLE {name} {} {}",
+                    (bounds.x() + bounds.width() / 2.) as i32,
+                    (bounds.y() + bounds.height() / 2.) as i32
+                );
+                for _ in 0..400 {
+                    if pop.is_visible() {
+                        break;
+                    }
+                    glib::timeout_future(std::time::Duration::from_millis(15)).await;
+                }
+                assert!(pop.is_visible(), "pointer must open {name}");
+                assert_eq!(pop.parent().as_ref(), Some(&launcher));
+                assert!(
+                    !paragraph.stack.is_transition_running()
+                        && !text.stack.is_transition_running()
+                        && !elements.stack.is_transition_running()
+                );
+                eprintln!(
+                    "TOOLBAR41_OPEN {name} active={}",
+                    launcher
+                        .clone()
+                        .downcast::<gtk::MenuButton>()
+                        .unwrap()
+                        .is_active()
+                );
+                for _ in 0..400 {
+                    if !pop.is_visible() {
+                        break;
+                    }
+                    glib::timeout_future(std::time::Duration::from_millis(15)).await;
+                }
+                assert!(!pop.is_visible(), "second pointer click must close {name}");
+                eprintln!("TOOLBAR41_CLOSED {name}");
+            }
+            assert_eq!(state(&ui), before);
+        }
         click(&ui.format_toolbar, "format-quick-alignment");
         settle().await;
         assert_eq!(state(&ui), before);
         assert!(!paragraph.header.arrow.is_visible());
-        assert!(paragraph.popover.upgrade().unwrap().pointing_to().0);
+        assert_eq!(
+            paragraph.popover.upgrade().unwrap().parent().as_ref(),
+            find_widget(&ui.format_toolbar, "format-quick-alignment").as_ref()
+        );
         assert!(
-            !find_widget(&paragraph.main, "format-row-paragraph-alignment")
-                .unwrap()
-                .get_visible()
+            find_widget(&paragraph.main, "format-row-paragraph-alignment")
+                .is_none_or(|row| !row.get_visible())
         );
         paragraph.popover.upgrade().unwrap().popdown();
         click(&ui.format_toolbar, "format-quick-list");
         settle().await;
         assert!(!paragraph.header.arrow.is_visible());
+        for kind in [
+            "view-list-bullet-symbolic",
+            "view-list-ordered-symbolic",
+            "list-remove",
+        ] {
+            assert!(
+                find_widget(&paragraph.detail, &format!("paragraph-glyph-{kind}"))
+                    .unwrap()
+                    .is_mapped()
+            );
+        }
         paragraph.page("bullets");
         assert!(paragraph.header.arrow.is_visible());
         paragraph.popover.upgrade().unwrap().popdown();
@@ -317,11 +392,24 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             2,
             "the template name must actually use two lines"
         );
+        assert!(blank.start_footer.is_mapped());
+        assert!(!blank.sidebar_selector.is_mapped());
+        let footer_y = blank.start_footer.compute_bounds(&window).unwrap().y();
         let preview = content.first_child().unwrap();
-        assert!(preview.width() <= 30 && preview.height() <= 42);
+        assert!((168..=170).contains(&preview.width()));
+        assert!(preview.height() >= 210);
         apply_user_edit(&blank, Edit::Insert("x".into()));
         settle().await;
         assert_eq!(blank.sidebar.sidebar().unwrap().width(), sidebar_width);
+        assert!(blank.sidebar_selector.is_mapped());
+        assert!(
+            (blank.current.borrow().as_ref().unwrap().thumbs[0].width() - preview.width()).abs()
+                <= 2
+        );
+        assert!(
+            (blank.sidebar_selector.compute_bounds(&window).unwrap().y() - footer_y).abs() < 1.
+        );
+
         assert!(
             (blank.current.borrow().as_ref().unwrap().page_frames[0]
                 .compute_bounds(&window)

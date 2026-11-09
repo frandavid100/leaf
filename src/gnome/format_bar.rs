@@ -4,12 +4,11 @@ use super::*;
 
 pub(super) struct QuickTools {
     style_name: gtk::Label,
-    style_actions: gtk::MenuButton,
-    alignment: gtk::Button,
+    alignment: gtk::MenuButton,
     ui: std::rc::Weak<Ui>,
     width: Cell<i32>,
     groups: Vec<(&'static str, gtk::Box, Vec<(String, gtk::Widget)>)>,
-    toggles: Vec<(gtk::ToggleButton, gtk::Label, &'static str)>,
+    toggles: Vec<(gtk::Button, gtk::Label, &'static str)>,
     swatches: Vec<(&'static str, gtk::DrawingArea)>,
 }
 
@@ -24,13 +23,12 @@ fn icon_button(icon: &str, label: &str, name: &str) -> gtk::Button {
 
 fn shortcut(
     ui: &Rc<Ui>,
+    button: gtk::Button,
     icon: &str,
     label: &str,
     key: &'static str,
     command: &'static str,
-) -> (gtk::ToggleButton, gtk::Label, &'static str) {
-    let button = gtk::ToggleButton::new();
-    button.add_css_class("flat");
+) -> (gtk::Button, gtk::Label, &'static str) {
     button.set_widget_name(&format!("format-quick-{key}"));
     button.set_tooltip_text(Some(label));
     accessible_name(&button, label);
@@ -111,7 +109,7 @@ impl QuickTools {
                 previous = Some(widget.clone());
                 // Measure the widget even when it was overflowed on the last frame.
                 widget.set_visible(true);
-                let cost = widget.measure(gtk::Orientation::Horizontal, -1).1.max(34);
+                let cost = widget.measure(gtk::Orientation::Horizontal, -1).1.max(34) + 6;
                 let visible = enabled && cost <= available;
                 widget.set_visible(visible);
                 if visible {
@@ -168,7 +166,6 @@ impl QuickTools {
             menu.set_tooltip_text(Some(name));
             accessible_name(&menu, name);
         }
-        self.style_actions.set_sensitive(style.is_some());
         drop(current);
         for (group, _, tools) in &self.groups {
             if *group != "text" {
@@ -297,7 +294,13 @@ impl QuickTools {
                     character[*key].is_null(),
                 ),
             };
-            button.set_active(active && !mixed);
+            if let Ok(toggle) = button.clone().downcast::<gtk::ToggleButton>() {
+                toggle.set_active(active && !mixed);
+            } else if active && !mixed {
+                button.set_state_flags(gtk::StateFlags::CHECKED, false);
+            } else {
+                button.unset_state_flags(gtk::StateFlags::CHECKED);
+            }
             marker.set_visible(mixed);
             button.update_state(&[gtk::accessible::State::Pressed(if mixed {
                 gtk::AccessibleTristate::Mixed
@@ -324,113 +327,24 @@ pub(super) fn install_quick_tools(
     formats.set_spacing(6);
     let style_group = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     style_group.set_widget_name("format-style-group");
-    style_group.add_css_class("linked");
-    style_group.add_css_class("style-control");
     style_group.set_width_request(184);
     style_group.set_hexpand(false);
-    let style_name = gtk::Label::new(Some("Normal"));
+    style.remove_css_class("flat");
+    style.set_has_frame(true);
+    style.add_css_class("raised");
+    style.remove_css_class("image-button");
+    style.set_label("Normal");
+    style.set_always_show_arrow(true);
+    style.set_hexpand(true);
+    let style_name = first_label(style.upcast_ref()).expect("native style dropdown label");
     style_name.set_ellipsize(gtk::pango::EllipsizeMode::End);
     style_name.set_max_width_chars(16);
     style_name.set_width_chars(16);
-    style.set_hexpand(true);
-    style.set_child(Some(&style_name));
-    style.set_always_show_arrow(false);
     style_group.append(style);
-    let actions = gtk::MenuButton::new();
-    actions.set_widget_name("style-actions");
-    actions.set_icon_name("pan-down-symbolic");
-    actions.set_direction(gtk::ArrowType::Up);
-    accessible_name(&actions, wordcraft_gnome::t!("Current Style Actions"));
-    actions.set_tooltip_text(Some(wordcraft_gnome::t!("Current Style Actions")));
-    let pop = gtk::Popover::new();
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 6);
-    root.set_margin_top(8);
-    root.set_margin_bottom(8);
-    root.set_margin_start(8);
-    root.set_margin_end(8);
-    format_popover_header(&pop, &root, wordcraft_gnome::t!("Style"), &ui.format_group);
-    let choices = gtk::Box::new(gtk::Orientation::Vertical, 4);
-    root.append(&choices);
-    pop.set_child(Some(&root));
-    actions.set_popover(Some(&pop));
-    let weak_ui = Rc::downgrade(ui);
-    let weak_style = style.downgrade();
-    let weak_pop = pop.downgrade();
-    pop.connect_show(move |_| {
-        clear_box(&choices);
-        let Some(ui) = weak_ui.upgrade().filter(|u| !u.closed.get()) else {
-            return;
-        };
-        let Some(id) = ui
-            .current
-            .borrow()
-            .as_ref()
-            .and_then(|d| wordcraft_gnome::styles::current(&d.session))
-        else {
-            return;
-        };
-        let identity = document_identity(&ui);
-        for (name, label) in [
-            (
-                "style-current-update",
-                wordcraft_gnome::t!("Update from Selection"),
-            ),
-            ("style-current-edit", wordcraft_gnome::t!("Edit Style")),
-        ] {
-            let button = style_menu_button(label);
-            button.set_widget_name(name);
-            choices.append(&button);
-            let (weak_ui, weak_style, weak_pop, id) = (
-                Rc::downgrade(&ui),
-                weak_style.clone(),
-                weak_pop.clone(),
-                id.clone(),
-            );
-            button.connect_clicked(move |_| {
-                let Some(ui) = weak_ui.upgrade().filter(|u| !u.closed.get()) else {
-                    return;
-                };
-                let valid = document_identity(&ui) == identity
-                    && ui.current.borrow().as_ref().is_some_and(|d| {
-                        wordcraft_gnome::styles::current(&d.session).as_ref() == Some(&id)
-                    });
-                if !valid {
-                    ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
-                        "The document has changed; open this dialog again."
-                    )));
-                    return;
-                }
-                if let Some(pop) = weak_pop.upgrade() {
-                    close_format_popover(&pop);
-                }
-                if name == "style-current-edit" {
-                    if let Some(menu) = weak_style.upgrade() {
-                        menu.popup();
-                    }
-                    if let Some(panel) = ui.style.borrow().as_ref() {
-                        panel.show_detail(&id);
-                    }
-                } else {
-                    let panel = ui.style.borrow().clone();
-                    if let Some(panel) = panel {
-                        if let Err(error) =
-                            panel.run(wordcraft_gnome::styles::Edit::Update(id.clone()))
-                        {
-                            ui.toasts.add_toast(Toast::new(&error));
-                        }
-                    }
-                    ui.document_box.grab_focus();
-                }
-            });
-        }
-    });
-    style_group.append(&gtk::Separator::new(gtk::Orientation::Vertical));
-    actions.add_css_class("flat");
-    style_group.append(&actions);
     formats.append(&style_group);
-    let paragraph_group = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    let text_group = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    let elements_group = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    let paragraph_group = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    let text_group = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    let elements_group = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     for (group, name) in [
         (&paragraph_group, "paragraph"),
         (&text_group, "text"),
@@ -449,7 +363,7 @@ pub(super) fn install_quick_tools(
         ("text", &text_group),
         ("elements", &elements_group),
     ] {
-        let shortcuts = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+        let shortcuts = gtk::Box::new(gtk::Orientation::Horizontal, 6);
         container.append(&shortcuts);
         let mut tools = Vec::new();
         for tool in wordcraft_gnome::toolbar::tools(group) {
@@ -465,71 +379,95 @@ pub(super) fn install_quick_tools(
                     "strike" => "format.strikethrough",
                     _ => "format.superscript",
                 };
-                let item = shortcut(ui, tool.icon, tool.label, tool.id, command);
-                let widget = if matches!(tool.id, "underline" | "strike") {
-                    let split = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-                    split.add_css_class("linked");
-                    split.append(&item.0);
-                    let options = icon_button(
-                        "pan-down-symbolic",
-                        &wordcraft_gnome::i18n::interpolate(
-                            wordcraft_gnome::t!("Options for {label}"),
-                            &[("label", tool.label.into())],
-                        ),
-                        &format!("format-quick-{}-options", tool.id),
+                if matches!(tool.id, "underline" | "strike") {
+                    let split = adw::SplitButton::new();
+                    split.add_css_class("flat");
+                    split.add_css_class("image-button");
+                    split.set_valign(gtk::Align::Center);
+                    // The documented native hierarchy is the same as Undo.
+                    let body = split
+                        .first_child()
+                        .unwrap()
+                        .downcast::<gtk::Button>()
+                        .unwrap();
+                    let options = body
+                        .next_sibling()
+                        .unwrap()
+                        .next_sibling()
+                        .unwrap()
+                        .downcast::<gtk::MenuButton>()
+                        .unwrap();
+                    options.set_widget_name(&format!("format-quick-{}-options", tool.id));
+                    let label = wordcraft_gnome::i18n::interpolate(
+                        wordcraft_gnome::t!("Options for {label}"),
+                        &[("label", tool.label.into())],
                     );
-                    connect_picker(ui, &options, text, group, tool.id);
-                    split.append(&options);
+                    accessible_name(&options, &label);
+                    options.set_tooltip_text(Some(&label));
+                    connect_picker(ui, &options, text, group, Some(tool.id));
+                    toggles.push(shortcut(ui, body, tool.icon, tool.label, tool.id, command));
                     split.upcast()
                 } else {
-                    item.0.clone().upcast()
-                };
-                toggles.push(item);
-                widget
-            } else {
+                    let toggle = gtk::ToggleButton::new();
+                    toggle.add_css_class("flat");
+                    let item = shortcut(
+                        ui,
+                        toggle.clone().upcast(),
+                        tool.icon,
+                        tool.label,
+                        tool.id,
+                        command,
+                    );
+                    toggles.push(item);
+                    toggle.upcast()
+                }
+            } else if group == "elements" && !matches!(tool.id, "image" | "table" | "toc") {
                 let button =
                     icon_button(tool.icon, tool.label, &format!("format-quick-{}", tool.id));
+                button.set_action_name(Some(&format!("win.insert-{}", tool.id)));
+                button.upcast()
+            } else {
+                let button = gtk::MenuButton::new();
+                button.set_widget_name(&format!("format-quick-{}", tool.id));
+                button.add_css_class("flat");
+                button.set_has_frame(false);
+                button.set_direction(gtk::ArrowType::Up);
+                button.set_tooltip_text(Some(tool.label));
+                accessible_name(&button, tool.label);
                 if group == "paragraph" && tool.id == "alignment" {
                     alignment = Some(button.clone());
                 }
-                if group == "elements" && !matches!(tool.id, "image" | "table" | "toc") {
-                    button.set_action_name(Some(&format!("win.insert-{}", tool.id)));
+                let content = gtk::Box::new(gtk::Orientation::Horizontal, 2);
+                let image = gtk::Image::from_icon_name(tool.icon);
+                if group == "text" && matches!(tool.id, "ink" | "highlight") {
+                    let icon = gtk::Overlay::new();
+                    icon.set_child(Some(&image));
+                    let swatch = gtk::DrawingArea::new();
+                    swatch.set_widget_name(&format!("format-quick-{}-swatch", tool.id));
+                    swatch.set_content_width(16);
+                    swatch.set_content_height(3);
+                    swatch.set_valign(gtk::Align::End);
+                    icon.add_overlay(&swatch);
+                    swatches.push((tool.id, swatch));
+                    content.append(&icon);
                 } else {
-                    // One target opens choices; the small indicator never changes click semantics.
-                    let content = gtk::Box::new(gtk::Orientation::Horizontal, 2);
-                    let image = gtk::Image::from_icon_name(tool.icon);
-                    if group == "text" && matches!(tool.id, "ink" | "highlight") {
-                        let icon = gtk::Overlay::new();
-                        icon.set_child(Some(&image));
-                        let swatch = gtk::DrawingArea::new();
-                        swatch.set_widget_name(&format!("format-quick-{}-swatch", tool.id));
-                        swatch.set_content_width(16);
-                        swatch.set_content_height(3);
-                        swatch.set_valign(gtk::Align::End);
-                        icon.add_overlay(&swatch);
-                        swatches.push((tool.id, swatch));
-                        content.append(&icon);
-                    } else {
-                        content.append(&image);
-                    }
-                    let arrow = gtk::Image::from_icon_name("pan-down-symbolic");
-                    arrow.set_pixel_size(10);
-                    content.append(&arrow);
-                    button.set_child(Some(&content));
-                    connect_picker(
-                        ui,
-                        &button,
-                        if group == "paragraph" {
-                            paragraph
-                        } else if group == "text" {
-                            text
-                        } else {
-                            &elements.menu
-                        },
-                        group,
-                        tool.id,
-                    );
+                    content.append(&image);
                 }
+                content.append(&format_chevron());
+                button.set_child(Some(&content));
+                connect_picker(
+                    ui,
+                    &button,
+                    if group == "paragraph" {
+                        paragraph
+                    } else if group == "text" {
+                        text
+                    } else {
+                        &elements.menu
+                    },
+                    group,
+                    Some(tool.id),
+                );
                 button.upcast()
             };
             shortcuts.append(&widget);
@@ -553,12 +491,27 @@ pub(super) fn install_quick_tools(
         menu.set_icon_name("view-more-symbolic");
         menu.set_tooltip_text(Some(label));
         accessible_name(menu, label);
+        if let Some(pop) = menu.popover() {
+            connect_picker(
+                ui,
+                menu,
+                menu,
+                if menu == paragraph {
+                    "paragraph"
+                } else if menu == text {
+                    "text"
+                } else {
+                    "elements"
+                },
+                None,
+            );
+            // Keep the default group popup attached until a direct launcher takes it.
+            menu.set_popover(Some(&pop));
+        }
         group.append(menu);
     }
-    ui.format_buttons.borrow_mut().push(actions.clone());
     Rc::new(QuickTools {
         style_name,
-        style_actions: actions,
         alignment: alignment.unwrap(),
         ui: Rc::downgrade(ui),
         width: Cell::new(0),
@@ -568,30 +521,49 @@ pub(super) fn install_quick_tools(
     })
 }
 
+fn first_label(root: &gtk::Widget) -> Option<gtk::Label> {
+    if let Ok(label) = root.clone().downcast::<gtk::Label>() {
+        return Some(label);
+    }
+    let mut child = root.first_child();
+    while let Some(widget) = child {
+        child = widget.next_sibling();
+        if let Some(label) = first_label(&widget) {
+            return Some(label);
+        }
+    }
+    None
+}
+
+// Each launcher is a native MenuButton. Its factory adopts the existing shared
+// popover, so GTK owns the correct open state, anchor and second-click dismissal.
+// https://docs.gtk.org/gtk4/method.MenuButton.set_create_popup_func.html
 fn connect_picker(
     ui: &Rc<Ui>,
-    button: &gtk::Button,
+    button: &gtk::MenuButton,
     menu: &gtk::MenuButton,
     group: &'static str,
-    page: &'static str,
+    page: Option<&'static str>,
 ) {
-    let weak = Rc::downgrade(ui);
-    let menu = menu.downgrade();
-    button.connect_clicked(move |button| {
-        let (Some(ui), Some(menu)) = (weak.upgrade().filter(|u| !u.closed.get()), menu.upgrade())
+    let Some(pop) = menu.popover() else { return };
+    let (weak, pop) = (Rc::downgrade(ui), pop.downgrade());
+    button.set_create_popup_func(move |button| {
+        let (Some(ui), Some(pop)) = (weak.upgrade().filter(|u| !u.closed.get()), pop.upgrade())
         else {
             return;
         };
-        let Some(pop) = menu.popover() else { return };
-        // Point in the original parent's coordinates, retaining its lifetime,
-        // pin and close handlers. Native popup placement follows the launcher.
-        if let Some(bounds) = button.compute_bounds(&menu) {
-            pop.set_pointing_to(Some(&gdk::Rectangle::new(
-                bounds.x().round() as i32,
-                bounds.y().round() as i32,
-                bounds.width().round() as i32,
-                bounds.height().round() as i32,
-            )));
+        if let Some(owner) = pop.parent().and_downcast::<gtk::MenuButton>() {
+            if owner != *button {
+                pop.set_visible(false);
+                owner.set_popover(None::<&gtk::Popover>);
+            }
+        }
+        if ui.format_reflowing.get() && pop.parent().as_ref() == Some(button.upcast_ref()) {
+            return;
+        }
+        pop.set_pointing_to(None::<&gdk::Rectangle>);
+        if pop.parent().as_ref() != Some(button.upcast_ref()) {
+            button.set_popover(Some(&pop));
         }
         let header = ui
             .format_group
@@ -601,32 +573,54 @@ fn connect_picker(
             .find(|(p, _)| p.upgrade().as_ref() == Some(&pop))
             .map(|(_, h)| h.clone());
         if let Some(header) = header {
-            header.entry_page.replace(Some(page.into()));
-        }
-        // Elements prepares and presents its borrowed body itself. Opening its
-        // empty host first can race the previous element's closed callback.
-        if group != "elements" {
-            menu.popup();
+            header.entry_page.replace(page.map(str::to_owned));
         }
         match group {
             "paragraph" => {
-                let panel = ui.paragraph.borrow().clone();
-                if let Some(p) = panel {
-                    p.page(page);
+                if let Some(panel) = ui.paragraph.borrow().clone() {
+                    let transition = panel.stack.transition_type();
+                    panel
+                        .stack
+                        .set_transition_type(gtk::StackTransitionType::None);
+                    if let Some(page) = page {
+                        panel.page(page);
+                    } else {
+                        panel.home();
+                    }
+                    panel.stack.set_transition_type(transition);
                 }
             }
             "text" => {
-                let panel = ui.text_tools.borrow().clone();
-                if let Some(p) = panel {
-                    p.page(page);
+                if let Some(panel) = ui.text_tools.borrow().clone() {
+                    let transition = panel.stack.transition_type();
+                    panel
+                        .stack
+                        .set_transition_type(gtk::StackTransitionType::None);
+                    if let Some(page) = page {
+                        panel.page(page);
+                    } else {
+                        panel.home();
+                    }
+                    panel.stack.set_transition_type(transition);
                 }
             }
             _ => {
-                let panel = ui.elements.borrow().clone();
-                if let Some(p) = panel {
-                    p.show(page);
+                if let Some(panel) = ui.elements.borrow().clone() {
+                    let transition = panel.stack.transition_type();
+                    panel
+                        .stack
+                        .set_transition_type(gtk::StackTransitionType::None);
+                    if let Some(page) = page {
+                        panel.prepare(page);
+                    } else {
+                        panel.home();
+                    }
+                    panel.stack.set_transition_type(transition);
                 }
             }
         }
     });
+    if page.is_some() {
+        ui.format_buttons.borrow_mut().push(button.clone());
+    }
 }

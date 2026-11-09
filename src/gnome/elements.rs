@@ -6,7 +6,7 @@ pub(super) struct ElementsPanel {
     ui: std::rc::Weak<Ui>,
     pub(super) menu: gtk::MenuButton,
     pub(super) pop: gtk::Popover,
-    stack: gtk::Stack,
+    pub(super) stack: gtk::Stack,
     pub(super) header: Rc<FormatHeader>,
     borrowed: RefCell<Vec<(gtk::Popover, gtk::Widget, Rc<FormatHeader>)>>,
     toc: gtk::Box,
@@ -46,6 +46,12 @@ impl ElementsPanel {
         self.stack.set_visible_child_name("home");
     }
     pub(super) fn show(self: &Rc<Self>, page: &str) {
+        self.prepare(page);
+        if let Some(owner) = self.pop.parent().and_downcast::<gtk::MenuButton>() {
+            owner.popup();
+        }
+    }
+    pub(super) fn prepare(self: &Rc<Self>, page: &str) {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
@@ -115,7 +121,6 @@ impl ElementsPanel {
                 s.home();
             }
         });
-        self.menu.popup();
     }
     pub(super) fn sync(self: &Rc<Self>) {
         if !self.pop.is_visible() || self.active.borrow().as_str() != "toc" {

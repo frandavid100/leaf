@@ -3,6 +3,7 @@ use super::*;
 
 pub(super) fn paragraph_icon(name: &str) -> gtk::Widget {
     let area = gtk::DrawingArea::new();
+    area.set_widget_name(&format!("paragraph-glyph-{name}"));
     area.set_content_width(18);
     area.set_content_height(18);
     area.set_halign(gtk::Align::Center);
@@ -51,6 +52,17 @@ pub(super) fn paragraph_icon(name: &str) -> gtk::Widget {
                         let _ = cr.show_text(&(i + 1).to_string());
                     }
                 }
+            }
+            "list-remove" => {
+                for y in [4., 9., 14.] {
+                    cr.move_to(7., y);
+                    cr.line_to(17., y);
+                }
+                cr.move_to(0.5, 6.5);
+                cr.line_to(4.5, 10.5);
+                cr.move_to(4.5, 6.5);
+                cr.line_to(0.5, 10.5);
+                let _ = cr.stroke();
             }
             "format-indent-less-symbolic" | "format-indent-more-symbolic" => {
                 for y in [2.0, 16.0] {
@@ -118,4 +130,14 @@ pub(super) fn paragraph_icon(name: &str) -> gtk::Widget {
         }
     });
     area.upcast()
+}
+
+pub(super) fn list_choice_content(label: &str, kind: &str) -> gtk::Box {
+    let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    row.append(&paragraph_icon(kind));
+    let text = gtk::Label::new(Some(label));
+    text.set_xalign(0.);
+    text.set_hexpand(true);
+    row.append(&text);
+    row
 }

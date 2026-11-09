@@ -98,7 +98,16 @@ pub fn list(folder: &Path) -> Result<Vec<PathBuf>, String> {
             files.push(path)
         }
     }
-    files.sort_by_key(|p| p.file_name().map(|v| v.to_string_lossy().to_lowercase()));
+    files.sort_by(|a, b| {
+        let modified = |p: &Path| {
+            std::fs::metadata(p)
+                .and_then(|m| m.modified())
+                .unwrap_or(std::time::UNIX_EPOCH)
+        };
+        modified(b)
+            .cmp(&modified(a))
+            .then_with(|| a.file_name().cmp(&b.file_name()))
+    });
     Ok(files)
 }
 pub fn open(path: &Path) -> Result<Session, String> {
@@ -143,6 +152,34 @@ pub fn preview(path: &Path) -> Result<std::sync::Arc<crate::PageImage>, String> 
 pub fn page_preview(session: &mut Session) -> Result<crate::PageImage, String> {
     let layout = session.layout();
     let page = layout.pages.first().ok_or("The document is empty")?;
-    let scale = (104.0 / page.w).min(148.0 / page.h) * 2.0;
+    let scale = crate::viewer_layout::thumbnail_scale(page.w) * 2.0;
     crate::render_page_premultiplied(session, 0, scale)
+}
+
+#[cfg(test)]
+#[test]
+fn template_files_are_newest_first_with_stable_name_ties() {
+    use std::time::{Duration, UNIX_EPOCH};
+    let folder = std::env::temp_dir().join(format!("leaf-template-order-{}", std::process::id()));
+    std::fs::create_dir_all(&folder).unwrap();
+    for (name, seconds) in [
+        ("a-old.docx", 10),
+        ("z-new.docx", 30),
+        ("b-tie.odt", 20),
+        ("a-tie.docx", 20),
+    ] {
+        let file = std::fs::File::create(folder.join(name)).unwrap();
+        file.set_modified(UNIX_EPOCH + Duration::from_secs(seconds))
+            .unwrap();
+    }
+    let names = list(&folder)
+        .unwrap()
+        .into_iter()
+        .map(|p| p.file_name().unwrap().to_string_lossy().into_owned())
+        .collect::<Vec<_>>();
+    assert_eq!(
+        names,
+        ["z-new.docx", "a-tie.docx", "b-tie.odt", "a-old.docx"]
+    );
+    std::fs::remove_dir_all(folder).unwrap();
 }

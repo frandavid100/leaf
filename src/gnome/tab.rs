@@ -223,7 +223,16 @@ pub(super) fn build_tab(
     // Mode tabs belong to the sidebar, not to any representation's scroll.
     // Keep the same controls reachable in Pages, Structure, Review and Search.
     sidebar_toolbar.set_bottom_bar_style(adw::ToolbarStyle::Flat);
-    sidebar_toolbar.add_bottom_bar(&selector_bar);
+    let start_footer = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    start_footer.add_css_class("toolbar");
+    start_footer.set_widget_name("start-fixed-footer");
+    let sidebar_footer = gtk::Stack::new();
+    sidebar_footer.set_vhomogeneous(true);
+    sidebar_footer.set_hhomogeneous(false);
+    sidebar_footer.add_named(&selector_bar, Some("navigation"));
+    sidebar_footer.add_named(&start_footer, Some("start"));
+    sidebar_footer.set_visible_child_name("navigation");
+    sidebar_toolbar.add_bottom_bar(&sidebar_footer);
     sidebar_pages.add_named(&navigation, Some("navigation"));
     sidebar_pages.set_visible_child_name("navigation");
     sidebar_toolbar.set_content(Some(&sidebar_pages));
@@ -445,6 +454,8 @@ pub(super) fn build_tab(
         format_reflowing: Cell::new(false),
         pages_button: pages_toggle.clone(),
         sidebar_selector: selector_bar.clone(),
+        start_footer,
+        sidebar_footer,
         _header_heights: header_heights,
         format_bold: bold_button.clone(),
         format_italic: italic_button.clone(),

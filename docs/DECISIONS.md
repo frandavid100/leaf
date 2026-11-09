@@ -1,5 +1,15 @@
 # Decisiones vigentes
 
+## 9/11/2026 — excepción explícita: publicar alpha.41 al terminar
+
+David pide resolver los issues abiertos y publicar directamente porque se va a
+dormir. Esta instrucción autoriza la promoción automática de esta entrega tras
+validar la nueva fuente, con los mismos bytes comprobados; no sustituye la regla
+habitual de RC y visto bueno para futuras entregas. Se cierran solo los informes
+resueltos: #233–#237 se incorporan al plan de cierre, #152 se retira del plan.
+Se mantienen los otros cinco bloqueos y las capturas públicas reservadas a David.
+[Alcance y límites](ALPHA41_FINAL.md).
+
 ## 9/11/2026 — #152 reabierto tras probar la RC
 
 David aporta cinco capturas y distingue dos operaciones: seleccionar y borrar

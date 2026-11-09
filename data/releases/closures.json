@@ -2,7 +2,6 @@
   "version": "0.1.0-alpha.41",
   "issues": [
     107,
-    152,
     217,
     226,
     227,
@@ -10,7 +9,12 @@
     229,
     230,
     231,
-    232
+    232,
+    233,
+    234,
+    235,
+    236,
+    237
   ],
-  "report": "docs/ALPHA41_INTERFACE.md"
+  "report": "docs/ALPHA41_FINAL.md"
 }

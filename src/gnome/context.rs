@@ -133,7 +133,20 @@ pub(super) fn mount_context_formats(
         ),
         ("text-menu", wordcraft_gnome::t!("Text"), "context-text"),
     ] {
-        let Some(origin) = format_button(ui, name).and_then(|m| m.popover()) else {
+        let origin = match name {
+            "paragraph-menu" => ui
+                .paragraph
+                .borrow()
+                .as_ref()
+                .and_then(|p| p.popover.upgrade()),
+            "text-menu" => ui
+                .text_tools
+                .borrow()
+                .as_ref()
+                .and_then(|p| p.popover.upgrade()),
+            _ => format_button(ui, name).and_then(|m| m.popover()),
+        };
+        let Some(origin) = origin else {
             continue;
         };
         let header = ui

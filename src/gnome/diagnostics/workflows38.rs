@@ -121,7 +121,8 @@ async fn check(ui: &Rc<Ui>, has_templates: bool, has_recovery: bool) {
             let paintable = picture.paintable().unwrap();
             let ratio = paintable.intrinsic_width() as f64 / paintable.intrinsic_height() as f64;
             let bounds = picture.compute_bounds(&slot).unwrap();
-            assert!(bounds.width() <= 105. && bounds.height() <= 149.);
+            assert!((168.0..=170.0).contains(&bounds.width()));
+            assert!(bounds.height() >= 210.);
             assert!(
                 (bounds.width() as f64 / bounds.height() as f64 - ratio).abs() < 0.015,
                 "label stretched first-page paper: {bounds:?}, ratio={ratio}"
@@ -130,14 +131,10 @@ async fn check(ui: &Rc<Ui>, has_templates: bool, has_recovery: bool) {
     }
     let templates = find_widget(&ui.template_slot, "start-templates").unwrap();
     let recoveries = find_widget(&ui.template_slot, "start-recovery").unwrap();
-    let has_folder = wordcraft_gnome::templates::folder().is_some_and(|p| p.is_dir());
-    assert_eq!(templates.is_visible(), has_templates || has_folder);
+    assert_eq!(templates.is_visible(), has_templates);
     assert_eq!(recoveries.is_visible(), has_recovery);
     assert_eq!(button(ui).is_some(), has_recovery);
-    for (group, present) in [
-        (&templates, has_templates || has_folder),
-        (&recoveries, has_recovery),
-    ] {
+    for (group, present) in [(&templates, has_templates), (&recoveries, has_recovery)] {
         if !present {
             assert!(!group.is_mapped());
             assert_eq!(group.measure(gtk::Orientation::Vertical, -1).0, 0);
@@ -145,7 +142,7 @@ async fn check(ui: &Rc<Ui>, has_templates: bool, has_recovery: bool) {
     }
     assert!(find_widget(&ui.template_slot, "start-blank-heading").is_none());
     assert_eq!(document_content_top(ui), 0.);
-    let choices = has_folder || has_templates || has_recovery;
+    let choices = true; // Start retains its fixed folder action even with no entries.
     assert_eq!(
         ui.sidebar_pages.visible_child_name().as_deref(),
         Some(if choices { "start" } else { "navigation" })

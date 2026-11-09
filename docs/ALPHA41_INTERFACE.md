@@ -1,5 +1,8 @@
 # Alpha41 candidate: scope and evidence
 
+Historical RC, superseded by the [authorized final revision](ALPHA41_FINAL.md).
+The identities and results below describe the earlier immutable candidate only.
+
 Status: automated candidate validation passed; #152 has been reopened after
 David's RC trial. Deleting a whole preceding paragraph still transfers its format;
 deleting text first and then the empty paragraph works. See
