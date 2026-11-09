@@ -1,10 +1,6 @@
 # Alpha.41: final interface revision
 
-David explicitly authorizes publishing this delivery automatically on 9 November
-2026 after validation, without waiting for another personal RC trial. Future
-deliveries retain the default [RC approval process](CANDIDATES.md). The earlier
-[immutable RC](ALPHA41_INTERFACE.md) remains historical evidence; it does not
-validate this changed executable.
+Published and verified: #107, #217, #226, #227, #228, #229, #230, #231, #232, #233, #234, #235, #236, #237 are completed. See [published identity and validation](LATEST_RELEASE.md).
 
 ## Changes after the earlier RC
 

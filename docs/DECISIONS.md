@@ -1,5 +1,11 @@
 # Decisiones vigentes
 
+## Publicada y verificada automáticamente: 0.1.0-alpha.41
+
+Se publican los mismos bytes de la candidata tras superar todas las pruebas
+nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
+de cerrar #107, #217, #226, #227, #228, #229, #230, #231, #232, #233, #234, #235, #236, #237. [Identidad y límites](LATEST_RELEASE.md).
+
 ## 9/11/2026 — excepción explícita: publicar alpha.41 al terminar
 
 David pide resolver los issues abiertos y publicar directamente porque se va a
