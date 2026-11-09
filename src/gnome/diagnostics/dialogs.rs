@@ -3,6 +3,46 @@
 //! describe whether the modal surface is open. New workflow probes use async waits.
 use super::*;
 
+/// Await GTK frames without recursively polling GLib's future executor.
+/// Async probes must not call the legacy nested-main-loop helpers below.
+pub(super) async fn dialog_presented_async(dialog: &impl IsA<adw::Dialog>) {
+    let dialog = dialog.as_ref();
+    let frames = Rc::new(Cell::new(0));
+    let count = frames.clone();
+    dialog.add_tick_callback(move |_, _| {
+        count.set(count.get() + 1);
+        if count.get() >= 4 {
+            glib::ControlFlow::Break
+        } else {
+            glib::ControlFlow::Continue
+        }
+    });
+    for _ in 0..150 {
+        if dialog.is_mapped() && dialog.root().is_some() && frames.get() >= 4 {
+            return;
+        }
+        glib::timeout_future(std::time::Duration::from_millis(20)).await;
+    }
+    panic!(
+        "adaptive dialog did not become interactive: {:?}",
+        dialog.title()
+    );
+}
+
+pub(super) async fn dialog_closed_async(dialog: &impl IsA<adw::Dialog>) {
+    let dialog = dialog.as_ref();
+    for _ in 0..150 {
+        if dialog.root().is_none() && !dialog.is_mapped() {
+            return;
+        }
+        glib::timeout_future(std::time::Duration::from_millis(20)).await;
+    }
+    panic!(
+        "adaptive dialog did not finish closing: {:?}",
+        dialog.title()
+    );
+}
+
 pub(super) fn wait_dialog_presented(dialog: &impl IsA<adw::Dialog>) {
     let dialog = dialog.as_ref();
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(3);

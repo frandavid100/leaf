@@ -248,6 +248,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         settle().await;
         window.set_default_size(420, 800);
         settle().await;
+        until(|| style_menu.popover().unwrap().is_mapped()).await;
         assert!(ui.format_toolbar.is_mapped());
         assert!(style_menu.popover().unwrap().is_mapped());
         assert!(!bold.is_mapped());
@@ -265,6 +266,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         );
         window.set_default_size(1280, 850);
         settle().await;
+        until(|| style_menu.popover().unwrap().is_mapped()).await;
         assert!(style_menu.popover().unwrap().is_mapped());
         popover_pin(&style_menu.popover().unwrap()).set_active(false);
         style_menu.popdown();

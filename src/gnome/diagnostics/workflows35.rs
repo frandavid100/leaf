@@ -261,7 +261,7 @@ pub(super) fn test(
         assert!(text(&ui).starts_with("A"));
         let before = document_identity(&ui);
         let properties = show_document_properties(&ui, &window);
-        wait_dialog_presented(&properties.window);
+        dialog_presented_async(&properties.window).await;
         assert!(
             find_widget(&properties.window, "properties-document-fonts")
                 .unwrap()

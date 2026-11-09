@@ -65,11 +65,12 @@ impl AdaptiveTools {
         }
         if changed && !self.pending.borrow().is_empty() {
             // GTK can unmap a popup while its scrolling toolbar is allocated.
-            // Restore after allocation, retaining the same menu and subpage.
+            // Let the sidebar's adaptive animation settle before restoring the
+            // same menu and subpage; an early restore can target an unmapped anchor.
             let generation = self.generation.get().wrapping_add(1);
             self.generation.set(generation);
             let weak = Rc::downgrade(self);
-            glib::timeout_add_local_once(std::time::Duration::from_millis(40), move || {
+            glib::timeout_add_local_once(std::time::Duration::from_millis(250), move || {
                 let Some(tools) = weak.upgrade().filter(|a| a.generation.get() == generation)
                 else {
                     return;
@@ -78,8 +79,17 @@ impl AdaptiveTools {
                 if let Some(ui) = tools.ui.upgrade().filter(|u| !u.closed.get()) {
                     for (menu, identity) in pending {
                         if identity == document_identity(&ui) {
-                            if let Some(menu) = menu.upgrade().filter(|m| m.is_mapped()) {
-                                menu.popup();
+                            if let Some(menu) = menu.upgrade() {
+                                if std::env::args().any(|a| a == "--workflows40-ui-test") {
+                                    eprintln!(
+                                        "WORKFLOWS40_REFLOW anchor={} mapped={} width={width}",
+                                        menu.widget_name(),
+                                        menu.is_mapped()
+                                    );
+                                }
+                                if menu.is_mapped() {
+                                    menu.popup();
+                                }
                             }
                         }
                     }
