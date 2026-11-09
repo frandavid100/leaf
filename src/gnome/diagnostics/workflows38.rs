@@ -151,6 +151,10 @@ async fn check(ui: &Rc<Ui>, has_templates: bool, has_recovery: bool) {
         Some(if choices { "start" } else { "navigation" })
     );
     assert_eq!(ui.sidebar_selector.is_visible(), !choices);
+    assert!(
+        ui.sidebar.sidebar().unwrap().width() <= 260,
+        "Start headings must wrap without widening the sidebar"
+    );
     assert_eq!(
         ui.sidebar_title.text(),
         if choices {

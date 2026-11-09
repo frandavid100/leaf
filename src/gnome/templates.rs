@@ -100,6 +100,7 @@ fn heading(text: &str, name: &str) -> gtk::Label {
     let label = gtk::Label::new(Some(text));
     label.set_widget_name(name);
     label.set_xalign(0.);
+    label.set_wrap(true);
     label.add_css_class("heading");
     label.set_margin_start(20);
     label.set_margin_end(20);

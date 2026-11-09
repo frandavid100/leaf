@@ -49,7 +49,7 @@ msgstr ""
 msgid "Add Left Tab Stop"
 msgstr ""
 
-#: src/gnome/templates.rs:296
+#: src/gnome/templates.rs:297
 msgid "Add documents to this folder to use them as templates."
 msgstr ""
 
@@ -305,7 +305,7 @@ msgstr ""
 msgid "Bullets"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:70 src/gnome/annotations.rs:673 src/gnome/columns.rs:414 src/gnome/comment_composer.rs:65 src/gnome/document_properties_dialog.rs:87 src/gnome/files.rs:18 src/gnome/headers.rs:124 src/gnome/links.rs:67 src/gnome/references.rs:105 src/gnome/templates.rs:351
+#: src/gnome/annotation_dialog.rs:70 src/gnome/annotations.rs:673 src/gnome/columns.rs:414 src/gnome/comment_composer.rs:65 src/gnome/document_properties_dialog.rs:87 src/gnome/files.rs:18 src/gnome/headers.rs:124 src/gnome/links.rs:67 src/gnome/references.rs:105 src/gnome/templates.rs:352
 msgid "Cancel"
 msgstr ""
 
@@ -413,7 +413,7 @@ msgstr ""
 msgid "Choose Dictionary Folder…"
 msgstr ""
 
-#: src/gnome/templates.rs:705 src/gnome/templates.rs:725
+#: src/gnome/templates.rs:706 src/gnome/templates.rs:726
 msgid "Choose Templates Folder"
 msgstr ""
 
@@ -617,7 +617,7 @@ msgstr ""
 msgid "Could Not Export PDF"
 msgstr ""
 
-#: src/gnome/templates.rs:378 src/gnome/templates.rs:543 src/gnome/templates.rs:648
+#: src/gnome/templates.rs:379 src/gnome/templates.rs:544 src/gnome/templates.rs:649
 msgid "Could Not Load Recovery List"
 msgstr ""
 
@@ -629,7 +629,7 @@ msgstr ""
 msgid "Could Not Open Save Dialog: {e}"
 msgstr ""
 
-#: src/gnome/templates.rs:622
+#: src/gnome/templates.rs:623
 msgid "Could Not Open Template"
 msgstr ""
 
@@ -729,7 +729,7 @@ msgstr ""
 msgid "Custom Widths"
 msgstr ""
 
-#: src/gnome/templates.rs:701
+#: src/gnome/templates.rs:702
 msgid "Custom template folders are unavailable in the sandbox. Use the system Templates folder."
 msgstr ""
 
@@ -877,15 +877,15 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: src/gnome/templates.rs:352
+#: src/gnome/templates.rs:353
 msgid "Discard"
 msgstr ""
 
-#: src/gnome/templates.rs:350
+#: src/gnome/templates.rs:351
 msgid "Discard Recovery?"
 msgstr ""
 
-#: src/gnome/templates.rs:491
+#: src/gnome/templates.rs:492
 msgid "Discard recovery of “{name}”"
 msgstr ""
 
@@ -973,7 +973,7 @@ msgstr ""
 msgid "Documents (.docx, .odt)"
 msgstr ""
 
-#: src/gnome/templates.rs:192
+#: src/gnome/templates.rs:193
 msgid "Documents to Recover"
 msgstr ""
 
@@ -1869,7 +1869,7 @@ msgstr ""
 msgid "Narrow Right Column"
 msgstr ""
 
-#: src/gnome/diagnostics/navigation131.rs:102 src/gnome/diagnostics/workflows38.rs:159 src/gnome/navigation.rs:16 src/gnome/navigation.rs:38 src/gnome/tab.rs:173 src/gnome/tab.rs:174 src/gnome/tab.rs:191
+#: src/gnome/diagnostics/navigation131.rs:102 src/gnome/diagnostics/workflows38.rs:163 src/gnome/navigation.rs:16 src/gnome/navigation.rs:38 src/gnome/tab.rs:173 src/gnome/tab.rs:174 src/gnome/tab.rs:191
 msgid "Navigation"
 msgstr ""
 
@@ -1877,7 +1877,7 @@ msgstr ""
 msgid "New Comment"
 msgstr ""
 
-#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:145 src/gnome/tab.rs:879 src/gnome/templates.rs:587 src/gnome/workspace.rs:321
+#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:145 src/gnome/tab.rs:879 src/gnome/templates.rs:588 src/gnome/workspace.rs:321
 msgid "New Document"
 msgstr ""
 
@@ -2033,7 +2033,7 @@ msgstr ""
 msgid "Open Document"
 msgstr ""
 
-#: src/gnome/templates.rs:303 src/gnome/templates.rs:306
+#: src/gnome/templates.rs:304 src/gnome/templates.rs:307
 msgid "Open Templates Folder"
 msgstr ""
 
@@ -2241,7 +2241,7 @@ msgstr ""
 msgid "RGB Color, for Example 2266AA"
 msgstr ""
 
-#: src/gnome/templates.rs:461 src/gnome/templates.rs:585 src/gnome/workspace.rs:492
+#: src/gnome/templates.rs:462 src/gnome/templates.rs:586 src/gnome/workspace.rs:492
 msgid "Recovered Document"
 msgstr ""
 
@@ -2889,7 +2889,7 @@ msgstr ""
 msgid "Square Root"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows38.rs:157 src/gnome/diagnostics/workflows40.rs:72 src/gnome/diagnostics/workflows40.rs:305 src/gnome/diagnostics/workflows40.rs:469 src/gnome/navigation.rs:31
+#: src/gnome/diagnostics/workflows38.rs:161 src/gnome/diagnostics/workflows40.rs:72 src/gnome/diagnostics/workflows40.rs:305 src/gnome/diagnostics/workflows40.rs:469 src/gnome/navigation.rs:31
 msgid "Start"
 msgstr ""
 
@@ -3025,11 +3025,11 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
-#: src/gnome/templates.rs:190 src/gnome/templates.rs:684
+#: src/gnome/templates.rs:191 src/gnome/templates.rs:685
 msgid "Templates"
 msgstr ""
 
-#: src/gnome/templates.rs:686
+#: src/gnome/templates.rs:687
 msgid "Templates Folder"
 msgstr ""
 
@@ -3069,7 +3069,7 @@ msgstr ""
 msgid "Text Language: {language}"
 msgstr ""
 
-#: src/gnome/templates.rs:319
+#: src/gnome/templates.rs:320
 msgid "The Templates folder is unavailable."
 msgstr ""
 
@@ -3173,7 +3173,7 @@ msgstr ""
 msgid "The path is not UTF-8"
 msgstr ""
 
-#: src/gnome/templates.rs:344
+#: src/gnome/templates.rs:345
 msgid "The recovery copy of “{name}” will be permanently deleted. This cannot be undone."
 msgstr ""
 
@@ -3341,7 +3341,7 @@ msgstr ""
 msgid "UPPERCASE"
 msgstr ""
 
-#: src/gnome/templates.rs:691 src/gnome/templates.rs:770
+#: src/gnome/templates.rs:692 src/gnome/templates.rs:771
 msgid "Unavailable"
 msgstr ""
 
@@ -3417,7 +3417,7 @@ msgstr ""
 msgid "Use DOCX to preserve changes to the following paragraph style."
 msgstr ""
 
-#: src/gnome/templates.rs:709
+#: src/gnome/templates.rs:710
 msgid "Use System Templates Folder"
 msgstr ""
 
@@ -3537,7 +3537,7 @@ msgstr ""
 msgid "Zoom Out (Ctrl+-)"
 msgstr ""
 
-#: src/gnome/templates.rs:726
+#: src/gnome/templates.rs:727
 msgid "_Use Folder"
 msgstr ""
 
