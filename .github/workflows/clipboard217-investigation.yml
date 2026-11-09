@@ -1,0 +1,28 @@
+name: Clipboard 217 browser investigation
+on:
+  push:
+    branches: [diagnostics/wordcraft017-clipboard217]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browsers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chrome firefox
+          sudo apt-get install -y xvfb xauth xclip
+      - name: Capture real browser selections and native HTML clipboard
+        run: xvfb-run -a -s '-screen 0 1920x1600x24' python tools/capture_clipboard217.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: clipboard217-browser-evidence
+          path: clipboard217-evidence
+          retention-days: 14
