@@ -63,7 +63,9 @@ def verify(release, tag, candidate, manifest, notes, native, run):
 def document_changes(proof, remaining, root):
     version, source = proof['version'], proof['source']
     closed = ', '.join('#' + str(n) for n in proof['closed_issues']) or 'ninguno'
-    open_issues = ', '.join('#' + str(n) for n in sorted(remaining)) or 'ninguno'
+    # GitHub's issue list can lag its successful close responses.
+    remaining = sorted(set(remaining) - set(proof['closed_issues']))
+    open_issues = ', '.join('#' + str(n) for n in remaining) or 'ninguno'
     report = f'''# Última release verificada: {version}
 
 [Release y descargas]({proof['release_url']}).

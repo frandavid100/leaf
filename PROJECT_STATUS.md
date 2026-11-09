@@ -5,7 +5,7 @@
 ## Última publicación verificada: 0.1.0-alpha.40
 
 [Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.40). Issues cerrados: #218, #219, #220, #221, #222.
-Permanecen abiertos: #1, #52, #99, #107, #152, #171, #185, #217, #220, #221, #222.
+Permanecen abiertos: #1, #52, #99, #107, #152, #171, #185, #217.
 [Fuente, validación y límites](docs/LATEST_RELEASE.md).
 <!-- published-alpha:end -->
 

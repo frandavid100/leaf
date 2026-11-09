@@ -75,9 +75,11 @@ class PublishedAlphaVerification(unittest.TestCase):
                 (root / name).write_text('# Project\n\n## Historical section\nKeep this.\n')
             windows = '**[Experimental Windows version](https://example.org/alpha.36-windows.1)**'
             (root / 'README.md').write_text('**[Try the Flatpak alpha](https://example.org/old)**\n' + windows)
-            files = document_changes(self.check(), [1, 52], root)
+            files = document_changes(self.check(), [1, 52, 213, 214], root)
             self.assertIn(windows, files['README.md'])
             for name in ['PROJECT_STATUS.md', 'ROADMAP.md', 'docs/DECISIONS.md']:
                 self.assertIn('## Historical section\nKeep this.', files[name])
             self.assertIn('212', files['docs/LATEST_RELEASE.md'])
             self.assertIn('#52', files['PROJECT_STATUS.md'])
+            self.assertIn('Permanecen abiertos: #1, #52.', files['PROJECT_STATUS.md'])
+            self.assertIn('Permanecen abiertos: #1, #52.', files['docs/LATEST_RELEASE.md'])

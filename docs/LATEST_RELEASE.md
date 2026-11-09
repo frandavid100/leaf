@@ -1,7 +1,7 @@
 # Última release verificada: 0.1.0-alpha.40
 
 [Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.40).
-Cerrados tras verificar la publicación: #218, #219, #220, #221, #222. Permanecen abiertos: #1, #52, #99, #107, #152, #171, #185, #217, #220, #221, #222.
+Cerrados tras verificar la publicación: #218, #219, #220, #221, #222. Permanecen abiertos: #1, #52, #99, #107, #152, #171, #185, #217.
 
 - Fuente/tag: `beca342212ec1556b26d9121a5ed6cfe62f6afbd`.
 - [Batería nativa completa](https://github.com/frandavid100/leaf/actions/runs/42599649931).
