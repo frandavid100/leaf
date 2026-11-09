@@ -1,6 +1,9 @@
 # Alpha41 candidate: scope and evidence
 
-Status: verified candidate; #107, #152, #217 and #226–#232 are closed.
+Status: automated candidate validation passed; #152 has been reopened after
+David's RC trial. Deleting a whole preceding paragraph still transfers its format;
+deleting text first and then the empty paragraph works. See
+[the updated issue and screenshots](https://github.com/frandavid100/leaf/issues/152).
 The latest public release remains alpha.40.
 
 The authorized WordCraft 0.17 base is
@@ -16,7 +19,8 @@ layout, document and renderer crates are unmodified upstream dependencies.
 [Download the candidate ZIP](https://github.com/frandavid100/leaf/actions/runs/42659019759/artifacts/13694293397).
 The installable `Leaf-0.1.0-alpha.41-x86_64.flatpak` is at its root. The same
 archive contains release files, checksums and private automated QA evidence.
-No rebuilding is needed to test or later promote the verified release files.
+This immutable artifact remains available to reproduce the finding. Corrections
+require a new validated RC for David to test before publication.
 
 | Item | Verified value |
 | --- | --- |
@@ -32,7 +36,7 @@ No rebuilding is needed to test or later promote the verified release files.
 | Issue | Behavior and focused verification |
 | --- | --- |
 | #107 | The existing public picture adapter accepts the manual-page-break target. Root regression verifies page, one undo step, Undo/Redo and DOCX reopening. |
-| #152 | Delete/Backspace before a heading retains its paragraph properties, Undo/Redo, DOCX and ODT. |
+| #152 | The previously empty paragraph case passed Delete/Backspace, Undo/Redo and DOCX/ODT tests. Reopened after the RC trial: deleting an entire non-empty heading paragraph selected by triple click still changes the following list paragraph's format; the two-step text-only deletion control works. |
 | #217 | Normalize the predominant contrasting neutral pair in Chrome wrappers before public HTML paste. Real Chrome/Firefox light/dark clipboard captures are preserved in test fixtures. Local red, highlights, bold, italic and links remain. The test checks one paste undo step, redo, DOCX/ODT and both screen-renderer themes. |
 | #226 | The style launcher keeps a fixed text allowance and ellipsizes long names; adjacent style actions have separate targets. Native acceptance moves between Normal, Heading1 and a long custom name and measures the neighboring controls. |
 | #227 | Shared panels derive their pointing rectangle and root page from the direct launcher; nested overflow navigation retains Back. Visible controls are omitted from overflow; List is one control. |

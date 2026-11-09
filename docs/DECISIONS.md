@@ -1,5 +1,15 @@
 # Decisiones vigentes
 
+## 9/11/2026 — #152 reabierto tras probar la RC
+
+David aporta cinco capturas y distingue dos operaciones: seleccionar y borrar
+el párrafo completo con triple clic todavía impone su formato al siguiente;
+borrar solo el texto y eliminar después el párrafo ya vacío conserva el formato.
+El arreglo y las regresiones anteriores cubrían el segundo caso. Se reabre #152,
+con ambas rutas, resultados y capturas; no se da por confirmada la capa causante
+del caso restante sin inspeccionar selección y modelo. Esta actualización registra
+el fallo; no modifica el ejecutable ni publica la RC. [Issue](https://github.com/frandavid100/leaf/issues/152).
+
 ## 9/11/2026 — procedimiento habitual: RC, prueba y promoción sin cambios
 
 David establece como procedimiento habitual entregar primero una RC validada

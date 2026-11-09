@@ -3,9 +3,17 @@
 Procedimiento habitual: RC validada para probar; tras el visto bueno de David,
 promoción de los mismos archivos sin recompilar. [Proceso](docs/CANDIDATES.md).
 
+## Seguimiento de la RC: #152 reabierto
+
+David confirma que borrar el párrafo completo mediante triple clic todavía
+transfiere formato al siguiente; borrar solo el texto y después el párrafo vacío
+sí lo conserva. [Reproducción y capturas](https://github.com/frandavid100/leaf/issues/152).
+El cierre anterior cubría el caso vacío, no la eliminación completa de un párrafo
+con texto. La corrección restante requiere otra RC para probar.
+
 ## Candidata alpha.41 verificada
 
-Preparada con WordCraft 0.17 y cerrados #107, #152, #217 y #226–#232, incluidos
+Preparada con WordCraft 0.17. Inicialmente se cerraron #107, #152, #217 y #226–#232, incluidos
 los dos últimos informes de recuperación e Inicio. Barra inferior personalizable,
 menús anclados a su botón, pies de inserción fijos y pegado legible desde Chrome.
 226 pruebas Rust, 15 Python y 906 mensajes completos en/es; batería nativa,
@@ -13,7 +21,7 @@ Flatpak GNOME 49 y prefijo GNOME 51 superados, con los mismos bytes validados.
 [Descarga, fuente, pruebas y límites](docs/ALPHA41_INTERFACE.md).
 
 La última release pública sigue siendo alpha.40. Esta entrega es una candidata
-para probar antes de promocionarla. Pendientes #1, #52, #99, #171 y #185;
+para probar antes de promocionarla. Pendientes #1, #52, #99, #152, #171 y #185;
 se conservan los aplazamientos de capturas públicas, Weblate y Windows ocasional.
 
 <!-- published-alpha:start -->
