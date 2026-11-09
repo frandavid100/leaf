@@ -1,5 +1,15 @@
 # Decisiones vigentes
 
+## 9/11/2026 — RC alpha.41 verificada y diez cierres
+
+Se cierran #107, #152, #217 y #226–#232 después de validar código, interfaz y
+paquetes instalados GNOME 49/51. El ejecutable de `2d9b1fd` se conserva sin
+recompilar; la candidata `d6adbe5` verifica equivalencia de fuente y bytes.
+Los ajustes posteriores afectan solo a la descarga de artefactos y a perfiles/
+sincronización de los controladores de pruebas. La RC queda descargable para
+probarla; la última alpha pública sigue siendo la 40. Se mantienen los cinco
+informes pendientes y los aplazamientos. [Identidad y evidencia](ALPHA41_INTERFACE.md).
+
 ## 9/11/2026 — candidata 0.17 y nuevos issues
 
 David pide una RC con WordCraft 0.17 y #217, añadiendo los issues recientes

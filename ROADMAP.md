@@ -1,21 +1,23 @@
 # Hoja de ruta de Leaf
 
-## En preparación: candidata alpha.41
+## Candidata alpha.41 verificada
 
-WordCraft 0.17, pegado legible desde Chrome y revisión de la barra inferior
-(#107/#152/#217/#226–#230). Incluye también #231/#232: excluir trabajo vivo
-de recuperación y compactar Inicio sin desplazar la división lateral.
-La última release pública sigue siendo alpha.40. Los cierres y la candidata
-deben contrastarse con las comprobaciones de esta fuente, sin anticipar su éxito.
-[Alcance y validación](docs/ALPHA41_INTERFACE.md).
+Preparada con WordCraft 0.17 y cerrados #107, #152, #217 y #226–#232, incluidos
+los dos últimos informes de recuperación e Inicio. Barra inferior personalizable,
+menús anclados a su botón, pies de inserción fijos y pegado legible desde Chrome.
+226 pruebas Rust, 15 Python y 906 mensajes completos en/es; batería nativa,
+Flatpak GNOME 49 y prefijo GNOME 51 superados, con los mismos bytes validados.
+[Descarga, fuente, pruebas y límites](docs/ALPHA41_INTERFACE.md).
 
-
+La última release pública sigue siendo alpha.40. Esta entrega es una candidata
+para probar antes de promocionarla. Pendientes #1, #52, #99, #171 y #185;
+se conservan los aplazamientos de capturas públicas, Weblate y Windows ocasional.
 
 <!-- published-alpha:start -->
 ## Última publicación verificada: 0.1.0-alpha.40
 
 [Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.40). Issues cerrados: #218, #219, #220, #221, #222.
-Permanecen abiertos: #1, #52, #99, #107, #152, #171, #185, #217.
+Abiertos al publicar alpha.40: #1, #52, #99, #107, #152, #171, #185, #217.
 [Fuente, validación y límites](docs/LATEST_RELEASE.md).
 <!-- published-alpha:end -->
 

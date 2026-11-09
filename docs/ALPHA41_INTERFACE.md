@@ -1,6 +1,7 @@
 # Alpha41 candidate: scope and evidence
 
-Status: implementation and local checks in progress, not a published release.
+Status: verified candidate; #107, #152, #217 and #226–#232 are closed.
+The latest public release remains alpha.40.
 
 The authorized WordCraft 0.17 base is
 `d9f5e5353d4acf38f6b551714307ac9bcb356fe1`, pinned to upstream
@@ -9,7 +10,24 @@ unchanged pin. The formats snapshot was recopied and the residual ODT preservati
 delta reapplied; see [compatibility patch](../patches/README.md). Other engine,
 layout, document and renderer crates are unmodified upstream dependencies.
 
-## Changes being verified
+
+## Verified download and identity
+
+[Download the candidate ZIP](https://github.com/frandavid100/leaf/actions/runs/42659019759/artifacts/13694293397).
+The installable `Leaf-0.1.0-alpha.41-x86_64.flatpak` is at its root. The same
+archive contains release files, checksums and private automated QA evidence.
+No rebuilding is needed to test or later promote the verified release files.
+
+| Item | Verified value |
+| --- | --- |
+| Candidate source | `d6adbe5def2266640f84c1219cf1f95ad5d8a2d7` |
+| Native executable source | `2d9b1fda80c3f7c5ed2ce7ea545daecda95f69fb` |
+| Completed packaging/runtime run | [42659019759](https://github.com/frandavid100/leaf/actions/runs/42659019759), success |
+| Candidate artifact | `13694293397` |
+| Candidate ZIP SHA-256 | `575435c060838df27b7934f77f48172bfa3914f0d64a4e01e8bef80c7c300605` |
+| Flatpak SHA-256 | `88f62c69befca2ccdb48a5e81c7f5db17082dfc4d69cf346f7166efb8f12eee9` |
+
+## Changes
 
 | Issue | Behavior and focused verification |
 | --- | --- |
@@ -30,13 +48,34 @@ expectation is updated to that public command behavior, not worked around in Lea
 
 ## Validation and limits
 
-225 Rust tests passed before the additional #231 regression; that focused file
-passes all three tests, including live/normal-close/interruption semantics.
-15 Python checks, gettext generation/check and project links passed locally.
-Native and installed candidate validation are still required before declaring the
-requested issues complete. The normal distribution build preserves the release
+Source `2d9b1fda80c3f7c5ed2ce7ea545daecda95f69fb` has passed 226 Rust tests,
+15 Python checks, gettext generation/check (906 complete English/Spanish messages),
+project links and the default optimized GUI build in
+[run 42652504898](https://github.com/frandavid100/leaf/actions/runs/42652504898).
+The local toolbar acceptance also passed real pointer dragging, keyboard ordering,
+immediate switches, a cold restart, direct/overflow roots, fixed insertion footers,
+constant style widths and the mapped two-line Start row/divider assertions in
+English and Spanish at 200% scale. General remains the default Preferences page.
+All five native groups (editing, text, documents, lifecycle and appearance) and
+their aggregate gate passed for that source. The source run then failed in a
+packaging artifact download, not in native validation. Packaging-only follow-ups
+explicitly require those seven successful native jobs, source equivalence and a
+byte-for-byte comparison against the stripped validated executable. The installed
+runner uses separate profiles for legacy overflow probes and default-toolbar
+acceptance so it tests both supported configurations independently.
+The complete GNOME 49 and relocated GNOME 51 jobs passed. The final candidate
+checksums and executable comparison passed before closing the ten issues. The normal distribution build preserves the release
 profile and panic unwinding. A local diagnostic executable may override host optimization and cross-crate
 LTO; only the default release-profile CI bytes are eligible for distribution.
+
+The relocated GNOME 51 job passed in
+[packaging run 42659019759](https://github.com/frandavid100/leaf/actions/runs/42659019759)
+using candidate source `d6adbe5def2266640f84c1219cf1f95ad5d8a2d7` and the native
+source above. Both English/100% and Spanish/200% passed the real toolbar drag,
+cold preference reload and Start assertions. The complete GNOME 49 job, print portal handoff, AT-SPI/Orca automation, final
+candidate checksums and exact executable comparison also passed. These are
+automated checks, not a claim of human desktop, physical printer or braille testing. Clipboard-based entry checks now wait for
+new ownership replies instead of assuming a fixed 100 ms response time.
 
 Browser capture provenance is recorded in the fixture metadata and
 `tools/capture_clipboard217.py`. The actual public alpha.38 release was copied with
