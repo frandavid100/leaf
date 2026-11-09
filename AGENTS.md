@@ -36,6 +36,17 @@ extensas/performance/corpus son opcionales cuando se justifiquen; no repetirlas
 por rutina ni imponer el corpus por versión. Medir antes/después en condiciones
 equivalentes y no extrapolar una muestra a toda la app.
 
+## Publicación: RC primero
+
+El procedimiento habitual es preparar y validar una RC, entregarla a David y
+esperar su visto bueno para publicar esa candidata concreta. Las autorizaciones
+históricas de publicación automática no se extienden a nuevas versiones.
+Con su visto bueno y sin cambios, promover los mismos archivos, sin recompilar
+ni repetir la batería ya superada; verificar fuente, tag y sumas de los archivos
+publicados. Si hay correcciones, crear y validar otra RC y entregarla de nuevo.
+Ver [candidatas y publicación](docs/CANDIDATES.md). Una instrucción posterior
+explícita de David puede establecer una excepción para una entrega concreta.
+
 ## Alcance y cierre
 
 Una propuesta de ROADMAP no autoriza implementarla. Respetar los aplazamientos:

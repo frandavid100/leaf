@@ -19,8 +19,13 @@ is historical. A source/documentation cleanup does not by itself require a relea
   release, launcher/document portal, data persistence, relevant features and existing Orca check.
 - [ ] Review internal validation output and distinguish it from human GNOME OS, braille,
   printer or real-document testing. Do not invent confirmations.
-- [ ] Publish a prerelease only after package validation, with Flatpak, instructions,
-  checksums, exact source, runtime and permissions. Verify tag and downloaded assets.
+- [ ] Deliver the validated RC to David with Flatpak, instructions, checksums, exact
+  source, runtime and permissions. Default to `[candidate-alpha]` without automatic promotion.
+- [ ] Wait for David's approval of that exact candidate. If fixes are needed, build,
+  validate and deliver a new RC for another trial.
+- [ ] With approval and no changes, publish the same files and frozen notes without
+  rebuilding or rerunning the completed regression suite. Verify source, tag and
+  downloaded asset checksums. [Candidate procedure](CANDIDATES.md).
 - [ ] Update current status, roadmap and landing README. Store detailed evidence in a
   feature report/JSON; avoid copying the whole release narrative into active planning.
 

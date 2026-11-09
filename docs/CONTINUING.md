@@ -12,6 +12,9 @@ compilar y enviar PR. ApexDesk se conserva en `archive/apexdesk-main-2026-11-02`
 > docs/ARCHITECTURE.md. Comprueba el estado remoto antes de editar y continúa
 > desde el trabajo vigente. Las propuestas de la hoja de ruta no son autorización
 > general. Modificamos Leaf; cualquier cambio del motor se propone en WordCraft.
+> Primero entrega una RC validada para probar. Con mi visto bueno para esa RC,
+> publícala sin cambios reutilizando los mismos archivos, sin recompilar ni repetir
+> las pruebas ya superadas. Si hay correcciones, prepara otra RC para probar.
 
 Añade después la tarea que quieras realizar. No hace falta pegar toda la
 conversación ni pedir al asistente que reconstruya las decisiones a partir de ella.

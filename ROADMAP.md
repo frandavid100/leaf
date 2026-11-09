@@ -1,5 +1,8 @@
 # Hoja de ruta de Leaf
 
+Procedimiento habitual: RC validada para probar; tras el visto bueno de David,
+promoción de los mismos archivos sin recompilar. [Proceso](docs/CANDIDATES.md).
+
 ## Candidata alpha.41 verificada
 
 Preparada con WordCraft 0.17 y cerrados #107, #152, #217 y #226–#232, incluidos

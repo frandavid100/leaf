@@ -1,5 +1,16 @@
 # Decisiones vigentes
 
+## 9/11/2026 — procedimiento habitual: RC, prueba y promoción sin cambios
+
+David establece como procedimiento habitual entregar primero una RC validada
+para probarla. Con su visto bueno para esa candidata y sin correcciones, publicar
+los mismos archivos y notas congeladas, sin recompilar ni repetir la batería ya
+superada. Se conservan las verificaciones de fuente, tag y SHA-256 al publicar.
+Si encuentra fallos y hay cambios, preparar otra RC validada para volver a probar.
+Las autorizaciones automáticas anteriores fueron para aquellas entregas; no son
+una autorización permanente para publicar futuras versiones. La alpha.41 sigue
+como candidata hasta recibir su visto bueno. [Procedimiento](CANDIDATES.md).
+
 ## 9/11/2026 — RC alpha.41 verificada y diez cierres
 
 Se cierran #107, #152, #217 y #226–#232 después de validar código, interfaz y
