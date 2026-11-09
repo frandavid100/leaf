@@ -47,6 +47,94 @@ fn move_to(
         }
     }
 }
+fn clear_drag_marks(list: &gtk::ListBox) {
+    let mut child = list.first_child();
+    while let Some(row) = child {
+        child = row.next_sibling();
+        row.remove_css_class("outline-drop-before");
+        row.remove_css_class("toolbar-drop-after");
+    }
+}
+// This is an internal list reorder, so use a native gesture rather than a
+// desktop data transfer. Commit once on release; cancellation changes nothing.
+fn install_row_drag(
+    dialog: &adw::PreferencesDialog,
+    list: &gtk::ListBox,
+    handle: &gtk::Image,
+    group: &'static str,
+    id: &'static str,
+    index: usize,
+) {
+    let drag = gtk::GestureDrag::new();
+    drag.set_button(gdk::BUTTON_PRIMARY);
+    drag.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let start = Rc::new(Cell::new(None::<f64>));
+    let (weak_list, weak_handle, begin) = (list.downgrade(), handle.downgrade(), start.clone());
+    drag.connect_drag_begin(move |gesture, _, y| {
+        if let (Some(list), Some(handle)) = (weak_list.upgrade(), weak_handle.upgrade()) {
+            if let Some(bounds) = handle.compute_bounds(&list) {
+                begin.set(Some(bounds.y() as f64 + y));
+                handle.set_cursor_from_name(Some("grabbing"));
+                gesture.set_state(gtk::EventSequenceState::Claimed);
+            }
+        }
+    });
+    let (weak_list, moving) = (list.downgrade(), start.clone());
+    drag.connect_drag_update(move |_, _, dy| {
+        let (Some(list), Some(y)) = (weak_list.upgrade(), moving.get()) else {
+            return;
+        };
+        clear_drag_marks(&list);
+        if let Some(row) = list.row_at_y((y + dy).round() as i32) {
+            if row.index() != index as i32 {
+                row.add_css_class(if row.index() < index as i32 {
+                    "outline-drop-before"
+                } else {
+                    "toolbar-drop-after"
+                });
+            }
+        }
+    });
+    let (weak_dialog, weak_list, weak_handle, ending) = (
+        dialog.downgrade(),
+        list.downgrade(),
+        handle.downgrade(),
+        start.clone(),
+    );
+    drag.connect_drag_end(move |_, _, dy| {
+        let y = ending.take();
+        if let Some(handle) = weak_handle.upgrade() {
+            handle.set_cursor_from_name(Some("grab"));
+        }
+        let (Some(list), Some(y)) = (weak_list.upgrade(), y) else {
+            return;
+        };
+        clear_drag_marks(&list);
+        let Some(target) = list
+            .row_at_y((y + dy).round() as i32)
+            .map(|r| r.index() as usize)
+        else {
+            return;
+        };
+        let (weak_dialog, weak_list) = (weak_dialog.clone(), weak_list.clone());
+        glib::idle_add_local_once(move || {
+            if let (Some(dialog), Some(list)) = (weak_dialog.upgrade(), weak_list.upgrade()) {
+                move_to(&dialog, &list, group, id, target);
+            }
+        });
+    });
+    let (weak_list, weak_handle) = (list.downgrade(), handle.downgrade());
+    drag.connect_cancel(move |_, _| {
+        start.set(None);
+        if let Some(handle) = weak_handle.upgrade() {
+            handle.set_cursor_from_name(Some("grab"));
+        }
+        if let Some(list) = weak_list.upgrade() {
+            clear_drag_marks(&list);
+        }
+    });
+    handle.add_controller(drag);
+}
 fn populate(dialog: &adw::PreferencesDialog, list: &gtk::ListBox, group: &'static str) {
     while let Some(child) = list.first_child() {
         list.remove(&child);
@@ -113,40 +201,14 @@ fn populate(dialog: &adw::PreferencesDialog, list: &gtk::ListBox, group: &'stati
             });
             row.add_suffix(&button);
         }
-        let source = gtk::DragSource::new();
-        source.set_actions(gdk::DragAction::MOVE);
-        source.set_content(Some(&gdk::ContentProvider::for_value(
-            &format!("leaf-toolbar:{group}:{}", tool.id).to_value(),
-        )));
-        handle.add_controller(source);
-        let target = gtk::DropTarget::new(String::static_type(), gdk::DragAction::MOVE);
-        let (weak_dialog, weak_list) = (dialog.downgrade(), list.downgrade());
-        target.connect_drop(move |_, value, _, _| {
-            let (Some(dialog), Some(list), Ok(value)) = (
-                weak_dialog.upgrade(),
-                weak_list.upgrade(),
-                value.get::<String>(),
-            ) else {
-                return false;
-            };
-            let Some(id) = value.strip_prefix(&format!("leaf-toolbar:{group}:")) else {
-                return false;
-            };
-            if !wordcraft_gnome::toolbar::tools(group)
-                .iter()
-                .any(|t| t.id == id)
-            {
-                return false;
-            }
-            move_to(&dialog, &list, group, id, index);
-            true
-        });
-        row.add_controller(target);
+        handle.set_widget_name(&format!("toolbar-drag-{group}-{}", tool.id));
+        install_row_drag(dialog, list, &handle, group, tool.id, index);
         list.append(&row);
     }
 }
 pub(super) fn add(dialog: &adw::PreferencesDialog) {
     let page = adw::PreferencesPage::new();
+    page.set_name(Some("toolbar"));
     page.set_title(wordcraft_gnome::t!("Bottom Toolbar"));
     page.set_icon_name(Some("preferences-desktop-display-symbolic"));
     page.set_widget_name("toolbar-preferences");

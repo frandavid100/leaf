@@ -196,10 +196,16 @@ jobs:
       run: |
         set -o pipefail
         for language in en es; do
+          export GDK_SCALE=1
+          if test "$language" = es; then export GDK_SCALE=2; fi
           config=$(mktemp -d)
           state=$(mktemp -d)
           for probe in ui reopen; do
-            XDG_CONFIG_HOME="$config" XDG_STATE_HOME="$state" LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s target/release/wordcraft-gnome --toolbar41-$probe-test 2>&1 | tee "toolbar41-$language-$probe.log"
+            if test "$probe" = ui; then
+              XDG_CONFIG_HOME="$config" XDG_STATE_HOME="$state" LANGUAGE=$language LEAF_TOOLBAR_LOG="toolbar41-$language-$probe.log" GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s bash tools/toolbar41-pointer-test.sh
+            else
+              XDG_CONFIG_HOME="$config" XDG_STATE_HOME="$state" LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s target/release/wordcraft-gnome --toolbar41-$probe-test 2>&1 | tee "toolbar41-$language-$probe.log"
+            fi
             grep -Eq 'TOOLBAR41_(UI|REOPEN)_OK' "toolbar41-$language-$probe.log"
           done
         done

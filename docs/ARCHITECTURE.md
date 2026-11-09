@@ -286,7 +286,7 @@ folder and import UI; the native/Flatpak chooser returns the authorized path.
 
 `src/toolbar.rs` owns stable preference identifiers, defaults and sanitization.
 `src/preferences.rs` persists order and switches independently of documents.
-`src/gnome/toolbar_preferences.rs` supplies native drag sources, drop targets and
+`src/gnome/toolbar_preferences.rs` supplies native drag gestures and
 keyboard reorder actions, refreshing open windows immediately.
 `src/gnome/format_bar.rs` places controls and filters overflow from the same
 visible-widget set. Shared format headers remember the actual entry page;

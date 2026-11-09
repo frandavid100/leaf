@@ -47,7 +47,7 @@ intentionally authored, so the normalization policy is deliberately limited;
 this is not a general proof of source-color intent.
 
 GNOME references: [native split controls](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/class.SplitButton.html),
-[drag and drop](https://docs.gtk.org/gtk4/drag-and-drop.html),
+[native drag gestures](https://docs.gtk.org/gtk4/class.GestureDrag.html),
 and [popover pointing rectangles](https://docs.gtk.org/gtk4/method.Popover.set_pointing_to.html).
 Public store screenshots remain David's responsibility. No Flathub, Weblate,
 new Orca scope, or occasional Windows release is started by this candidate.

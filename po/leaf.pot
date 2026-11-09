@@ -273,7 +273,7 @@ msgstr ""
 msgid "Bottom (mm)"
 msgstr ""
 
-#: src/gnome/toolbar_preferences.rs:150
+#: src/gnome/toolbar_preferences.rs:212
 msgid "Bottom Toolbar"
 msgstr ""
 
@@ -1053,7 +1053,7 @@ msgstr ""
 msgid "Effects"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:152 src/gnome/diagnostics/annotations.rs:170 src/gnome/diagnostics/annotations.rs:185 src/gnome/diagnostics/format136.rs:432 src/gnome/elements.rs:111 src/gnome/elements.rs:260 src/gnome/elements.rs:261 src/gnome/elements.rs:278 src/gnome/menus.rs:528 src/gnome/toolbar_preferences.rs:156
+#: src/gnome/diagnostics/annotations.rs:152 src/gnome/diagnostics/annotations.rs:170 src/gnome/diagnostics/annotations.rs:185 src/gnome/diagnostics/format136.rs:432 src/gnome/elements.rs:111 src/gnome/elements.rs:260 src/gnome/elements.rs:261 src/gnome/elements.rs:278 src/gnome/menus.rs:528 src/gnome/toolbar_preferences.rs:218
 msgid "Elements"
 msgstr ""
 
@@ -1065,7 +1065,7 @@ msgstr ""
 msgid "Embossed"
 msgstr ""
 
-#: src/gnome/toolbar_preferences.rs:161
+#: src/gnome/toolbar_preferences.rs:223
 msgid "Enabled items appear from left to right in list order. Other items are available in each group’s ⋮ menu. Drag rows or use Move Up and Move Down to reorder them."
 msgstr ""
 
@@ -1845,7 +1845,7 @@ msgstr ""
 msgid "More text options"
 msgstr ""
 
-#: src/gnome/toolbar_preferences.rs:98
+#: src/gnome/toolbar_preferences.rs:186
 msgid "Move Down"
 msgstr ""
 
@@ -1861,7 +1861,7 @@ msgstr ""
 msgid "Move Table by Dragging"
 msgstr ""
 
-#: src/gnome/toolbar_preferences.rs:97
+#: src/gnome/toolbar_preferences.rs:185
 msgid "Move Up"
 msgstr ""
 
@@ -2141,7 +2141,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:392 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:337 src/gnome/paragraph.rs:1265 src/gnome/tab.rs:335 src/gnome/tab.rs:631 src/gnome/toolbar_preferences.rs:154
+#: src/gnome/context.rs:131 src/gnome/context.rs:392 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:337 src/gnome/paragraph.rs:1265 src/gnome/tab.rs:335 src/gnome/tab.rs:631 src/gnome/toolbar_preferences.rs:216
 msgid "Paragraph"
 msgstr ""
 
@@ -2261,7 +2261,7 @@ msgstr ""
 msgid "RGB Color, for Example 2266AA"
 msgstr ""
 
-#: src/gnome/templates.rs:473 src/gnome/templates.rs:597 src/gnome/workspace.rs:495
+#: src/gnome/templates.rs:473 src/gnome/templates.rs:597 src/gnome/workspace.rs:496
 msgid "Recovered Document"
 msgstr ""
 
@@ -2813,7 +2813,7 @@ msgstr ""
 msgid "Show or Hide Sidebar (F9)"
 msgstr ""
 
-#: src/gnome/toolbar_preferences.rs:77
+#: src/gnome/toolbar_preferences.rs:165
 msgid "Show {label} in toolbar"
 msgstr ""
 
@@ -3057,7 +3057,7 @@ msgstr ""
 msgid "Templates Folder"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:393 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:429 src/gnome/diagnostics/register.rs:338 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/references.rs:334 src/gnome/tab.rs:287 src/gnome/tab.rs:322 src/gnome/tab.rs:632 src/gnome/toolbar_preferences.rs:155
+#: src/gnome/context.rs:134 src/gnome/context.rs:393 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:429 src/gnome/diagnostics/register.rs:338 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/references.rs:334 src/gnome/tab.rs:287 src/gnome/tab.rs:322 src/gnome/tab.rs:632 src/gnome/toolbar_preferences.rs:217
 msgid "Text"
 msgstr ""
 

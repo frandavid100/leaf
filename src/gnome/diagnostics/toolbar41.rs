@@ -121,7 +121,43 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert_eq!(state(&ui), before);
         // All three native preference groups support keyboard reordering and switches.
         let dialog = show_preferences(&window);
+        dialog.set_visible_page_name("toolbar");
         settle().await;
+        if std::env::var_os("LEAF_TOOLBAR_DND").is_some() {
+            window.set_title(Some("Leaf Toolbar41"));
+            let source = find_widget(&dialog, "toolbar-drag-paragraph-list")
+                .unwrap()
+                .compute_bounds(&window)
+                .unwrap();
+            let target = find_widget(&dialog, "toolbar-preference-paragraph-alignment")
+                .unwrap()
+                .compute_bounds(&window)
+                .unwrap();
+            eprintln!(
+                "TOOLBAR41_DRAG {} {} {} {}",
+                (source.x() + source.width() / 2.) as i32,
+                (source.y() + source.height() / 2.) as i32,
+                (target.x() + target.width() / 2.) as i32,
+                (target.y() + target.height() / 2.) as i32
+            );
+            for _ in 0..500 {
+                if wordcraft_gnome::preferences::toolbar("paragraph")[0].0 == "list" {
+                    break;
+                }
+                glib::timeout_future(std::time::Duration::from_millis(15)).await;
+            }
+            assert_eq!(
+                wordcraft_gnome::preferences::toolbar("paragraph")[0].0,
+                "list",
+                "real pointer drag must persist the new order"
+            );
+            click(&dialog, "toolbar-move-paragraph-list-1");
+            assert_eq!(
+                wordcraft_gnome::preferences::toolbar("paragraph")[0].0,
+                "alignment"
+            );
+            eprintln!("TOOLBAR41_DRAG_OK real-pointer=true saved=true keyboard-restore=true");
+        }
         for (group, id) in [
             ("paragraph", "list"),
             ("text", "italic"),
