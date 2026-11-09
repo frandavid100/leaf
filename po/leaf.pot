@@ -2889,7 +2889,7 @@ msgstr ""
 msgid "Square Root"
 msgstr ""
 
-#: src/gnome/diagnostics/workflows38.rs:157 src/gnome/diagnostics/workflows40.rs:72 src/gnome/diagnostics/workflows40.rs:297 src/gnome/diagnostics/workflows40.rs:461 src/gnome/navigation.rs:31
+#: src/gnome/diagnostics/workflows38.rs:157 src/gnome/diagnostics/workflows40.rs:72 src/gnome/diagnostics/workflows40.rs:305 src/gnome/diagnostics/workflows40.rs:469 src/gnome/navigation.rs:31
 msgid "Start"
 msgstr ""
 

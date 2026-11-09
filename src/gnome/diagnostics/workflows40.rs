@@ -237,7 +237,15 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             ),
             state
         );
+        // Let the actions-to-editor popup handoff finish before simulating
+        // the next user gesture. Resize must start from a drawn, pinned panel.
+        settle().await;
+        assert!(
+            style_menu.popover().unwrap().is_mapped(),
+            "Edit Style must open its panel"
+        );
         popover_pin(&style_menu.popover().unwrap()).set_active(true);
+        settle().await;
         window.set_default_size(420, 800);
         settle().await;
         assert!(ui.format_toolbar.is_mapped());
