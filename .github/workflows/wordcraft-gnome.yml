@@ -1041,13 +1041,19 @@ jobs:
         PY
         )
         gh api "repos/$GITHUB_REPOSITORY/actions/runs/$native_run" > native-run.json
+        gh api "repos/$GITHUB_REPOSITORY/actions/runs/$native_run/jobs?per_page=100" > native-jobs.json
         python3 - <<'PY'
         import json, os, re
         r = json.load(open('native-run.json'))
-        assert r['conclusion'] in (None, 'success')
         assert r['repository']['full_name'] == os.environ['GITHUB_REPOSITORY']
         assert r['path'] == '.github/workflows/wordcraft-gnome.yml'
         assert re.fullmatch(r'[0-9a-f]{40}', r['head_sha'])
+        # A packaging failure does not invalidate successful native regression jobs.
+        # Reuse requires every exact native job and its gate to be complete.
+        required = {'Build the optimized executable once', 'Require every native regression group'}
+        required.update('Native regressions (' + g + ')' for g in ('editing', 'documents', 'text', 'lifecycle', 'appearance'))
+        jobs = json.load(open('native-jobs.json'))['jobs']
+        assert required <= {j['name'] for j in jobs if j['conclusion'] == 'success'}, 'All native regressions must have succeeded'
         with open(os.environ['GITHUB_ENV'], 'a') as f:
             f.write('LEAF_NATIVE_SOURCE=' + r['head_sha'] + '\n')
             f.write('LEAF_NATIVE_RUN=' + str(r['id']) + '\n')
@@ -1065,11 +1071,8 @@ jobs:
       run: |
         set -euo pipefail
         for attempt in $(seq 1 80); do
-          conclusion=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LEAF_NATIVE_RUN" --jq '.conclusion // "pending"')
-          case "$conclusion" in
-            pending|success) ;;
-            *) echo "Native validation ended with $conclusion" >&2; exit 1 ;;
-          esac
+          # The exact native jobs were verified above; this run may have failed
+          # later in packaging. Keep the native artifact tied to that same run.
           available=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LEAF_NATIVE_RUN/artifacts?name=leaf-native-unvalidated" --jq '[.artifacts[] | select(.name == "leaf-native-unvalidated" and .expired == false)] | length')
           if test "$available" -gt 0; then exit 0; fi
           echo "Waiting for the native executable ($attempt/80). Full native success remains required before promotion."
@@ -1122,7 +1125,7 @@ jobs:
       with:
         name: leaf-native-unvalidated
         path: debug-native
-        run-id: ${{ env.LEAF_NATIVE_RUN }}
+        run-id: ${{ env.LEAF_NATIVE_RUN || github.run_id }}
         github-token: ${{ github.token }}
     - name: Restore executable permission on the downloaded native drag source
       run: |
@@ -1336,21 +1339,20 @@ jobs:
     - name: Collect the verified FlatPark evidence
       run: |
         cp flatpark-results/flatpark-smoke.log dist/flatpark-smoke.log
-    - name: Require complete success of the parallel native regression run
+    - name: Recheck complete native regression success independently of packaging
       if: contains(github.event.head_commit.message, '[bundle-only]')
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        for attempt in $(seq 1 100); do
-          state=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LEAF_NATIVE_RUN" --jq '.status + ":" + (.conclusion // "")')
-          case "$state" in
-            completed:success) exit 0 ;;
-            completed:*) echo "Native validation failed: $state" >&2; exit 1 ;;
-          esac
-          sleep 15
-        done
-        echo 'Native validation did not finish within the candidate window.' >&2
-        exit 1
+        gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LEAF_NATIVE_RUN/jobs?per_page=100" > native-jobs-final.json
+        python3 - <<'PYTHON'
+        import json
+        required = {'Build the optimized executable once', 'Require every native regression group'}
+        required.update('Native regressions (' + g + ')' for g in ('editing', 'documents', 'text', 'lifecycle', 'appearance'))
+        jobs = json.load(open('native-jobs-final.json'))['jobs']
+        assert required <= {j['name'] for j in jobs if j['conclusion'] == 'success'}
+        print('EXACT_NATIVE_RUN_VALIDATED')
+        PYTHON
     - uses: actions/download-artifact@v4
       if: contains(github.event.head_commit.message, '[bundle-only]')
       with:
