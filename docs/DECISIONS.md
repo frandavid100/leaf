@@ -1,5 +1,16 @@
 # Decisiones vigentes
 
+## 9/11/2026 — candidata 0.17 y nuevos issues
+
+David pide una RC con WordCraft 0.17 y #217, añadiendo los issues recientes
+#226–#232. Se adapta el par neutro predominante del HTML externo de Chrome;
+los colores locales intencionados se conservan. WordCraft sigue siendo el
+modelo, el renderizador y el historial. Preferencias solo guarda disposición
+de controles, nunca datos del documento. Las copias de documentos vivos siguen
+escribiéndose pero no se ofrecen como recuperación ni para descarte. No publicar
+ni cerrar por una validación parcial; registrar pruebas y límites de la candidata.
+
+
 ## Publicada y verificada automáticamente: 0.1.0-alpha.40
 
 Se publican los mismos bytes de la candidata tras superar todas las pruebas

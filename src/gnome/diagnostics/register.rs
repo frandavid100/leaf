@@ -25,8 +25,39 @@ pub(super) fn install_diagnostics(
     app: &Application,
     controls: DiagnosticControls<'_>,
 ) {
+    // Older formatting probes exercise the supported all-overflow configuration.
+    // The toolbar41 probe independently covers defaults, direct and overflow targets,
+    // preferences, reordering and resize. Keep the older interactions accessible.
+    let legacy = std::env::args().any(|a| a.ends_with("-test") || a == "--split-states-demo")
+        && !std::env::args()
+            .any(|a| a.starts_with("--workflows40-") || a.starts_with("--toolbar41-"));
+    if legacy {
+        for group in ["paragraph", "text", "elements"] {
+            let order = wordcraft_gnome::preferences::toolbar(group)
+                .into_iter()
+                .map(|(id, _)| (id, false))
+                .collect::<Vec<_>>();
+            wordcraft_gnome::preferences::set_toolbar(group, &order).unwrap();
+        }
+        if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+            tools.layout();
+        }
+    }
+    if std::env::args().any(|arg| arg == "--toolbar41-reopen-test") && host.tabs.n_pages() == 1 {
+        let (u, a) = (ui.clone(), app.clone());
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
+            toolbar41_checks::reopen(&u, &a)
+        });
+    }
+    if std::env::args().any(|arg| arg == "--toolbar41-ui-test") && host.tabs.n_pages() == 1 {
+        let (u, w, a) = (ui.clone(), window.clone(), app.clone());
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
+            toolbar41_checks::test(&u, &w, &a)
+        });
+    }
     if std::env::args().any(|arg| {
-        arg.starts_with("--workflows36-")
+        arg.starts_with("--toolbar41-")
+            || arg.starts_with("--workflows36-")
             || arg.starts_with("--workflows37-")
             || arg.starts_with("--workflows38-")
             || arg.starts_with("--workflows40-")

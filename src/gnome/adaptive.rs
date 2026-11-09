@@ -419,7 +419,7 @@ impl TextTools {
             "annotations" => wordcraft_gnome::t!("Annotations"),
             _ => wordcraft_gnome::t!("More Text Options…"),
         };
-        self.header.back(title, move || {
+        self.header.page(page, title, move || {
             if let Some(s) = weak.upgrade() {
                 if home {
                     s.home();
@@ -938,7 +938,9 @@ pub(super) fn install_text_pages(
 
     accessible_name(&font_repeat, wordcraft_gnome::t!("Apply Last Font"));
     font_repeat.set_tooltip_text(Some(wordcraft_gnome::t!("Apply Last Font")));
-    main.append(&property_split(&font_open, &font_repeat));
+    let font_row = property_split(&font_open, &font_repeat);
+    font_row.set_widget_name("format-row-text-font");
+    main.append(&font_row);
     let size_row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     size_row.append(&gtk::Image::from_icon_name("zoom-in-symbolic"));
     size_row.append(&gtk::Label::new(Some(wordcraft_gnome::t!("Size"))));
@@ -965,7 +967,9 @@ pub(super) fn install_text_pages(
     language_repeat.set_sensitive(false);
     accessible_name(&language_repeat, wordcraft_gnome::t!("Apply Last Language"));
     language_repeat.set_tooltip_text(Some(wordcraft_gnome::t!("Apply Last Language")));
-    main.append(&property_split(&language_button, &language_repeat));
+    let language_row = property_split(&language_button, &language_repeat);
+    language_row.set_widget_name("format-row-text-language");
+    main.append(&language_row);
     main.append(&palette.properties);
     main.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     main.append(more);

@@ -1,5 +1,15 @@
 # Hoja de ruta de Leaf
 
+## En preparación: candidata alpha.41
+
+WordCraft 0.17, pegado legible desde Chrome y revisión de la barra inferior
+(#107/#152/#217/#226–#230). Incluye también #231/#232: excluir trabajo vivo
+de recuperación y compactar Inicio sin desplazar la división lateral.
+La última release pública sigue siendo alpha.40. Los cierres y la candidata
+deben contrastarse con las comprobaciones de esta fuente, sin anticipar su éxito.
+[Alcance y validación](docs/ALPHA41_INTERFACE.md).
+
+
 
 <!-- published-alpha:start -->
 ## Última publicación verificada: 0.1.0-alpha.40

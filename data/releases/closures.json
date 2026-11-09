@@ -1,11 +1,16 @@
 {
-  "version": "0.1.0-alpha.40",
+  "version": "0.1.0-alpha.41",
   "issues": [
-    218,
-    219,
-    220,
-    221,
-    222
+    107,
+    152,
+    217,
+    226,
+    227,
+    228,
+    229,
+    230,
+    231,
+    232
   ],
-  "report": "docs/ALPHA40_INTERFACE.md"
+  "report": "docs/ALPHA41_INTERFACE.md"
 }

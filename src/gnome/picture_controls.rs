@@ -311,10 +311,10 @@ pub(super) fn install_picture_controls(
     root.remove(&hint);
     root.remove(&context);
     body.append(&context);
-    body.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-    body.append(&insert);
     scroll.set_child(Some(&body));
     root.append(&scroll);
+    root.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+    root.append(&insert);
     pop.set_child(Some(&root));
     menu.set_popover(Some(&pop));
     let state = Rc::new(PicturePopover {

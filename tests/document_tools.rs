@@ -60,7 +60,10 @@ fn inline_picture_history_selection_and_roundtrips() {
         let mut reopened = open_document(&path).unwrap();
         reopened.run("select.objects", &json!({"index":0})).unwrap();
         let (_, rw, rh) = pictures::selected(&reopened).unwrap();
-        assert!((rw - 90.0).abs() < 0.2 && (rh - 60.0).abs() < 0.2);
+        assert!(
+            (rw - 90.0).abs() < 0.2 && (rh - 45.0).abs() < 0.2,
+            "{ext}: {rw}x{rh}"
+        );
         assert!(!reopened.doc.media.is_empty());
     }
     pictures::delete(&mut s).unwrap();
@@ -343,7 +346,7 @@ fn inline_and_floating_pictures_move_to_the_destination_page_with_one_undo() {
 }
 
 #[test]
-fn a_rejected_cross_page_anchor_restores_the_original_picture() {
+fn a_cross_page_anchor_after_a_manual_break_moves_and_preserves_history() {
     let dir = folder();
     let image = fixture(&dir);
     let mut s = Session::new(Document::from_text("Source\nDestination"));
@@ -354,8 +357,20 @@ fn a_rejected_cross_page_anchor_restores_the_original_picture() {
     pictures::placement(&mut s, Some("left"), 6.).unwrap();
     let before = s.doc.clone();
     let depth = s.undo_depth();
-    assert!(pictures::drop_at(&mut s, 1, None, 100., 110.).is_err());
+    pictures::drop_at(&mut s, 1, None, 100., 110.).unwrap();
+    let after = s.doc.clone();
+    let pos = pictures::selected(&s).unwrap().0;
+    assert_eq!(s.layout().object(&pos, 1).unwrap().page, 1);
+    assert_eq!(s.undo_depth(), depth + 1);
+    s.run("edit.undo", &json!({})).unwrap();
     assert_eq!(s.doc, before);
-    assert_eq!(s.undo_depth(), depth);
+    s.run("edit.redo", &json!({})).unwrap();
+    assert_eq!(s.doc, after);
+    let path = dir.join("manual-break-drag.docx");
+    saving::save(&mut s, &path).unwrap();
+    let mut reopened = open_document(&path).unwrap();
+    reopened.run("select.objects", &json!({"index":0})).unwrap();
+    let pos = pictures::selected(&reopened).unwrap().0;
+    assert_eq!(reopened.layout().object(&pos, 1).unwrap().page, 1);
     std::fs::remove_dir_all(dir).unwrap();
 }

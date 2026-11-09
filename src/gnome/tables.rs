@@ -747,14 +747,14 @@ pub(super) fn install_table_controls(
     content.remove(&context);
     let body = gtk::Box::new(gtk::Orientation::Vertical, 6);
     body.append(&context);
-    body.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-    body.append(&insert);
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
     scroll.set_max_content_height(440);
     scroll.set_propagate_natural_height(true);
     scroll.set_child(Some(&body));
     content.append(&scroll);
+    content.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+    content.append(&insert);
     pop.set_child(Some(&content));
     menu.set_popover(Some(&pop));
     bar.append(&menu);

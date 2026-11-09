@@ -11,6 +11,9 @@ fn seed(root: &Path) {
     seed_named(root, "Notas.docx");
 }
 fn seed_named(root: &Path, name: &str) {
+    drop(seed_live(root, name));
+}
+fn seed_live(root: &Path, name: &str) -> Session {
     let before = copies(root).len();
     let mut session = Session::new(Document::new());
     session
@@ -32,6 +35,7 @@ fn seed_named(root: &Path, name: &str) {
         assert!(Instant::now() < deadline);
         std::thread::sleep(Duration::from_millis(10));
     }
+    session
 }
 fn copies(root: &Path) -> Vec<Vec<u8>> {
     let mut files = std::fs::read_dir(root)
@@ -119,5 +123,52 @@ fn confirmed_discard_rejects_stale_and_live_records_and_preserves_other_drafts()
     assert_eq!(restored.doc.plain_text(StoryRef::Body), "Recovered text ñ");
     drop(restored);
     assert_eq!(recovery::inventory(&root).unwrap().documents.len(), 1);
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn live_snapshots_are_hidden_and_normal_save_or_discard_never_offers_recovery() {
+    let root = std::env::temp_dir().join(format!("leaf-live-recovery-{}", std::process::id()));
+    std::fs::create_dir_all(&root).unwrap();
+    seed_named(&root, "Interrupted.docx");
+    let pending = recovery::inventory(&root).unwrap().documents;
+    assert_eq!(pending.len(), 1);
+    let mut live = seed_live(&root, "Live.docx");
+    // Inventory is independent, as with another tab or another window. A
+    // cancelled close leaves precisely this live ownership and dirty state.
+    for _ in 0..3 {
+        let listed = recovery::inventory(&root).unwrap().documents;
+        assert_eq!(listed.len(), 1);
+        assert_eq!(listed[0].id, pending[0].id);
+        live.recovery_tick();
+    }
+    let path = root.with_extension("saved.docx");
+    wordcraft_gnome::saving::save(&mut live, &path).unwrap();
+    live.finish_recovery();
+    drop(live);
+    assert_eq!(recovery::inventory(&root).unwrap().documents.len(), 1);
+    let mut discarded = seed_live(&root, "Discarded.docx");
+    discarded.discard_recovery_copy();
+    discarded.finish_recovery();
+    drop(discarded);
+    assert_eq!(recovery::inventory(&root).unwrap().documents.len(), 1);
+    let crash = seed_live(&root, "Crashed.docx");
+    assert_eq!(recovery::inventory(&root).unwrap().documents.len(), 1);
+    drop(crash); // Equivalent record ownership release to an interrupted process.
+    let listed = recovery::inventory(&root).unwrap().documents;
+    assert_eq!(listed.len(), 2);
+    assert!(listed.iter().any(|d| d.name == "Crashed.docx"));
+    let mut clean = Session::new(Document::new());
+    clean
+        .enable_recovery(root.clone(), Arc::new(|| {}))
+        .unwrap();
+    for _ in 0..30 {
+        clean.recovery_tick();
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    clean.finish_recovery();
+    drop(clean);
+    assert_eq!(recovery::inventory(&root).unwrap().documents.len(), 2);
+    std::fs::remove_file(path).unwrap();
     std::fs::remove_dir_all(root).unwrap();
 }

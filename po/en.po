@@ -3318,3 +3318,39 @@ msgstr "The Templates folder is unavailable."
 
 msgid "The recovery copy of “{name}” will be permanently deleted. This cannot be undone."
 msgstr "The recovery copy of “{name}” will be permanently deleted. This cannot be undone."
+
+msgid "Show {label} in toolbar"
+msgstr "Show {label} in toolbar"
+
+msgid "Move Up"
+msgstr "Move Up"
+
+msgid "Move Down"
+msgstr "Move Down"
+
+msgid "Bottom Toolbar"
+msgstr "Bottom Toolbar"
+
+msgid "General"
+msgstr "General"
+
+msgid "Enabled items appear from left to right in list order. Other items are available in each group’s ⋮ menu. Drag rows or use Move Up and Move Down to reorder them."
+msgstr "Enabled items appear from left to right in list order. Other items are available in each group’s ⋮ menu. Drag rows or use Move Up and Move Down to reorder them."
+
+msgid "Personal formatting tools and readable web paste"
+msgstr "Personal formatting tools and readable web paste"
+
+msgid "Choose and reorder Paragraph, Text and Elements buttons in Preferences. Changes apply to open windows and survive restarting; other commands stay in each group’s overflow menu."
+msgstr "Choose and reorder Paragraph, Text and Elements buttons in Preferences. Changes apply to open windows and survive restarting; other commands stay in each group’s overflow menu."
+
+msgid "Direct formatting pickers open above their own buttons. Overflow menus omit visible controls, List keeps bullets and numbering together, and insertion actions stay in a fixed footer."
+msgstr "Direct formatting pickers open above their own buttons. Overflow menus omit visible controls, List keeps bullets and numbering together, and insertion actions stay in a fixed footer."
+
+msgid "Toggle buttons, property pickers and toggles with options retain their behavior in the toolbar and overflow. Text Color opens its picker; reapplying the last color is available inside it."
+msgstr "Toggle buttons, property pickers and toggles with options retain their behavior in the toolbar and overflow. Text Color opens its picker; reapplying the last color is available inside it."
+
+msgid "Pasted Chrome web text adapts its predominant neutral theme colors for readability while retaining local colors, highlights and formatting. Firefox, Undo/Redo and document roundtrips are covered by regression tests."
+msgstr "Pasted Chrome web text adapts its predominant neutral theme colors for readability while retaining local colors, highlights and formatting. Firefox, Undo/Redo and document roundtrips are covered by regression tests."
+
+msgid "Update to WordCraft 0.17, including upstream fixes for moving floating pictures across manual page breaks and preserving a following heading when deleting an empty paragraph. Replacing a picture retains its width and uses the replacement’s proportions."
+msgstr "Update to WordCraft 0.17, including upstream fixes for moving floating pictures across manual page breaks and preserving a following heading when deleting an empty paragraph. Replacing a picture retains its width and uses the replacement’s proportions."

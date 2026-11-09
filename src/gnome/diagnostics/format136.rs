@@ -235,8 +235,6 @@ pub(super) fn format136_ui_test(
                 if [
                     "text-font-property",
                     "text-language",
-                    "text-ink",
-                    "text-highlight",
                     "paragraph-alignment",
                     "paragraph-more-spacing",
                     "paragraph-more-borders",

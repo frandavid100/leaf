@@ -133,10 +133,14 @@ pub(super) fn build_tab(
     sidebar_bars.append(&side_header);
     sidebar_toolbar.add_top_bar(&sidebar_bars);
     let sidebar_pages = gtk::Stack::new();
+    sidebar_pages.set_hhomogeneous(true);
     sidebar_pages.set_transition_type(gtk::StackTransitionType::Crossfade);
     sidebar_pages.set_transition_duration(180);
     let start_scroll = gtk::ScrolledWindow::new();
-    start_scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+    // The Start content must fit the allocated navigation width, never set it.
+    start_scroll.set_policy(gtk::PolicyType::External, gtk::PolicyType::Automatic);
+    start_scroll.set_propagate_natural_width(false);
+    start_scroll.set_min_content_width(0);
     start_scroll.set_child(Some(&template_slot));
     sidebar_pages.add_named(&start_scroll, Some("start"));
     let navigation_pages = gtk::Stack::new();

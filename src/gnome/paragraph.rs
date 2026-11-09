@@ -344,8 +344,11 @@ impl ParagraphPopover {
                     let before = s.doc.clone();
                     let result = (|| {
                         if clear {
-                            s.run("para.shading", &serde_json::json!({"color":null}))
-                                .map_err(|e| e.to_string())?;
+                            s.run(
+                                "para.shading",
+                                &serde_json::json!({"color":null,"paragraph":true}),
+                            )
+                            .map_err(|e| e.to_string())?;
                             s.join_next_undo();
                         }
                         if let Some(command) = args["command"].as_str() {
@@ -427,7 +430,9 @@ impl ParagraphPopover {
                     s.repeat_group(page);
                 }
             });
-            self.main.append(&property_split(&button, &repeat));
+            let row = property_split(&button, &repeat);
+            row.set_widget_name(&format!("format-row-paragraph-{page}"));
+            self.main.append(&row);
         }
         let weak = Rc::downgrade(self);
         button.connect_clicked(move |_| {
@@ -584,7 +589,7 @@ impl ParagraphPopover {
                 "shading",
                 "paragraph-shading",
                 "para.shading",
-                serde_json::json!({"color":self.shade.borrow().as_str()}),
+                serde_json::json!({"color":self.shade.borrow().as_str(),"paragraph":true}),
                 wordcraft_gnome::t!("Apply Last Settings"),
             ),
         ] {
@@ -637,7 +642,9 @@ impl ParagraphPopover {
             apply.set_child(Some(&gtk::Image::from_icon_name("view-refresh-symbolic")));
             apply.set_tooltip_text(Some(tip));
             accessible_name(&apply, tip);
-            self.main.append(&property_split(&open, &apply));
+            let row = property_split(&open, &apply);
+            row.set_widget_name(&format!("format-row-paragraph-{page}"));
+            self.main.append(&row);
         }
 
         self.option_row(
@@ -646,6 +653,9 @@ impl ParagraphPopover {
             "options",
         );
         self.stack.set_visible_child_name("main");
+        if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+            tools.filter_menus();
+        }
     }
     fn group_separator(&self) {
         if self.detail.first_child().is_some() {
@@ -704,7 +714,7 @@ impl ParagraphPopover {
                 let Some(ui) = s.ui.upgrade().filter(|u| !u.closed.get()) else {
                     return false;
                 };
-                let args = serde_json::json!({"color":hex});
+                let args = serde_json::json!({"color":hex,"paragraph":true});
                 match immediate_format(&ui, "para.shading", args.clone()) {
                     Ok(()) => {
                         s.shade.replace(hex.into());
@@ -726,7 +736,7 @@ impl ParagraphPopover {
             wordcraft_gnome::t!("No Shading"),
             "paragraph-shade-none",
             "para.shading",
-            serde_json::json!({"color":null}),
+            serde_json::json!({"color":null,"paragraph":true}),
         );
     }
     pub(super) fn page(self: &Rc<Self>, page: &str) {
@@ -745,7 +755,7 @@ impl ParagraphPopover {
             _ => wordcraft_gnome::t!("More Paragraph Options"),
         };
         let nested = matches!(page, "bullets" | "numbering");
-        self.header.back(title, move || {
+        self.header.page(page, title, move || {
             if let Some(s) = weak.upgrade() {
                 if nested {
                     s.page("list");

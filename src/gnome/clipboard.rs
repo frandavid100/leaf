@@ -227,7 +227,7 @@ async fn rich_clipboard(clipboard: &gdk::Clipboard) -> Option<serde_json::Value>
         return None;
     }
     Some(if mime == "text/html" {
-        serde_json::json!({"html":text})
+        serde_json::json!({"html":wordcraft_gnome::clipboard_html::for_paste(&text)})
     } else {
         serde_json::json!({"rtf":text})
     })

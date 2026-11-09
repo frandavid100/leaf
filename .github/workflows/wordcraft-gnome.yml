@@ -187,12 +187,25 @@ jobs:
           grep -q WORKFLOWS40_UI_OK "workflows40-native-$language.log"
           XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 120s bash tools/workflows40-folder-test.sh
         done
+    - name: Verify customizable toolbar, anchors and a cold preference reload
+      if: ${{ matrix.group == 'editing' }}
+      run: |
+        set -o pipefail
+        for language in en es; do
+          config=$(mktemp -d)
+          state=$(mktemp -d)
+          for probe in ui reopen; do
+            XDG_CONFIG_HOME="$config" XDG_STATE_HOME="$state" LANGUAGE=$language GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s target/release/wordcraft-gnome --toolbar41-$probe-test 2>&1 | tee "toolbar41-$language-$probe.log"
+            grep -Eq 'TOOLBAR41_(UI|REOPEN)_OK' "toolbar41-$language-$probe.log"
+          done
+        done
     - uses: actions/upload-artifact@v4
       if: ${{ matrix.group == 'editing' && (always()) }}
       with:
         name: leaf-alpha40-native
         path: |
           workflows40-*.log
+          toolbar41-*.log
           folder40-*.log
         retention-days: 7
     - uses: actions/upload-artifact@v4
@@ -463,19 +476,17 @@ jobs:
         set -o pipefail
         # Feature work may reuse a locked transitive crate in the frontend.
         # Preserve every existing dependency, engine package, profile and patch.
-        git diff --exit-code 2cd4ef308650686f5b71175c57b5875eb441dd8c -- craft-i18n.rev vendor patches
+        git diff --exit-code d9f5e5353d4acf38f6b551714307ac9bcb356fe1 -- craft-i18n.rev vendor patches
         python3 - <<'WORDCRAFT_BOUNDARY'
         import subprocess,tomllib
         from pathlib import Path
-        base='2cd4ef308650686f5b71175c57b5875eb441dd8c'
+        base='d9f5e5353d4acf38f6b551714307ac9bcb356fe1'
         def before(path):return tomllib.loads(subprocess.check_output(['git','show',f'{base}:{path}'],text=True))
         old=before('Cargo.toml');new=tomllib.loads(Path('Cargo.toml').read_text())
         expected_dependencies = dict(old['dependencies'])
-        # Adaptive dialogs use the existing libadwaita crate's 1.5 API.
-        # Allow precisely this feature change, preserving its version and all
-        # other dependency specifications, profiles, patches and lock entries.
-        assert expected_dependencies['adw']['features'] == ['v1_4']
-        expected_dependencies['adw'] = {**expected_dependencies['adw'], 'features': ['v1_5']}
+        # The reviewed base records David's explicitly authorized 0.17 upgrade.
+        # Frontend work still preserves its existing dependencies and engine.
+        assert expected_dependencies['adw']['features'] == ['v1_5']
         assert all(new['dependencies'].get(name)==spec for name,spec in expected_dependencies.items())
         assert old.get('patch')==new.get('patch')
         assert old.get('profile')==new.get('profile')
@@ -537,7 +548,7 @@ jobs:
     - name: Identificar versión de prueba
       run: |
         ./target/release/wordcraft-gnome --version | tee version.txt
-        grep -q "Leaf 0.1.0-alpha.40" version.txt
+        grep -q "Leaf 0.1.0-alpha.41" version.txt
       if: ${{ matrix.group == 'appearance' }}
     - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
       run: |
@@ -1351,9 +1362,9 @@ jobs:
         cp packaging/RELEASE_NOTES.md dist/RELEASE_NOTES.md
         python3 - <<'PYTHON'
         import json, os, pathlib
-        assert json.load(open('data/releases/closures.json'))['version'] == '0.1.0-alpha.40'
+        assert json.load(open('data/releases/closures.json'))['version'] == '0.1.0-alpha.41'
         pathlib.Path('dist/candidate.json').write_text(json.dumps({
-            'version': '0.1.0-alpha.40', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+            'version': '0.1.0-alpha.41', 'source': os.environ['LEAF_CANDIDATE_SHA'],
             'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
             'native_source': os.environ['LEAF_NATIVE_SHA'],
             'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
@@ -1367,7 +1378,7 @@ jobs:
         python3 - <<'PYTHON'
         from pathlib import Path
         from zipfile import ZipFile, ZIP_DEFLATED
-        with ZipFile("dist/Leaf-0.1.0-alpha.40-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
+        with ZipFile("dist/Leaf-0.1.0-alpha.41-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
             for source in sorted(Path("tests/fixtures/dictionary84").iterdir()):
                 if source.is_file(): archive.write(source, "Leaf-dictionary-test/" + source.name)
         PYTHON
@@ -1429,7 +1440,7 @@ jobs:
     - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
       run: |
         set -o pipefail
-        xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.40-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+        xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.41-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
         grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
     - uses: actions/upload-artifact@v4
       if: always()

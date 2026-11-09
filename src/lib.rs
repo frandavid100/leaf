@@ -3,6 +3,7 @@
 
 extern crate self as wordcraft_gnome;
 pub mod captions;
+pub mod clipboard_html;
 pub mod highlight;
 pub mod i18n;
 
@@ -186,3 +187,5 @@ pub mod document_fonts;
 pub mod format_painter;
 
 mod search_lines;
+
+pub mod toolbar;

@@ -3318,3 +3318,39 @@ msgstr "La carpeta de plantillas no está disponible."
 
 msgid "The recovery copy of “{name}” will be permanently deleted. This cannot be undone."
 msgstr "La copia de recuperación de «{name}» se eliminará permanentemente. Esta acción no se puede deshacer."
+
+msgid "Show {label} in toolbar"
+msgstr "Mostrar {label} en la barra"
+
+msgid "Move Up"
+msgstr "Subir"
+
+msgid "Move Down"
+msgstr "Bajar"
+
+msgid "Bottom Toolbar"
+msgstr "Barra inferior"
+
+msgid "General"
+msgstr "General"
+
+msgid "Enabled items appear from left to right in list order. Other items are available in each group’s ⋮ menu. Drag rows or use Move Up and Move Down to reorder them."
+msgstr "Los elementos activados aparecen de izquierda a derecha en el orden de la lista. Los demás están en el menú ⋮ de cada grupo. Arrastra las filas o usa Subir y Bajar para cambiar el orden."
+
+msgid "Personal formatting tools and readable web paste"
+msgstr "Herramientas de formato personales y pegado web legible"
+
+msgid "Choose and reorder Paragraph, Text and Elements buttons in Preferences. Changes apply to open windows and survive restarting; other commands stay in each group’s overflow menu."
+msgstr "Elige y ordena los botones de Párrafo, Texto y Elementos en Preferencias. Los cambios se aplican a las ventanas abiertas y se conservan al reiniciar; las demás acciones siguen en el menú de cada grupo."
+
+msgid "Direct formatting pickers open above their own buttons. Overflow menus omit visible controls, List keeps bullets and numbering together, and insertion actions stay in a fixed footer."
+msgstr "Los selectores directos se abren sobre su botón. Los menús omiten los controles visibles, Lista reúne viñetas y numeración, y las acciones de inserción permanecen en un pie fijo."
+
+msgid "Toggle buttons, property pickers and toggles with options retain their behavior in the toolbar and overflow. Text Color opens its picker; reapplying the last color is available inside it."
+msgstr "Los botones de activación, los selectores y los botones con opciones mantienen su comportamiento en la barra y en el menú. Color del texto abre su selector; dentro se puede volver a aplicar el último color."
+
+msgid "Pasted Chrome web text adapts its predominant neutral theme colors for readability while retaining local colors, highlights and formatting. Firefox, Undo/Redo and document roundtrips are covered by regression tests."
+msgstr "El texto web pegado desde Chrome adapta los colores neutros predominantes del tema para resultar legible y conserva los colores locales, el resaltado y el formato. Las regresiones comprueban Firefox, Deshacer/Rehacer y el guardado y reapertura."
+
+msgid "Update to WordCraft 0.17, including upstream fixes for moving floating pictures across manual page breaks and preserving a following heading when deleting an empty paragraph. Replacing a picture retains its width and uses the replacement’s proportions."
+msgstr "Actualización a WordCraft 0.17, con las correcciones del motor para mover imágenes flotantes entre páginas tras un salto manual y conservar el título siguiente al borrar un párrafo vacío. Sustituir una imagen conserva su anchura y usa las proporciones de la nueva."

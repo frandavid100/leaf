@@ -134,7 +134,7 @@ fn row(title: &str, name: &str) -> (gtk::Box, gtk::Box) {
 // slot is common to all cards; only the proportionally sized page owns a card.
 fn preview_slot() -> gtk::Box {
     let slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    slot.set_size_request(48, 68);
+    slot.set_size_request(30, 42);
     slot.set_vexpand(false);
     slot.set_valign(gtk::Align::Center);
     let icon = gtk::Image::from_icon_name("text-x-generic-symbolic");
@@ -144,7 +144,7 @@ fn preview_slot() -> gtk::Box {
     slot
 }
 fn set_preview(slot: &gtk::Box, image: &wordcraft_gnome::PageImage) {
-    let scale = (48. / image.width as f64).min(68. / image.height as f64);
+    let scale = (30. / image.width as f64).min(42. / image.height as f64);
     let width = (image.width as f64 * scale).round().max(1.) as i32;
     let height = (image.height as f64 * scale).round().max(1.) as i32;
     let paintable = page_paintable::new(
@@ -163,7 +163,7 @@ fn set_preview(slot: &gtk::Box, image: &wordcraft_gnome::PageImage) {
     picture.set_valign(gtk::Align::Center);
     picture.set_vexpand(false);
     picture.set_content_fit(gtk::ContentFit::Contain);
-    picture.add_css_class("card");
+    picture.add_css_class("start-paper-preview");
     clear_box(slot);
     slot.append(&picture);
 }
@@ -173,6 +173,10 @@ fn card_title(name: &str) -> gtk::Label {
     label.set_xalign(0.);
     label.set_hexpand(true);
     label.set_max_width_chars(20);
+    label.set_width_chars(1);
+    label.set_wrap(true);
+    label.set_wrap_mode(gtk::pango::WrapMode::WordChar);
+    label.set_lines(2);
     label
 }
 fn reload(ui: &Rc<Ui>) {
@@ -301,7 +305,11 @@ impl Gallery {
         text.set_xalign(0.);
         text.add_css_class("dim-label");
         footer.append(&text);
-        let button = gtk::Button::with_label(wordcraft_gnome::t!("Open Templates Folder"));
+        let button = gtk::Button::new();
+        let label = gtk::Label::new(Some(wordcraft_gnome::t!("Open Templates Folder")));
+        label.set_wrap(true);
+        label.set_max_width_chars(20);
+        button.set_child(Some(&label));
         button.set_widget_name("start-open-template-folder");
         button.set_tooltip_text(Some(&folder.display().to_string()));
         accessible_name(&button, wordcraft_gnome::t!("Open Templates Folder"));
@@ -420,7 +428,10 @@ impl Gallery {
             };
             gallery.scan.borrow_mut().take();
             if gallery.rescan.replace(false) {
+                // A restore/discard in another tab supersedes this inventory.
+                // Never briefly expose stale rows (or their discard buttons).
                 gallery.refresh_recovery();
+                return;
             }
             match result {
                 Ok(Ok(inventory)) => {

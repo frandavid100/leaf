@@ -110,7 +110,7 @@ impl ElementsPanel {
             "toc" => wordcraft_gnome::t!("Table of Contents"),
             _ => wordcraft_gnome::t!("Elements"),
         };
-        self.header.back(title, move || {
+        self.header.page(page, title, move || {
             if let Some(s) = weak.upgrade() {
                 s.home();
             }
@@ -187,7 +187,14 @@ impl ElementsPanel {
             .set_tooltip_text((!targeted).then_some(wordcraft_gnome::t!(
                 "Place the caret in a table of contents."
             )));
-        self.toc.append(&properties);
+        let options = gtk::Box::new(gtk::Orientation::Vertical, 6);
+        let scroll = gtk::ScrolledWindow::new();
+        scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+        scroll.set_max_content_height(400);
+        scroll.set_propagate_natural_height(true);
+        options.append(&properties);
+        scroll.set_child(Some(&options));
+        self.toc.append(&scroll);
         let label = gtk::Label::new(Some(wordcraft_gnome::t!("Current Table of Contents")));
         label.set_xalign(0.);
         label.add_css_class("heading");
@@ -206,7 +213,7 @@ impl ElementsPanel {
         hint.set_max_width_chars(30);
         hint.add_css_class("dim-label");
         hint.set_visible(false);
-        self.toc.append(&hint);
+        options.append(&hint);
         self.toc
             .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
         self.toc.append(&insert);
@@ -280,18 +287,8 @@ pub(super) fn install_elements(ui: &Rc<Ui>, bar: &gtk::Box) -> Rc<ElementsPanel>
     elements_home(&home, &elements_menu().upcast::<gio::MenuModel>());
     stack.add_named(&home, Some("home"));
     let toc = gtk::Box::new(gtk::Orientation::Vertical, 6);
-    let scroll = gtk::ScrolledWindow::new();
-    scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
-    scroll.set_max_content_height(480);
-    scroll.set_propagate_natural_height(true);
-    scroll.set_child(Some(&toc));
-    stack.add_named(&scroll, Some("toc"));
-    let pages_scroll = gtk::ScrolledWindow::new();
-    pages_scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
-    pages_scroll.set_max_content_height(500);
-    pages_scroll.set_propagate_natural_height(true);
-    pages_scroll.set_child(Some(&stack));
-    root.append(&pages_scroll);
+    stack.add_named(&toc, Some("toc"));
+    root.append(&stack);
     pop.set_child(Some(&root));
     menu.set_popover(Some(&pop));
     let s = Rc::new(ElementsPanel {
@@ -343,6 +340,11 @@ fn elements_home(root: &gtk::Box, model: &gio::MenuModel) {
                 .and_then(|v| v.str().map(str::to_owned))
             {
                 button.set_action_name(Some(&action));
+                let id = action
+                    .trim_start_matches("win.")
+                    .trim_start_matches("elements-")
+                    .trim_start_matches("insert-");
+                button.set_widget_name(&format!("format-row-elements-{id}"));
             }
             root.append(&button);
         }

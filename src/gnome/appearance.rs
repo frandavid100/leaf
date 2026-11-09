@@ -79,6 +79,7 @@ pub(super) fn install_css() {
       .document-scroll { background: @window_bg_color; }
       .document-sheet { background: white; border-radius: 6px; box-shadow: 0 1px 4px alpha(black, 0.15); }
       .leaf-dark-document .document-sheet, .leaf-dark-document .thumbnail-sheet { background: #333333; }
+      .start-paper-preview { border-radius: 2px; background: white; box-shadow: 0 1px 2px alpha(black, 0.16); }
       .thumbnail-sheet { background: white; border-radius: 6px; border: 1px solid alpha(black, 0.12); background-clip: content-box; }
       .thumbnail-button { padding: 8px 12px; min-width: 0; min-height: 0; }
       .thumbnail-button.selected-thumb { background: alpha(@window_fg_color, 0.09); }

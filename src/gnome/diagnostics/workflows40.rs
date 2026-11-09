@@ -166,10 +166,13 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         .unwrap();
         alignment.emit_clicked();
         assert_eq!(selection_paragraph(&ui)["align"], "center");
-        toggle(&ui, "bullets").emit_clicked();
-        assert!(toggle(&ui, "bullets").is_active());
-        toggle(&ui, "numbering").emit_clicked();
-        assert!(toggle(&ui, "numbering").is_active());
+        click(&ui, "format-quick-list");
+        let panel = ui.paragraph.borrow().as_ref().unwrap().clone();
+        assert_eq!(panel.header.label.text(), wordcraft_gnome::t!("List"));
+        assert!(!panel.header.arrow.is_visible());
+        panel.page("bullets");
+        assert!(panel.header.arrow.is_visible());
+        panel.popover.upgrade().unwrap().popdown();
         let style_menu = format_button(&ui, "style-menu").unwrap();
         style_menu.popup();
         settle().await;

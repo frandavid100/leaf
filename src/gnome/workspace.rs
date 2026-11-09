@@ -329,7 +329,10 @@ pub(super) fn blank_tab(app: &Application, host: &Rc<Workspace>) {
 pub(super) fn show_preferences(parent: &ApplicationWindow) -> adw::PreferencesDialog {
     let dialog = adw::PreferencesDialog::new();
     dialog.set_title(wordcraft_gnome::t!("Preferences"));
+    toolbar_preferences::add(&dialog);
     let page = adw::PreferencesPage::new();
+    page.set_title(wordcraft_gnome::t!("General"));
+    page.set_icon_name(Some("preferences-system-symbolic"));
     let identity = adw::PreferencesGroup::new();
     let name = adw::EntryRow::new();
     name.set_title(wordcraft_gnome::t!("Author Name"));

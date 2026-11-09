@@ -280,3 +280,15 @@ format validation and spelling when a language is used.
 [src/gnome/dictionaries.rs](../src/gnome/dictionaries.rs) owns the weak/cancellable
 folder and import UI; the native/Flatpak chooser returns the authorized path.
 [Issue #84](ISSUE84_DICTIONARIES.md) records precedence, checks and GNOME OS limits.
+
+
+## Customizable bottom toolbar
+
+`src/toolbar.rs` owns stable preference identifiers, defaults and sanitization.
+`src/preferences.rs` persists order and switches independently of documents.
+`src/gnome/toolbar_preferences.rs` supplies native drag sources, drop targets and
+keyboard reorder actions, refreshing open windows immediately.
+`src/gnome/format_bar.rs` places controls and filters overflow from the same
+visible-widget set. Shared format headers remember the actual entry page;
+popover pointing rectangles use the launcher bounds without transferring callback
+ownership. Element bodies keep their internal scrolling and fixed insertion footer.

@@ -534,6 +534,13 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                     return glib::ControlFlow::Continue;
                 }
                 settled.set(0);
+                let body = find_widget(&pop, "text-ink").unwrap();
+                if !text_pointer_target("TEXT18_INK_REOPEN", &pop, &body) {
+                    return glib::ControlFlow::Continue;
+                }
+                phase.set(12);
+            }
+            12 if tools.stack.visible_child_name().as_deref() == Some("detail") => {
                 let body = find_widget(&pop, "text-ink-apply").unwrap();
                 if !text_pointer_target("TEXT18_INK_BODY", &pop, &body) {
                     return glib::ControlFlow::Continue;
@@ -541,7 +548,7 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 phase.set(3);
             }
             3 if selection_character(&u)["color"] == json!({"Rgb":[28,113,216]}) => {
-                assert_eq!(tools.stack.visible_child_name().as_deref(), Some("main"));
+                assert_eq!(tools.stack.visible_child_name().as_deref(), Some("detail"));
                 select_paragraph(&u, 2);
                 settled.set(0);
                 phase.set(9);
@@ -558,6 +565,7 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 phase.set(10);
             }
             10 if selection_character(&u)["color"] == json!({"Rgb":[28,113,216]}) => {
+                tools.home();
                 let arrow = palette.underline.clone().upcast::<gtk::Widget>();
                 if !text_pointer_target("TEXT18_UNDERLINE_ARROW", &pop, &arrow) {
                     return glib::ControlFlow::Continue;

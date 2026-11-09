@@ -201,3 +201,30 @@ pub fn set_template_folder(path: &std::path::Path) -> Result<(), String> {
 pub fn reset_template_folder() -> Result<(), String> {
     update("template_folder", serde_json::Value::Null)
 }
+
+pub fn toolbar(group: &str) -> Vec<(String, bool)> {
+    crate::toolbar::normalize(group, &read()["toolbar"][group])
+}
+pub fn set_toolbar(group: &str, order: &[(String, bool)]) -> Result<(), String> {
+    if crate::toolbar::tools(group).is_empty() {
+        return Err("Unknown toolbar group".into());
+    }
+    let value = serde_json::Value::Array(
+        order
+            .iter()
+            .map(|(id, on)| serde_json::json!({"id":id,"visible":on}))
+            .collect(),
+    );
+    let normalized = crate::toolbar::normalize(group, &value);
+    let mut settings = read()["toolbar"].as_object().cloned().unwrap_or_default();
+    settings.insert(
+        group.into(),
+        serde_json::Value::Array(
+            normalized
+                .iter()
+                .map(|(id, on)| serde_json::json!({"id":id,"visible":on}))
+                .collect(),
+        ),
+    );
+    update("toolbar", serde_json::Value::Object(settings))
+}

@@ -22,6 +22,7 @@ pub(super) struct FormatHeader {
     pub(super) back: FormatBack,
     pub(super) parent_back: FormatBack,
     pub(super) title: String,
+    pub(super) entry_page: RefCell<Option<String>>,
 }
 impl FormatHeader {
     pub(super) fn home(&self) {
@@ -40,6 +41,15 @@ impl FormatHeader {
         self.button.set_can_target(true);
         self.button.set_focusable(true);
         self.back.replace(Some(Rc::new(callback)));
+    }
+    pub(super) fn page(&self, page: &str, label: &str, callback: impl Fn() + 'static) {
+        self.back(label, callback);
+        if self.entry_page.borrow().as_deref() == Some(page) {
+            self.arrow.set_visible(false);
+            self.button.set_can_target(false);
+            self.button.set_focusable(false);
+            self.back.borrow_mut().take();
+        }
     }
 }
 #[derive(Default)]
@@ -244,6 +254,14 @@ pub(super) fn format_popover_header(
         back,
         parent_back: Rc::new(RefCell::new(None)),
         title: title.into(),
+        entry_page: RefCell::new(None),
+    });
+    let weak_header = Rc::downgrade(&h);
+    pop.connect_closed(move |p| {
+        p.set_pointing_to(None::<&gdk::Rectangle>);
+        if let Some(h) = weak_header.upgrade() {
+            h.entry_page.borrow_mut().take();
+        }
     });
     h.home();
     group

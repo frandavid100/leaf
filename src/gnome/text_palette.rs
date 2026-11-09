@@ -49,6 +49,11 @@ impl TextPalette {
                     "format-text-italic-symbolic"
                 },
             );
+            button.set_widget_name(if button == &ui.format_bold {
+                "format-row-text-bold"
+            } else {
+                "format-row-text-italic"
+            });
             root.append(button);
         }
         let superscript = gtk::CheckButton::with_label(wordcraft_gnome::t!("Superscript"));
@@ -58,6 +63,10 @@ impl TextPalette {
             wordcraft_gnome::t!("Superscript"),
             "format-text-rich-symbolic",
         );
+        let superscript_row = gtk::Box::new(gtk::Orientation::Vertical, 0);
+        superscript_row.set_widget_name("format-row-text-superscript");
+        superscript_row.append(&superscript);
+        root.append(&superscript_row);
         let underline_check = gtk::CheckButton::with_label(wordcraft_gnome::t!("Underline"));
         let strike_check = gtk::CheckButton::with_label(wordcraft_gnome::t!("Strikethrough"));
         let mut buttons = Vec::new();
@@ -96,6 +105,11 @@ impl TextPalette {
             button.set_tooltip_text(Some(&label));
             accessible_name(&button, &label);
             row.append(&button);
+            row.set_widget_name(if name == "text-underline" {
+                "format-row-text-underline"
+            } else {
+                "format-row-text-strike"
+            });
             root.append(&row);
             buttons.push(button);
         }
@@ -139,7 +153,15 @@ impl TextPalette {
             content.append(&value);
             // Lower property rows have no navigation arrow.
             open.set_child(Some(&content));
-            properties.append(&property_split(&open, &apply));
+            open.set_widget_name(name);
+            let row = gtk::Box::new(gtk::Orientation::Vertical, 0);
+            row.set_widget_name(if name == "text-ink" {
+                "format-row-text-ink"
+            } else {
+                "format-row-text-highlight"
+            });
+            row.append(&open);
+            properties.append(&row);
             configs.push((open, apply, value));
         }
         let (ink, ink_apply, ink_value) = configs.remove(0);
@@ -414,6 +436,11 @@ impl TextPalette {
             "ink-choice-auto"
         } else {
             "highlight-choice-none"
+        });
+        root.append(if name == "ink" {
+            &self.ink_apply
+        } else {
+            &self.highlight_apply
         });
         root.append(&clear);
         let weak = Rc::downgrade(self);
