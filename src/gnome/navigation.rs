@@ -26,8 +26,8 @@ fn navigation_choice(ui: &Ui) -> gtk::Box {
 // Shared native Navigation and Review sidebar.
 pub(super) fn refresh_sidebar_title(ui: &Ui) {
     let start = ui.sidebar_pages.visible_child_name().as_deref() == Some("start");
-    ui.sidebar_selector.set_visible(!start);
-    ui.start_footer.set_visible(start);
+    // Stack controls mapping. Keep both children measurable so its homogeneous
+    // height also reserves wrapped translated labels on the inactive page.
     ui.sidebar_footer
         .set_visible_child_name(if start { "start" } else { "navigation" });
     let label = if start {

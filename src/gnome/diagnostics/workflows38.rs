@@ -164,7 +164,7 @@ async fn check(ui: &Rc<Ui>, has_templates: bool, has_recovery: bool) {
         ui.sidebar_pages.visible_child_name().as_deref(),
         Some(if choices { "start" } else { "navigation" })
     );
-    assert_eq!(ui.sidebar_selector.is_visible(), !choices);
+    assert_eq!(ui.sidebar_selector.is_mapped(), !choices);
     assert!(
         ui.sidebar.sidebar().unwrap().width() <= 260,
         "Start headings must wrap without widening the sidebar"

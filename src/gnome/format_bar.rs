@@ -617,6 +617,8 @@ fn connect_picker(
                         .set_transition_type(gtk::StackTransitionType::None);
                     if let Some(page) = page {
                         panel.prepare(page);
+                    } else if let Some(page) = panel.requested_page.take() {
+                        panel.prepare(&page);
                     } else {
                         panel.home();
                     }

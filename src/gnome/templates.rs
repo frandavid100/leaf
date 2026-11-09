@@ -284,7 +284,7 @@ impl Gallery {
         clear_box(&ui.start_footer);
         let button = gtk::Button::new();
         let label = gtk::Label::new(Some(wordcraft_gnome::t!("Open Templates Folder")));
-        label.set_wrap(true);
+        label.set_ellipsize(gtk::pango::EllipsizeMode::End);
         label.set_max_width_chars(20);
         label.set_width_chars(1);
         button.set_child(Some(&label));

@@ -320,7 +320,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         until(|| find_widget(&start.start_footer, "start-open-template-folder").is_some()).await;
         settle().await;
         assert_eq!(start.sidebar_title.text(), wordcraft_gnome::t!("Start"));
-        assert!(!start.sidebar_selector.is_visible());
+        assert!(!start.sidebar_selector.is_mapped());
         assert!(start.start_footer.is_mapped());
         assert!(start.sidebar_footer.height() > 0);
         let y = first_page_y(&start);
@@ -332,7 +332,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
                 start.sidebar_pages.visible_child_name().as_deref(),
                 Some("navigation")
             );
-            assert!(start.sidebar_selector.is_visible());
+            assert!(start.sidebar_selector.is_mapped());
             assert!((first_page_y(&start) - y).abs() < 1.5);
             apply_user_edit(&start, Edit::Undo);
             settle().await;
@@ -341,7 +341,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
                 start.sidebar_pages.visible_child_name().as_deref(),
                 Some("start")
             );
-            assert!(!start.sidebar_selector.is_visible());
+            assert!(!start.sidebar_selector.is_mapped());
             assert!(start.document_box.has_focus());
             assert!((first_page_y(&start) - y).abs() < 1.5);
             apply_user_edit(&start, Edit::Redo);

@@ -11,6 +11,7 @@ pub(super) struct ElementsPanel {
     borrowed: RefCell<Vec<(gtk::Popover, gtk::Widget, Rc<FormatHeader>)>>,
     toc: gtk::Box,
     active: RefCell<String>,
+    pub(super) requested_page: RefCell<Option<String>>,
     displayed: RefCell<Option<(u64, u64, wordcraft_engine::Selection)>>,
 }
 impl ElementsPanel {
@@ -46,10 +47,17 @@ impl ElementsPanel {
         self.stack.set_visible_child_name("home");
     }
     pub(super) fn show(self: &Rc<Self>, page: &str) {
-        self.prepare(page);
-        if let Some(owner) = self.pop.parent().and_downcast::<gtk::MenuButton>() {
-            owner.popup();
+        if self.ui.upgrade().is_none_or(|ui| ui.closed.get()) {
+            return;
         }
+        if self.pop.is_visible() && self.pop.parent().as_ref() == Some(self.menu.upcast_ref()) {
+            self.prepare(page);
+            return;
+        }
+        // The native factory prepares the requested page before mapping. Opening
+        // home first and replacing it can invalidate the popup's surface layout.
+        self.requested_page.replace(Some(page.into()));
+        self.menu.popup();
     }
     pub(super) fn prepare(self: &Rc<Self>, page: &str) {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
@@ -305,14 +313,17 @@ pub(super) fn install_elements(ui: &Rc<Ui>, bar: &gtk::Box) -> Rc<ElementsPanel>
         borrowed: RefCell::new(Vec::new()),
         toc,
         active: RefCell::new("home".into()),
+        requested_page: RefCell::new(None),
         displayed: RefCell::new(None),
     });
     s.home();
     let weak = Rc::downgrade(&s);
     s.pop.connect_closed(move |_| {
         if let Some(s) = weak.upgrade() {
-            s.restore();
-            s.home();
+            if !s.ui.upgrade().is_some_and(|ui| ui.format_reflowing.get()) {
+                s.restore();
+                s.home();
+            }
         }
     });
     s

@@ -395,6 +395,9 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert!(blank.start_footer.is_mapped());
         assert!(!blank.sidebar_selector.is_mapped());
         let footer_y = blank.start_footer.compute_bounds(&window).unwrap().y();
+        let window_before = (window.width(), window.height(), blank.sidebar.height());
+        let footer_stack_before = blank.sidebar_footer.compute_bounds(&window).unwrap();
+        let footer_child_before = blank.start_footer.compute_bounds(&window).unwrap();
         let preview = content.first_child().unwrap();
         assert!((168..=170).contains(&preview.width()));
         assert!(preview.height() >= 210);
@@ -407,7 +410,14 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
                 <= 2
         );
         assert!(
-            (blank.sidebar_selector.compute_bounds(&window).unwrap().y() - footer_y).abs() < 1.
+            (blank.sidebar_selector.compute_bounds(&window).unwrap().y() - footer_y).abs() < 1.,
+            "footer moved: Start={footer_child_before:?}, stack={footer_stack_before:?}, Navigation={:?}, stack-after={:?}, start-after={:?} visible={}/{} window-before={window_before:?} window-after={:?}",
+            blank.sidebar_selector.compute_bounds(&window),
+            blank.sidebar_footer.compute_bounds(&window),
+            blank.start_footer.compute_bounds(&window),
+            blank.start_footer.get_visible(),
+            blank.sidebar_selector.get_visible(),
+            (window.width(), window.height(), blank.sidebar.height())
         );
 
         assert!(

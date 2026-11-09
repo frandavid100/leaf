@@ -53,7 +53,17 @@ now uses Navigation’s same f32 rounding, and existing show handlers alone prep
 overflow home. Local spacing and real text-color pointer checks pass after this
 correction. The four Start inventory combinations use isolated fixture folders,
 so an earlier template session cannot repopulate the next empty-folder fixture.
-The changed source must complete the full remote pipeline before publication.
+A second remote pass also exposed localized footer-height differences and generic
+Elements navigation being overwritten by its launcher factory. Both footer pages
+now remain measurable in their homogeneous GtkStack while mapping follows the
+selected page. The folder button uses a single native ellipsized line, keeping
+the footer height stable with translated labels. Programmatic Elements navigation
+passes its requested page to the group factory before mapping; direct launchers
+retain their own roots and temporary reflows retain borrowed content.
+Local 200% toolbar geometry and the full caption pointer workflow now pass,
+including native typing, pinning, Undo/Redo, image switching, table captions,
+DOCX reopening and hover cues. The changed source must complete the full remote
+pipeline before publication.
 
 ## Remaining reports
 
