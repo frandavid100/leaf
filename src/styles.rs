@@ -39,6 +39,12 @@ pub fn current(session: &Session) -> Option<String> {
             let from = if path == a.path { a.off } else { 0 };
             let to = if path == b.path { b.off } else { p.len() };
             let para = p.props.style.as_deref().unwrap_or("Normal");
+            if p.is_empty() {
+                if current.as_deref().is_some_and(|old| old != para) {
+                    return None;
+                }
+                current = Some(para.to_owned());
+            }
             for (range, props) in p.run_ranges() {
                 if range.end <= from || range.start >= to {
                     continue;

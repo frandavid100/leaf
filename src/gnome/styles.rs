@@ -151,6 +151,9 @@ impl StylePopover {
             let label = gtk::Label::new(Some(&st.name));
             let attributes = gtk::pango::AttrList::new();
             attributes.insert(gtk::pango::AttrString::new_family(&resolved.font));
+            attributes.insert(gtk::pango::AttrSize::new(
+                (resolved.size.clamp(8., 28.) * gtk::pango::SCALE as f32).round() as i32,
+            ));
             if resolved.bold {
                 attributes.insert(gtk::pango::AttrInt::new_weight(gtk::pango::Weight::Bold));
             }
@@ -195,22 +198,6 @@ impl StylePopover {
             label.set_max_width_chars(28);
             let content = gtk::Box::new(gtk::Orientation::Horizontal, 8);
             content.append(&label);
-            let kind = gtk::Label::new(Some(
-                if st.kind == wordcraft_doc::styles::StyleKind::Paragraph {
-                    "¶"
-                } else {
-                    "a"
-                },
-            ));
-            kind.add_css_class("dim-label");
-            kind.set_tooltip_text(Some(
-                if st.kind == wordcraft_doc::styles::StyleKind::Paragraph {
-                    wordcraft_gnome::t!("Paragraph Style")
-                } else {
-                    wordcraft_gnome::t!("Character Style")
-                },
-            ));
-            content.append(&kind);
             if current.as_deref() == Some(st.id.as_str()) {
                 apply.set_tooltip_text(Some(wordcraft_gnome::t!("Current Style")));
             }
@@ -348,16 +335,6 @@ impl StylePopover {
         title.add_css_class("heading");
         title.set_margin_top(6);
         self.detail.append(&title);
-        let kind = gtk::Label::new(Some(
-            if st.kind == wordcraft_doc::styles::StyleKind::Paragraph {
-                wordcraft_gnome::t!("Paragraph Style")
-            } else {
-                wordcraft_gnome::t!("Text Style")
-            },
-        ));
-        kind.set_xalign(0.0);
-        kind.add_css_class("dim-label");
-        self.detail.append(&kind);
         if let Some(ui) = self.ui.upgrade() {
             let preview = {
                 let state = ui.current.borrow();

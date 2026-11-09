@@ -16,6 +16,7 @@ for marker in TEXT18_INK_ARROW TEXT18_BLUE TEXT18_INK_BACK TEXT18_INK_BODY TEXT1
   grep -q "^$marker " "$log" || { tail -35 "$log" | cut -c1-240; exit 1; }
   read -r _ x y < <(grep "^$marker " "$log" | tail -n1)
   leaf_window=$(xdotool search --onlyvisible --name '^Leaf Text Pointer Regression$' | head -n1)
+  xdotool windowfocus --sync "$leaf_window"
   # Enter the popup, then send a small in-surface motion. GTK/X11 may
   # replay one parent-surface motion after an instantaneous pointer warp.
   xdotool mousemove --window "$leaf_window" "$x" "$y"

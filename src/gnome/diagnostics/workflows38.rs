@@ -130,36 +130,53 @@ async fn check(ui: &Rc<Ui>, has_templates: bool, has_recovery: bool) {
     }
     let templates = find_widget(&ui.template_slot, "start-templates").unwrap();
     let recoveries = find_widget(&ui.template_slot, "start-recovery").unwrap();
-    assert_eq!(templates.is_visible(), has_templates);
+    let has_folder = wordcraft_gnome::templates::folder().is_some_and(|p| p.is_dir());
+    assert_eq!(templates.is_visible(), has_templates || has_folder);
     assert_eq!(recoveries.is_visible(), has_recovery);
     assert_eq!(button(ui).is_some(), has_recovery);
-    for (group, present) in [(&templates, has_templates), (&recoveries, has_recovery)] {
+    for (group, present) in [
+        (&templates, has_templates || has_folder),
+        (&recoveries, has_recovery),
+    ] {
         if !present {
             assert!(!group.is_mapped());
             assert_eq!(group.measure(gtk::Orientation::Vertical, -1).0, 0);
         }
     }
-    let blank = find_widget(&ui.template_slot, "start-blank-heading").unwrap();
-    let parent = ui.document_box.parent().unwrap();
-    let b = blank.compute_bounds(&parent).unwrap();
-    let page = ui.current.borrow().as_ref().unwrap().page_frames[0]
-        .compute_bounds(&parent)
-        .unwrap();
-    assert!(b.height() > 0. && b.y() + b.height() <= page.y() + 1.);
+    assert!(find_widget(&ui.template_slot, "start-blank-heading").is_none());
+    assert_eq!(document_content_top(ui), 0.);
+    let choices = has_folder || has_templates || has_recovery;
+    assert_eq!(
+        ui.sidebar_pages.visible_child_name().as_deref(),
+        Some(if choices { "start" } else { "navigation" })
+    );
+    assert_eq!(ui.sidebar_selector.is_visible(), !choices);
+    assert!(
+        ui.sidebar.sidebar().unwrap().width() <= 260,
+        "Start headings must wrap without widening the sidebar"
+    );
+    assert_eq!(
+        ui.sidebar_title.text(),
+        if choices {
+            wordcraft_gnome::t!("Start")
+        } else {
+            wordcraft_gnome::t!("Navigation")
+        }
+    );
     let mut previous = -1.;
-    for group in [&templates, &recoveries] {
+    for group in [&recoveries, &templates] {
         if group.is_visible() {
-            let r = group.compute_bounds(&parent).unwrap();
+            let r = group.compute_bounds(&ui.template_slot).unwrap();
             assert!(r.y() >= previous);
             previous = r.y() + r.height();
         }
     }
-    assert!(b.y() >= previous);
     assert!(ui.template_eligible.get());
     assert!(text(ui).is_empty());
     assert!(!ui.dirty.get());
 }
-fn write_pending(root: PathBuf) {
+pub(super) fn write_pending(root: PathBuf) {
+    let before = records(&root).len();
     let mut s = Session::new(wordcraft_doc::Document::new());
     s.enable_recovery(root.clone(), std::sync::Arc::new(|| {}))
         .unwrap();
@@ -172,9 +189,17 @@ fn write_pending(root: PathBuf) {
     let end = std::time::Instant::now() + std::time::Duration::from_secs(15);
     loop {
         s.recovery_tick();
-        if s.recovery_ready() && !s.recovery_busy() && !records(&root).is_empty() {
+        // Another live test document may write its own snapshot concurrently.
+        // The public wait API becomes idle only after this session's revision
+        // has its copy; a global file count alone can finish too early.
+        if s.recovery_ready()
+            && !s.recovery_busy()
+            && s.recovery_wait().is_none()
+            && records(&root).len() > before
+        {
             break;
         }
+        assert!(s.recovery_error().is_none(), "{:?}", s.recovery_error());
         assert!(std::time::Instant::now() < end);
         std::thread::sleep(std::time::Duration::from_millis(10));
     }
@@ -325,7 +350,11 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert_eq!(records(&root), before);
         apply_user_edit(&target, Edit::Undo);
         settle().await;
-        assert!(!target.template_slot.is_visible());
+        assert!(target.template_slot.is_visible());
+        assert_eq!(
+            target.sidebar_pages.visible_child_name().as_deref(),
+            Some("start")
+        );
         target.dirty.set(false);
         let page = host.tabs.selected_page().unwrap();
         host.tabs.close_page(&page);
@@ -403,7 +432,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             "obsolete recovery menu action removed"
         );
         let a = animated.scroll.vadjustment();
-        a.set_value(100.);
+        a.set_value(0.);
         settle().await;
         animated.document_box.grab_focus();
         let samples = Rc::new(RefCell::new(Vec::<(f64, f64, f64)>::new()));
@@ -418,7 +447,11 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
                 .compute_bounds(&ui.scroll)
                 .unwrap();
             values.borrow_mut().push((
-                document_content_top(&ui),
+                if ui.sidebar_pages.is_transition_running() {
+                    1.
+                } else {
+                    0.
+                },
                 page.y() as f64,
                 ui.scroll.vadjustment().value(),
             ));
@@ -431,23 +464,18 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         clock.disconnect(capture);
         assert_eq!(text(&animated), "Animated typing Paste ñ");
         let heights = samples.borrow();
-        let max = heights.iter().map(|v| v.0).fold(0., f64::max);
-        let mids = heights
-            .iter()
-            .filter(|v| v.0 > 1. && v.0 < max - 1.)
-            .count();
         eprintln!(
-            "WORKFLOWS38_MOTION samples={} intermediate={mids} max={max} values={:?}",
+            "WORKFLOWS40_SIDEBAR_TRANSITION samples={} values={:?}",
             heights.len(),
             &*heights
         );
         assert!(
-            mids >= 2,
-            "native animation must allocate intermediate heights"
+            heights.iter().filter(|p| p.0 > 0.).count() >= 2,
+            "sidebar must crossfade through native frames"
         );
         assert!(
-            heights.windows(2).all(|p| p[1].1 <= p[0].1 + 1.5),
-            "painted page must move upward without rebounding"
+            heights.windows(2).all(|p| (p[1].1 - p[0].1).abs() < 1.5),
+            "sidebar transitions must not move the page"
         );
         assert_eq!(document_content_top(&animated), 0.);
         assert_eq!(records(&root), before);

@@ -302,6 +302,8 @@ pub(super) fn test(
         assert_eq!(host.tabs.n_pages(), count + 1);
         assert_eq!(std::fs::read(&path).unwrap(), bytes);
         assert_eq!(text(&blank), "Personal template");
+        assert!(!blank.template_eligible.get());
+        pause().await;
         assert!(!blank.template_slot.is_visible());
         let restart = std::process::Command::new(std::env::current_exe().unwrap())
             .arg("--workflows35-template-restart-test")

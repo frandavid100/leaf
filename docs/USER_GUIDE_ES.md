@@ -11,7 +11,7 @@ importantes en otro editor. [Instalación Flatpak](../packaging/INSTALL.md).
 - Ctrl+O abre; Ctrl+N/Ctrl+T crean otra pestaña; Ctrl+Mayús+N crea otra ventana;
   Ctrl+W cierra la pestaña. Los documentos conservan sus estados independientes.
 - El menú de tres puntos corresponde al documento: Guardar, Guardar como,
-  propiedades, PDF, imprimir, zoom y los modos Editar/Sugerir. Elementos está en la cabecera.
+  propiedades, PDF, imprimir, zoom y los modos Editar/Sugerir. Elementos está en la barra inferior.
 - Ctrl+S guarda y Ctrl+Mayús+S abre Guardar como. DOCX/ODT se eligen por el
   sufijo del archivo. Un documento abierto se guarda sobre su archivo; un documento
   nuevo pide su destino la primera vez. Guardar como elige otra copia. Al cerrar con cambios se
@@ -22,13 +22,15 @@ importantes en otro editor. [Instalación Flatpak](../packaging/INSTALL.md).
 Preferencias permite desactivar el autoguardado, usar un archivo de recuperación
 (predeterminado) o guardar periódicamente en el propio archivo. Esta última opción
 puede modificar el original abierto; actívala conscientemente. En cada ventana o
-pestaña nueva aparecen, por este orden, las plantillas disponibles, los documentos
-pendientes de recuperar y el folio en blanco. Las dos primeras filas y sus títulos
-solo aparecen si contienen elementos. Puedes escribir directamente en el folio;
-las filas superiores se retiran con una animación breve, respetando la preferencia
-del sistema sobre animaciones. Esto no borra las copias pendientes. Al elegir una
-recuperación se abre como documento nuevo con cambios por guardar. Una operación
-cancelada o fallida conserva los cambios.
+pestaña nueva, el panel Inicio ofrece primero los documentos por recuperar y
+después las plantillas. El folio permanece en su posición normal. Escribir cambia
+el panel a Navegación; al borrar todo el contenido reaparece Inicio. Una imagen o
+tabla sigue contando como contenido. Inicio oculta las pestañas inferiores del
+panel, que vuelven con la navegación habitual. Cada recuperación tiene su botón
+para descartarla, con confirmación antes del borrado permanente. Al elegir una
+recuperación se abre como documento nuevo con cambios por guardar. El botón de la
+carpeta de plantillas abre su ubicación en el gestor de archivos, incluso si está
+vacía. Cancelar o fallar una operación conserva los cambios.
 
 Para conservar ecuaciones editables, notas al pie, índice automático e imágenes
 flotantes con ajuste del texto, usa DOCX. Leaf rechaza guardar esas estructuras
@@ -41,9 +43,12 @@ Escritura Unicode, selección con ratón/teclado, copiar/cortar/pegar y deshacer
 Intro crea párrafo; Mayús+Intro, salto de línea. El portapapeles dentro de Leaf
 conserva texto enriquecido, tablas e imágenes; el texto externo también se admite.
 
-Deshacer/Rehacer están a la izquierda de la cabecera; Estilo → Párrafo → Texto,
-con iconos, a la derecha. En una ventana estrecha esos controles pasan a la barra
-inferior. Los desplegables comparten cabecera, vuelta atrás y chincheta: fijar
+Deshacer/Rehacer están a la izquierda de la cabecera. La barra inferior reúne
+Estilo → Párrafo → Texto → Elementos, con separadores entre grupos. El nombre del
+estilo abre el selector y la flecha contigua sus acciones. Alineación, listas,
+negrita, cursiva, subrayado, Imagen y Tabla tienen accesos directos; los menús de
+cada grupo conservan todas las opciones cuando la ventana se estrecha.
+Los desplegables comparten cabecera, vuelta atrás y chincheta: fijar
 permite seguir aplicando opciones sin cerrarlos; abrir otro sustituye al anterior.
 El clic derecho abre opciones nativas de texto, tablas o imágenes; sus páginas
 de formato quedan contenidas en el menú contextual.

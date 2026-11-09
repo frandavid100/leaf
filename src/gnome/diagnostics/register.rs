@@ -29,12 +29,25 @@ pub(super) fn install_diagnostics(
         arg.starts_with("--workflows36-")
             || arg.starts_with("--workflows37-")
             || arg.starts_with("--workflows38-")
+            || arg.starts_with("--workflows40-")
     }) {
         let previous = std::panic::take_hook();
         std::panic::set_hook(Box::new(move |info| {
             previous(info);
             std::process::exit(1);
         }));
+    }
+    if std::env::args().any(|arg| arg == "--workflows40-ui-test") && host.tabs.n_pages() == 1 {
+        let (u, w, a) = (ui.clone(), window.clone(), app.clone());
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
+            workflows40_checks::test(&u, &w, &a)
+        });
+    }
+    if std::env::args().any(|arg| arg == "--workflows40-folder-test") && host.tabs.n_pages() == 1 {
+        let (u, a) = (ui.clone(), app.clone());
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
+            workflows40_checks::folder(&u, &a)
+        });
     }
     if std::env::args().any(|arg| arg == "--workflows38-startup-test") {
         let (u, a) = (ui.clone(), app.clone());

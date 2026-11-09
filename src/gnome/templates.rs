@@ -36,142 +36,71 @@ impl Drop for Gallery {
     }
 }
 
-pub(super) struct Dismissal {
-    document: u64,
-    height: f64,
-    scroll: f64,
-    last_scroll: Cell<f64>,
-    user_scrolled: Cell<bool>,
-    clock: gdk::FrameClock,
-    revealer: gtk::Revealer,
-    update: RefCell<Option<glib::SignalHandlerId>>,
-    done: RefCell<Option<glib::SignalHandlerId>>,
-}
-impl Drop for Dismissal {
-    fn drop(&mut self) {
-        if let Some(id) = self.update.get_mut().take() {
-            self.clock.disconnect(id);
-        }
-        if let Some(id) = self.done.get_mut().take() {
-            self.revealer.disconnect(id);
-        }
-    }
-}
-fn compensate(ui: &Ui, animation: &Dismissal, height: f64) {
-    let adjustment = ui.scroll.vadjustment();
-    if (adjustment.value() - animation.last_scroll.get()).abs() > 1.1 {
-        animation.user_scrolled.set(true);
-    }
-    if !animation.user_scrolled.get() {
-        let max = (adjustment.upper() - adjustment.page_size()).max(0.);
-        adjustment.set_value((animation.scroll - (animation.height - height)).clamp(0., max));
-    }
-    animation.last_scroll.set(adjustment.value());
-}
-fn finish_dismissal(ui: &Rc<Ui>, animation: &Rc<Dismissal>) {
-    let owns = ui
-        .template_dismissal
-        .borrow()
-        .as_ref()
-        .is_some_and(|d| Rc::ptr_eq(d, animation));
-    if owns {
-        compensate(ui, animation, 0.);
-        ui.template_dismissal.borrow_mut().take();
-        clear(ui);
-        refresh_pages(ui);
-    }
-}
-pub(super) fn keeps_dismissal(ui: &Ui, document: u64) -> bool {
-    ui.template_dismissal
-        .borrow()
-        .as_ref()
-        .is_some_and(|d| d.document == document)
+// The sidebar Stack owns the reversible transition; no page-scroll
+// compensation or frame-clock worker is needed when the document stays put.
+pub(super) fn keeps_start_state(ui: &Ui, document: u64) -> bool {
+    ui.template_eligible.get() && ui.template_document.get() == Some(document)
 }
 fn clear(ui: &Ui) {
+    if ui.sidebar_pages.visible_child_name().as_deref() == Some("start") {
+        ui.sidebar_pages.set_visible_child_name("navigation");
+    }
+    if ui.sidebar_pages.is_transition_running() {
+        return;
+    }
     ui.template_revealer.set_reveal_child(false);
     ui.template_revealer.set_child(None::<&gtk::Widget>);
     ui.template_slot.set_visible(false);
 }
-pub(super) fn dismiss(ui: &Ui) {
-    let top = document_scroll_y(ui).max(0.);
-    ui.template_eligible.set(false);
-    ui.template_gallery.borrow_mut().take();
-    ui.template_dismissal.borrow_mut().take();
-    clear(ui);
-    ui.scroll.vadjustment().set_value(top);
-}
-pub(super) fn dismiss_after_edit(ui: &Rc<Ui>) {
-    if !ui.template_eligible.replace(false) {
-        return;
-    }
-    ui.template_gallery.borrow_mut().take();
-    let height = document_content_top(ui);
-    if height <= 0.
-        || !ui.template_slot.is_mapped()
-        || !ui.template_slot.settings().is_gtk_enable_animations()
+pub(super) fn finish_transition(ui: &Ui) {
+    if !ui.sidebar_pages.is_transition_running()
+        && ui.sidebar_pages.visible_child_name().as_deref() != Some("start")
+        && ui.template_gallery.borrow().is_none()
     {
-        dismiss(ui);
+        clear(ui);
+    }
+}
+pub(super) fn dismiss(ui: &Ui) {
+    ui.template_eligible.set(false);
+    ui.template_document.set(None);
+    ui.template_gallery.borrow_mut().take();
+    clear(ui);
+}
+pub(super) fn sync_after_edit(ui: &Rc<Ui>) {
+    if !ui.template_eligible.get() || ui.closed.get() {
         return;
     }
-    let Some((document, _)) = document_identity(ui) else {
-        dismiss(ui);
-        return;
-    };
-    let scroll = ui.scroll.vadjustment().value();
-    let clock = ui.template_revealer.frame_clock().unwrap();
-    let animation = Rc::new(Dismissal {
-        document,
-        height,
-        scroll,
-        last_scroll: Cell::new(scroll),
-        user_scrolled: Cell::new(false),
-        clock: clock.clone(),
-        revealer: ui.template_revealer.clone(),
-        update: RefCell::new(None),
-        done: RefCell::new(None),
-    });
-    ui.template_dismissal.replace(Some(animation.clone()));
-    ui.template_revealer.set_sensitive(false);
-    let weak = Rc::downgrade(ui);
-    let running = Rc::downgrade(&animation);
-    // Observe GTK's new reveal request after its update handlers, before layout.
-    // Allocated height belongs to the previous frame and causes a visible rebound.
-    let id = clock.connect_local("update", true, move |_| {
-        if let (Some(ui), Some(animation)) = (weak.upgrade(), running.upgrade()) {
-            if !ui.closed.get() {
-                let height = ui
-                    .template_revealer
-                    .measure(gtk::Orientation::Vertical, ui.template_revealer.width())
-                    .1 as f64;
-                compensate(&ui, &animation, height);
-            }
+    let empty = ui
+        .current
+        .borrow()
+        .as_ref()
+        .is_some_and(|d| wordcraft_gnome::templates::is_empty(&d.session));
+    if empty {
+        let fresh = ui
+            .template_gallery
+            .borrow()
+            .as_ref()
+            .is_none_or(|g| g.identity != document_identity(ui));
+        if fresh {
+            reload(ui);
         }
-        None
-    });
-    animation.update.replace(Some(id));
-    let weak = Rc::downgrade(ui);
-    let running = Rc::downgrade(&animation);
-    let id = ui
-        .template_revealer
-        .connect_child_revealed_notify(move |revealer| {
-            if !revealer.reveals_child() && !revealer.is_child_revealed() {
-                if let (Some(ui), Some(animation)) = (weak.upgrade(), running.upgrade()) {
-                    finish_dismissal(&ui, &animation);
-                }
-            }
-        });
-    animation.done.replace(Some(id));
-    ui.template_revealer.set_reveal_child(false);
+    } else {
+        ui.template_gallery.borrow_mut().take();
+        clear(ui);
+    }
 }
 pub(super) fn offer(ui: &Rc<Ui>) {
     dismiss(ui);
     ui.template_eligible.set(true);
+    ui.template_document
+        .set(document_identity(ui).map(|id| id.0));
     reload(ui);
 }
 fn heading(text: &str, name: &str) -> gtk::Label {
     let label = gtk::Label::new(Some(text));
     label.set_widget_name(name);
     label.set_xalign(0.);
+    label.set_wrap(true);
     label.add_css_class("heading");
     label.set_margin_start(20);
     label.set_margin_end(20);
@@ -181,15 +110,18 @@ fn heading(text: &str, name: &str) -> gtk::Label {
 }
 fn row(title: &str, name: &str) -> (gtk::Box, gtk::Box) {
     let group = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    group.set_vexpand(false);
     group.set_widget_name(name);
     group.set_visible(false);
     group.append(&heading(title, &format!("{name}-heading")));
-    let strip = gtk::Box::new(gtk::Orientation::Horizontal, 12);
-    strip.set_margin_start(16);
-    strip.set_margin_end(16);
+    let strip = gtk::Box::new(gtk::Orientation::Vertical, 4);
+    strip.set_vexpand(false);
+    strip.set_valign(gtk::Align::Start);
+    strip.set_margin_start(6);
+    strip.set_margin_end(6);
     strip.set_margin_bottom(12);
     let scroll = gtk::ScrolledWindow::new();
-    scroll.set_policy(gtk::PolicyType::Automatic, gtk::PolicyType::Never);
+    scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Never);
     scroll.set_propagate_natural_height(true);
     scroll.set_child(Some(&strip));
     if name == "start-templates" {
@@ -202,15 +134,17 @@ fn row(title: &str, name: &str) -> (gtk::Box, gtk::Box) {
 // slot is common to all cards; only the proportionally sized page owns a card.
 fn preview_slot() -> gtk::Box {
     let slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    slot.set_size_request(112, 148);
+    slot.set_size_request(48, 68);
+    slot.set_vexpand(false);
+    slot.set_valign(gtk::Align::Center);
     let icon = gtk::Image::from_icon_name("text-x-generic-symbolic");
-    icon.set_pixel_size(48);
-    icon.set_vexpand(true);
+    icon.set_pixel_size(24);
+    icon.set_vexpand(false);
     slot.append(&icon);
     slot
 }
 fn set_preview(slot: &gtk::Box, image: &wordcraft_gnome::PageImage) {
-    let scale = (104. / image.width as f64).min(148. / image.height as f64);
+    let scale = (48. / image.width as f64).min(68. / image.height as f64);
     let width = (image.width as f64 * scale).round().max(1.) as i32;
     let height = (image.height as f64 * scale).round().max(1.) as i32;
     let paintable = page_paintable::new(
@@ -227,7 +161,7 @@ fn set_preview(slot: &gtk::Box, image: &wordcraft_gnome::PageImage) {
     picture.set_size_request(width, height);
     picture.set_halign(gtk::Align::Center);
     picture.set_valign(gtk::Align::Center);
-    picture.set_vexpand(true);
+    picture.set_vexpand(false);
     picture.set_content_fit(gtk::ContentFit::Contain);
     picture.add_css_class("card");
     clear_box(slot);
@@ -236,12 +170,20 @@ fn set_preview(slot: &gtk::Box, image: &wordcraft_gnome::PageImage) {
 fn card_title(name: &str) -> gtk::Label {
     let label = gtk::Label::new(Some(name));
     label.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    label.set_width_chars(16);
-    label.set_max_width_chars(16);
+    label.set_xalign(0.);
+    label.set_hexpand(true);
+    label.set_max_width_chars(20);
     label
 }
 fn reload(ui: &Rc<Ui>) {
-    if !ui.template_eligible.get() || ui.closed.get() {
+    if !ui.template_eligible.get()
+        || ui.closed.get()
+        || !ui
+            .current
+            .borrow()
+            .as_ref()
+            .is_some_and(|d| wordcraft_gnome::templates::is_empty(&d.session))
+    {
         return;
     }
     ui.template_gallery.borrow_mut().take();
@@ -251,18 +193,14 @@ fn reload(ui: &Rc<Ui>) {
         wordcraft_gnome::t!("Documents to Recover"),
         "start-recovery",
     );
-    content.append(&template_group);
     content.append(&recovery_group);
-    content.append(&heading(
-        wordcraft_gnome::t!("Blank Document"),
-        "start-blank-heading",
-    ));
+    content.append(&template_group);
     ui.template_revealer.set_transition_duration(0);
     ui.template_revealer.set_child(Some(&content));
     ui.template_revealer.set_sensitive(true);
-    ui.template_slot.set_visible(true);
+    ui.template_slot.set_visible(false);
     ui.template_revealer.set_reveal_child(true);
-    ui.template_revealer.set_transition_duration(180);
+    ui.template_revealer.set_transition_duration(0);
     let cancelled = Arc::new(AtomicBool::new(false));
     let gallery = Rc::new(Gallery {
         ui: Rc::downgrade(ui),
@@ -286,6 +224,11 @@ fn reload(ui: &Rc<Ui>) {
     let Some(folder) = wordcraft_gnome::templates::folder() else {
         return;
     };
+    if folder.is_dir() {
+        gallery.folder_footer(&folder);
+        gallery.template_group.set_visible(true);
+        gallery.present();
+    }
     let (send, receive) = std::sync::mpsc::channel();
     std::thread::spawn(move || {
         let Ok(paths) = wordcraft_gnome::templates::list(&folder) else {
@@ -320,6 +263,7 @@ fn reload(ui: &Rc<Ui>) {
                 Ok((path, image)) => {
                     gallery.add(&path, &image);
                     gallery.template_group.set_visible(true);
+                    gallery.present();
                 }
                 Err(std::sync::mpsc::TryRecvError::Empty) => break,
                 Err(std::sync::mpsc::TryRecvError::Disconnected) => {
@@ -333,6 +277,114 @@ fn reload(ui: &Rc<Ui>) {
     gallery.source.replace(Some(source));
 }
 impl Gallery {
+    fn present(&self) {
+        let Some(ui) = self.valid_ui() else { return };
+        // Read each section's own flag: the Start page is hidden until this
+        // decision, so ancestor visibility would keep it hidden forever.
+        let visible = self.template_group.get_visible() || self.recovery_group.get_visible();
+        ui.template_slot.set_visible(visible);
+        if visible {
+            ui.sidebar_pages.set_visible_child_name("start");
+        } else if ui.sidebar_pages.visible_child_name().as_deref() == Some("start") {
+            ui.sidebar_pages.set_visible_child_name("navigation");
+        }
+    }
+    fn folder_footer(self: &Rc<Self>, folder: &Path) {
+        let footer = gtk::Box::new(gtk::Orientation::Vertical, 6);
+        footer.set_margin_start(12);
+        footer.set_margin_end(12);
+        footer.set_margin_bottom(12);
+        let text = gtk::Label::new(Some(wordcraft_gnome::t!(
+            "Add documents to this folder to use them as templates."
+        )));
+        text.set_wrap(true);
+        text.set_xalign(0.);
+        text.add_css_class("dim-label");
+        footer.append(&text);
+        let button = gtk::Button::with_label(wordcraft_gnome::t!("Open Templates Folder"));
+        button.set_widget_name("start-open-template-folder");
+        button.set_tooltip_text(Some(&folder.display().to_string()));
+        accessible_name(&button, wordcraft_gnome::t!("Open Templates Folder"));
+        footer.append(&button);
+        self.template_group.append(&footer);
+        let path = folder.to_path_buf();
+        let weak = Rc::downgrade(self);
+        button.connect_clicked(move |_| {
+            let Some(ui) = weak.upgrade().and_then(|g| g.valid_ui()) else {
+                return;
+            };
+            let Some(host) = ui.host.upgrade() else {
+                return;
+            };
+            if !path.is_dir() {
+                ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
+                    "The Templates folder is unavailable."
+                )));
+                return;
+            }
+            let launcher = gtk::FileLauncher::new(Some(&gio::File::for_path(&path)));
+            launcher.set_writable(false);
+            let weak = Rc::downgrade(&ui);
+            launcher.launch(Some(&host.window), gio::Cancellable::NONE, move |result| {
+                if std::env::args().any(|arg| arg == "--workflows40-folder-test") {
+                    eprintln!("WORKFLOWS40_FOLDER_RESULT success={}", result.is_ok());
+                }
+                if let (Some(ui), Err(error)) = (weak.upgrade().filter(|u| !u.closed.get()), result)
+                {
+                    ui.toasts.add_toast(Toast::new(&error.to_string()));
+                }
+            });
+        });
+    }
+    fn confirm_discard(self: &Rc<Self>, id: &str, saved_at: &str, name: &str) {
+        let Some(ui) = self.valid_ui() else { return };
+        let Some(host) = ui.host.upgrade() else {
+            return;
+        };
+        let body = wordcraft_gnome::i18n::interpolate(
+            wordcraft_gnome::t!(
+                "The recovery copy of “{name}” will be permanently deleted. This cannot be undone."
+            ),
+            &[("name", name.into())],
+        );
+        let dialog =
+            adw::AlertDialog::new(Some(wordcraft_gnome::t!("Discard Recovery?")), Some(&body));
+        dialog.add_response("cancel", wordcraft_gnome::t!("Cancel"));
+        dialog.add_response("discard", wordcraft_gnome::t!("Discard"));
+        dialog.set_response_appearance("discard", adw::ResponseAppearance::Destructive);
+        dialog.set_default_response(Some("cancel"));
+        dialog.set_close_response("cancel");
+        let weak = Rc::downgrade(self);
+        let (id, stamp) = (id.to_owned(), saved_at.to_owned());
+        dialog.connect_response(None, move |_, response| {
+            if response != "discard" {
+                return;
+            }
+            let Some(gallery) = weak.upgrade().filter(|g| g.valid_ui().is_some()) else {
+                return;
+            };
+            let weak = Rc::downgrade(&gallery);
+            let root = wordcraft_gnome::preferences::recovery_root();
+            let (id, stamp) = (id.clone(), stamp.clone());
+            glib::spawn_future_local(async move {
+                let result = gio::spawn_blocking(move || {
+                    wordcraft_gnome::recovery::discard(&root, &id, &stamp)
+                })
+                .await;
+                if let Some(gallery) = weak.upgrade() {
+                    match result {
+                        Ok(Ok(())) => {}
+                        Ok(Err(error)) => gallery.warning(Some(error)),
+                        Err(_) => gallery.warning(Some(
+                            wordcraft_gnome::t!("Could Not Load Recovery List").into(),
+                        )),
+                    }
+                }
+                refresh_recoveries();
+            });
+        });
+        dialog.present(Some(&host.window));
+    }
     pub(super) fn inventory_ready(&self) -> bool {
         self.scan.borrow().is_none()
     }
@@ -396,7 +448,8 @@ impl Gallery {
                         let button = gtk::Button::new();
                         button.set_widget_name("start-recovery-document");
                         button.add_css_class("flat");
-                        let content = gtk::Box::new(gtk::Orientation::Vertical, 6);
+                        let content = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+                        button.set_hexpand(true);
                         let slot = preview_slot();
                         slot.set_widget_name("recovery-preview");
                         content.append(&slot);
@@ -410,28 +463,54 @@ impl Gallery {
                         } else {
                             record.name.clone()
                         };
-                        content.append(&card_title(&name));
+                        let labels = gtk::Box::new(gtk::Orientation::Vertical, 4);
+                        labels.set_hexpand(true);
+                        labels.set_valign(gtk::Align::Center);
+                        labels.append(&card_title(&name));
                         let date = glib::DateTime::from_iso8601(&record.saved_at, None)
                             .and_then(|d| d.to_local())
                             .and_then(|d| d.format("%x %X"))
                             .map(|d| d.to_string())
-                            .unwrap_or(record.saved_at);
+                            .unwrap_or_else(|_| record.saved_at.clone());
                         let timestamp = gtk::Label::new(Some(&date));
-                        timestamp.set_max_width_chars(16);
+                        timestamp.set_max_width_chars(20);
+                        timestamp.set_xalign(0.);
                         timestamp.set_ellipsize(gtk::pango::EllipsizeMode::End);
                         timestamp.add_css_class("dim-label");
-                        content.append(&timestamp);
+                        labels.append(&timestamp);
+                        content.append(&labels);
                         button.set_child(Some(&content));
                         button.set_tooltip_text(Some(&format!("{name} — {date}")));
                         accessible_name(&button, &format!("{name} — {date}"));
+                        let row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+                        row.append(&button);
+                        let discard = gtk::Button::from_icon_name("user-trash-symbolic");
+                        discard.add_css_class("flat");
+                        discard.set_valign(gtk::Align::Center);
+                        discard.set_widget_name("start-recovery-discard");
+                        let label = wordcraft_gnome::i18n::interpolate(
+                            wordcraft_gnome::t!("Discard recovery of “{name}”"),
+                            &[("name", name.clone())],
+                        );
+                        discard.set_tooltip_text(Some(&label));
+                        accessible_name(&discard, &label);
+                        row.append(&discard);
+                        let weak = Rc::downgrade(&gallery);
+                        let (id, stamp) = (record.id.clone(), record.saved_at.clone());
+                        discard.connect_clicked(move |_| {
+                            if let Some(gallery) = weak.upgrade() {
+                                gallery.confirm_discard(&id, &stamp, &name);
+                            }
+                        });
                         let weak = Rc::downgrade(&gallery);
                         button.connect_clicked(move |_| {
                             if let Some(gallery) = weak.upgrade() {
                                 gallery.recover(record.id.clone());
                             }
                         });
-                        gallery.recovery_strip.append(&button);
+                        gallery.recovery_strip.append(&row);
                     }
+                    gallery.present();
                     let weak = Rc::downgrade(&gallery);
                     let root = wordcraft_gnome::preferences::recovery_root();
                     let task = glib::spawn_future_local(async move {
@@ -479,7 +558,8 @@ impl Gallery {
         button.add_css_class("flat");
         button.set_tooltip_text(Some(&name));
         accessible_name(&button, &name);
-        let content = gtk::Box::new(gtk::Orientation::Vertical, 6);
+        let content = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+        button.set_hexpand(true);
         let slot = preview_slot();
         slot.set_widget_name("template-preview");
         set_preview(&slot, image);

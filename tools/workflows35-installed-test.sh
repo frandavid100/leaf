@@ -18,7 +18,8 @@ if [[ -n ${LEAF35_TEST_UID:-} ]]; then test "$(id -u)" = "$LEAF35_TEST_UID"; fi
 exec flatpak run --socket=x11 --nosocket=wayland \
   --env=LC_ALL=en_US.UTF-8 --env=LANGUAGE="${LANGUAGE:-en}" \
   --env=GDK_SCALE="${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo \
-  --env=LEAF29_ACK_DIR="${LEAF29_ACK_DIR:-}" --env=LEAF35_PROFILE="$LEAF35_PROFILE" --command=sh "$LEAF35_APP_ID" \
+  --env=LEAF29_ACK_DIR="${LEAF29_ACK_DIR:-}" --env=LEAF35_PROFILE="$LEAF35_PROFILE" \
+  --env=LEAF40_FOLDER="${LEAF40_FOLDER:-}" --env=GTK_USE_PORTAL="${GTK_USE_PORTAL:-}" --command=sh "$LEAF35_APP_ID" \
   -c 'export XDG_CONFIG_HOME="$LEAF35_PROFILE/config" XDG_STATE_HOME="$LEAF35_PROFILE/state"; exec "$@"' \
   leaf "$LEAF35_BINARY" "$@"
 RUNNER
@@ -39,6 +40,9 @@ grep -q WORKFLOWS36_UI_OK "workflows36-ui-${LANGUAGE}.log"
 cat "workflows36-ui-${LANGUAGE}.log"
 bash "$root/tools/workflows36-pointer-test.sh" "$runner"
 bash "$root/tools/workflows36-template-folder-test.sh" "$runner"
+"$runner" --workflows40-ui-test > "workflows40-ui-${LANGUAGE}.log" 2>&1 || { cat "workflows40-ui-${LANGUAGE}.log"; exit 1; }
+grep -q WORKFLOWS40_UI_OK "workflows40-ui-${LANGUAGE}.log"
+cat "workflows40-ui-${LANGUAGE}.log"
 CHECK
 chmod +x "$temporary/installed.sh"
 if [[ ${CI:-} == true ]]; then export LEAF35_TEST_UID; LEAF35_TEST_UID=$(id -u); fi

@@ -25,7 +25,11 @@ fn navigation_choice(ui: &Ui) -> gtk::Box {
 
 // Shared native Navigation and Review sidebar.
 pub(super) fn refresh_sidebar_title(ui: &Ui) {
-    let label = if ui.sidebar_pages.visible_child_name().as_deref() == Some("search") {
+    let start = ui.sidebar_pages.visible_child_name().as_deref() == Some("start");
+    ui.sidebar_selector.set_visible(!start);
+    let label = if start {
+        wordcraft_gnome::t!("Start")
+    } else if ui.sidebar_pages.visible_child_name().as_deref() == Some("search") {
         wordcraft_gnome::t!("Search")
     } else {
         if ui.navigation_pages.visible_child_name().as_deref() == Some("review") {

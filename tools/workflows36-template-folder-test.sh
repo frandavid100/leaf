@@ -75,5 +75,6 @@ test "$(find "$folder" -type f | wc -l)" = 1
 if [[ -n "$xdg_folder" ]]; then
  test "$xdg_before" = "$(sha256sum "$xdg_folder/Personal.docx" | cut -d' ' -f1)"
  test "$(find "$xdg_folder" -type f | wc -l)" = 1
+ bash "$root/tools/workflows40-folder-test.sh" "$runner" "$xdg_folder"
 fi
 cat "$log"

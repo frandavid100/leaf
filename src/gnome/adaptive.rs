@@ -1,6 +1,6 @@
 use super::*;
 
-// Shared controls move between two real toolbar positions; no duplicate actions.
+// Each group keeps a stable toolbar anchor; only shortcut visibility adapts.
 pub(super) struct AdaptiveTools {
     pub(super) ui: std::rc::Weak<Ui>,
     pub(super) history: gtk::Box,
@@ -10,76 +10,83 @@ pub(super) struct AdaptiveTools {
     pub(super) bottom: gtk::Box,
     pub(super) separator: gtk::Separator,
     pub(super) narrow: Cell<bool>,
+    pub(super) width_band: Cell<u8>,
     pub(super) generation: Cell<u64>,
+    pub(super) pending: RefCell<Vec<(glib::WeakRef<gtk::MenuButton>, Option<(u64, u64)>)>>,
 }
 impl AdaptiveTools {
     pub(super) fn sync_width(self: &Rc<Self>, width: i32) {
         if width <= 0 {
             return;
         }
-        let narrow = tool_diagnostics()
-            || if self.narrow.get() {
-                width < 680
-            } else {
-                width < 640
-            };
-        let Some(ui) = self.ui.upgrade() else {
-            return;
-        };
-        if self.narrow.replace(narrow) == narrow {
-            ui.format_toolbar.set_visible(narrow);
-            return;
-        }
-        let generation = self.generation.get() + 1;
-        self.generation.set(generation);
-        ui.format_reflowing.set(true);
-        let open = ui
-            .format_buttons
-            .borrow()
-            .iter()
-            .filter_map(|m| {
-                m.popover().filter(|p| p.is_visible()).map(|p| {
-                    p.popdown();
-                    m.clone()
-                })
-            })
-            .collect::<Vec<_>>();
-        for group in [&self.history, &self.formats] {
-            if let Some(parent) = group.parent().and_then(|p| p.downcast::<gtk::Box>().ok()) {
-                parent.remove(group);
-            }
-        }
-        if narrow {
-            self.bottom.prepend(&self.history);
-            self.bottom
-                .insert_child_after(&self.formats, Some(&self.separator));
-        } else {
-            self.top_history.append(&self.history);
-            self.top_formats.append(&self.formats);
-        }
-        ui.format_toolbar.set_visible(narrow);
-        self.separator.set_visible(narrow);
-        for m in ui.format_buttons.borrow().iter() {
-            m.set_direction(if narrow {
-                gtk::ArrowType::Up
-            } else {
-                gtk::ArrowType::Down
-            });
-        }
-        let weak = Rc::downgrade(self);
-        glib::timeout_add_local_once(std::time::Duration::from_millis(40), move || {
-            if let Some(a) = weak.upgrade() {
-                if a.generation.get() != generation {
-                    return;
+        let Some(ui) = self.ui.upgrade() else { return };
+        self.narrow.set(width < 640);
+        let band =
+            u8::from(width >= 520) | (u8::from(width >= 680) << 1) | (u8::from(width >= 850) << 2);
+        let changed = self.width_band.replace(band) != band;
+        if changed {
+            let identity = document_identity(&ui);
+            let mut pending = self.pending.borrow_mut();
+            for menu in ui.format_buttons.borrow().iter() {
+                if menu.popover().is_some_and(|p| p.get_visible()) {
+                    if !pending
+                        .iter()
+                        .any(|(m, _)| m.upgrade().as_ref() == Some(menu))
+                    {
+                        pending.push((menu.downgrade(), identity));
+                    }
+                    menu.popdown();
                 }
-                if let Some(ui) = a.ui.upgrade() {
-                    for menu in open {
-                        menu.popup();
+            }
+            ui.format_reflowing.set(!pending.is_empty());
+        }
+        // History stays in the header; document formatting always has the same
+        // bottom anchor. Resizing never reparents an open or pinned popover.
+        if self.history.parent().as_ref() != Some(self.top_history.upcast_ref()) {
+            if let Some(parent) = self.history.parent().and_downcast::<gtk::Box>() {
+                parent.remove(&self.history);
+            }
+            self.top_history.append(&self.history);
+        }
+        if self.formats.parent().as_ref() != Some(self.bottom.upcast_ref()) {
+            if let Some(parent) = self.formats.parent().and_downcast::<gtk::Box>() {
+                parent.remove(&self.formats);
+            }
+            self.bottom.append(&self.formats);
+        }
+        self.top_formats.set_visible(false);
+        self.separator.set_visible(false);
+        ui.format_toolbar.set_visible(true);
+        for menu in ui.format_buttons.borrow().iter() {
+            menu.set_direction(gtk::ArrowType::Up);
+        }
+        if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+            tools.width(width);
+        }
+        if changed && !self.pending.borrow().is_empty() {
+            // GTK can unmap a popup while its scrolling toolbar is allocated.
+            // Restore after allocation, retaining the same menu and subpage.
+            let generation = self.generation.get().wrapping_add(1);
+            self.generation.set(generation);
+            let weak = Rc::downgrade(self);
+            glib::timeout_add_local_once(std::time::Duration::from_millis(40), move || {
+                let Some(tools) = weak.upgrade().filter(|a| a.generation.get() == generation)
+                else {
+                    return;
+                };
+                let pending = tools.pending.take();
+                if let Some(ui) = tools.ui.upgrade().filter(|u| !u.closed.get()) {
+                    for (menu, identity) in pending {
+                        if identity == document_identity(&ui) {
+                            if let Some(menu) = menu.upgrade().filter(|m| m.is_mapped()) {
+                                menu.popup();
+                            }
+                        }
                     }
                     ui.format_reflowing.set(false);
                 }
-            }
-        });
+            });
+        }
     }
 }
 pub(super) fn history_icon(redo: bool) -> gtk::Image {

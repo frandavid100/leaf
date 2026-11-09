@@ -51,7 +51,7 @@ jobs:
                 path.write_text(uri + '\n')
         PY
         sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xclip xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11
+        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xclip xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11 python3-gi
         sudo locale-gen en_US.UTF-8
     - name: Check Leaf formatting and contributor entry points
       run: |
@@ -155,7 +155,7 @@ jobs:
                 path.write_text(uri + '\n')
         PY
         sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xclip xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11
+        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth scrot xclip xdotool adwaita-icon-theme librsvg2-common xcompmgr poppler-utils gettext locales dbus-x11 python3-gi
         sudo locale-gen en_US.UTF-8
     - uses: actions/download-artifact@v4
       with:
@@ -176,6 +176,25 @@ jobs:
           XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 180s bash tools/workflows38-pointer-test.sh
         done
       if: ${{ matrix.group == 'editing' }}
+    - name: Verify alpha40 sidebar, direct formatting and native folder launch
+      if: ${{ matrix.group == 'editing' }}
+      run: |
+        set -o pipefail
+        for language in en es; do
+          scale=1
+          if test "$language" = es; then scale=2; fi
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s target/release/wordcraft-gnome --workflows40-ui-test 2>&1 | tee "workflows40-native-$language.log"
+          grep -q WORKFLOWS40_UI_OK "workflows40-native-$language.log"
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 120s bash tools/workflows40-folder-test.sh
+        done
+    - uses: actions/upload-artifact@v4
+      if: ${{ matrix.group == 'editing' && (always()) }}
+      with:
+        name: leaf-alpha40-native
+        path: |
+          workflows40-*.log
+          folder40-*.log
+        retention-days: 7
     - uses: actions/upload-artifact@v4
       if: ${{ matrix.group == 'editing' && (always()) }}
       with:
@@ -518,7 +537,7 @@ jobs:
     - name: Identificar versión de prueba
       run: |
         ./target/release/wordcraft-gnome --version | tee version.txt
-        grep -q "Leaf 0.1.0-alpha.39" version.txt
+        grep -q "Leaf 0.1.0-alpha.40" version.txt
       if: ${{ matrix.group == 'appearance' }}
     - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
       run: |
@@ -735,6 +754,7 @@ jobs:
           sweep18-*.log
           table18-*.log
           text18-*.log
+          text18-*.png
           issues-*.log
           uri-launch.log
           interactions-pointer.log
@@ -873,6 +893,7 @@ jobs:
           sweep18-*.log
           table18-*.log
           text18-*.log
+          text18-*.png
           issues-*.log
           uri-launch.log
           interactions-pointer.log
@@ -1330,9 +1351,9 @@ jobs:
         cp packaging/RELEASE_NOTES.md dist/RELEASE_NOTES.md
         python3 - <<'PYTHON'
         import json, os, pathlib
-        assert json.load(open('data/releases/closures.json'))['version'] == '0.1.0-alpha.39'
+        assert json.load(open('data/releases/closures.json'))['version'] == '0.1.0-alpha.40'
         pathlib.Path('dist/candidate.json').write_text(json.dumps({
-            'version': '0.1.0-alpha.39', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+            'version': '0.1.0-alpha.40', 'source': os.environ['LEAF_CANDIDATE_SHA'],
             'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
             'native_source': os.environ['LEAF_NATIVE_SHA'],
             'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
@@ -1346,7 +1367,7 @@ jobs:
         python3 - <<'PYTHON'
         from pathlib import Path
         from zipfile import ZipFile, ZIP_DEFLATED
-        with ZipFile("dist/Leaf-0.1.0-alpha.39-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
+        with ZipFile("dist/Leaf-0.1.0-alpha.40-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
             for source in sorted(Path("tests/fixtures/dictionary84").iterdir()):
                 if source.is_file(): archive.write(source, "Leaf-dictionary-test/" + source.name)
         PYTHON
@@ -1408,7 +1429,7 @@ jobs:
     - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
       run: |
         set -o pipefail
-        xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.39-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+        xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.40-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
         grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
     - uses: actions/upload-artifact@v4
       if: always()

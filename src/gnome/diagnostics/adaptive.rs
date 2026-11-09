@@ -3,16 +3,13 @@ use super::*;
 pub(super) fn adaptive_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     let a = ui.adaptive.borrow().as_ref().unwrap().clone();
     assert!(!a.narrow.get());
-    assert!(!ui.format_toolbar.is_visible());
+    assert!(ui.format_toolbar.is_visible());
     let buttons = ui.format_buttons.borrow().clone();
     assert_eq!(
         a.history.parent().as_ref(),
         Some(a.top_history.upcast_ref())
     );
-    assert_eq!(
-        a.formats.parent().as_ref(),
-        Some(a.top_formats.upcast_ref())
-    );
+    assert_eq!(a.formats.parent().as_ref(), Some(a.bottom.upcast_ref()));
     let style = ui.style.borrow().as_ref().unwrap().clone();
     buttons[0].popup();
     style.show_detail("Heading1");
@@ -36,7 +33,7 @@ pub(super) fn adaptive_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
         window.set_default_size(1200, 850);
         glib::timeout_add_local_once(std::time::Duration::from_millis(600), move || {
             assert!(!a.narrow.get());
-            assert!(!ui.format_toolbar.is_visible());
+            assert!(ui.format_toolbar.is_visible());
             assert!(buttons[0].popover().unwrap().is_mapped());
             assert_eq!(style.stack.visible_child_name().as_deref(), Some("detail"));
             buttons[0].popdown();

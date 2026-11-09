@@ -36,6 +36,11 @@ pub(super) fn localization_ui_test(ui: &Rc<Ui>, app: &Application) {
             "New Window"
         }
     );
+    // This check inspects navigation thumbnails, not the optional Start page.
+    templates::dismiss(ui);
+    ui.sidebar.set_show_sidebar(true);
+    ui.sidebar_pages.set_visible_child_name("navigation");
+    ui.navigation_pages.set_visible_child_name("thumbnails");
     let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     let rev = ui.current.borrow().as_ref().unwrap().session.rev();
     let selection = ui.current.borrow().as_ref().unwrap().session.sel.clone();
@@ -45,6 +50,8 @@ pub(super) fn localization_ui_test(ui: &Rc<Ui>, app: &Application) {
     glib::timeout_add_local_once(std::time::Duration::from_millis(350), move || {
         let ui = weak.upgrade().unwrap();
         assert!(ui.sidebar.has_css_class("leaf-dark-document"));
+        refresh_pages(&ui);
+        refresh_thumbnails(&ui);
         {
             let mut current = ui.current.borrow_mut();
             let doc = current.as_mut().unwrap();
@@ -72,6 +79,8 @@ pub(super) fn localization_ui_test(ui: &Rc<Ui>, app: &Application) {
         glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
             let ui = weak.upgrade().unwrap();
             assert!(!ui.sidebar.has_css_class("leaf-dark-document"));
+            refresh_pages(&ui);
+            refresh_thumbnails(&ui);
             let current = ui.current.borrow();
             let doc = current.as_ref().unwrap();
             assert_eq!(

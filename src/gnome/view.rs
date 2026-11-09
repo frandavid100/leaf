@@ -98,16 +98,9 @@ pub(super) fn refresh_document_appearance(ui: &Rc<Ui>) {
     refresh_selection(ui);
 }
 
-/// Canvas coordinates exclude the gallery that scrolls above the first page.
-pub(super) fn document_content_top(ui: &Ui) -> f64 {
-    if ui.template_slot.is_visible() {
-        ui.document_box
-            .parent()
-            .and_then(|p| ui.document_box.compute_bounds(&p))
-            .map_or(0., |r| f64::from(r.y()))
-    } else {
-        0.0
-    }
+/// Start choices live in the sidebar and never offset page coordinates.
+pub(super) fn document_content_top(_ui: &Ui) -> f64 {
+    0.0
 }
 
 /// Thumbnail bounds are local to their list, below the scrolling selector.
@@ -501,7 +494,7 @@ pub(super) fn clear_canvas(canvas: &impl IsA<gtk::Fixed>) {
 }
 
 pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
-    if !templates::keeps_dismissal(ui, session.document_id()) {
+    if !templates::keeps_start_state(ui, session.document_id()) {
         templates::dismiss(ui);
     }
     image_drop::cancel(ui);
