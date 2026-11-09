@@ -143,7 +143,7 @@ pub(super) fn test(
         search.toggle.set_active(false);
         eprintln!("WORKFLOWS36_SEARCH_OK");
         let props = show_document_properties(&ui, &window);
-        wait_dialog_presented(&props.window);
+        dialog_presented_async(&props.window).await;
         let fonts = find_widget(&props.window, "properties-document-fonts").unwrap();
         assert!(fonts.is::<adw::PreferencesGroup>());
         assert!(
@@ -187,7 +187,7 @@ pub(super) fn test(
         opened(&ui, Session::new(font_doc), "Many fonts");
         let before_fonts = ui.current.borrow().as_ref().unwrap().session.doc.clone();
         let props = show_document_properties(&ui, &window);
-        wait_dialog_presented(&props.window);
+        dialog_presented_async(&props.window).await;
         props.window.set_content_width(380);
         props.window.set_content_height(560);
         props.metadata[0].set_text("Pending title survives font replacement");
@@ -219,7 +219,7 @@ pub(super) fn test(
         assert!(find_widget(&props.window, &format!("document-font-{missing_name}")).is_none());
         props.apply.emit_clicked();
         settle().await;
-        assert_dialog_closed(&props.window);
+        dialog_closed_async(&props.window).await;
         assert_eq!(
             wordcraft_gnome::document_properties::DocumentInfo::current(
                 &ui.current.borrow().as_ref().unwrap().session
@@ -407,7 +407,7 @@ pub(super) fn test(
         assert!(fresh.template_slot.is_visible());
         assert_eq!(std::fs::read(&path).unwrap(), bytes);
         let prefs = show_preferences(&host.window);
-        wait_dialog_presented(&prefs);
+        dialog_presented_async(&prefs).await;
         assert!(find_widget(&prefs, "preferences-template-folder").is_some());
         find_widget(&prefs, "preferences-template-reset")
             .unwrap()
@@ -416,7 +416,7 @@ pub(super) fn test(
             .emit_clicked();
         assert!(wordcraft_gnome::preferences::template_folder().is_none());
         prefs.close();
-        assert_dialog_closed(&prefs);
+        dialog_closed_async(&prefs).await;
         wordcraft_gnome::preferences::set_template_folder(&folder).unwrap();
         blank_tab(&app, &host);
         let rapid = selected_ui(&host).unwrap();
@@ -719,7 +719,7 @@ pub(super) fn template_folder(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
     glib::spawn_future_local(async move {
         wordcraft_gnome::preferences::reset_template_folder().unwrap();
         let prefs = show_preferences(&window);
-        wait_dialog_presented(&prefs);
+        dialog_presented_async(&prefs).await;
         let choose = find_widget(&prefs, "preferences-template-choose")
             .unwrap()
             .downcast::<gtk::Button>()
@@ -748,7 +748,7 @@ pub(super) fn template_folder(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
         let folder = wordcraft_gnome::templates::folder().expect("usable template folder");
         assert!(folder.join("Personal.docx").is_file());
         prefs.close();
-        assert_dialog_closed(&prefs);
+        dialog_closed_async(&prefs).await;
         let host = ui.host.upgrade().unwrap();
         let count = host.tabs.n_pages();
         blank_tab(&app, &host);
