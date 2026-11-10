@@ -157,6 +157,16 @@ impl QuickTools {
                 let tool = catalog.iter().find(|t| t.id == id).unwrap();
                 let button = style_menu_button(tool.label);
                 button.set_widget_name(&format!("overflow-tool-{group}-{id}"));
+                let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+                row.append(&gtk::Image::from_icon_name(tool.icon));
+                let label = gtk::Label::new(Some(tool.label));
+                label.set_hexpand(true);
+                label.set_xalign(0.);
+                row.append(&label);
+                let state = gtk::Label::new(None);
+                state.set_widget_name(&format!("overflow-state-{group}-{id}"));
+                row.append(&state);
+                button.set_child(Some(&row));
                 let (weak, group, id, widget) = (self.ui.clone(), *group, id, widget.clone());
                 button.connect_clicked(move |_| {
                     let Some(ui) = weak.upgrade() else { return };
@@ -232,6 +242,7 @@ impl QuickTools {
                 }
             }
         })));
+        pop.set_pointing_to(None::<&gdk::Rectangle>);
         self.overflow.set_popover(Some(pop));
         match group {
             "text" => {
@@ -466,6 +477,29 @@ impl QuickTools {
                 button.unset_state_flags(gtk::StateFlags::CHECKED);
             }
             marker.set_visible(mixed);
+            if let Some(status) =
+                find_widget(&self.overflow_main, &format!("overflow-state-text-{key}"))
+                    .and_downcast::<gtk::Label>()
+            {
+                status.set_text(if mixed {
+                    "−"
+                } else if active {
+                    "✓"
+                } else {
+                    ""
+                });
+            }
+            if let Some(proxy) =
+                find_widget(&self.overflow_main, &format!("overflow-tool-text-{key}"))
+            {
+                proxy.update_state(&[gtk::accessible::State::Pressed(if mixed {
+                    gtk::AccessibleTristate::Mixed
+                } else if active {
+                    gtk::AccessibleTristate::True
+                } else {
+                    gtk::AccessibleTristate::False
+                })]);
+            }
             button.update_state(&[gtk::accessible::State::Pressed(if mixed {
                 gtk::AccessibleTristate::Mixed
             } else if active {
@@ -672,6 +706,14 @@ pub(super) fn install_quick_tools(
     root.append(&scroll);
     pop.set_child(Some(&root));
     overflow.set_popover(Some(&pop));
+    let weak = Rc::downgrade(ui);
+    pop.connect_show(move |_| {
+        if let Some(ui) = weak.upgrade() {
+            if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                tools.sync(&ui, &selection_character(&ui));
+            }
+        }
+    });
     ui.format_buttons.borrow_mut().push(overflow.clone());
     // Only the shortcuts scroll. The single menu stays fixed at the far right.
     let fixed = gtk::Box::new(gtk::Orientation::Horizontal, 6);

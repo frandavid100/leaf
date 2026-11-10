@@ -57,11 +57,11 @@ msgstr ""
 msgid "After (pt)"
 msgstr ""
 
-#: src/gnome/format_bar.rs:399 src/gnome/paragraph.rs:462 src/gnome/paragraph.rs:810
+#: src/gnome/format_bar.rs:410 src/gnome/paragraph.rs:462 src/gnome/paragraph.rs:810
 msgid "Align Left"
 msgstr ""
 
-#: src/gnome/format_bar.rs:403 src/gnome/paragraph.rs:464 src/gnome/paragraph.rs:812
+#: src/gnome/format_bar.rs:414 src/gnome/paragraph.rs:464 src/gnome/paragraph.rs:812
 msgid "Align Right"
 msgstr ""
 
@@ -69,7 +69,7 @@ msgstr ""
 msgid "Alignment"
 msgstr ""
 
-#: src/gnome/format_bar.rs:425 src/gnome/paragraph.rs:471
+#: src/gnome/format_bar.rs:436 src/gnome/paragraph.rs:471
 msgid "Alignment: {value}"
 msgstr ""
 
@@ -353,7 +353,7 @@ msgstr ""
 msgid "Cells"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:244 src/gnome/format_bar.rs:407 src/gnome/paragraph.rs:463 src/gnome/paragraph.rs:811 src/gnome/tables.rs:353
+#: src/gnome/document_properties_dialog.rs:244 src/gnome/format_bar.rs:418 src/gnome/paragraph.rs:463 src/gnome/paragraph.rs:811 src/gnome/tables.rs:353
 msgid "Center"
 msgstr ""
 
@@ -1305,7 +1305,7 @@ msgstr ""
 msgid "Format text and paragraphs with native controls."
 msgstr ""
 
-#: src/gnome/format_bar.rs:661 src/gnome/review.rs:303
+#: src/gnome/format_bar.rs:695 src/gnome/review.rs:303
 msgid "Formatting"
 msgstr ""
 
@@ -1613,7 +1613,7 @@ msgstr ""
 msgid "Italic (Ctrl+I)"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:245 src/gnome/format_bar.rs:411 src/gnome/paragraph.rs:465 src/gnome/paragraph.rs:813
+#: src/gnome/document_properties_dialog.rs:245 src/gnome/format_bar.rs:422 src/gnome/paragraph.rs:465 src/gnome/paragraph.rs:813
 msgid "Justify"
 msgstr ""
 
@@ -1809,7 +1809,7 @@ msgstr ""
 msgid "Missing; fallback information unavailable"
 msgstr ""
 
-#: src/gnome/adaptive.rs:189 src/gnome/adaptive.rs:260 src/gnome/format_bar.rs:322 src/gnome/format_bar.rs:413 src/gnome/paragraph.rs:467 src/gnome/paragraph.rs:493 src/gnome/paragraph.rs:542 src/gnome/paragraph.rs:549 src/gnome/paragraph.rs:561 src/gnome/paragraph.rs:1038 src/gnome/selection_view.rs:155 src/gnome/text_palette.rs:526 src/gnome/text_palette.rs:546
+#: src/gnome/adaptive.rs:189 src/gnome/adaptive.rs:260 src/gnome/format_bar.rs:333 src/gnome/format_bar.rs:424 src/gnome/paragraph.rs:467 src/gnome/paragraph.rs:493 src/gnome/paragraph.rs:542 src/gnome/paragraph.rs:549 src/gnome/paragraph.rs:561 src/gnome/paragraph.rs:1038 src/gnome/selection_view.rs:155 src/gnome/text_palette.rs:526 src/gnome/text_palette.rs:546
 msgid "Mixed"
 msgstr ""
 
@@ -1817,11 +1817,11 @@ msgstr ""
 msgid "Modify Style"
 msgstr ""
 
-#: src/gnome/format_bar.rs:179
+#: src/gnome/format_bar.rs:189
 msgid "More Elements Options…"
 msgstr ""
 
-#: src/gnome/format_bar.rs:655
+#: src/gnome/format_bar.rs:689
 msgid "More Formatting Options"
 msgstr ""
 
@@ -1829,7 +1829,7 @@ msgstr ""
 msgid "More Paragraph Options"
 msgstr ""
 
-#: src/gnome/format_bar.rs:178
+#: src/gnome/format_bar.rs:188
 msgid "More Paragraph Options…"
 msgstr ""
 
@@ -1841,7 +1841,7 @@ msgstr ""
 msgid "More Table Options…"
 msgstr ""
 
-#: src/gnome/adaptive.rs:423 src/gnome/adaptive.rs:881 src/gnome/format_bar.rs:177 src/gnome/tab.rs:324
+#: src/gnome/adaptive.rs:423 src/gnome/adaptive.rs:881 src/gnome/format_bar.rs:187 src/gnome/tab.rs:324
 msgid "More Text Options…"
 msgstr ""
 
@@ -2081,7 +2081,7 @@ msgstr ""
 msgid "Open…"
 msgstr ""
 
-#: src/gnome/format_bar.rs:567 src/gnome/text_palette.rs:102
+#: src/gnome/format_bar.rs:601 src/gnome/text_palette.rs:102
 msgid "Options for {label}"
 msgstr ""
 
