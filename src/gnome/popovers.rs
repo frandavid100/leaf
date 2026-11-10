@@ -336,13 +336,20 @@ pub(super) fn embedded_color_chooser(
         picker.set_rgba(&color);
     }
     let armed = Rc::new(Cell::new(false));
-    let click = gtk::GestureClick::new();
-    click.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let pointer = gtk::EventControllerLegacy::new();
+    pointer.set_propagation_phase(gtk::PropagationPhase::Capture);
     let a = armed.clone();
-    click.connect_pressed(move |_, _, _, _| {
-        a.set(true);
+    pointer.connect_event(move |_, event| {
+        if matches!(
+            event.event_type(),
+            gdk::EventType::ButtonPress | gdk::EventType::TouchBegin
+        ) {
+            a.set(true);
+        }
+        // Observe intent without competing with GtkColorSwatch's own gesture.
+        glib::Propagation::Proceed
     });
-    picker.add_controller(click);
+    picker.add_controller(pointer);
     let keys = gtk::EventControllerKey::new();
     keys.set_propagation_phase(gtk::PropagationPhase::Capture);
     let a = armed.clone();
