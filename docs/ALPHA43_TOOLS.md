@@ -4,8 +4,13 @@
 
 Direct publication is explicitly authorized by David for this delivery; there is no
 human RC approval step. All functional and installed checks remain required.
-Closure after verified publication: #50, #236, #238, #240, #249, #250, #251,
+Closure after verified publication: #50, #236, #238, #240, #246, #249, #250, #251,
 #253, #254, #255, #256, #257, #258, #260, #263, #264, #266.
+
+The full-color and symbolic application icons use the exact final approved SVGs
+from reopened #246: taller paper, three text lines and a light-blue bottom
+profile. The Windows ICO is regenerated from that same vector source. Public
+store screenshots and description remain paused under #185.
 
 Start caches are tied to document identity rather than formatting revisions; stale
 loads still check identity and revision before replacing live work. Sidebar width
