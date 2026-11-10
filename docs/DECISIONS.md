@@ -1,6 +1,12 @@
 # Decisiones vigentes
 
 
+## Publicada y verificada automáticamente: 0.1.0-alpha.43
+
+Se publican los mismos bytes de la candidata tras superar todas las pruebas
+nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
+de cerrar #50, #236, #238, #240, #246, #249, #250, #251, #253, #254, #255, #256, #257, #258, #260, #263, #264, #266. [Identidad y límites](LATEST_RELEASE.md).
+
 ## 10/11/2026 — alpha.43 con los issues nuevos y publicación directa
 
 David añade las propuestas recientes y pide expresamente release, sin RC.

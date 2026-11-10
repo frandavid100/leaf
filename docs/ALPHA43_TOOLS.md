@@ -1,5 +1,7 @@
 # Alpha.43 — focused formatting and contextual tools
 
+Published and verified: #50, #236, #238, #240, #246, #249, #250, #251, #253, #254, #255, #256, #257, #258, #260, #263, #264, #266 are completed. See [published identity and validation](LATEST_RELEASE.md).
+
 ## Scope and closure plan
 
 Direct publication is explicitly authorized by David for this delivery; there is no

@@ -1,15 +1,6 @@
 # Hoja de ruta de Leaf
 
 
-<!-- candidate-alpha:start -->
-## En preparación: alpha.43, publicación directa autorizada
-
-Incluye los nuevos #249–#268 y las reaperturas #50/#236/#238/#240.
-Se cierran únicamente los requisitos completados y verificados; los límites y
-partes pendientes conservan su issue abierto. No se crea una RC para David en
-esta entrega. WordCraft sigue en 0.17.0; #185 permanece en pausa.
-[Alcance, plan de cierre y límites](docs/ALPHA43_TOOLS.md).
-<!-- candidate-alpha:end -->
 
 
 Procedimiento habitual: RC validada para probar; tras el visto bueno de David,
@@ -30,10 +21,10 @@ al borrar el párrafo completo. También permanecen #1, #52, #99, #171 y #185.
 Se conservan los aplazamientos de capturas públicas, Weblate y Windows ocasional.
 
 <!-- published-alpha:start -->
-## Última publicación verificada: 0.1.0-alpha.42
+## Última publicación verificada: 0.1.0-alpha.43
 
-[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.42). Issues cerrados: #235, #238, #239, #240, #241, #242, #243, #244, #245, #246, #248.
-Permanecen abiertos: #1, #99, #152, #185, #231.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.43). Issues cerrados: #50, #236, #238, #240, #246, #249, #250, #251, #253, #254, #255, #256, #257, #258, #260, #263, #264, #266.
+Permanecen abiertos: #1, #99, #152, #185, #231, #252, #259, #261, #262, #265, #267, #268.
 [Fuente, validación y límites](docs/LATEST_RELEASE.md).
 <!-- published-alpha:end -->
 
