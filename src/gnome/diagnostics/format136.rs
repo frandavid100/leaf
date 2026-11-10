@@ -323,11 +323,11 @@ pub(super) fn format136_ui_test(
                     )
                     .unwrap();
                     assert!(picker.is_mapped());
-                    find_widget(&picker, "color-custom")
+                    find_widget(&picker, "color-custom-editor")
                         .unwrap()
-                        .downcast::<gtk::Button>()
+                        .downcast::<gtk::ColorChooserWidget>()
                         .unwrap()
-                        .emit_clicked();
+                        .set_show_editor(true);
                     phase.set(4);
                 } else if row == "text-language" {
                     // The new page is mapped, but its long list has not yet

@@ -1,0 +1,195 @@
+{
+  "baseline": {
+    "source": "19baf2bb29b42153bfa6ec2d9f2046f8171c39ef",
+    "binary_bytes": 45812584,
+    "binary_sha256": "3dffcbe68f970a76af76581f668498e52743c319508905c6ff73dc21263f6191",
+    "rust_files": 170,
+    "rust_lines": 58285,
+    "diagnostic_lines": 16129,
+    "build_seconds": 127.752,
+    "max_rss_kib": 2552280
+  },
+  "candidate_version": "0.1.0-alpha.44",
+  "candidate": {
+    "binary_bytes": 45735432,
+    "binary_sha256": "9c7751d63a402a0d41a712cf4ae5112a8213eeaddfc6715aad819b8aa193abc9",
+    "rust_lines": 58000,
+    "diagnostic_lines": 16087,
+    "rust_tests_passed": 240
+  },
+  "binary_difference_bytes": -77152,
+  "binary_reduction_percent": 0.1684,
+  "source_difference_lines": -285,
+  "compiler": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "gtk": "4.18.6",
+  "libadwaita": "1.7.6",
+  "profile": "unchanged production opt-level=3, thin LTO, one codegen unit, symbols stripped, unwinding retained",
+  "display": "Xvfb 2800x2200, X11, Cairo, fresh profiles, English",
+  "performance_samples": {
+    "sizes": [
+      120,
+      600
+    ],
+    "orders": [
+      "AB",
+      "BA"
+    ],
+    "cases": 8,
+    "canonical_document_unchanged": true,
+    "phases": [
+      {
+        "paragraphs": 120,
+        "phase": "import_docx",
+        "baseline": 1.6218585,
+        "final": 3.78985
+      },
+      {
+        "paragraphs": 120,
+        "phase": "import_odt",
+        "baseline": 1.6921295,
+        "final": 1.7546235000000001
+      },
+      {
+        "paragraphs": 120,
+        "phase": "first_layout",
+        "baseline": 32.320659,
+        "final": 41.04633750000001
+      },
+      {
+        "paragraphs": 120,
+        "phase": "open_widgets_and_initial_rasters",
+        "baseline": 38.688713500000006,
+        "final": 41.3517065
+      },
+      {
+        "paragraphs": 120,
+        "phase": "thumbnail_cache_hits_80",
+        "baseline": 0.16339150000000002,
+        "final": 0.1540875
+      },
+      {
+        "paragraphs": 120,
+        "phase": "cursor_right_80",
+        "baseline": 259.9454005,
+        "final": 267.15528299999994
+      },
+      {
+        "paragraphs": 120,
+        "phase": "derived_refresh_16",
+        "baseline": 0.006084,
+        "final": 0.005178
+      },
+      {
+        "paragraphs": 120,
+        "phase": "scroll_pages",
+        "baseline": 47.219982,
+        "final": 55.981572
+      },
+      {
+        "paragraphs": 120,
+        "phase": "scroll_thumbnails",
+        "baseline": 70.918886,
+        "final": 61.6196795
+      },
+      {
+        "paragraphs": 120,
+        "phase": "edit_8_and_undo",
+        "baseline": 105.646288,
+        "final": 89.7742775
+      },
+      {
+        "paragraphs": 120,
+        "phase": "active_search",
+        "baseline": 5.8815815,
+        "final": 7.1637925
+      },
+      {
+        "paragraphs": 120,
+        "phase": "inactive_search_refresh_4",
+        "baseline": 0.0016175,
+        "final": 0.0027595
+      },
+      {
+        "paragraphs": 600,
+        "phase": "import_docx",
+        "baseline": 3.436703,
+        "final": 4.3100045
+      },
+      {
+        "paragraphs": 600,
+        "phase": "import_odt",
+        "baseline": 5.1299285,
+        "final": 6.6356079999999995
+      },
+      {
+        "paragraphs": 600,
+        "phase": "first_layout",
+        "baseline": 73.99975,
+        "final": 76.195305
+      },
+      {
+        "paragraphs": 600,
+        "phase": "open_widgets_and_initial_rasters",
+        "baseline": 47.418512,
+        "final": 48.6044905
+      },
+      {
+        "paragraphs": 600,
+        "phase": "thumbnail_cache_hits_80",
+        "baseline": 0.21774300000000002,
+        "final": 0.212385
+      },
+      {
+        "paragraphs": 600,
+        "phase": "cursor_right_80",
+        "baseline": 595.7242094999999,
+        "final": 629.6336225
+      },
+      {
+        "paragraphs": 600,
+        "phase": "derived_refresh_16",
+        "baseline": 0.022794500000000002,
+        "final": 0.0228995
+      },
+      {
+        "paragraphs": 600,
+        "phase": "scroll_pages",
+        "baseline": 109.21149650000001,
+        "final": 79.51204200000001
+      },
+      {
+        "paragraphs": 600,
+        "phase": "scroll_thumbnails",
+        "baseline": 148.0104845,
+        "final": 132.2824645
+      },
+      {
+        "paragraphs": 600,
+        "phase": "edit_8_and_undo",
+        "baseline": 172.669603,
+        "final": 189.85861200000002
+      },
+      {
+        "paragraphs": 600,
+        "phase": "active_search",
+        "baseline": 11.8255065,
+        "final": 14.745887
+      },
+      {
+        "paragraphs": 600,
+        "phase": "inactive_search_refresh_4",
+        "baseline": 0.0021985,
+        "final": 0.002669
+      }
+    ]
+  },
+  "visual_comparison": {
+    "size": [
+      1140,
+      840
+    ],
+    "different_pixels": 0,
+    "difference_box": null
+  },
+  "limits": "Local Linux measurements; phase timings are descriptive small-sample results, not a general speed guarantee or Windows/package-size estimate."
+}

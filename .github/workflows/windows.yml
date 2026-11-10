@@ -165,8 +165,8 @@ jobs:
         run: |
           version=$(cat release/version.txt)
           [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+-windows\.[0-9]+$ ]]
-          cat > notes.md <<'NOTES'
-          First experimental Windows x86_64 package of Leaf, based on alpha.36.
+          printf 'Experimental Windows x86_64 package of Leaf, based on %s.\n\n' "${version%-windows.*}" > notes.md
+          cat >> notes.md <<'NOTES'
 
           Download **setup.exe** for a per-user installation, or extract **portable.zip** and open `bin/leaf.exe`. GTK and its runtime libraries are included.
 

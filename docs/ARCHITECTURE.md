@@ -303,3 +303,12 @@ GTK `color_chooser.rs`, `paragraph_options.rs`, `list_options.rs`, `image_option
 and `table_properties.rs` expose native controls and read-only current state;
 `tool_actions.rs` routes stable customization IDs to these shared tools.
 [Contracts, validation and remaining gaps](ALPHA43_TOOLS.md).
+
+## Alpha44 maintenance
+
+Color properties reuse the native GTK palette/editor through the small guarded
+`InlineColor` adapter in `src/gnome/color_chooser.rs`; custom swatch/controller
+registries are removed. Toolbar filtering reuses per-group catalogs/placements.
+`DiagnosticRunner` centralizes common callback ownership while preserving the
+existing opt-in test registrations and distributed-executable verification.
+See [maintenance scope and measurement limits](ALPHA44_MAINTENANCE.md).

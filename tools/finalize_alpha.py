@@ -93,8 +93,10 @@ Permanecen abiertos: {open_issues}.
     if report_path:
         report_text = (root / report_path).read_text()
         at = report_text.index('\n## ')
-        files[report_path] = (report_text.splitlines()[0] + '\n\nPublished and verified: ' + closed +
-                              ' are completed. See [published identity and validation](LATEST_RELEASE.md).\n' + report_text[at:])
+        completed = (f'Published and verified: {closed} are completed.' if proof['closed_issues']
+                     else 'Published and verified; this maintenance release claims no issue closures.')
+        files[report_path] = (report_text.splitlines()[0] + '\n\n' + completed +
+                              ' See [published identity and validation](LATEST_RELEASE.md).\n' + report_text[at:])
     for name in ['PROJECT_STATUS.md', 'ROADMAP.md']:
         text = (root / name).read_text()
         text = re.sub(r'<!-- candidate-alpha:start -->.*?<!-- candidate-alpha:end -->\n', '', text, flags=re.S)
