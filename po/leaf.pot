@@ -2513,7 +2513,7 @@ msgstr ""
 msgid "Ruler: {marker}, {value} pt, page {page}"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:72 src/gnome/close_group.rs:129 src/gnome/diagnostics/alpha42.rs:174 src/gnome/diagnostics/alpha42.rs:188 src/gnome/diagnostics/localization.rs:20 src/gnome/files.rs:20 src/gnome/menus.rs:538 src/gnome/menus.rs:641
+#: src/gnome/annotation_dialog.rs:72 src/gnome/close_group.rs:129 src/gnome/diagnostics/alpha42.rs:192 src/gnome/diagnostics/alpha42.rs:206 src/gnome/diagnostics/localization.rs:20 src/gnome/files.rs:20 src/gnome/menus.rs:538 src/gnome/menus.rs:641
 msgid "Save"
 msgstr ""
 

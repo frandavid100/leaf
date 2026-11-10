@@ -67,6 +67,19 @@ pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
         paragraph.popover.upgrade().unwrap().popdown();
         settle().await;
     }
+    let theme = gtk::IconTheme::for_display(&gdk::Display::default().unwrap());
+    assert!(theme.has_icon(APP_ID) && theme.has_icon(&format!("{APP_ID}-symbolic")));
+    for size in [32, 64] {
+        let icon = theme.lookup_icon(
+            APP_ID,
+            &[],
+            size,
+            window.scale_factor(),
+            gtk::TextDirection::None,
+            gtk::IconLookupFlags::empty(),
+        );
+        assert!(icon.intrinsic_width() > 0 && icon.intrinsic_height() > 0);
+    }
     let search = ui.search.borrow().as_ref().unwrap().clone();
     search.show(false);
     search.query.set_text("Alpha");
@@ -76,7 +89,8 @@ pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     let target = options.compute_bounds(window).unwrap();
     assert!(target.x() >= field.x() && target.x() + target.width() <= field.x() + field.width());
     assert!(
-        gtk::IconTheme::for_display(&window.display()).has_icon("nautilus-search-filters-symbolic")
+        gtk::IconTheme::for_display(&gdk::Display::default().unwrap())
+            .has_icon("nautilus-search-filters-symbolic")
     );
     search.toggle.set_active(false);
     ui.sidebar_button.set_active(true);
@@ -108,6 +122,10 @@ pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
         .document_menu
         .borrow()
         .as_ref()
+        .unwrap()
+        .upgrade()
+        .unwrap()
+        .downcast::<gtk::PopoverMenu>()
         .unwrap()
         .menu_model()
         .unwrap();

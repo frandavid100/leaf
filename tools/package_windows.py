@@ -44,15 +44,13 @@ def main():
             shutil.copytree(source, package / 'share/locale' / language, dirs_exist_ok=True)
     shutil.copytree(ROOT / 'po/locale', package / 'share/locale', dirs_exist_ok=True)
     shutil.copytree(ROOT / 'data/icons', package / 'share/icons', dirs_exist_ok=True)
-    shutil.copy2(ROOT / 'data/icons/hicolor/scalable/apps/leaf.svg',
-                 package / 'share/icons/hicolor/scalable/apps/io.github.frandavid100.leaf.svg')
     shutil.copytree(ROOT / 'data/dictionaries', package / 'share/hunspell', dirs_exist_ok=True)
     shutil.copy2(ROOT / 'LICENSE', package / 'share/licenses/Leaf/LICENSE')
     for name in ['LICENSE-MIT', 'LICENSE-APACHE']:
         target = package / 'share/licenses/WordCraft'
         target.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / 'vendor/wordcraft-formats' / name, target / name)
-    for source in ['data/icons/ICON_DEV_KIT_LICENSE.md', 'data/THEME_SELECTOR_SOURCES.md']:
+    for source in ['data/icons/ICON_DEV_KIT_LICENSE.md', 'data/icons/NAUTILUS_SOURCES.md', 'data/THEME_SELECTOR_SOURCES.md']:
         shutil.copy2(ROOT / source, package / 'share/licenses/Leaf' / Path(source).name)
     # Retain runtime library notices, as well as Leaf/dictionary and embedded pack licenses.
     shutil.copytree(prefix / 'share/licenses', package / 'share/licenses/runtime', dirs_exist_ok=True)
