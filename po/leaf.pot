@@ -57,11 +57,11 @@ msgstr ""
 msgid "After (pt)"
 msgstr ""
 
-#: src/gnome/format_bar.rs:419 src/gnome/paragraph.rs:462 src/gnome/paragraph.rs:810
+#: src/gnome/format_bar.rs:437 src/gnome/paragraph.rs:462 src/gnome/paragraph.rs:810
 msgid "Align Left"
 msgstr ""
 
-#: src/gnome/format_bar.rs:423 src/gnome/paragraph.rs:464 src/gnome/paragraph.rs:812
+#: src/gnome/format_bar.rs:441 src/gnome/paragraph.rs:464 src/gnome/paragraph.rs:812
 msgid "Align Right"
 msgstr ""
 
@@ -69,7 +69,7 @@ msgstr ""
 msgid "Alignment"
 msgstr ""
 
-#: src/gnome/format_bar.rs:445 src/gnome/paragraph.rs:471
+#: src/gnome/format_bar.rs:463 src/gnome/paragraph.rs:471
 msgid "Alignment: {value}"
 msgstr ""
 
@@ -353,7 +353,7 @@ msgstr ""
 msgid "Cells"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:244 src/gnome/format_bar.rs:427 src/gnome/paragraph.rs:463 src/gnome/paragraph.rs:811 src/gnome/tables.rs:353
+#: src/gnome/document_properties_dialog.rs:244 src/gnome/format_bar.rs:445 src/gnome/paragraph.rs:463 src/gnome/paragraph.rs:811 src/gnome/tables.rs:353
 msgid "Center"
 msgstr ""
 
@@ -735,6 +735,10 @@ msgstr ""
 
 #: src/gnome/templates.rs:754
 msgid "Custom template folders are unavailable in the sandbox. Use the system Templates folder."
+msgstr ""
+
+#: src/gnome/format_bar.rs:206
+msgid "Customize Toolbar"
 msgstr ""
 
 #: src/gnome/context.rs:376 src/gnome/diagnostics/context.rs:132 src/gnome/diagnostics/spellcheck.rs:145
@@ -1305,7 +1309,7 @@ msgstr ""
 msgid "Format text and paragraphs with native controls."
 msgstr ""
 
-#: src/gnome/format_bar.rs:720 src/gnome/review.rs:303
+#: src/gnome/format_bar.rs:738 src/gnome/review.rs:303
 msgid "Formatting"
 msgstr ""
 
@@ -1613,7 +1617,7 @@ msgstr ""
 msgid "Italic (Ctrl+I)"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:245 src/gnome/format_bar.rs:431 src/gnome/paragraph.rs:465 src/gnome/paragraph.rs:813
+#: src/gnome/document_properties_dialog.rs:245 src/gnome/format_bar.rs:449 src/gnome/paragraph.rs:465 src/gnome/paragraph.rs:813
 msgid "Justify"
 msgstr ""
 
@@ -1809,7 +1813,7 @@ msgstr ""
 msgid "Missing; fallback information unavailable"
 msgstr ""
 
-#: src/gnome/adaptive.rs:189 src/gnome/adaptive.rs:260 src/gnome/format_bar.rs:342 src/gnome/format_bar.rs:433 src/gnome/paragraph.rs:467 src/gnome/paragraph.rs:493 src/gnome/paragraph.rs:542 src/gnome/paragraph.rs:549 src/gnome/paragraph.rs:561 src/gnome/paragraph.rs:1038 src/gnome/selection_view.rs:155 src/gnome/text_palette.rs:526 src/gnome/text_palette.rs:546
+#: src/gnome/adaptive.rs:189 src/gnome/adaptive.rs:260 src/gnome/format_bar.rs:360 src/gnome/format_bar.rs:451 src/gnome/paragraph.rs:467 src/gnome/paragraph.rs:493 src/gnome/paragraph.rs:542 src/gnome/paragraph.rs:549 src/gnome/paragraph.rs:561 src/gnome/paragraph.rs:1038 src/gnome/selection_view.rs:155 src/gnome/text_palette.rs:526 src/gnome/text_palette.rs:546
 msgid "Mixed"
 msgstr ""
 
@@ -1821,7 +1825,7 @@ msgstr ""
 msgid "More Elements Options…"
 msgstr ""
 
-#: src/gnome/format_bar.rs:714
+#: src/gnome/format_bar.rs:732
 msgid "More Formatting Options"
 msgstr ""
 
@@ -2081,7 +2085,7 @@ msgstr ""
 msgid "Open…"
 msgstr ""
 
-#: src/gnome/format_bar.rs:610 src/gnome/text_palette.rs:102
+#: src/gnome/format_bar.rs:628 src/gnome/text_palette.rs:102
 msgid "Options for {label}"
 msgstr ""
 

@@ -335,8 +335,8 @@ async fn shared_overflow(ui: &Rc<Ui>, window: &ApplicationWindow) {
         }
         names.push(widget.widget_name().to_string());
     }
-    assert_eq!(separators, 2);
-    assert_eq!(names.last().unwrap(), "overflow-more-elements");
+    assert_eq!(separators, 3);
+    assert_eq!(names.last().unwrap(), "overflow-customize-toolbar");
     menu.popdown();
     window.set_default_size(1280, 850);
     settle().await;
@@ -383,12 +383,41 @@ async fn shared_overflow(ui: &Rc<Ui>, window: &ApplicationWindow) {
             .is_mapped()
     );
     menu.popdown();
+    for width in [420, 1280] {
+        window.set_default_size(width, 850);
+        settle().await;
+        ui.quick_tools.borrow().as_ref().unwrap().root();
+        settle().await;
+        let customize = find_widget(&ui.format_toolbar, "overflow-customize-toolbar")
+            .unwrap()
+            .downcast::<gtk::Button>()
+            .unwrap();
+        assert!(customize.is_mapped());
+        customize.emit_clicked();
+        settle().await;
+        let dialog = window
+            .visible_dialog()
+            .unwrap()
+            .downcast::<adw::PreferencesDialog>()
+            .unwrap();
+        assert_eq!(dialog.visible_page_name().as_deref(), Some("toolbar"));
+        for name in [
+            "toolbar-placement-text-bold",
+            "toolbar-move-text-bold-1",
+            "toolbar-preferences-paragraph",
+            "toolbar-preferences-elements",
+        ] {
+            assert!(find_widget(&dialog, name).is_some());
+        }
+        dialog.close();
+        settle().await;
+    }
     for (group, order) in &saved {
         prefs::set_toolbar_placements(group, order).unwrap();
     }
     ui.quick_tools.borrow().as_ref().unwrap().layout();
     settle().await;
     eprintln!(
-        "OVERFLOW248_OK fixed-menu=true pinned-scroll=true focus-reveal=true sections=true restore=true"
+        "OVERFLOW248_OK fixed-menu=true pinned-scroll=true focus-reveal=true sections=true customize-wide-narrow=true restore=true"
     );
 }

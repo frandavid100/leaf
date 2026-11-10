@@ -201,6 +201,24 @@ impl QuickTools {
             });
             self.overflow_main.append(&more);
         }
+        self.overflow_main
+            .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+        let customize = style_menu_button(wordcraft_gnome::t!("Customize Toolbar"));
+        customize.set_widget_name("overflow-customize-toolbar");
+        let weak = self.ui.clone();
+        customize.connect_clicked(move |_| {
+            let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+                return;
+            };
+            if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                tools.overflow.popdown();
+            }
+            if let Some(host) = ui.host.upgrade() {
+                let dialog = show_preferences(&host.window);
+                dialog.set_visible_page_name("toolbar");
+            }
+        });
+        self.overflow_main.append(&customize);
     }
 
     pub(super) fn root(&self) {

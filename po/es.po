@@ -3408,3 +3408,6 @@ msgstr "Más opciones de elementos"
 
 msgid "More Formatting Options"
 msgstr "Más opciones de formato"
+
+msgid "Customize Toolbar"
+msgstr "Personalizar la barra de herramientas"
