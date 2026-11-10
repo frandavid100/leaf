@@ -79,7 +79,11 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
                 assert!(
                     !paragraph.stack.is_transition_running()
                         && !text.stack.is_transition_running()
-                        && !elements.stack.is_transition_running()
+                        && !elements.stack.is_transition_running(),
+                    "direct {name} transitions: paragraph={} text={} elements={}",
+                    paragraph.stack.is_transition_running(),
+                    text.stack.is_transition_running(),
+                    elements.stack.is_transition_running()
                 );
                 eprintln!(
                     "TOOLBAR41_OPEN {name} active={}",

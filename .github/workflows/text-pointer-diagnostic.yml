@@ -25,6 +25,15 @@ jobs:
           shared-key: native-focused-debug
       - name: Install native build and pointer dependencies
         run: |
+          sudo python3 - <<'PYMIRROR'
+          from pathlib import Path
+          for path in [Path('/etc/apt/sources.list'), *Path('/etc/apt/sources.list.d').glob('*.list'), *Path('/etc/apt/sources.list.d').glob('*.sources')]:
+              if path.is_file():
+                  path.write_text(path.read_text().replace('http://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu').replace('https://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu'))
+          for name, uri in [('apt-mirrors.txt', 'https://archive.ubuntu.com/ubuntu'), ('apt-security-mirrors.txt', 'https://security.ubuntu.com/ubuntu')]:
+              path = Path('/etc/apt') / name
+              if path.is_file(): path.write_text(uri + '\n')
+          PYMIRROR
           sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
           sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth xdotool scrot xclip adwaita-icon-theme librsvg2-common gettext dbus-x11 gdb
       - name: Build an unpublished diagnostic executable from this checkout
@@ -42,6 +51,11 @@ jobs:
           set -o pipefail
           export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d)
           xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s target/debug/wordcraft-gnome --toolbar41-ui-test 2>&1 | tee focused-toolbar.log
+      - name: Check direct popover toggles and preference drag with real pointer input
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d)
+          xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s bash tools/toolbar41-pointer-test.sh "$PWD/target/debug/wordcraft-gnome"
       - name: Trace the existing formatting navigation regression
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -58,4 +72,5 @@ jobs:
           path: |
             text18-*
             focused-toolbar.log
+            toolbar41-*
             alpha31-format136-*
