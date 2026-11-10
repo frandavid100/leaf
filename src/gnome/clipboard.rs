@@ -29,12 +29,21 @@ pub(super) fn clipboard_can_paste(ui: &Ui) -> bool {
 // Share the engine fragment between tabs only while GTK still owns this exact
 // clipboard provider. Never paste an old fragment after another app copies.
 thread_local! {
+    static FORMAT_CLIPBOARD: RefCell<Option<(gdk::ContentProvider,wordcraft_gnome::format_painter::FormatTransfer)>> = const {RefCell::new(None)};
     static CLIPBOARD_WATCHED: Cell<bool> = const { Cell::new(false) };
     pub(super) static RICH_CLIPBOARD: RefCell<Option<(gdk::ContentProvider, wordcraft_doc::edit::Fragment)>> = const { RefCell::new(None) };
 }
 pub(super) fn context_copy(ui: &Rc<Ui>) -> bool {
     if !CLIPBOARD_WATCHED.with(|v| v.replace(true)) {
         ui.document_box.clipboard().connect_changed(|clipboard| {
+            FORMAT_CLIPBOARD.with(|c| {
+                let mut c = c.borrow_mut();
+                if c.as_ref()
+                    .is_some_and(|(p, _)| clipboard.content().as_ref() != Some(p))
+                {
+                    c.take();
+                }
+            });
             RICH_CLIPBOARD.with(|c| {
                 let mut c = c.borrow_mut();
                 if c.as_ref()
@@ -45,6 +54,10 @@ pub(super) fn context_copy(ui: &Rc<Ui>) -> bool {
             });
         });
     }
+    let appearance =
+        ui.current.borrow().as_ref().and_then(|d| {
+            wordcraft_gnome::format_painter::FormatTransfer::capture(&d.session).ok()
+        });
     let result = {
         let mut value = ui.current.borrow_mut();
         let Some(d) = value.as_mut() else {
@@ -83,6 +96,7 @@ pub(super) fn context_copy(ui: &Rc<Ui>) -> bool {
         ui.toasts.add_toast(Toast::new(&e.to_string()));
         return false;
     }
+    FORMAT_CLIPBOARD.with(|c| c.replace(appearance.map(|f| (provider.clone(), f))));
     RICH_CLIPBOARD.with(|c| c.replace(fragment.map(|f| (provider, f))));
     true
 }
@@ -265,4 +279,23 @@ pub(super) fn paste_plain(ui: &Rc<Ui>) {
         caret_ensure_visible(&ui);
     });
     ui.clipboard_read.replace(Some(task));
+}
+
+pub(super) fn can_paste_format(ui: &Rc<Ui>) -> bool {
+    FORMAT_CLIPBOARD.with(|c| {
+        c.borrow()
+            .as_ref()
+            .is_some_and(|(p, _)| ui.document_box.clipboard().content().as_ref() == Some(p))
+    })
+}
+pub(super) fn paste_format(ui: &Rc<Ui>) {
+    let payload = FORMAT_CLIPBOARD.with(|c| {
+        c.borrow()
+            .as_ref()
+            .filter(|(p, _)| ui.document_box.clipboard().content().as_ref() == Some(p))
+            .map(|(_, f)| f.clone())
+    });
+    if let Some(payload) = payload {
+        tools_change(ui, move |s| payload.apply(s));
+    }
 }

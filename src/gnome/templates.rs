@@ -7,7 +7,7 @@ use std::sync::{
 
 pub(super) struct Gallery {
     ui: std::rc::Weak<Ui>,
-    identity: Option<(u64, u64)>,
+    document: Option<u64>,
     strip: gtk::Box,
     template_group: gtk::Box,
     recovery_group: gtk::Box,
@@ -80,7 +80,7 @@ pub(super) fn sync_after_edit(ui: &Rc<Ui>) {
             .template_gallery
             .borrow()
             .as_ref()
-            .is_none_or(|g| g.identity != document_identity(ui));
+            .is_none_or(|g| g.document != document_identity(ui).map(|id| id.0));
         if fresh {
             reload(ui);
         }
@@ -206,7 +206,7 @@ fn reload(ui: &Rc<Ui>) {
     let cancelled = Arc::new(AtomicBool::new(false));
     let gallery = Rc::new(Gallery {
         ui: Rc::downgrade(ui),
-        identity: document_identity(ui),
+        document: document_identity(ui).map(|id| id.0),
         strip,
         template_group,
         recovery_group,
@@ -274,8 +274,8 @@ fn reload(ui: &Rc<Ui>) {
     });
     gallery.source.replace(Some(source));
 }
-// Use allocated native geometry, including the optional tab row. Independent
-// scrolling does not change the resting origin of either the page or previews.
+// The single-document reference ends at the primary header. The editor's tab
+// row belongs only to its own viewport and must never shift Start thumbnails.
 pub(super) fn align_start(ui: &Rc<Ui>) {
     let weak = Rc::downgrade(ui);
     let frames = Cell::new(0);
@@ -291,7 +291,8 @@ pub(super) fn align_start(ui: &Rc<Ui>) {
         {
             if let (Some(preview), Some(page)) = (
                 slot.compute_bounds(&ui.sidebar),
-                ui.scroll.compute_bounds(&ui.sidebar),
+                find_widget(&ui.sidebar, "document-primary-header")
+                    .and_then(|header| header.compute_bounds(&ui.sidebar)),
             ) {
                 if let Some(content) = ui.template_revealer.child() {
                     let scroll = ui
@@ -306,7 +307,7 @@ pub(super) fn align_start(ui: &Rc<Ui>) {
                     ) else {
                         return glib::ControlFlow::Continue;
                     };
-                    let top = (f64::from(page.y()) + viewer_layout::PAGE_GAP
+                    let top = (f64::from(page.y() + page.height()) + viewer_layout::PAGE_GAP
                         - f64::from(slot_bounds.y())
                         - scroll
                         - f64::from(preview.y() - content_bounds.y()))
@@ -434,7 +435,13 @@ impl Gallery {
     }
     fn valid_ui(&self) -> Option<Rc<Ui>> {
         self.ui.upgrade().filter(|u| {
-            !u.closed.get() && u.template_eligible.get() && document_identity(u) == self.identity
+            !u.closed.get()
+                && u.template_eligible.get()
+                && document_identity(u).map(|id| id.0) == self.document
+                && u.current
+                    .borrow()
+                    .as_ref()
+                    .is_some_and(|d| wordcraft_gnome::templates::is_empty(&d.session))
         })
     }
     fn warning(&self, message: Option<String>) {
@@ -655,19 +662,24 @@ impl Gallery {
         }
     }
     fn choose(self: &Rc<Self>, path: PathBuf) {
-        if self.valid_ui().is_none() {
-            return;
-        }
+        let Some(ui) = self.valid_ui() else { return };
+        let identity = document_identity(&ui);
         if let Some(old) = self.load.borrow_mut().take() {
             old.abort();
         }
         let weak = Rc::downgrade(self);
         let task = glib::spawn_future_local(async move {
             let result = gio::spawn_blocking(move || wordcraft_gnome::templates::open(&path)).await;
-            let Some(gallery) = weak.upgrade().filter(|g| g.valid_ui().is_some()) else {
+            let Some(gallery) = weak.upgrade() else {
                 return;
             };
             gallery.load.borrow_mut().take();
+            if !gallery
+                .valid_ui()
+                .is_some_and(|ui| document_identity(&ui) == identity)
+            {
+                return;
+            }
             match result {
                 Ok(Ok(session)) => gallery.accept(session, false),
                 Ok(Err(e)) => gallery.warning(Some(e)),
@@ -679,18 +691,26 @@ impl Gallery {
         self.load.replace(Some(task));
     }
     fn recover(self: &Rc<Self>, id: String) {
-        if self.valid_ui().is_none() || self.load.borrow().is_some() {
+        let Some(ui) = self.valid_ui() else { return };
+        if self.load.borrow().is_some() {
             return;
         }
+        let identity = document_identity(&ui);
         let weak = Rc::downgrade(self);
         let root = wordcraft_gnome::preferences::recovery_root();
         let task = glib::spawn_future_local(async move {
             let result =
                 gio::spawn_blocking(move || wordcraft_gnome::recovery::restore(&root, &id)).await;
-            let Some(gallery) = weak.upgrade().filter(|g| g.valid_ui().is_some()) else {
+            let Some(gallery) = weak.upgrade() else {
                 return;
             };
             gallery.load.borrow_mut().take();
+            if !gallery
+                .valid_ui()
+                .is_some_and(|ui| document_identity(&ui) == identity)
+            {
+                return;
+            }
             match result {
                 Ok(Ok(session)) => gallery.accept(session, true),
                 Ok(Err(e)) => {

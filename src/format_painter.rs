@@ -2,7 +2,7 @@
 use serde_json::json;
 use wordcraft_engine::Session;
 
-pub fn capture(s: &mut Session, sticky: bool) -> Result<(), String> {
+fn source(s: &Session) -> Result<(wordcraft_doc::CharProps, wordcraft_doc::ParaProps), String> {
     let pos = s.sel.ordered().0;
     let p = s
         .doc
@@ -61,11 +61,93 @@ pub fn capture(s: &mut Session, sticky: bool) -> Result<(), String> {
     chr.scale = Some(effective.scale);
     chr.position = Some(effective.position);
     let para = p.props.clone();
+    Ok((chr.formatting().without_symbol(), para))
+}
+pub fn capture(s: &mut Session, sticky: bool) -> Result<(), String> {
+    let (chr, para) = source(s)?;
     // The public command activates the tool; its public transient payload carries
     // the effective source properties, never a second editable document.
     s.painter = None;
     s.run("edit.formatPainter", &json!({"sticky":sticky}))
         .map_err(|e| e.to_string())?;
-    s.painter = Some((chr.formatting().without_symbol(), para, sticky));
+    s.painter = Some((chr, para, sticky));
     Ok(())
+}
+
+/// Ordinary Copy carries appearance separately from clipboard text/structure.
+#[derive(Clone)]
+pub struct FormatTransfer {
+    chr: wordcraft_doc::CharProps,
+    para: serde_json::Value,
+}
+impl FormatTransfer {
+    pub fn capture(s: &Session) -> Result<Self, String> {
+        let (chr, _) = source(s)?;
+        let pos = s.sel.ordered().0;
+        let p = s.doc.para_at(&pos).ok_or("No source paragraph")?;
+        let resolved =
+            serde_json::to_value(s.doc.styles.resolve_para(&p.props)).map_err(|e| e.to_string())?;
+        // Never transfer source-document IDs, sections, numbering or object ownership.
+        let keys = [
+            "align",
+            "bidi",
+            "indentLeft",
+            "indentRight",
+            "indentFirst",
+            "lineSpacing",
+            "spaceBefore",
+            "spaceAfter",
+            "keepNext",
+            "keepLines",
+            "pageBreakBefore",
+            "widowControl",
+            "borders",
+            "shading",
+            "tabs",
+        ];
+        let props: serde_json::Map<_, _> = keys
+            .into_iter()
+            .filter_map(|k| {
+                resolved
+                    .get(k)
+                    .filter(|v| !v.is_null())
+                    .map(|v| (k.into(), v.clone()))
+            })
+            .collect();
+        Ok(Self {
+            chr,
+            para: json!({"props":props}),
+        })
+    }
+    pub fn apply(&self, s: &mut Session) -> Result<(), String> {
+        if s.registry.get("leaf.pasteAppearance").is_none() {
+            let mut specs = s.registry.all().to_vec();
+            specs.push(wordcraft_engine::CommandSpec::new(
+                "leaf.pasteAppearance",
+                "Paste Formatting",
+                "Clipboard",
+                replace_character_appearance,
+            ));
+            s.registry = std::sync::Arc::new(wordcraft_engine::Registry::new(specs));
+        }
+        crate::operations::atomic(s, crate::t!("Paste Formatting"), |s| {
+            s.run("leaf.pasteAppearance", &json!({"props":self.chr}))
+                .map_err(|e| e.to_string())?;
+            s.run("para.set", &self.para).map_err(|e| e.to_string())?;
+            Ok(())
+        })
+    }
+}
+
+fn replace_character_appearance(
+    s: &mut Session,
+    args: &serde_json::Value,
+) -> wordcraft_engine::CmdResult {
+    let props: wordcraft_doc::CharProps = serde_json::from_value(args["props"].clone())
+        .map_err(|e| wordcraft_engine::CmdError::Params(e.to_string()))?;
+    wordcraft_engine::cmd::format::apply(s, &|c| {
+        let link = c.link.clone();
+        *c = c.cleared().overlaid(&props);
+        c.link = link;
+    })
 }

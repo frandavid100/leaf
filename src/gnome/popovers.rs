@@ -308,82 +308,6 @@ pub(super) fn format_popover_header(
     h
 }
 
-// GTK's embeddable native chooser is retained throughout GTK 4. Unlike
-// ColorDialog, it exposes the palette and arbitrary-colour editor in our page.
-#[allow(deprecated)]
-pub(super) struct InlineColor {
-    pub(super) widget: gtk::ColorChooserWidget,
-    syncing: Rc<Cell<bool>>,
-    last: Rc<RefCell<Option<String>>>,
-}
-#[allow(deprecated)]
-impl InlineColor {
-    pub(super) fn sync(&self, color: Option<&str>) {
-        self.syncing.set(true);
-        if let Some(rgba) = color.and_then(|c| gdk::RGBA::parse(c).ok()) {
-            self.widget.set_rgba(&rgba);
-        }
-        self.last.borrow_mut().take();
-        self.syncing.set(false);
-    }
-}
-#[allow(deprecated)]
-pub(super) fn embedded_color_chooser(
-    name: &str,
-    initial: Option<&str>,
-    apply: impl Fn(&str) -> bool + 'static,
-) -> Rc<InlineColor> {
-    let picker = gtk::ColorChooserWidget::new();
-    picker.set_widget_name(name);
-    picker.set_use_alpha(false);
-    // Keep GTK's full native palette, grayscale and custom-color editor.
-    // Adding a replacement palette here hides the standard chooser colors.
-    if let Some(color) = initial.and_then(|s| gdk::RGBA::parse(s).ok()) {
-        picker.set_rgba(&color);
-    }
-    let armed = Rc::new(Cell::new(false));
-    let click = gtk::GestureClick::new();
-    click.set_propagation_phase(gtk::PropagationPhase::Capture);
-    let a = armed.clone();
-    click.connect_pressed(move |_, _, _, _| {
-        a.set(true);
-    });
-    picker.add_controller(click);
-    let keys = gtk::EventControllerKey::new();
-    keys.set_propagation_phase(gtk::PropagationPhase::Capture);
-    let a = armed.clone();
-    keys.connect_key_pressed(move |_, _, _, _| {
-        a.set(true);
-        glib::Propagation::Proceed
-    });
-    picker.add_controller(keys);
-    let syncing = Rc::new(Cell::new(false));
-    let guard = syncing.clone();
-    let last = Rc::new(RefCell::new(None::<String>));
-    let previous = last.clone();
-    let action: Rc<dyn Fn(&str)> = Rc::new(move |hex| {
-        let changed = previous.borrow().as_deref() != Some(hex);
-        if !guard.get() && changed && apply(hex) {
-            previous.replace(Some(hex.into()));
-        }
-    });
-    let choose = action.clone();
-    picker.connect_rgba_notify(move |p| {
-        if armed.get() && p.is_mapped() {
-            choose(&rgba_hex(&p.rgba()));
-        }
-    });
-    picker.connect_color_activated(move |p, rgba| {
-        if p.is_mapped() {
-            action(&rgba_hex(rgba));
-        }
-    });
-    Rc::new(InlineColor {
-        widget: picker,
-        syncing,
-        last,
-    })
-}
 pub(super) fn rgba_hex(c: &gdk::RGBA) -> String {
     format!(
         "{:02X}{:02X}{:02X}",
@@ -419,6 +343,7 @@ pub(super) fn property_split(open: &gtk::Button, repeat: &gtk::Button) -> adw::S
     let split = adw::SplitButton::new();
     split.add_css_class("flat");
     split.add_css_class("image-button");
+    split.add_css_class("leaf-format-split");
     split.set_hexpand(true);
     let native = split
         .first_child()
@@ -483,5 +408,22 @@ pub(super) fn property_split(open: &gtk::Button, repeat: &gtk::Button) -> adw::S
             target.set_sensitive(source.is_sensitive());
         }
     });
+    split
+}
+
+/// Property body reapplies its remembered value; the native secondary navigates
+/// within the current panel and deliberately does not create another popup.
+pub(super) fn reapply_split(open: &gtk::Button, apply: &gtk::Button) -> adw::SplitButton {
+    if let Some(child) = open.child() {
+        open.set_child(None::<&gtk::Widget>);
+        apply.set_child(Some(&child));
+    }
+    let split = property_split(apply, open);
+    let arrow = split
+        .last_child()
+        .unwrap()
+        .downcast::<gtk::MenuButton>()
+        .unwrap();
+    arrow.set_icon_name("go-next-symbolic");
     split
 }

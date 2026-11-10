@@ -30,7 +30,8 @@ while kill -0 "$pid" 2>/dev/null; do
       xdotool mousemove --window "$window" "$ax" "$ay" click 1 key ctrl+a
       xdotool key Delete
       xdotool type --clearmodifiers --delay 80 "$family"
-      xdotool key ctrl+k ;;
+      # Filtering is non-mutating; Enter explicitly chooses the typed family.
+      xdotool key Return ctrl+k ;;
     paste) xdotool mousemove --window "$window" "$ax" "$ay" click 1 key ctrl+a ctrl+v ;;
     backspace) xdotool key BackSpace ;;
     size|comma)

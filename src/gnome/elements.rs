@@ -9,6 +9,7 @@ pub(super) struct ElementsPanel {
     pub(super) stack: gtk::Stack,
     pub(super) header: Rc<FormatHeader>,
     borrowed: RefCell<Vec<(gtk::Popover, gtk::Widget, Rc<FormatHeader>)>>,
+    tool_borrowed: RefCell<Vec<(gtk::Box, gtk::Widget, gtk::Box)>>,
     toc: gtk::Box,
     active: RefCell<String>,
     pub(super) requested_page: RefCell<Option<String>>,
@@ -22,7 +23,24 @@ impl ElementsPanel {
             .find(|(p, _, _)| p == origin)
             .map(|(_, w, _)| w.clone())
     }
+    fn restore_tools(&self) {
+        for (slot, body, page) in self.tool_borrowed.borrow_mut().drain(..) {
+            page.remove(&body);
+            self.stack.remove(&page);
+            slot.append(&body);
+        }
+    }
     pub(super) fn restore(&self) {
+        self.restore_tools();
+        if let Some(ui) = self.ui.upgrade() {
+            if let Some(p) = ui.picture.borrow().as_ref() {
+                EMBEDDED_FORMAT.with(|items| {
+                    items
+                        .borrow_mut()
+                        .retain(|(origin, _, _)| origin.upgrade().as_ref() != Some(&p.pop))
+                });
+            }
+        }
         for (origin, body, header) in self.borrowed.borrow_mut().drain(..) {
             self.stack.remove(&body);
             origin.set_child(Some(&body));
@@ -77,6 +95,37 @@ impl ElementsPanel {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
+        if !page.starts_with("image-") {
+            self.restore_tools();
+        }
+        if page.starts_with("image-") {
+            if let Some(picture) = ui.picture.borrow().as_ref() {
+                picture.refresh();
+                if self.stack.child_by_name(page).is_none() {
+                    if let Some(slot) =
+                        find_widget(&picture.context, &format!("format-row-elements-{page}"))
+                            .and_downcast::<gtk::Box>()
+                    {
+                        if let Some(body) = slot.first_child() {
+                            slot.remove(&body);
+                            let panel = gtk::Box::new(gtk::Orientation::Vertical, 6);
+                            panel.append(&body);
+                            self.stack.add_named(&panel, Some(page));
+                            self.tool_borrowed.borrow_mut().push((slot, body, panel));
+                        }
+                    }
+                }
+                EMBEDDED_FORMAT.with(|items| {
+                    let mut items = items.borrow_mut();
+                    items.retain(|(p, _, _)| p.upgrade().as_ref() != Some(&picture.pop));
+                    items.push((
+                        picture.pop.downgrade(),
+                        self.pop.downgrade(),
+                        self.header.pin.downgrade(),
+                    ));
+                });
+            }
+        }
         let origin = match page {
             "table" => ui.table_popover.borrow().clone(),
             "image" => ui.picture.borrow().as_ref().map(|p| p.pop.clone()),
@@ -136,6 +185,10 @@ impl ElementsPanel {
             "table" => wordcraft_gnome::t!("Table"),
             "image" => wordcraft_gnome::t!("Image"),
             "toc" => wordcraft_gnome::t!("Table of Contents"),
+            id if id.starts_with("image-") => wordcraft_gnome::toolbar::tools("elements")
+                .into_iter()
+                .find(|t| t.id == id)
+                .map_or(wordcraft_gnome::t!("Image"), |t| t.label),
             _ => wordcraft_gnome::t!("Elements"),
         };
         self.header.page(page, title, move || {
@@ -145,6 +198,16 @@ impl ElementsPanel {
         });
     }
     pub(super) fn sync(self: &Rc<Self>) {
+        if self.pop.is_visible() && self.active.borrow().starts_with("image-") {
+            if let Some(ui) = self.ui.upgrade() {
+                if let Some(p) = ui.picture.borrow().as_ref() {
+                    p.refresh();
+                    for (_, body, _) in self.tool_borrowed.borrow().iter() {
+                        body.set_sensitive(p.target.borrow().is_some());
+                    }
+                }
+            }
+        }
         if !self.pop.is_visible() || self.active.borrow().as_str() != "toc" {
             return;
         }
@@ -325,6 +388,7 @@ pub(super) fn install_elements(ui: &Rc<Ui>, bar: &gtk::Box) -> Rc<ElementsPanel>
         stack,
         header,
         borrowed: RefCell::new(Vec::new()),
+        tool_borrowed: RefCell::new(Vec::new()),
         toc,
         active: RefCell::new("home".into()),
         requested_page: RefCell::new(None),
@@ -357,10 +421,24 @@ fn elements_home(root: &gtk::Box, model: &gio::MenuModel) {
             .and_then(|v| v.str().map(str::to_owned))
             .unwrap_or_default();
         if let Some(submenu) = model.item_link(n, "submenu") {
+            let action = submenu
+                .item_attribute_value(0, "action", None)
+                .and_then(|v| v.str().map(str::to_owned))
+                .unwrap_or_default();
+            if action.contains("insert-header") || action.contains("insert-footer") {
+                elements_home(root, &submenu);
+                continue;
+            }
             let button = gtk::MenuButton::new();
             button.add_css_class("flat");
             button.set_label(&label);
             button.set_menu_model(Some(&submenu));
+            if action.contains("field") {
+                button.set_widget_name("format-row-elements-fields");
+            }
+            if action.contains("break") {
+                button.set_widget_name("format-row-elements-breaks");
+            }
             accessible_name(&button, &label);
             root.append(&button);
         } else {

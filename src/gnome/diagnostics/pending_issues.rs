@@ -312,6 +312,12 @@ pub(super) fn pending_spacing_ui_test(ui: &Rc<Ui>, app: &Application) {
             menu.popup();
             panel.page("spacing");
             settle(150).await;
+            find_widget(&panel.detail, "paragraph-spacing-help")
+                .unwrap()
+                .downcast::<gtk::Expander>()
+                .unwrap()
+                .set_expanded(true);
+            settle(150).await;
             assert!(
                 find_widget(&panel.detail, "paragraph-spacing-hint")
                     .unwrap()

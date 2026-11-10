@@ -322,11 +322,13 @@ pub(super) fn format136_ui_test(
                             _ => "paragraph-shading-chooser",
                         },
                     )
-                    .unwrap()
-                    .downcast::<gtk::ColorChooserWidget>()
                     .unwrap();
                     assert!(picker.is_mapped());
-                    picker.set_show_editor(true);
+                    find_widget(&picker, "color-custom")
+                        .unwrap()
+                        .downcast::<gtk::Button>()
+                        .unwrap()
+                        .emit_clicked();
                     phase.set(4);
                 } else if row == "text-language" {
                     // The new page is mapped, but its long list has not yet

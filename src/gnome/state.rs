@@ -145,7 +145,7 @@ pub(super) struct Ui {
     pub(super) format_syncing: Cell<bool>,
     pub(super) ruler: RefCell<Option<Rc<Ruler>>>,
     pub(super) history_controls: RefCell<Option<Rc<HistoryControls>>>,
-    pub(super) repeat_action: RefCell<Option<wordcraft_gnome::history::RepeatAction>>,
+    pub(super) repeat_action: RefCell<wordcraft_gnome::history::RepeatHistory>,
     pub(super) document_menu_open: Cell<bool>,
     pub(super) document_menu: RefCell<Option<glib::WeakRef<gtk::Popover>>>,
     pub(super) undo_button: gtk::Button,

@@ -37,7 +37,7 @@ pub fn travel(s: &mut Session, redo: bool, count: usize) -> Result<usize, String
     Ok(done)
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct RepeatAction {
     document: u64,
     command: String,
@@ -53,8 +53,14 @@ impl RepeatAction {
             "format.italic" => Some("italic"),
             "format.underline" => Some("underline"),
             "format.strike" => Some("strike"),
-            "format.superscript" => Some("superscript"),
-            "format.subscript" => Some("subscript"),
+            "format.superscript" | "format.subscript" => Some("vertAlign"),
+            "format.smallCaps" => Some("smallCaps"),
+            "format.allCaps" => Some("caps"),
+            "format.hidden" => Some("hidden"),
+            "format.outline" => Some("outline"),
+            "format.shadow" => Some("shadow"),
+            "format.emboss" => Some("emboss"),
+            "format.engrave" => Some("engrave"),
             _ => None,
         };
         let (command, params) = if let Some(key) = toggle {
@@ -72,12 +78,24 @@ impl RepeatAction {
         } else {
             let allowed = match id.as_str() {
                 "format.set" => vec!["props"],
+                "format.changeCase" => vec!["mode"],
+                "format.clear" | "format.resetChar" | "format.growFont" | "format.shrinkFont" => {
+                    vec![]
+                }
+                "para.align" => vec!["value"],
+                "para.keepNext"
+                | "para.keepLines"
+                | "para.pageBreakBefore"
+                | "para.widowControl"
+                | "para.ltr"
+                | "para.rtl" => vec!["value"],
+                "leaf.proofText" => vec!["choice"],
                 "format.font" => vec!["name"],
                 "format.size" => vec!["size"],
                 "format.color" | "format.highlight" | "leaf.highlight" => vec!["color"],
                 "para.spacing" => vec!["before", "after"],
                 "para.indents" => vec!["left", "right", "firstLine"],
-                "para.lineSpacing" => vec!["rule", "value"],
+                "para.lineSpacing" => vec!["value", "exactly", "atLeast"],
                 "para.alignLeft" | "para.alignCenter" | "para.alignRight" | "para.justify"
                 | "para.indent" | "para.outdent" => vec![],
                 "para.style" => vec!["style"],
@@ -108,6 +126,15 @@ impl RepeatAction {
                                 | "position"
                                 | "caps"
                                 | "small_caps"
+                                | "smallCaps"
+                                | "vertAlign"
+                                | "doubleStrike"
+                                | "hidden"
+                                | "outline"
+                                | "shadow"
+                                | "emboss"
+                                | "engrave"
+                                | "underlineColor"
                         )
                     })
                 {
@@ -135,9 +162,161 @@ impl RepeatAction {
             return Ok(false);
         }
         let rev = s.rev();
+        let typing = s.typing_props();
         s.run(&self.command, &self.params)
             .map_err(|e| e.to_string())?;
-        Ok(s.rev() != rev)
+        Ok(s.rev() != rev || s.typing_props() != typing)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct RepeatRecipe {
+    actions: Vec<RepeatAction>,
+}
+impl RepeatRecipe {
+    pub fn description(&self) -> String {
+        if self.actions.len() == 1 {
+            self.actions[0].description()
+        } else {
+            crate::i18n::interpolate(
+                crate::t!("Repeat {count} actions"),
+                &[("count", self.actions.len().to_string())],
+            )
+        }
+    }
+    pub fn len(&self) -> usize {
+        self.actions.len()
+    }
+}
+impl RepeatAction {
+    fn description(&self) -> String {
+        let name = if self.command == "format.set" {
+            let p = &self.params["props"];
+            if p.get("bold").is_some() {
+                crate::t!("Bold")
+            } else if p.get("italic").is_some() {
+                crate::t!("Italic")
+            } else if p.get("underline").is_some() {
+                crate::t!("Underline")
+            } else if p.get("vertAlign").is_some() {
+                crate::t!("Text Position")
+            } else if p.get("size").is_some() {
+                crate::t!("Font Size")
+            } else {
+                crate::t!("Text Formatting")
+            }
+        } else {
+            match self.command.as_str() {
+                "format.font" => crate::t!("Font"),
+                "format.size" => crate::t!("Font Size"),
+                "format.color" => crate::t!("Text Color"),
+                "format.highlight" | "leaf.highlight" => crate::t!("Highlight"),
+                "format.changeCase" => crate::t!("Change Case"),
+                "format.clear" => crate::t!("Clear Text Formatting"),
+                "leaf.proofText" => crate::t!("Language"),
+                _ => crate::t!("Paragraph Formatting"),
+            }
+        };
+        name.into()
+    }
+}
+/// A bounded log of explicit public-command intents, never engine undo records.
+/// A repeated range is flattened and replaces that range with one recipe. Thus
+/// its first menu row and body agree, and repeating cannot recursively grow it.
+#[derive(Default)]
+pub struct RepeatHistory {
+    document: Option<u64>,
+    generation: u64,
+    recipes: Vec<RepeatRecipe>,
+}
+impl RepeatHistory {
+    pub fn generation(&self) -> u64 {
+        self.generation
+    }
+    pub fn available(&self, s: &Session) -> bool {
+        self.document == Some(s.document_id())
+            && !self.recipes.is_empty()
+            && !wordcraft_engine::cmd::protect::enforced(&s.doc)
+    }
+    pub fn record(&mut self, s: &Session) {
+        if self.document != Some(s.document_id()) {
+            self.document = Some(s.document_id());
+            self.recipes.clear();
+            self.generation = self.generation.wrapping_add(1);
+        }
+        let Some(action) = RepeatAction::capture(s) else {
+            return;
+        };
+        if self
+            .recipes
+            .last()
+            .is_some_and(|r| r.actions == [action.clone()])
+        {
+            return;
+        }
+        self.recipes.push(RepeatRecipe {
+            actions: vec![action],
+        });
+        if self.recipes.len() > 50 {
+            self.recipes.remove(0);
+        }
+        self.generation = self.generation.wrapping_add(1);
+    }
+    pub fn descriptions(&self) -> Vec<String> {
+        self.recipes
+            .iter()
+            .enumerate()
+            .rev()
+            .map(|(index, _)| {
+                let selected = &self.recipes[index..];
+                let labels = selected
+                    .iter()
+                    .map(RepeatRecipe::description)
+                    .collect::<Vec<_>>()
+                    .join(" → ");
+                if selected.len() == 1 {
+                    labels
+                } else {
+                    crate::i18n::interpolate(
+                        crate::t!("{action} ({count} steps)"),
+                        &[("action", labels), ("count", selected.len().to_string())],
+                    )
+                }
+            })
+            .collect()
+    }
+    pub fn repeat_recent(&mut self, s: &mut Session, count: usize) -> Result<bool, String> {
+        if !self.available(s) || count == 0 || count > self.recipes.len() {
+            return Err(crate::t!("The document has changed; open this dialog again.").into());
+        }
+        let first = self.recipes.len() - count;
+        let actions = self.recipes[first..]
+            .iter()
+            .flat_map(|r| r.actions.clone())
+            .collect::<Vec<_>>();
+        let snapshot = s.edit_snapshot();
+        let result = crate::operations::atomic(s, crate::t!("Repeat Last Action"), |s| {
+            let mut changed = false;
+            for action in &actions {
+                changed |= action.apply(s)?;
+            }
+            Ok(changed)
+        });
+        match result {
+            Ok(false) => {
+                s.restore(snapshot);
+                Ok(false)
+            }
+            Ok(true) => {
+                if count > 1 {
+                    self.recipes.truncate(first);
+                    self.recipes.push(RepeatRecipe { actions });
+                    self.generation = self.generation.wrapping_add(1);
+                }
+                Ok(true)
+            }
+            Err(error) => Err(error),
+        }
     }
 }
 

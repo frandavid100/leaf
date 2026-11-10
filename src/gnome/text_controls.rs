@@ -248,6 +248,10 @@ pub(super) struct TextControls {
     size_menu: gtk::MenuButton,
     pub(super) font_choices: gtk::Box,
     size_choices: gtk::Box,
+    font_rows: RefCell<Vec<(String, gtk::Button)>>,
+    font_document_rows: gtk::Box,
+    font_all_rows: gtk::Box,
+    font_document_key: RefCell<Vec<String>>,
     font_source: RefCell<Option<glib::SourceId>>,
     size_source: RefCell<Option<glib::SourceId>>,
 }
@@ -365,72 +369,248 @@ impl TextControls {
         });
         source.replace(Some(id));
     }
-    pub(super) fn show_fonts(self: &Rc<Self>) {
-        clear_box(&self.font_choices);
-        let current = self.ui.upgrade().map(|u| selection_character(&u));
-        for family in self.family_names() {
-            let button = gtk::Button::new();
-            button.add_css_class("flat");
-            if current
-                .as_ref()
-                .and_then(|s| s["font"].as_str())
-                .is_some_and(|name| name.eq_ignore_ascii_case(&family))
-            {
-                button.add_css_class("current-style");
-            }
-            let preview = gtk::Label::new(Some(&family));
-            preview.set_widget_name("font-preview");
-            preview.set_xalign(0.0);
-            preview.set_ellipsize(gtk::pango::EllipsizeMode::End);
-            preview.set_width_chars(1);
-            preview.set_max_width_chars(28);
-            preview.set_tooltip_text(Some(&family));
-            let attrs = gtk::pango::AttrList::new();
-            attrs.insert(gtk::pango::AttrString::new_family(&family));
-            preview.set_attributes(Some(&attrs));
-            button.set_child(Some(&preview));
-            accessible_name(&button, &family);
-            let weak = Rc::downgrade(self);
-            button.connect_clicked(move |_| {
-                if let Some(s) = weak.upgrade() {
-                    if let Some(ui) = s.ui.upgrade() {
-                        ui.format_syncing.set(true);
-                        s.font.set_text(&family);
-                        ui.format_syncing.set(false);
+    fn font_row(self: &Rc<Self>, family: &str, installed: bool) -> gtk::Button {
+        let button = gtk::Button::new();
+        button.add_css_class("flat");
+        let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+        let preview = gtk::Label::new(Some(family));
+        preview.set_widget_name("font-preview");
+        preview.set_xalign(0.);
+        preview.set_hexpand(true);
+        preview.set_ellipsize(gtk::pango::EllipsizeMode::End);
+        preview.set_width_chars(1);
+        preview.set_max_width_chars(28);
+        preview.set_tooltip_text(Some(family));
+        row.append(&preview);
+        if let Some(ui) = self.ui.upgrade().filter(|_| installed) {
+            let context = ui.document_box.pango_context();
+            let mut desc = gtk::pango::FontDescription::new();
+            desc.set_family(family);
+            desc.set_size(12 * gtk::pango::SCALE);
+            if let Some(font) = context.load_font(&desc).filter(|f| {
+                f.describe()
+                    .family()
+                    .is_some_and(|name| name.eq_ignore_ascii_case(family))
+            }) {
+                let attr = gtk::pango::AttrList::new();
+                attr.insert(gtk::pango::AttrString::new_family(family));
+                attr.insert(gtk::pango::AttrInt::new_fallback(false));
+                if family
+                    .chars()
+                    .all(|c| c.is_whitespace() || font.has_char(c))
+                {
+                    preview.set_attributes(Some(&attr));
+                }
+                if !"Aa Bb Cc"
+                    .chars()
+                    .all(|c| c.is_whitespace() || font.has_char(c))
+                {
+                    if let Some(text) = [
+                        "العربية",
+                        "עברית",
+                        "हिन्दी",
+                        "汉字",
+                        "日本語",
+                        "한글",
+                        "αβγ",
+                        "абв",
+                        "★♫",
+                    ]
+                    .into_iter()
+                    .find(|t| t.chars().all(|c| font.has_char(c)))
+                    {
+                        let sample = gtk::Label::new(Some(text));
+                        sample.set_attributes(Some(&attr));
+                        row.append(&sample);
                     }
-                    s.apply_font(&family);
-                    s.font_menu.popdown();
+                }
+            }
+        }
+        let mark = gtk::Image::from_icon_name("object-select-symbolic");
+        mark.set_widget_name("font-current-marker");
+        mark.set_visible(false);
+        row.append(&mark);
+        button.set_child(Some(&row));
+        accessible_name(&button, family);
+        button.set_tooltip_text(Some(if installed {
+            family
+        } else {
+            wordcraft_gnome::t!("This font is not installed. Its document identity is preserved.")
+        }));
+        button.set_sensitive(installed);
+        let (weak, name) = (Rc::downgrade(self), family.to_owned());
+        button.connect_clicked(move |_| {
+            if let Some(s) = weak.upgrade() {
+                if let Some(ui) = s.ui.upgrade() {
+                    let old = ui.format_syncing.replace(true);
+                    s.font.set_text(&name);
+                    ui.format_syncing.set(old);
+                }
+                s.apply_font(&name);
+                if let Some(ui) = s.ui.upgrade().filter(|ui| !ui.format_group.pinned.get()) {
+                    if let Some(p) = ui
+                        .text_tools
+                        .borrow()
+                        .as_ref()
+                        .and_then(|t| t.popover.upgrade())
+                    {
+                        close_format_popover(&p);
+                    }
+                }
+            }
+        });
+        self.font_rows
+            .borrow_mut()
+            .push((family.into(), button.clone()));
+        button
+    }
+    pub(super) fn show_fonts(self: &Rc<Self>) {
+        if self.font_all_rows.parent().is_none() {
+            clear_box(&self.font_choices);
+            let current = gtk::Label::new(None);
+            current.set_widget_name("font-current-state");
+            current.set_xalign(0.);
+            current.add_css_class("dim-label");
+            self.font_choices.append(&current);
+            let title = gtk::Label::new(Some(wordcraft_gnome::t!("Fonts in This Document")));
+            title.set_xalign(0.);
+            title.add_css_class("heading");
+            self.font_choices.append(&title);
+            self.font_choices.append(&self.font_document_rows);
+            self.font_choices
+                .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+            let title = gtk::Label::new(Some(wordcraft_gnome::t!("All Fonts")));
+            title.set_xalign(0.);
+            title.add_css_class("heading");
+            self.font_choices.append(&title);
+            self.font_choices.append(&self.font_all_rows);
+            for family in self.family_names() {
+                self.font_all_rows.append(&self.font_row(&family, true));
+            }
+            let empty = gtk::Label::new(Some(wordcraft_gnome::t!("No Results")));
+            empty.set_widget_name("font-no-results");
+            empty.set_visible(false);
+            self.font_choices.append(&empty);
+        }
+        self.sync_document_fonts();
+        let current = self.ui.upgrade().map(|u| selection_character(&u));
+        self.mark_current_font(current.as_ref().and_then(|v| v["font"].as_str()));
+        self.filter_fonts();
+        let selected = self
+            .font_rows
+            .borrow()
+            .iter()
+            .find(|(name, _)| {
+                current
+                    .as_ref()
+                    .and_then(|v| v["font"].as_str())
+                    .is_some_and(|f| f.eq_ignore_ascii_case(name))
+            })
+            .map(|(_, b)| b.downgrade());
+        if let Some(row) = selected {
+            glib::idle_add_local_once(move || {
+                if let Some(row) = row.upgrade().filter(|r| r.is_mapped()) {
+                    reveal_font_row(&row);
                 }
             });
-            self.font_choices.append(&button);
         }
-        self.filter_fonts();
+    }
+    pub(super) fn sync_document_fonts(self: &Rc<Self>) {
+        let Some(ui) = self.ui.upgrade() else { return };
+        let mut names = ui
+            .current
+            .borrow()
+            .as_ref()
+            .map(|d| {
+                wordcraft_gnome::document_fonts::inventory(&d.session)
+                    .into_iter()
+                    .filter(|f| !f.uses.is_empty())
+                    .map(|f| f.name)
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+        if let Some(current) = selection_character(&ui)["font"].as_str() {
+            names.push(current.into());
+        }
+        names.sort_by_key(|s| s.to_lowercase());
+        names.dedup_by(|a, b| a.eq_ignore_ascii_case(b));
+        if *self.font_document_key.borrow() == names {
+            return;
+        }
+        self.font_document_key.replace(names.clone());
+        let old = self
+            .font_rows
+            .borrow()
+            .iter()
+            .filter(|(_, b)| b.parent().as_ref() == Some(self.font_document_rows.upcast_ref()))
+            .cloned()
+            .collect::<Vec<_>>();
+        for (name, button) in &old {
+            if !names.contains(name) {
+                self.font_document_rows.remove(button);
+            }
+        }
+        self.font_rows
+            .borrow_mut()
+            .retain(|(_, b)| b.parent().is_some());
+        let installed = self.family_names();
+        let mut previous: Option<gtk::Widget> = None;
+        for name in names {
+            let button = old
+                .iter()
+                .find(|(n, _)| *n == name)
+                .map(|(_, b)| b.clone())
+                .unwrap_or_else(|| {
+                    let b = self.font_row(
+                        &name,
+                        installed.iter().any(|f| f.eq_ignore_ascii_case(&name)),
+                    );
+                    self.font_document_rows.append(&b);
+                    b
+                });
+            self.font_document_rows
+                .reorder_child_after(&button, previous.as_ref());
+            previous = Some(button.upcast());
+        }
     }
     pub(super) fn mark_current_font(&self, current: Option<&str>) {
-        let mut child = self.font_choices.first_child();
-        while let Some(row) = child {
-            child = row.next_sibling();
-            let selected = row
-                .first_child()
-                .and_then(|w| w.downcast::<gtk::Label>().ok())
-                .is_some_and(|l| current.is_some_and(|name| l.text().eq_ignore_ascii_case(name)));
+        if let Some(label) =
+            find_widget(&self.font_choices, "font-current-state").and_downcast::<gtk::Label>()
+        {
+            label.set_text(&format!(
+                "{}: {}",
+                wordcraft_gnome::t!("Font"),
+                current.unwrap_or(wordcraft_gnome::t!("Mixed"))
+            ));
+        }
+
+        for (name, row) in self.font_rows.borrow().iter() {
+            let selected = current.is_some_and(|f| f.eq_ignore_ascii_case(name));
             if selected {
                 row.add_css_class("current-style");
             } else {
                 row.remove_css_class("current-style");
             }
+            row.update_state(&[gtk::accessible::State::Pressed(if selected {
+                gtk::AccessibleTristate::True
+            } else {
+                gtk::AccessibleTristate::False
+            })]);
+            if let Some(mark) = find_widget(row, "font-current-marker") {
+                mark.set_visible(selected);
+            }
         }
     }
     fn filter_fonts(&self) {
         let query = self.font.text().trim().to_lowercase();
-        let mut child = self.font_choices.first_child();
-        while let Some(row) = child {
-            child = row.next_sibling();
-            let name = row
-                .first_child()
-                .and_then(|w| w.downcast::<gtk::Label>().ok())
-                .map(|l| l.text().to_lowercase());
-            row.set_visible(name.is_some_and(|name| name.contains(&query)));
+        let mut found = false;
+        for (name, row) in self.font_rows.borrow().iter() {
+            let visible = name.to_lowercase().contains(&query);
+            row.set_visible(visible);
+            found |= visible;
+        }
+        if let Some(empty) = find_widget(&self.font_choices, "font-no-results") {
+            empty.set_visible(!found);
         }
     }
     fn show_sizes(self: &Rc<Self>) {
@@ -563,6 +743,10 @@ pub(super) fn install_text_controls(
         size_menu,
         font_choices,
         size_choices,
+        font_rows: RefCell::new(Vec::new()),
+        font_document_rows: gtk::Box::new(gtk::Orientation::Vertical, 2),
+        font_all_rows: gtk::Box::new(gtk::Orientation::Vertical, 2),
+        font_document_key: RefCell::new(Vec::new()),
         font_source: RefCell::new(None),
         size_source: RefCell::new(None),
     });
@@ -571,7 +755,6 @@ pub(super) fn install_text_controls(
     s.font.connect_changed(move |_| {
         if let Some(s) = weak.upgrade() {
             s.filter_fonts();
-            s.schedule(true);
         }
     });
     let weak = Rc::downgrade(&s);
@@ -613,4 +796,24 @@ pub(super) fn install_text_controls(
         }
     });
     s
+}
+
+fn reveal_font_row(row: &gtk::Button) {
+    if let Some(scroll) = row
+        .ancestor(gtk::ScrolledWindow::static_type())
+        .and_downcast::<gtk::ScrolledWindow>()
+    {
+        if let Some(bounds) = row.compute_bounds(&scroll) {
+            let a = scroll.vadjustment();
+            let delta = if bounds.y() < 0. {
+                bounds.y()
+            } else {
+                (bounds.y() + bounds.height() - scroll.height() as f32).max(0.)
+            };
+            a.set_value(
+                (a.value() + delta as f64)
+                    .clamp(a.lower(), (a.upper() - a.page_size()).max(a.lower())),
+            );
+        }
+    }
 }

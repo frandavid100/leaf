@@ -7,13 +7,14 @@ pub(super) struct ParagraphPopover {
     pub(super) stack: gtk::Stack,
     pub(super) main: gtk::Box,
     pub(super) detail: gtk::Box,
+    pub(super) fixed: gtk::Box,
     pub(super) message: gtk::Label,
     pub(super) header: Rc<FormatHeader>,
     pub(super) spacing: Cell<f64>,
     pub(super) shade: RefCell<String>,
     pub(super) border: RefCell<serde_json::Value>,
     last_applied: RefCell<std::collections::HashMap<String, serde_json::Value>>,
-    groups: RefCell<std::collections::HashMap<String, serde_json::Value>>,
+    pub(super) groups: RefCell<std::collections::HashMap<String, serde_json::Value>>,
     pub(super) last_columns: RefCell<
         Option<(
             document_properties::ColumnSetup,
@@ -37,6 +38,8 @@ impl ParagraphPopover {
                 format!("{:?}", d.session.sel)
             )));
         }
+        paragraph_options::sync(self, &state);
+        list_options::sync(self, &state);
         if *self.displayed.borrow() == state {
             return;
         }
@@ -210,8 +213,10 @@ impl ParagraphPopover {
                     if let Some(p) = self.popover.upgrade() {
                         close_format_popover(&p);
                     }
-                    ui.document_box.grab_focus();
-                    caret_ensure_visible(&ui);
+                    if !ui.format_group.pinned.get() {
+                        ui.document_box.grab_focus();
+                        caret_ensure_visible(&ui);
+                    }
                 }
                 Err(e) => {
                     self.message.set_text(&e);
@@ -269,7 +274,8 @@ impl ParagraphPopover {
         let group = match command {
             "para.align" => "alignment",
             "para.bullets" | "para.numbering" | "para.multilevel" | "para.listLevel" => "list",
-            "para.indents" | "para.indent" | "para.outdent" => "indents",
+            "para.indents" => "indents",
+            "para.sort" => "sort",
             "para.shading" => "shading",
             "para.borders" => "borders",
             "para.lineSpacing" | "para.spacing" => "spacing",
@@ -293,14 +299,16 @@ impl ParagraphPopover {
                     .map(|v| ((*k).to_string(), v.clone()))
             })
             .collect();
-        let config = if command == "para.listLevel" {
+        let config = if command == "para.sort" {
+            serde_json::json!({"command":command,"args":args})
+        } else if command == "para.listLevel" {
             let saved = self.groups.borrow().get("list").cloned();
             if let Some(mut saved) = saved.filter(|v| v["command"].is_string()) {
                 saved["listLevel"] = args["level"].clone();
                 saved
             } else {
-                // Imported numbering retains its canonical definition in this document.
-                serde_json::json!({"props":props,"document":ui.current.borrow().as_ref().map(|d|d.session.document_id())})
+                // A level edit is not a design choice; do not remember its num ID.
+                return;
             }
         } else if group == "list" {
             serde_json::json!({"command":command,"args":args})
@@ -310,11 +318,16 @@ impl ParagraphPopover {
         self.groups.borrow_mut().insert(group.into(), config);
     }
 
-    fn repeat_group(self: &Rc<Self>, page: &str) {
+    pub(super) fn repeat_group(self: &Rc<Self>, page: &str) {
         if page == "columns" {
             let saved = self.last_columns.borrow().clone();
-            if let (Some(ui), Some((setup, scope))) = (self.ui.upgrade(), saved) {
+            if let (Some(ui), Some((setup, _scope))) = (self.ui.upgrade(), saved) {
                 if tools_change(&ui, |s| {
+                    let scope = if wordcraft_engine::cmd::page::selection_sectionable(s) {
+                        document_properties::ColumnScope::Selection
+                    } else {
+                        document_properties::ColumnScope::Section
+                    };
                     document_properties::apply_columns(s, &setup, scope).map(|_| ())
                 }) {
                     if let Some(p) = self.popover.upgrade() {
@@ -378,7 +391,9 @@ impl ParagraphPopover {
                     if let Some(p) = self.popover.upgrade() {
                         close_format_popover(&p);
                     }
-                    ui.document_box.grab_focus();
+                    if !ui.format_group.pinned.get() {
+                        ui.document_box.grab_focus();
+                    }
                 }
             }
         }
@@ -434,7 +449,7 @@ impl ParagraphPopover {
                     s.repeat_group(page);
                 }
             });
-            let row = property_split(&button, &repeat);
+            let row = reapply_split(&button, &repeat);
             row.set_widget_name(&format!("format-row-paragraph-{page}"));
             self.main.append(&row);
         }
@@ -458,6 +473,15 @@ impl ParagraphPopover {
         let Some(ui) = self.ui.upgrade() else { return };
         let state = selection_paragraph(&ui);
         self.displayed.replace(state.clone());
+        let mut launcher_state = state.clone();
+        for config in self.groups.borrow().values() {
+            if let Some(props) = config["props"].as_object() {
+                for (key, value) in props {
+                    launcher_state[key] = value.clone();
+                }
+            }
+        }
+        let state = launcher_state;
         let alignment = match state["align"].as_str() {
             Some("left") => wordcraft_gnome::t!("Align Left"),
             Some("center") => wordcraft_gnome::t!("Center"),
@@ -474,44 +498,42 @@ impl ParagraphPopover {
             "paragraph-alignment",
             "alignment",
         );
-        let list_kind = {
-            let value = ui.current.borrow();
-            value.as_ref().and_then(|d| {
-                let p = d.session.doc.para_at(&d.session.sel.focus)?;
-                let n = d.session.doc.styles.resolve_para(&p.props).numbering?;
-                d.session
-                    .doc
-                    .numbering
-                    .level(n.num, n.level)
-                    .map(|l| format!("{:?}", l.format))
+        let saved = self.groups.borrow().get("list").cloned();
+        let list_label = saved.as_ref().map(|v| {
+            if v["args"]["off"] == true {
+                wordcraft_gnome::t!("No List").to_owned()
+            } else {
+                match v["args"]["kind"].as_str() {
+                    Some("numbered") => "1. 2. 3.".into(),
+                    Some("numberedParen") => "1) 2) 3)".into(),
+                    Some("upperLetter") => "A. B. C.".into(),
+                    Some("lowerLetter") => "a) b) c)".into(),
+                    Some("lowerRoman") => "i. ii. iii.".into(),
+                    Some("legal") => "1 / 1.1 / 1.1.1".into(),
+                    Some("outline") => "I / A / 1".into(),
+                    Some(glyph) if glyph.chars().count() == 1 => format!("{glyph} {glyph} {glyph}"),
+                    _ => {
+                        if v["command"] == "para.bullets" {
+                            wordcraft_gnome::t!("Bulleted List").into()
+                        } else {
+                            wordcraft_gnome::t!("Numbered List").into()
+                        }
+                    }
+                }
+            }
+        });
+        let label = list_label
+            .map(|value| {
+                wordcraft_gnome::i18n::interpolate(
+                    wordcraft_gnome::t!("{label}: {value}"),
+                    &[
+                        ("label", wordcraft_gnome::t!("List").into()),
+                        ("value", value),
+                    ],
+                )
             })
-        };
-        let mixed_list = state["_mixed"]
-            .as_array()
-            .is_some_and(|a| a.iter().any(|v| v == "numbering"));
-        let list_label = if mixed_list {
-            wordcraft_gnome::t!("Mixed")
-        } else if list_kind
-            .as_ref()
-            .is_some_and(|s| s.to_lowercase().contains("bullet"))
-        {
-            wordcraft_gnome::t!("Bulleted List")
-        } else if list_kind.is_some() {
-            wordcraft_gnome::t!("Numbered List")
-        } else {
-            wordcraft_gnome::t!("None")
-        };
-        self.option_row(
-            &wordcraft_gnome::i18n::interpolate(
-                wordcraft_gnome::t!("{label}: {value}"),
-                &[
-                    ("label", wordcraft_gnome::t!("List").into()),
-                    ("value", list_label.into()),
-                ],
-            ),
-            "paragraph-list",
-            "list",
-        );
+            .unwrap_or_else(|| wordcraft_gnome::t!("List").into());
+        self.option_row(&label, "paragraph-list", "list");
         self.option_row(
             wordcraft_gnome::t!("Columns"),
             "paragraph-columns",
@@ -646,7 +668,7 @@ impl ParagraphPopover {
             apply.set_child(Some(&gtk::Image::from_icon_name("view-refresh-symbolic")));
             apply.set_tooltip_text(Some(tip));
             accessible_name(&apply, tip);
-            let row = property_split(&open, &apply);
+            let row = reapply_split(&open, &apply);
             row.set_widget_name(&format!("format-row-paragraph-{page}"));
             self.main.append(&row);
         }
@@ -751,29 +773,46 @@ impl ParagraphPopover {
             "list" => wordcraft_gnome::t!("List"),
             "bullets" => wordcraft_gnome::t!("Bullets"),
             "numbering" => wordcraft_gnome::t!("Numbering"),
+            "multilevel" => wordcraft_gnome::t!("Multilevel List"),
             "indents" => wordcraft_gnome::t!("Indents"),
-            "spacing" => wordcraft_gnome::t!("Line Spacing"),
+            "spacing" => wordcraft_gnome::t!("Spacing"),
+            "direction" => wordcraft_gnome::t!("Text Direction"),
+            "sort" => wordcraft_gnome::t!("Sort"),
+            "tabs" => wordcraft_gnome::t!("Tab Stops"),
             "borders" => wordcraft_gnome::t!("Borders"),
+            "border-color" => wordcraft_gnome::t!("Color"),
             "shading" => wordcraft_gnome::t!("Shading"),
             "columns" => wordcraft_gnome::t!("Columns"),
             _ => wordcraft_gnome::t!("More Paragraph Options"),
         };
-        let nested = matches!(page, "bullets" | "numbering");
+        let nested = matches!(
+            page,
+            "bullets" | "numbering" | "multilevel" | "border-color"
+        );
+        let border_color = page == "border-color";
         self.header.page(page, title, move || {
             if let Some(s) = weak.upgrade() {
                 if nested {
-                    s.page("list");
+                    s.page(if border_color { "borders" } else { "list" });
                 } else {
                     s.home();
                 }
             }
         });
+        clear_box(&self.fixed);
         clear_box(&self.detail);
         self.message.set_visible(false);
         let Some(ui) = self.ui.upgrade() else {
             return;
         };
         let state = selection_paragraph(&ui);
+        if paragraph_options::build(self, &ui, page, &state) {
+            self.stack.set_visible_child_name("detail");
+            if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                tools.filter_menus();
+            }
+            return;
+        }
         match page {
             "list" => {
                 for (title, target) in [
@@ -826,12 +865,22 @@ impl ParagraphPopover {
                 let weak = Rc::downgrade(self);
                 let editor = columns_editor(&ui, move || {
                     if let Some(s) = weak.upgrade() {
-                        s.home();
+                        if !s
+                            .ui
+                            .upgrade()
+                            .is_some_and(|ui| ui.format_group.pinned.get())
+                        {
+                            s.home();
+                        }
                         if let Some(pop) = s.popover.upgrade() {
                             close_format_popover(&pop);
                         }
                     }
                 });
+                if let Some(parent) = editor.scope_header.parent().and_downcast::<gtk::Box>() {
+                    parent.remove(&editor.scope_header);
+                }
+                self.fixed.append(&editor.scope_header);
                 self.detail.append(&editor.root);
                 self.detail.append(&editor.apply);
             }
@@ -1232,6 +1281,10 @@ impl ParagraphPopover {
     pub(super) fn toggle(self: &Rc<Self>, label: &str, active: bool, command: &'static str) {
         let b = gtk::CheckButton::with_label(label);
         b.set_active(active);
+        b.set_widget_name(&format!(
+            "format-row-paragraph-{}",
+            command.rsplit('.').next().unwrap_or("")
+        ));
         if let Some(ui) = self.ui.upgrade() {
             let state = selection_paragraph(&ui);
             let key = command.rsplit('.').next().unwrap_or("");
@@ -1240,6 +1293,13 @@ impl ParagraphPopover {
         self.detail.append(&b);
         let weak = Rc::downgrade(self);
         b.connect_toggled(move |b| {
+            if weak
+                .upgrade()
+                .and_then(|s| s.ui.upgrade())
+                .is_some_and(|ui| ui.format_syncing.get())
+            {
+                return;
+            }
             b.set_inconsistent(false);
             if let Some(s) = weak.upgrade() {
                 s.execute(command, serde_json::json!({"value":b.is_active()}));
@@ -1292,6 +1352,8 @@ pub(super) fn install_paragraph_popover(
     scroll.set_propagate_natural_height(true);
     scroll.set_child(Some(&detail));
     let detail_page = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    let fixed = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    detail_page.append(&fixed);
     detail_page.append(&scroll);
     let main_scroll = gtk::ScrolledWindow::new();
     main_scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
@@ -1313,6 +1375,7 @@ pub(super) fn install_paragraph_popover(
         stack,
         main,
         detail,
+        fixed,
         message,
         header,
         last_applied: RefCell::new(std::collections::HashMap::new()),

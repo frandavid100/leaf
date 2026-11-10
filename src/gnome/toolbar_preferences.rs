@@ -148,6 +148,7 @@ fn populate(dialog: &adw::PreferencesDialog, list: &gtk::ListBox, group: &'stati
         };
         let row = adw::ActionRow::new();
         row.set_title(tool.label);
+        row.set_title_lines(2);
         row.set_widget_name(&format!("toolbar-preference-{group}-{id}"));
         row.set_focusable(true);
         let handle = gtk::Image::from_icon_name("list-drag-handle-symbolic");
@@ -163,6 +164,11 @@ fn populate(dialog: &adw::PreferencesDialog, list: &gtk::ListBox, group: &'stati
         ]);
         placement.set_widget_name(&format!("toolbar-placement-{group}-{id}"));
         placement.set_valign(gtk::Align::Center);
+        if let Some(label) = format_bar::first_label(placement.upcast_ref()) {
+            label.set_max_width_chars(12);
+            label.set_width_chars(12);
+            label.set_ellipsize(gtk::pango::EllipsizeMode::End);
+        }
         placement.set_selected(match on {
             Placement::Pinned => 0,
             Placement::Adaptive => 1,

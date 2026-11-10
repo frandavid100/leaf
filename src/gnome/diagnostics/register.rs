@@ -29,8 +29,11 @@ pub(super) fn install_diagnostics(
     // The toolbar41 probe independently covers defaults, direct and overflow targets,
     // preferences, reordering and resize. Keep the older interactions accessible.
     let legacy = std::env::args().any(|a| a.ends_with("-test") || a == "--split-states-demo")
-        && !std::env::args()
-            .any(|a| a.starts_with("--workflows40-") || a.starts_with("--toolbar41-"));
+        && !std::env::args().any(|a| {
+            a.starts_with("--alpha43-")
+                || a.starts_with("--workflows40-")
+                || a.starts_with("--toolbar41-")
+        });
     if legacy {
         for group in ["paragraph", "text", "elements"] {
             let order = wordcraft_gnome::preferences::toolbar(group)
@@ -49,6 +52,12 @@ pub(super) fn install_diagnostics(
             toolbar41_checks::reopen(&u, &a)
         });
     }
+    if std::env::args().any(|arg| arg == "--alpha43-ui-test") && host.tabs.n_pages() == 1 {
+        let (u, w, a) = (ui.clone(), window.clone(), app.clone());
+        capture_ready::after(std::time::Duration::from_millis(800), move || {
+            alpha43_checks::test(&u, &w, &a)
+        });
+    }
     if std::env::args().any(|arg| arg == "--toolbar41-ui-test") && host.tabs.n_pages() == 1 {
         let (u, w, a) = (ui.clone(), window.clone(), app.clone());
         capture_ready::after(std::time::Duration::from_millis(800), move || {
@@ -56,7 +65,8 @@ pub(super) fn install_diagnostics(
         });
     }
     if std::env::args().any(|arg| {
-        arg.starts_with("--toolbar41-")
+        arg.starts_with("--alpha43-")
+            || arg.starts_with("--toolbar41-")
             || arg.starts_with("--workflows36-")
             || arg.starts_with("--workflows37-")
             || arg.starts_with("--workflows38-")

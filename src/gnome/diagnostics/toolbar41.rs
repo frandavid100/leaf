@@ -55,8 +55,8 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         if std::env::var_os("LEAF_TOOLBAR_DND").is_some() {
             window.set_title(Some("Leaf Toolbar41"));
             for (name, pop) in [
-                ("alignment", paragraph.popover.upgrade().unwrap()),
-                ("list", paragraph.popover.upgrade().unwrap()),
+                ("alignment-options", paragraph.popover.upgrade().unwrap()),
+                ("list-options", paragraph.popover.upgrade().unwrap()),
                 ("underline-options", text.popover.upgrade().unwrap()),
                 ("image", elements.pop.clone()),
             ] {
@@ -104,20 +104,20 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             }
             assert_eq!(state(&ui), before);
         }
-        click(&ui.format_toolbar, "format-quick-alignment");
+        click(&ui.format_toolbar, "format-quick-alignment-options");
         settle().await;
         assert_eq!(state(&ui), before);
         assert!(!paragraph.header.arrow.is_visible());
         assert_eq!(
             paragraph.popover.upgrade().unwrap().parent().as_ref(),
-            find_widget(&ui.format_toolbar, "format-quick-alignment").as_ref()
+            find_widget(&ui.format_toolbar, "format-quick-alignment-options").as_ref()
         );
         assert!(
             find_widget(&paragraph.main, "format-row-paragraph-alignment")
                 .is_none_or(|row| !row.get_visible())
         );
         paragraph.popover.upgrade().unwrap().popdown();
-        click(&ui.format_toolbar, "format-quick-list");
+        click(&ui.format_toolbar, "format-quick-list-options");
         settle().await;
         assert!(!paragraph.header.arrow.is_visible());
         for kind in [
@@ -298,7 +298,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         dialog.close();
         settle().await;
         let color_before = state(&ui);
-        click(&ui.format_toolbar, "format-quick-ink");
+        click(&ui.format_toolbar, "format-quick-ink-options");
         settle().await;
         assert!(!text.header.arrow.is_visible());
         assert_eq!(
@@ -473,13 +473,14 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         );
         let preview = find_widget(&blank.template_slot, "template-preview").unwrap();
         let preview_y = preview.compute_bounds(&window).unwrap().y();
-        let page_y = blank.current.borrow().as_ref().unwrap().page_frames[0]
-            .compute_bounds(&window)
+        let reference = find_widget(&window, "document-primary-header")
             .unwrap()
-            .y();
+            .compute_bounds(&window)
+            .unwrap();
+        let page_y = reference.y() + reference.height() + viewer_layout::PAGE_GAP as f32;
         assert!(
-            (preview_y - page_y).abs() < 2.0,
-            "Start preview and paper top: {preview_y}/{page_y}"
+            (preview_y - page_y).abs() < 2.,
+            "Start preview and single-document page origin: {preview_y}/{page_y}"
         );
         std::fs::remove_dir_all(folder).unwrap();
         // Leave all three placements represented for the separate cold launch.

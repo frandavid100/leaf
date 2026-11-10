@@ -22,9 +22,14 @@ pub(super) fn paragraph_icon(name: &str) -> gtk::Widget {
             "format-justify-left-symbolic"
             | "format-justify-center-symbolic"
             | "format-justify-right-symbolic"
-            | "format-justify-fill-symbolic" => {
+            | "format-justify-fill-symbolic"
+            | "format-justify-distribute-symbolic" => {
                 for (i, width) in [14.0, 10.0, 14.0, 8.0].into_iter().enumerate() {
-                    let width = if kind.contains("fill") { 14.0 } else { width };
+                    let width = if kind.contains("distribute") || (kind.contains("fill") && i < 3) {
+                        14.0
+                    } else {
+                        width
+                    };
                     let x = if kind.contains("center") {
                         (18.0 - width) / 2.0
                     } else if kind.contains("right") {

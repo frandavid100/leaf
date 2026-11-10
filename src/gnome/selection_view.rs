@@ -53,6 +53,12 @@ pub(super) fn refresh_selection(ui: &Rc<Ui>) {
         panel.sync_caret();
     }
     refresh_overlay_layers(ui);
+    if let Some(p) = ui.table_popover.borrow().as_ref() {
+        refresh_table_controls(ui, p);
+    }
+    if let Some(p) = ui.picture.borrow().as_ref() {
+        p.refresh();
+    }
     refresh_format_controls(ui);
     if let Some(style) = ui.style.borrow().as_ref() {
         style.sync_selection();
@@ -62,12 +68,6 @@ pub(super) fn refresh_selection(ui: &Rc<Ui>) {
     }
     if let Some(text) = ui.text_tools.borrow().as_ref() {
         text.sync_selection();
-    }
-    if let Some(p) = ui.table_popover.borrow().as_ref() {
-        refresh_table_controls(ui, p);
-    }
-    if let Some(p) = ui.picture.borrow().as_ref() {
-        p.refresh();
     }
     if let Some(elements) = ui.elements.borrow().as_ref() {
         elements.sync();

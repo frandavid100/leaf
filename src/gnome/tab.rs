@@ -398,7 +398,7 @@ pub(super) fn build_tab(
     sidebar_button.set_active(sidebar_on_start || !narrow_on_start);
     compact_app_menu.set_visible(!(sidebar_on_start || !narrow_on_start));
     compact_search.set_visible(!(sidebar_on_start || !narrow_on_start));
-    sidebar.set_min_sidebar_width(190.0);
+    sidebar.set_min_sidebar_width(240.0);
     sidebar.set_max_sidebar_width(240.0);
     sidebar.set_sidebar_width_fraction(0.21);
     sidebar.set_pin_sidebar(true);
@@ -475,7 +475,7 @@ pub(super) fn build_tab(
         format_syncing: Cell::new(false),
         ruler: RefCell::new(None),
         history_controls: RefCell::new(None),
-        repeat_action: RefCell::new(None),
+        repeat_action: RefCell::new(wordcraft_gnome::history::RepeatHistory::default()),
         document_menu_open: Cell::new(false),
         document_menu: RefCell::new(None),
         undo_button: undo_button.clone(),

@@ -1,7 +1,7 @@
 //! Native inline picture controls and cancellable file selection.
 use super::*;
 
-fn picture_properties_target(s: &Session) -> Option<(Pos, f32, f32)> {
+pub(super) fn picture_properties_target(s: &Session) -> Option<(Pos, f32, f32)> {
     pictures::selected(s).or_else(|| {
         let caption = wordcraft_gnome::captions::at(&s.doc, &s.sel.focus)?;
         if caption.pos.story != s.sel.focus.story || caption.pos.path != s.sel.focus.path {
@@ -62,6 +62,24 @@ impl PicturePopover {
             })
             .unwrap_or(false);
         self.caption.set_active(shown);
+        if let Some(check) =
+            find_widget(&self.context, "picture-decorative").and_downcast::<gtk::CheckButton>()
+        {
+            let on = self.ui.upgrade().is_some_and(|ui| {
+                ui.current.borrow().as_ref().is_some_and(|d| {
+                    target
+                        .as_ref()
+                        .and_then(|(p, _, _)| {
+                            d.session
+                                .doc
+                                .para_at(p)
+                                .and_then(|para| para.object_at(p.off))
+                        })
+                        .is_some_and(|o| o.is_decorative())
+                })
+            });
+            check.set_active(on);
+        }
         let body = target
             .as_ref()
             .is_some_and(|(p, _, _)| p.story == wordcraft_doc::StoryRef::Body);
@@ -77,8 +95,8 @@ impl PicturePopover {
                 "Captions are available in the document body."
             )));
         if let Some((_, w, h)) = &target {
-            self.width.set_value(*w as f64 / PT_PER_MM);
-            self.height.set_value(*h as f64 / PT_PER_MM);
+            self.width.set_value(*w as f64 / (72. / 2.54));
+            self.height.set_value(*h as f64 / (72. / 2.54));
         } else {
             self.width.set_text("");
             self.height.set_text("");
@@ -93,15 +111,47 @@ impl PicturePopover {
                     _ => None,
                 }
             }) {
-                self.spacing.set_value(float.dist as f64 / PT_PER_MM);
+                self.spacing.set_value(float.dist as f64 / (72. / 2.54));
                 self.move_with_text
                     .set_active(wordcraft_engine::cmd::objects::moves_with_text(&float));
                 self.move_with_text
                     .set_sensitive(float.wrap != wordcraft_doc::para::Wrap::Inline);
+                self.move_with_text.set_tooltip_text(
+                    (float.wrap == wordcraft_doc::para::Wrap::Inline).then_some(
+                        wordcraft_gnome::t!("Inline images move with the text automatically."),
+                    ),
+                );
             }
         }
         self.syncing.set(false);
         self.target.replace(target);
+    }
+    fn number_edit(
+        &self,
+        f: impl FnOnce(&mut Session) -> Result<(), String>,
+    ) -> Result<(), String> {
+        if self.syncing.get() {
+            return Ok(());
+        }
+        let ui = self.ui.upgrade().ok_or("Document closed")?;
+        let mut failure = None;
+        tools_change(&ui, |session| {
+            if pictures::selected(session).is_none() {
+                let (pos, _, _) = picture_properties_target(session)
+                    .ok_or(wordcraft_gnome::t!("Select an Image"))?;
+                pictures::select(session, &pos)?;
+            }
+            let result = f(session);
+            if let Err(e) = &result {
+                failure = Some(e.clone());
+            }
+            result
+        });
+        if let Some(e) = failure {
+            return Err(e);
+        }
+        self.refresh();
+        Ok(())
     }
     pub(super) fn execute(&self, f: impl FnOnce(&mut Session) -> Result<(), String>) {
         if let Some(ui) = self.ui.upgrade() {
@@ -115,8 +165,10 @@ impl PicturePopover {
             }) {
                 self.refresh();
                 close_format_popover(&self.pop);
-                ui.document_box.grab_focus();
-                caret_ensure_visible(&ui);
+                if !ui.format_group.pinned.get() {
+                    ui.document_box.grab_focus();
+                    caret_ensure_visible(&ui);
+                }
             }
         }
     }
@@ -244,14 +296,19 @@ pub(super) fn install_picture_controls(
     let caption = gtk::CheckButton::with_label(wordcraft_gnome::t!("Show Caption"));
     caption.set_widget_name("picture-show-caption");
     context.append(&caption);
+    let decorative = gtk::CheckButton::with_label(wordcraft_gnome::t!("Mark as Decorative"));
+    decorative.set_widget_name("picture-decorative");
+    context.append(&decorative);
     context.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-    let width = mm_input(30.0, 1.0 / PT_PER_MM, 4000.0 / PT_PER_MM);
+    let width = mm_input(3.0, 1.0 / (72. / 2.54), 4000.0 / (72. / 2.54));
     width.set_widget_name("picture-width");
-    let height = mm_input(15.0, 1.0 / PT_PER_MM, 4000.0 / PT_PER_MM);
+    width.set_digits(3);
+    let height = mm_input(1.5, 1.0 / (72. / 2.54), 4000.0 / (72. / 2.54));
     height.set_widget_name("picture-height");
+    height.set_digits(3);
     for (label, n) in [
-        (wordcraft_gnome::t!("Width (mm)"), &width),
-        (wordcraft_gnome::t!("Height (mm)"), &height),
+        (wordcraft_gnome::t!("Width (cm)"), &width),
+        (wordcraft_gnome::t!("Height (cm)"), &height),
     ] {
         let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
         let l = gtk::Label::new(Some(label));
@@ -266,18 +323,19 @@ pub(super) fn install_picture_controls(
     context.append(&lock);
     let apply = style_menu_button(wordcraft_gnome::t!("Apply Size"));
     apply.set_widget_name("picture-apply");
-    context.append(&apply);
+
     context.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-    let spacing = mm_input(2.0, 0.0, 144.0 / PT_PER_MM);
+    let spacing = mm_input(0.2, 0.0, 144.0 / (72. / 2.54));
+    spacing.set_digits(3);
     let spacing_row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-    let label = gtk::Label::new(Some(wordcraft_gnome::t!("Space Around Image (mm)")));
+    let label = gtk::Label::new(Some(wordcraft_gnome::t!("Space Around Image (cm)")));
     label.set_hexpand(true);
     label.set_xalign(0.0);
     spacing_row.append(&label);
     spacing_row.append(&spacing);
     context.append(&spacing_row);
     let apply_spacing = style_menu_button(wordcraft_gnome::t!("Apply Spacing"));
-    context.append(&apply_spacing);
+
     let mut placement_buttons = Vec::new();
     for (label, mode) in [
         (wordcraft_gnome::t!("In Line with Text"), "inline"),
@@ -291,6 +349,7 @@ pub(super) fn install_picture_controls(
         placement_buttons.push((button, mode));
     }
     let move_with_text = gtk::CheckButton::with_label(wordcraft_gnome::t!("Move with Text"));
+    move_with_text.set_widget_name("picture-move-with-text");
     context.append(&move_with_text);
     let original = style_menu_button(wordcraft_gnome::t!("Restore Original Size"));
     original.set_widget_name("picture-original");
@@ -300,7 +359,83 @@ pub(super) fn install_picture_controls(
     context.append(&replace);
     let delete = style_menu_button(wordcraft_gnome::t!("Delete Image"));
     delete.set_widget_name("picture-delete");
+    context.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     context.append(&delete);
+    let mut last_transform = original.clone().upcast::<gtk::Widget>();
+    for (title, id) in [
+        (wordcraft_gnome::t!("Crop Image"), "image-crop"),
+        (wordcraft_gnome::t!("Rotate Left"), "image-rotate-left"),
+        (wordcraft_gnome::t!("Rotate Right"), "image-rotate-right"),
+        (
+            wordcraft_gnome::t!("Flip Horizontally"),
+            "image-flip-horizontal",
+        ),
+        (
+            wordcraft_gnome::t!("Flip Vertically"),
+            "image-flip-vertical",
+        ),
+        (wordcraft_gnome::t!("Alternative Text"), "image-alt"),
+    ] {
+        let b = style_menu_button(title);
+        b.set_widget_name(&format!("format-row-elements-{id}"));
+        context.insert_child_after(&b, Some(&last_transform));
+        last_transform = b.clone().upcast();
+        let weak = Rc::downgrade(ui);
+        b.connect_clicked(move |_| {
+            if let Some(ui) = weak.upgrade() {
+                tool_actions::activate(&ui, "elements", id);
+            }
+        });
+    }
+    // Stable logical groups are leased, rather than duplicated, by individual tools.
+    let size_body = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    for control in [
+        width.parent().unwrap(),
+        height.parent().unwrap(),
+        lock.clone().upcast(),
+        original.clone().upcast(),
+    ] {
+        context.remove(&control);
+        size_body.append(&control);
+    }
+    let size_slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    size_slot.set_widget_name("format-row-elements-image-size");
+    size_slot.append(&size_body);
+    context.insert_child_after(&size_slot, Some(&caption));
+    let spacing_body = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    context.remove(&spacing_row);
+
+    spacing_body.append(&spacing_row);
+
+    let spacing_slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    spacing_slot.set_widget_name("format-row-elements-image-spacing");
+    spacing_slot.append(&spacing_body);
+    context.insert_child_after(&spacing_slot, Some(&size_slot));
+    let wrap_body = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    for (button, _) in &placement_buttons {
+        context.remove(button);
+        wrap_body.append(button);
+    }
+    let wrap_slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    wrap_slot.set_widget_name("format-row-elements-image-wrap");
+    wrap_slot.append(&wrap_body);
+    context.insert_child_after(&wrap_slot, Some(&spacing_slot));
+    for (widget, id) in [
+        (caption.clone().upcast::<gtk::Widget>(), "image-caption"),
+        (decorative.clone().upcast(), "image-decorative"),
+        (move_with_text.clone().upcast(), "image-move"),
+        (original.clone().upcast(), "image-original"),
+        (replace.clone().upcast(), "image-replace"),
+        (delete.clone().upcast(), "image-delete"),
+    ] {
+        let prev = widget.prev_sibling();
+        let owner = widget.parent().unwrap().downcast::<gtk::Box>().unwrap();
+        owner.remove(&widget);
+        let slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
+        slot.set_widget_name(&format!("format-row-elements-{id}"));
+        slot.append(&widget);
+        owner.insert_child_after(&slot, prev.as_ref());
+    }
     // Keep the header fixed when the window is short.
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
@@ -317,6 +452,8 @@ pub(super) fn install_picture_controls(
     root.append(&insert);
     pop.set_child(Some(&root));
     menu.set_popover(Some(&pop));
+    apply.set_visible(false);
+    apply_spacing.set_visible(false);
     let state = Rc::new(PicturePopover {
         ui: Rc::downgrade(ui),
         pop: pop.clone(),
@@ -334,6 +471,20 @@ pub(super) fn install_picture_controls(
     });
     {
         let weak = Rc::downgrade(&state);
+        decorative.connect_toggled(move |check| {
+            let Some(p) = weak.upgrade().filter(|p| !p.syncing.get()) else {
+                return;
+            };
+            let value = check.is_active();
+            p.execute(move |s| {
+                s.run("object.altText", &serde_json::json!({"decorative":value}))
+                    .map(|_| ())
+                    .map_err(|e| e.to_string())
+            });
+        });
+    }
+    {
+        let weak = Rc::downgrade(&state);
         state.caption.connect_toggled(move |button| {
             let Some(p) = weak.upgrade().filter(|p| !p.syncing.get()) else {
                 return;
@@ -347,7 +498,7 @@ pub(super) fn install_picture_controls(
         button.connect_clicked(move |_| {
             if let Some(p) = weak.upgrade() {
                 p.spacing.update();
-                let distance = p.spacing.value() as f32 * PT_PER_MM as f32;
+                let distance = p.spacing.value() as f32 * (72. / 2.54) as f32;
                 p.execute(move |s| pictures::placement(s, Some(mode), distance));
             }
         });
@@ -357,7 +508,7 @@ pub(super) fn install_picture_controls(
         apply_spacing.connect_clicked(move |_| {
             if let Some(p) = weak.upgrade() {
                 p.spacing.update();
-                let distance = p.spacing.value() as f32 * PT_PER_MM as f32;
+                let distance = p.spacing.value() as f32 * (72. / 2.54) as f32;
                 p.execute(move |s| pictures::placement(s, None, distance));
             }
         });
@@ -400,6 +551,34 @@ pub(super) fn install_picture_controls(
             }
         });
     }
+    for (is_width, n) in [(true, &state.width), (false, &state.height)] {
+        let weak = Rc::downgrade(&state);
+        bind_numeric(ui, n, move |value| {
+            let p = weak.upgrade().ok_or("Document closed")?;
+            if p.syncing.get() {
+                return Ok(());
+            }
+            let lock = p.lock.is_active();
+            p.number_edit(move |session| {
+                let mut args = serde_json::json!({"lockAspect":lock});
+                args[if is_width { "width" } else { "height" }] =
+                    serde_json::json!(value * (72. / 2.54));
+                session
+                    .run("picture.size", &args)
+                    .map(|_| ())
+                    .map_err(|e| e.to_string())
+            })
+        });
+    }
+    {
+        let weak = Rc::downgrade(&state);
+        bind_numeric(ui, &state.spacing, move |value| {
+            let p = weak.upgrade().ok_or("Document closed")?;
+            p.number_edit(move |session| {
+                pictures::placement(session, None, (value * (72. / 2.54)) as f32)
+            })
+        });
+    }
     {
         let weak = Rc::downgrade(&state);
         apply.connect_clicked(glib::clone!(
@@ -412,8 +591,8 @@ pub(super) fn install_picture_controls(
                     s.width.update();
                     s.height.update();
                     let (w, h, lock, by_width) = (
-                        s.width.value() as f32 * PT_PER_MM as f32,
-                        s.height.value() as f32 * PT_PER_MM as f32,
+                        s.width.value() as f32 * (72. / 2.54) as f32,
+                        s.height.value() as f32 * (72. / 2.54) as f32,
                         s.lock.is_active(),
                         s.width_changed.get(),
                     );

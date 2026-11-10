@@ -13,7 +13,14 @@ pub(super) fn format_execute(
             wordcraft_gnome::highlight::register(&mut doc.session);
         }
         let rev = doc.session.rev();
-        doc.session.run(command, &args).map_err(|e| e.to_string())?;
+        if matches!(
+            command,
+            "para.bullets" | "para.numbering" | "para.multilevel"
+        ) {
+            wordcraft_gnome::list_design::apply(&mut doc.session, command, &args)?;
+        } else {
+            doc.session.run(command, &args).map_err(|e| e.to_string())?;
+        }
         doc.session.rev() != rev
     };
     if let Some(t) = ui.text_tools.borrow().as_ref() {
@@ -99,6 +106,7 @@ pub(super) fn panel_action(
     args: serde_json::Value,
 ) {
     let b = gtk::Button::with_label(label);
+    b.set_widget_name(&format!("tool-control-{command}"));
     b.set_halign(gtk::Align::Fill);
     accessible_name(&b, label);
     g.add(&b);
@@ -162,6 +170,7 @@ pub(super) fn panel_choice(
     key: &'static str,
 ) {
     let row = adw::ComboRow::new();
+    row.set_widget_name(&format!("tool-control-{command}-{key}"));
     row.set_title(label);
     let labels: Vec<&str> = std::iter::once(wordcraft_gnome::t!("Choose…"))
         .chain(options.iter().map(|o| o.0))
@@ -179,7 +188,7 @@ pub(super) fn panel_choice(
         #[weak]
         w,
         move |r| {
-            if !valid() {
+            if !valid() || ui.format_syncing.get() {
                 return;
             }
             if let Some(v) = r

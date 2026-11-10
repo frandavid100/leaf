@@ -51,6 +51,9 @@ LEAF_TOOLBAR_LOG="toolbar41-${LANGUAGE}.log" bash "$root/tools/toolbar41-pointer
 "$runner" --toolbar41-reopen-test > "toolbar41-reopen-${LANGUAGE}.log" 2>&1 || { cat "toolbar41-reopen-${LANGUAGE}.log"; exit 1; }
 grep -q TOOLBAR41_REOPEN_OK "toolbar41-reopen-${LANGUAGE}.log"
 cat "toolbar41-reopen-${LANGUAGE}.log"
+LEAF35_PROFILE="$LEAF35_PROFILE/alpha43" "$runner" --alpha43-ui-test > "alpha43-ui-${LANGUAGE}.log" 2>&1 || { cat "alpha43-ui-${LANGUAGE}.log"; exit 1; }
+grep -q ALPHA43_UI_OK "alpha43-ui-${LANGUAGE}.log"
+cat "alpha43-ui-${LANGUAGE}.log"
 CHECK
 chmod +x "$temporary/installed.sh"
 if [[ ${CI:-} == true ]]; then export LEAF35_TEST_UID; LEAF35_TEST_UID=$(id -u); fi

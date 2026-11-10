@@ -40,7 +40,9 @@ pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     );
     let paragraph = ui.paragraph.borrow().as_ref().unwrap().clone();
     for close_first in [false, true] {
-        format_button(ui, "format-quick-alignment").unwrap().popup();
+        format_button(ui, "format-quick-alignment-options")
+            .unwrap()
+            .popup();
         settle().await;
         if close_first {
             paragraph.popover.upgrade().unwrap().popdown();
@@ -258,8 +260,23 @@ async fn shared_overflow(ui: &Rc<Ui>, window: &ApplicationWindow) {
             .map(|(id, _)| {
                 (
                     id.clone(),
-                    if *group == "text" {
+                    if *group == "text"
+                        && [
+                            "bold",
+                            "italic",
+                            "underline",
+                            "strike",
+                            "superscript",
+                            "font",
+                            "ink",
+                            "highlight",
+                            "language",
+                        ]
+                        .contains(&id.as_str())
+                    {
                         Placement::Pinned
+                    } else if *group == "text" {
+                        Placement::More
                     } else {
                         Placement::Adaptive
                     },
@@ -289,7 +306,7 @@ async fn shared_overflow(ui: &Rc<Ui>, window: &ApplicationWindow) {
     );
     assert!(fixed.x() >= 0. && fixed.x() + fixed.width() <= window.width() as f32);
     assert!(scroll.hadjustment().upper() > scroll.hadjustment().page_size());
-    let last = find_widget(&ui.format_toolbar, "format-quick-language").unwrap();
+    let last = find_widget(&ui.format_toolbar, "format-quick-language-options").unwrap();
     assert!(last.is_mapped());
     last.grab_focus();
     settle().await;
@@ -341,7 +358,7 @@ async fn shared_overflow(ui: &Rc<Ui>, window: &ApplicationWindow) {
     window.set_default_size(1280, 850);
     settle().await;
     assert!(
-        find_widget(&ui.format_toolbar, "format-quick-alignment")
+        find_widget(&ui.format_toolbar, "format-quick-alignment-options")
             .unwrap()
             .is_mapped()
     );

@@ -104,9 +104,9 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
     );
     tools.home();
     button(&menu.popover().unwrap(), "text-more-options");
-    assert!(find_widget(&menu.popover().unwrap(), "text-options-case").is_some());
+    assert!(find_widget(&menu.popover().unwrap(), "format-row-text-case").is_some());
     let clear = find_widget(&menu.popover().unwrap(), "text-clear-formatting").unwrap();
-    assert!(clear.next_sibling().is_none());
+    assert!(clear.parent().unwrap().next_sibling().is_none());
     menu.popdown();
     // Document defaults preserve explicit yes and disabled text, independent of app defaults.
     {
@@ -666,19 +666,37 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
 
 #[allow(deprecated)]
 pub(super) fn test_choose_color(root: &impl IsA<gtk::Widget>, name: &str, hex: &str) {
-    let picker = find_widget(root, name)
-        .unwrap()
-        .downcast::<gtk::ColorChooserWidget>()
-        .unwrap();
-    assert!(
-        picker.is_mapped(),
-        "native chooser must actually be shown: {name}"
-    );
-    let rgba = gdk::RGBA::parse(format!("#{hex}")).unwrap();
-    picker.set_rgba(&rgba);
-    picker.emit_by_name::<()>("color-activated", &[&rgba]);
+    let picker = find_widget(root, name).unwrap();
+    assert!(picker.is_mapped(), "shared chooser must be shown: {name}");
+    if let Some(button) = find_widget(&picker, &format!("color-swatch-{}", hex.to_lowercase()))
+        .and_downcast::<gtk::Button>()
+    {
+        button.emit_clicked();
+    } else {
+        find_widget(&picker, "color-custom")
+            .unwrap()
+            .downcast::<gtk::Button>()
+            .unwrap()
+            .emit_clicked();
+        let editor = find_widget(&picker, "color-custom-editor")
+            .unwrap()
+            .downcast::<gtk::ColorChooserWidget>()
+            .unwrap();
+        let rgba = gdk::RGBA::parse(format!("#{hex}")).unwrap();
+        editor.set_rgba(&rgba);
+        editor.emit_by_name::<()>("color-activated", &[&rgba]);
+    }
 }
 pub(super) fn native_color_swatch(root: &gtk::Widget, color: &gdk::RGBA) -> Option<gtk::Widget> {
+    let hex = format!(
+        "color-swatch-{:02x}{:02x}{:02x}",
+        (color.red() * 255.).round() as u8,
+        (color.green() * 255.).round() as u8,
+        (color.blue() * 255.).round() as u8
+    );
+    if root.widget_name() == hex {
+        return Some(root.clone());
+    }
     if root.type_().name() == "GtkColorSwatch"
         && root.find_property("rgba").is_some()
         && root.property::<Option<gdk::RGBA>>("rgba").as_ref() == Some(color)

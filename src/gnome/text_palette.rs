@@ -8,6 +8,10 @@ pub(super) struct TextPalette {
     pub(super) root: gtk::Box,
     pub(super) properties: gtk::Box,
     pub(super) superscript: gtk::CheckButton,
+    position: gtk::Button,
+    words_only: gtk::CheckButton,
+    underline_color: gtk::Button,
+    choices: RefCell<Vec<(String, String, gtk::Button)>>,
     pub(super) underline_check: gtk::CheckButton,
     pub(super) strike_check: gtk::CheckButton,
     pub(super) underline: gtk::Button,
@@ -65,7 +69,9 @@ impl TextPalette {
         );
         let superscript_row = gtk::Box::new(gtk::Orientation::Vertical, 0);
         superscript_row.set_widget_name("format-row-text-superscript");
-        superscript_row.append(&superscript);
+        let position = style_menu_button(wordcraft_gnome::t!("Text Position"));
+        position.set_widget_name("text-position");
+        superscript_row.append(&position);
         root.append(&superscript_row);
         let underline_check = gtk::CheckButton::with_label(wordcraft_gnome::t!("Underline"));
         let strike_check = gtk::CheckButton::with_label(wordcraft_gnome::t!("Strikethrough"));
@@ -160,7 +166,7 @@ impl TextPalette {
             } else {
                 "format-row-text-highlight"
             });
-            row.append(&open);
+            row.append(&reapply_split(&open, &apply));
             properties.append(&row);
             configs.push((open, apply, value));
         }
@@ -171,6 +177,10 @@ impl TextPalette {
             root,
             properties,
             superscript,
+            position,
+            words_only: gtk::CheckButton::with_label(wordcraft_gnome::t!("Words Only")),
+            underline_color: style_menu_button(wordcraft_gnome::t!("Automatic Color")),
+            choices: RefCell::new(Vec::new()),
             underline_check,
             strike_check,
             underline,
@@ -221,6 +231,7 @@ impl TextPalette {
             }
         });
         for (button, page) in [
+            (&s.position, "superscript"),
             (&s.underline, "underline"),
             (&s.strike, "strike"),
             (&s.ink, "ink"),
@@ -266,8 +277,12 @@ impl TextPalette {
         s
     }
     pub(super) fn options_page(self: &Rc<Self>, name: &str) -> Option<gtk::Box> {
-        if matches!(name, "ink" | "highlight") {
-            self.color_page(if name == "ink" { "ink" } else { "highlight" });
+        if matches!(name, "ink" | "highlight" | "underline-color") {
+            self.color_page(match name {
+                "ink" => "ink",
+                "highlight" => "highlight",
+                _ => "underline-color",
+            });
         }
         self.panels.borrow().get(name).cloned()
     }
@@ -328,6 +343,7 @@ impl TextPalette {
     pub(super) fn choose_ink(&self, value: &str) -> bool {
         if self.apply("format.color", json!({"color":value})) {
             self.last_ink.replace(value.into());
+            self.refresh_last();
             true
         } else {
             false
@@ -335,18 +351,43 @@ impl TextPalette {
     }
     pub(super) fn choose_highlight(&self, value: &str) -> bool {
         if self.apply("leaf.highlight", json!({"color":value})) {
-            if value != "none" {
-                self.last_highlight.replace(value.into());
-            }
+            self.last_highlight.replace(value.into());
+            self.refresh_last();
             true
         } else {
             false
         }
     }
+    fn refresh_last(&self) {
+        self.displayed.replace(serde_json::Value::Null);
+        self.sync();
+        if let Some(ui) = self.ui.upgrade() {
+            if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                tools.sync(&ui, &selection_character(&ui));
+            }
+        }
+    }
+    pub(super) fn reapply_color(&self, ink: bool) {
+        let value = if ink {
+            self.last_ink.borrow().clone()
+        } else {
+            self.last_highlight.borrow().clone()
+        };
+        if ink {
+            self.choose_ink(&value);
+        } else {
+            self.choose_highlight(&value);
+        }
+    }
     fn home(&self) {
         if let Some(ui) = self.ui.upgrade() {
             if let Some(tools) = ui.text_tools.borrow().as_ref() {
-                tools.home();
+                if !ui.format_group.pinned.get() {
+                    if let Some(pop) = tools.popover.upgrade() {
+                        close_format_popover(&pop);
+                    }
+                    ui.document_box.grab_focus();
+                }
             }
         }
     }
@@ -355,9 +396,39 @@ impl TextPalette {
         self.panels.borrow_mut().insert(name, root.clone());
         root
     }
+    fn choice_row(
+        self: &Rc<Self>,
+        root: &gtk::Box,
+        group: &str,
+        value: &str,
+        title: &str,
+        name: &str,
+    ) -> gtk::Button {
+        let button = decoration_row(
+            title,
+            name,
+            if group == "strike" {
+                if value == "double" {
+                    "strike-double"
+                } else if value == "single" {
+                    "strike-single"
+                } else {
+                    "none"
+                }
+            } else {
+                value
+            },
+        );
+        root.append(&button);
+        self.choices
+            .borrow_mut()
+            .push((group.into(), value.into(), button.clone()));
+        button
+    }
     fn options(self: &Rc<Self>) {
         let root = self.panel("underline");
         for (title, style) in [
+            (wordcraft_gnome::t!("No underline"), "none"),
             (wordcraft_gnome::t!("Single"), "single"),
             (wordcraft_gnome::t!("Double"), "double"),
             (wordcraft_gnome::t!("Thick"), "thick"),
@@ -366,56 +437,94 @@ impl TextPalette {
             (wordcraft_gnome::t!("Wavy"), "wave"),
             (wordcraft_gnome::t!("Dot Dash"), "dotDash"),
             (wordcraft_gnome::t!("Dot Dot Dash"), "dotDotDash"),
-            (wordcraft_gnome::t!("Words Only"), "words"),
         ] {
-            let b = style_menu_button(title);
-            b.set_widget_name(&format!("underline-choice-{style}"));
-            root.append(&b);
+            let b = self.choice_row(
+                &root,
+                "underline",
+                style,
+                title,
+                &format!("underline-choice-{style}"),
+            );
             let weak = Rc::downgrade(self);
             b.connect_clicked(move |_| {
                 if let Some(s) = weak.upgrade() {
-                    if s.apply_underline(true, style) {
-                        s.last_underline.replace(style.into());
+                    // A style choice preserves this target's independent color.
+                    if s.apply(
+                        "format.underline",
+                        json!({"value":style != "none", "style":style}),
+                    ) {
+                        if style != "none" {
+                            s.last_underline.replace(style.into());
+                        }
                         s.home();
                     }
                 }
             });
         }
+        root.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+        self.words_only.set_widget_name("underline-words-only");
+        self.words_only.set_tooltip_text(Some(wordcraft_gnome::t!("WordCraft supports words-only with a single underline; other line styles cannot yet combine with it.")));
+        root.append(&self.words_only);
         let weak = Rc::downgrade(self);
-        let picker = embedded_color_chooser("text-underline-chooser", None, move |hex| {
-            weak.upgrade()
-                .is_some_and(|s| s.apply("format.underlineColor", json!({"color":hex})))
-        });
-        root.append(&picker.widget);
-        self.pickers.borrow_mut().insert("underline", picker);
-        let auto = style_menu_button(wordcraft_gnome::t!("Automatic Color"));
-        root.append(&auto);
-        let weak = Rc::downgrade(self);
-        auto.connect_clicked(move |_| {
-            if let Some(s) = weak.upgrade() {
-                s.apply("format.underlineColor", json!({"color":"auto"}));
+        self.words_only.connect_toggled(move |check| {
+            if let Some(s) = weak.upgrade().filter(|s| !s.syncing.get()) {
+                s.apply(
+                    "format.underline",
+                    json!({"value":true,"style":if check.is_active(){"words"}else{"single"}}),
+                );
             }
         });
+        self.underline_color
+            .set_widget_name("underline-color-property");
+        root.append(&self.underline_color);
+        let weak = Rc::downgrade(self);
+        self.underline_color.connect_clicked(move |_| {
+            if let Some(ui) = weak.upgrade().and_then(|s| s.ui.upgrade()) {
+                if let Some(tools) = ui.text_tools.borrow().as_ref() {
+                    tools.page("underline-color");
+                }
+            }
+        });
+        self.panel("underline-color");
         let root = self.panel("strike");
-        for (title, double) in [
-            (wordcraft_gnome::t!("Single"), false),
-            (wordcraft_gnome::t!("Double"), true),
+        for (title, value) in [
+            (wordcraft_gnome::t!("No strikethrough"), "none"),
+            (wordcraft_gnome::t!("Single"), "single"),
+            (wordcraft_gnome::t!("Double"), "double"),
         ] {
-            let b = style_menu_button(title);
-            b.set_widget_name(if double {
-                "strike-double"
-            } else {
-                "strike-single"
-            });
-            root.append(&b);
+            let b = self.choice_row(&root, "strike", value, title, &format!("strike-{value}"));
             let weak = Rc::downgrade(self);
             b.connect_clicked(move |_| {
                 if let Some(s) = weak.upgrade() {
                     if s.apply(
                         "format.set",
-                        json!({"props":{"strike":!double,"doubleStrike":double}}),
+                        json!({"props":{"strike":value=="single","doubleStrike":value=="double"}}),
                     ) {
-                        s.last_strike.set(double);
+                        if value != "none" {
+                            s.last_strike.set(value == "double");
+                        }
+                        s.home();
+                    }
+                }
+            });
+        }
+        let root = self.panel("superscript");
+        for (title, value) in [
+            (wordcraft_gnome::t!("Normal"), "baseline"),
+            (wordcraft_gnome::t!("Superscript"), "superscript"),
+            (wordcraft_gnome::t!("Subscript"), "subscript"),
+        ] {
+            let b = self.choice_row(
+                &root,
+                "script",
+                value,
+                title,
+                &format!("script-choice-{value}"),
+            );
+            let weak = Rc::downgrade(self);
+            b.connect_clicked(move |_| {
+                if let Some(s) = weak.upgrade() {
+                    if s.apply("format.set", json!({"props":{"vertAlign":value}})) {
                         s.home();
                     }
                 }
@@ -426,21 +535,22 @@ impl TextPalette {
     }
     fn color_page(self: &Rc<Self>, name: &'static str) {
         let root = self.panels.borrow().get(name).cloned().unwrap();
+        if self.pickers.borrow().contains_key(name) {
+            self.sync_pickers();
+            return;
+        }
         clear_box(&root);
-        let clear = style_menu_button(if name == "ink" {
+        let clear = style_menu_button(if name != "highlight" {
             wordcraft_gnome::t!("Automatic Color")
         } else {
             wordcraft_gnome::t!("No Highlight")
         });
         clear.set_widget_name(if name == "ink" {
             "ink-choice-auto"
-        } else {
+        } else if name == "highlight" {
             "highlight-choice-none"
-        });
-        root.append(if name == "ink" {
-            &self.ink_apply
         } else {
-            &self.highlight_apply
+            "underline-color-choice-auto"
         });
         root.append(&clear);
         let weak = Rc::downgrade(self);
@@ -448,6 +558,8 @@ impl TextPalette {
             if let Some(s) = weak.upgrade() {
                 if name == "ink" {
                     s.choose_ink("auto");
+                } else if name == "underline-color" {
+                    s.apply("format.underlineColor", json!({"color":"auto"}));
                 } else {
                     s.choose_highlight("none");
                 }
@@ -458,6 +570,8 @@ impl TextPalette {
             weak.upgrade().is_some_and(|s| {
                 if name == "ink" {
                     s.choose_ink(hex)
+                } else if name == "underline-color" {
+                    s.apply("format.underlineColor", json!({"color":hex}))
                 } else {
                     s.choose_highlight(hex)
                 }
@@ -481,11 +595,39 @@ impl TextPalette {
         for (name, color) in [
             ("ink", ink),
             ("highlight", background),
-            ("underline", p.underline_color),
+            ("underline-color", p.underline_color),
         ] {
             if let Some(picker) = self.pickers.borrow().get(name) {
                 let hex = color.map(|c| format!("#{}", c.hex()));
-                picker.sync(hex.as_deref());
+                let mixed = resolved.iter().skip(1).any(|r| match name {
+                    "ink" => r.color != p.color,
+                    "highlight" => r.highlight.or(r.shading) != background,
+                    _ => r.underline_color != p.underline_color,
+                });
+                picker.sync_state(hex.as_deref(), mixed);
+                if let Some(root) = self.panels.borrow().get(name) {
+                    let id = match name {
+                        "ink" => "ink-choice-auto",
+                        "highlight" => "highlight-choice-none",
+                        _ => "underline-color-choice-auto",
+                    };
+                    if let Some(button) = find_widget(root, id).and_downcast::<gtk::Button>() {
+                        let on = color.is_none() && !mixed;
+                        let title = if name == "highlight" {
+                            wordcraft_gnome::t!("No Highlight")
+                        } else {
+                            wordcraft_gnome::t!("Automatic Color")
+                        };
+                        button.set_label(&format!("{}{}", if on { "✓  " } else { "" }, title));
+                        button.update_state(&[gtk::accessible::State::Pressed(if mixed {
+                            gtk::AccessibleTristate::Mixed
+                        } else if on {
+                            gtk::AccessibleTristate::True
+                        } else {
+                            gtk::AccessibleTristate::False
+                        })]);
+                    }
+                }
             }
         }
     }
@@ -499,6 +641,72 @@ impl TextPalette {
         self.displayed.replace(state.clone());
         self.sync_pickers();
         self.syncing.set(true);
+        let underline = state["underline"].as_str();
+        self.words_only.set_inconsistent(underline.is_none());
+        self.words_only.set_active(underline == Some("words"));
+        self.words_only
+            .set_sensitive(matches!(underline, Some("none" | "single" | "words")));
+        let mixed_underline_color = ui.current.borrow().as_ref().is_some_and(|d| {
+            let all = wordcraft_gnome::text_properties::selected_resolved(&d.session);
+            all.first().is_some_and(|first| {
+                all.iter()
+                    .any(|p| p.underline_color != first.underline_color)
+            })
+        });
+        let underline_color = state["underlineColor"]
+            .as_array()
+            .map(|rgb| {
+                format!(
+                    "#{:02X}{:02X}{:02X}",
+                    rgb[0].as_u64().unwrap_or(0),
+                    rgb[1].as_u64().unwrap_or(0),
+                    rgb[2].as_u64().unwrap_or(0)
+                )
+            })
+            .unwrap_or_else(|| {
+                if mixed_underline_color {
+                    wordcraft_gnome::t!("Mixed")
+                } else {
+                    wordcraft_gnome::t!("Automatic Color")
+                }
+                .into()
+            });
+        self.underline_color.set_label(&format!(
+            "{}: {}",
+            wordcraft_gnome::t!("Color"),
+            underline_color
+        ));
+        for (group, value, button) in self.choices.borrow().iter() {
+            let current = match group.as_str() {
+                "underline" => underline.map(|s| if s == "words" { "single" } else { s }),
+                "script" => state["vertAlign"].as_str(),
+                _ => {
+                    if state["strike"].is_null() || state["doubleStrike"].is_null() {
+                        None
+                    } else if state["doubleStrike"] == true {
+                        Some("double")
+                    } else if state["strike"] == true {
+                        Some("single")
+                    } else {
+                        Some("none")
+                    }
+                }
+            };
+            let selected = current == Some(value.as_str());
+            if selected {
+                button.add_css_class("current-style");
+            } else {
+                button.remove_css_class("current-style");
+            }
+            button.update_state(&[gtk::accessible::State::Pressed(if selected {
+                gtk::AccessibleTristate::True
+            } else {
+                gtk::AccessibleTristate::False
+            })]);
+            if let Some(mark) = button.child().and_then(|c| c.last_child()) {
+                mark.set_visible(selected);
+            }
+        }
         for (button, key, on) in [
             (
                 &self.superscript,
@@ -522,45 +730,26 @@ impl TextPalette {
                     || (key == "strike" && state["doubleStrike"].is_null()),
             );
         }
-        let color = if state["color"].is_null() {
-            wordcraft_gnome::t!("Mixed").into()
-        } else if let Some(rgb) = state["color"]["Rgb"].as_array() {
-            format!(
-                "#{:02X}{:02X}{:02X}",
-                rgb[0].as_u64().unwrap_or(0),
-                rgb[1].as_u64().unwrap_or(0),
-                rgb[2].as_u64().unwrap_or(0)
-            )
-        } else {
-            wordcraft_gnome::t!("Automatic Color").into()
-        };
-        let current = ui.current.borrow();
-        let resolved = current
-            .as_ref()
-            .map(|d| wordcraft_gnome::text_properties::selected_resolved(&d.session))
-            .unwrap_or_default();
-        let highlight = if resolved
-            .windows(2)
-            .any(|w| w[0].highlight.or(w[0].shading) != w[1].highlight.or(w[1].shading))
-        {
-            wordcraft_gnome::t!("Mixed").into()
-        } else if let Some(c) = resolved.first().and_then(|p| p.highlight.or(p.shading)) {
-            format!("#{:02X}{:02X}{:02X}", c.0, c.1, c.2)
-        } else {
-            wordcraft_gnome::t!("No Highlight").into()
-        };
         for (button, text, title, value) in [
             (
                 &self.ink,
                 &self.ink_value,
                 wordcraft_gnome::t!("Text Color"),
-                color,
+                if self.last_ink.borrow().as_str() == "auto" {
+                    wordcraft_gnome::t!("Automatic Color").into()
+                } else {
+                    self.last_ink.borrow().clone()
+                },
             ),
             (
                 &self.highlight,
                 &self.highlight_value,
                 wordcraft_gnome::t!("Highlight"),
-                highlight,
+                if self.last_highlight.borrow().as_str() == "none" {
+                    wordcraft_gnome::t!("No Highlight").into()
+                } else {
+                    self.last_highlight.borrow().clone()
+                },
             ),
         ] {
             let label = wordcraft_gnome::i18n::interpolate(
@@ -575,4 +764,84 @@ impl TextPalette {
         }
         self.syncing.set(false);
     }
+}
+
+fn decoration_row(title: &str, name: &str, style: &str) -> gtk::Button {
+    let button = style_menu_button(title);
+    button.set_widget_name(name);
+    let row = gtk::Box::new(gtk::Orientation::Horizontal, 12);
+    let label = gtk::Label::new(Some(title));
+    label.set_xalign(0.);
+    label.set_hexpand(true);
+    row.append(&label);
+    let sample = gtk::DrawingArea::new();
+    sample.set_content_width(72);
+    sample.set_content_height(24);
+    let style = style.to_owned();
+    sample.set_draw_func(move |w, c, width, height| {
+        let color = w.color();
+        c.set_source_rgba(
+            color.red() as f64,
+            color.green() as f64,
+            color.blue() as f64,
+            color.alpha() as f64,
+        );
+        if style == "none" {
+            return;
+        }
+        if matches!(style.as_str(), "baseline" | "superscript" | "subscript") {
+            c.set_font_size(18.);
+            c.move_to(12., 19.);
+            let _ = c.show_text(match style.as_str() {
+                "superscript" => "x²",
+                "subscript" => "x₂",
+                _ => "x",
+            });
+            return;
+        }
+        let strike = style.starts_with("strike");
+        if strike {
+            c.set_font_size(17.);
+            c.move_to(15., 19.);
+            let _ = c.show_text("Aa");
+        }
+        let y = if strike {
+            height as f64 / 2. + 1.
+        } else {
+            height as f64 - 6.
+        };
+        c.set_line_width(if style == "thick" { 2.5 } else { 1. });
+        match style.as_str() {
+            "dotted" => c.set_dash(&[1., 3.], 0.),
+            "dash" => c.set_dash(&[6., 3.], 0.),
+            "dotDash" => c.set_dash(&[1., 3., 6., 3.], 0.),
+            "dotDotDash" => c.set_dash(&[1., 3., 1., 3., 6., 3.], 0.),
+            _ => {}
+        }
+        if style == "wave" {
+            for x in 5..width - 5 {
+                let y = y + ((x - 5) as f64 * 0.6).sin() * 1.5;
+                if x == 5 {
+                    c.move_to(x as f64, y);
+                } else {
+                    c.line_to(x as f64, y);
+                }
+            }
+        } else {
+            c.move_to(5., y);
+            c.line_to(width as f64 - 5., y);
+        }
+        let _ = c.stroke();
+        if matches!(style.as_str(), "double" | "strike-double") {
+            c.move_to(5., y - 3.);
+            c.line_to(width as f64 - 5., y - 3.);
+            let _ = c.stroke();
+        }
+    });
+    row.append(&sample);
+    let selected = gtk::Image::from_icon_name("object-select-symbolic");
+    selected.set_visible(false);
+    row.append(&selected);
+    button.set_child(Some(&row));
+    button
 }
