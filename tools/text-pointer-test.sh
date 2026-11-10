@@ -28,7 +28,8 @@ for marker in TEXT18_INK_ARROW TEXT18_BLUE TEXT18_INK_BACK TEXT18_INK_REOPEN TEX
   done
   grep -Fq "POINTER_TARGET_ENTERED $marker" "$log" || { cat "$log"; exit 1; }
   { echo "$marker before window=$leaf_window"; xdotool getwindowgeometry --shell "$leaf_window"; xdotool getmouselocation; } >> "${log%.log}-driver.log"
-  xdotool mousedown 1
+  # Match format136: X11 needs final target motion and press on one client.
+  xdotool mousemove --window "$leaf_window" "$x" "$y" mousedown 1
   sleep 0.12
   xdotool mouseup 1
   { echo "$marker after"; xdotool getmouselocation; } >> "${log%.log}-driver.log"
