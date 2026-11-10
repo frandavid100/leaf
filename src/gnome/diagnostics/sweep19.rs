@@ -87,6 +87,21 @@ fn followup_wait(t: Rc<Followup>, stage: u8) {
         {
             return glib::ControlFlow::Continue;
         }
+        // Wait for the observable debounced result as well as native input.
+        // Repagination can queue the final key and ACK in the same main-loop
+        // turn; an idle callback alone does not wait for the numeric debounce.
+        if t.mode == "font" && (stage == 2 || stage == 8) {
+            let expected = if stage == 2 {
+                17.5
+            } else if std::env::var_os("LEAF19_LARGE").is_some() {
+                64.5
+            } else {
+                18.75
+            };
+            if selection_character(&t.ui)["size"].as_f64() != Some(expected) {
+                return glib::ControlFlow::Continue;
+            }
+        }
         // Drain native input/layout sources before checking the driver's ACK.
         // A busy repagination can leave X events queued behind this timeout.
         let t = t.clone();
@@ -475,7 +490,10 @@ fn followup_check(t: &Followup, stage: u8) {
                 );
                 let preview = previews.into_iter().find(|l| l.text() == t.family).unwrap();
                 assert!(
-                    preview.parent().unwrap().has_css_class("current-style"),
+                    preview
+                        .ancestor(gtk::Button::static_type())
+                        .unwrap()
+                        .has_css_class("current-style"),
                     "the direct list marks the effective current font"
                 );
                 let selector = u.font_input.clone();

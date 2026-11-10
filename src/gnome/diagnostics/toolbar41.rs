@@ -485,10 +485,20 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         modes.iter_mut().find(|(id, _)| id == "table").unwrap().1 =
             wordcraft_gnome::toolbar::Placement::Pinned;
         wordcraft_gnome::preferences::set_toolbar_placements("elements", &modes).unwrap();
+        // Keep a real application window alive while the tested last workspace
+        // closes, so GTK versions cannot end the loop before final assertions.
+        let keeper = ApplicationWindow::builder()
+            .application(&app)
+            .title("Leaf close verification")
+            .default_width(180)
+            .default_height(100)
+            .build();
+        keeper.present();
         alpha42_checks::closing(&ui, &blank, &window, &app).await;
         eprintln!(
             "TOOLBAR41_UI_OK direct=true overflow=true options-read-only=true insertion-fixed=true preferences=true keyboard-reorder=true saved-resize=true"
         );
+        keeper.close();
         app.quit();
     });
 }

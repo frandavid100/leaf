@@ -545,34 +545,60 @@ impl TextControls {
             .filter(|(_, b)| b.parent().as_ref() == Some(self.font_document_rows.upcast_ref()))
             .cloned()
             .collect::<Vec<_>>();
+        let installed = self.family_names();
         for (name, button) in &old {
-            if !names.contains(name) {
+            if !names.iter().any(|n| n.eq_ignore_ascii_case(name)) {
                 self.font_document_rows.remove(button);
+                if installed.iter().any(|f| f.eq_ignore_ascii_case(name)) {
+                    self.font_all_rows.append(button);
+                }
             }
         }
         self.font_rows
             .borrow_mut()
             .retain(|(_, b)| b.parent().is_some());
-        let installed = self.family_names();
         let mut previous: Option<gtk::Widget> = None;
         for name in names {
-            let button = old
+            // One cached row per family. Move installed rows into the document
+            // group instead of creating a second visible entry for the family.
+            let existing = self
+                .font_rows
+                .borrow()
                 .iter()
-                .find(|(n, _)| *n == name)
-                .map(|(_, b)| b.clone())
-                .unwrap_or_else(|| {
-                    let b = self.font_row(
-                        &name,
-                        installed.iter().any(|f| f.eq_ignore_ascii_case(&name)),
-                    );
-                    self.font_document_rows.append(&b);
-                    b
-                });
+                .find(|(n, _)| n.eq_ignore_ascii_case(&name))
+                .map(|(_, b)| b.clone());
+            let button = existing.unwrap_or_else(|| {
+                self.font_row(
+                    &name,
+                    installed.iter().any(|f| f.eq_ignore_ascii_case(&name)),
+                )
+            });
+            if button.parent().as_ref() != Some(self.font_document_rows.upcast_ref()) {
+                if let Some(parent) = button.parent().and_downcast::<gtk::Box>() {
+                    parent.remove(&button);
+                }
+                self.font_document_rows.append(&button);
+            }
             self.font_document_rows
                 .reorder_child_after(&button, previous.as_ref());
             previous = Some(button.upcast());
         }
+        let mut all = self
+            .font_rows
+            .borrow()
+            .iter()
+            .filter(|(_, b)| b.parent().as_ref() == Some(self.font_all_rows.upcast_ref()))
+            .cloned()
+            .collect::<Vec<_>>();
+        all.sort_by_key(|(name, _)| name.to_lowercase());
+        let mut previous: Option<gtk::Widget> = None;
+        for (_, row) in all {
+            self.font_all_rows
+                .reorder_child_after(&row, previous.as_ref());
+            previous = Some(row.upcast());
+        }
     }
+
     pub(super) fn mark_current_font(&self, current: Option<&str>) {
         if let Some(label) =
             find_widget(&self.font_choices, "font-current-state").and_downcast::<gtk::Label>()

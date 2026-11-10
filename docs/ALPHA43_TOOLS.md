@@ -18,7 +18,8 @@ options. Pinned panels retain their page, editing focus and scroll. Compact
 underline/strike samples and the combined text-position chooser show current and
 mixed values. Font search filters without applying on focus/typing; an explicit
 choice applies. Installed-font previews use actual Pango glyph availability, and
-missing document fonts preserve their identity. Language includes effective
+missing document fonts preserve their identity. Installed families move between
+the document and all-font groups, keeping one cached row per family. Language includes effective
 Default, native/localized search, missing-dictionary explanation and footer tools.
 
 All color properties reuse one compact 48-color palette, native custom editor and
