@@ -8,6 +8,7 @@ pub(super) struct QuickTools {
     alignment: gtk::MenuButton,
     ui: std::rc::Weak<Ui>,
     width: Cell<i32>,
+    opening: Cell<bool>,
     groups: Vec<(&'static str, gtk::Box, Vec<(String, gtk::Widget)>)>,
     toggles: Vec<(gtk::Button, gtk::Label, &'static str)>,
     pub(super) overflow: gtk::MenuButton,
@@ -204,7 +205,7 @@ impl QuickTools {
 
     pub(super) fn root(&self) {
         if let Some(pop) = self.overflow.popover() {
-            pop.popdown();
+            pop.set_visible(false);
         }
         if let Some(owner) = self.overflow_pop.parent().and_downcast::<gtk::MenuButton>() {
             owner.set_popover(None::<&gtk::Popover>);
@@ -220,8 +221,9 @@ impl QuickTools {
             return;
         };
         if let Some(current) = self.overflow.popover() {
-            current.popdown();
+            current.set_visible(false);
         }
+        pop.set_visible(false);
         if let Some(owner) = pop.parent().and_downcast::<gtk::MenuButton>() {
             owner.set_popover(None::<&gtk::Popover>);
         }
@@ -253,6 +255,7 @@ impl QuickTools {
                 panel
                     .stack
                     .set_transition_type(gtk::StackTransitionType::None);
+                reset_entry_stack(&panel.stack, "main", "detail");
                 if let Some(page) = page {
                     panel.page(page);
                 } else {
@@ -266,6 +269,7 @@ impl QuickTools {
                 panel
                     .stack
                     .set_transition_type(gtk::StackTransitionType::None);
+                reset_entry_stack(&panel.stack, "main", "detail");
                 if let Some(page) = page {
                     panel.page(page);
                 } else {
@@ -279,6 +283,7 @@ impl QuickTools {
                 panel
                     .stack
                     .set_transition_type(gtk::StackTransitionType::None);
+                reset_entry_stack(&panel.stack, "home", "toc");
                 if let Some(page) = page {
                     panel.requested_page.replace(Some(page.into()));
                     panel.prepare(page);
@@ -289,7 +294,9 @@ impl QuickTools {
             }
         }
         self.filter_menus();
+        self.opening.set(true);
         self.overflow.popup();
+        self.opening.set(false);
     }
 
     pub(super) fn filter_menus(&self) {
@@ -750,29 +757,34 @@ pub(super) fn install_quick_tools(
     ui.format_toolbar
         .set_policy(gtk::PolicyType::Never, gtk::PolicyType::Never);
     ui.format_toolbar.set_child(Some(&fixed));
-    for (_, origin) in &origins {
-        let (weak, original) = (Rc::downgrade(ui), origin.downgrade());
-        origin.connect_closed(move |_| {
-            let (weak, original) = (weak.clone(), original.clone());
-            glib::idle_add_local_once(move || {
-                if let (Some(ui), Some(origin)) = (weak.upgrade(), original.upgrade()) {
-                    if let Some(tools) = ui.quick_tools.borrow().as_ref() {
-                        if tools.overflow.popover().as_ref() == Some(&origin)
-                            && !origin.is_visible()
-                            && !ui.format_reflowing.get()
-                        {
-                            tools.overflow.set_popover(Some(&tools.overflow_pop));
-                        }
-                    }
-                }
-            });
-        });
-    }
+    // Prepare the common page on the next activation, after GTK has finished
+    // closing the previous surface. Never reparent from a closed idle callback.
+    let weak = Rc::downgrade(ui);
+    overflow.set_create_popup_func(move |button| {
+        let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+            return;
+        };
+        let Some(tools) = ui.quick_tools.borrow().as_ref().cloned() else {
+            return;
+        };
+        if tools.opening.get() || ui.format_reflowing.get() {
+            return;
+        }
+        if let Some(current) = button.popover() {
+            if current != tools.overflow_pop {
+                current.set_visible(false);
+                button.set_popover(Some(&tools.overflow_pop));
+            }
+        } else {
+            button.set_popover(Some(&tools.overflow_pop));
+        }
+    });
     Rc::new(QuickTools {
         style_name,
         alignment: alignment.unwrap(),
         ui: Rc::downgrade(ui),
         width: Cell::new(0),
+        opening: Cell::new(false),
         groups,
         toggles,
         swatches,
@@ -781,6 +793,15 @@ pub(super) fn install_quick_tools(
         overflow_main: main,
         origins,
     })
+}
+
+// GtkStack can retain an interrupted transition when reopening the same page.
+// Finish it while the popover is hidden; nested navigation keeps its animation.
+fn reset_entry_stack(stack: &gtk::Stack, root: &str, alternate: &str) {
+    if stack.is_transition_running() && stack.visible_child_name().as_deref() == Some(root) {
+        stack.set_visible_child_full(alternate, gtk::StackTransitionType::None);
+    }
+    stack.set_visible_child_full(root, gtk::StackTransitionType::None);
 }
 
 fn first_label(root: &gtk::Widget) -> Option<gtk::Label> {
@@ -850,6 +871,7 @@ fn connect_picker(
                     panel
                         .stack
                         .set_transition_type(gtk::StackTransitionType::None);
+                    reset_entry_stack(&panel.stack, "main", "detail");
                     if let Some(page) = page {
                         panel.page(page);
                     } else {
@@ -864,6 +886,7 @@ fn connect_picker(
                     panel
                         .stack
                         .set_transition_type(gtk::StackTransitionType::None);
+                    reset_entry_stack(&panel.stack, "main", "detail");
                     if let Some(page) = page {
                         panel.page(page);
                     } else {
@@ -878,6 +901,7 @@ fn connect_picker(
                     panel
                         .stack
                         .set_transition_type(gtk::StackTransitionType::None);
+                    reset_entry_stack(&panel.stack, "home", "toc");
                     if let Some(page) = page {
                         panel.prepare(page);
                     } else if let Some(page) = panel.requested_page.take() {
