@@ -3,7 +3,7 @@
 set -euo pipefail
 app_id=io.github.frandavid100.leaf
 runtime_version=49
-version=0.1.0-alpha.41
+version=0.1.0-alpha.42
 binary=${1:?Usage: build-bundle.sh TESTED_BINARY}
 work=flatpak-build
 repo=flatpak-repo
@@ -20,11 +20,12 @@ mkdir -p "$work/files/share/locale"
 cp -R po/locale/. "$work/files/share/locale/"
 install -Dm0644 data/io.github.frandavid100.leaf.desktop "$work/files/share/applications/$app_id.desktop"
 install -Dm0644 data/io.github.frandavid100.leaf.metainfo.xml "$work/files/share/metainfo/$app_id.metainfo.xml"
-install -Dm0644 data/icons/hicolor/scalable/apps/leaf.svg "$work/files/share/icons/hicolor/scalable/apps/$app_id.svg"
-install -Dm0644 data/icons/hicolor/symbolic/apps/leaf-symbolic.svg "$work/files/share/icons/hicolor/symbolic/apps/$app_id-symbolic.svg"
+install -Dm0644 data/icons/hicolor/scalable/apps/io.github.frandavid100.leaf.svg "$work/files/share/icons/hicolor/scalable/apps/$app_id.svg"
+install -Dm0644 data/icons/hicolor/symbolic/apps/io.github.frandavid100.leaf-symbolic.svg "$work/files/share/icons/hicolor/symbolic/apps/$app_id-symbolic.svg"
 for icon in data/icons/hicolor/scalable/actions/*-symbolic.svg; do
   install -Dm0644 "$icon" "$work/files/share/icons/hicolor/scalable/actions/$(basename "$icon")"
 done
+install -Dm0644 data/icons/NAUTILUS_SOURCES.md "$work/files/share/licenses/$app_id/NAUTILUS_SOURCES.md"
 install -Dm0644 data/icons/ICON_DEV_KIT_LICENSE.md "$work/files/share/licenses/$app_id/ICON_DEV_KIT_LICENSE.md"
 mkdir -p "$work/files/share/hunspell" "$work/files/share/licenses/$app_id/dictionaries"
 cp data/dictionaries/*.aff data/dictionaries/*.dic "$work/files/share/hunspell/"

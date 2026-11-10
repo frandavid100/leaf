@@ -9,8 +9,10 @@ pub(super) fn package_test() {
         wordcraft_gnome::dictionaries::bundled(),
         prefix.join("share/hunspell")
     );
-    gtk::gdk_pixbuf::Pixbuf::from_file(prefix.join("share/icons/hicolor/scalable/apps/leaf.svg"))
-        .expect("the relocated package must decode SVG icons");
+    gtk::gdk_pixbuf::Pixbuf::from_file(
+        prefix.join("share/icons/hicolor/scalable/apps/io.github.frandavid100.leaf.svg"),
+    )
+    .expect("the relocated package must decode SVG icons");
     wordcraft_gnome::dictionaries::refresh(true).unwrap();
     let dir = std::env::temp_dir().join(format!("Leaf documentos ñ {}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();

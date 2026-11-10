@@ -308,7 +308,7 @@ pub(super) fn pending_spacing_ui_test(ui: &Rc<Ui>, app: &Application) {
             settle(150).await;
             let panel = ui.paragraph.borrow().as_ref().unwrap().clone();
             panel.header.pin.set_active(true);
-            let menu = format_button(&ui, "paragraph-menu").unwrap();
+            let menu = format_bar::open_group(&ui, "paragraph", None);
             menu.popup();
             panel.page("spacing");
             settle(150).await;

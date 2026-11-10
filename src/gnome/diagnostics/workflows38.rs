@@ -526,8 +526,18 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         check(&view, true, false).await;
         view.input_context
             .emit_by_name::<()>("commit", &[&"Closing"]);
-        view.closing_confirmed.set(true);
         close_workspace(&closing);
+        let dialog = closing
+            .window
+            .visible_dialog()
+            .unwrap()
+            .downcast::<adw::AlertDialog>()
+            .unwrap();
+        dialog_presented_async(&dialog).await;
+        assert!(alpha42_checks::response(
+            dialog.upcast_ref(),
+            wordcraft_gnome::t!("Discard")
+        ));
         settle().await;
         assert!(view.closed.get());
         assert_eq!(records(&root), before);

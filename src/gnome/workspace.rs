@@ -133,30 +133,11 @@ pub(super) struct Workspace {
     pub(super) overview: adw::TabOverview,
     pub(super) docs: RefCell<Vec<(adw::TabPage, Rc<Ui>)>>,
     pub(super) allow_close: Cell<bool>,
+    pub(super) close_pending: Cell<bool>,
 }
 
 pub(super) fn close_workspace(host: &Rc<Workspace>) {
-    let pending = host
-        .docs
-        .borrow()
-        .iter()
-        .find(|(_, ui)| ui.dirty.get() && !ui.closing_confirmed.get())
-        .map(|(_, ui)| ui.clone());
-    if let Some(ui) = pending {
-        let host2 = host.clone();
-        let next = ui.clone();
-        ask_discard(&ui, &host.window, move || {
-            next.closing_confirmed.set(true);
-            close_workspace(&host2);
-        });
-    } else {
-        for (_, ui) in host.docs.borrow().iter() {
-            release_document(ui);
-        }
-        host.allow_close.set(true);
-        let window = host.window.clone();
-        glib::idle_add_local_once(move || window.close());
-    }
+    close_group::request(host);
 }
 
 pub(super) fn make_window(
@@ -190,6 +171,7 @@ pub(super) fn make_window(
         overview,
         docs: RefCell::new(Vec::new()),
         allow_close: Cell::new(false),
+        close_pending: Cell::new(false),
     });
     WORKSPACES.with(|v| v.borrow_mut().push(host.clone()));
     lifecycle_track(&host);
@@ -263,9 +245,6 @@ pub(super) fn make_window(
                     forget_workspace(&host2);
                     glib::Propagation::Proceed
                 } else {
-                    for (_, ui) in host2.docs.borrow().iter() {
-                        ui.closing_confirmed.set(false);
-                    }
                     close_workspace(&host2);
                     glib::Propagation::Stop
                 }

@@ -188,6 +188,8 @@ fn reload(ui: &Rc<Ui>) {
     }
     ui.template_gallery.borrow_mut().take();
     let content = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    // The same page inset as the main viewer, less native button padding/margin.
+    content.set_margin_top((viewer_layout::PAGE_GAP - 14.0) as i32);
     let (template_group, strip) = row(wordcraft_gnome::t!("Templates"), "start-templates");
     let (recovery_group, recovery_strip) = row(
         wordcraft_gnome::t!("Documents to Recover"),
@@ -272,12 +274,65 @@ fn reload(ui: &Rc<Ui>) {
     });
     gallery.source.replace(Some(source));
 }
+// Use allocated native geometry, including the optional tab row. Independent
+// scrolling does not change the resting origin of either the page or previews.
+pub(super) fn align_start(ui: &Rc<Ui>) {
+    let weak = Rc::downgrade(ui);
+    let frames = Cell::new(0);
+    ui.template_slot.add_tick_callback(move |_, _| {
+        let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+            return glib::ControlFlow::Break;
+        };
+        frames.set(frames.get() + 1);
+        if let Some(slot) = ["recovery-preview", "template-preview"]
+            .iter()
+            .filter_map(|name| find_widget(&ui.template_slot, name))
+            .find(|slot| slot.is_mapped())
+        {
+            if let (Some(preview), Some(page)) = (
+                slot.compute_bounds(&ui.sidebar),
+                ui.scroll.compute_bounds(&ui.sidebar),
+            ) {
+                if let Some(content) = ui.template_revealer.child() {
+                    let scroll = ui
+                        .template_slot
+                        .ancestor(gtk::ScrolledWindow::static_type())
+                        .and_downcast::<gtk::ScrolledWindow>()
+                        .map(|s| s.vadjustment().value())
+                        .unwrap_or(0.0);
+                    let (Some(content_bounds), Some(slot_bounds)) = (
+                        content.compute_bounds(&ui.sidebar),
+                        ui.template_slot.compute_bounds(&ui.sidebar),
+                    ) else {
+                        return glib::ControlFlow::Continue;
+                    };
+                    let top = (f64::from(page.y()) + viewer_layout::PAGE_GAP
+                        - f64::from(slot_bounds.y())
+                        - scroll
+                        - f64::from(preview.y() - content_bounds.y()))
+                    .round()
+                    .max(0.0) as i32;
+                    if content.margin_top() != top {
+                        content.set_margin_top(top);
+                    }
+                }
+            }
+        }
+        if frames.get() < 3 {
+            glib::ControlFlow::Continue
+        } else {
+            glib::ControlFlow::Break
+        }
+    });
+}
+
 impl Gallery {
     fn present(&self) {
         let Some(ui) = self.valid_ui() else { return };
         // Empty Start lists still retain their fixed folder action.
         ui.template_slot.set_visible(true);
         ui.sidebar_pages.set_visible_child_name("start");
+        align_start(&ui);
     }
     fn folder_footer(self: &Rc<Self>, folder: Option<&Path>) {
         let Some(ui) = self.valid_ui() else { return };
@@ -478,12 +533,13 @@ impl Gallery {
                         accessible_name(&button, &format!("{name} — {date}"));
                         let row = gtk::Overlay::new();
                         row.set_child(Some(&button));
+                        row.set_halign(gtk::Align::Center);
                         let discard = gtk::Button::from_icon_name("user-trash-symbolic");
                         discard.add_css_class("flat");
                         discard.set_valign(gtk::Align::Start);
                         discard.set_halign(gtk::Align::End);
-                        discard.set_margin_top(6);
-                        discard.set_margin_end(6);
+                        discard.set_margin_top(20);
+                        discard.set_margin_end(18);
                         discard.set_widget_name("start-recovery-discard");
                         let label = wordcraft_gnome::i18n::interpolate(
                             wordcraft_gnome::t!("Discard recovery of “{name}”"),

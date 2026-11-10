@@ -99,8 +99,8 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
     let before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     let depth = ui.current.borrow().as_ref().unwrap().session.undo_depth();
     let tools = ui.text_tools.borrow().as_ref().unwrap().clone();
-    let text = format_button(ui, "text-menu").unwrap();
-    text.popup();
+    let text = format_bar::open_group(ui, "text", None);
+    format_bar::open_group(ui, "text", None);
     tools.home();
     let pop = text.popover().unwrap();
     assert!(find_widget(&pop, "text-font-property").unwrap().is_mapped());
@@ -135,7 +135,7 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
     refresh_selection(ui);
     click(&pop, "text-font-apply");
     assert_eq!(selection_character(ui)["font"], "serif");
-    text.popup();
+    format_bar::open_group(ui, "text", None);
     tools.home();
     click(&pop, "text-language-apply");
     assert_eq!(

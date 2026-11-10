@@ -17,8 +17,8 @@ pub(super) fn issue_sweep_ui_test(
     app: &Application,
     document_menu: &gtk::MenuButton,
     main_menu: &gtk::MenuButton,
-    paragraph_menu: &gtk::MenuButton,
-    text_menu: &gtk::MenuButton,
+    _paragraph_menu: &gtk::MenuButton,
+    _text_menu: &gtk::MenuButton,
 ) {
     opened(
         ui,
@@ -295,7 +295,7 @@ pub(super) fn issue_sweep_ui_test(
         s.run("para.spacing", &json!({"before":17})).unwrap();
         selection::set_caret(s, &Pos::body(0, 0), false).unwrap();
     }
-    paragraph_menu.popup();
+    format_bar::open_group(ui, "paragraph", None);
     let paragraph = ui.paragraph.borrow().as_ref().unwrap().clone();
     paragraph.header.pin.set_active(true);
     paragraph.page("spacing");
@@ -343,7 +343,7 @@ pub(super) fn issue_sweep_ui_test(
     paragraph.header.pin.set_active(false);
     paragraph.popover.upgrade().unwrap().popdown();
     eprintln!("ISSUE_PINNED_PARAGRAPH_IMMEDIATE_OK");
-    paragraph_menu.popup();
+    format_bar::open_group(ui, "paragraph", None);
     paragraph.header.pin.set_active(true);
     paragraph.page("columns");
     ui.document_box.grab_focus();
@@ -415,8 +415,8 @@ pub(super) fn issue_sweep_ui_test(
         selection::select_all(&mut current.as_mut().unwrap().session).unwrap();
     }
     refresh_selection(ui);
-    text_menu.popup();
-    let text_popover = text_menu.popover().unwrap();
+    format_bar::open_group(ui, "text", None);
+    let text_popover = format_bar::group_pop(ui, "text");
     assert!(find_widget(&text_popover, "text-apply-size").is_none());
     let tools = ui.text_tools.borrow().as_ref().unwrap().clone();
     tools.page("font");

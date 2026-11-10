@@ -337,10 +337,13 @@ jobs:
         grep -q 'HEADER_FOOTER_UI_OK pointer=false' headers-ui.log
         xvfb-run -a bash tools/header-pointer-test.sh
       if: ${{ matrix.group == 'documents' }}
+    - name: Prepare supported GTK for the unchanged formatting navigation probe
+      if: ${{ matrix.group == 'documents' }}
+      run: bash tools/ci/prepare-gtk49-probe.sh "$PWD/target/release/wordcraft-gnome"
     - name: Verify alpha29 document controls and all picture gestures
       run: |
-        XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 1400x1100x24' timeout 180s bash tools/alpha29-pointer-test.sh
-        XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=es GDK_SCALE=2 GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 180s bash tools/alpha29-pointer-test.sh
+        XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 180s bash tools/alpha29-pointer-test.sh
+        XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=es GDK_SCALE=2 GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s bash tools/alpha29-pointer-test.sh
       if: ${{ matrix.group == 'documents' }}
     - uses: actions/upload-artifact@v4
       if: ${{ matrix.group == 'documents' && (always()) }}
@@ -558,7 +561,7 @@ jobs:
     - name: Identificar versión de prueba
       run: |
         ./target/release/wordcraft-gnome --version | tee version.txt
-        grep -q "Leaf 0.1.0-alpha.41" version.txt
+        grep -q "Leaf 0.1.0-alpha.42" version.txt
       if: ${{ matrix.group == 'appearance' }}
     - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
       run: |
@@ -1374,9 +1377,9 @@ jobs:
         cp packaging/RELEASE_NOTES.md dist/RELEASE_NOTES.md
         python3 - <<'PYTHON'
         import json, os, pathlib
-        assert json.load(open('data/releases/closures.json'))['version'] == '0.1.0-alpha.41'
+        assert json.load(open('data/releases/closures.json'))['version'] == '0.1.0-alpha.42'
         pathlib.Path('dist/candidate.json').write_text(json.dumps({
-            'version': '0.1.0-alpha.41', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+            'version': '0.1.0-alpha.42', 'source': os.environ['LEAF_CANDIDATE_SHA'],
             'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
             'native_source': os.environ['LEAF_NATIVE_SHA'],
             'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
@@ -1390,7 +1393,7 @@ jobs:
         python3 - <<'PYTHON'
         from pathlib import Path
         from zipfile import ZipFile, ZIP_DEFLATED
-        with ZipFile("dist/Leaf-0.1.0-alpha.41-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
+        with ZipFile("dist/Leaf-0.1.0-alpha.42-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
             for source in sorted(Path("tests/fixtures/dictionary84").iterdir()):
                 if source.is_file(): archive.write(source, "Leaf-dictionary-test/" + source.name)
         PYTHON
@@ -1452,7 +1455,7 @@ jobs:
     - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
       run: |
         set -o pipefail
-        xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.41-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+        xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.42-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
         grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
     - uses: actions/upload-artifact@v4
       if: always()

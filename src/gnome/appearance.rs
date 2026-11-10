@@ -94,6 +94,8 @@ pub(super) fn install_css() {
       .sidebar-choice > button:hover { background: alpha(@window_fg_color, 0.08); }
       button.outline-expander { min-width: 18px; min-height: 24px; padding: 0; }
       .search-options > button { background: transparent; box-shadow: none; }
+      entry.search-with-options { padding-right: 38px; }
+      entry.search-with-options:dir(rtl) { padding-right: 9px; padding-left: 38px; }
       button.search-replace { min-width: 24px; min-height: 24px; padding: 0; }
       .style-popover button, .format-popover button { font-weight: normal; }
       .bookmark-name { font-weight: normal; }

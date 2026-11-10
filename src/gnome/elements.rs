@@ -47,7 +47,21 @@ impl ElementsPanel {
         self.stack.set_visible_child_name("home");
     }
     pub(super) fn show(self: &Rc<Self>, page: &str) {
-        if self.ui.upgrade().is_none_or(|ui| ui.closed.get()) {
+        if let Some(ui) = self.ui.upgrade().filter(|ui| !ui.closed.get()) {
+            if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                if self.pop.is_visible()
+                    && self.pop.parent().as_ref() == Some(tools.overflow.upcast_ref())
+                    && self.header.entry_page.borrow().is_none()
+                {
+                    // A row inside More Elements is nested navigation, so its
+                    // Back target remains that page before the shared root.
+                    self.prepare(page);
+                } else {
+                    tools.open_group("elements", Some(page));
+                }
+                return;
+            }
+        } else {
             return;
         }
         if self.pop.is_visible() && self.pop.parent().as_ref() == Some(self.menu.upcast_ref()) {

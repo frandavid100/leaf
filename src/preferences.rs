@@ -205,24 +205,48 @@ pub fn reset_template_folder() -> Result<(), String> {
 pub fn toolbar(group: &str) -> Vec<(String, bool)> {
     crate::toolbar::normalize(group, &read()["toolbar"][group])
 }
+pub fn toolbar_placements(group: &str) -> Vec<(String, crate::toolbar::Placement)> {
+    crate::toolbar::placements(group, &read()["toolbar"][group])
+}
 pub fn set_toolbar(group: &str, order: &[(String, bool)]) -> Result<(), String> {
+    set_toolbar_placements(
+        group,
+        &order
+            .iter()
+            .map(|(id, on)| {
+                (
+                    id.clone(),
+                    if *on {
+                        crate::toolbar::Placement::Adaptive
+                    } else {
+                        crate::toolbar::Placement::More
+                    },
+                )
+            })
+            .collect::<Vec<_>>(),
+    )
+}
+pub fn set_toolbar_placements(
+    group: &str,
+    order: &[(String, crate::toolbar::Placement)],
+) -> Result<(), String> {
     if crate::toolbar::tools(group).is_empty() {
         return Err("Unknown toolbar group".into());
     }
     let value = serde_json::Value::Array(
         order
             .iter()
-            .map(|(id, on)| serde_json::json!({"id":id,"visible":on}))
+            .map(|(id, mode)| serde_json::json!({"id":id,"placement":mode.key()}))
             .collect(),
     );
-    let normalized = crate::toolbar::normalize(group, &value);
+    let normalized = crate::toolbar::placements(group, &value);
     let mut settings = read()["toolbar"].as_object().cloned().unwrap_or_default();
     settings.insert(
         group.into(),
         serde_json::Value::Array(
             normalized
                 .iter()
-                .map(|(id, on)| serde_json::json!({"id":id,"visible":on}))
+                .map(|(id, mode)| serde_json::json!({"id":id,"placement":mode.key()}))
                 .collect(),
         ),
     );

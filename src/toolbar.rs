@@ -130,23 +130,73 @@ pub fn tools(group: &str) -> Vec<Tool> {
         })
         .collect()
 }
-/// Ignore stale/duplicate/unknown IDs while retaining known order and switches.
-pub fn normalize(group: &str, saved: &serde_json::Value) -> Vec<(String, bool)> {
+/// Placement is presentation state and never changes document content.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Placement {
+    Pinned,
+    Adaptive,
+    More,
+}
+impl Placement {
+    pub fn key(self) -> &'static str {
+        match self {
+            Self::Pinned => "pinned",
+            Self::Adaptive => "adaptive",
+            Self::More => "more",
+        }
+    }
+    pub fn parse(value: &str) -> Option<Self> {
+        match value {
+            "pinned" => Some(Self::Pinned),
+            "adaptive" => Some(Self::Adaptive),
+            "more" => Some(Self::More),
+            _ => None,
+        }
+    }
+}
+/// Migrate old switches while ignoring stale or duplicate tool identities.
+pub fn placements(group: &str, saved: &serde_json::Value) -> Vec<(String, Placement)> {
     let tools = tools(group);
     let mut result = Vec::new();
     if let Some(saved) = saved.as_array() {
         for item in saved {
-            if let (Some(id), Some(on)) = (item["id"].as_str(), item["visible"].as_bool()) {
+            let mode = item["placement"]
+                .as_str()
+                .and_then(Placement::parse)
+                .or_else(|| {
+                    item["visible"].as_bool().map(|on| {
+                        if on {
+                            Placement::Adaptive
+                        } else {
+                            Placement::More
+                        }
+                    })
+                });
+            if let (Some(id), Some(mode)) = (item["id"].as_str(), mode) {
                 if tools.iter().any(|t| t.id == id) && !result.iter().any(|(k, _)| k == id) {
-                    result.push((id.to_owned(), on));
+                    result.push((id.to_owned(), mode));
                 }
             }
         }
     }
     for tool in tools {
         if !result.iter().any(|(id, _)| id == tool.id) {
-            result.push((tool.id.into(), tool.default_visible));
+            result.push((
+                tool.id.into(),
+                if tool.default_visible {
+                    Placement::Adaptive
+                } else {
+                    Placement::More
+                },
+            ));
         }
     }
     result
+}
+/// Compatibility for saved pre-three-placement settings and regression fixtures.
+pub fn normalize(group: &str, saved: &serde_json::Value) -> Vec<(String, bool)> {
+    placements(group, saved)
+        .into_iter()
+        .map(|(id, mode)| (id, mode != Placement::More))
+        .collect()
 }

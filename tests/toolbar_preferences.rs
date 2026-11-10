@@ -30,3 +30,38 @@ fn reordered_disabled_controls_survive_normalization_and_unknown_ids_do_not_dupl
         assert!(normalize(group, &off).iter().all(|(_, on)| !on));
     }
 }
+
+#[test]
+fn three_placements_migrate_switches_and_keep_order_without_duplicates() {
+    use wordcraft_gnome::toolbar::{Placement::*, placements};
+    let saved = json!([
+        {"id":"table","placement":"pinned"},
+        {"id":"image","placement":"more","visible":true},
+        {"id":"table","placement":"adaptive"},
+        {"id":"toc","visible":true},
+        {"id":"equation","visible":false},
+        {"id":"removed","placement":"pinned"}
+    ]);
+    let modes = placements("elements", &saved);
+    assert_eq!(
+        &modes[..4],
+        &[
+            ("table".into(), Pinned),
+            ("image".into(), More),
+            ("toc".into(), Adaptive),
+            ("equation".into(), More)
+        ]
+    );
+    assert_eq!(
+        modes.len(),
+        wordcraft_gnome::toolbar::tools("elements").len()
+    );
+    let roundtrip = serde_json::Value::Array(
+        modes
+            .iter()
+            .map(|(id, mode)| json!({"id":id,"placement":mode.key()}))
+            .collect(),
+    );
+    assert_eq!(placements("elements", &roundtrip), modes);
+    assert!(placements("unknown", &saved).is_empty());
+}

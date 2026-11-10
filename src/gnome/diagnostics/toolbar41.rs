@@ -37,6 +37,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         let paragraph = ui.paragraph.borrow().as_ref().unwrap().clone();
         let text = ui.text_tools.borrow().as_ref().unwrap().clone();
         let elements = ui.elements.borrow().as_ref().unwrap().clone();
+        alpha42_checks::controls(&ui, &window).await;
         let before = state(&ui);
         let style = format_button(&ui, "style-menu").unwrap();
         assert!(style.has_css_class("raised") && style.has_frame());
@@ -78,7 +79,11 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
                 assert!(
                     !paragraph.stack.is_transition_running()
                         && !text.stack.is_transition_running()
-                        && !elements.stack.is_transition_running()
+                        && !elements.stack.is_transition_running(),
+                    "direct {name} transitions: paragraph={} text={} elements={}",
+                    paragraph.stack.is_transition_running(),
+                    text.stack.is_transition_running(),
+                    elements.stack.is_transition_running()
                 );
                 eprintln!(
                     "TOOLBAR41_OPEN {name} active={}",
@@ -200,6 +205,12 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         settle().await;
         if std::env::var_os("LEAF_TOOLBAR_DND").is_some() {
             window.set_title(Some("Leaf Toolbar41"));
+            // Text now precedes Paragraph. Bring the real row into the native
+            // preferences viewport before asking XTest to drag its handle.
+            find_widget(&dialog, "toolbar-preference-paragraph-list")
+                .unwrap()
+                .grab_focus();
+            settle().await;
             let source = find_widget(&dialog, "toolbar-drag-paragraph-list")
                 .unwrap()
                 .compute_bounds(&window)
@@ -242,11 +253,20 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             click(&dialog, &name);
             assert_eq!(wordcraft_gnome::preferences::toolbar(group)[0].0, id);
         }
-        let switch = find_widget(&dialog, "toolbar-visible-elements-image")
+        let switch = find_widget(&dialog, "toolbar-placement-elements-image")
             .unwrap()
-            .downcast::<gtk::Switch>()
+            .downcast::<gtk::DropDown>()
             .unwrap();
-        switch.set_active(false);
+        switch.set_selected(0);
+        assert_eq!(
+            wordcraft_gnome::preferences::toolbar_placements("elements")
+                .iter()
+                .find(|(id, _)| id == "image")
+                .unwrap()
+                .1,
+            wordcraft_gnome::toolbar::Placement::Pinned
+        );
+        switch.set_selected(2);
         assert!(
             !find_widget(&ui.format_toolbar, "format-quick-image")
                 .unwrap()
@@ -257,7 +277,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
                 .unwrap()
                 .get_visible()
         );
-        switch.set_active(true);
+        switch.set_selected(1);
         assert!(
             find_widget(&ui.format_toolbar, "format-quick-image")
                 .unwrap()
@@ -270,11 +290,11 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             table.compute_bounds(&ui.format_toolbar).unwrap().x()
                 < image.compute_bounds(&ui.format_toolbar).unwrap().x()
         );
-        let ink_switch = find_widget(&dialog, "toolbar-visible-text-ink")
+        let ink_switch = find_widget(&dialog, "toolbar-placement-text-ink")
             .unwrap()
-            .downcast::<gtk::Switch>()
+            .downcast::<gtk::DropDown>()
             .unwrap();
-        ink_switch.set_active(true);
+        ink_switch.set_selected(1);
         dialog.close();
         settle().await;
         let color_before = state(&ui);
@@ -294,19 +314,29 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         settle().await;
         assert!(!table.is_mapped());
         assert!(
-            find_widget(&elements.pop, "format-row-elements-table")
+            find_widget(&ui.format_toolbar, "overflow-tool-elements-table")
                 .unwrap()
                 .get_visible()
         );
         assert_eq!(wordcraft_gnome::preferences::toolbar("elements"), saved);
-        format_button(&ui, "paragraph-menu").unwrap().popup();
+        format_bar::open_group(&ui, "paragraph", None);
         settle().await;
-        click(&paragraph.main, "paragraph-alignment");
+        // A tool in overflow opens directly from the common root.
+        ui.quick_tools.borrow().as_ref().unwrap().root();
+        settle().await;
+        click(&ui.format_toolbar, "overflow-tool-paragraph-alignment");
+        // Direct tool entry keeps its local root; More Options retains Back.
+        assert!(!paragraph.header.arrow.is_visible());
+        paragraph.popover.upgrade().unwrap().popdown();
+        format_bar::open_group(&ui, "paragraph", None);
+        settle().await;
         assert!(paragraph.header.arrow.is_visible());
         paragraph.header.button.emit_clicked();
-        assert_eq!(
-            paragraph.stack.visible_child_name().as_deref(),
-            Some("main")
+        settle().await;
+        assert!(
+            find_widget(&ui.format_toolbar, "overflow-section-text")
+                .unwrap()
+                .is_mapped()
         );
         paragraph.popover.upgrade().unwrap().popdown();
         window.set_default_size(1280, 850);
@@ -441,7 +471,23 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
                 .abs()
                 < 1.0
         );
+        let preview = find_widget(&blank.template_slot, "template-preview").unwrap();
+        let preview_y = preview.compute_bounds(&window).unwrap().y();
+        let page_y = blank.current.borrow().as_ref().unwrap().page_frames[0]
+            .compute_bounds(&window)
+            .unwrap()
+            .y();
+        assert!(
+            (preview_y - page_y).abs() < 2.0,
+            "Start preview and paper top: {preview_y}/{page_y}"
+        );
         std::fs::remove_dir_all(folder).unwrap();
+        // Leave all three placements represented for the separate cold launch.
+        let mut modes = wordcraft_gnome::preferences::toolbar_placements("elements");
+        modes.iter_mut().find(|(id, _)| id == "table").unwrap().1 =
+            wordcraft_gnome::toolbar::Placement::Pinned;
+        wordcraft_gnome::preferences::set_toolbar_placements("elements", &modes).unwrap();
+        alpha42_checks::closing(&ui, &blank, &window, &app).await;
         eprintln!(
             "TOOLBAR41_UI_OK direct=true overflow=true options-read-only=true insertion-fixed=true preferences=true keyboard-reorder=true saved-resize=true"
         );
@@ -474,6 +520,19 @@ pub(super) fn reopen(ui: &Rc<Ui>, app: &Application) {
             .unwrap()
             .is_visible()
     );
-    eprintln!("TOOLBAR41_REOPEN_OK groups=3 order=true switches=true");
+    let modes = wordcraft_gnome::preferences::toolbar_placements("elements");
+    assert_eq!(
+        modes.iter().find(|(id, _)| id == "table").unwrap().1,
+        wordcraft_gnome::toolbar::Placement::Pinned
+    );
+    assert_eq!(
+        modes.iter().find(|(id, _)| id == "image").unwrap().1,
+        wordcraft_gnome::toolbar::Placement::Adaptive
+    );
+    assert_eq!(
+        modes.iter().find(|(id, _)| id == "toc").unwrap().1,
+        wordcraft_gnome::toolbar::Placement::More
+    );
+    eprintln!("TOOLBAR41_REOPEN_OK groups=3 order=true placements=3");
     app.quit();
 }

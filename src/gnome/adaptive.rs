@@ -20,6 +20,9 @@ impl AdaptiveTools {
             return;
         }
         let Some(ui) = self.ui.upgrade() else { return };
+        if ui.template_gallery.borrow().is_some() {
+            templates::align_start(&ui);
+        }
         self.narrow.set(width < 640);
         let band =
             u8::from(width >= 520) | (u8::from(width >= 680) << 1) | (u8::from(width >= 850) << 2);
@@ -1017,16 +1020,16 @@ pub(super) fn install_text_pages(
         move |_| {
             if !state.ui.upgrade().is_some_and(|u| u.format_reflowing.get()) {
                 let entry = state.header.entry_page.borrow().clone();
+                let transition = state.stack.transition_type();
+                state
+                    .stack
+                    .set_transition_type(gtk::StackTransitionType::None);
                 if let Some(page) = entry {
-                    let transition = state.stack.transition_type();
-                    state
-                        .stack
-                        .set_transition_type(gtk::StackTransitionType::None);
                     state.page(&page);
-                    state.stack.set_transition_type(transition);
                 } else {
                     state.home();
                 }
+                state.stack.set_transition_type(transition);
             }
             state.sync_selection();
         }

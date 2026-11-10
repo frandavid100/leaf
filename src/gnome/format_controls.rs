@@ -301,12 +301,7 @@ pub(super) fn selection_paragraph(ui: &Rc<Ui>) -> serde_json::Value {
     state
 }
 pub(super) fn show_text_options(ui: &Rc<Ui>, _parent: &ApplicationWindow) {
-    if let Some(s) = ui.text_tools.borrow().as_ref() {
-        if let Some(p) = s.popover.upgrade() {
-            p.popup();
-        }
-        s.page("options");
-    }
+    format_bar::open_group(ui, "text", Some("options"));
 }
 
 pub(super) fn property_content(label: &str, icon: &str) -> (gtk::Box, gtk::Label) {

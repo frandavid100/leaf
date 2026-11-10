@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <title>Leaf</title>
+  <desc>A blue leaf-shaped quill resting on a written sheet of paper.</desc>
+  <!-- The front profile ends on the GNOME template baseline, y=116. -->
+  <rect x="20" y="36" width="72" height="80" rx="8" fill="#9a9996"/>
+  <rect x="20" y="32" width="72" height="80" rx="8" fill="#deddda"/>
+  <rect x="22" y="32" width="68" height="78" rx="6" fill="#f6f5f4"/>
+  <g fill="#77767b">
+    <rect x="34" y="52" width="30" height="4" rx="2"/>
+    <rect x="34" y="64" width="20" height="4" rx="2"/>
+  </g>
+  <!-- A shorter quill keeps the combined silhouette horizontally centered. -->
+  <path fill="#1a5fb4" d="M58 86C50 58 72 20 108 20c0 36-22 62-50 66Z"/>
+  <path fill="#3584e4" d="M58 82C50 54 72 16 108 16c0 36-22 62-50 66Z"/>
+  <path fill="#62a0ea" d="M58 82C50 54 72 16 108 16Z"/>
+  <path d="M50 96C60 72 76 50 96 30" fill="none" stroke="#1a5fb4" stroke-width="6" stroke-linecap="round"/>
+  <path d="m72 58-2-14m14 0 12-2" fill="none" stroke="#1a5fb4" stroke-width="4" stroke-linecap="round"/>
+</svg>

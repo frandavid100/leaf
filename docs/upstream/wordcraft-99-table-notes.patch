@@ -1,0 +1,649 @@
+diff --git a/ROADMAP.md b/ROADMAP.md
+index d4c951f9..8da38f8c 100644
+--- a/ROADMAP.md
++++ b/ROADMAP.md
+@@ -1,6 +1,8 @@
+ # WordCraft roadmap
+ 
+ > **Last reviewed:** 2026-10-31 · **Last updated:** 2026-10-31 · **Change:** minor (#3398: persistent screen paper colors; parity estimates unchanged); previously minor (#3693: additional Delete Previous Sentence command and shortcut; Word-parity estimates unchanged)
++> **Table footnote reservation:** 2026-11-08 · Table rows reserve referenced footnotes before fitting; trial counters are restored, retained fragments own their notes, and nested Can't Split rows keep main's pagination policy. Synthetic footer, history, multi-cell and nested-row controls; no new Word or native Leaf visual acceptance. Readiness estimates unchanged.
++
+ > **CLI path update:** 2026-11-04 · Options before a non-Unicode input filename no longer make the CLI reject that filename; text option values still require Unicode; `run --file` and `run --script` retain native paths. No ranked gap or readiness estimate changes.
+ > **Floating anchor row segments:** 2026-11-07 · A floating anchor after a manual page/column break counts visible content on the far side of the same wrapped row. Marker-only cover anchors retain their previous-page rule. Synthetic picture spacing, placement and history controls; no new native Word measurement. Readiness estimates unchanged.
+ 
+@@ -159,6 +161,8 @@ Ranked, to beta (detail and remaining milestones in [docs/roadmap.md](docs/roadm
+ - 2026-11-05: ODT frames keep the page they are anchored to (gap 19): written without its number, a frame on page 3 came back on page 1 in LibreOffice after a save.
+ - 2026-11-05: ODT documents keep their language (gap 19). It was lost on save after numbering or a new style, and LibreOffice then showed the document in its own default language; a document in another language was also proofed as English.
+ - 2026-11-05: ODT table and row backgrounds are kept (gap 19): they were dropped, and gone in LibreOffice after a save.
++- 2026-11-08: Table rows reserve referenced footnotes before fitting; trial counters are restored, retained fragments own their notes, and nested Can't Split rows keep main's pagination policy. Synthetic footer, history, multi-cell and nested-row controls; no new Word or native Leaf visual acceptance. Readiness estimates unchanged.
++
+ - 2026-11-08: Layout: a turned inline picture whose file keeps no room for the turn (no or a zero `wp:effectExtent`, as other tools write) keeps its line to its frame and overhangs it, cut at the line's top and bottom, as Word does: the frame as it is in Word 2007 layout, with width and height exchanged from 45° to 135° and 225° to 315° in Word 2013+ layout. Such a file saves the same way. Pictures with the room recorded (Word's own files) still take their rotated bounds. Readiness unchanged.
+ - 2026-11-08: XML text and CDATA read with their line ends normalised (XML 1.0 §2.11): CR LF and a lone CR are one line feed, `&#13;` stays a CR, so a line break inside `w:t` in a file saved with Windows line ends is one space, not two (#5897); readiness estimates unchanged.
+ - 2026-11-08: Layout: contextual spacing drops the space after a table cell's last paragraph when that paragraph is in the Normal style, the end-of-cell mark counting as a Normal paragraph next to it; a last paragraph in another style keeps its space after. The rule is inferred from docxide-pdf's notes and its `cell-end-*` fixtures (`cell-end-text-context`, `cell-end-empty-context`); a Word comparison that tells it apart from the neighbouring paragraph's style is still open. Readiness unchanged.
+@@ -885,6 +889,8 @@ MATH glyphs that reference the same construction now share its immutable variant
+ 
+ > 2026-11-08 · Progress log: `convert --strict` refuses a PDF or PNG that would silently lack a character or a picture (#6005).
+ >
++> 2026-11-08 · Table-footnote reservation reconciled with nested-row keep policy (#5456); readiness estimates unchanged.
++
+ > 2026-11-08 · Progress log: turned inline pictures without a recorded effect extent keep their line to the frame, as in Word.
+ >
+ > 2026-11-05 · Linux self-update ignores another program's AppImage variables (#5653); recorded in the progress log, readiness unchanged.
+diff --git a/crates/engine/tests/table_footnote_clearance.rs b/crates/engine/tests/table_footnote_clearance.rs
+new file mode 100644
+index 00000000..099d3f6e
+--- /dev/null
++++ b/crates/engine/tests/table_footnote_clearance.rs
+@@ -0,0 +1,277 @@
++use serde_json::json;
++use std::sync::Arc;
++use wordcraft_doc::{Block, Document, Paragraph, PartKind, Path, Pos, StoryRef, Table, para_block};
++use wordcraft_engine::Session;
++use wordcraft_layout::Placed;
++
++/// A synthetic two-column table with a note in its thirteenth row and a real footer.
++fn fixture(columns: u32, distance: f32, footer_lines: usize, note: &str) -> Session {
++    let mut d = Document::new();
++    let footer = d
++        .add_part(PartKind::Footer, (0..footer_lines).map(|_| para_block(Paragraph::with_text("An ordinary footer.", Default::default()))).collect());
++    let s = &mut d.last_section;
++    (s.page_w, s.page_h) = (595.3, 841.9);
++    (s.margin_top, s.margin_bottom, s.margin_left, s.margin_right) = (28.35, 28.35, 28.35, 28.35);
++    s.columns.count = columns;
++    s.columns.space = 14.15;
++    s.footer = distance;
++    s.footers.default = Some(footer);
++    let mut t = Table::new(24, 2, (s.text_width() - (columns - 1) as f32 * 14.15) / columns as f32);
++    for row in &mut t.rows {
++        for cell in &mut row.cells {
++            cell.blocks = vec![para_block(Paragraph::with_text(&"Ordinary table cell content. ".repeat(5), Default::default()))];
++        }
++    }
++    d.body = vec![Arc::new(Block::Table(t)), para_block(Paragraph::new())];
++    let mut s = Session::new(d);
++    s.run("caret.set", &json!({"pos": Pos { story: StoryRef::Body, path: Path(vec![0, 12, 0, 0]), off: 20 }})).unwrap();
++    s.run("references.footnote", &json!({"text": note})).unwrap();
++    s
++}
++
++/// Notes and their separator must fit above the actual footer, regardless of nominal margins.
++fn assert_clear(s: &mut Session) {
++    let doc = s.doc.clone();
++    let l = s.layout();
++    let mut pieces = 0;
++    for (pi, p) in l.pages.iter().enumerate() {
++        let footer = p
++            .footer
++            .iter()
++            .filter_map(|it| match it {
++                Placed::Lines { y, l0, l1, .. } if l1 > l0 => Some(*y),
++                _ => None,
++            })
++            .fold(p.h, f32::min);
++        let body = p
++            .items
++            .iter()
++            .filter_map(|it| match it {
++                Placed::Lines { story: StoryRef::Body, y, para, l0, l1, .. } if l1 > l0 => {
++                    let last = &para.lines[l1 - 1];
++                    Some(y + last.top - para.lines[*l0].top + last.height)
++                }
++                _ => None,
++            })
++            .fold(0.0, f32::max);
++        for it in &p.items {
++            if let Placed::Lines { story: StoryRef::Part(id), y, para, l0, l1, .. } = it
++                && doc.parts.get(id).is_some_and(|part| part.kind == PartKind::Footnote)
++                && l1 > l0
++            {
++                let last = &para.lines[l1 - 1];
++                let bottom = y + last.top - para.lines[*l0].top + last.height;
++                assert!(bottom <= footer + 0.05 && bottom <= p.h + 0.05, "page {pi}: note bottom {bottom} below footer {footer} / page {}", p.h);
++                assert!(*y >= body - 0.05, "page {pi}: note top {y} overlaps body bottom {body}");
++                pieces += 1;
++            }
++        }
++    }
++    assert!(pieces > 0, "the note must be laid out");
++}
++
++/// A long table note continues in readable pieces instead of overlapping either body column.
++#[test]
++fn long_table_notes_continue_above_multiline_footers() {
++    for columns in [1, 2] {
++        let mut s = fixture(columns, 60.0, 3, &"More editable note content. ".repeat(400));
++        assert_clear(&mut s);
++        let doc = s.doc.clone();
++        let l = s.layout();
++        let pages = l
++            .pages
++            .iter()
++            .filter(|p| {
++                p.items.iter().any(|it| {
++                    matches!(it,
++                        Placed::Lines { story: StoryRef::Part(id), .. } if doc.parts.get(id).is_some_and(|p| p.kind == PartKind::Footnote)
++                    )
++                })
++            })
++            .count();
++        assert!(pages > 1, "the overlong note must continue");
++    }
++}
++
++/// Editing notes, history and DOCX round trips use the same reservation in warm and cold layouts.
++#[test]
++fn editing_table_notes_and_docx_round_trips_preserve_clearance() {
++    let mut s = fixture(2, 35.45, 3, "A short footnote.");
++    assert_clear(&mut s);
++    s.run("text.insert", &json!({"text": " More editable note content. ".repeat(100)})).unwrap();
++    assert_clear(&mut s);
++    assert_clear(&mut Session::new(s.doc.clone()));
++    s.run("edit.undo", &json!({})).unwrap();
++    assert_clear(&mut s);
++    s.run("edit.redo", &json!({})).unwrap();
++    assert_clear(&mut s);
++    let bytes = wordcraft_docx::write(&s.doc).unwrap();
++    let reopened = wordcraft_docx::read(&bytes).unwrap();
++    let reopened_note = reopened.parts.iter().find(|(_, p)| p.kind == PartKind::Footnote).unwrap().0;
++    assert_eq!(s.doc.plain_text(s.sel.focus.story), reopened.plain_text(StoryRef::Part(*reopened_note)));
++    assert_clear(&mut Session::new(reopened));
++}
++
++/// Leaf #99: reserving the note after placing its table row must not push it under the footer.
++#[test]
++fn table_footnotes_stay_above_the_footer() {
++    for distance in [14.0, 28.35, 35.45, 60.0] {
++        let mut s = fixture(2, distance, 1, "A short footnote.");
++        assert_clear(&mut s);
++    }
++}
++
++/// A note near the end of a split cell starts on its reference page, not on an earlier fragment.
++#[test]
++fn split_rows_reserve_only_the_notes_of_retained_lines() {
++    let mut s = fixture(2, 35.45, 1, "The later table note.");
++    s.run("caret.set", &json!({"pos": Pos { story: StoryRef::Body, path: Path(vec![0, 0, 0, 0]), off: 0 }})).unwrap();
++    s.run("text.insert", &json!({"text": "An ordinary long cell paragraph. ".repeat(180)})).unwrap();
++    let reference = s.sel.focus.clone();
++    let id = s.run("references.footnote", &json!({"text": "The split cell's note."})).unwrap()["id"].as_u64().unwrap() as u32;
++    assert_clear(&mut s);
++    let l = s.layout();
++    let reference_page = l.caret(&reference).unwrap().page;
++    let first_note_page = l
++        .pages
++        .iter()
++        .position(|p| {
++            p.items.iter().any(|it| {
++                matches!(it,
++                    Placed::Lines { story: StoryRef::Part(own), .. } if *own == id
++                )
++            })
++        })
++        .unwrap();
++    assert!(reference_page > 0, "the large cell must split before its reference");
++    assert_eq!(first_note_page, reference_page, "no note on a fragment without its reference");
++}
++
++/// Fitting and rejected row trials must not consume list numbers from a note or later body text.
++#[test]
++fn measuring_table_notes_does_not_advance_list_counters() {
++    let mut s = fixture(2, 35.45, 1, "A numbered note paragraph.");
++    let note = s.sel.focus.story;
++    s.run("para.numbering", &json!({})).unwrap();
++    let numbering = s.doc.para(note, &Path::top(0)).unwrap().props.numbering;
++    let after = s.doc.para_mut(StoryRef::Body, &Path::top(1)).unwrap();
++    after.props.numbering = numbering;
++    after.insert_text(0, "After the table.", &Default::default()).unwrap();
++    s.touch();
++    let l = s.layout();
++    let labels = |story, path: &Path| {
++        l.pages
++            .iter()
++            .flat_map(|p| &p.items)
++            .filter_map(|it| match it {
++                Placed::Lines { story: own, path: at, para, l0: 0, .. } if *own == story && at == path => {
++                    para.label.as_ref().map(|label| label.text.trim().to_string())
++                }
++                _ => None,
++            })
++            .collect::<Vec<_>>()
++    };
++    assert_eq!(labels(note, &Path::top(0)), ["1."]);
++    assert_eq!(labels(StoryRef::Body, &Path::top(1)), ["2."]);
++    assert_clear(&mut s);
++}
++
++/// A cut through one cell's first line must not hide a smaller fitting cut in another cell.
++#[test]
++fn notes_in_different_cells_keep_a_fitting_prefix_on_the_page() {
++    use wordcraft_doc::{CharProps, props::LineSpacing};
++    let mut d = Document::new();
++    (d.last_section.page_w, d.last_section.page_h) = (595.3, 841.9);
++    (d.last_section.margin_top, d.last_section.margin_bottom) = (28.35, 28.35);
++    let mut before = Paragraph::with_text("Before the table.", Default::default());
++    before.props.space_after = Some(550.0);
++    let mut t = Table::new(1, 2, d.last_section.text_width());
++    let mut left = Paragraph::with_text(&"Ordinary cell content. ".repeat(100), Default::default());
++    left.props.widow_control = Some(false);
++    t.rows[0].cells[0].blocks = vec![para_block(left)];
++    let mut right = Paragraph::with_text("Tall", CharProps { size: Some(60.0), ..Default::default() });
++    right.props.space_before = Some(60.0);
++    right.props.line_spacing = Some(LineSpacing::Exactly(100.0));
++    t.rows[0].cells[1].blocks = vec![para_block(right)];
++    d.body = vec![para_block(before), Arc::new(Block::Table(t)), para_block(Paragraph::new())];
++    let mut s = Session::new(d);
++    let left_reference = Pos { story: StoryRef::Body, path: Path(vec![1, 0, 0, 0]), off: 5 };
++    s.run("caret.set", &json!({"pos": left_reference})).unwrap();
++    s.run("references.footnote", &json!({"text": "The early cell note."})).unwrap();
++    s.run("caret.set", &json!({"pos": Pos { story: StoryRef::Body, path: Path(vec![1, 0, 1, 0]), off: 1 }})).unwrap();
++    s.run("references.footnote", &json!({"text": "The later cell note. ".repeat(30)})).unwrap();
++    assert_eq!(s.layout().caret(&left_reference).unwrap().page, 0, "a smaller prefix fits before the tall cell starts");
++    assert_clear(&mut s);
++}
++
++/// The outer row's note fitting must preserve a nested row's Can't Split policy (#5456).
++fn nested_fixture(push: f32, prefix: usize, nested: usize, note_in_nested: Option<bool>) -> Session {
++    let paragraphs = |what: &str, count| {
++        (0..count)
++            .map(|i| {
++                let mut p = Paragraph::with_text(&format!("{what} {i}"), Default::default());
++                p.props.space_before = Some(0.0);
++                p.props.space_after = Some(0.0);
++                para_block(p)
++            })
++            .collect::<Vec<_>>()
++    };
++    let mut d = Document::from_text("Filler");
++    d.para_mut(StoryRef::Body, &Path::top(0)).unwrap().props.space_before = Some(push);
++    let mut inner = Table::new(1, 1, 200.0);
++    inner.rows[0].props.cant_split = true;
++    inner.rows[0].cells[0].blocks = paragraphs("Nested", nested);
++    let mut outer = Table::new(1, 1, 440.0);
++    outer.rows[0].cells[0].blocks = paragraphs("Prefix", prefix);
++    outer.rows[0].cells[0].blocks.extend([Arc::new(Block::Table(inner)), para_block(Paragraph::new())]);
++    d.insert_block(StoryRef::Body, &Path::top(1), Block::Table(outer)).unwrap();
++    let mut s = Session::new(d);
++    if let Some(in_nested) = note_in_nested {
++        let path = if in_nested { Path(vec![1, 0, 0, prefix as u32, 0, 0, 0]) } else { Path(vec![1, 0, 0, 0]) };
++        s.run("caret.set", &json!({"pos": Pos { story: StoryRef::Body, path, off: 1 }})).unwrap();
++        s.run("references.footnote", &json!({"text": "The nested table control note."})).unwrap();
++    }
++    s
++}
++
++/// The number of nested-table lines on each page, excluding the outer row's prefix.
++fn nested_lines(s: &mut Session, prefix: usize) -> Vec<usize> {
++    s.layout()
++        .pages
++        .iter()
++        .map(|page| {
++            page.items
++                .iter()
++                .filter_map(|it| match it {
++                    Placed::Lines { story: StoryRef::Body, path, l0, l1, .. } if path.0.len() == 7 && path.0[..4] == [1, 0, 0, prefix as u32] => {
++                        Some(l1 - l0)
++                    }
++                    _ => None,
++                })
++                .sum()
++        })
++        .collect()
++}
++
++#[test]
++fn table_note_trials_do_not_split_a_nested_cant_split_row() {
++    for note in [None, Some(false), Some(true)] {
++        let mut s = nested_fixture(340.0, 10, 30, note);
++        let pages = nested_lines(&mut s, 10);
++        assert_eq!(pages[..2], [0, 30], "the nested row stays whole, note={note:?}: {pages:?}");
++        assert_eq!(pages.iter().sum::<usize>(), 30, "every nested line is placed once");
++        if note.is_some() {
++            assert_clear(&mut s);
++        }
++    }
++}
++
++#[test]
++fn an_oversized_nested_cant_split_row_with_a_note_still_advances() {
++    let mut s = nested_fixture(520.0, 0, 60, Some(true));
++    let pages = nested_lines(&mut s, 0);
++    assert_eq!(pages[0], 0, "the nested row leaves the partly filled page: {pages:?}");
++    assert_eq!(pages.iter().sum::<usize>(), 60, "every nested line is placed once: {pages:?}");
++    assert!(pages.iter().filter(|&&lines| lines > 0).count() >= 2, "the oversized row continues: {pages:?}");
++    assert_clear(&mut s);
++}
+diff --git a/crates/layout/src/notes.rs b/crates/layout/src/notes.rs
+index e34f1aff..2e4e6243 100644
+--- a/crates/layout/src/notes.rs
++++ b/crates/layout/src/notes.rs
+@@ -382,29 +382,56 @@ pub(crate) fn para_notes(doc: &Document, p: &Paragraph, pl: &ParaLayout) -> Vec<
+     notes
+ }
+ 
+-/// Footnotes referenced in the cell lines of a placed table row (or part of one) go to the
+-/// bottom of the page, like those of body paragraphs; notes that don't fit there continue on
+-/// the next page (see [`PageBuilder::flush_notes`]).
+-pub(crate) fn table_notes(ctx: &mut Ctx, pb: &mut PageBuilder, items: &[Placed]) {
+-    if pb.web {
+-        return;
+-    }
++/// Note IDs actually referenced in these cell lines, in table reading order.
++pub(crate) fn table_note_ids(items: &[Placed]) -> Vec<u32> {
+     let mut ids: Vec<u32> = Vec::new();
+     for it in items {
+         let Placed::Lines { story: StoryRef::Body, para, l0, l1, .. } = it else { continue };
+         let (Some(a), Some(b)) = (para.lines.get(*l0), para.lines.get(l1.saturating_sub(1))) else { continue };
+         for (ci, id) in &para.notes {
+-            if *ci >= a.c0 && *ci < b.c1 && !ids.contains(id) && !pb.notes.iter().any(|n| n.id == *id) {
++            if *ci >= a.c0 && *ci < b.c1 && !ids.contains(id) {
+                 ids.push(*id);
+             }
+         }
+     }
+-    let before = pb.notes_h();
+-    for id in ids {
++    ids
++}
++
++/// Trial measurement must not consume list or automatic-equation numbers, even if the row moves on.
++pub(crate) fn measure_table_notes(ctx: &mut Ctx, pb: &PageBuilder, items: &[Placed]) -> Vec<NoteBox> {
++    if pb.web || table_note_ids(items).iter().all(|id| pb.notes.iter().any(|n| n.id == *id)) {
++        return Vec::new();
++    }
++    let counters = ctx.counters.clone();
++    let eq_count = ctx.eq_count;
++    let notes = table_notes(ctx, pb, items);
++    ctx.counters = counters;
++    ctx.eq_count = eq_count;
++    notes
++}
++
++/// Lay out new notes once from committed counter state when their reference lines are placed.
++pub(crate) fn table_notes(ctx: &mut Ctx, pb: &PageBuilder, items: &[Placed]) -> Vec<NoteBox> {
++    if pb.web {
++        return Vec::new();
++    }
++    let mut notes = Vec::new();
++    for id in table_note_ids(items).into_iter().filter(|id| !pb.notes.iter().any(|n| n.id == *id)) {
+         let Some(part) = ctx.doc.parts.get(&id).filter(|p| p.kind == wordcraft_doc::PartKind::Footnote) else { continue };
+         let blocks = part.blocks.clone();
+         let BoxLayout { items, height: h, .. } = layout_box(ctx, BoxInput::other(StoryRef::Part(id), &blocks, pb.sect.text_width(), 0, None));
+-        pb.notes.push(NoteBox { id, items, h, cont: false });
++        notes.push(NoteBox { id, items, h, cont: false });
+     }
++    notes
++}
++
++/// Commit only the notes whose reference lines were placed, leaving room for continuation.
++pub(crate) fn keep_table_notes(pb: &mut PageBuilder, notes: Vec<NoteBox>) {
++    let before = pb.notes_h();
++    pb.notes.extend(notes);
+     pb.bottom -= pb.notes_h() - before;
++    if !pb.notes.is_empty() && pb.y > pb.bottom + 0.01 {
++        // As for body paragraphs, an overlong note takes the remaining space, then continues.
++        pb.bottom = pb.body_floor().max(pb.y).min(pb.orig_bottom);
++    }
+ }
+diff --git a/crates/layout/src/table.rs b/crates/layout/src/table.rs
+index 9ea31912..e12a88d6 100644
+--- a/crates/layout/src/table.rs
++++ b/crates/layout/src/table.rs
+@@ -901,9 +901,26 @@ pub fn split_row_keeping_cells(row: &RowLayout, cut: f32) -> Option<(RowLayout,
+ }
+ 
+ fn split_row_with(row: &RowLayout, cut: f32, whole_cells: bool) -> Option<(RowLayout, RowLayout)> {
++    try_split_row(row, cut, whole_cells).ok()
++}
++
++/// The nearest possible split at or below `cut`, skipping intervals through a cell's first line.
++pub(crate) fn split_row_before(row: &RowLayout, mut cut: f32, whole_cells: bool) -> Option<(RowLayout, RowLayout, f32)> {
++    for _ in 0..=row.cells.len() {
++        match try_split_row(row, cut, whole_cells) {
++            Ok((a, b)) => return Some((a, b, cut)),
++            Err(before) if before > 0.0 && before < cut - 0.01 => cut = before,
++            _ => return None,
++        }
++    }
++    None
++}
++
++/// A rejected split supplies the cut before its blocking first line, or zero when nothing fits.
++fn try_split_row(row: &RowLayout, cut: f32, whole_cells: bool) -> Result<(RowLayout, RowLayout), f32> {
+     // Also rejects a NaN cut.
+     if !(cut > 0.0 && cut < row.height) {
+-        return None;
++        return Err(0.0);
+     }
+     let limit = cut - row.bottom.clamp(0.0, cut);
+     let fits = |bottom: f32| bottom <= limit + 0.01;
+@@ -949,7 +966,7 @@ fn split_row_with(row: &RowLayout, cut: f32, whole_cells: bool) -> Option<(RowLa
+             && crate::item_bottom(y, para, l0, l1).is_some_and(|bottom| !fits(bottom))
+             && para.lines.get(l0).is_some_and(|l| fits(y + l.top - para.lines.get(l0).map_or(0.0, |f| f.top) + l.height))
+         {
+-            return None;
++            return Err(y + row.bottom);
+         }
+     }
+     align_in_part(row, &mut cells, &splits, &realign, &mut ends, cut);
+@@ -1011,11 +1028,17 @@ fn split_row_with(row: &RowLayout, cut: f32, whole_cells: bool) -> Option<(RowLa
+     let kept_any = kept_cells.iter().any(|&k| k);
+     let first_moved = moved.iter().copied().fold(f32::MAX, f32::min);
+     if !kept_any || first_moved == f32::MAX {
+-        return None;
++        return Err(0.0);
+     }
+     // A cell left with nothing here because its first line or picture runs below the cut.
+     if whole_cells && kept_cells.iter().zip(&cut_through).any(|(&kept, &through)| !kept && through) {
+-        return None;
++        let before = kept_cells
++            .iter()
++            .zip(&cut_through)
++            .zip(&moved)
++            .filter_map(|((&kept, &through), &top)| (!kept && through).then_some(top))
++            .fold(f32::MAX, f32::min);
++        return Err(before + row.bottom);
+     }
+     // Each cell resumes below its own top margin and border band.
+     let shifts: Vec<f32> = moved.iter().zip(&row.cells).map(|(&m, c)| ((if m < f32::MAX { m } else { first_moved }) - c.top).max(0.0)).collect();
+@@ -1150,7 +1173,7 @@ fn split_row_with(row: &RowLayout, cut: f32, whole_cells: bool) -> Option<(RowLa
+         parts.push(CellPart { top: c.top, items: start..b.len(), end: end.map(|e| e - shift), align: None });
+     }
+     // The part left on the page is placed and never split again.
+-    Some((
++    Ok((
+         RowLayout { height: cut, items: a, bottom: row.bottom, edge: 0.0, cells: Vec::new() },
+         RowLayout { height, items: b, bottom: row.bottom, edge: row.edge, cells: parts },
+     ))
+diff --git a/crates/layout/src/table_flow.rs b/crates/layout/src/table_flow.rs
+index 538e9eb7..ad282652 100644
+--- a/crates/layout/src/table_flow.rs
++++ b/crates/layout/src/table_flow.rs
+@@ -3,7 +3,7 @@ use super::ctx::{Ctx, with_pct_base};
+ use super::floats::{WrapArea, align_in, body_wraps};
+ use super::flow::again;
+ use super::headers::{header_items_cap, header_table_areas, placed_cost};
+-use super::notes::table_notes;
++use super::notes::{NoteBox, keep_table_notes, measure_table_notes, table_notes};
+ use super::page::{PageBuilder, PageFrame, page_frame};
+ use super::placed::Placed;
+ use super::{Anchor, Arc, HeightRule, Path, Rect, StoryRef, TableFloat, ViewMode, WrapText, table};
+@@ -162,6 +162,88 @@ fn row_can_start(doc: &wordcraft_doc::Document, row: &wordcraft_doc::Row, laid:
+     split_keeping_nested(doc, laid, room).is_some()
+ }
+ 
++/// The row and all earlier columns must leave the new notes above the actual page footer.
++fn row_fits_notes(pb: &PageBuilder, row: &table::RowLayout, notes: &[NoteBox], continuation: bool) -> bool {
++    let sep = if pb.notes.is_empty() && !notes.is_empty() { pb.seps.sep_h(false) } else { 0.0 };
++    let height: f32 = notes.iter().map(|n| n.h).sum();
++    let extra = if continuation {
++        let Some(last) = notes.last() else { return false };
++        height - last.h + last.first_piece() + pb.seps.notice_h()
++    } else {
++        height
++    };
++    let limit = pb.bottom - sep - extra;
++    let bottom = pb.y + row.height + row.edge;
++    bottom <= limit + 0.01 && (notes.is_empty() || pb.body_floor().max(bottom) <= limit + 0.01)
++}
++
++/// Split against the notes of the retained lines, not notes whose references move on.
++fn split_noted_row(
++    ctx: &mut Ctx,
++    pb: &PageBuilder,
++    row: &table::RowLayout,
++    notes: &[NoteBox],
++    whole_cells: bool,
++) -> Option<(table::RowLayout, table::RowLayout)> {
++    let doc = ctx.doc;
++    let room = pb.bottom - pb.y;
++    // Rows without new notes take main's existing path, including its fresh-page escape for
++    // a nested row taller than the page. Note fitting must not weaken that keep policy.
++    let split = |cut| {
++        if whole_cells {
++            split_keeping_nested(doc, row, cut)
++        } else {
++            table::split_row(row, nested_keep_cut(doc, row, cut)).or_else(|| table::split_row(row, cut))
++        }
++    };
++    if notes.is_empty() {
++        return split(room);
++    }
++    if let Some((a, b)) = split(room)
++        && row_fits_notes(pb, &a, &measure_table_notes(ctx, pb, &a.items), false)
++    {
++        return Some((a, b));
++    }
++    let kept = nested_keep_cut(doc, row, room);
++    // Keep the fresh-page escape only when the full available room cannot split above the
++    // nested row. A smaller trial cut must not make a normally fitting kept row splittable.
++    let oversized = !whole_cells && kept < room - 0.01 && table::split_row(row, kept).is_none();
++    let keep_cut = |cut| if oversized { cut } else { nested_keep_cut(doc, row, cut) };
++    let before = |mut cut| {
++        for _ in 0..=row.cells.len() {
++            let (a, b, used) = table::split_row_before(row, keep_cut(cut), whole_cells)?;
++            let kept = keep_cut(used);
++            if kept >= used - 0.01 {
++                return Some((a, b, used));
++            }
++            // Skipping a first-line interval can retreat into another nested kept row.
++            // Reapply its boundary before accepting the fragment; each retry moves up.
++            cut = kept;
++        }
++        None
++    };
++    // Prefixes only gain reference lines as they grow. Skip invalid cut intervals before
++    // testing note clearance, so a cut through another cell's first line can't hide a fit.
++    // The bounded search avoids scanning every possible cut of a tall cell.
++    let (mut lo, mut hi) = (0.0, room.min(row.height - 0.02));
++    let mut best = None;
++    for _ in 0..24 {
++        if hi - lo <= 0.02 {
++            break;
++        }
++        let cut = (lo + hi) * 0.5;
++        match before(cut) {
++            None => lo = cut,
++            Some((a, b, _)) if row_fits_notes(pb, &a, &measure_table_notes(ctx, pb, &a.items), false) => {
++                lo = cut;
++                best = Some((a, b));
++            }
++            Some((_, _, used)) => hi = used,
++        }
++    }
++    best
++}
++
+ pub(crate) fn place_table(ctx: &mut Ctx, pb: &mut PageBuilder, t: &wordcraft_doc::Table, block: usize, body_top: f32) {
+     pb.prev = None;
+     // A page break before the first row's paragraph moves the whole table to a new page, as
+@@ -263,6 +345,7 @@ pub(crate) fn place_table(ctx: &mut Ctx, pb: &mut PageBuilder, t: &wordcraft_doc
+         // Each pass places the part of the row that fits, then breaks the page.
+         for _ in 0..1000 {
+             let cur = rest.as_ref().unwrap_or(row);
++            let notes = measure_table_notes(ctx, pb, &cur.items);
+             // A fitting kept row follows the next row when that row cannot start below it.
+             // Move only the prefix's start; an oversized follower cannot separate its kept rows.
+             let defer_kept = pb.y + cur.height <= pb.bottom + 0.01
+@@ -280,7 +363,7 @@ pub(crate) fn place_table(ctx: &mut Ctx, pb: &mut PageBuilder, t: &wordcraft_doc
+                     height <= page_height + 0.01 && !row_can_start(ctx.doc, next, laid, pb.bottom - pb.y - height, page_height)
+                 });
+             // A row another row follows needs room for the border below it too (measured in Word).
+-            if pb.y + cur.height + cur.edge <= pb.bottom + 0.01 && !defer_kept {
++            if row_fits_notes(pb, cur, &notes, false) && !defer_kept {
+                 break;
+             }
+             // An at-least row with less room than its minimum moves on whole, unless nothing
+@@ -292,16 +375,18 @@ pub(crate) fn place_table(ctx: &mut Ctx, pb: &mut PageBuilder, t: &wordcraft_doc
+             let moves_on = first_part && short_of_min(ri, room);
+             let split = match (splittable && !moves_on && !defer_kept, first_part) {
+                 (false, _) => None,
+-                (true, true) => split_keeping_nested(ctx.doc, cur, room),
+-                // On a fresh page, a nested row taller than the room splits rather than overflowing.
+-                (true, false) => table::split_row(cur, nested_keep_cut(ctx.doc, cur, room)).or_else(|| table::split_row(cur, room)),
++                (true, first) => split_noted_row(ctx, pb, cur, &notes, first),
+             };
+             match split {
+                 Some((a, b)) => {
++                    let notes = table_notes(ctx, pb, &a.items);
+                     place(pb, &a);
+-                    table_notes(ctx, pb, &a.items);
++                    keep_table_notes(pb, notes);
+                     rest = Some(b);
+                 }
++                // An indivisible reference line may keep the first piece of a long note;
++                // flush_notes carries the remainder, just as it does for body paragraphs.
++                None if !defer_kept && row_fits_notes(pb, cur, &notes, true) => break,
+                 // Like Word, a row that does not fit on an empty page, or under the header rows
+                 // repeated there, is placed anyway and runs into the bottom margin.
+                 None if pb.at_top() || fresh => break,
+@@ -318,8 +403,9 @@ pub(crate) fn place_table(ctx: &mut Ctx, pb: &mut PageBuilder, t: &wordcraft_doc
+             fresh = true;
+         }
+         let last = rest.as_ref().unwrap_or(row);
++        let notes = table_notes(ctx, pb, &last.items);
+         place(pb, last);
+-        table_notes(ctx, pb, &last.items);
++        keep_table_notes(pb, notes);
+     }
+     // Its own space below (ODT).
+     if let Some(s) = t.props.space_after.filter(|s| s.is_finite() && *s > 0.0) {
+diff --git a/docs/gaps.md b/docs/gaps.md
+index 80d2e148..154f86d1 100644
+--- a/docs/gaps.md
++++ b/docs/gaps.md
+@@ -1,5 +1,7 @@
+ # Where WordCraft falls short of Word
+ 
++> **Table footnote reservation:** 2026-11-08 · Table rows reserve referenced footnotes before fitting; trial counters are restored, retained fragments own their notes, and nested Can't Split rows keep main's pagination policy. Synthetic footer, history, multi-cell and nested-row controls; no new Word or native Leaf visual acceptance. Readiness estimates unchanged.
++
+ > **CLI path update:** 2026-11-04 · Options before a non-Unicode input filename no longer make the CLI reject that filename; text option values still require Unicode; `run --file` and `run --script` retain native paths. No ranked gap or readiness estimate changes.
+ 
+ > **Last reviewed:** 2026-10-10 · **Last updated:** 2026-11-08 · **Change:** trivial (#19: ODT default language kept when styles are written from the model); previously trivial (#10 narrowed: a turned inline picture whose file keeps no room for the turn keeps its line to its frame, as in Word); previously trivial (Protected typing boundary lookup counts preceding objects once and indexes editable permission IDs (#3614); caret movement and enforcement policy are unchanged; previously trivial: View windows: several open documents and Switch Windows in the engine; previously trivial: explicit documents keep the editor when recovery discovery finishes; readable recovery controls; previously trivial: text mini toolbar available with the right-click menu, #2959; previously trivial: personal templates in File › New and Save as Word Template, #2852; previously trivial: tracked table/row/cell/section property changes record in WordCraft, narrowing gap 5; previously trivial: a document with many content controls saves in the time the controls take, #13; previously trivial: Format Page Numbers dialog carries Word's number formats and Continue from previous section / Start at, #1113; previously trivial: centred list labels after leading page breaks, #2964; previously trivial: fixed font inputs in four layout controls; previously trivial: a right, centre or decimal tab whose text doesn't fit, or a left tab past the right indent, goes to the next line with its text, #1840; previously trivial: Bullets and Numbering toggle off style-inherited lists at their effective level, including basedOn chains and numbered ListParagraph styles; other paragraphs and list definitions stay unchanged (related to #3459); previously trivial (gap 4: a float anchored right after a page break, before text, is drawn on the new page, #4262); previously trivial (Drawing Canvas members picked and moved on their own, #2637); previously trivial (gap 4: a float anchored on a later page of a long paragraph is drawn there, #4250); previously trivial (#29: typed `\int`, `\sum`… + Space wait for their limits, observed in Word for Windows on #4938, #4917); previously trivial (only the PDF sent to the printer leaves out link annotations; Save these pages as PDF keeps them, #4734; no ranked gap changed); previously trivial (print helpers erase loaded plaintext inputs before driver work, #5710); previously trivial (Windows print submissions use isolated helpers so a cancelled driver cannot block a retry, #5710); previously trivial (print cancellation remains available without a document; sending-boundary limitation clarified, #5710); previously trivial (gap 6: a print job waiting on its driver can be cancelled, #5710; no ranked gap changed); previously trivial (gap 6: the printer list no longer waits on printer drivers, #5710; no ranked gap changed); previously trivial (Page drawing indexes text-box warp lookups per paragraph (#3614)); previously trivial (built-in citation source lookups, #4888; current-main progress records retained); previously trivial (MATH construction reuse, #3630); previously trivial (DOCX `w:adjustRightInd` defaults true and is written in schema order); previously trivial (ink page lookups reuse scanned paragraph prefixes, #3614); previously trivial (#19: ODT settings for what the standard leaves open removed); previously trivial (#19: ODT element audit; files from other applications checked); previously trivial (#11: the dialogs of the mirrored Arabic interface read right to left: label-and-field rows, tables (list columns, the Models table), tile galleries and the Add/Remove arrows follow the reading direction, through one `rtl::Table` helper that draws exactly as before in English; no ranked gap closed, readiness estimates unchanged); previously trivial (#4: fonts that aren't installed are flagged in the font box and status bar); previously trivial (#19: ODT sections inside text boxes kept as read); previously trivial (#19: an ODT saved without edits keeps what WordCraft doesn't model); previously trivial (#19: ODT interpretation profile, WordCraft / LibreOffice / custom); previously trivial (#19: ODT form controls placed and multi-line; custom shapes keep their geometry); previously trivial (#19: ODT in-line frames placed against the text; template instantiation listed as left); previously trivial (#19: ODT charts kept as read; frame outlines; default header height); previously trivial (#19: ODT tables no longer gain repeated header rows); previously trivial (#19: ODT padding without a border, unequal columns, column breaks, picture-only lines); previously trivial (#19: ODT tables' margins and spacing, header spacing, pictures alone in a paragraph); previously trivial (#19: no LibreOffice template changes page count through a save); previously trivial (#19: ODT variables, emphasis marks, page backgrounds, fixed tables, default size); previously trivial (#19: ODT checked against LibreOffice's own templates: placeholders, first-page styles, unsized pages, metafile logos, `.ott`); previously trivial (#19: ODT at ~90%: custom shapes, cell formulas, macros kept, turned text, control sizes and buttons); previously trivial (#19 narrowed: ODT read and written nearly whole; estimate 18–27 h → 10–16 h); previously trivial (#10 narrowed: text in a turned text box is drawn turned with it); previously trivial (gap 19 narrowed: ODT heading numbering read and written); previously trivial (gap 19 narrowed: ODT table borders and padding read and written); previously trivial (gap 19 narrowed: ODT heading style looks read and written); previously trivial (gap 19 narrowed: ODT tab stops read and written); previously trivial (gap 19 narrowed: ODT character formatting read and written); previously trivial (gap 19 narrowed: ODT list formats read and written); previously trivial (gap 19 narrowed: ODT comments read and written); previously trivial (gap 19 narrowed: ODT footnotes and endnotes read and written); previously trivial (gap 19 narrowed: ODT headers and footers written, text fields and paragraph spacing read and written); previously trivial (#8: Options › Language lists Your languages and Add a language… replaces the Language packs table); previously trivial (#8: the missing-pack bar works on a fresh install and counts the caret's language); previously trivial (#8: Language pack languages are in Set Proofing Language, Review › Language and the status bar; built-in proofing is named as such); previously trivial (#20: layout resource caps and linear-time passes (#3867, #3866)); previously trivial (#3 narrowed: a pasted text box story is charged for the formatting it copies); previously trivial (#3 narrowed: a .doc table row keeps one override per cell); previously trivial (#3 narrowed: a .doc file's sections find their paragraphs by index); previously minor (#11: Arabic interface with mirrored shell landed, #1195; hi/id/pt-PT and Hebrew UI remain); previously trivial (#8: language-packs-2 is published and pinned: 75 packs, adding Danish, German (Germany, Austria, Switzerland), Esperanto, Estonian, Persian, Croatian, Hungarian, Norwegian (Bokmål, Nynorsk), Dutch and Swedish (Sweden, Finland); no ranked gap changed); previously trivial (#8: language-packs-1 is published and pinned, 61 packs: Lithuanian, Romanian, Catalan, French, Greek, Slovak, Serbian and Latvian install as Language packs; Dutch, German and the other compounding languages wait on craft-proof; no ranked gap changed); previously minor (#8: Language packs: every other language's spelling and hyphenation installs from File › Options › Language or the missing-pack bar, through the font store; Lithuanian and Romanian are available as a Language pack once language-packs-1 is published; Dutch, Catalan, French, Greek, Slovak, Serbian and Latvian packs wait on craft-proof engine support); previously trivial (gap 8: English spelling reads SCOWL 2026, one dictionary per English, #40, #520, #5205; no ranked gap changed);; previously trivial (DOCX table rows and cells inside selected alternate-content branches survive open and repeated saves (#5219); broader corpus qualification and readiness estimates unchanged); previously trivial (#26 narrowed: MHT opens and `w:altChunk` content is brought in on open; saving MHT remains) previously trivial (gap 8 points at craft-proof in craft-libs, its data in craft-i18n, #5202; no ranked gap changed); previously trivial (arrowheads keep their kind, width and length and are drawn at Word's sizes; no ranked gap changed); previously trivial (.doc default font from the stylesheet's standard font, #5066; no ranked gap changed); previously trivial (a middle or bottom cell of a row split across pages lines up on the first page; no ranked gap changed); previously trivial (tab leader dots spaced and placed as in Word; no ranked gap changed); previously trivial (a list level above counts its first number at the first deeper item; no ranked gap changed); previously trivial (only the PDF sent to the printer leaves out link annotations; Save these pages as PDF keeps them, #4734; no ranked gap changed); previously trivial (documents with links print: the print job leaves out link annotations, #4734; no ranked gap changed; previously trivial: aligned-copy review fixes retain the document axis through scrolling and include secondary selections (#4764)); previously trivial (connector rerouting indexes laid-out object positions once per batch (#3631); previously trivial (custom-property bookmark-link preservation, #4767); previously trivial (Relative font-size commands preserve mixed sizes in the selection (#4903); existing button steps and one-point shortcuts are unchanged; readiness estimates unchanged); previously trivial (Arabic Backspace removes one combining mark and keeps its base letter (#4757); previously trivial (note conversion reference-run membership uses one ordered walk, #4750); previously trivial (DOCX comment-ID save lookups); previously trivial (gap 19: RTF reads and writes WMF and EMF pictures, #4259); previously trivial (#4658 bounds nested Markdown reference-label work); previously trivial (HTML import keeps preformatted lines with CR or CRLF input newlines, #4810); previously trivial (Recipient labels continue across product-sized sheets instead of stopping after the first sheet (#4880)); previously trivial (View windows: several open documents and Switch Windows in the engine; previously trivial: explicit documents keep the editor when recovery discovery finishes; readable recovery controls; previously trivial: text mini toolbar available with the right-click menu, #2959; previously trivial: personal templates in File › New and Save as Word Template, #2852; previously trivial: tracked table/row/cell/section property changes record in WordCraft, narrowing gap 5; previously trivial: a document with many content controls saves in the time the controls take, #13; previously trivial: Format Page Numbers dialog carries Word's number formats and Continue from previous section / Start at, #1113; previously trivial: centred list labels after leading page breaks, #2964; previously trivial: fixed font inputs in four layout controls; previously trivial: a right, centre or decimal tab whose text doesn't fit, or a left tab past the right indent, goes to the next line with its text, #1840; previously trivial: Bullets and Numbering toggle off style-inherited lists at their effective level, including basedOn chains and numbered ListParagraph styles; other paragraphs and list definitions stay unchanged (related to #3459); previously trivial: Russian sorting keeps ё with е and recognises decomposed ё/й; previously trivial: #8: English dialects — en-GB, en-CA, en-AU… flag each other's spellings, #1281; previously trivial: #1: shape gradients and transparency, #1500; previously trivial: text typed into a content control takes the control's formatting; localized placeholder styles recognised; previously trivial: forms protection keeps its content controls: no inserting, Properties or Remove Content Control; previously trivial: clearing a no-match font query keeps the recent heading visible, #2068; previously trivial: line breaking: a slash opening a word travels whole to the next line, #2963; previously trivial: recipient list search and merged-only view, #1576; previously trivial: #2 impact restated: only ink rendering and OLE editing remain; previously trivial: #2 narrowed: native ink nested in groups and drawing canvases kept on save; previously trivial: opening a DOCX no longer copies its pictures; previously trivial: RTF export writes sections (gap 19); previously trivial: ODT export writes sections (gap 19); previously trivial: automatic Asian/Latin and Asian/number spacing laid out, #2358; previously trivial: hint-reliant CJK outlines; previously trivial: numbered headings, #1793; previously trivial: legacy outline, shadow, emboss and imprint text effects drawn, #2534; previously trivial: #8 narrowed: Indonesian proofing from the installed Hunspell dictionary, #498; previously trivial: glossary/building blocks closed; previously trivial: Split Cells and Convert Text to Table follow the Word check, #2592; previously trivial: Language dialog keeps inherited proofing language and no-proof choices (#2717); previously trivial: #29: a copied equation also goes in the MathML clipboard formats, #1297; previously trivial: #24: the Spike, Ctrl+F3 and Ctrl+Shift+F3; previously trivial: VML freeforms read and kept on save; previously trivial: consistent preferred cell widths; previously trivial: multi-paragraph field instructions no longer add blank lines; previously trivial: page-break-only list paragraphs hide their labels; previously trivial: floating-table overlap ignores empty line-break lines; previously trivial: copies keep their formatting on the clipboard as HTML, #1523; previously trivial: sample-text formulas on Enter, #1067; previously trivial: #29: copied equations as MathML, OMML open as #1297, #816; previously trivial: the Font list no longer keeps every previewed font in memory, #848; previously trivial: table column and row markers on the rulers, #700; previously trivial: table borders and the resize handle drag on the page, #217; previously trivial: formatting revisions landed, #41; previously trivial: Draw Table and Eraser landed, #303; previously minor: beta distance restated: ~15 points, ~150–230 h; previously: first version; every known shortfall from the 2026-10-10 re-measure, ranked) · **Target:** Microsoft Word (Microsoft 365) for Mac 16.113.4
+@@ -197,6 +199,7 @@ Page Setup's margin, paper-size and document-grid number boxes scroll long text
+ 
+ | Date | Change | Summary |
+ |---|---|---|
++| 2026-11-08 | trivial | Table rows reserve referenced footnotes before fitting; trial counters are restored, retained fragments own their notes, and nested Can't Split rows keep main's pagination policy. Synthetic footer, history, multi-cell and nested-row controls; no new Word or native Leaf visual acceptance. Readiness estimates unchanged. |
+ | 2026-11-08 | trivial | #10 narrowed: a turned inline picture with no recorded effect extent keeps its line to its frame (exchanged near a quarter turn in Word 2013+ layout), cut at the line; gap stays open |
+ | 2026-11-08 | trivial | #4 narrowed: a cell's last Normal paragraph drops its contextual space after, the end-of-cell mark counting as a Normal paragraph (#5450) |
+ | 2026-11-07 | trivial | Page Setup also bounds the unfocused margin display after a long numeric paste; the accepted value is retained (#5650). |
+diff --git a/docs/layout-parity.md b/docs/layout-parity.md
+index 1f2f9676..eddfe8d5 100644
+--- a/docs/layout-parity.md
++++ b/docs/layout-parity.md
+@@ -1,5 +1,7 @@
+ # Layout and pagination parity with Microsoft Word
+ 
++> **Table footnote reservation:** 2026-11-08 · Table rows reserve referenced footnotes before fitting; trial counters are restored, retained fragments own their notes, and nested Can't Split rows keep main's pagination policy. Synthetic footer, history, multi-cell and nested-row controls; no new Word or native Leaf visual acceptance. Readiness estimates unchanged.
++
+ > **Last reviewed:** 2026-10-10 · **Last updated:** 2026-11-08 · **Change:** trivial (a turned inline picture whose file keeps no room for the turn keeps its line to its frame, the frame turned a quarter in Word 2013+ layout); previously trivial (a picture lowered further than its own height lowers its line as far, its top on the baseline); previously trivial (a float anchored right after a page break, before text, is drawn on the new page, #4262); previously trivial (a float anchored on a later page of a long paragraph is drawn there, #4250); previously trivial (the line between columns runs as tall as the section's text, so columns for selected text have it, #5178); previously trivial (a line of only pictures is as tall as they reach, never less than its font's height; a legacy check box sizes its line as text of its size, #3984); previously trivial (spaces before a line's first character keep their width in justified and distributed lines, as in Word); previously trivial (Page drawing indexes text-box warp lookups per paragraph (#3614)); previously trivial (Times and Courier take their Windows counterparts' line spacing; previously trivial: group connector rerouting preserves transformed free and unresolved endpoints under nonuniform scaling; readiness estimates unchanged; previously trivial: a word with no break opportunity in it no longer makes the layout quadratic, #3412; previously trivial: an empty paragraph whose mark is hidden shows nothing, not even its list number, which is still counted, #3982; previously trivial: a Thai run with Latin finds one installed font covering it all on Linux too, #1549; previously trivial: symbol fonts keep their line height without the font; previously trivial: an equation-array row without `&` is centred, #2617; previously trivial: a superscript or subscript sizes its line at the full font size, without its raise or drop, as Word does; previously trivial: an object dragged near the bottom of a page lands where it is dropped, #3169; previously trivial: centred list labels after leading page breaks, #2964; previously trivial: fixed font inputs in four layout controls; previously trivial: justified lines shrink their spaces by Word's measured limits; previously trivial: a right, centre or decimal tab whose text doesn't fit, or a left tab past the right indent, goes to the next line with its text, #1840; previously trivial: a click below a floating table goes to the text beside or after it, not to a cell of its last row, #2038; previously trivial: shapes drawn with their gradients and transparency, #1500; previously trivial: paragraphs above a float's anchor wrap around it, also when that pushes the anchor onto the next page, #2048; previously trivial: triple borders draw three lines, #1740; previously trivial: the caret, clicks and selection edges fall between the letters of a ligature, #1974; previously trivial: a word after a slash wraps whole, like Word, #2963; previously trivial: VML header-cell floats always on the page, user-checked in Word for Mac, #1775; previously trivial: an at-least row with no room for its minimum starts the next page whole, #1742; previously trivial: AutoFit donors lose equal widths down to their content minima; previously trivial: automatic space between Asian text and Latin text or digits, #2358; previously trivial: hint-reliant CJK outlines; previously trivial: positional tabs go to the margins or indents, #2367; previously trivial: field results with right-to-left text read right to left, #1670; previously trivial: a list bullet no installed font can draw shows the level's default bullet, #1683; previously trivial: a missing Thai font is drawn in one Thai face for the whole run, #1549; previously trivial: the caret after spaces hanging past the margin stays at the margin, #2146; previously trivial: covered black-circle fallback before UI sans; previously trivial: resolved split-cell continuation top insets; previously trivial: Symbol PCL6 alias uses Symbol encoding; previously trivial: exact full font names select their installed face; previously trivial: Arial Unicode MS uses proportional fallbacks; previously trivial: DrawingML outline dashes, including zero-width paths; previously trivial: TOCs include table-cell headings and retain full targets; previously trivial: kept table rows follow the next row; previously trivial: consistent cell widths override a stale table grid; previously trivial: multi-paragraph field instructions no longer add blank lines; previously trivial: page-break-only list paragraphs hide their labels; previously trivial: floating-table overlap ignores empty line-break lines; previously trivial: paragraph spacing adds up when the document turns HTML auto spacing off; previously trivial: an inherited footer sizes its percentage tables by its own section; previously trivial: an empty section mark stays on a full page; previously trivial: a fitting row with less room than its minimum height moves on whole; oversized rows still split; previously trivial: text past an exact-height row is cut off; previously trivial: a list number stays with text after a leading page break; previously trivial: a bookmark after a page break takes no line; previously trivial: a page break followed by a page break before or a next-page section starts one page; previously trivial: All Caps and Small Caps draw ß as SS, #1581; previously trivial: justified vertical page alignment, #1320; previously trivial: page numbers restart at 0; previously trivial: a list label moves with its first line when the paragraph is centred or end-aligned (#1159); previously trivial (a click just outside a floating table, by a cell whose text is turned, goes to the text beside or after it, #4181; previously trivial: group connector rerouting preserves transformed free and unresolved endpoints under nonuniform scaling; readiness estimates unchanged; previously trivial: a word with no break opportunity in it no longer makes the layout quadratic, #3412; previously trivial: an empty paragraph whose mark is hidden shows nothing, not even its list number, which is still counted, #3982; previously trivial: a Thai run with Latin finds one installed font covering it all on Linux too, #1549; previously trivial: symbol fonts keep their line height without the font; previously trivial: an equation-array row without `&` is centred, #2617; previously trivial: a superscript or subscript sizes its line at the full font size, without its raise or drop, as Word does; previously trivial: an object dragged near the bottom of a page lands where it is dropped, #3169; previously trivial: centred list labels after leading page breaks, #2964; previously trivial: fixed font inputs in four layout controls; previously trivial: justified lines shrink their spaces by Word's measured limits; previously trivial: a right, centre or decimal tab whose text doesn't fit, or a left tab past the right indent, goes to the next line with its text, #1840; previously trivial: a click below a floating table goes to the text beside or after it, not to a cell of its last row, #2038; previously trivial: shapes drawn with their gradients and transparency, #1500; previously trivial: paragraphs above a float's anchor wrap around it, also when that pushes the anchor onto the next page, #2048; previously trivial: triple borders draw three lines, #1740; previously trivial: the caret, clicks and selection edges fall between the letters of a ligature, #1974; previously trivial: a word after a slash wraps whole, like Word, #2963; previously trivial: VML header-cell floats always on the page, user-checked in Word for Mac, #1775; previously trivial: an at-least row with no room for its minimum starts the next page whole, #1742; previously trivial: AutoFit donors lose equal widths down to their content minima; previously trivial: automatic space between Asian text and Latin text or digits, #2358; previously trivial: hint-reliant CJK outlines; previously trivial: positional tabs go to the margins or indents, #2367; previously trivial: field results with right-to-left text read right to left, #1670; previously trivial: a list bullet no installed font can draw shows the level's default bullet, #1683; previously trivial: a missing Thai font is drawn in one Thai face for the whole run, #1549; previously trivial: the caret after spaces hanging past the margin stays at the margin, #2146; previously trivial: covered black-circle fallback before UI sans; previously trivial: resolved split-cell continuation top insets; previously trivial: Symbol PCL6 alias uses Symbol encoding; previously trivial: exact full font names select their installed face; previously trivial: Arial Unicode MS uses proportional fallbacks; previously trivial: DrawingML outline dashes, including zero-width paths; previously trivial: TOCs include table-cell headings and retain full targets; previously trivial: kept table rows follow the next row; previously trivial: consistent cell widths override a stale table grid; previously trivial: multi-paragraph field instructions no longer add blank lines; previously trivial: page-break-only list paragraphs hide their labels; previously trivial: floating-table overlap ignores empty line-break lines; previously trivial: paragraph spacing adds up when the document turns HTML auto spacing off; previously trivial: an inherited footer sizes its percentage tables by its own section; previously trivial: an empty section mark stays on a full page; previously trivial: a fitting row with less room than its minimum height moves on whole; oversized rows still split; previously trivial: text past an exact-height row is cut off; previously trivial: a list number stays with text after a leading page break; previously trivial: a bookmark after a page break takes no line; previously trivial: a page break followed by a page break before or a next-page section starts one page; previously trivial: All Caps and Small Caps draw ß as SS, #1581; previously trivial: justified vertical page alignment, #1320; previously trivial: page numbers restart at 0; previously trivial: a list label moves with its first line when the paragraph is centred or end-aligned (#1159); previously trivial (PR #4545: eligible cell floats keep in-bounds offsets; overflow confinement retains the front-of-text, turned-cell and native-acceptance limits); previously trivial (MATH construction reuse, #3630; previously trivial: continuous sections one after another go onto new pages instead of running off the page; empty marks after another empty section mark take a line each until the page is full, then stay at its bottom drawing nothing, not even a list label; an empty mark that takes no room draws no list label either; a kept-together paragraph is measured against the page it would move to, so a tall different first-page header no longer splits it, #3907; previously trivial: a justified line ending in a manual line break is stretched to the margin unless `w:doNotExpandShiftReturn` is set, #3924; previously trivial: a no-break space is as wide as a space, #4192; previously trivial: a bookmark or other zero-width marker is no line-break opportunity, #4193; previously trivial: Arabic list labels: `arabicAlpha` and `arabicAbjad` draw the 28 Arabic letters (alphabetical and abjad order), doubling past the last letter; Hebrew, Hindi, Thai and Vietnamese still show decimal (`doc::section::tests::arabic_letters_count_in_both_orders`); previously trivial (ODT documents: a line of only pictures keeps its font's height; no setting for it any more); previously trivial (ODT documents: padding is the standard's box model always; picture-only line height is an ODF interpretation setting); previously trivial (行頭禁則 also covers the small kana and the prolonged sound mark at ordinary break opportunities, as JIS X 4051 §4 specifies, inferred from the standard and synthetic tests rather than checked in Word); previously trivial (a missing font is drawn in an installed metric twin before any other substitute: Arial for Helvetica on Windows, Tinos before macOS Times for Times New Roman); previously trivial (ODT documents: padding without a border takes room); previously trivial (ODT documents: a line of only pictures is as tall as they are); previously trivial (ODT documents: a table's own space above and below; header and footer spacing kept past a tall header); previously trivial (a page break before a table's first row moves the table; emphasis marks drawn with room in the line); previously trivial (text in a turned text box turns with it; previously trivial: an in-line picture, shape or chart moves with its run's raise or lowering, Word's `w:position`; previously trivial (layout work bounds: header-row repeats budgeted per layout, cached picture outlines charged to the decode budget, linked-box chain widths exact up to a work cap, #3867); previously trivial (the line between columns runs as tall as the section's text, so columns for selected text have it, #5178); previously trivial (a table row that would leave a cell empty on a page that already holds something, its picture or first line not fitting there, moves on whole instead of leaving the other cells' text beside the empty cell, #4272); previously trivial (a middle or bottom cell of a row split across pages lines up on the first page); previously trivial (tab leader dots spaced and placed as in Word); previously trivial (a level above that hasn't counted yet takes its first number at the first deeper item); previously trivial (paragraph side borders lie beyond their distance from the text, #5036); previously trivial (with a header taller than the top margin, Margin-anchored drawings, header-cell pins and header-table obstacles use the rendered body top; TopMargin and InsideMargin keep their declared band, #2485; previously trivial: connector rerouting indexes laid-out object positions once per batch (#3631); previously trivial (field results take the `\* DollarText`, `\* Hex` and `\* ArabicDash` switches, #4226; previously trivial: a cell spanning columns shares its extra minimum width by the columns' preferred widths, equally in automatic tables, #1883; previously trivial: continuous sections one after another go onto new pages instead of running off the page; empty marks after another empty section mark take a line each until the page is full, then stay at its bottom drawing nothing, not even a list label; an empty mark that takes no room draws no list label either; a kept-together paragraph is measured against the page it would move to, so a tall different first-page header no longer splits it, #3907; previously trivial: a justified line ending in a manual line break is stretched to the margin unless `w:doNotExpandShiftReturn` is set, #3924; previously trivial: a no-break space is as wide as a space, #4192; previously trivial: a bookmark or other zero-width marker is no line-break opportunity, #4193; previously trivial: Arabic list labels: `arabicAlpha` and `arabicAbjad` draw the 28 Arabic letters (alphabetical and abjad order), doubling past the last letter; Hebrew, Hindi, Thai and Vietnamese still show decimal (`doc::section::tests::arabic_letters_count_in_both_orders`); previously trivial: Preserve grapheme edit/wrap boundaries across independently drawn font/style pieces; Exact-spacing table contact uses the specified line height rather than paragraph-mark metrics (#3977); previously trivial: cu20we: restrict pre-spacing float origins to paragraph anchors; document cap helpers and regressions; previously trivial: cu20we: outline caps; previously trivial: cu20we: box float paragraph origin; previously trivial: group connector rerouting preserves transformed free and unresolved endpoints under nonuniform scaling; readiness estimates unchanged; previously trivial: a word with no break opportunity in it no longer makes the layout quadratic, #3412; previously trivial: an empty paragraph whose mark is hidden shows nothing, not even its list number, which is still counted, #3982; previously trivial: a Thai run with Latin finds one installed font covering it all on Linux too, #1549; previously trivial: symbol fonts keep their line height without the font; previously trivial: an equation-array row without `&` is centred, #2617; previously trivial: a superscript or subscript sizes its line at the full font size, without its raise or drop, as Word does; previously trivial: an object dragged near the bottom of a page lands where it is dropped, #3169; previously trivial: centred list labels after leading page breaks, #2964; previously trivial: fixed font inputs in four layout controls; previously trivial: justified lines shrink their spaces by Word's measured limits; previously trivial: a right, centre or decimal tab whose text doesn't fit, or a left tab past the right indent, goes to the next line with its text, #1840; previously trivial: a click below a floating table goes to the text beside or after it, not to a cell of its last row, #2038; previously trivial: shapes drawn with their gradients and transparency, #1500; previously trivial: paragraphs above a float's anchor wrap around it, also when that pushes the anchor onto the next page, #2048; previously trivial: triple borders draw three lines, #1740; previously trivial: the caret, clicks and selection edges fall between the letters of a ligature, #1974; previously trivial: a word after a slash wraps whole, like Word, #2963; previously trivial: VML header-cell floats always on the page, user-checked in Word for Mac, #1775; previously trivial: an at-least row with no room for its minimum starts the next page whole, #1742; previously trivial: AutoFit donors lose equal widths down to their content minima; previously trivial: automatic space between Asian text and Latin text or digits, #2358; previously trivial: hint-reliant CJK outlines; previously trivial: positional tabs go to the margins or indents, #2367; previously trivial: field results with right-to-left text read right to left, #1670; previously trivial: a list bullet no installed font can draw shows the level's default bullet, #1683; previously trivial: a missing Thai font is drawn in one Thai face for the whole run, #1549; previously trivial: the caret after spaces hanging past the margin stays at the margin, #2146; previously trivial: covered black-circle fallback before UI sans; previously trivial: resolved split-cell continuation top insets; previously trivial: Symbol PCL6 alias uses Symbol encoding; previously trivial: exact full font names select their installed face; previously trivial: Arial Unicode MS uses proportional fallbacks; previously trivial: DrawingML outline dashes, including zero-width paths; previously trivial: TOCs include table-cell headings and retain full targets; previously trivial: kept table rows follow the next row; previously trivial: consistent cell widths override a stale table grid; previously trivial: multi-paragraph field instructions no longer add blank lines; previously trivial: page-break-only list paragraphs hide their labels; previously trivial: floating-table overlap ignores empty line-break lines; previously trivial: paragraph spacing adds up when the document turns HTML auto spacing off; previously trivial: an inherited footer sizes its percentage tables by its own section; previously trivial: an empty section mark stays on a full page; previously trivial: a fitting row with less room than its minimum height moves on whole; oversized rows still split; previously trivial: text past an exact-height row is cut off; previously trivial: a list number stays with text after a leading page break; previously trivial: a bookmark after a page break takes no line; previously trivial: a page break followed by a page break before or a next-page section starts one page; previously trivial: All Caps and Small Caps draw ß as SS, #1581; previously trivial: justified vertical page alignment, #1320; previously trivial: page numbers restart at 0; previously trivial: a list label moves with its first line when the paragraph is centred or end-aligned (#1159); previously trivial: PAGE fields in a paragraph split across pages show the page they are on, #1352; previously trivial: a dragged floating object anchors in the column it lands in, #884; previously trivial: a paragraph ending on a page with footnotes keeps its space after above the separator, #1116; previously trivial: symbol-font text drawn as Unicode symbols, #776; previously trivial: large-table scrolling measured and fixed, #811; previously trivial: text boxes use their own margins; Resize shape to fit text never cuts text, #743; previously trivial: complex-script shaping and Myanmar line breaking, #604; previously trivial: body page totals, table-cell footnotes and bookmark link pages fixed, #450 #451 #455; previously major: first version; line breaking, pagination and object placement checked against Word's behaviour from the layout source on origin/main) · **Target:** Microsoft Word (Microsoft 365) for Mac 16.113.4
+ > **Floating anchor row segments:** 2026-11-07 · A floating anchor after a manual page/column break counts visible content on the far side of the same wrapped row. Marker-only cover anchors retain their previous-page rule. Synthetic picture spacing, placement and history controls; no new native Word measurement. Readiness estimates unchanged.
+ 
+@@ -307,6 +309,7 @@ The front-of-text opt-out is retained from the earlier implementation; this patc
+ 
+ | Date | Change | Summary |
+ |---|---|---|
++| 2026-11-08 | trivial | Table rows reserve referenced footnotes before fitting; trial counters are restored, retained fragments own their notes, and nested Can't Split rows keep main's pagination policy. Synthetic footer, history, multi-cell and nested-row controls; no new Word or native Leaf visual acceptance. Readiness estimates unchanged. |
+ | 2026-11-08 | trivial | Turned inline pictures with no recorded effect extent keep their line to the frame (exchanged near a quarter turn in Word 2013+ layout) and overhang it, cut at the line's top and bottom, as in Word |
+ | 2026-11-08 | trivial | Contextual spacing drops the space after a table cell's last paragraph in the Normal style, the end-of-cell mark counting as a Normal paragraph; another style keeps it, and a middle or bottom cell of a split row lines up without the dropped space (#5450) (`layout::tests::contextual_spacing_drops_the_space_after_a_cells_last_normal_paragraph`, `a_bottom_cell_of_a_split_row_ignores_a_dropped_space_after_beside_it`). |
+ | 2026-11-04 | trivial | Header table measurements and fitted text-box heights use the page section’s PAGE format; cache reuse follows the field context |

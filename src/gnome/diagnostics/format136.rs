@@ -121,7 +121,7 @@ pub(super) fn format136_ui_test(
         (0, "text-underline", wordcraft_gnome::t!("Underline")),
     ];
     let (u, w, a) = (ui.clone(), window.clone(), app.clone());
-    let (text, para_menu, styles_menu, styles) = (
+    let (_text, _para_menu, styles_menu, styles) = (
         text_menu.clone(),
         paragraph_menu.clone(),
         style_menu.clone(),
@@ -156,8 +156,8 @@ pub(super) fn format136_ui_test(
         }
         let (family, row, title) = cases[index.get()];
         let (pop, header) = match family {
-            0 => (text.popover().unwrap(), tools.header.clone()),
-            1 => (para_menu.popover().unwrap(), para.header.clone()),
+            0 => (format_bar::group_pop(&u, "text"), tools.header.clone()),
+            1 => (format_bar::group_pop(&u, "paragraph"), para.header.clone()),
             2 => (styles_menu.popover().unwrap(), styles.header.clone()),
             _ => (elements.pop.clone(), elements.header.clone()),
         };
@@ -199,11 +199,11 @@ pub(super) fn format136_ui_test(
                 match family {
                     0 => {
                         tools.home();
-                        text.popup();
+                        format_bar::open_group(&u, "text", None);
                     }
                     1 => {
                         para.home();
-                        para_menu.popup();
+                        format_bar::open_group(&u, "paragraph", None);
                     }
                     2 => {
                         styles.main();
@@ -211,7 +211,7 @@ pub(super) fn format136_ui_test(
                     }
                     _ => {
                         elements.home();
-                        elements.menu.popup();
+                        format_bar::open_group(&u, "elements", None);
                     }
                 }
                 phase.set(1);

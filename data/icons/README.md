@@ -1,12 +1,21 @@
 # Leaf icons
 
-Original vector artwork created with AI assistance for Leaf, a GTK4/libadwaita document editor powered by WordCraft. Distributed under the repository's GPL-3.0 license (see ../../LICENSE).
+The approved blue leaf-shaped quill over a sheet of paper replaces the former
+folded-corner document for alpha.42 (#246). Original vector artwork prepared with
+AI assistance and approved by David. GPL-3.0-or-later; see ../../LICENSE.
 
-- `hicolor/scalable/apps/leaf.svg`: 128 × 128 application icon, transparent background.
-- `hicolor/symbolic/apps/leaf-symbolic.svg`: 16 × 16 monochrome symbolic companion.
+- `hicolor/scalable/apps/io.github.frandavid100.leaf.svg`: exact approved 128×128
+  full-color source, transparent, no embedded fonts, rasters or external resources.
+- `hicolor/symbolic/apps/io.github.frandavid100.leaf-symbolic.svg`: exact approved
+  16×16 monochrome companion, recolored by the native icon theme.
+- `packaging/windows/leaf.ico`: rasterized from the approved full-color source;
+  updating this source does not publish a new Windows package.
 
-Metaphor: a written sheet of paper with a green folded corner. GNOME palette, simple geometry, 4 px lower profile ending at y=116, no external shadows, no embedded fonts, raster data, scripts or external resources. Reviewed using Inkscape renders on light/dark backgrounds and at small sizes.
+Source names now match the installed application ID, so development builds and
+installed builds use the same theme lookup. The existing installer copies them
+into its hicolor icon tree. PNG render checks at 32/64/128 pixels use the SVG;
+small-size and light/dark native checks accompany the release validation.
+No public store screenshots are generated or replaced by this change.
 
-Guidance: https://developer.gnome.org/hig/guidelines/app-icons.html
-
-The names are source asset names, not a finalized application ID. Installation, icon-theme lookup and the desktop launcher will be wired up when the installer is implemented. The existing executable has not changed in this asset-only commit.
+The separate Nautilus search filter symbol is credited in NAUTILUS_SOURCES.md.
+GNOME guidance: https://developer.gnome.org/hig/guidelines/app-icons.html

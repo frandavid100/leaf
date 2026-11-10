@@ -103,7 +103,7 @@ pub(super) fn followup_pointer_test(
     ui: &Rc<Ui>,
     w: &ApplicationWindow,
     app: &Application,
-    menu: &gtk::MenuButton,
+    _menu: &gtk::MenuButton,
     mode: String,
 ) {
     if mode == "font" {
@@ -165,7 +165,7 @@ pub(super) fn followup_pointer_test(
         ui: ui.clone(),
         window: w.clone(),
         app: app.clone(),
-        menu: menu.clone(),
+        menu: ui.quick_tools.borrow().as_ref().unwrap().overflow.clone(),
         initial_pages: ui.current.borrow().as_ref().unwrap().sizes.len(),
         body: text,
         mode,
@@ -183,6 +183,13 @@ pub(super) fn followup_pointer_test(
     });
 }
 fn followup_stage(t: Rc<Followup>, stage: u8) {
+    if t.mode == "font" && stage == 0 {
+        t.ui.quick_tools.borrow().as_ref().unwrap().root();
+        glib::timeout_add_local_once(std::time::Duration::from_millis(300), move || {
+            followup_stage_ready(t, stage)
+        });
+        return;
+    }
     if t.mode == "font" && matches!(stage, 1 | 2 | 3 | 6 | 8 | 9 | 10 | 11) {
         let tools = t.ui.text_tools.borrow().as_ref().unwrap().clone();
         if stage == 10 {
@@ -207,7 +214,14 @@ fn followup_stage_ready(t: Rc<Followup>, stage: u8) {
     t.window.set_title(Some("Leaf Followup Regression"));
     match t.mode.as_str() {
         "font" => match stage {
-            0 => followup_emit(stage, "open", &[followup_point(&t.menu, &t.window)]),
+            0 => followup_emit(
+                stage,
+                "open",
+                &[followup_point(
+                    &find_widget(&t.menu.popover().unwrap(), "overflow-more-text").unwrap(),
+                    &t.window,
+                )],
+            ),
             1 | 6 => {
                 if stage == 6 {
                     u.font_input.clipboard().set_text(&(t.family.clone() + "x"));
@@ -227,7 +241,7 @@ fn followup_stage_ready(t: Rc<Followup>, stage: u8) {
             }
             3 | 9 => {
                 assert!(
-                    find_widget(&t.menu.popover().unwrap(), "text-font-list")
+                    find_widget(&format_bar::group_pop(&t.ui, "text"), "text-font-list")
                         .unwrap()
                         .is_mapped()
                 );
@@ -240,7 +254,7 @@ fn followup_stage_ready(t: Rc<Followup>, stage: u8) {
             4 => followup_emit(stage, "escape", &[]),
             5 => {
                 // Closing the nested popup can reposition its parent.
-                let pop = t.menu.popover().unwrap();
+                let pop = format_bar::group_pop(&t.ui, "text");
                 assert!(pop.is_visible(), "Escape should leave the Text popup open");
                 followup_emit(
                     stage,
@@ -260,12 +274,14 @@ fn followup_stage_ready(t: Rc<Followup>, stage: u8) {
                 );
             }
             11 => {
-                t.menu.popup();
-                let menu = find_widget(&t.menu.popover().unwrap(), "text-size-choices").unwrap();
+                format_bar::open_group(&t.ui, "text", None);
+                let menu = find_widget(&format_bar::group_pop(&t.ui, "text"), "text-size-choices")
+                    .unwrap();
                 followup_emit(stage, "hover", &[followup_point(&menu, &t.window)]);
             }
             12 => {
-                let menu = find_widget(&t.menu.popover().unwrap(), "text-size-choices").unwrap();
+                let menu = find_widget(&format_bar::group_pop(&t.ui, "text"), "text-size-choices")
+                    .unwrap();
                 followup_emit(stage, "choices", &[followup_point(&menu, &t.window)]);
             }
             13 => {
@@ -447,7 +463,8 @@ fn followup_check(t: &Followup, stage: u8) {
                 );
             }
             if stage == 3 || stage == 9 {
-                let pop = find_widget(&t.menu.popover().unwrap(), "text-font-list").unwrap();
+                let pop =
+                    find_widget(&format_bar::group_pop(&t.ui, "text"), "text-font-list").unwrap();
                 assert!(pop.is_mapped(), "direct font list remains mapped");
                 let mut previews = Vec::new();
                 followup_font_labels(&pop, &mut previews);
@@ -471,7 +488,7 @@ fn followup_check(t: &Followup, stage: u8) {
                 // Entry::width excludes CSS padding; the plain scroller's
                 // content width does not. Compare their actual drawing bounds
                 // in the same popup coordinate space instead.
-                let parent = t.menu.popover().unwrap();
+                let parent = format_bar::group_pop(&t.ui, "text");
                 let list_bounds = pop.compute_bounds(&parent).unwrap();
                 let field_bounds = selector.compute_bounds(&parent).unwrap();
                 assert!(
@@ -485,7 +502,7 @@ fn followup_check(t: &Followup, stage: u8) {
                 );
             }
             if stage == 0 || stage == 12 {
-                let menu = find_widget(&t.menu.popover().unwrap(), "text-size-choices")
+                let menu = find_widget(&format_bar::group_pop(&t.ui, "text"), "text-size-choices")
                     .unwrap()
                     .downcast::<gtk::MenuButton>()
                     .unwrap();
@@ -512,12 +529,12 @@ fn followup_check(t: &Followup, stage: u8) {
             }
             if stage == 10 {
                 assert!(
-                    !t.menu.popover().unwrap().is_visible(),
+                    !format_bar::group_pop(&t.ui, "text").is_visible(),
                     "close Text before clicking its covered caret"
                 );
             }
             if stage == 5 {
-                assert!(popover_pin(&t.menu.popover().unwrap()).is_active());
+                assert!(popover_pin(&format_bar::group_pop(&t.ui, "text")).is_active());
             }
             let text = u
                 .current

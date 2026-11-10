@@ -1,0 +1,154 @@
+diff --git a/crates/doc/src/edit.rs b/crates/doc/src/edit.rs
+index fc8fa2bb..5b515ec6 100644
+--- a/crates/doc/src/edit.rs
++++ b/crates/doc/src/edit.rs
+@@ -772,10 +772,10 @@ impl Document {
+         if a.path.parent() == b.path.parent() {
+             // Same container: trim the ends, drop the blocks between, join.
+             let (ia, ib) = (a.path.last(), b.path.last());
+-            // Removing an already-empty paragraph must not impose its style or mark formatting
+-            // on the following content. Test before trimming: deleting actual heading text is
+-            // still an ordinary merge that keeps the first paragraph's properties.
+-            let empty_start = self.para(a.story, &a.path).is_some_and(Paragraph::is_empty);
++            // An empty paragraph or a whole preceding paragraph (including its mark)
++            // must not impose formatting on the survivor. Partial text merges retain
++            // the existing leading-paragraph rule. Inspect offsets before trimming.
++            let keep_following = self.para(a.story, &a.path).is_some_and(Paragraph::is_empty) || (a.off == 0 && b.off == 0);
+             // Kept markers of the paragraphs in between move to the join.
+             let mut moved: Vec<(InlineObject, CharProps)> = Vec::new();
+             // `kept` is sorted: one walk of each paragraph's objects and runs (#3614).
+@@ -828,8 +828,8 @@ impl Document {
+             // setup, as in Word (#2127).
+             let sect = tail.section.take();
+             let pa = self.para_mut(a.story, &a.path)?;
+-            let keep_props = if empty_start { tail.props.clone() } else { pa.props.clone() };
+-            let keep_mark = empty_start.then(|| tail.mark.clone());
++            let keep_props = if keep_following { tail.props.clone() } else { pa.props.clone() };
++            let keep_mark = keep_following.then(|| tail.mark.clone());
+             pa.append(tail);
+             pa.props = keep_props;
+             if let Some(mark) = keep_mark {
+diff --git a/crates/doc/src/edit/tests.rs b/crates/doc/src/edit/tests.rs
+index ae7f7d64..2e796cc9 100644
+--- a/crates/doc/src/edit/tests.rs
++++ b/crates/doc/src/edit/tests.rs
+@@ -911,3 +911,41 @@ fn an_adopted_notes_text_box_gets_a_story_of_its_own() {
+     assert_eq!(part.kind, PartKind::TextBox);
+     assert!(matches!(part.blocks.first().map(|b| &**b), Some(Block::Para(p)) if p.text == "their box"));
+ }
++
++/// Whole preceding paragraphs, including their marks, do not donate formatting (Leaf #152).
++#[test]
++fn delete_whole_preceding_paragraph_keeps_following_formatting() {
++    for reverse in [false, true] {
++        for count in [1, 2] {
++            let mut d = Document::from_text(if count == 1 { "Heading\nFollowing" } else { "Heading\nSecond heading\nFollowing" });
++            d.para_mut(StoryRef::Body, &Path::top(0)).unwrap().props.style = Some("Heading2".into());
++            let following = Pos::body(count, 0);
++            let p = d.para_mut(StoryRef::Body, &following.path).unwrap();
++            p.props.style = Some("ListParagraph".into());
++            p.props.align = Some(crate::props::Align::Right);
++            p.mark.bold = Some(false);
++            p.mark.italic = Some(true);
++            let expected = p.clone();
++            let start = Pos::body(0, 0);
++            let (a, b) = if reverse { (&following, &start) } else { (&start, &following) };
++            d.delete_range(a, b).unwrap();
++            let actual = d.para_at(&Pos::body(0, 0)).unwrap();
++            assert_eq!(actual.text, expected.text);
++            assert_eq!(actual.props, expected.props);
++            assert_eq!(actual.mark, expected.mark);
++            assert_eq!(actual.runs, expected.runs);
++            assert_eq!(actual.objects, expected.objects);
++        }
++    }
++}
++
++/// A range that retains leading text or deletes part of the tail remains a merge.
++#[test]
++fn partial_paragraph_deletion_keeps_the_leading_paragraph_style() {
++    for (from, to) in [(1, 0), (0, 1)] {
++        let mut d = Document::from_text("Heading\nFollowing");
++        d.para_mut(StoryRef::Body, &Path::top(0)).unwrap().props.style = Some("Heading2".into());
++        d.delete_range(&Pos::body(0, from), &Pos::body(1, to)).unwrap();
++        assert_eq!(d.para_at(&Pos::body(0, 0)).unwrap().props.style.as_deref(), Some("Heading2"));
++    }
++}
+diff --git a/crates/doc/tests/empty_paragraph_merge.rs b/crates/doc/tests/empty_paragraph_merge.rs
+index 7368ad1b..94730d61 100644
+--- a/crates/doc/tests/empty_paragraph_merge.rs
++++ b/crates/doc/tests/empty_paragraph_merge.rs
+@@ -134,10 +134,10 @@ fn deleting_an_empty_section_paragraph_keeps_format_and_linked_headers() {
+     assert_eq!(d.last_section.margin_left, 96.0);
+ }
+ 
+-/// Deleting actual text continues to use the first paragraph merge rule.
++/// Retaining some leading text continues to use the first paragraph merge rule.
+ #[test]
+ fn joining_nonempty_paragraphs_keeps_the_existing_first_paragraph_rule() {
+-    for off in [0, 7] {
++    for off in [1, 7] {
+         let mut d = fixture("Heading", None);
+         let expected = d.para_at(&Pos::body(0, 0)).unwrap().props.clone();
+         d.delete_range(&Pos::body(0, off), &Pos::body(1, 0)).unwrap();
+diff --git a/crates/engine/tests/empty_paragraph_merge.rs b/crates/engine/tests/empty_paragraph_merge.rs
+index 40f81088..38c43c9f 100644
+--- a/crates/engine/tests/empty_paragraph_merge.rs
++++ b/crates/engine/tests/empty_paragraph_merge.rs
+@@ -78,3 +78,37 @@ fn deleted_empty_heading_does_not_promote_body_text_into_toc_or_docx() {
+     assert_eq!(text.matches("Body paragraph.").count(), 1, "body text is not a TOC entry: {text}");
+     assert_eq!(text.matches("Real heading").count(), 2, "the genuine heading stays in the TOC: {text}");
+ }
++
++/// Leaf #152: the whole non-empty heading, unlike a partial merge, must not restyle its successor.
++#[test]
++fn whole_heading_delete_preserves_list_formatting_history_and_docx() {
++    for command in ["text.delete", "text.backspace"] {
++        for backwards in [false, true] {
++            let mut s = fixture();
++            run(&mut s, "text.insert", json!({"text":"Heading"}));
++            s.sel = Selection::caret(Pos::body(1, 0));
++            run(&mut s, "para.bullets", json!({}));
++            let expected = s.doc.para_at(&Pos::body(1, 0)).unwrap().clone();
++            let before = s.doc.clone();
++            let (a, b) = (Pos::body(0, 0), Pos::body(1, 0));
++            s.sel = if backwards { Selection { anchor: b, focus: a } } else { Selection { anchor: a, focus: b } };
++            run(&mut s, command, json!({}));
++            let p = s.doc.para_at(&Pos::body(0, 0)).unwrap();
++            assert_eq!(p.text, expected.text);
++            assert_eq!(p.props, expected.props);
++            assert_eq!(p.mark, expected.mark);
++            assert_eq!(p.runs, expected.runs);
++            assert_eq!(outline::levels(&s.doc)[..2], [outline::BODY, 2]);
++            let after = s.doc.clone();
++            run(&mut s, "edit.undo", json!({}));
++            assert_eq!(s.doc, before);
++            run(&mut s, "edit.redo", json!({}));
++            assert_eq!(s.doc, after);
++            let saved = wordcraft_docx::read(&wordcraft_docx::write(&s.doc).unwrap()).unwrap();
++            let p = saved.para_at(&Pos::body(0, 0)).unwrap();
++            assert_eq!(p.props.numbering, expected.props.numbering);
++            assert_eq!(p.mark.size, expected.mark.size);
++            assert_eq!(p.props_of_char(6).italic, Some(true));
++        }
++    }
++}
+diff --git a/docs/typing-parity.md b/docs/typing-parity.md
+index 6ad5a1a3..a04d5560 100644
+--- a/docs/typing-parity.md
++++ b/docs/typing-parity.md
+@@ -691,3 +691,14 @@ DOCX and Undo/Redo (Leaf #152). No new Word or native UI comparison was run.
+ | 2026-10-10 | minor | Track Changes rows: tracked Enter, Backspace and Delete on paragraph marks (#244) |
+ | 2026-10-10 | major | First version: lists, AutoCorrect and AutoFormat as you type, observed against Word (#204) |
+ | 2026-10-15 | trivial | Text direction: typed and inserted text takes its direction from its own letters, not the caret's run; spaces typed into reopened Hebrew draw in the Latin font until reopened (#1543) |
++
++## Whole preceding paragraph deletion — Leaf #152 follow-up (2026-11-10)
++
++Deleting a non-empty paragraph from its start through the following paragraph's
++start removes its mark as well as its text. The surviving paragraph retains its
++own paragraph properties, mark formatting and inline runs, like deleting the text
++then the resulting empty paragraph. A range retaining leading text, or entering
++part of the following text, keeps the ordinary leading-paragraph merge rule.
++Synthetic model/engine checks cover both selection directions, Delete/Backspace,
++list formatting, history, DOCX and outline membership. This is not a new native
++Word comparison or confirmation in a released Leaf build.

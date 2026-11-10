@@ -366,12 +366,25 @@ pub(super) fn install_pointer_and_view_input(
         ui.document_box.add_controller(drag);
     }
 
+    let preferred_sidebar = Rc::new(Cell::new(ui.sidebar.shows_sidebar()));
+    let syncing_sidebar = Rc::new(Cell::new(false));
     {
+        let preferred = preferred_sidebar.clone();
+        let syncing = syncing_sidebar.clone();
         let weak = Rc::downgrade(&ui);
         ui.sidebar_button.connect_toggled(move |button| {
             if let Some(ui) = weak.upgrade() {
+                if !syncing.get() && !ui.sidebar.is_collapsed() {
+                    preferred.set(button.is_active());
+                }
                 ui.sidebar.set_show_sidebar(button.is_active());
             }
+        });
+    }
+    {
+        let preferred = preferred_sidebar.clone();
+        ui.sidebar.connect_collapsed_notify(move |split| {
+            split.set_show_sidebar(!split.is_collapsed() && preferred.get());
         });
     }
     {
@@ -391,7 +404,9 @@ pub(super) fn install_pointer_and_view_input(
                 compact_menu.set_visible(!visible);
                 compact_search.set_visible(!visible);
                 if ui.sidebar_button.is_active() != visible {
+                    syncing_sidebar.set(true);
                     ui.sidebar_button.set_active(visible);
+                    syncing_sidebar.set(false);
                 }
                 if visible {
                     let weak = Rc::downgrade(&ui);

@@ -167,19 +167,6 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
         assert_eq!(history.item_link(i, "submenu").unwrap().n_items(), 0);
     }
     assert!(find_widget(&ui.format_toolbar, "ruler-pin").is_none());
-    for (section, actions) in [(2, ["win.save", "win.save-as"])] {
-        let part = model.item_link(section, "section").unwrap();
-        assert_eq!(part.n_items(), 2);
-        for (i, action) in actions.iter().enumerate() {
-            assert_eq!(
-                part.item_attribute_value(i as i32, "action", None)
-                    .unwrap()
-                    .get::<String>()
-                    .unwrap(),
-                *action
-            );
-        }
-    }
     assert!(
         ui.host
             .upgrade()
@@ -247,8 +234,12 @@ pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Applicat
     );
     assert_eq!(sections.item_link(2, "submenu").unwrap().n_items(), 7);
     assert_eq!(
+        actions(model.item_link(2, "section").unwrap()),
+        ["win.save", "win.save-as", "win.export-pdf", "win.print"]
+    );
+    assert_eq!(
         actions(model.item_link(3, "section").unwrap()),
-        ["win.document-properties", "win.export-pdf", "win.print"]
+        ["win.document-properties"]
     );
     let h = ui.host.upgrade().unwrap();
     assert!(h.window.lookup_action("print").unwrap().is_enabled());

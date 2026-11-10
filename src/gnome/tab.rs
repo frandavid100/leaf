@@ -75,7 +75,16 @@ pub(super) fn build_tab(
     accessible_name(&menu_button, wordcraft_gnome::t!("Document Options"));
     header.pack_end(&menu_button);
     let top_history = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    header.pack_start(&top_history);
+    // History keeps its natural width on ordinary windows, but must not make
+    // the whole split view wider than a narrow document viewport.
+    let history_scroll = gtk::ScrolledWindow::new();
+    history_scroll.set_widget_name("header-history-scroll");
+    history_scroll.set_policy(gtk::PolicyType::External, gtk::PolicyType::Never);
+    history_scroll.set_min_content_width(0);
+    history_scroll.set_max_content_width(160);
+    history_scroll.set_propagate_natural_width(true);
+    history_scroll.set_child(Some(&top_history));
+    header.pack_start(&history_scroll);
     let top_formats = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     header.pack_end(&top_formats);
 
@@ -393,7 +402,12 @@ pub(super) fn build_tab(
     sidebar.set_max_sidebar_width(240.0);
     sidebar.set_sidebar_width_fraction(0.21);
     sidebar.set_pin_sidebar(true);
-    let tab_page = host.tabs.append(&sidebar);
+    // Each tab owns its adaptive condition. A window only activates the last
+    // matching breakpoint, which would leave earlier tabs at the wrong size.
+    let adaptive_page = adw::BreakpointBin::new();
+    adaptive_page.set_size_request(360, 420);
+    adaptive_page.set_child(Some(&sidebar));
+    let tab_page = host.tabs.append(&adaptive_page);
     host.tabs.set_selected_page(&tab_page);
 
     // En estrecho la barra lateral se superpone sobre la página.
@@ -401,7 +415,7 @@ pub(super) fn build_tab(
         adw::BreakpointCondition::parse("max-width: 760sp").expect("condición de ancho válida"),
     );
     narrow.add_setter(&sidebar, "collapsed", Some(&true.to_value()));
-    window.add_breakpoint(narrow);
+    adaptive_page.add_breakpoint(narrow);
     window.set_size_request(360, 420);
 
     let ui = Rc::new(Ui {
@@ -431,7 +445,6 @@ pub(super) fn build_tab(
         dirty: Cell::new(false),
         thumbnail_refresh_pending: Cell::new(false),
         thumbnail_bounds_pending: Cell::new(false),
-        closing_confirmed: Cell::new(false),
         tab_page: RefCell::new(Some(tab_page.clone())),
         closed: Cell::new(false),
         derived_source: RefCell::new(None),
