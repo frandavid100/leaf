@@ -56,15 +56,14 @@ jobs:
         run: |
           export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d)
           xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s bash tools/toolbar41-pointer-test.sh "$PWD/target/debug/wordcraft-gnome"
-      - name: Trace the existing formatting navigation regression
+      - name: Prepare the supported runtime for native formatting navigation
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: bash tools/ci/prepare-gtk49-probe.sh "$PWD/target/debug/wordcraft-gnome"
+      - name: Check unchanged formatting navigation on GTK from GNOME 49
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
-          cat > /tmp/leaf-focused-gdb.sh <<'SH'
-          #!/usr/bin/env bash
-          exec gdb --batch --return-child-result -ex run -ex 'thread apply all bt' --args "$GITHUB_WORKSPACE/target/debug/wordcraft-gnome" "$@"
-          SH
           export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d)
-          xvfb-run -a -s '-screen 0 2800x2200x24' timeout 240s bash tools/format136-pointer-test.sh /tmp/leaf-focused-gdb.sh
+          xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 240s bash tools/format136-pointer-test.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:

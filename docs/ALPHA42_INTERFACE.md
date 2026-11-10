@@ -54,3 +54,14 @@ The publisher must verify the candidate source, optimized executable, tag and al
 public asset digests before closing the explicit closure plan. No publication or
 successful final native/installed result is claimed by this preparation document.
 The publication workflow records the verified outcome in LATEST_RELEASE.md.
+
+## GTK used for formatting navigation
+
+The Ubuntu 24.04 host has GTK 4.14, which predates the upstream
+[GNOME/gtk#6817 fix in GTK 4.17.6](https://github.com/GNOME/gtk/blob/4.18.0/NEWS).
+The captured crash is in `gdk_surface_request_motion` from native layout after
+a popup surface disappears. The unchanged format136 pointer test therefore runs
+the exact optimized Leaf executable with GNOME Platform 49, the supported runtime.
+The helper checks GTK >= 4.18 and records the immutable runtime commit. No input
+assertion is skipped, and no GTK interposer or Leaf workaround is shipped.
+All other native probes and installed GNOME 49/51 validation remain required.

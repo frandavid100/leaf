@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-runner=${1:-./target/release/wordcraft-gnome}
+runner=${LEAF_FORMAT136_RUNNER:-${1:-./target/release/wordcraft-gnome}}
 cmd=("$runner"); [[ "$runner" != *.sh ]] || cmd=(bash "$runner")
 export LEAF29_ACK_DIR
 LEAF29_ACK_DIR=$(mktemp -d "${LEAF29_ACK_PARENT:-/tmp}/leaf136-ack.XXXXXX")

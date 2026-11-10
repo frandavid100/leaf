@@ -337,10 +337,13 @@ jobs:
         grep -q 'HEADER_FOOTER_UI_OK pointer=false' headers-ui.log
         xvfb-run -a bash tools/header-pointer-test.sh
       if: ${{ matrix.group == 'documents' }}
+    - name: Prepare supported GTK for the unchanged formatting navigation probe
+      if: ${{ matrix.group == 'documents' }}
+      run: bash tools/ci/prepare-gtk49-probe.sh "$PWD/target/release/wordcraft-gnome"
     - name: Verify alpha29 document controls and all picture gestures
       run: |
-        XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 1400x1100x24' timeout 180s bash tools/alpha29-pointer-test.sh
-        XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=es GDK_SCALE=2 GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' timeout 180s bash tools/alpha29-pointer-test.sh
+        XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=en GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 1400x1100x24' dbus-run-session -- timeout 180s bash tools/alpha29-pointer-test.sh
+        XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=es GDK_SCALE=2 GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s bash tools/alpha29-pointer-test.sh
       if: ${{ matrix.group == 'documents' }}
     - uses: actions/upload-artifact@v4
       if: ${{ matrix.group == 'documents' && (always()) }}
