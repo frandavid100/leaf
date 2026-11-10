@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
   <title>Leaf</title>
   <desc>A sheet of paper and a leaf-shaped quill, in monochrome.</desc>
-  <path class="foreground" fill="#2e3436" fill-rule="evenodd" d="M2 4h5L6 6H3v7h7V9l2-1v6a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Zm13-3C10 1 6 5 7 9l-2 3 1 1 2-3c4 0 7-4 7-9Zm-2 2L8 9l-1-1Z"/>
+  <path class="foreground" fill="#2e3436" fill-rule="evenodd" d="M2 3h5L6 5H3v8h7V9l2-1v6a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm13-3C10 1 6 5 7 9l-2 3 1 1 2-3c4 0 7-4 7-9Zm-2 2L8 9l-1-1Z"/>
 </svg>
