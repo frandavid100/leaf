@@ -1,0 +1,46 @@
+name: Optional text pointer diagnostic
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  text-pointer:
+    if: contains(github.event.pull_request.title, '[text-debug]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify diagnostic source equivalence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/$GITHUB_REPOSITORY/actions/runs/42776014694 > native.json
+          source=$(python3 -c "import json; print(json.load(open('native.json'))['head_sha'])")
+          git diff --exit-code "$source" -- src Cargo.toml Cargo.lock build.rs vendor data po
+      - uses: actions/download-artifact@v4
+        with:
+          name: leaf-native-unvalidated
+          path: native
+          run-id: 42776014694
+          github-token: ${{ github.token }}
+      - name: Install the same native GTK runtime and pointer tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libgtk-4-1 libadwaita-1-0 xvfb xauth xdotool scrot xclip adwaita-icon-theme librsvg2-common
+          chmod +x native/wordcraft-gnome
+      - name: Observe the native pointer regression through its own timeout
+        env:
+          LANGUAGE: es
+          GSK_RENDERER: cairo
+        run: |
+          export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d)
+          xvfb-run -a -s '-screen 0 2800x2200x24' timeout 90s bash tools/text-pointer-test.sh "$PWD/native/wordcraft-gnome"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: text-pointer-diagnostic
+          path: text18-*
