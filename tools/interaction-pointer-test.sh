@@ -45,7 +45,9 @@ for marker in SHIFT_POINTER_READY WORD_POINTER_READY WORD_DRAG_READY LINK_POINTE
       else
         if test "$marker" = FONT_INPUT_READY_4; then family='serif '; else family=17.5; fi
         xdotool type --clearmodifiers --delay 20 "$family"
-      fi ;;
+      fi
+      # Font input is a non-mutating search until an explicit confirmation.
+      if test "$marker" != FONT_INPUT_READY_6; then xdotool key Return; fi ;;
   esac
 done
 wait "$leaf_pid" || { cat interactions-pointer.log; exit 1; }
