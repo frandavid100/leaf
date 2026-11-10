@@ -1,5 +1,16 @@
 # Decisiones vigentes
 
+## 10/11/2026 — Windows alpha.44 publicado y verificado
+
+El instalador y ZIP `0.1.0-alpha.44-windows.1` utilizan la misma fuente
+`534c86eab70e05ae5de8c4d1d9c95d075d8ae666` que la release Linux alpha.44.
+Las pruebas de compilación, paquete portátil, instalación y desinstalación
+superan la [CI de Windows](https://github.com/frandavid100/leaf/actions/runs/42900734179).
+Se verifican tag y cuatro archivos públicos; los hashes del artefacto descargado
+coinciden con los digests públicos y `SHA256SUMS`. [Descarga, identidad y límites](WINDOWS.md).
+No se atribuyen pruebas humanas en equipos Windows. Ambas publicaciones quedan
+completadas sin modificar WordCraft ni cerrar requisitos parciales.
+
 ## Publicada y verificada automáticamente: 0.1.0-alpha.44
 
 Se publican los mismos bytes de la candidata tras superar todas las pruebas

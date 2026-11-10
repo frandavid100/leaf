@@ -1,8 +1,8 @@
 # Leaf for Windows — experimental
 
-[Download 0.1.0-alpha.36-windows.1](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36-windows.1), published and verified on 8 November 2026. Windows 10/11 x86_64 is the target;
-automated checks ran on Windows Server 2022 x64. The installer is about 34 MB and
-the ZIP about 52 MB. This is based on Linux alpha.36 and is an occasional release.
+[Download 0.1.0-alpha.44-windows.1](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.44-windows.1), published and verified on 10 November 2026. Windows 10/11 x86_64 is the target;
+automated checks ran on Windows Server 2022 x64. The installer is about 35 MB and
+the ZIP about 51 MB. This is based on Linux alpha.44 and is an occasional release.
 
 ## Use
 
@@ -60,6 +60,22 @@ with third-party apps and real printer drivers still need interactive testing.
 Use copies of important documents; the existing DOCX/ODT preservation limits apply.
 An unsigned build may show a Windows reputation warning. Runtime package versions
 are recorded in BUILD.json, with licenses and source links in the package.
+
+## Latest verified release
+
+Alpha.44 includes the frontend cleanup and restored standard GTK color selectors.
+It uses the same application source as the Linux alpha.44 package.
+
+- Executable source/tag: `534c86eab70e05ae5de8c4d1d9c95d075d8ae666`.
+- [Build, 239 Windows/240 Linux Rust tests, portable/installed checks and publication](https://github.com/frandavid100/leaf/actions/runs/42900734179).
+- 64 native DLLs; relocated and installed checks use the bundled runtime.
+- Installer: 34,767,302 bytes; SHA-256 `13310436f06f184156003549f6d097baae5ee3b95027bb8566ded4e53a2caad6`.
+- Portable ZIP: 50,677,234 bytes; SHA-256 `32ee1ea47c32f56ee361152d59d076f9d96760e63d9d00bb9a5987c63bf9a29d`.
+
+The four public assets, GitHub digests and source tag were independently checked.
+The downloaded build artifact's package hashes match the public asset digests and
+`SHA256SUMS`; `BUILD.txt` identifies the source and successful workflow above.
+These are automated checks, not a report of personal Windows testing.
 
 ## Verified first release
 
