@@ -348,6 +348,32 @@ impl QuickTools {
     pub(super) fn filter_menus(&self) {
         let Some(ui) = self.ui.upgrade() else { return };
         for (group, _, tools) in &self.groups {
+            if *group == "elements" {
+                for (id, _) in tools {
+                    let row = ui
+                        .picture
+                        .borrow()
+                        .as_ref()
+                        .and_then(|p| find_widget(&p.context, &format!("format-row-elements-{id}")))
+                        .or_else(|| {
+                            ui.table_popover
+                                .borrow()
+                                .as_ref()
+                                .and_then(|p| p.child())
+                                .and_then(|w| find_widget(&w, &format!("format-row-elements-{id}")))
+                        });
+                    if let Some(row) = row {
+                        row.set_visible(
+                            wordcraft_gnome::preferences::toolbar_placements(group)
+                                .iter()
+                                .find(|(key, _)| key == id)
+                                .unwrap()
+                                .1
+                                == Placement::More,
+                        );
+                    }
+                }
+            }
             let root = match *group {
                 "paragraph" => ui
                     .paragraph

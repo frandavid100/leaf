@@ -309,6 +309,8 @@ mod workflows37_checks;
 
 #[path = "diagnostics/alpha42.rs"]
 mod alpha42_checks;
+#[path = "diagnostics/alpha43.rs"]
+mod alpha43_checks;
 #[path = "diagnostics/toolbar41.rs"]
 mod toolbar41_checks;
 #[path = "diagnostics/workflows38.rs"]

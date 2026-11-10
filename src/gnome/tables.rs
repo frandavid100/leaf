@@ -26,8 +26,10 @@ pub(super) fn table_command(ui: &Rc<Ui>, command: &str, args: serde_json::Value)
         s.run(command, &args).map_err(|e| e.to_string())?;
         Ok(())
     });
-    caret_ensure_visible(ui);
-    ui.document_box.grab_focus();
+    if !ui.format_group.pinned.get() {
+        caret_ensure_visible(ui);
+        ui.document_box.grab_focus();
+    }
     if let Some(menu) = find_widget(&ui.format_toolbar, "table-menu")
         .and_then(|w| w.downcast::<gtk::MenuButton>().ok())
     {
@@ -751,6 +753,29 @@ pub(super) fn install_table_controls(
             ui,
             move |p| refresh_table_controls(&ui, p)
         ));
+    }
+    for id in [
+        "table-select",
+        "table-add",
+        "table-delete",
+        "table-merge",
+        "table-split",
+        "table-properties",
+        "table-caption",
+    ] {
+        let name = if id == "table-caption" {
+            "table-show-caption"
+        } else {
+            id
+        };
+        if let Some(widget) = find_widget(&context, name) {
+            let prev = widget.prev_sibling();
+            context.remove(&widget);
+            let slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
+            slot.set_widget_name(&format!("format-row-elements-{id}"));
+            slot.append(&widget);
+            context.insert_child_after(&slot, prev.as_ref());
+        }
     }
     content.remove(&context);
     let body = gtk::Box::new(gtk::Orientation::Vertical, 6);

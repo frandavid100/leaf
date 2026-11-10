@@ -114,17 +114,10 @@ fn alpha30_controls(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
     );
     tools.home();
     tools.page("options");
-    assert!(
-        tools
-            .palette
-            .borrow()
-            .as_ref()
-            .unwrap()
-            .superscript
-            .parent()
-            .as_ref()
-            == Some(tools.detail.upcast_ref())
-    );
+    tools.page("superscript");
+    for id in ["baseline", "superscript", "subscript"] {
+        assert!(find_widget(&pop, &format!("script-choice-{id}")).is_some());
+    }
     tools.home();
     immediate_format(ui, "format.font", json!({"name":"serif"})).unwrap();
     format_execute(ui, "leaf.proofText", json!({"choice":"es-ES"})).unwrap();

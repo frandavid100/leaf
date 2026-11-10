@@ -3411,3 +3411,255 @@ msgstr "More Formatting Options"
 
 msgid "Customize Toolbar"
 msgstr "Customize Toolbar"
+
+msgid "About paragraph spacing"
+msgstr "About paragraph spacing"
+
+msgid "Add or Update Tab Stop"
+msgstr "Add or Update Tab Stop"
+
+msgid "After paragraph (pt)"
+msgstr "After paragraph (pt)"
+
+msgid "All Fonts"
+msgstr "All Fonts"
+
+msgid "At Least (pt)"
+msgstr "At Least (pt)"
+
+msgid "Automatic Row Height"
+msgstr "Automatic Row Height"
+
+msgid "Bar"
+msgstr "Bar"
+
+msgid "Basque"
+msgstr "Basque"
+
+msgid "Before paragraph (pt)"
+msgstr "Before paragraph (pt)"
+
+msgid "Catalan"
+msgstr "Catalan"
+
+msgid "Cell Alignment"
+msgstr "Cell Alignment"
+
+msgid "Cell Background"
+msgstr "Cell Background"
+
+msgid "Cell Text Direction"
+msgstr "Cell Text Direction"
+
+msgid "Color"
+msgstr "Color"
+
+msgid "Color #{color}"
+msgstr "Color #{color}"
+
+msgid "Custom Color…"
+msgstr "Custom Color…"
+
+msgid "Dashes"
+msgstr "Dashes"
+
+msgid "Decimal"
+msgstr "Decimal"
+
+msgid "Delete Rows or Columns"
+msgstr "Delete Rows or Columns"
+
+msgid "Dictionary not installed"
+msgstr "Dictionary not installed"
+
+msgid "Distance (cm)"
+msgstr "Distance (cm)"
+
+msgid "Distance in points"
+msgstr "Distance in points"
+
+msgid "Distribute text across the full line, including the final line."
+msgstr "Distribute text across the full line, including the final line."
+
+msgid "Do not check spelling or grammar"
+msgstr "Do not check spelling or grammar"
+
+msgid "Dots"
+msgstr "Dots"
+
+msgid "First Line"
+msgstr "First Line"
+
+msgid "Fonts in This Document"
+msgstr "Fonts in This Document"
+
+msgid "French"
+msgstr "French"
+
+msgid "Galician"
+msgstr "Galician"
+
+msgid "German"
+msgstr "German"
+
+msgid "Hanging"
+msgstr "Hanging"
+
+msgid "Height (cm)"
+msgstr "Height (cm)"
+
+msgid "Image Caption"
+msgstr "Image Caption"
+
+msgid "Image Size"
+msgstr "Image Size"
+
+msgid "Inline images move with the text automatically."
+msgstr "Inline images move with the text automatically."
+
+msgid "Insert Rows or Columns"
+msgstr "Insert Rows or Columns"
+
+msgid "Italian"
+msgstr "Italian"
+
+msgid "Justify lines; keep the final line at its natural width."
+msgstr "Justify lines; keep the final line at its natural width."
+
+msgid "Language can be assigned without a dictionary. Use Dictionary Settings to install proofing support."
+msgstr "Language can be assigned without a dictionary. Use Dictionary Settings to install proofing support."
+
+msgid "Left (cm)"
+msgstr "Left (cm)"
+
+msgid "Line Style"
+msgstr "Line Style"
+
+msgid "Line height multiplier"
+msgstr "Line height multiplier"
+
+msgid "Multiple"
+msgstr "Multiple"
+
+msgid "No Results"
+msgstr "No Results"
+
+msgid "No strikethrough"
+msgstr "No strikethrough"
+
+msgid "No underline"
+msgstr "No underline"
+
+msgid "Normal"
+msgstr "Normal"
+
+msgid "One"
+msgstr "One"
+
+msgid "Pagination"
+msgstr "Pagination"
+
+msgid "Paragraph borders"
+msgstr "Paragraph borders"
+
+msgid "Paste Formatting"
+msgstr "Paste Formatting"
+
+msgid "Polish"
+msgstr "Polish"
+
+msgid "Portuguese (Brazil)"
+msgstr "Portuguese (Brazil)"
+
+msgid "Position (cm)"
+msgstr "Position (cm)"
+
+msgid "Positions are measured from the left text indent, as on the ruler. Style tab stops are inherited; removing one adds an explicit override."
+msgstr "Positions are measured from the left text indent, as on the ruler. Style tab stops are inherited; removing one adds an explicit override."
+
+msgid "Recent Colors"
+msgstr "Recent Colors"
+
+msgid "Remove Indents"
+msgstr "Remove Indents"
+
+msgid "Remove Selected Tab Stop"
+msgstr "Remove Selected Tab Stop"
+
+msgid "Repeat History"
+msgstr "Repeat History"
+
+msgid "Repeat {count} actions"
+msgstr "Repeat {count} actions"
+
+msgid "Right (cm)"
+msgstr "Right (cm)"
+
+msgid "Russian"
+msgstr "Russian"
+
+msgid "Search fonts"
+msgstr "Search fonts"
+
+msgid "Search languages"
+msgstr "Search languages"
+
+msgid "Select Table Cells"
+msgstr "Select Table Cells"
+
+msgid "Sort the selected paragraphs. Select at least two paragraphs."
+msgstr "Sort the selected paragraphs. Select at least two paragraphs."
+
+msgid "Space Around Image"
+msgstr "Space Around Image"
+
+msgid "Space Around Image (cm)"
+msgstr "Space Around Image (cm)"
+
+msgid "Spacing"
+msgstr "Spacing"
+
+msgid "Special"
+msgstr "Special"
+
+msgid "Split Cells or Table"
+msgstr "Split Cells or Table"
+
+msgid "Table Borders"
+msgstr "Table Borders"
+
+msgid "Table Caption"
+msgstr "Table Caption"
+
+msgid "Text Position"
+msgstr "Text Position"
+
+msgid "Text Wrapping"
+msgstr "Text Wrapping"
+
+msgid "Thickness (pt)"
+msgstr "Thickness (pt)"
+
+msgid "This font is not installed. Its document identity is preserved."
+msgstr "This font is not installed. Its document identity is preserved."
+
+msgid "Three"
+msgstr "Three"
+
+msgid "Triple"
+msgstr "Triple"
+
+msgid "Two"
+msgstr "Two"
+
+msgid "Value"
+msgstr "Value"
+
+msgid "Width (cm)"
+msgstr "Width (cm)"
+
+msgid "WordCraft supports words-only with a single underline; other line styles cannot yet combine with it."
+msgstr "WordCraft supports words-only with a single underline; other line styles cannot yet combine with it."
+
+msgid "{name} ({number})"
+msgstr "{name} ({number})"

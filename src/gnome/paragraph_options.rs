@@ -210,7 +210,7 @@ pub(super) fn build(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, page: &str, state: &V
                 ),
             ] {
                 let b = s.action(label, id, command, json!({"value":true}));
-                selected(&b, state["rtl"].as_bool().map(|v| v == rtl));
+                selected(&b, state["bidi"].as_bool().map(|v| v == rtl));
                 s.detail.append(&b);
             }
         }
@@ -482,6 +482,8 @@ pub(super) fn build(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, page: &str, state: &V
             }
         }
         "tabs" => tabs(s, ui, state),
+        "borders" => borders(s, ui, state),
+        "border-color" => border_color(s, ui, state),
         "options" => {
             page_link(s, wordcraft_gnome::t!("Text Direction"), "direction");
             let marks = ui
@@ -635,4 +637,246 @@ fn tabs(s: &Rc<ParagraphPopover>, _ui: &Rc<Ui>, state: &Value) {
         "para.tabs",
         json!({"clearAll":true}),
     ));
+}
+
+fn border_color(s: &Rc<ParagraphPopover>, _ui: &Rc<Ui>, state: &Value) {
+    let current = state["borders"]
+        .as_object()
+        .and_then(|b| b.values().find_map(|v| rgb_value_hex(&v["color"])));
+    let weak = Rc::downgrade(s);
+    let picker =
+        embedded_color_chooser("paragraph-border-chooser", current.as_deref(), move |hex| {
+            let Some(s) = weak.upgrade() else {
+                return false;
+            };
+            s.border.borrow_mut()["color"] = json!(hex);
+            change_edges(&s, None, Some(("color", json!(hex))))
+        });
+    s.detail.append(&picker.widget);
+}
+fn change_edges(
+    s: &Rc<ParagraphPopover>,
+    placement: Option<&str>,
+    property: Option<(&str, Value)>,
+) -> bool {
+    let Some(ui) = s.ui.upgrade() else {
+        return false;
+    };
+    let recipe = s.border.borrow().clone();
+    let ok = tools_change(&ui, |session| {
+        let styles = session.doc.styles.clone();
+        wordcraft_engine::cmd::para::fmt(session, &|p| {
+            let mut borders = styles.resolve_para(p).borders.unwrap_or_default();
+            if let Some((key, value)) = &property {
+                for edge in [
+                    &mut borders.top,
+                    &mut borders.bottom,
+                    &mut borders.left,
+                    &mut borders.right,
+                    &mut borders.between,
+                ]
+                .into_iter()
+                .flatten()
+                {
+                    match *key {
+                        "width" => edge.width = value.as_f64().unwrap_or(0.5) as f32,
+                        "style" => {
+                            edge.style = wordcraft_doc::props::BorderStyle::from_ooxml(
+                                value.as_str().unwrap_or("single"),
+                            )
+                        }
+                        "color" => {
+                            edge.color = value.as_str().and_then(wordcraft_doc::props::Rgb::parse)
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            if let Some(kind) = placement {
+                let line = wordcraft_doc::props::Border {
+                    style: wordcraft_doc::props::BorderStyle::from_ooxml(
+                        recipe["style"].as_str().unwrap_or("single"),
+                    ),
+                    width: recipe["width"].as_f64().unwrap_or(0.5) as f32,
+                    color: recipe["color"]
+                        .as_str()
+                        .and_then(wordcraft_doc::props::Rgb::parse),
+                    space: 1.,
+                };
+                if kind == "none" {
+                    borders = Default::default();
+                } else {
+                    for edge in ["top", "bottom", "left", "right"] {
+                        if edge == kind || matches!(kind, "all" | "outside") {
+                            match edge {
+                                "top" => borders.top = Some(line),
+                                "bottom" => borders.bottom = Some(line),
+                                "left" => borders.left = Some(line),
+                                _ => borders.right = Some(line),
+                            }
+                        }
+                    }
+                    if kind == "all" || kind == "inside" {
+                        borders.between = Some(line);
+                    }
+                }
+            }
+            p.borders = Some(borders);
+        })
+        .map_err(|e| e.to_string())?;
+        Ok(())
+    });
+    if ok {
+        s.remember_property("para.borders", &recipe, &ui);
+        if !ui.format_group.pinned.get() {
+            if let Some(pop) = s.popover.upgrade() {
+                close_format_popover(&pop);
+            }
+        }
+    }
+    ok
+}
+fn borders(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, state: &Value) {
+    heading(s, wordcraft_gnome::t!("Paragraph borders"));
+    if state["borders"].is_null()
+        && state["_mixed"]
+            .as_array()
+            .is_some_and(|m| m.iter().any(|v| v == "borders"))
+    {
+        note(s, wordcraft_gnome::t!("Mixed"));
+    }
+    for (title, kind) in [
+        (wordcraft_gnome::t!("Bottom"), "bottom"),
+        (wordcraft_gnome::t!("Top"), "top"),
+        (wordcraft_gnome::t!("Left"), "left"),
+        (wordcraft_gnome::t!("Right"), "right"),
+        (wordcraft_gnome::t!("Outside"), "outside"),
+        (wordcraft_gnome::t!("All"), "all"),
+        (wordcraft_gnome::t!("No Borders"), "none"),
+    ] {
+        let b = style_menu_button(title);
+        b.set_widget_name(&format!("paragraph-border-{kind}"));
+        let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+        let sample = gtk::DrawingArea::new();
+        sample.set_content_width(24);
+        sample.set_content_height(24);
+        sample.set_draw_func(move |w, c, _, _| {
+            let fg = w.color();
+            c.set_source_rgba(fg.red() as f64, fg.green() as f64, fg.blue() as f64, 0.25);
+            c.rectangle(3., 3., 18., 18.);
+            let _ = c.stroke();
+            c.set_source_rgba(fg.red() as f64, fg.green() as f64, fg.blue() as f64, 1.);
+            c.set_line_width(1.8);
+            for (side, x1, y1, x2, y2) in [
+                ("top", 3., 3., 21., 3.),
+                ("bottom", 3., 21., 21., 21.),
+                ("left", 3., 3., 3., 21.),
+                ("right", 21., 3., 21., 21.),
+            ] {
+                if side == kind || matches!(kind, "outside" | "all") {
+                    c.move_to(x1, y1);
+                    c.line_to(x2, y2);
+                }
+            }
+            if kind == "all" {
+                c.move_to(3., 12.);
+                c.line_to(21., 12.);
+            }
+            if kind == "none" {
+                c.move_to(2., 22.);
+                c.line_to(22., 2.);
+            }
+            let _ = c.stroke();
+        });
+        row.append(&sample);
+        let label = gtk::Label::new(Some(title));
+        label.set_hexpand(true);
+        label.set_xalign(0.);
+        row.append(&label);
+        if state["borders"][kind].is_object() {
+            row.append(&gtk::Label::new(Some("✓")));
+        }
+        b.set_child(Some(&row));
+        s.detail.append(&b);
+        let weak = Rc::downgrade(s);
+        b.connect_clicked(move |_| {
+            if let Some(s) = weak.upgrade() {
+                s.border.borrow_mut()["kind"] = json!(kind);
+                change_edges(&s, Some(kind), None);
+            }
+        });
+    }
+    let widths = state["borders"]
+        .as_object()
+        .map(|o| {
+            o.values()
+                .filter_map(|v| v["width"].as_f64())
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+    let width = widths
+        .first()
+        .copied()
+        .filter(|v| widths.iter().all(|w| (v - w).abs() < 0.001));
+    let n = s.number(
+        wordcraft_gnome::t!("Thickness (pt)"),
+        width.unwrap_or(0.5),
+        0.25,
+        6.,
+    );
+    n.set_widget_name("paragraph-border-thickness");
+    if width.is_none() && !widths.is_empty() {
+        n.set_text("");
+    }
+    let weak = Rc::downgrade(s);
+    bind_numeric(ui, &n, move |v| {
+        if let Some(s) = weak.upgrade() {
+            s.border.borrow_mut()["width"] = json!(v);
+            if change_edges(&s, None, Some(("width", json!(v)))) {
+                Ok(())
+            } else {
+                Err("Cannot change borders".into())
+            }
+        } else {
+            Err("Document closed".into())
+        }
+    });
+    let styles = [
+        "single", "double", "dotted", "dashed", "thick", "triple", "dotDash", "wave",
+    ];
+    let mode = gtk::DropDown::from_strings(&[
+        wordcraft_gnome::t!("Single"),
+        wordcraft_gnome::t!("Double"),
+        wordcraft_gnome::t!("Dotted"),
+        wordcraft_gnome::t!("Dashed"),
+        wordcraft_gnome::t!("Thick"),
+        wordcraft_gnome::t!("Triple"),
+        wordcraft_gnome::t!("Dot Dash"),
+        wordcraft_gnome::t!("Wavy"),
+    ]);
+    let current: Vec<_> = state["borders"]
+        .as_object()
+        .map(|o| o.values().filter_map(|v| v["style"].as_str()).collect())
+        .unwrap_or_default();
+    let style = current
+        .first()
+        .copied()
+        .filter(|v| current.iter().all(|w| v == w));
+    mode.set_selected(
+        style
+            .and_then(|v| styles.iter().position(|x| *x == v))
+            .map_or(gtk::INVALID_LIST_POSITION, |i| i as u32),
+    );
+    accessible_name(&mode, wordcraft_gnome::t!("Line Style"));
+    s.detail.append(&mode);
+    let weak = Rc::downgrade(s);
+    mode.connect_selected_notify(move |m| {
+        if let Some(s) = weak.upgrade() {
+            if let Some(v) = styles.get(m.selected() as usize) {
+                s.border.borrow_mut()["style"] = json!(v);
+                change_edges(&s, None, Some(("style", json!(v))));
+            }
+        }
+    });
+    page_link(s, wordcraft_gnome::t!("Color"), "border-color");
 }

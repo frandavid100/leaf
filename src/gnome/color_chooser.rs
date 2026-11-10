@@ -120,6 +120,7 @@ impl InlineColor {
     }
     fn cell(self: &Rc<Self>, value: &str) -> gtk::Button {
         let button = gtk::Button::new();
+        button.add_css_class("leaf-color-cell");
         button.add_css_class("flat");
         button.set_widget_name(&format!("color-swatch-{}", value.to_lowercase()));
         let label = wordcraft_gnome::i18n::interpolate(
@@ -186,6 +187,7 @@ impl InlineColor {
 }
 fn flow() -> gtk::FlowBox {
     let flow = gtk::FlowBox::new();
+    flow.add_css_class("leaf-color-grid");
     flow.set_selection_mode(gtk::SelectionMode::None);
     flow.set_min_children_per_line(4);
     flow.set_max_children_per_line(8);

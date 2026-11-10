@@ -104,6 +104,16 @@ pub(super) fn append(
             |u| format_painter::start(u, true),
         );
     } else {
+        context_item(
+            &choices,
+            actions,
+            host,
+            ui,
+            wordcraft_gnome::t!("Paste Formatting"),
+            "paste-format",
+            clipboard::can_paste_format(ui),
+            clipboard::paste_format,
+        );
         let formats = ui.document_box.clipboard().formats();
         let plain = formats.contains_type(String::static_type())
             || formats.contain_mime_type("text/plain")

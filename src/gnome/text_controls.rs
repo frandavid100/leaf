@@ -386,6 +386,7 @@ impl TextControls {
             let context = ui.document_box.pango_context();
             let mut desc = gtk::pango::FontDescription::new();
             desc.set_family(family);
+            desc.set_size(12 * gtk::pango::SCALE);
             if let Some(font) = context.load_font(&desc).filter(|f| {
                 f.describe()
                     .family()

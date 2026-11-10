@@ -7,6 +7,7 @@ pub(super) struct ParagraphPopover {
     pub(super) stack: gtk::Stack,
     pub(super) main: gtk::Box,
     pub(super) detail: gtk::Box,
+    pub(super) fixed: gtk::Box,
     pub(super) message: gtk::Label,
     pub(super) header: Rc<FormatHeader>,
     pub(super) spacing: Cell<f64>,
@@ -653,7 +654,7 @@ impl ParagraphPopover {
             apply.set_child(Some(&gtk::Image::from_icon_name("view-refresh-symbolic")));
             apply.set_tooltip_text(Some(tip));
             accessible_name(&apply, tip);
-            let row = property_split(&open, &apply);
+            let row = reapply_split(&open, &apply);
             row.set_widget_name(&format!("format-row-paragraph-{page}"));
             self.main.append(&row);
         }
@@ -764,20 +765,23 @@ impl ParagraphPopover {
             "sort" => wordcraft_gnome::t!("Sort"),
             "tabs" => wordcraft_gnome::t!("Tab Stops"),
             "borders" => wordcraft_gnome::t!("Borders"),
+            "border-color" => wordcraft_gnome::t!("Color"),
             "shading" => wordcraft_gnome::t!("Shading"),
             "columns" => wordcraft_gnome::t!("Columns"),
             _ => wordcraft_gnome::t!("More Paragraph Options"),
         };
-        let nested = matches!(page, "bullets" | "numbering");
+        let nested = matches!(page, "bullets" | "numbering" | "border-color");
+        let border_color = page == "border-color";
         self.header.page(page, title, move || {
             if let Some(s) = weak.upgrade() {
                 if nested {
-                    s.page("list");
+                    s.page(if border_color { "borders" } else { "list" });
                 } else {
                     s.home();
                 }
             }
         });
+        clear_box(&self.fixed);
         clear_box(&self.detail);
         self.message.set_visible(false);
         let Some(ui) = self.ui.upgrade() else {
@@ -855,6 +859,10 @@ impl ParagraphPopover {
                         }
                     }
                 });
+                if let Some(parent) = editor.scope_header.parent().and_downcast::<gtk::Box>() {
+                    parent.remove(&editor.scope_header);
+                }
+                self.fixed.append(&editor.scope_header);
                 self.detail.append(&editor.root);
                 self.detail.append(&editor.apply);
             }
@@ -1319,6 +1327,8 @@ pub(super) fn install_paragraph_popover(
     scroll.set_propagate_natural_height(true);
     scroll.set_child(Some(&detail));
     let detail_page = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    let fixed = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    detail_page.append(&fixed);
     detail_page.append(&scroll);
     let main_scroll = gtk::ScrolledWindow::new();
     main_scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
@@ -1340,6 +1350,7 @@ pub(super) fn install_paragraph_popover(
         stack,
         main,
         detail,
+        fixed,
         message,
         header,
         last_applied: RefCell::new(std::collections::HashMap::new()),

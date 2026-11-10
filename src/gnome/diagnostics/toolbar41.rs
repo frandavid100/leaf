@@ -55,8 +55,8 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         if std::env::var_os("LEAF_TOOLBAR_DND").is_some() {
             window.set_title(Some("Leaf Toolbar41"));
             for (name, pop) in [
-                ("alignment", paragraph.popover.upgrade().unwrap()),
-                ("list", paragraph.popover.upgrade().unwrap()),
+                ("alignment-options", paragraph.popover.upgrade().unwrap()),
+                ("list-options", paragraph.popover.upgrade().unwrap()),
                 ("underline-options", text.popover.upgrade().unwrap()),
                 ("image", elements.pop.clone()),
             ] {
@@ -104,20 +104,20 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             }
             assert_eq!(state(&ui), before);
         }
-        click(&ui.format_toolbar, "format-quick-alignment");
+        click(&ui.format_toolbar, "format-quick-alignment-options");
         settle().await;
         assert_eq!(state(&ui), before);
         assert!(!paragraph.header.arrow.is_visible());
         assert_eq!(
             paragraph.popover.upgrade().unwrap().parent().as_ref(),
-            find_widget(&ui.format_toolbar, "format-quick-alignment").as_ref()
+            find_widget(&ui.format_toolbar, "format-quick-alignment-options").as_ref()
         );
         assert!(
             find_widget(&paragraph.main, "format-row-paragraph-alignment")
                 .is_none_or(|row| !row.get_visible())
         );
         paragraph.popover.upgrade().unwrap().popdown();
-        click(&ui.format_toolbar, "format-quick-list");
+        click(&ui.format_toolbar, "format-quick-list-options");
         settle().await;
         assert!(!paragraph.header.arrow.is_visible());
         for kind in [
@@ -298,7 +298,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         dialog.close();
         settle().await;
         let color_before = state(&ui);
-        click(&ui.format_toolbar, "format-quick-ink");
+        click(&ui.format_toolbar, "format-quick-ink-options");
         settle().await;
         assert!(!text.header.arrow.is_visible());
         assert_eq!(

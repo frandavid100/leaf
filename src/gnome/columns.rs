@@ -84,6 +84,7 @@ pub(super) struct ColumnEditor {
     pub(super) root: gtk::Box,
     pub(super) controls: Rc<ColumnControls>,
     pub(super) apply: gtk::Button,
+    pub(super) scope_header: adw::PreferencesGroup,
 }
 pub(super) struct ColumnsDialog {
     pub(super) window: adw::Dialog,
@@ -113,9 +114,10 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
     page.append(&group);
     let preview = gtk::DrawingArea::new();
     preview.set_content_width(320);
-    preview.set_content_height(112);
+    preview.set_content_height(190);
     preview.set_halign(gtk::Align::Fill);
-    group.add(&preview);
+    // Preview follows detailed controls; presets remain at the beginning.
+
     let mode = adw::ComboRow::new();
     mode.set_title(wordcraft_gnome::t!("Widths"));
     mode.set_model(Some(&gtk::StringList::new(&[
@@ -200,7 +202,7 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
         widths.push((width, after));
     }
     let scopes_group = adw::PreferencesGroup::new();
-    page.append(&scopes_group);
+    page.prepend(&scopes_group);
     let scope = adw::ComboRow::new();
     scope.set_title(wordcraft_gnome::t!("Apply To"));
     let mut labels = vec![
@@ -233,6 +235,8 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
     let errors = adw::PreferencesGroup::new();
     errors.add(&error);
     page.append(&errors);
+    page.append(&preview);
+    let scope_header = scopes_group.clone();
     let controls = Rc::new(ColumnControls {
         mode,
         count,
@@ -296,18 +300,19 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
                 return;
             };
             let color = area.color();
-            let margin = 14.0;
             let total = c.text_width as f64;
-            let scale = (w as f64 - 2.0 * margin) / total;
-            let y = 12.0;
-            let height = h as f64 - 24.0;
+            let height = h as f64 - 24.;
+            let scale = ((w as f64 - 28.) / total).min(height / (total * 1.414));
+            let frame_width = total * scale;
+            let margin = (w as f64 - frame_width) / 2.;
+            let y = 12.;
             cr.set_source_rgba(
                 color.red() as f64,
                 color.green() as f64,
                 color.blue() as f64,
                 0.15,
             );
-            cr.rectangle(margin, y, w as f64 - 2.0 * margin, height);
+            cr.rectangle(margin, y, total * scale, height);
             let _ = cr.stroke();
             let mut x = margin;
             for i in 0..cols.count as usize {
@@ -390,9 +395,105 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
             }
         });
     }
+    let presets = gtk::FlowBox::new();
+    presets.set_selection_mode(gtk::SelectionMode::None);
+    presets.set_min_children_per_line(3);
+    presets.set_max_children_per_line(5);
+    presets.set_homogeneous(true);
+    presets.set_row_spacing(4);
+    presets.set_column_spacing(4);
+    let mut choices = Vec::new();
+    for (label, count, mode, id) in [
+        (wordcraft_gnome::t!("One"), 1, 0, "one"),
+        (wordcraft_gnome::t!("Two"), 2, 0, "two"),
+        (wordcraft_gnome::t!("Three"), 3, 0, "three"),
+        (wordcraft_gnome::t!("Narrow Left Column"), 2, 1, "left"),
+        (wordcraft_gnome::t!("Narrow Right Column"), 2, 2, "right"),
+    ] {
+        let b = gtk::Button::new();
+        b.set_widget_name(&format!("columns-preset-{id}"));
+        b.set_tooltip_text(Some(label));
+        accessible_name(&b, label);
+        let sample = gtk::DrawingArea::new();
+        sample.set_content_width(44);
+        sample.set_content_height(44);
+        sample.set_draw_func(move |w, c, _, _| {
+            let fg = w.color();
+            c.set_source_rgba(fg.red() as f64, fg.green() as f64, fg.blue() as f64, 0.8);
+            let ratios: Vec<f64> = if mode == 1 {
+                vec![0.3, 0.7]
+            } else if mode == 2 {
+                vec![0.7, 0.3]
+            } else {
+                vec![1. / count as f64; count]
+            };
+            let mut x = 3.;
+            for ratio in ratios {
+                let width = 38. * ratio - 3.;
+                for y in [6., 13., 20., 27., 34.] {
+                    c.move_to(x, y);
+                    c.line_to(x + width, y);
+                }
+                x += width + 3.;
+            }
+            let _ = c.stroke();
+        });
+        b.set_child(Some(&sample));
+        presets.insert(&b, -1);
+        choices.push((b.clone(), count, mode));
+        let weak = Rc::downgrade(&controls);
+        let commit = apply.downgrade();
+        b.connect_clicked(move |_| {
+            if let (Some(c), Some(apply)) = (weak.upgrade(), commit.upgrade()) {
+                c.count.set_value(count as f64);
+                c.mode.set_selected(mode);
+                apply.emit_clicked();
+            }
+        });
+    }
+    let matching = gtk::Label::new(None);
+    matching.add_css_class("dim-label");
+    matching.set_widget_name("columns-preset-state");
+    let update: Rc<dyn Fn()> = {
+        let weak = Rc::downgrade(&controls);
+        let matching = matching.clone();
+        Rc::new(move || {
+            if let Some(c) = weak.upgrade() {
+                let setup = c.setup();
+                let mut found = false;
+                for (b, count, mode) in &choices {
+                    let on = setup.count == *count as u32 && c.mode.selected() == *mode;
+                    if on {
+                        b.add_css_class("current-style");
+                        found = true;
+                    } else {
+                        b.remove_css_class("current-style");
+                    }
+                    b.update_state(&[gtk::accessible::State::Pressed(if on {
+                        gtk::AccessibleTristate::True
+                    } else {
+                        gtk::AccessibleTristate::False
+                    })]);
+                }
+                matching.set_text(if found {
+                    ""
+                } else {
+                    wordcraft_gnome::t!("Custom")
+                });
+            }
+        })
+    };
+    let f = update.clone();
+    controls.mode.connect_selected_notify(move |_| f());
+    let f = update.clone();
+    controls.count.connect_value_changed(move |_| f());
+    update();
+    page.insert_child_after(&presets, Some(&scope_header));
+    page.insert_child_after(&matching, Some(&presets));
     controls.refresh();
     ColumnEditor {
         root: page,
+        scope_header,
         controls,
         apply,
     }

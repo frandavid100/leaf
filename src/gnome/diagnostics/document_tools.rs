@@ -63,73 +63,71 @@ pub(super) fn document_tools_ui_test(
             }
             menu.popup();
             popover_pin(&panel.pop).set_active(true);
-            panel.width.set_value(50.0);
-            find_widget(&panel.pop.child().unwrap(), "picture-apply")
-                .unwrap()
-                .downcast::<gtk::Button>()
-                .unwrap()
-                .emit_clicked();
-            {
-                let state = ui.current.borrow();
-                let (_, w, h) = pictures::selected(&state.as_ref().unwrap().session).unwrap();
-                assert!((w / h - 2.0).abs() < 0.01);
-                assert!((w as f64 / PT_PER_MM - 50.0).abs() < 0.1);
-            }
-            find_widget(&panel.pop.child().unwrap(), "picture-original")
-                .unwrap()
-                .downcast::<gtk::Button>()
-                .unwrap()
-                .emit_clicked();
-            assert_eq!(
-                pictures::selected(&ui.current.borrow().as_ref().unwrap().session)
+            glib::timeout_add_local_once(std::time::Duration::from_millis(400), move || {
+                panel.width.set_value(5.0);
+                {
+                    let state = ui.current.borrow();
+                    let (_, w, h) = pictures::selected(&state.as_ref().unwrap().session).unwrap();
+                    assert!((w / h - 2.0).abs() < 0.01);
+                    assert!((w as f64 / PT_PER_MM - 50.0).abs() < 0.1);
+                }
+                find_widget(&panel.pop.child().unwrap(), "picture-original")
                     .unwrap()
-                    .1,
-                120.0
-            );
-            find_widget(&panel.pop.child().unwrap(), "picture-delete")
-                .unwrap()
-                .downcast::<gtk::Button>()
-                .unwrap()
-                .emit_clicked();
-            assert!(panel.context.is_visible() && !panel.context.is_sensitive());
-            apply_user_edit(&ui, Edit::Undo);
-            assert!(panel.context.is_visible() && panel.context.is_sensitive());
-            panel.pop.popdown();
-            let props = show_section_properties(&ui, &parent, 0);
-            wait_dialog_presented(&props.window);
-            props.width.set_value(297.0);
-            props.height.set_value(210.0);
-            props.top.set_value(20.0);
-            props.bottom.set_value(20.0);
-            props.left.set_value(25.0);
-            props.right.set_value(25.0);
-            props.apply.emit_clicked();
-            {
-                let mut state = ui.current.borrow_mut();
-                let d = state.as_mut().unwrap();
-                let p = PageSetup::current(&d.session);
-                assert!(p.width > p.height);
-                let (id, dirty, depth, rev) = (
-                    d.session.document_id(),
-                    d.session.dirty,
-                    d.session.undo_depth(),
-                    d.session.rev(),
-                );
-                pdf_export::export(&mut d.session, Path::new("document-tools-test.pdf")).unwrap();
+                    .downcast::<gtk::Button>()
+                    .unwrap()
+                    .emit_clicked();
                 assert_eq!(
-                    (
+                    pictures::selected(&ui.current.borrow().as_ref().unwrap().session)
+                        .unwrap()
+                        .1,
+                    120.0
+                );
+                find_widget(&panel.pop.child().unwrap(), "picture-delete")
+                    .unwrap()
+                    .downcast::<gtk::Button>()
+                    .unwrap()
+                    .emit_clicked();
+                assert!(panel.context.is_visible() && !panel.context.is_sensitive());
+                apply_user_edit(&ui, Edit::Undo);
+                assert!(panel.context.is_visible() && panel.context.is_sensitive());
+                panel.pop.popdown();
+                let props = show_section_properties(&ui, &parent, 0);
+                wait_dialog_presented(&props.window);
+                props.width.set_value(297.0);
+                props.height.set_value(210.0);
+                props.top.set_value(20.0);
+                props.bottom.set_value(20.0);
+                props.left.set_value(25.0);
+                props.right.set_value(25.0);
+                props.apply.emit_clicked();
+                {
+                    let mut state = ui.current.borrow_mut();
+                    let d = state.as_mut().unwrap();
+                    let p = PageSetup::current(&d.session);
+                    assert!(p.width > p.height);
+                    let (id, dirty, depth, rev) = (
                         d.session.document_id(),
                         d.session.dirty,
                         d.session.undo_depth(),
-                        d.session.rev()
-                    ),
-                    (id, dirty, depth, rev)
-                );
-            }
-            assert_dialog_closed(&props.window);
-            assert_eq!(app.windows().len(), 1);
-            eprintln!("DOCUMENT_TOOLS_OK");
-            app.quit();
+                        d.session.rev(),
+                    );
+                    pdf_export::export(&mut d.session, Path::new("document-tools-test.pdf"))
+                        .unwrap();
+                    assert_eq!(
+                        (
+                            d.session.document_id(),
+                            d.session.dirty,
+                            d.session.undo_depth(),
+                            d.session.rev()
+                        ),
+                        (id, dirty, depth, rev)
+                    );
+                }
+                assert_dialog_closed(&props.window);
+                assert_eq!(app.windows().len(), 1);
+                eprintln!("DOCUMENT_TOOLS_OK");
+                app.quit();
+            });
         });
     });
 }
