@@ -5,7 +5,7 @@ use wordcraft_gnome::toolbar::Placement;
 
 pub(super) struct QuickTools {
     style_name: gtk::Label,
-    alignment: gtk::MenuButton,
+    alignment: gtk::Button,
     ui: std::rc::Weak<Ui>,
     width: Cell<i32>,
     opening: Cell<bool>,
@@ -156,6 +156,34 @@ impl QuickTools {
                 }
                 let catalog = wordcraft_gnome::toolbar::tools(group);
                 let tool = catalog.iter().find(|t| t.id == id).unwrap();
+                if tool_actions::split_tool(group, &id) {
+                    let apply = style_menu_button(tool.label);
+                    apply.set_widget_name(&format!("overflow-tool-{group}-{id}"));
+                    let open = gtk::Button::from_icon_name("go-next-symbolic");
+                    let (weak, g, key) = (self.ui.clone(), *group, id.clone());
+                    apply.connect_clicked(move |_| {
+                        if let Some(ui) = weak.upgrade() {
+                            tool_actions::activate(&ui, g, &key);
+                        }
+                    });
+                    let (weak, g, key) = (self.ui.clone(), *group, id.clone());
+                    open.connect_clicked(move |_| {
+                        if let Some(ui) = weak.upgrade() {
+                            if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                                tools.open_group(g, Some(&key));
+                            }
+                        }
+                    });
+                    let split = property_split(&apply, &open);
+                    split
+                        .last_child()
+                        .unwrap()
+                        .downcast::<gtk::MenuButton>()
+                        .unwrap()
+                        .set_icon_name("go-next-symbolic");
+                    self.overflow_main.append(&split);
+                    continue;
+                }
                 let button = style_menu_button(tool.label);
                 button.set_widget_name(&format!("overflow-tool-{group}-{id}"));
                 let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
@@ -325,12 +353,12 @@ impl QuickTools {
                     .paragraph
                     .borrow()
                     .as_ref()
-                    .map(|p| p.main.clone().upcast::<gtk::Widget>()),
+                    .map(|p| p.stack.clone().upcast::<gtk::Widget>()),
                 "text" => ui
                     .text_tools
                     .borrow()
                     .as_ref()
-                    .and_then(|t| t.stack.child_by_name("main")),
+                    .map(|t| t.stack.clone().upcast::<gtk::Widget>()),
                 _ => ui.elements.borrow().as_ref().and_then(|p| p.pop.child()),
             };
             if let Some(root) = root {
@@ -392,19 +420,28 @@ impl QuickTools {
             }
         }
         for (key, swatch) in &self.swatches {
-            let value = if *key == "ink" {
-                &character["color"]["Rgb"]
+            let saved = ui
+                .text_tools
+                .borrow()
+                .as_ref()
+                .and_then(|t| t.palette.borrow().clone())
+                .map(|p| {
+                    if *key == "ink" {
+                        p.last_ink.borrow().clone()
+                    } else {
+                        p.last_highlight.borrow().clone()
+                    }
+                })
+                .unwrap_or_default();
+            let color = if saved.len() == 6 && saved.bytes().all(|b| b.is_ascii_hexdigit()) {
+                format!("#{saved}")
             } else {
-                &character["highlight"]
+                saved.clone()
             };
-            let rgb = value.as_array().filter(|v| v.len() == 3).map(|v| {
-                (
-                    v[0].as_f64().unwrap_or(0.) / 255.,
-                    v[1].as_f64().unwrap_or(0.) / 255.,
-                    v[2].as_f64().unwrap_or(0.) / 255.,
-                )
-            });
-            let none = *key == "highlight" && rgb.is_none();
+            let rgb = gdk::RGBA::parse(&color)
+                .ok()
+                .map(|c| (c.red() as f64, c.green() as f64, c.blue() as f64));
+            let none = *key == "highlight" && saved == "none";
             swatch.set_draw_func(move |w, c, width, height| {
                 if let Some((r, g, b)) = rgb {
                     c.set_source_rgb(r, g, b);
@@ -429,8 +466,57 @@ impl QuickTools {
             });
             swatch.queue_draw();
         }
+        for (group, _, tools) in &self.groups {
+            for (id, widget) in tools {
+                widget.set_sensitive(tool_actions::enabled(ui, group, id));
+                if *group == "elements"
+                    && (id.starts_with("image-")
+                        || id.starts_with("table-")
+                        || id.starts_with("cell-"))
+                {
+                    if !widget.is_sensitive() {
+                        widget.set_tooltip_text(Some(if id.starts_with("image-") {
+                            wordcraft_gnome::t!("Select an image in the document to edit it.")
+                        } else {
+                            wordcraft_gnome::t!("Place the caret in a table.")
+                        }));
+                    }
+                }
+                if id == "language" {
+                    if let Some(body) = find_widget(widget, "format-quick-language") {
+                        body.set_sensitive(
+                            ui.text_tools
+                                .borrow()
+                                .as_ref()
+                                .is_some_and(|t| t.language_remembered()),
+                        );
+                    }
+                }
+                if id == "size" {
+                    if let Some(spin) = find_widget(widget, "format-quick-size-input")
+                        .and_downcast::<gtk::SpinButton>()
+                        .filter(|s| !control_has_focus(s))
+                    {
+                        let old = ui.format_syncing.replace(true);
+                        if let Some(size) = character["size"].as_f64() {
+                            spin.set_value(size);
+                        } else {
+                            spin.set_text("");
+                        }
+                        ui.format_syncing.set(old);
+                    }
+                }
+            }
+        }
         let paragraph = selection_paragraph(ui);
-        let alignment = paragraph["align"].as_str();
+        let remembered = ui
+            .paragraph
+            .borrow()
+            .as_ref()
+            .and_then(|p| p.groups.borrow().get("alignment").cloned());
+        let alignment = remembered
+            .as_ref()
+            .and_then(|v| v["props"]["align"].as_str());
         let (icon, label) = match alignment {
             Some("left") => (
                 "format-justify-left-symbolic",
@@ -453,7 +539,8 @@ impl QuickTools {
         if let Some(image) = self
             .alignment
             .child()
-            .and_then(|w| w.first_child())
+            .and_then(|w| w.downcast::<gtk::Overlay>().ok())
+            .and_then(|w| w.child())
             .and_downcast::<gtk::Image>()
         {
             image.set_icon_name(Some(icon));
@@ -491,6 +578,17 @@ impl QuickTools {
                     character[*key].as_str().is_some_and(|v| v != "none"),
                     character[*key].is_null(),
                 ),
+                "keepNext" | "keepLines" | "pageBreakBefore" | "widowControl" => {
+                    (paragraph[*key] == true, paragraph[*key].is_null())
+                }
+                "marks" => (
+                    ui.current
+                        .borrow()
+                        .as_ref()
+                        .is_some_and(|d| d.session.view.marks),
+                    false,
+                ),
+                "text-border" => (character["border"].is_object(), false),
                 _ => (
                     character[*key].as_bool().unwrap_or(false),
                     character[*key].is_null(),
@@ -504,6 +602,13 @@ impl QuickTools {
                 button.unset_state_flags(gtk::StateFlags::CHECKED);
             }
             marker.set_visible(mixed);
+            if let Some(split) = button.parent().and_downcast::<adw::SplitButton>() {
+                if active && !mixed {
+                    split.add_css_class("split-active");
+                } else {
+                    split.remove_css_class("split-active");
+                }
+            }
             if let Some(status) =
                 find_widget(&self.overflow_main, &format!("overflow-state-text-{key}"))
                     .and_downcast::<gtk::Label>()
@@ -593,10 +698,8 @@ pub(super) fn install_quick_tools(
         let mut tools = Vec::new();
         for tool in wordcraft_gnome::toolbar::tools(group) {
             let widget: gtk::Widget = if group == "text"
-                && matches!(
-                    tool.id,
-                    "bold" | "italic" | "underline" | "strike" | "superscript"
-                ) {
+                && matches!(tool.id, "bold" | "italic" | "underline" | "strike")
+            {
                 let command = match tool.id {
                     "bold" => "format.bold",
                     "italic" => "format.italic",
@@ -631,7 +734,17 @@ pub(super) fn install_quick_tools(
                     );
                     accessible_name(&options, &label);
                     options.set_tooltip_text(Some(&label));
-                    connect_picker(ui, &options, text, group, Some(tool.id));
+                    connect_picker(
+                        ui,
+                        &options,
+                        if group == "paragraph" {
+                            paragraph
+                        } else {
+                            text
+                        },
+                        group,
+                        Some(tool.id),
+                    );
                     toggles.push(shortcut(ui, body, tool.icon, tool.label, tool.id, command));
                     split.upcast()
                 } else {
@@ -648,10 +761,91 @@ pub(super) fn install_quick_tools(
                     toggles.push(item);
                     toggle.upcast()
                 }
-            } else if group == "elements" && !matches!(tool.id, "image" | "table" | "toc") {
+            } else if tool_actions::split_tool(group, tool.id) {
+                let split = adw::SplitButton::new();
+                split.add_css_class("flat");
+                split.add_css_class("image-button");
+                split.add_css_class("leaf-format-split");
+                split.set_direction(gtk::ArrowType::Up);
+                split.set_valign(gtk::Align::Center);
+                let body = split
+                    .first_child()
+                    .unwrap()
+                    .downcast::<gtk::Button>()
+                    .unwrap();
+                let options = split
+                    .last_child()
+                    .unwrap()
+                    .downcast::<gtk::MenuButton>()
+                    .unwrap();
+                body.set_widget_name(&format!("format-quick-{}", tool.id));
+                body.set_tooltip_text(Some(tool.label));
+                accessible_name(&body, tool.label);
+                let icon = gtk::Overlay::new();
+                icon.set_child(Some(&gtk::Image::from_icon_name(tool.icon)));
+                if matches!(tool.id, "ink" | "highlight") {
+                    let swatch = gtk::DrawingArea::new();
+                    swatch.set_widget_name(&format!("format-quick-{}-swatch", tool.id));
+                    swatch.set_content_width(16);
+                    swatch.set_content_height(3);
+                    swatch.set_valign(gtk::Align::End);
+                    icon.add_overlay(&swatch);
+                    swatches.push((tool.id, swatch));
+                }
+                body.set_child(Some(&icon));
+                let (weak, id) = (Rc::downgrade(ui), tool.id);
+                let group = group;
+                body.connect_clicked(move |_| {
+                    if let Some(ui) = weak.upgrade() {
+                        tool_actions::activate(&ui, group, id);
+                    }
+                });
+                if group == "paragraph" && tool.id == "alignment" {
+                    alignment = Some(body.clone());
+                }
+                options.set_widget_name(&format!("format-quick-{}-options", tool.id));
+                let label = wordcraft_gnome::i18n::interpolate(
+                    wordcraft_gnome::t!("Options for {label}"),
+                    &[("label", tool.label.into())],
+                );
+                accessible_name(&options, &label);
+                options.set_tooltip_text(Some(&label));
+                connect_picker(
+                    ui,
+                    &options,
+                    if group == "paragraph" {
+                        paragraph
+                    } else {
+                        text
+                    },
+                    group,
+                    Some(tool.id),
+                );
+                split.upcast()
+            } else if group == "text" && tool.id == "size" {
+                let control = tool_actions::sizing_control(ui);
+                control.set_widget_name("format-quick-size");
+                control.upcast()
+            } else if tool_actions::direct(group, tool.id) {
                 let button =
                     icon_button(tool.icon, tool.label, &format!("format-quick-{}", tool.id));
-                button.set_action_name(Some(&format!("win.insert-{}", tool.id)));
+                let (weak, group, id) = (Rc::downgrade(ui), group, tool.id);
+                button.connect_clicked(move |_| {
+                    if let Some(ui) = weak.upgrade() {
+                        tool_actions::activate(&ui, group, id);
+                    }
+                });
+                if tool_actions::toggle_command(group, tool.id).is_some() {
+                    let mixed = gtk::Label::new(Some("−"));
+                    mixed.set_visible(false);
+                    let icon = gtk::Overlay::new();
+                    icon.set_child(Some(&gtk::Image::from_icon_name(tool.icon)));
+                    icon.add_overlay(&mixed);
+                    mixed.set_halign(gtk::Align::End);
+                    mixed.set_valign(gtk::Align::End);
+                    button.set_child(Some(&icon));
+                    toggles.push((button.clone(), mixed, tool.id));
+                }
                 button.upcast()
             } else {
                 let button = gtk::MenuButton::new();
@@ -661,9 +855,7 @@ pub(super) fn install_quick_tools(
                 button.set_direction(gtk::ArrowType::Up);
                 button.set_tooltip_text(Some(tool.label));
                 accessible_name(&button, tool.label);
-                if group == "paragraph" && tool.id == "alignment" {
-                    alignment = Some(button.clone());
-                }
+
                 let content = gtk::Box::new(gtk::Orientation::Horizontal, 2);
                 let image = gtk::Image::from_icon_name(tool.icon);
                 if group == "text" && matches!(tool.id, "ink" | "highlight") {
@@ -684,19 +876,32 @@ pub(super) fn install_quick_tools(
                 arrow.set_pixel_size(16);
                 content.append(&arrow);
                 button.set_child(Some(&content));
-                connect_picker(
-                    ui,
-                    &button,
-                    if group == "paragraph" {
-                        paragraph
-                    } else if group == "text" {
-                        text
-                    } else {
-                        &elements.menu
-                    },
-                    group,
-                    Some(tool.id),
-                );
+                if group == "elements" && matches!(tool.id, "fields" | "breaks") {
+                    let model = elements_menu()
+                        .item_link(2, "section")
+                        .unwrap()
+                        .item_link(if tool.id == "fields" { 1 } else { 2 }, "submenu")
+                        .unwrap();
+                    button.set_menu_model(Some(&model));
+                } else if let Some(source) =
+                    tool_actions::source_widget(ui, tool.id).and_downcast::<gtk::MenuButton>()
+                {
+                    connect_existing_picker(ui, &button, &source, tool.id);
+                } else {
+                    connect_picker(
+                        ui,
+                        &button,
+                        if group == "paragraph" {
+                            paragraph
+                        } else if group == "text" {
+                            text
+                        } else {
+                            &elements.menu
+                        },
+                        group,
+                        Some(tool.id),
+                    );
+                }
                 button.upcast()
             };
             shortcuts.append(&widget);
@@ -955,4 +1160,32 @@ pub(super) fn group_pop(ui: &Ui, group: &str) -> gtk::Popover {
         .unwrap()
         .1
         .clone()
+}
+
+fn connect_existing_picker(
+    ui: &Rc<Ui>,
+    button: &gtk::MenuButton,
+    source: &gtk::MenuButton,
+    id: &'static str,
+) {
+    let Some(pop) = source.popover() else { return };
+    for launcher in [button, source] {
+        let (weak, pop) = (Rc::downgrade(ui), pop.clone());
+        launcher.set_create_popup_func(move |launcher| {
+            let Some(ui) = weak
+                .upgrade()
+                .filter(|u| tool_actions::enabled(u, "elements", id))
+            else {
+                return;
+            };
+            if pop.parent().as_ref() != Some(launcher.upcast_ref()) {
+                pop.set_visible(false);
+                if let Some(old) = pop.parent().and_downcast::<gtk::MenuButton>() {
+                    old.set_popover(None::<&gtk::Popover>);
+                }
+                launcher.set_popover(Some(&pop));
+            }
+            let _ = ui;
+        });
+    }
 }

@@ -1,7 +1,7 @@
 //! Native inline picture controls and cancellable file selection.
 use super::*;
 
-fn picture_properties_target(s: &Session) -> Option<(Pos, f32, f32)> {
+pub(super) fn picture_properties_target(s: &Session) -> Option<(Pos, f32, f32)> {
     pictures::selected(s).or_else(|| {
         let caption = wordcraft_gnome::captions::at(&s.doc, &s.sel.focus)?;
         if caption.pos.story != s.sel.focus.story || caption.pos.path != s.sel.focus.path {
@@ -291,6 +291,7 @@ pub(super) fn install_picture_controls(
         placement_buttons.push((button, mode));
     }
     let move_with_text = gtk::CheckButton::with_label(wordcraft_gnome::t!("Move with Text"));
+    move_with_text.set_widget_name("picture-move-with-text");
     context.append(&move_with_text);
     let original = style_menu_button(wordcraft_gnome::t!("Restore Original Size"));
     original.set_widget_name("picture-original");

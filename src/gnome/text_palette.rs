@@ -166,7 +166,7 @@ impl TextPalette {
             } else {
                 "format-row-text-highlight"
             });
-            row.append(&open);
+            row.append(&reapply_split(&open, &apply));
             properties.append(&row);
             configs.push((open, apply, value));
         }
@@ -343,6 +343,7 @@ impl TextPalette {
     pub(super) fn choose_ink(&self, value: &str) -> bool {
         if self.apply("format.color", json!({"color":value})) {
             self.last_ink.replace(value.into());
+            self.refresh_last();
             true
         } else {
             false
@@ -351,9 +352,31 @@ impl TextPalette {
     pub(super) fn choose_highlight(&self, value: &str) -> bool {
         if self.apply("leaf.highlight", json!({"color":value})) {
             self.last_highlight.replace(value.into());
+            self.refresh_last();
             true
         } else {
             false
+        }
+    }
+    fn refresh_last(&self) {
+        self.displayed.replace(serde_json::Value::Null);
+        self.sync();
+        if let Some(ui) = self.ui.upgrade() {
+            if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                tools.sync(&ui, &selection_character(&ui));
+            }
+        }
+    }
+    pub(super) fn reapply_color(&self, ink: bool) {
+        let value = if ink {
+            self.last_ink.borrow().clone()
+        } else {
+            self.last_highlight.borrow().clone()
+        };
+        if ink {
+            self.choose_ink(&value);
+        } else {
+            self.choose_highlight(&value);
         }
     }
     fn home(&self) {
@@ -668,45 +691,26 @@ impl TextPalette {
                     || (key == "strike" && state["doubleStrike"].is_null()),
             );
         }
-        let color = if state["color"].is_null() {
-            wordcraft_gnome::t!("Mixed").into()
-        } else if let Some(rgb) = state["color"]["Rgb"].as_array() {
-            format!(
-                "#{:02X}{:02X}{:02X}",
-                rgb[0].as_u64().unwrap_or(0),
-                rgb[1].as_u64().unwrap_or(0),
-                rgb[2].as_u64().unwrap_or(0)
-            )
-        } else {
-            wordcraft_gnome::t!("Automatic Color").into()
-        };
-        let current = ui.current.borrow();
-        let resolved = current
-            .as_ref()
-            .map(|d| wordcraft_gnome::text_properties::selected_resolved(&d.session))
-            .unwrap_or_default();
-        let highlight = if resolved
-            .windows(2)
-            .any(|w| w[0].highlight.or(w[0].shading) != w[1].highlight.or(w[1].shading))
-        {
-            wordcraft_gnome::t!("Mixed").into()
-        } else if let Some(c) = resolved.first().and_then(|p| p.highlight.or(p.shading)) {
-            format!("#{:02X}{:02X}{:02X}", c.0, c.1, c.2)
-        } else {
-            wordcraft_gnome::t!("No Highlight").into()
-        };
         for (button, text, title, value) in [
             (
                 &self.ink,
                 &self.ink_value,
                 wordcraft_gnome::t!("Text Color"),
-                color,
+                if self.last_ink.borrow().as_str() == "auto" {
+                    wordcraft_gnome::t!("Automatic Color").into()
+                } else {
+                    self.last_ink.borrow().clone()
+                },
             ),
             (
                 &self.highlight,
                 &self.highlight_value,
                 wordcraft_gnome::t!("Highlight"),
-                highlight,
+                if self.last_highlight.borrow().as_str() == "none" {
+                    wordcraft_gnome::t!("No Highlight").into()
+                } else {
+                    self.last_highlight.borrow().clone()
+                },
             ),
         ] {
             let label = wordcraft_gnome::i18n::interpolate(

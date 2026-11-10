@@ -99,6 +99,7 @@ pub(super) fn panel_action(
     args: serde_json::Value,
 ) {
     let b = gtk::Button::with_label(label);
+    b.set_widget_name(&format!("tool-control-{command}"));
     b.set_halign(gtk::Align::Fill);
     accessible_name(&b, label);
     g.add(&b);
@@ -162,6 +163,7 @@ pub(super) fn panel_choice(
     key: &'static str,
 ) {
     let row = adw::ComboRow::new();
+    row.set_widget_name(&format!("tool-control-{command}-{key}"));
     row.set_title(label);
     let labels: Vec<&str> = std::iter::once(wordcraft_gnome::t!("Choose…"))
         .chain(options.iter().map(|o| o.0))

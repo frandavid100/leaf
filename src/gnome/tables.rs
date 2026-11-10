@@ -161,6 +161,7 @@ pub(super) fn table_property_toggle(
     w: &adw::PreferencesDialog,
 ) {
     let row = adw::SwitchRow::new();
+    row.set_widget_name(&format!("tool-control-table.properties-{key}"));
     row.set_title(label);
     row.set_active(on);
     g.add(&row);
@@ -201,6 +202,7 @@ pub(super) fn table_measurement(
     let row = adw::ActionRow::new();
     row.set_title(label);
     let n = gtk::SpinButton::with_range(min, 1584.0, 0.5);
+    n.set_widget_name(&format!("tool-control-{command}-{key}"));
     n.set_digits(1);
     n.set_value(value);
     n.set_valign(gtk::Align::Center);
@@ -230,19 +232,24 @@ pub(super) fn table_measurement(
     });
 }
 
-pub(super) fn show_table_properties(ui: &Rc<Ui>, parent: &ApplicationWindow) {
+pub(super) fn show_table_properties(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+) -> adw::PreferencesDialog {
     let state = {
         let mut state = ui.current.borrow_mut();
-        let Some(doc) = state.as_mut() else { return };
+        let Some(doc) = state.as_mut() else {
+            return preferences_dialog(wordcraft_gnome::t!("Table Properties"));
+        };
         if let Err(e) = use_table_target(&mut doc.session) {
             ui.toasts.add_toast(Toast::new(&e));
-            return;
+            return preferences_dialog(wordcraft_gnome::t!("Table Properties"));
         }
         match doc.session.run("table.properties", &serde_json::json!({})) {
             Ok(v) => v,
             Err(e) => {
                 ui.toasts.add_toast(Toast::new(&e.to_string()));
-                return;
+                return preferences_dialog(wordcraft_gnome::t!("Table Properties"));
             }
         }
     };
@@ -461,6 +468,7 @@ pub(super) fn show_table_properties(ui: &Rc<Ui>, parent: &ApplicationWindow) {
         ));
     }
     w.present(Some(parent));
+    w
 }
 
 pub(super) fn show_split_cells(ui: &Rc<Ui>, parent: &ApplicationWindow) {

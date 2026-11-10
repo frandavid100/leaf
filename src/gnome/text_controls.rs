@@ -509,7 +509,7 @@ impl TextControls {
             });
         }
     }
-    fn sync_document_fonts(self: &Rc<Self>) {
+    pub(super) fn sync_document_fonts(self: &Rc<Self>) {
         let Some(ui) = self.ui.upgrade() else { return };
         let mut names = ui
             .current

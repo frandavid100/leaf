@@ -13,7 +13,7 @@ pub(super) struct ParagraphPopover {
     pub(super) shade: RefCell<String>,
     pub(super) border: RefCell<serde_json::Value>,
     last_applied: RefCell<std::collections::HashMap<String, serde_json::Value>>,
-    groups: RefCell<std::collections::HashMap<String, serde_json::Value>>,
+    pub(super) groups: RefCell<std::collections::HashMap<String, serde_json::Value>>,
     pub(super) last_columns: RefCell<
         Option<(
             document_properties::ColumnSetup,
@@ -271,7 +271,8 @@ impl ParagraphPopover {
         let group = match command {
             "para.align" => "alignment",
             "para.bullets" | "para.numbering" | "para.multilevel" | "para.listLevel" => "list",
-            "para.indents" | "para.indent" | "para.outdent" => "indents",
+            "para.indents" => "indents",
+            "para.sort" => "sort",
             "para.shading" => "shading",
             "para.borders" => "borders",
             "para.lineSpacing" | "para.spacing" => "spacing",
@@ -295,7 +296,9 @@ impl ParagraphPopover {
                     .map(|v| ((*k).to_string(), v.clone()))
             })
             .collect();
-        let config = if command == "para.listLevel" {
+        let config = if command == "para.sort" {
+            serde_json::json!({"command":command,"args":args})
+        } else if command == "para.listLevel" {
             let saved = self.groups.borrow().get("list").cloned();
             if let Some(mut saved) = saved.filter(|v| v["command"].is_string()) {
                 saved["listLevel"] = args["level"].clone();
@@ -312,7 +315,7 @@ impl ParagraphPopover {
         self.groups.borrow_mut().insert(group.into(), config);
     }
 
-    fn repeat_group(self: &Rc<Self>, page: &str) {
+    pub(super) fn repeat_group(self: &Rc<Self>, page: &str) {
         if page == "columns" {
             let saved = self.last_columns.borrow().clone();
             if let (Some(ui), Some((setup, scope))) = (self.ui.upgrade(), saved) {
@@ -380,7 +383,9 @@ impl ParagraphPopover {
                     if let Some(p) = self.popover.upgrade() {
                         close_format_popover(&p);
                     }
-                    ui.document_box.grab_focus();
+                    if !ui.format_group.pinned.get() {
+                        ui.document_box.grab_focus();
+                    }
                 }
             }
         }
@@ -436,7 +441,7 @@ impl ParagraphPopover {
                     s.repeat_group(page);
                 }
             });
-            let row = property_split(&button, &repeat);
+            let row = reapply_split(&button, &repeat);
             row.set_widget_name(&format!("format-row-paragraph-{page}"));
             self.main.append(&row);
         }
@@ -754,7 +759,10 @@ impl ParagraphPopover {
             "bullets" => wordcraft_gnome::t!("Bullets"),
             "numbering" => wordcraft_gnome::t!("Numbering"),
             "indents" => wordcraft_gnome::t!("Indents"),
-            "spacing" => wordcraft_gnome::t!("Line Spacing"),
+            "spacing" => wordcraft_gnome::t!("Spacing"),
+            "direction" => wordcraft_gnome::t!("Text Direction"),
+            "sort" => wordcraft_gnome::t!("Sort"),
+            "tabs" => wordcraft_gnome::t!("Tab Stops"),
             "borders" => wordcraft_gnome::t!("Borders"),
             "shading" => wordcraft_gnome::t!("Shading"),
             "columns" => wordcraft_gnome::t!("Columns"),
@@ -776,6 +784,13 @@ impl ParagraphPopover {
             return;
         };
         let state = selection_paragraph(&ui);
+        if paragraph_options::build(self, &ui, page, &state) {
+            self.stack.set_visible_child_name("detail");
+            if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                tools.filter_menus();
+            }
+            return;
+        }
         match page {
             "list" => {
                 for (title, target) in [
@@ -1240,6 +1255,10 @@ impl ParagraphPopover {
     pub(super) fn toggle(self: &Rc<Self>, label: &str, active: bool, command: &'static str) {
         let b = gtk::CheckButton::with_label(label);
         b.set_active(active);
+        b.set_widget_name(&format!(
+            "format-row-paragraph-{}",
+            command.rsplit('.').next().unwrap_or("")
+        ));
         if let Some(ui) = self.ui.upgrade() {
             let state = selection_paragraph(&ui);
             let key = command.rsplit('.').next().unwrap_or("");

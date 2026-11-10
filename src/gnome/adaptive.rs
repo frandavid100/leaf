@@ -146,9 +146,15 @@ pub(super) struct TextTools {
     language_page: gtk::Box,
     last_font: RefCell<Option<String>>,
     last_language: RefCell<Option<String>>,
+    last_case: RefCell<String>,
 }
 impl TextTools {
     pub(super) fn remember_property(&self, command: &str, args: &serde_json::Value) {
+        if command == "format.changeCase" {
+            if let Some(mode) = args["mode"].as_str() {
+                self.last_case.replace(mode.into());
+            }
+        }
         if let Some(pop) = self.popover.upgrade() {
             if let Some(button) = find_widget(
                 &pop,
@@ -223,6 +229,22 @@ impl TextTools {
             if self.active_page.borrow().as_deref() == Some("language") {
                 self.sync_language_rows(&ui);
             }
+            let label = if let Some(last) = self.last_language.borrow().as_deref() {
+                let name = if last == "default" {
+                    Self::language_title(&ui, last)
+                } else {
+                    localized_language(last)
+                };
+                wordcraft_gnome::i18n::interpolate(
+                    wordcraft_gnome::t!("{label}: {value}"),
+                    &[
+                        ("label", wordcraft_gnome::t!("Language").into()),
+                        ("value", name),
+                    ],
+                )
+            } else {
+                label
+            };
             self.language_value.set_text(&label);
             self.language_value.set_tooltip_text(Some(&label));
             if let Some(button) = self
@@ -259,6 +281,9 @@ impl TextTools {
             return;
         }
         if let Some(controls) = ui.text_controls.borrow().as_ref() {
+            if self.active_page.borrow().as_deref() == Some("font") {
+                controls.sync_document_fonts();
+            }
             controls.mark_current_font(state["font"].as_str());
         }
         if *self.displayed.borrow() == state {
@@ -354,6 +379,12 @@ impl TextTools {
             };
             b.set_inconsistent(state.get(key).is_some_and(|v| v.is_null()));
         }
+        let key = match cmd {
+            "format.allCaps" => "caps",
+            "format.border" => "text-border",
+            _ => cmd.rsplit('.').next().unwrap_or(""),
+        };
+        b.set_widget_name(&format!("format-row-text-{key}"));
         self.detail.append(&b);
         let weak = Rc::downgrade(self);
         b.connect_toggled(move |b| {
@@ -437,6 +468,10 @@ impl TextTools {
             "font" => wordcraft_gnome::t!("Font"),
             "language" => wordcraft_gnome::t!("Language"),
             "character" => wordcraft_gnome::t!("Font and Characters"),
+            "character-spacing" => wordcraft_gnome::t!("Character Spacing"),
+            "size" => wordcraft_gnome::t!("Font Size"),
+            "enclose" => wordcraft_gnome::t!("Enclosed Characters"),
+            "phonetic" => wordcraft_gnome::t!("Phonetic Guide"),
             "color" => wordcraft_gnome::t!("Color and Effects"),
             "case" => wordcraft_gnome::t!("Change Case"),
             "annotations" => wordcraft_gnome::t!("Annotations"),
@@ -561,6 +596,9 @@ impl TextTools {
                 ] {
                     let b = style_menu_button(label);
                     b.set_widget_name(&format!("text-options-{page}"));
+                    if page == "case" {
+                        b.set_widget_name("format-row-text-case");
+                    }
                     let weak = Rc::downgrade(self);
                     b.connect_clicked(move |_| {
                         if let Some(s) = weak.upgrade() {
@@ -577,73 +615,82 @@ impl TextTools {
                         panel.execute("format.clear", serde_json::json!({}));
                     }
                 });
-                self.detail.append(&clear);
+                let row = gtk::Box::new(gtk::Orientation::Vertical, 0);
+                row.set_widget_name("format-row-text-clear");
+                row.append(&clear);
+                self.detail.append(&row);
             }
-            "character" => {
-                self.heading(wordcraft_gnome::t!("Character Formatting"));
-                for (label, key, cmd) in [
-                    (
-                        wordcraft_gnome::t!("Small Caps"),
-                        "smallCaps",
-                        "format.smallCaps",
-                    ),
-                    (
-                        wordcraft_gnome::t!("Capitalization"),
-                        "caps",
-                        "format.allCaps",
-                    ),
-                    (
-                        wordcraft_gnome::t!("Hidden Text"),
-                        "hidden",
-                        "format.hidden",
-                    ),
-                ] {
-                    self.toggle(label, state[key].as_bool().unwrap_or(false), cmd);
-                }
-                for (label, cmd) in [
-                    (wordcraft_gnome::t!("Subscript"), "format.subscript"),
-                    (wordcraft_gnome::t!("Increase Size"), "format.growFont"),
-                    (wordcraft_gnome::t!("Decrease Size"), "format.shrinkFont"),
-                ] {
-                    self.action(label, cmd, serde_json::json!({}));
-                }
-                self.heading(wordcraft_gnome::t!("Character Spacing"));
-                let spacing = self.number(
-                    wordcraft_gnome::t!("Spacing (pt)"),
-                    state["spacing"].as_f64().unwrap_or(0.0),
-                    -100.0,
-                    100.0,
-                );
-                let scale = self.number(
-                    wordcraft_gnome::t!("Scale (%)"),
-                    state["scale"].as_f64().unwrap_or(100.0),
-                    1.0,
-                    600.0,
-                );
-                let position = self.number(
-                    wordcraft_gnome::t!("Offset (pt)"),
-                    state["position"].as_f64().unwrap_or(0.0),
-                    -100.0,
-                    100.0,
-                );
-                for (n, key) in [
-                    (&spacing, "spacing"),
-                    (&scale, "scale"),
-                    (&position, "position"),
-                ] {
-                    n.set_widget_name(&format!("text-{key}"));
-                    if state[key].is_null() {
-                        n.set_text("");
+            "size" => self.detail.append(&tool_actions::sizing_control(&ui)),
+            "character" | "character-spacing" => {
+                if page == "character" {
+                    self.heading(wordcraft_gnome::t!("Character Formatting"));
+                    for (label, key, cmd) in [
+                        (
+                            wordcraft_gnome::t!("Small Caps"),
+                            "smallCaps",
+                            "format.smallCaps",
+                        ),
+                        (
+                            wordcraft_gnome::t!("Capitalization"),
+                            "caps",
+                            "format.allCaps",
+                        ),
+                        (
+                            wordcraft_gnome::t!("Hidden Text"),
+                            "hidden",
+                            "format.hidden",
+                        ),
+                    ] {
+                        self.toggle(label, state[key].as_bool().unwrap_or(false), cmd);
                     }
-                    let weak = Rc::downgrade(&ui);
-                    bind_numeric(&ui, n, move |value| {
-                        let ui = weak.upgrade().ok_or("Document closed")?;
-                        immediate_format(
-                            &ui,
-                            "format.set",
-                            serde_json::json!({"props":{key:value}}),
-                        )
+                    let b = style_menu_button(wordcraft_gnome::t!("Character Spacing"));
+                    b.set_widget_name("format-row-text-character-spacing");
+                    let weak = Rc::downgrade(self);
+                    b.connect_clicked(move |_| {
+                        if let Some(s) = weak.upgrade() {
+                            s.page("character-spacing");
+                        }
                     });
+                    self.detail.append(&b);
+                } else {
+                    self.heading(wordcraft_gnome::t!("Character Spacing"));
+                    let spacing = self.number(
+                        wordcraft_gnome::t!("Spacing (pt)"),
+                        state["spacing"].as_f64().unwrap_or(0.0),
+                        -100.0,
+                        100.0,
+                    );
+                    let scale = self.number(
+                        wordcraft_gnome::t!("Scale (%)"),
+                        state["scale"].as_f64().unwrap_or(100.0),
+                        1.0,
+                        600.0,
+                    );
+                    let position = self.number(
+                        wordcraft_gnome::t!("Offset (pt)"),
+                        state["position"].as_f64().unwrap_or(0.0),
+                        -100.0,
+                        100.0,
+                    );
+                    for (n, key) in [
+                        (&spacing, "spacing"),
+                        (&scale, "scale"),
+                        (&position, "position"),
+                    ] {
+                        n.set_widget_name(&format!("text-{key}"));
+                        if state[key].is_null() {
+                            n.set_text("");
+                        }
+                        let weak = Rc::downgrade(&ui);
+                        bind_numeric(&ui, n, move |value| {
+                            let ui = weak.upgrade().ok_or("Document closed")?;
+                            immediate_format(
+                                &ui,
+                                "format.set",
+                                serde_json::json!({"props":{key:value}}),
+                            )
+                        });
+                    }
                 }
             }
             "color" => {
@@ -662,7 +709,23 @@ impl TextTools {
                     self.toggle(label, state[key].as_bool().unwrap_or(false), cmd);
                 }
             }
-            _ => {
+            "annotations" => {
+                for (title, target) in [
+                    (wordcraft_gnome::t!("Enclosed Characters"), "enclose"),
+                    (wordcraft_gnome::t!("Phonetic Guide"), "phonetic"),
+                ] {
+                    let b = style_menu_button(title);
+                    b.set_widget_name(&format!("format-row-text-{target}"));
+                    let weak = Rc::downgrade(self);
+                    b.connect_clicked(move |_| {
+                        if let Some(s) = weak.upgrade() {
+                            s.page(target);
+                        }
+                    });
+                    self.detail.append(&b);
+                }
+            }
+            "enclose" => {
                 self.choice(
                     wordcraft_gnome::t!("Enclosed Characters"),
                     &[
@@ -679,6 +742,8 @@ impl TextTools {
                     "format.enclose",
                     serde_json::json!({"shape":null}),
                 );
+            }
+            "phonetic" => {
                 self.heading(wordcraft_gnome::t!("Phonetic Guide"));
                 let ruby = gtk::Entry::new();
                 ruby.set_placeholder_text(Some(wordcraft_gnome::t!("Annotation")));
@@ -710,6 +775,10 @@ impl TextTools {
                     serde_json::json!({"ruby":null}),
                 );
             }
+            _ => return,
+        }
+        if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+            tools.filter_menus();
         }
         self.stack.set_visible_child_name("detail");
     }
@@ -791,6 +860,7 @@ pub(super) fn install_text_pages(
         language_page: gtk::Box::new(gtk::Orientation::Vertical, 6),
         last_font: RefCell::new(None),
         last_language: RefCell::new(None),
+        last_case: RefCell::new("sentence".into()),
         active_page: RefCell::new(None),
         displayed: RefCell::new(serde_json::Value::Null),
     });
@@ -854,7 +924,10 @@ pub(super) fn install_text_pages(
     size_row.set_margin_bottom(3);
     size_field.add_css_class("size-field");
     size_field.set_child(Some(&size_row));
-    main.append(&size_field);
+    let size_slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    size_slot.set_widget_name("format-row-text-size");
+    size_slot.append(&size_field);
+    main.append(&size_slot);
     language_button.remove_css_class("flat");
     language_button.set_hexpand(true);
     let language_repeat = gtk::Button::from_icon_name("view-refresh-symbolic");
@@ -863,7 +936,7 @@ pub(super) fn install_text_pages(
     language_repeat.set_sensitive(false);
     accessible_name(&language_repeat, wordcraft_gnome::t!("Apply Last Language"));
     language_repeat.set_tooltip_text(Some(wordcraft_gnome::t!("Apply Last Language")));
-    let language_row = property_split(&language_button, &language_repeat);
+    let language_row = reapply_split(&language_button, &language_repeat);
     language_row.set_widget_name("format-row-text-language");
     main.append(&language_row);
     main.append(&palette.properties);
@@ -958,6 +1031,12 @@ impl TextTools {
         if let Some(choice) = self.last_language.borrow().clone() {
             self.execute("leaf.proofText", serde_json::json!({"choice":choice}));
         }
+    }
+    pub(super) fn reapply_case(&self) {
+        self.execute(
+            "format.changeCase",
+            serde_json::json!({"mode":self.last_case.borrow().clone()}),
+        );
     }
     pub(super) fn language_remembered(&self) -> bool {
         self.last_language.borrow().is_some()

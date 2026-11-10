@@ -343,6 +343,7 @@ pub(super) fn property_split(open: &gtk::Button, repeat: &gtk::Button) -> adw::S
     let split = adw::SplitButton::new();
     split.add_css_class("flat");
     split.add_css_class("image-button");
+    split.add_css_class("leaf-format-split");
     split.set_hexpand(true);
     let native = split
         .first_child()
@@ -407,5 +408,22 @@ pub(super) fn property_split(open: &gtk::Button, repeat: &gtk::Button) -> adw::S
             target.set_sensitive(source.is_sensitive());
         }
     });
+    split
+}
+
+/// Property body reapplies its remembered value; the native secondary navigates
+/// within the current panel and deliberately does not create another popup.
+pub(super) fn reapply_split(open: &gtk::Button, apply: &gtk::Button) -> adw::SplitButton {
+    if let Some(child) = open.child() {
+        open.set_child(None::<&gtk::Widget>);
+        apply.set_child(Some(&child));
+    }
+    let split = property_split(apply, open);
+    let arrow = split
+        .last_child()
+        .unwrap()
+        .downcast::<gtk::MenuButton>()
+        .unwrap();
+    arrow.set_icon_name("go-next-symbolic");
     split
 }
