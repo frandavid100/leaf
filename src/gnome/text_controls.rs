@@ -467,6 +467,11 @@ impl TextControls {
     pub(super) fn show_fonts(self: &Rc<Self>) {
         if self.font_all_rows.parent().is_none() {
             clear_box(&self.font_choices);
+            let current = gtk::Label::new(None);
+            current.set_widget_name("font-current-state");
+            current.set_xalign(0.);
+            current.add_css_class("dim-label");
+            self.font_choices.append(&current);
             let title = gtk::Label::new(Some(wordcraft_gnome::t!("Fonts in This Document")));
             title.set_xalign(0.);
             title.add_css_class("heading");
@@ -569,6 +574,16 @@ impl TextControls {
         }
     }
     pub(super) fn mark_current_font(&self, current: Option<&str>) {
+        if let Some(label) =
+            find_widget(&self.font_choices, "font-current-state").and_downcast::<gtk::Label>()
+        {
+            label.set_text(&format!(
+                "{}: {}",
+                wordcraft_gnome::t!("Font"),
+                current.unwrap_or(wordcraft_gnome::t!("Mixed"))
+            ));
+        }
+
         for (name, row) in self.font_rows.borrow().iter() {
             let selected = current.is_some_and(|f| f.eq_ignore_ascii_case(name));
             if selected {

@@ -29,7 +29,7 @@ fn selected(button: &gtk::Button, value: Option<bool>) {
 fn preview(s: &ParagraphPopover, state: &Value, indent: bool) {
     let d = gtk::DrawingArea::new();
     d.set_content_width(235);
-    d.set_content_height(95);
+    d.set_content_height(150);
     let state = state.clone();
     d.set_draw_func(move |w, c, width, _| {
         let fg = w.color();
@@ -44,8 +44,9 @@ fn preview(s: &ParagraphPopover, state: &Value, indent: bool) {
         } else {
             match state["lineSpacing"]["rule"].as_str() {
                 Some("multiple") => 11. * state["lineSpacing"]["value"].as_f64().unwrap_or(1.),
-                Some("exactly" | "atLeast") => {
-                    state["lineSpacing"]["value"].as_f64().unwrap_or(14.) * 0.6
+                Some("exactly") => state["lineSpacing"]["value"].as_f64().unwrap_or(14.) * 0.6,
+                Some("atLeast") => {
+                    (state["lineSpacing"]["value"].as_f64().unwrap_or(14.) * 0.6).max(11.)
                 }
                 _ => 11.,
             }
@@ -540,7 +541,7 @@ pub(super) fn build(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, page: &str, state: &V
     }
     true
 }
-fn tabs(s: &Rc<ParagraphPopover>, _ui: &Rc<Ui>, state: &Value) {
+fn tabs(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, state: &Value) {
     note(
         s,
         wordcraft_gnome::t!(
@@ -556,12 +557,31 @@ fn tabs(s: &Rc<ParagraphPopover>, _ui: &Rc<Ui>, state: &Value) {
     list.set_selection_mode(gtk::SelectionMode::Single);
     list.set_widget_name("paragraph-tab-list");
     s.detail.append(&list);
+    let direct = ui
+        .current
+        .borrow()
+        .as_ref()
+        .and_then(|d| {
+            d.session
+                .doc
+                .para_at(&d.session.sel.focus)
+                .and_then(|p| p.props.tabs.clone())
+        })
+        .unwrap_or_default();
     for stop in &current {
         let l = gtk::Label::new(Some(&format!(
-            "{:.3} cm · {} · {}",
+            "{:.3} cm · {} · {} · {}",
             stop["pos"].as_f64().unwrap_or(0.) / cm,
             stop["align"].as_str().unwrap_or("left"),
-            stop["leader"].as_str().unwrap_or("none")
+            stop["leader"].as_str().unwrap_or("none"),
+            if direct
+                .iter()
+                .any(|t| (t.pos as f64 - stop["pos"].as_f64().unwrap_or(0.)).abs() < 0.5)
+            {
+                wordcraft_gnome::t!("Custom")
+            } else {
+                wordcraft_gnome::t!("Inherited")
+            }
         )));
         l.set_margin_top(5);
         l.set_margin_bottom(5);
@@ -879,4 +899,34 @@ fn borders(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, state: &Value) {
         }
     });
     page_link(s, wordcraft_gnome::t!("Color"), "border-color");
+}
+
+pub(super) fn sync(s: &ParagraphPopover, state: &Value) {
+    for value in ["left", "center", "right", "justify", "distribute"] {
+        if let Some(b) = find_widget(&s.detail, &format!("paragraph-align-{value}"))
+            .and_downcast::<gtk::Button>()
+        {
+            let on = state["align"].as_str().map(|v| v == value);
+            selected(&b, on);
+            if on != Some(true) {
+                b.remove_css_class("current-style");
+            }
+            if let Some(mark) = b
+                .child()
+                .and_then(|w| w.last_child())
+                .and_downcast::<gtk::Label>()
+            {
+                mark.set_text(if on == Some(true) { "✓" } else { "" });
+            }
+        }
+    }
+    for (name, value) in [("paragraph-ltr", false), ("paragraph-rtl", true)] {
+        if let Some(b) = find_widget(&s.detail, name).and_downcast::<gtk::Button>() {
+            let on = state["bidi"].as_bool().map(|v| v == value);
+            selected(&b, on);
+            if on != Some(true) {
+                b.remove_css_class("current-style");
+            }
+        }
+    }
 }

@@ -38,6 +38,7 @@ impl ParagraphPopover {
                 format!("{:?}", d.session.sel)
             )));
         }
+        paragraph_options::sync(self, &state);
         if *self.displayed.borrow() == state {
             return;
         }
@@ -319,8 +320,13 @@ impl ParagraphPopover {
     pub(super) fn repeat_group(self: &Rc<Self>, page: &str) {
         if page == "columns" {
             let saved = self.last_columns.borrow().clone();
-            if let (Some(ui), Some((setup, scope))) = (self.ui.upgrade(), saved) {
+            if let (Some(ui), Some((setup, _scope))) = (self.ui.upgrade(), saved) {
                 if tools_change(&ui, |s| {
+                    let scope = if wordcraft_engine::cmd::page::selection_sectionable(s) {
+                        document_properties::ColumnScope::Selection
+                    } else {
+                        document_properties::ColumnScope::Section
+                    };
                     document_properties::apply_columns(s, &setup, scope).map(|_| ())
                 }) {
                     if let Some(p) = self.popover.upgrade() {
@@ -1275,6 +1281,13 @@ impl ParagraphPopover {
         self.detail.append(&b);
         let weak = Rc::downgrade(self);
         b.connect_toggled(move |b| {
+            if weak
+                .upgrade()
+                .and_then(|s| s.ui.upgrade())
+                .is_some_and(|ui| ui.format_syncing.get())
+            {
+                return;
+            }
             b.set_inconsistent(false);
             if let Some(s) = weak.upgrade() {
                 s.execute(command, serde_json::json!({"value":b.is_active()}));

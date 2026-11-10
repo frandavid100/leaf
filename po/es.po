@@ -3663,3 +3663,6 @@ msgstr "WordCraft solo admite subrayar palabras con la línea sencilla; aún no 
 
 msgid "{name} ({number})"
 msgstr "{name} ({number})"
+
+msgid "Inherited"
+msgstr "Heredada"

@@ -412,6 +412,7 @@ pub const MESSAGES: &[&str] = &[
     "Independent",
     "Independent copies keep the current content. Linking uses the previous section; existing separate content remains available through Undo.",
     "Information",
+    "Inherited",
     "Inline images move with the text automatically.",
     "Insert",
     "Insert Above",

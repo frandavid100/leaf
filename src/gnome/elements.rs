@@ -23,12 +23,15 @@ impl ElementsPanel {
             .find(|(p, _, _)| p == origin)
             .map(|(_, w, _)| w.clone())
     }
-    pub(super) fn restore(&self) {
+    fn restore_tools(&self) {
         for (slot, body, page) in self.tool_borrowed.borrow_mut().drain(..) {
             page.remove(&body);
             self.stack.remove(&page);
             slot.append(&body);
         }
+    }
+    pub(super) fn restore(&self) {
+        self.restore_tools();
         if let Some(ui) = self.ui.upgrade() {
             if let Some(p) = ui.picture.borrow().as_ref() {
                 EMBEDDED_FORMAT.with(|items| {
@@ -92,6 +95,9 @@ impl ElementsPanel {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
             return;
         };
+        if !page.starts_with("image-") {
+            self.restore_tools();
+        }
         if page.starts_with("image-") {
             if let Some(picture) = ui.picture.borrow().as_ref() {
                 picture.refresh();

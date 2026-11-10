@@ -615,6 +615,13 @@ impl QuickTools {
                     false,
                 ),
                 "text-border" => (character["border"].is_object(), false),
+                "image-caption" | "table-caption" | "image-move" => {
+                    let c = tool_actions::source_widget(ui, key).and_downcast::<gtk::CheckButton>();
+                    (
+                        c.as_ref().is_some_and(|c| c.is_active()),
+                        c.as_ref().is_some_and(|c| c.is_inconsistent()),
+                    )
+                }
                 _ => (
                     character[*key].as_bool().unwrap_or(false),
                     character[*key].is_null(),
@@ -861,7 +868,10 @@ pub(super) fn install_quick_tools(
                         tool_actions::activate(&ui, group, id);
                     }
                 });
-                if tool_actions::toggle_command(group, tool.id).is_some() {
+                if tool_actions::toggle_command(group, tool.id).is_some()
+                    || (group == "elements"
+                        && matches!(tool.id, "image-caption" | "table-caption" | "image-move"))
+                {
                     let mixed = gtk::Label::new(Some("−"));
                     mixed.set_visible(false);
                     let icon = gtk::Overlay::new();
@@ -1054,7 +1064,7 @@ fn reset_entry_stack(stack: &gtk::Stack, root: &str, alternate: &str) {
     stack.set_visible_child_full(root, gtk::StackTransitionType::None);
 }
 
-fn first_label(root: &gtk::Widget) -> Option<gtk::Label> {
+pub(super) fn first_label(root: &gtk::Widget) -> Option<gtk::Label> {
     if let Ok(label) = root.clone().downcast::<gtk::Label>() {
         return Some(label);
     }

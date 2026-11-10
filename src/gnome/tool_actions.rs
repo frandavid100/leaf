@@ -86,11 +86,13 @@ pub(super) fn enabled(ui: &Rc<Ui>, group: &str, id: &str) -> bool {
         return false;
     }
     if group == "elements" && (id.starts_with("table-") || id.starts_with("cell-")) {
-        return wordcraft_gnome::tables::in_table(&d.session)
-            || wordcraft_gnome::captions::table_target(&d.session).is_some();
+        return (wordcraft_gnome::tables::in_table(&d.session)
+            || wordcraft_gnome::captions::table_target(&d.session).is_some())
+            && source_widget(ui, id).is_none_or(|w| w.is_sensitive());
     }
     if group == "elements" && id.starts_with("image-") {
-        return picture_properties_target(&d.session).is_some();
+        return picture_properties_target(&d.session).is_some()
+            && source_widget(ui, id).is_none_or(|w| w.is_sensitive());
     }
     true
 }

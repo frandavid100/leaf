@@ -399,6 +399,15 @@ jobs:
         xvfb-run -a bash tools/table-pointer-test.sh
         xvfb-run -a bash tools/text-pointer-test.sh
       if: ${{ matrix.group == 'text' }}
+    - name: Verify alpha43 shared controls and clipboard appearance
+      if: ${{ matrix.group == 'text' }}
+      run: |
+        set -o pipefail
+        for language in en es; do
+          mkdir -p "alpha43-captures/$language"
+          XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language LEAF43_CAPTURE_DIR="$PWD/alpha43-captures/$language" GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s ./target/release/wordcraft-gnome --alpha43-ui-test 2>&1 | tee "alpha43-$language.log"
+          grep -q ALPHA43_UI_OK "alpha43-$language.log"
+        done
     - name: Verify followup font input, links and paragraph gestures
       run: |
         for target in range caret; do

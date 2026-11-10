@@ -102,7 +102,7 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
             s.sel.focus.story == wordcraft_doc::StoryRef::Body && s.sel.focus.path.depth() == 0,
         )
     };
-    let identity = document_identity(ui);
+    let identity = Rc::new(Cell::new(document_identity(ui)));
     let page = gtk::Box::new(gtk::Orientation::Vertical, 12);
     page.set_margin_start(4);
     page.set_margin_end(4);
@@ -359,7 +359,7 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
             let (Some(c), Some(ui)) = (weak.upgrade(), ui.upgrade()) else {
                 return;
             };
-            if ui.closed.get() || document_identity(&ui) != identity {
+            if ui.closed.get() || document_identity(&ui) != identity.get() {
                 error.set_text(wordcraft_gnome::t!(
                     "The document has changed. Close and reopen Columns."
                 ));
@@ -380,6 +380,7 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
             };
             match result {
                 Ok(changed) => {
+                    identity.set(document_identity(&ui));
                     if let Some(p) = ui.paragraph.borrow().as_ref() {
                         p.last_columns.replace(Some((setup.clone(), scope)));
                     }

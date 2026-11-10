@@ -37,15 +37,44 @@ async fn capture(window: &ApplicationWindow, widget: &impl IsA<gtk::Widget>, nam
     p.snapshot(&snapshot, widget.width() as f64, widget.height() as f64);
     let node = snapshot.to_node().unwrap();
     let texture = window.renderer().unwrap().render_texture(&node, None);
-    let dir = std::env::var("LEAF43_CAPTURE_DIR").unwrap_or_else(|_| ".".into());
-    texture.save_to_png(format!("{dir}/{name}.png")).unwrap();
+    let dir = std::env::var("LEAF43_CAPTURE_DIR")
+        .ok()
+        .filter(|v| !v.is_empty())
+        .map(PathBuf::from)
+        .unwrap_or_else(std::env::temp_dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    texture
+        .save_to_png(dir.join(format!("{name}.png")))
+        .unwrap();
 }
 pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
         window.set_default_size(1280, 850);
+        let theme = gtk::IconTheme::for_display(&ui.document_box.display());
+        for group in ["text", "paragraph", "elements"] {
+            for tool in wordcraft_gnome::toolbar::tools(group) {
+                assert!(
+                    theme.has_icon(tool.icon),
+                    "missing toolbar icon {} for {}",
+                    tool.icon,
+                    tool.id
+                );
+            }
+        }
+        settle().await;
+        opened(
+            &ui,
+            Session::new(wordcraft_doc::Document::new()),
+            wordcraft_gnome::t!("New Document"),
+        );
+        templates::offer(&ui);
         settle().await;
         let gallery = ui.template_gallery.borrow().clone();
+        assert!(
+            gallery.is_some(),
+            "Start gallery must exist for this reproduction"
+        );
         if let Some(first) = gallery {
             for _ in 0..3 {
                 format_execute(&ui, "format.bold", json!({"value":true})).unwrap();
@@ -254,6 +283,46 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             !clipboard::can_paste_format(&ui),
             "provider loss invalidates appearance payload"
         );
+        document_tools_fixture(&ui);
+        refresh_selection(&ui);
+        let elements = ui.elements.borrow().as_ref().unwrap().clone();
+        format_bar::open_group(&ui, "elements", Some("image-size"));
+        settle().await;
+        elements.header.pin.set_active(true);
+        let picture = ui.picture.borrow().as_ref().unwrap().clone();
+        assert!(
+            picture.width.is_mapped(),
+            "independent size tool leases the real controls"
+        );
+        picture.width.set_value(4.0);
+        settle().await;
+        let (_, w, h) = pictures::selected(&ui.current.borrow().as_ref().unwrap().session).unwrap();
+        assert!((w as f64 - 4. * 72. / 2.54).abs() < 0.02 && (w / h - 2.).abs() < 0.01);
+        assert!(elements.pop.is_visible());
+        elements.prepare("image-wrap");
+        settle().await;
+        click(&elements.pop, "picture-placement-left");
+        settle().await;
+        assert_eq!(
+            pictures::layout(&ui.current.borrow().as_ref().unwrap().session)
+                .unwrap()
+                .wrap,
+            wordcraft_doc::para::Wrap::Square
+        );
+        assert!(
+            find_widget(&elements.pop, "picture-placement-left")
+                .unwrap()
+                .is_mapped()
+        );
+        elements.prepare("image");
+        settle().await;
+        assert!(
+            picture.width.is_mapped(),
+            "general Image page restores controls leased by individual tools"
+        );
+        elements.header.pin.set_active(false);
+        elements.pop.popdown();
+        settle().await;
         eprintln!("ALPHA43_UI_OK");
         app.quit();
     });

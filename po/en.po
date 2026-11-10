@@ -3663,3 +3663,6 @@ msgstr "WordCraft supports words-only with a single underline; other line styles
 
 msgid "{name} ({number})"
 msgstr "{name} ({number})"
+
+msgid "Inherited"
+msgstr "Inherited"

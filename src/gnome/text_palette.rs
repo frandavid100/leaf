@@ -547,8 +547,10 @@ impl TextPalette {
         });
         clear.set_widget_name(if name == "ink" {
             "ink-choice-auto"
-        } else {
+        } else if name == "highlight" {
             "highlight-choice-none"
+        } else {
+            "underline-color-choice-auto"
         });
         root.append(&clear);
         let weak = Rc::downgrade(self);
@@ -603,6 +605,29 @@ impl TextPalette {
                     _ => r.underline_color != p.underline_color,
                 });
                 picker.sync_state(hex.as_deref(), mixed);
+                if let Some(root) = self.panels.borrow().get(name) {
+                    let id = match name {
+                        "ink" => "ink-choice-auto",
+                        "highlight" => "highlight-choice-none",
+                        _ => "underline-color-choice-auto",
+                    };
+                    if let Some(button) = find_widget(root, id).and_downcast::<gtk::Button>() {
+                        let on = color.is_none() && !mixed;
+                        let title = if name == "highlight" {
+                            wordcraft_gnome::t!("No Highlight")
+                        } else {
+                            wordcraft_gnome::t!("Automatic Color")
+                        };
+                        button.set_label(&format!("{}{}", if on { "✓  " } else { "" }, title));
+                        button.update_state(&[gtk::accessible::State::Pressed(if mixed {
+                            gtk::AccessibleTristate::Mixed
+                        } else if on {
+                            gtk::AccessibleTristate::True
+                        } else {
+                            gtk::AccessibleTristate::False
+                        })]);
+                    }
+                }
             }
         }
     }
@@ -621,6 +646,13 @@ impl TextPalette {
         self.words_only.set_active(underline == Some("words"));
         self.words_only
             .set_sensitive(matches!(underline, Some("none" | "single" | "words")));
+        let mixed_underline_color = ui.current.borrow().as_ref().is_some_and(|d| {
+            let all = wordcraft_gnome::text_properties::selected_resolved(&d.session);
+            all.first().is_some_and(|first| {
+                all.iter()
+                    .any(|p| p.underline_color != first.underline_color)
+            })
+        });
         let underline_color = state["underlineColor"]
             .as_array()
             .map(|rgb| {
@@ -631,7 +663,14 @@ impl TextPalette {
                     rgb[2].as_u64().unwrap_or(0)
                 )
             })
-            .unwrap_or_else(|| wordcraft_gnome::t!("Automatic Color").into());
+            .unwrap_or_else(|| {
+                if mixed_underline_color {
+                    wordcraft_gnome::t!("Mixed")
+                } else {
+                    wordcraft_gnome::t!("Automatic Color")
+                }
+                .into()
+            });
         self.underline_color.set_label(&format!(
             "{}: {}",
             wordcraft_gnome::t!("Color"),

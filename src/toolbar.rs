@@ -10,18 +10,6 @@ pub fn tools(group: &str) -> Vec<Tool> {
     let definitions: &[(&str, &str, &str, bool)] = match group {
         "paragraph" => &[
             (
-                "indent",
-                "format-indent-more-symbolic",
-                crate::t!("Increase Indent"),
-                false,
-            ),
-            (
-                "outdent",
-                "format-indent-less-symbolic",
-                crate::t!("Decrease Indent"),
-                false,
-            ),
-            (
                 "alignment",
                 "format-justify-left-symbolic",
                 crate::t!("Alignment"),
@@ -100,6 +88,18 @@ pub fn tools(group: &str) -> Vec<Tool> {
                 "reset",
                 "edit-clear-all-symbolic",
                 crate::t!("Reset Paragraph Formatting"),
+                false,
+            ),
+            (
+                "indent",
+                "format-indent-more-symbolic",
+                crate::t!("Increase Indent"),
+                false,
+            ),
+            (
+                "outdent",
+                "format-indent-less-symbolic",
+                crate::t!("Decrease Indent"),
                 false,
             ),
         ],
