@@ -126,10 +126,9 @@ pub(super) fn request(host: &Rc<Workspace>) {
     );
     // This native preference appeared in libadwaita 1.6. Use it when the
     // installed runtime provides it without raising Leaf's 1.5 API baseline.
-    if dialog.find_property("prefer-wide-layout").is_some() {
+    let native_wide = dialog.find_property("prefer-wide-layout").is_some();
+    if native_wide {
         dialog.set_property("prefer-wide-layout", true);
-    } else {
-        dialog.set_content_width(620);
     }
     dialog.add_response("cancel", wordcraft_gnome::t!("Cancel"));
     dialog.add_response("discard", wordcraft_gnome::t!("Discard All"));
@@ -231,4 +230,8 @@ pub(super) fn request(host: &Rc<Workspace>) {
         _ => group.cancel(),
     });
     dialog.present(Some(&host.window));
+    // libadwaita 1.5 cannot safely size an unpresented adaptive dialog.
+    if !native_wide {
+        dialog.set_content_width(620);
+    }
 }

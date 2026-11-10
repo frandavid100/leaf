@@ -23,6 +23,15 @@ pub(super) async fn dialog_presented_async(dialog: &impl IsA<adw::Dialog>) {
         }
         glib::timeout_future(std::time::Duration::from_millis(20)).await;
     }
+    eprintln!(
+        "DIALOG_PRESENT_TIMEOUT mapped={} root={} frames={} visible={} size={}x{}",
+        dialog.is_mapped(),
+        dialog.root().is_some(),
+        frames.get(),
+        dialog.is_visible(),
+        dialog.width(),
+        dialog.height()
+    );
     panic!(
         "adaptive dialog did not become interactive: {:?}",
         dialog.title()
