@@ -681,6 +681,22 @@ pub(super) fn install_quick_tools(
         ("paragraph", paragraph.popover().unwrap()),
         ("elements", elements.pop.clone()),
     ];
+    // Existing internal category launchers (including keyboard/demo callers)
+    // route to the one visible anchor; they no longer occupy toolbar slots.
+    for (menu, group) in [
+        (text, "text"),
+        (paragraph, "paragraph"),
+        (&elements.menu, "elements"),
+    ] {
+        let weak = Rc::downgrade(ui);
+        menu.set_create_popup_func(move |_| {
+            if let Some(ui) = weak.upgrade().filter(|ui| !ui.closed.get()) {
+                if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                    tools.open_group(group, None);
+                }
+            }
+        });
+    }
     let overflow = gtk::MenuButton::new();
     overflow.set_widget_name("format-overflow-menu");
     overflow.set_icon_name("view-more-symbolic");

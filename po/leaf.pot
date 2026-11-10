@@ -1305,7 +1305,7 @@ msgstr ""
 msgid "Format text and paragraphs with native controls."
 msgstr ""
 
-#: src/gnome/format_bar.rs:695 src/gnome/review.rs:303
+#: src/gnome/format_bar.rs:711 src/gnome/review.rs:303
 msgid "Formatting"
 msgstr ""
 
@@ -1821,7 +1821,7 @@ msgstr ""
 msgid "More Elements Options…"
 msgstr ""
 
-#: src/gnome/format_bar.rs:689
+#: src/gnome/format_bar.rs:705
 msgid "More Formatting Options"
 msgstr ""
 
