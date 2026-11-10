@@ -37,7 +37,7 @@ pub(super) fn lifecycle_trim() {
 #[cfg(not(target_os = "linux"))]
 pub(super) fn lifecycle_trim() {}
 pub(super) struct ClosedTabProbe {
-    pub(super) controller: glib::WeakRef<gtk::GestureClick>,
+    pub(super) controller: glib::WeakRef<gtk::EventControllerLegacy>,
     pub(super) controls: Vec<glib::WeakRef<gtk::Widget>>,
     pub(super) ui: std::rc::Weak<Ui>,
     pub(super) picture: glib::WeakRef<gtk::Picture>,

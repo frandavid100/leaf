@@ -75,7 +75,16 @@ pub(super) fn build_tab(
     accessible_name(&menu_button, wordcraft_gnome::t!("Document Options"));
     header.pack_end(&menu_button);
     let top_history = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    header.pack_start(&top_history);
+    // History keeps its natural width on ordinary windows, but must not make
+    // the whole split view wider than a narrow document viewport.
+    let history_scroll = gtk::ScrolledWindow::new();
+    history_scroll.set_widget_name("header-history-scroll");
+    history_scroll.set_policy(gtk::PolicyType::External, gtk::PolicyType::Never);
+    history_scroll.set_min_content_width(0);
+    history_scroll.set_max_content_width(160);
+    history_scroll.set_propagate_natural_width(true);
+    history_scroll.set_child(Some(&top_history));
+    header.pack_start(&history_scroll);
     let top_formats = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     header.pack_end(&top_formats);
 
@@ -597,13 +606,23 @@ pub(super) fn build_tab(
     {
         let g = Rc::downgrade(&format_group);
         let w = window.downgrade();
-        let outside = gtk::GestureClick::new();
+        // Observing outside presses must not join GTK gesture arbitration:
+        // native chooser buttons and swatches own their own click sequences.
+        let outside = gtk::EventControllerLegacy::new();
         outside.set_propagation_phase(gtk::PropagationPhase::Capture);
-        outside.set_button(0);
-        outside.connect_pressed(move |c, _, x, y| {
-            if let (Some(g), Some(w)) = (g.upgrade(), w.upgrade()) {
-                g.outside(c, &w, x, y);
+        outside.connect_event(move |_, event| {
+            if matches!(
+                event.event_type(),
+                gdk::EventType::ButtonPress | gdk::EventType::TouchBegin
+            ) {
+                if let (Some(g), Some(w), Some((x, y))) =
+                    (g.upgrade(), w.upgrade(), event.position())
+                {
+                    let (tx, ty) = w.surface_transform();
+                    g.outside(event, &w, x - tx, y - ty);
+                }
             }
+            glib::Propagation::Proceed
         });
         window.add_controller(outside.clone());
         ui.outside_controller.replace(Some(outside));

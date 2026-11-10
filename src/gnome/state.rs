@@ -87,7 +87,7 @@ pub(super) struct Ui {
     pub(super) picture: RefCell<Option<Rc<PicturePopover>>>,
     pub(super) table_popover: RefCell<Option<gtk::Popover>>,
     pub(super) tab_bar: adw::TabBar,
-    pub(super) outside_controller: RefCell<Option<gtk::GestureClick>>,
+    pub(super) outside_controller: RefCell<Option<gtk::EventControllerLegacy>>,
     pub(super) context_popovers: RefCell<
         Vec<(
             glib::WeakRef<gtk::PopoverMenu>,

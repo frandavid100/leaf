@@ -89,17 +89,11 @@ impl FormatPopoverGroup {
             }
         }
     }
-    pub(super) fn outside(
-        &self,
-        gesture: &gtk::GestureClick,
-        window: &ApplicationWindow,
-        x: f64,
-        y: f64,
-    ) {
+    pub(super) fn outside(&self, event: &gdk::Event, window: &ApplicationWindow, x: f64, y: f64) {
         if self.pinned.get() {
             return;
         }
-        let surface = gesture.current_event().and_then(|e| e.surface());
+        let surface = event.surface();
         let hosts = self
             .hosts
             .borrow()
