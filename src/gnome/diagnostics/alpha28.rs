@@ -166,14 +166,7 @@ pub(super) fn alpha28_gallery(ui: &Rc<Ui>, window: &ApplicationWindow) {
         let u = u.clone();
         glib::timeout_add_local_once(std::time::Duration::from_millis(350), move || {
             if variant == "format" {
-                if let Some(pop) = u
-                    .paragraph
-                    .borrow()
-                    .as_ref()
-                    .and_then(|p| p.popover.upgrade())
-                {
-                    pop.popup();
-                }
+                format_bar::open_group(&u, "paragraph", None);
             } else if variant == "notes" {
                 if let Some(d) = u.current.borrow_mut().as_mut() {
                     wordcraft_gnome::references::open_footnote(&mut d.session, true).unwrap();

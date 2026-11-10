@@ -739,6 +739,10 @@ pub(super) fn install_quick_tools(
     scroll_bar.set_widget_name("format-pinned-scroll");
     scroll_bar.set_policy(gtk::PolicyType::Automatic, gtk::PolicyType::Never);
     scroll_bar.set_hexpand(true);
+    scroll_bar.set_min_content_width(0);
+    scroll_bar.set_propagate_natural_width(false);
+    ui.format_toolbar.set_min_content_width(0);
+    ui.format_toolbar.set_propagate_natural_width(false);
     ui.format_toolbar.set_child(None::<&gtk::Widget>);
     scroll_bar.set_child(Some(&formats.parent().unwrap()));
     fixed.append(&scroll_bar);

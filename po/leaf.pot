@@ -101,7 +101,7 @@ msgstr ""
 msgid "Appearance"
 msgstr ""
 
-#: src/gnome/columns.rs:108 src/gnome/document_properties_dialog.rs:89 src/gnome/elements.rs:222 src/gnome/links.rs:73 src/gnome/references.rs:109 src/gnome/spellcheck.rs:400
+#: src/gnome/columns.rs:108 src/gnome/document_properties_dialog.rs:89 src/gnome/elements.rs:231 src/gnome/links.rs:73 src/gnome/references.rs:109 src/gnome/spellcheck.rs:400
 msgid "Apply"
 msgstr ""
 
@@ -713,7 +713,7 @@ msgstr ""
 msgid "Current Table"
 msgstr ""
 
-#: src/gnome/elements.rs:216
+#: src/gnome/elements.rs:225
 msgid "Current Table of Contents"
 msgstr ""
 
@@ -1053,7 +1053,7 @@ msgstr ""
 msgid "Effects"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:152 src/gnome/diagnostics/annotations.rs:170 src/gnome/diagnostics/annotations.rs:185 src/gnome/diagnostics/format136.rs:432 src/gnome/elements.rs:130 src/gnome/elements.rs:278 src/gnome/elements.rs:279 src/gnome/elements.rs:296 src/gnome/format_bar.rs:144 src/gnome/menus.rs:528 src/gnome/toolbar_preferences.rs:231
+#: src/gnome/diagnostics/annotations.rs:152 src/gnome/diagnostics/annotations.rs:170 src/gnome/diagnostics/annotations.rs:185 src/gnome/diagnostics/format136.rs:432 src/gnome/elements.rs:139 src/gnome/elements.rs:287 src/gnome/elements.rs:288 src/gnome/elements.rs:305 src/gnome/format_bar.rs:144 src/gnome/menus.rs:528 src/gnome/toolbar_preferences.rs:231
 msgid "Elements"
 msgstr ""
 
@@ -1445,7 +1445,7 @@ msgstr ""
 msgid "Ignore This Occurrence"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:155 src/gnome/diagnostics/format136.rs:117 src/gnome/elements.rs:128 src/gnome/menus.rs:453 src/gnome/picture_controls.rs:214 src/gnome/picture_controls.rs:225 src/navigation.rs:301 src/toolbar.rs:87
+#: src/gnome/diagnostics/annotations.rs:155 src/gnome/diagnostics/format136.rs:117 src/gnome/elements.rs:137 src/gnome/menus.rs:453 src/gnome/picture_controls.rs:214 src/gnome/picture_controls.rs:225 src/navigation.rs:301 src/toolbar.rs:87
 msgid "Image"
 msgstr ""
 
@@ -1561,7 +1561,7 @@ msgstr ""
 msgid "Insert Table"
 msgstr ""
 
-#: src/gnome/elements.rs:181
+#: src/gnome/elements.rs:190
 msgid "Insert Table of Contents…"
 msgstr ""
 
@@ -2193,7 +2193,7 @@ msgstr ""
 msgid "Pictures"
 msgstr ""
 
-#: src/gnome/popovers.rs:71 src/gnome/popovers.rs:207 src/gnome/popovers.rs:208
+#: src/gnome/popovers.rs:71 src/gnome/popovers.rs:210 src/gnome/popovers.rs:211
 msgid "Pin"
 msgstr ""
 
@@ -2201,7 +2201,7 @@ msgstr ""
 msgid "Place the caret in a footnote first."
 msgstr ""
 
-#: src/gnome/elements.rs:205
+#: src/gnome/elements.rs:214
 msgid "Place the caret in a table of contents."
 msgstr ""
 
@@ -3017,7 +3017,7 @@ msgstr ""
 msgid "Tab stop"
 msgstr ""
 
-#: src/gnome/context.rs:475 src/gnome/context.rs:500 src/gnome/diagnostics/annotations.rs:154 src/gnome/diagnostics/format136.rs:116 src/gnome/elements.rs:127 src/gnome/links.rs:113 src/gnome/menus.rs:452 src/gnome/references.rs:329 src/gnome/tables.rs:60 src/gnome/tables.rs:252 src/gnome/tables.rs:572 src/gnome/tables.rs:585 src/gnome/tables.rs:661 src/gnome/tables.rs:686 src/toolbar.rs:88
+#: src/gnome/context.rs:475 src/gnome/context.rs:500 src/gnome/diagnostics/annotations.rs:154 src/gnome/diagnostics/format136.rs:116 src/gnome/elements.rs:136 src/gnome/links.rs:113 src/gnome/menus.rs:452 src/gnome/references.rs:329 src/gnome/tables.rs:60 src/gnome/tables.rs:252 src/gnome/tables.rs:572 src/gnome/tables.rs:585 src/gnome/tables.rs:661 src/gnome/tables.rs:686 src/toolbar.rs:88
 msgid "Table"
 msgstr ""
 
@@ -3041,7 +3041,7 @@ msgstr ""
 msgid "Table Size"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:101 src/gnome/diagnostics/format136.rs:118 src/gnome/elements.rs:129 src/gnome/menus.rs:454 src/gnome/navigation.rs:1047 src/gnome/references.rs:208 src/navigation.rs:319 src/toolbar.rs:92
+#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:101 src/gnome/diagnostics/format136.rs:118 src/gnome/elements.rs:138 src/gnome/menus.rs:454 src/gnome/navigation.rs:1047 src/gnome/references.rs:208 src/navigation.rs:319 src/toolbar.rs:92
 msgid "Table of Contents"
 msgstr ""
 
@@ -3149,7 +3149,7 @@ msgstr ""
 msgid "The document has changed; export it again"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:166 src/gnome/close_group.rs:34 src/gnome/elements.rs:226 src/gnome/elements.rs:249 src/gnome/files.rs:179 src/gnome/headers.rs:170 src/gnome/links.rs:241 src/gnome/references.rs:164 src/gnome/tables.rs:217 src/history.rs:131
+#: src/gnome/annotation_dialog.rs:166 src/gnome/close_group.rs:34 src/gnome/elements.rs:235 src/gnome/elements.rs:258 src/gnome/files.rs:179 src/gnome/headers.rs:170 src/gnome/links.rs:241 src/gnome/references.rs:164 src/gnome/tables.rs:217 src/history.rs:131
 msgid "The document has changed; open this dialog again."
 msgstr ""
 

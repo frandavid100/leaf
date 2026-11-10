@@ -11,6 +11,7 @@ for marker in TEXT18_INK_ARROW TEXT18_BLUE TEXT18_INK_BACK TEXT18_INK_REOPEN TEX
   for attempt in $(seq 1 350); do
     grep -q "^$marker " "$log" && break
     kill -0 "$leaf_pid" || { cat "$log"; exit 1; }
+    if [[ "$attempt" = 150 ]]; then scrot "${log%.log}-$marker-stalled.png" 2>/dev/null || true; fi
     sleep 0.1
   done
   grep -q "^$marker " "$log" || { tail -35 "$log" | cut -c1-240; exit 1; }
@@ -26,9 +27,11 @@ for marker in TEXT18_INK_ARROW TEXT18_BLUE TEXT18_INK_BACK TEXT18_INK_REOPEN TEX
     kill -0 "$leaf_pid" || { cat "$log"; exit 1; }
   done
   grep -Fq "POINTER_TARGET_ENTERED $marker" "$log" || { cat "$log"; exit 1; }
+  { echo "$marker before window=$leaf_window"; xdotool getwindowgeometry --shell "$leaf_window"; xdotool getmouselocation; } >> "${log%.log}-driver.log"
   xdotool mousedown 1
   sleep 0.12
   xdotool mouseup 1
+  { echo "$marker after"; xdotool getmouselocation; } >> "${log%.log}-driver.log"
   sleep 0.15
 done
 wait "$leaf_pid" || { cat "$log"; exit 1; }

@@ -1348,10 +1348,5 @@ pub(super) fn install_paragraph_popover(
     s
 }
 pub(super) fn show_paragraph_options(ui: &Rc<Ui>, _parent: &ApplicationWindow) {
-    if let Some(s) = ui.paragraph.borrow().as_ref() {
-        if let Some(p) = s.popover.upgrade() {
-            p.popup();
-        }
-        s.page("options");
-    }
+    format_bar::open_group(ui, "paragraph", Some("options"));
 }

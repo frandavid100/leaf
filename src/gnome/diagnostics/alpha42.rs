@@ -277,6 +277,16 @@ async fn shared_overflow(ui: &Rc<Ui>, window: &ApplicationWindow) {
         .downcast::<gtk::ScrolledWindow>()
         .unwrap();
     let fixed = menu.compute_bounds(window).unwrap();
+    eprintln!(
+        "OVERFLOW248_LAYOUT window={} sidebar={:?} toolbar={:?} scroll={:?} header={:?} fixed={fixed:?}",
+        window.width(),
+        ui.sidebar.measure(gtk::Orientation::Horizontal, -1),
+        ui.format_toolbar.measure(gtk::Orientation::Horizontal, -1),
+        scroll.measure(gtk::Orientation::Horizontal, -1),
+        find_widget(window, "document-primary-header")
+            .unwrap()
+            .measure(gtk::Orientation::Horizontal, -1)
+    );
     assert!(fixed.x() >= 0. && fixed.x() + fixed.width() <= window.width() as f32);
     assert!(scroll.hadjustment().upper() > scroll.hadjustment().page_size());
     let last = find_widget(&ui.format_toolbar, "format-quick-language").unwrap();
@@ -335,6 +345,44 @@ async fn shared_overflow(ui: &Rc<Ui>, window: &ApplicationWindow) {
             .unwrap()
             .is_mapped()
     );
+    let mut modes = prefs::toolbar_placements("elements");
+    modes.iter_mut().find(|(id, _)| id == "table").unwrap().1 = Placement::More;
+    prefs::set_toolbar_placements("elements", &modes).unwrap();
+    ui.quick_tools.borrow().as_ref().unwrap().layout();
+    ui.quick_tools.borrow().as_ref().unwrap().root();
+    settle().await;
+    for group in ["text", "paragraph", "elements"] {
+        assert!(
+            find_widget(&ui.format_toolbar, &format!("overflow-more-{group}"))
+                .unwrap()
+                .is_mapped()
+        );
+    }
+    find_widget(&ui.format_toolbar, "overflow-more-elements")
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap()
+        .emit_clicked();
+    settle().await;
+    let elements = ui.elements.borrow().as_ref().unwrap().clone();
+    find_widget(&elements.pop, "format-row-elements-table")
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap()
+        .emit_clicked();
+    settle().await;
+    assert!(elements.header.arrow.is_visible());
+    elements.header.button.emit_clicked();
+    settle().await;
+    assert_eq!(elements.stack.visible_child_name().as_deref(), Some("home"));
+    elements.header.button.emit_clicked();
+    settle().await;
+    assert!(
+        find_widget(&ui.format_toolbar, "overflow-section-text")
+            .unwrap()
+            .is_mapped()
+    );
+    menu.popdown();
     for (group, order) in &saved {
         prefs::set_toolbar_placements(group, order).unwrap();
     }
