@@ -65,7 +65,7 @@ jobs:
           LEAF35_NATIVE_SOURCE: ${{ github.workspace }}/target/debug/wordcraft-gnome
         run: |
           set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.41-flatpark-x86_64.tar.xz 2>&1 | tee dist/portal-gnome51.log
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.42-flatpark-x86_64.tar.xz 2>&1 | tee dist/portal-gnome51.log
           grep -q FLATPARK_GNOME51_RELOCATION_OK dist/portal-gnome51.log
       - name: Reproduce the portal interaction with bounded document differences
         env:

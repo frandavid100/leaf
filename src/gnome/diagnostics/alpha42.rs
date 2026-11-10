@@ -15,7 +15,7 @@ fn checks(root: &gtk::Widget) -> Vec<gtk::CheckButton> {
     }
     result
 }
-fn response(root: &gtk::Widget, label: &str) -> bool {
+pub(super) fn response(root: &gtk::Widget, label: &str) -> bool {
     if let Some(button) = root.downcast_ref::<gtk::Button>() {
         if button.label().as_deref() == Some(label) {
             button.emit_clicked();

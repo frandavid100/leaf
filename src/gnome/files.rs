@@ -16,7 +16,7 @@ pub(super) fn ask_discard(
         )),
     );
     dialog.add_response("cancel", wordcraft_gnome::t!("Cancel"));
-    dialog.add_response("discard", "Descartar");
+    dialog.add_response("discard", wordcraft_gnome::t!("Discard"));
     dialog.add_response("save", wordcraft_gnome::t!("Save"));
     dialog.set_response_appearance("discard", adw::ResponseAppearance::Destructive);
     dialog.set_response_appearance("save", adw::ResponseAppearance::Suggested);

@@ -29,7 +29,7 @@ msgstr ""
 msgid "Accept"
 msgstr ""
 
-#: src/gnome/tab.rs:64 src/gnome/tab.rs:563 src/gnome/tab.rs:564
+#: src/gnome/tab.rs:64 src/gnome/tab.rs:562 src/gnome/tab.rs:563
 msgid "Actual Size (100%)"
 msgstr ""
 
@@ -169,7 +169,7 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
-#: src/gnome/workspace.rs:320
+#: src/gnome/workspace.rs:317
 msgid "Author Name"
 msgstr ""
 
@@ -189,7 +189,7 @@ msgstr ""
 msgid "Automatic Fields"
 msgstr ""
 
-#: src/gnome/workspace.rs:352 src/gnome/workspace.rs:355
+#: src/gnome/workspace.rs:349 src/gnome/workspace.rs:352
 msgid "Autosave"
 msgstr ""
 
@@ -649,7 +649,7 @@ msgstr ""
 msgid "Could Not Read Image"
 msgstr ""
 
-#: src/gnome/workspace.rs:369
+#: src/gnome/workspace.rs:366
 msgid "Could Not Save Preferences: {e}"
 msgstr ""
 
@@ -737,7 +737,7 @@ msgstr ""
 msgid "DOCUMENTS\nOpen DOCX/ODT documents from the main menu. Ctrl+S saves; Ctrl+Shift+S saves a copy. Use DOCX for notes, equations, automatic references, comments and advanced tracked changes.\n\nNAVIGATION AND REVIEW\nF9 shows or hides Pages, Navigation and Review. Ctrl+F searches; Ctrl+H replaces. Review filters corrections, tracked changes and comments. Apply or ignore a correction occurrence, accept/reject changes, and reply to or resolve comments. F7 opens corrections. Edit/Suggest controls whether new edits are tracked.\n\nFORMATTING AND ELEMENTS\nStyle, Paragraph, Text and Elements are in the adaptive header or bottom toolbar. Format rows show current values; mixed checkboxes enable the option across the selection. Arrows open internal options with Back. Reapply remembers that feature’s applied settings. Pins keep panels floating. Elements shares table, image and contents tools with right-click, while keeping Insert available. Ctrl+Z undoes; Ctrl+Shift+Z redoes. Ruler drags snap to 0.5 cm; Escape cancels.\n\nAUTOSAVE\nPreferences can disable autosave, use recovery copies or save directly to the document. Pending recovery documents appear above the blank page in each new tab or window."
 msgstr ""
 
-#: src/gnome/tab.rs:801
+#: src/gnome/tab.rs:800
 msgid "DOCX and ODT Documents"
 msgstr ""
 
@@ -765,7 +765,7 @@ msgstr ""
 msgid "Decrease Size"
 msgstr ""
 
-#: src/gnome/workspace.rs:380
+#: src/gnome/workspace.rs:377
 msgid "Default Language for New Documents"
 msgstr ""
 
@@ -869,11 +869,11 @@ msgstr ""
 msgid "Different Odd and Even Pages"
 msgstr ""
 
-#: src/gnome/workspace.rs:357
+#: src/gnome/workspace.rs:354
 msgid "Disabled"
 msgstr ""
 
-#: src/gnome/templates.rs:397
+#: src/gnome/diagnostics/workflows38.rs:539 src/gnome/files.rs:19 src/gnome/templates.rs:397
 msgid "Discard"
 msgstr ""
 
@@ -921,7 +921,7 @@ msgstr ""
 msgid "Do Not Check"
 msgstr ""
 
-#: src/gnome/application.rs:130 src/gnome/tab.rs:837 src/save_name.rs:41 src/save_name.rs:109
+#: src/gnome/application.rs:130 src/gnome/tab.rs:836 src/save_name.rs:41 src/save_name.rs:109
 msgid "Document"
 msgstr ""
 
@@ -933,7 +933,7 @@ msgstr ""
 msgid "Document Editor"
 msgstr ""
 
-#: src/gnome/workspace.rs:359
+#: src/gnome/workspace.rs:356
 msgid "Document File"
 msgstr ""
 
@@ -1217,7 +1217,7 @@ msgstr ""
 msgid "Fit Contents"
 msgstr ""
 
-#: src/gnome/tab.rs:63 src/gnome/tab.rs:567 src/gnome/tab.rs:568 src/gnome/tables.rs:268
+#: src/gnome/tab.rs:63 src/gnome/tab.rs:566 src/gnome/tab.rs:567 src/gnome/tables.rs:268
 msgid "Fit Width"
 msgstr ""
 
@@ -1321,7 +1321,7 @@ msgstr ""
 msgid "From This Point Onwards"
 msgstr ""
 
-#: src/gnome/workspace.rs:316
+#: src/gnome/workspace.rs:313
 msgid "General"
 msgstr ""
 
@@ -1889,7 +1889,7 @@ msgstr ""
 msgid "New Comment"
 msgstr ""
 
-#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:146 src/gnome/tab.rs:894 src/gnome/templates.rs:640 src/gnome/workspace.rs:303
+#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:146 src/gnome/tab.rs:893 src/gnome/templates.rs:640 src/gnome/workspace.rs:300
 msgid "New Document"
 msgstr ""
 
@@ -2037,7 +2037,7 @@ msgstr ""
 msgid "Only DOCX and ODT files are supported"
 msgstr ""
 
-#: src/gnome/application.rs:122 src/gnome/tab.rs:826
+#: src/gnome/application.rs:122 src/gnome/tab.rs:825
 msgid "Only local files are supported"
 msgstr ""
 
@@ -2045,7 +2045,7 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: src/gnome/tab.rs:799
+#: src/gnome/tab.rs:798
 msgid "Open Document"
 msgstr ""
 
@@ -2137,7 +2137,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:405 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:337 src/gnome/paragraph.rs:1277 src/gnome/tab.rs:344 src/gnome/tab.rs:642 src/gnome/toolbar_preferences.rs:217
+#: src/gnome/context.rs:131 src/gnome/context.rs:405 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:337 src/gnome/paragraph.rs:1277 src/gnome/tab.rs:344 src/gnome/tab.rs:641 src/gnome/toolbar_preferences.rs:217
 msgid "Paragraph"
 msgstr ""
 
@@ -2225,7 +2225,7 @@ msgstr ""
 msgid "Power"
 msgstr ""
 
-#: src/gnome/menus.rs:373 src/gnome/menus.rs:664 src/gnome/workspace.rs:313
+#: src/gnome/menus.rs:373 src/gnome/menus.rs:664 src/gnome/workspace.rs:310
 msgid "Preferences"
 msgstr ""
 
@@ -2257,11 +2257,11 @@ msgstr ""
 msgid "RGB Color, for Example 2266AA"
 msgstr ""
 
-#: src/gnome/templates.rs:511 src/gnome/templates.rs:638 src/gnome/workspace.rs:478
+#: src/gnome/templates.rs:511 src/gnome/templates.rs:638 src/gnome/workspace.rs:475
 msgid "Recovered Document"
 msgstr ""
 
-#: src/gnome/workspace.rs:358
+#: src/gnome/workspace.rs:355
 msgid "Recovery File"
 msgstr ""
 
@@ -2269,7 +2269,7 @@ msgstr ""
 msgid "Recovery did not finish in time."
 msgstr ""
 
-#: src/gnome/workspace.rs:353
+#: src/gnome/workspace.rs:350
 msgid "Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved."
 msgstr ""
 
@@ -2449,7 +2449,7 @@ msgstr ""
 msgid "Review Filter"
 msgstr ""
 
-#: src/gnome/workspace.rs:390 src/gnome/workspace.rs:392
+#: src/gnome/workspace.rs:387 src/gnome/workspace.rs:389
 msgid "Review New Documents"
 msgstr ""
 
@@ -2885,7 +2885,7 @@ msgstr ""
 msgid "Spelling Suggestions"
 msgstr ""
 
-#: src/gnome/spellcheck.rs:569 src/gnome/workspace.rs:378
+#: src/gnome/spellcheck.rs:569 src/gnome/workspace.rs:375
 msgid "Spelling and Grammar"
 msgstr ""
 
@@ -2945,7 +2945,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:404 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:336 src/gnome/styles.rs:524 src/gnome/tab.rs:340 src/gnome/tab.rs:641
+#: src/gnome/context.rs:128 src/gnome/context.rs:404 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:336 src/gnome/styles.rs:524 src/gnome/tab.rs:340 src/gnome/tab.rs:640
 msgid "Style"
 msgstr ""
 
@@ -3057,7 +3057,7 @@ msgstr ""
 msgid "Templates Folder"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:406 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:429 src/gnome/diagnostics/register.rs:338 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/references.rs:334 src/gnome/tab.rs:296 src/gnome/tab.rs:331 src/gnome/tab.rs:643 src/gnome/toolbar_preferences.rs:216
+#: src/gnome/context.rs:134 src/gnome/context.rs:406 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:429 src/gnome/diagnostics/register.rs:338 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/references.rs:334 src/gnome/tab.rs:296 src/gnome/tab.rs:331 src/gnome/tab.rs:642 src/gnome/toolbar_preferences.rs:216
 msgid "Text"
 msgstr ""
 

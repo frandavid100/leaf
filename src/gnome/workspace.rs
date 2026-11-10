@@ -245,9 +245,6 @@ pub(super) fn make_window(
                     forget_workspace(&host2);
                     glib::Propagation::Proceed
                 } else {
-                    for (_, ui) in host2.docs.borrow().iter() {
-                        ui.closing_confirmed.set(false);
-                    }
                     close_workspace(&host2);
                     glib::Propagation::Stop
                 }

@@ -1,0 +1,550 @@
+diff --git a/ROADMAP.md b/ROADMAP.md
+index d4c951f9..c3300630 100644
+--- a/ROADMAP.md
++++ b/ROADMAP.md
+@@ -1,6 +1,8 @@
+ # WordCraft roadmap
+ 
+ > **Last reviewed:** 2026-10-31 · **Last updated:** 2026-10-31 · **Change:** minor (#3398: persistent screen paper colors; parity estimates unchanged); previously minor (#3693: additional Delete Previous Sentence command and shortcut; Word-parity estimates unchanged)
++> **Unequal-column overflow:** 2026-11-08 · Continuation of @PanSHIgg’s #2422 updated to current main (#2382). Natural paragraph continuation reflows for each destination width; equal-width, alignment, decoration and float controls retained. No new Word or Leaf desktop measurement; readiness estimates unchanged.
++
+ > **CLI path update:** 2026-11-04 · Options before a non-Unicode input filename no longer make the CLI reject that filename; text option values still require Unicode; `run --file` and `run --script` retain native paths. No ranked gap or readiness estimate changes.
+ > **Floating anchor row segments:** 2026-11-07 · A floating anchor after a manual page/column break counts visible content on the far side of the same wrapped row. Marker-only cover anchors retain their previous-page rule. Synthetic picture spacing, placement and history controls; no new native Word measurement. Readiness estimates unchanged.
+ 
+@@ -159,6 +161,8 @@ Ranked, to beta (detail and remaining milestones in [docs/roadmap.md](docs/roadm
+ - 2026-11-05: ODT frames keep the page they are anchored to (gap 19): written without its number, a frame on page 3 came back on page 1 in LibreOffice after a save.
+ - 2026-11-05: ODT documents keep their language (gap 19). It was lost on save after numbering or a new style, and LibreOffice then showed the document in its own default language; a document in another language was also proofed as English.
+ - 2026-11-05: ODT table and row backgrounds are kept (gap 19): they were dropped, and gone in LibreOffice after a save.
++- 2026-11-08: Natural overflow into unequal columns uses the destination width (#2382, continuation of @PanSHIgg’s #2422). Current-main documentation retained; alignment, borders, shading and late-float placement keep their controls. Readiness estimates unchanged.
++
+ - 2026-11-08: Layout: a turned inline picture whose file keeps no room for the turn (no or a zero `wp:effectExtent`, as other tools write) keeps its line to its frame and overhangs it, cut at the line's top and bottom, as Word does: the frame as it is in Word 2007 layout, with width and height exchanged from 45° to 135° and 225° to 315° in Word 2013+ layout. Such a file saves the same way. Pictures with the room recorded (Word's own files) still take their rotated bounds. Readiness unchanged.
+ - 2026-11-08: XML text and CDATA read with their line ends normalised (XML 1.0 §2.11): CR LF and a lone CR are one line feed, `&#13;` stays a CR, so a line break inside `w:t` in a file saved with Windows line ends is one space, not two (#5897); readiness estimates unchanged.
+ - 2026-11-08: Layout: contextual spacing drops the space after a table cell's last paragraph when that paragraph is in the Normal style, the end-of-cell mark counting as a Normal paragraph next to it; a last paragraph in another style keeps its space after. The rule is inferred from docxide-pdf's notes and its `cell-end-*` fixtures (`cell-end-text-context`, `cell-end-empty-context`); a Word comparison that tells it apart from the neighbouring paragraph's style is still open. Readiness unchanged.
+@@ -885,6 +889,8 @@ MATH glyphs that reference the same construction now share its immutable variant
+ 
+ > 2026-11-08 · Progress log: `convert --strict` refuses a PDF or PNG that would silently lack a character or a picture (#6005).
+ >
++> 2026-11-08 · Unequal-column continuation reconciled with current main (#2382/#2422); readiness estimates unchanged.
++
+ > 2026-11-08 · Progress log: turned inline pictures without a recorded effect extent keep their line to the frame, as in Word.
+ >
+ > 2026-11-05 · Linux self-update ignores another program's AppImage variables (#5653); recorded in the progress log, readiness unchanged.
+diff --git a/crates/layout/src/flow.rs b/crates/layout/src/flow.rs
+index 233add4e..4fe7ea51 100644
+--- a/crates/layout/src/flow.rs
++++ b/crates/layout/src/flow.rs
+@@ -14,6 +14,7 @@ use super::{
+ };
+ #[cfg(test)]
+ use crate::WRAP_RELAYS;
++use wordcraft_doc::props::Align;
+ 
+ /// A closing mark before a continuous section takes no room after content. An otherwise empty
+ /// section starting a new page retains its paragraph line.
+@@ -104,6 +105,93 @@ pub(crate) fn again<T>(ctx: &mut Ctx, eq_start: u32, f: impl FnOnce(&mut Ctx) ->
+ /// columns and pages it runs onto (#1374).
+ const MAX_WRAP_RELAYS: usize = 64;
+ 
++/// Bound repeated layouts when a paragraph crosses unequal columns (#2382).
++const MAX_WIDTH_RELAYS: usize = 64;
++
++#[cfg(test)]
++thread_local! {
++    pub(crate) static WIDTH_RELAYS: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
++}
++
++/// The line a paragraph laid out again for another column width continues the text from `resume`
++/// on at, and the layout to place it from: the line starting exactly there, or, when the new
++/// width cuts that text mid-line, the line holding it as its tail (a natural column overflow cuts
++/// a line at the new width's break, unlike a column break, which is a break of its own). The tail
++/// is placed per the paragraph's alignment. `None` when the tail cut is not supported (a
++/// bidirectional line), leaving the lines as they are.
++fn resume_relaid(relaid: &Arc<ParaLayout>, resume: usize) -> Option<(usize, Arc<ParaLayout>)> {
++    if let Some(k) = relaid.lines.iter().position(|l| l.start == resume) {
++        return Some((k, relaid.clone()));
++    }
++    let k = relaid.lines.iter().position(|l| l.start < resume && resume < l.stop)?;
++    let line = relaid.lines.get(k)?;
++    // Right-to-left lines carry per-cluster visual boxes this tail cut does not reorder.
++    if !line.vis.is_empty() {
++        return None;
++    }
++    let jc = (line.c0..line.c1).find(|&k| relaid.clusters.get(k).is_some_and(|c| c.start == resume))?;
++    let base = *line.xs.get(jc - line.c0)?;
++    // The tail continues on a fresh line of its own, at the paragraph's continuation indent, and
++    // keeps the paragraph's alignment: an end-aligned tail sits at the line's right edge and a
++    // centred one is centred by its own width, as Word lays the rest out in the new column.
++    let indent = relaid.rp.indent_left;
++    let mut content_end = line.xs.last().copied().unwrap_or(base);
++    for k in (jc..line.c1).rev() {
++        match relaid.clusters.get(k).map(|c| c.kind) {
++            Some(para::ClKind::Space)
++            | Some(para::ClKind::Marker)
++            | Some(para::ClKind::LineBreak)
++            | Some(para::ClKind::PageBreak)
++            | Some(para::ClKind::ColumnBreak) => {
++                content_end = line.xs.get(k - line.c0).copied().unwrap_or(content_end);
++            }
++            _ => {
++                content_end -= relaid.auto_space_after(k);
++                break;
++            }
++        }
++    }
++    let start = match relaid.rp.align {
++        Align::Right => base + (line.right - content_end),
++        Align::Center => indent + ((line.right - indent) - (content_end - base)) / 2.0,
++        _ => indent,
++    };
++    let shift = start - base;
++    let mut pl = (**relaid).clone();
++    // A justified line was stretched to the width of the column it was broken for; its tail is
++    // only the text from `resume` on, so it keeps natural word spacing, like a last line, rather
++    // than the stretched gaps of a line that then stops short of the right edge (#2382).
++    let xs: Vec<f32> = match relaid.rp.align {
++        Align::Justify | Align::Distribute => {
++            let mut out = Vec::with_capacity(line.c1 - jc + 1);
++            let mut x = indent;
++            for k in jc..line.c1 {
++                out.push(x);
++                x += relaid.clusters.get(k).map(|c| c.adv).unwrap_or(0.0);
++            }
++            out.push(x);
++            out
++        }
++        _ => line.xs.get(jc - line.c0..)?.iter().map(|x| x + shift).collect(),
++    };
++    let leaders = line.leaders.iter().filter(|(k, _)| *k >= jc).cloned().collect();
++    let tail = para::Line { start: resume, c0: jc, xs, leaders, left: indent, right: line.right, ..line.clone() };
++    // Keep the head (the text before `resume`) as line `k` and put the tail after it: the piece
++    // placed from the tail then starts at a later line, as a continuation of the paragraph, so
++    // `push_para` no longer draws the paragraph's top border on it and display no longer draws
++    // its list label (both belong to the paragraph's first piece).
++    if let Some(head) = pl.lines.get_mut(k) {
++        head.stop = resume;
++        head.c1 = jc;
++        head.xs.truncate(jc - line.c0 + 1);
++        head.leaders.retain(|(i, _)| *i < jc);
++        head.hyphen = None;
++        head.end = para::LineEnd::Wrap;
++    }
++    pl.lines.insert(k + 1, tail);
++    Some((k + 1, Arc::new(pl)))
++}
++
+ /// Run `f` with `map` as the field context's page map (`FieldCtx::page_from`), then take it back.
+ fn with_page_map<T>(ctx: &mut Ctx, map: &mut Vec<(usize, u32)>, f: impl FnOnce(&mut Ctx) -> T) -> T {
+     ctx.fields.page_from = std::mem::take(map);
+@@ -173,6 +261,7 @@ struct Flow<'a> {
+     /// of pages keeps the last number it got), and for the wrap areas of a later column (#1374).
+     page_relays: usize,
+     wrap_relays: usize,
++    width_relays: usize,
+     /// The first line not placed yet.
+     l0: usize,
+     /// Its floats anchored on a later page or column than its first piece (#4250).
+@@ -217,6 +306,7 @@ impl<'a> Flow<'a> {
+             page_map: Vec::new(),
+             page_relays: 0,
+             wrap_relays: 0,
++            width_relays: 0,
+             l0: 0,
+             late: LateFloats::new(&late),
+             rechecked: false,
+@@ -356,6 +446,47 @@ impl<'a> Flow<'a> {
+         before
+     }
+ 
++    /// Break a natural overflow for the destination column's width (#2382), retaining the
++    /// already placed text and floats. Equal-width columns need no additional layout.
++    fn relay_width(&mut self, ctx: &mut Ctx, pb: &PageBuilder) {
++        if self.l0 == 0 || pb.web || self.width_relays >= MAX_WIDTH_RELAYS || (pb.col_w() - self.laid_width).abs() <= 0.5 {
++            return;
++        }
++        let Some((resume, t)) = self.pl.lines.get(self.l0).map(|l| (l.start, l.top)) else { return };
++        self.width_relays += 1;
++        ctx.fields.page = self.laid_page;
++        #[cfg(test)]
++        WIDTH_RELAYS.with(|c| c.set(c.get() + 1));
++        let width_now = pb.col_w();
++        // The old column's exclusions must not follow the text into another column. A new
++        // width can move the resume's top, so resolve the destination's areas from that top
++        // once more; a top that still moves leaves the previous layout in place.
++        let mut offset = t;
++        let mut here = continued_exclusions(&[], &body_wraps(ctx, pb), pb.col_x(), pb.y, offset, width_now);
++        let (p, eq_start, label) = (self.p, self.eq_start, &self.label);
++        let mut relaid =
++            with_page_map(ctx, &mut self.page_map, |ctx| again(ctx, eq_start, |ctx| ctx.para_labelled(p, width_now, None, &here, label.clone())));
++        let mut relayed = resume_relaid(&relaid, resume);
++        let moved = relayed.as_ref().and_then(|(k, r)| r.lines.get(*k)).map(|l| l.top);
++        if let Some(t1) = moved
++            && (t1 - offset).abs() > 0.01
++            && !here.is_empty()
++        {
++            offset = t1;
++            here = continued_exclusions(&[], &body_wraps(ctx, pb), pb.col_x(), pb.y, offset, width_now);
++            relaid =
++                with_page_map(ctx, &mut self.page_map, |ctx| again(ctx, eq_start, |ctx| ctx.para_labelled(p, width_now, None, &here, label.clone())));
++            relayed = match resume_relaid(&relaid, resume) {
++                Some((k, r)) if r.lines.get(k).is_some_and(|l| (l.top - offset).abs() < 0.01) => Some((k, r)),
++                _ => None,
++            };
++        }
++        if let Some((k, relaid)) = relayed {
++            (self.pl, self.rel, self.l0) = (relaid, here, k);
++            self.laid_width = width_now;
++        }
++    }
++
+     /// The lines going into a new column (or page) were broken around the wrap areas where the
+     /// paragraph started: break them again around this column's (the lines before stay as they
+     /// were, and so do the paragraph's own floating objects), when they differ (#1374).
+@@ -537,7 +668,9 @@ impl<'a> Flow<'a> {
+         {
+             edges.up = (y - end).max(0.0);
+         }
+-        let end = push_para(&mut items, (StoryRef::Body, &[self.block as u32]), &self.pl, (l0, l1), (x, y), self.width, edges);
++        // Decoration follows the column this piece occupies, including after a width relay.
++        let col_w = pb.col_w();
++        let end = push_para(&mut items, (StoryRef::Body, &[self.block as u32]), &self.pl, (l0, l1), (x, y), col_w, edges);
+         pb.para_end = Some((pb.pages.len(), pb.col, end));
+         // Late floats whose anchor line came here after all are placed with these lines.
+         self.late.piece = (pb.pages.len(), pb.col);
+@@ -549,7 +682,7 @@ impl<'a> Flow<'a> {
+         // Pictures, shapes and text boxes in these lines (web view: floats placed by this piece).
+         let at = ObjFrame {
+             page: Some(PageFrame { sect: pb.sect, margin_top: None, origin: (0.0, 0.0), number: pb.number, mirror: ctx.mirror }),
+-            col: (x, self.width),
++            col: (x, col_w),
+             para_y: if pb.web { y } else { self.anchor_y },
+             table_chr: None,
+             pinned: None,
+@@ -844,6 +977,7 @@ fn place_para_in_flow(ctx: &mut Ctx, pb: &mut PageBuilder, p: &Paragraph, block:
+     }
+     while f.l0 < f.n() {
+         f.place_due_late(ctx, pb);
++        f.relay_width(ctx, pb);
+         f.relay_wrap(ctx, pb);
+         f.relay_pages(ctx, pb);
+         // What is laid out for these lines from here (their footnotes) is on this page.
+diff --git a/crates/layout/src/para.rs b/crates/layout/src/para.rs
+index 44bc2f6f..cf1b721c 100644
+--- a/crates/layout/src/para.rs
++++ b/crates/layout/src/para.rs
+@@ -141,7 +141,7 @@ impl ParaLayout {
+     }
+ 
+     /// The automatic space in cluster `k`'s advance ([`auto_space`]), 0 without one.
+-    fn auto_space_after(&self, k: usize) -> f32 {
++    pub(crate) fn auto_space_after(&self, k: usize) -> f32 {
+         self.auto_space.binary_search_by_key(&k, |a| a.0).ok().and_then(|i| self.auto_space.get(i)).map_or(0.0, |a| a.1)
+     }
+     /// The line the list label is drawn on: the first, unless the paragraph opens with a page
+diff --git a/crates/layout/src/tests.rs b/crates/layout/src/tests.rs
+index 98a75854..2a5453f4 100644
+--- a/crates/layout/src/tests.rs
++++ b/crates/layout/src/tests.rs
+@@ -21,6 +21,7 @@ mod pages;
+ mod styleref;
+ mod table_contact;
+ mod textbox;
++mod unequal_columns;
+ mod vertical;
+ 
+ const WRAP_TEST_FONT: &str = "Source Sans 3";
+diff --git a/crates/layout/src/tests/unequal_columns.rs b/crates/layout/src/tests/unequal_columns.rs
+new file mode 100644
+index 00000000..c8ea3f2c
+--- /dev/null
++++ b/crates/layout/src/tests/unequal_columns.rs
+@@ -0,0 +1,262 @@
++use super::*;
++use crate::flow::WIDTH_RELAYS;
++
++/// Unequal columns (#2382): a paragraph that fills a narrow column and overflows into a wide one
++/// (without a column break) breaks its remaining lines for the column they land in. Word 2024's
++/// Left and Right preset column layouts (a narrow and a wide column) showed it: the overflowing
++/// text ran down the wide column a word or two wide, and the two next to each other (till it
++/// reached the page edge).
++#[test]
++fn text_overflowing_into_an_unequal_column_takes_its_width() {
++    // Like Word's "Left" preset: a 120 pt column, then a 280 pt one.
++    let text = "Cras vitae aliquam leo. Integer quam ex, fringilla non ante quis, pharetra iaculis tortor. Vestibulum vel consequat augue, a dignissim massa. Vestibulum condimentum maximus urna, ac luctus quam consectetur et. Quisque convallis leo sem, id malesuada sem finibus elementum. Nam id nulla ac neque scelerisque volutpat sit amet sed ipsum. Donec hendrerit lacus ut felis porta, sed ultricies sapien tristique. Nullam eget dignissim lacus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In quis enim eu nunc dignissim accumsan et bibendum turpis. Vivamus volutpat, libero id scelerisque commodo, nulla massa tempus velit, quis ultricies ex eros sed sapien. Proin dapibus tortor varius porttitor tincidunt. Curabitur ullamcorper magna sed lectus luctus, vel bibendum mauris semper.";
++    let items = |widths: Vec<(f32, f32)>| {
++        let mut d = Document::from_text(text);
++        d.last_section.columns = wordcraft_doc::section::Columns { count: 2, space: 36.0, separator: false, widths };
++        WIDTH_RELAYS.with(|c| c.set(0));
++        let l = lay(&d);
++        let mut covered = 0;
++        for item in l.pages.iter().flat_map(|page| &page.items) {
++            if let Placed::Lines { path, para, l0, l1, .. } = item {
++                if path.0 == [0] {
++                    for line in &para.lines[*l0..*l1] {
++                        assert_eq!(line.start, covered, "continuation must neither omit nor repeat text");
++                        covered = line.stop;
++                    }
++                }
++            }
++        }
++        assert_eq!(covered, text.len());
++        // Caret endpoints include hanging trailing spaces; compare visible content,
++        // consistently with the alignment controls below.
++        let lines: Vec<(f32, f32)> = l.pages[0]
++            .items
++            .iter()
++            .filter_map(|it| match it {
++                Placed::Lines { path, para, l0, l1, x, .. } if path.0 == [0] => {
++                    let right = (*l0..*l1).filter_map(|li| para.lines.get(li)).map(|line| x + ink_end(para, line)).fold(f32::MIN, f32::max);
++                    Some((*x, right))
++                }
++                _ => None,
++            })
++            .collect();
++        (lines, WIDTH_RELAYS.with(|c| c.get()))
++    };
++    let (lines, relays) = items(vec![(120.0, 36.0), (280.0, 0.0)]);
++    let (narrow, wide) = (lines.first().copied().unwrap(), lines.last().copied().unwrap());
++    assert!(wide.0 > narrow.0, "the second column is right of the first: {lines:?}");
++    assert!(narrow.1 <= narrow.0 + 120.0 + 0.5, "the first column's lines stay in it: {lines:?}");
++    assert!(wide.1 > wide.0 + 160.0, "the overflowing lines are broken for the 280 pt column, not the 120 pt one: {lines:?}");
++    assert!(relays >= 1, "a width relay happened");
++    // Equal columns are unaffected (nothing is laid out twice).
++    let (_, relays) = items(vec![]);
++    assert_eq!(relays, 0, "no width relay for equal columns");
++}
++
++/// A long paragraph in Word 2024's "Left" preset columns (#2382): a 120 pt column, a 36 pt gap,
++/// then a 280 pt one; `edit` shapes the paragraph (alignment, shading…). The page is short so the
++/// narrow column holds two lines and the overflow resumes inside the wide column's first line
++/// (the tail cut, not a line boundary).
++fn unequal_column_doc(edit: impl Fn(&mut ParaProps)) -> Document {
++    let text = "Cras vitae aliquam leo. Integer quam ex, fringilla non ante quis, pharetra iaculis tortor. Vestibulum vel consequat augue, a dignissim massa. Vestibulum condimentum maximus urna, ac luctus quam consectetur et. Quisque convallis leo sem, id malesuada sem finibus elementum. Nam id nulla ac neque scelerisque volutpat sit amet sed ipsum. Donec hendrerit lacus ut felis porta, sed ultricies sapien tristique. Nullam eget dignissim lacus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In quis enim eu nunc dignissim accumsan et bibendum turpis. Vivamus volutpat, libero id scelerisque commodo, nulla massa tempus velit, quis ultricies ex eros sed sapien. Proin dapibus tortor varius porttitor tincidunt. Curabitur ullamcorper magna sed lectus luctus, vel bibendum mauris semper.";
++    let mut d = Document::from_text(text);
++    d.last_section.page_h = 180.0;
++    d.last_section.columns = wordcraft_doc::section::Columns { count: 2, space: 36.0, separator: false, widths: vec![(120.0, 36.0), (280.0, 0.0)] };
++    d.format_paragraphs(&Pos::body(0, 0), &Pos::body(0, 0), &edit).unwrap();
++    d
++}
++
++/// The body lines on page 1 as (x, ink end), one entry per line.
++fn page_lines(l: &DocLayout) -> Vec<(f32, f32)> {
++    l.pages[0]
++        .items
++        .iter()
++        .filter_map(|it| match it {
++            Placed::Lines { path, para, l0, l1, x, .. } if path.0 == [0] => {
++                Some((*l0..*l1).filter_map(|li| para.lines.get(li)).map(|line| (*x, *x + ink_end(para, line))).collect::<Vec<_>>())
++            }
++            _ => None,
++        })
++        .flatten()
++        .collect()
++}
++
++/// Unequal columns (#2382): the tail that opens the wide column keeps the paragraph's alignment,
++/// as Word lays the rest of the paragraph out there. An end-aligned paragraph's overflow reaches
++/// the wide column's right edge; before, the tail was anchored at the left indent and its line
++/// ended short of the edge.
++#[test]
++fn an_overflowing_tail_keeps_the_paragraphs_alignment() {
++    let d = unequal_column_doc(|p| p.align = Some(Align::Right));
++    let lines = page_lines(&lay(&d));
++    let first_x = lines.first().copied().unwrap().0;
++    assert!(lines.iter().any(|(x, _)| *x > first_x + 0.5), "the paragraph overflows into the second column: {lines:?}");
++    for (x, right) in &lines {
++        let width = if (*x - first_x).abs() < 0.5 { 120.0 } else { 280.0 };
++        assert!((*right - (*x + width)).abs() < 0.75, "an end-aligned line ends at its column's right edge: {lines:?}");
++    }
++}
++
++/// Unequal columns (#2382): a justified paragraph's overflow keeps natural word spacing in the
++/// wide column: the tail is only the text from where the wide column takes over, cut from a line
++/// that was stretched to the narrow column, so it reads like a last line instead of keeping
++/// stretched gaps and stopping short of the right edge.
++#[test]
++fn a_justified_overflowing_tail_keeps_natural_spacing() {
++    let d = unequal_column_doc(|p| p.align = Some(Align::Justify));
++    let l = lay(&d);
++    let first_x = l.pages[0]
++        .items
++        .iter()
++        .find_map(|it| match it {
++            Placed::Lines { story: StoryRef::Body, path, x, .. } if path.0 == [0] => Some(*x),
++            _ => None,
++        })
++        .expect("a body line");
++    let (_, line, para) = l.pages[0]
++        .items
++        .iter()
++        .find_map(|it| match it {
++            Placed::Lines { story: StoryRef::Body, path, para, l0, x, .. } if path.0 == [0] && *x > first_x + 0.5 => {
++                Some((*x, para.lines.get(*l0)?, para))
++            }
++            _ => None,
++        })
++        .expect("the paragraph overflows into the wide column");
++    assert!((line.xs.first().copied().unwrap_or_default()).abs() < 0.5, "the tail starts at the wide column's left edge: {:?}", line.xs.first());
++    for k in line.c0..line.c1 {
++        let i = k - line.c0;
++        let gap = line.xs.get(i + 1).copied().unwrap_or_default() - line.xs.get(i).copied().unwrap_or_default();
++        let adv = para.clusters.get(k).map(|c| c.adv).unwrap_or_default();
++        assert!((gap - adv).abs() < 0.001, "cluster {k}: gap {gap} vs its advance {adv}");
++    }
++    // The paragraph is justified otherwise: its full lines fill their column.
++    let justified = page_lines(&l).iter().any(|(x, right)| {
++        let width = if (*x - first_x).abs() < 0.5 { 120.0 } else { 280.0 };
++        (*right - (*x + width)).abs() < 0.75
++    });
++    assert!(justified, "justified lines fill their column: {:?}", page_lines(&l));
++}
++
++/// Unequal columns (#2382): a shaded paragraph's overflow shades the wide column it lands in, not
++/// the width of the column it started in (borders follow the same width).
++#[test]
++fn an_overflowing_paragraph_shades_the_column_it_lands_in() {
++    let colour = wordcraft_doc::Rgb(0xDD, 0xEE, 0xFF);
++    let d = unequal_column_doc(|p| p.shading = Some(colour));
++    let l = lay(&d);
++    let fills: Vec<_> = l.pages[0]
++        .items
++        .iter()
++        .filter_map(|it| match it {
++            Placed::Fill { rect, color } if *color == colour => Some(*rect),
++            _ => None,
++        })
++        .collect();
++    assert!(fills.iter().any(|r| (r.w - 280.0).abs() < 0.75), "a piece in the 280 pt column shades it: {fills:?}");
++    assert!(fills.iter().any(|r| (r.w - 120.0).abs() < 0.75), "the first piece shades the 120 pt column: {fills:?}");
++}
++
++/// Unequal columns (#2382): a paragraph's top border is drawn once, on its first piece. The piece
++/// that opens the wide column is a continuation, even though the overflow cuts a line mid-way
++/// (before, it held line 0 of the relaid layout and push_para drew the border again there, as
++/// display draws the list label again).
++#[test]
++fn an_overflowing_paragraph_draws_its_top_border_once() {
++    let d = unequal_column_doc(|p| {
++        p.borders = Some(wordcraft_doc::props::Borders { top: Some(Border::single(1.0)), ..Default::default() });
++    });
++    let l = lay(&d);
++    let horizontal: Vec<_> = l.pages[0]
++        .items
++        .iter()
++        .filter_map(|it| match it {
++            Placed::Rule { x0, y0, x1, y1, .. } if (y0 - y1).abs() < 0.01 => Some((*x0, *x1)),
++            _ => None,
++        })
++        .collect();
++    assert_eq!(horizontal.len(), 1, "one top border, on the paragraph's first piece: {horizontal:?}");
++}
++
++/// Unequal columns (#2382): a paragraph's floating object is placed once, at the paragraph's
++/// start, when its overflow opens the wide column. The wide column can hold text from before the
++/// overflow on its first line, so the resumed piece is not the paragraph's first piece and places
++/// no floating objects again.
++#[test]
++fn a_float_in_an_overflowing_paragraph_is_placed_once() {
++    let mut d = unequal_column_doc(|_| {});
++    let id = text_box(
++        &mut d,
++        40,
++        "Box",
++        72.0,
++        36.0,
++        wordcraft_doc::para::Float {
++            wrap: wordcraft_doc::para::Wrap::Square,
++            h_rel: wordcraft_doc::para::Anchor::Column,
++            v_rel: wordcraft_doc::para::Anchor::Paragraph,
++            x: 0.0,
++            y: 0.0,
++            dist: 0.0,
++            ..Default::default()
++        },
++    );
++    let l = lay(&d);
++    let placed = l.pages.iter().flat_map(|p| p.items.iter()).filter(|i| matches!(i, Placed::Object { text_box: Some(t), .. } if *t == id)).count();
++    assert_eq!(placed, 1, "the floating box is placed once");
++    // The box wraps the text in the narrow column it is anchored in only: every line laid out
++    // for the wide column starts at the paragraph's left edge there (before, the line after the
++    // tail kept clear of the box across the column it is not in).
++    let starts: Vec<(f32, f32)> = l.pages[0]
++        .items
++        .iter()
++        .filter_map(|it| match it {
++            Placed::Lines { story: StoryRef::Body, path, para, l0, l1, x, .. } if path.0 == [0] => {
++                Some((*l0..*l1).filter_map(|li| para.lines.get(li)).map(|ln| (*x, *x + ln.xs.first().copied().unwrap_or(0.0))).collect::<Vec<_>>())
++            }
++            _ => None,
++        })
++        .flatten()
++        .collect();
++    let first_x = starts.first().copied().unwrap().0;
++    assert!(starts.iter().any(|(x, _)| *x > first_x + 0.5), "the paragraph overflows into the wide column: {starts:?}");
++    for (x, start) in starts.iter().filter(|(x, _)| *x > first_x + 0.5) {
++        assert!((start - x).abs() < 0.5, "every line in the wide column starts at its left edge, clear of the narrow column's box: {starts:?}");
++    }
++}
++
++/// Unequal columns (#2382): the lines that run on into the wide column are broken again around
++/// that column's wrap areas, the page-anchored table in the footer (its areas come from the
++/// footer story, not from the page's floating objects) included: without, they ran through it.
++#[test]
++fn text_overflowing_into_another_column_keeps_clear_of_a_footer_table() {
++    use wordcraft_doc::para::Anchor;
++    use wordcraft_doc::props::{HeightRule, TableFloat};
++    let text: String = (0..200).map(|i| format!("word{i} ")).collect();
++    let mut d = Document::from_text(&format!("Anchor\n{}", text.trim_end()));
++    d.last_section.columns.count = 2;
++    d.last_section.columns.widths = vec![(120.0, 36.0), (280.0, 0.0)];
++    let mut table = Table::new(1, 1, 468.0);
++    table.props.float = Some(TableFloat { x: 0.0, y: 100.0, h_rel: Anchor::Page, v_rel: Anchor::Page, ..Default::default() });
++    table.rows[0].props.height = Some(40.0);
++    table.rows[0].props.height_rule = HeightRule::AtLeast;
++    table.rows[0].cells[0].blocks = vec![wordcraft_doc::para_block(wordcraft_doc::Paragraph::with_text("", Default::default()))];
++    let id = d.add_part(wordcraft_doc::PartKind::Footer, vec![std::sync::Arc::new(wordcraft_doc::Block::Table(table))]);
++    d.last_section.footers.default = Some(id);
++    let l = lay(&d);
++    let r = l.pages[0]
++        .footer
++        .iter()
++        .find_map(|it| match it {
++            Placed::Cell { table, rect, .. } if *table == Path::top(0) => Some(*rect),
++            _ => None,
++        })
++        .expect("the footer table is drawn");
++    let col2 = l.pages[0].body.x + d.last_section.column_boxes()[1].0;
++    let lines = line_boxes(&l, 0, 1, col2);
++    assert!(lines.iter().any(|(_, top, _, _)| *top > r.bottom()), "the paragraph runs past the table: {lines:?}");
++    for (left, top, right, bottom) in lines {
++        let clear = bottom <= r.y + 0.01 || top >= r.bottom() - 0.01 || left >= r.right() - 0.01 || right <= r.x + 0.01;
++        assert!(clear, "a line runs through the footer table {r:?}: {left}..{right} at {top}..{bottom}");
++    }
++}
+diff --git a/docs/layout-parity.md b/docs/layout-parity.md
+index 1f2f9676..b250442f 100644
+--- a/docs/layout-parity.md
++++ b/docs/layout-parity.md
+@@ -1,5 +1,7 @@
+ # Layout and pagination parity with Microsoft Word
+ 
++> **Unequal-column overflow:** 2026-11-08 · Continuation of @PanSHIgg’s #2422 updated to current main (#2382). Natural paragraph continuation reflows for each destination width; equal-width, alignment, decoration and float controls retained. No new Word or Leaf desktop measurement; readiness estimates unchanged.
++
+ > **Last reviewed:** 2026-10-10 · **Last updated:** 2026-11-08 · **Change:** trivial (a turned inline picture whose file keeps no room for the turn keeps its line to its frame, the frame turned a quarter in Word 2013+ layout); previously trivial (a picture lowered further than its own height lowers its line as far, its top on the baseline); previously trivial (a float anchored right after a page break, before text, is drawn on the new page, #4262); previously trivial (a float anchored on a later page of a long paragraph is drawn there, #4250); previously trivial (the line between columns runs as tall as the section's text, so columns for selected text have it, #5178); previously trivial (a line of only pictures is as tall as they reach, never less than its font's height; a legacy check box sizes its line as text of its size, #3984); previously trivial (spaces before a line's first character keep their width in justified and distributed lines, as in Word); previously trivial (Page drawing indexes text-box warp lookups per paragraph (#3614)); previously trivial (Times and Courier take their Windows counterparts' line spacing; previously trivial: group connector rerouting preserves transformed free and unresolved endpoints under nonuniform scaling; readiness estimates unchanged; previously trivial: a word with no break opportunity in it no longer makes the layout quadratic, #3412; previously trivial: an empty paragraph whose mark is hidden shows nothing, not even its list number, which is still counted, #3982; previously trivial: a Thai run with Latin finds one installed font covering it all on Linux too, #1549; previously trivial: symbol fonts keep their line height without the font; previously trivial: an equation-array row without `&` is centred, #2617; previously trivial: a superscript or subscript sizes its line at the full font size, without its raise or drop, as Word does; previously trivial: an object dragged near the bottom of a page lands where it is dropped, #3169; previously trivial: centred list labels after leading page breaks, #2964; previously trivial: fixed font inputs in four layout controls; previously trivial: justified lines shrink their spaces by Word's measured limits; previously trivial: a right, centre or decimal tab whose text doesn't fit, or a left tab past the right indent, goes to the next line with its text, #1840; previously trivial: a click below a floating table goes to the text beside or after it, not to a cell of its last row, #2038; previously trivial: shapes drawn with their gradients and transparency, #1500; previously trivial: paragraphs above a float's anchor wrap around it, also when that pushes the anchor onto the next page, #2048; previously trivial: triple borders draw three lines, #1740; previously trivial: the caret, clicks and selection edges fall between the letters of a ligature, #1974; previously trivial: a word after a slash wraps whole, like Word, #2963; previously trivial: VML header-cell floats always on the page, user-checked in Word for Mac, #1775; previously trivial: an at-least row with no room for its minimum starts the next page whole, #1742; previously trivial: AutoFit donors lose equal widths down to their content minima; previously trivial: automatic space between Asian text and Latin text or digits, #2358; previously trivial: hint-reliant CJK outlines; previously trivial: positional tabs go to the margins or indents, #2367; previously trivial: field results with right-to-left text read right to left, #1670; previously trivial: a list bullet no installed font can draw shows the level's default bullet, #1683; previously trivial: a missing Thai font is drawn in one Thai face for the whole run, #1549; previously trivial: the caret after spaces hanging past the margin stays at the margin, #2146; previously trivial: covered black-circle fallback before UI sans; previously trivial: resolved split-cell continuation top insets; previously trivial: Symbol PCL6 alias uses Symbol encoding; previously trivial: exact full font names select their installed face; previously trivial: Arial Unicode MS uses proportional fallbacks; previously trivial: DrawingML outline dashes, including zero-width paths; previously trivial: TOCs include table-cell headings and retain full targets; previously trivial: kept table rows follow the next row; previously trivial: consistent cell widths override a stale table grid; previously trivial: multi-paragraph field instructions no longer add blank lines; previously trivial: page-break-only list paragraphs hide their labels; previously trivial: floating-table overlap ignores empty line-break lines; previously trivial: paragraph spacing adds up when the document turns HTML auto spacing off; previously trivial: an inherited footer sizes its percentage tables by its own section; previously trivial: an empty section mark stays on a full page; previously trivial: a fitting row with less room than its minimum height moves on whole; oversized rows still split; previously trivial: text past an exact-height row is cut off; previously trivial: a list number stays with text after a leading page break; previously trivial: a bookmark after a page break takes no line; previously trivial: a page break followed by a page break before or a next-page section starts one page; previously trivial: All Caps and Small Caps draw ß as SS, #1581; previously trivial: justified vertical page alignment, #1320; previously trivial: page numbers restart at 0; previously trivial: a list label moves with its first line when the paragraph is centred or end-aligned (#1159); previously trivial (a click just outside a floating table, by a cell whose text is turned, goes to the text beside or after it, #4181; previously trivial: group connector rerouting preserves transformed free and unresolved endpoints under nonuniform scaling; readiness estimates unchanged; previously trivial: a word with no break opportunity in it no longer makes the layout quadratic, #3412; previously trivial: an empty paragraph whose mark is hidden shows nothing, not even its list number, which is still counted, #3982; previously trivial: a Thai run with Latin finds one installed font covering it all on Linux too, #1549; previously trivial: symbol fonts keep their line height without the font; previously trivial: an equation-array row without `&` is centred, #2617; previously trivial: a superscript or subscript sizes its line at the full font size, without its raise or drop, as Word does; previously trivial: an object dragged near the bottom of a page lands where it is dropped, #3169; previously trivial: centred list labels after leading page breaks, #2964; previously trivial: fixed font inputs in four layout controls; previously trivial: justified lines shrink their spaces by Word's measured limits; previously trivial: a right, centre or decimal tab whose text doesn't fit, or a left tab past the right indent, goes to the next line with its text, #1840; previously trivial: a click below a floating table goes to the text beside or after it, not to a cell of its last row, #2038; previously trivial: shapes drawn with their gradients and transparency, #1500; previously trivial: paragraphs above a float's anchor wrap around it, also when that pushes the anchor onto the next page, #2048; previously trivial: triple borders draw three lines, #1740; previously trivial: the caret, clicks and selection edges fall between the letters of a ligature, #1974; previously trivial: a word after a slash wraps whole, like Word, #2963; previously trivial: VML header-cell floats always on the page, user-checked in Word for Mac, #1775; previously trivial: an at-least row with no room for its minimum starts the next page whole, #1742; previously trivial: AutoFit donors lose equal widths down to their content minima; previously trivial: automatic space between Asian text and Latin text or digits, #2358; previously trivial: hint-reliant CJK outlines; previously trivial: positional tabs go to the margins or indents, #2367; previously trivial: field results with right-to-left text read right to left, #1670; previously trivial: a list bullet no installed font can draw shows the level's default bullet, #1683; previously trivial: a missing Thai font is drawn in one Thai face for the whole run, #1549; previously trivial: the caret after spaces hanging past the margin stays at the margin, #2146; previously trivial: covered black-circle fallback before UI sans; previously trivial: resolved split-cell continuation top insets; previously trivial: Symbol PCL6 alias uses Symbol encoding; previously trivial: exact full font names select their installed face; previously trivial: Arial Unicode MS uses proportional fallbacks; previously trivial: DrawingML outline dashes, including zero-width paths; previously trivial: TOCs include table-cell headings and retain full targets; previously trivial: kept table rows follow the next row; previously trivial: consistent cell widths override a stale table grid; previously trivial: multi-paragraph field instructions no longer add blank lines; previously trivial: page-break-only list paragraphs hide their labels; previously trivial: floating-table overlap ignores empty line-break lines; previously trivial: paragraph spacing adds up when the document turns HTML auto spacing off; previously trivial: an inherited footer sizes its percentage tables by its own section; previously trivial: an empty section mark stays on a full page; previously trivial: a fitting row with less room than its minimum height moves on whole; oversized rows still split; previously trivial: text past an exact-height row is cut off; previously trivial: a list number stays with text after a leading page break; previously trivial: a bookmark after a page break takes no line; previously trivial: a page break followed by a page break before or a next-page section starts one page; previously trivial: All Caps and Small Caps draw ß as SS, #1581; previously trivial: justified vertical page alignment, #1320; previously trivial: page numbers restart at 0; previously trivial: a list label moves with its first line when the paragraph is centred or end-aligned (#1159); previously trivial (PR #4545: eligible cell floats keep in-bounds offsets; overflow confinement retains the front-of-text, turned-cell and native-acceptance limits); previously trivial (MATH construction reuse, #3630; previously trivial: continuous sections one after another go onto new pages instead of running off the page; empty marks after another empty section mark take a line each until the page is full, then stay at its bottom drawing nothing, not even a list label; an empty mark that takes no room draws no list label either; a kept-together paragraph is measured against the page it would move to, so a tall different first-page header no longer splits it, #3907; previously trivial: a justified line ending in a manual line break is stretched to the margin unless `w:doNotExpandShiftReturn` is set, #3924; previously trivial: a no-break space is as wide as a space, #4192; previously trivial: a bookmark or other zero-width marker is no line-break opportunity, #4193; previously trivial: Arabic list labels: `arabicAlpha` and `arabicAbjad` draw the 28 Arabic letters (alphabetical and abjad order), doubling past the last letter; Hebrew, Hindi, Thai and Vietnamese still show decimal (`doc::section::tests::arabic_letters_count_in_both_orders`); previously trivial (ODT documents: a line of only pictures keeps its font's height; no setting for it any more); previously trivial (ODT documents: padding is the standard's box model always; picture-only line height is an ODF interpretation setting); previously trivial (行頭禁則 also covers the small kana and the prolonged sound mark at ordinary break opportunities, as JIS X 4051 §4 specifies, inferred from the standard and synthetic tests rather than checked in Word); previously trivial (a missing font is drawn in an installed metric twin before any other substitute: Arial for Helvetica on Windows, Tinos before macOS Times for Times New Roman); previously trivial (ODT documents: padding without a border takes room); previously trivial (ODT documents: a line of only pictures is as tall as they are); previously trivial (ODT documents: a table's own space above and below; header and footer spacing kept past a tall header); previously trivial (a page break before a table's first row moves the table; emphasis marks drawn with room in the line); previously trivial (text in a turned text box turns with it; previously trivial: an in-line picture, shape or chart moves with its run's raise or lowering, Word's `w:position`; previously trivial (layout work bounds: header-row repeats budgeted per layout, cached picture outlines charged to the decode budget, linked-box chain widths exact up to a work cap, #3867); previously trivial (the line between columns runs as tall as the section's text, so columns for selected text have it, #5178); previously trivial (a table row that would leave a cell empty on a page that already holds something, its picture or first line not fitting there, moves on whole instead of leaving the other cells' text beside the empty cell, #4272); previously trivial (a middle or bottom cell of a row split across pages lines up on the first page); previously trivial (tab leader dots spaced and placed as in Word); previously trivial (a level above that hasn't counted yet takes its first number at the first deeper item); previously trivial (paragraph side borders lie beyond their distance from the text, #5036); previously trivial (with a header taller than the top margin, Margin-anchored drawings, header-cell pins and header-table obstacles use the rendered body top; TopMargin and InsideMargin keep their declared band, #2485; previously trivial: connector rerouting indexes laid-out object positions once per batch (#3631); previously trivial (field results take the `\* DollarText`, `\* Hex` and `\* ArabicDash` switches, #4226; previously trivial: a cell spanning columns shares its extra minimum width by the columns' preferred widths, equally in automatic tables, #1883; previously trivial: continuous sections one after another go onto new pages instead of running off the page; empty marks after another empty section mark take a line each until the page is full, then stay at its bottom drawing nothing, not even a list label; an empty mark that takes no room draws no list label either; a kept-together paragraph is measured against the page it would move to, so a tall different first-page header no longer splits it, #3907; previously trivial: a justified line ending in a manual line break is stretched to the margin unless `w:doNotExpandShiftReturn` is set, #3924; previously trivial: a no-break space is as wide as a space, #4192; previously trivial: a bookmark or other zero-width marker is no line-break opportunity, #4193; previously trivial: Arabic list labels: `arabicAlpha` and `arabicAbjad` draw the 28 Arabic letters (alphabetical and abjad order), doubling past the last letter; Hebrew, Hindi, Thai and Vietnamese still show decimal (`doc::section::tests::arabic_letters_count_in_both_orders`); previously trivial: Preserve grapheme edit/wrap boundaries across independently drawn font/style pieces; Exact-spacing table contact uses the specified line height rather than paragraph-mark metrics (#3977); previously trivial: cu20we: restrict pre-spacing float origins to paragraph anchors; document cap helpers and regressions; previously trivial: cu20we: outline caps; previously trivial: cu20we: box float paragraph origin; previously trivial: group connector rerouting preserves transformed free and unresolved endpoints under nonuniform scaling; readiness estimates unchanged; previously trivial: a word with no break opportunity in it no longer makes the layout quadratic, #3412; previously trivial: an empty paragraph whose mark is hidden shows nothing, not even its list number, which is still counted, #3982; previously trivial: a Thai run with Latin finds one installed font covering it all on Linux too, #1549; previously trivial: symbol fonts keep their line height without the font; previously trivial: an equation-array row without `&` is centred, #2617; previously trivial: a superscript or subscript sizes its line at the full font size, without its raise or drop, as Word does; previously trivial: an object dragged near the bottom of a page lands where it is dropped, #3169; previously trivial: centred list labels after leading page breaks, #2964; previously trivial: fixed font inputs in four layout controls; previously trivial: justified lines shrink their spaces by Word's measured limits; previously trivial: a right, centre or decimal tab whose text doesn't fit, or a left tab past the right indent, goes to the next line with its text, #1840; previously trivial: a click below a floating table goes to the text beside or after it, not to a cell of its last row, #2038; previously trivial: shapes drawn with their gradients and transparency, #1500; previously trivial: paragraphs above a float's anchor wrap around it, also when that pushes the anchor onto the next page, #2048; previously trivial: triple borders draw three lines, #1740; previously trivial: the caret, clicks and selection edges fall between the letters of a ligature, #1974; previously trivial: a word after a slash wraps whole, like Word, #2963; previously trivial: VML header-cell floats always on the page, user-checked in Word for Mac, #1775; previously trivial: an at-least row with no room for its minimum starts the next page whole, #1742; previously trivial: AutoFit donors lose equal widths down to their content minima; previously trivial: automatic space between Asian text and Latin text or digits, #2358; previously trivial: hint-reliant CJK outlines; previously trivial: positional tabs go to the margins or indents, #2367; previously trivial: field results with right-to-left text read right to left, #1670; previously trivial: a list bullet no installed font can draw shows the level's default bullet, #1683; previously trivial: a missing Thai font is drawn in one Thai face for the whole run, #1549; previously trivial: the caret after spaces hanging past the margin stays at the margin, #2146; previously trivial: covered black-circle fallback before UI sans; previously trivial: resolved split-cell continuation top insets; previously trivial: Symbol PCL6 alias uses Symbol encoding; previously trivial: exact full font names select their installed face; previously trivial: Arial Unicode MS uses proportional fallbacks; previously trivial: DrawingML outline dashes, including zero-width paths; previously trivial: TOCs include table-cell headings and retain full targets; previously trivial: kept table rows follow the next row; previously trivial: consistent cell widths override a stale table grid; previously trivial: multi-paragraph field instructions no longer add blank lines; previously trivial: page-break-only list paragraphs hide their labels; previously trivial: floating-table overlap ignores empty line-break lines; previously trivial: paragraph spacing adds up when the document turns HTML auto spacing off; previously trivial: an inherited footer sizes its percentage tables by its own section; previously trivial: an empty section mark stays on a full page; previously trivial: a fitting row with less room than its minimum height moves on whole; oversized rows still split; previously trivial: text past an exact-height row is cut off; previously trivial: a list number stays with text after a leading page break; previously trivial: a bookmark after a page break takes no line; previously trivial: a page break followed by a page break before or a next-page section starts one page; previously trivial: All Caps and Small Caps draw ß as SS, #1581; previously trivial: justified vertical page alignment, #1320; previously trivial: page numbers restart at 0; previously trivial: a list label moves with its first line when the paragraph is centred or end-aligned (#1159); previously trivial: PAGE fields in a paragraph split across pages show the page they are on, #1352; previously trivial: a dragged floating object anchors in the column it lands in, #884; previously trivial: a paragraph ending on a page with footnotes keeps its space after above the separator, #1116; previously trivial: symbol-font text drawn as Unicode symbols, #776; previously trivial: large-table scrolling measured and fixed, #811; previously trivial: text boxes use their own margins; Resize shape to fit text never cuts text, #743; previously trivial: complex-script shaping and Myanmar line breaking, #604; previously trivial: body page totals, table-cell footnotes and bookmark link pages fixed, #450 #451 #455; previously major: first version; line breaking, pagination and object placement checked against Word's behaviour from the layout source on origin/main) · **Target:** Microsoft Word (Microsoft 365) for Mac 16.113.4
+ > **Floating anchor row segments:** 2026-11-07 · A floating anchor after a manual page/column break counts visible content on the far side of the same wrapped row. Marker-only cover anchors retain their previous-page rule. Synthetic picture spacing, placement and history controls; no new native Word measurement. Readiness estimates unchanged.
+ 
+@@ -61,6 +63,7 @@ Exact line spacing keeps the run font baseline around tall equations; automatic
+ | Caret, clicks and selection inside a ligature (fi, ffi, lam-alef) | ✅ | The glyph's advance is shared evenly among the letters' grapheme clusters, mirrored in right-to-left text; a grapheme cluster (a letter with a combining mark, an emoji ZWJ sequence, an Indic conjunct) is never split. `layout::tests::ligature`, `engine::tests::typing::right_arrow_moves_through_a_ligature_one_letter_at_a_time` (#1974); observed in Word for Mac 16.113.4 | — |
+ | All Caps and Small Caps: the full capital of each letter, so ß draws as SS (ﬀ as FF); the capitals drawn for one character are one cluster, so the caret, selection, hit testing and line breaking treat ß as one character | ✅ | `layout::tests::caps_draw_sharp_s_as_two_capitals_in_one_cluster` (#1581). The PDF text layer still reads the document's lowercase letters until #1473 | — |
+ | Columns, column breaks, separators, balancing | ✅ | Columns balance on a section's last page when the next section starts continuous (also at the document end, which Word only balances when the document ends with a continuous break); not after next-page/even/odd breaks or on a page with a column break; keep-together, keep-with-next, widow/orphan control and unsplittable rows can leave them slightly uneven (#350). The line between columns (Line between, `w:sep`) runs from the top of the section's text on the page to the bottom of its tallest column, so columns for selected text, a continuous section in the middle of a page, have their line too, and it no longer runs to the page bottom under a short section (#5178) | — |
++| Natural overflow into unequal columns | 🟡 | Reflows for the destination width (#2382, continuation of @PanSHIgg’s #2422); alignment, decoration and single placement of floating objects have synthetic regressions in `layout::tests::unequal_columns`. Bidirectional mid-line cuts retain the existing fallback. Synthetic controls pass; overflow line breaks have not been compared with Word. | Native Word comparison |
+ | Section breaks (next page, continuous, even, odd), different first page, odd/even headers | ✅ | Section breaks don't show in Draft view (#42). A break inserted with text selected goes before the selection and keeps it, as in Word (#852). An otherwise empty section at page start retains its line (`empty_page_section_keeps_line`); a closing mark after text stays quiet, but one after another section's mark takes its line while it fits and then stays at the page's bottom, so the text after a long run starts the next page; a run of continuous sections with text goes onto new pages like plain text, and a kept-together paragraph low in a continuous section is measured against the next page's body (its header, footer and carried notes), not the current one's (#3907). | 1–2 |
+ | Labels on page-break-only list paragraphs | ✅ | `layout::tests::break_only_list_has_no_label`: no bullet or number on the break, but the next number is still 3 after item 1 and a break. Plain empty items keep their labels. Synthetic DOCX observed through Adobe PDF conversion | — |
+ | List labels after a leading page break | ✅ | `layout::tests::bidi::list_label_after_leading_page_break_uses_its_text_lines_alignment`: the number/bullet and text retain the no-break horizontal positions for start, centre, end and justified alignment, LTR/RTL, including text with a tab. The issue's synthetic DOCX exports with the number before the heading, matching the reporter's Word/LibreOffice reference (#2964); reference applications were not rerun locally | — |
+@@ -307,6 +310,7 @@ The front-of-text opt-out is retained from the earlier implementation; this patc
+ 
+ | Date | Change | Summary |
+ |---|---|---|
++| 2026-11-08 | trivial | Natural overflow into unequal columns reflows for each destination width (#2382/#2422); existing alignment, decoration and late-float regressions retained; current-main records preserved, estimates unchanged. |
+ | 2026-11-08 | trivial | Turned inline pictures with no recorded effect extent keep their line to the frame (exchanged near a quarter turn in Word 2013+ layout) and overhang it, cut at the line's top and bottom, as in Word |
+ | 2026-11-08 | trivial | Contextual spacing drops the space after a table cell's last paragraph in the Normal style, the end-of-cell mark counting as a Normal paragraph; another style keeps it, and a middle or bottom cell of a split row lines up without the dropped space (#5450) (`layout::tests::contextual_spacing_drops_the_space_after_a_cells_last_normal_paragraph`, `a_bottom_cell_of_a_split_row_ignores_a_dropped_space_after_beside_it`). |
+ | 2026-11-04 | trivial | Header table measurements and fitted text-box heights use the page section’s PAGE format; cache reuse follows the field context |
