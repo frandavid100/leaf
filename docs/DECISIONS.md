@@ -1,5 +1,11 @@
 # Decisiones vigentes
 
+## Publicada y verificada automáticamente: 0.1.0-alpha.42
+
+Se publican los mismos bytes de la candidata tras superar todas las pruebas
+nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
+de cerrar #235, #238, #239, #240, #241, #242, #243, #244, #245, #246, #248. [Identidad y límites](LATEST_RELEASE.md).
+
 ## 10/11/2026 — alpha.42 y alcance de las plantillas
 
 David solicita revisar las contribuciones de WordCraft, cerrar lo verificable y

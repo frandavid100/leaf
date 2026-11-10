@@ -28,10 +28,10 @@ al borrar el párrafo completo. También permanecen #1, #52, #99, #171 y #185.
 Se conservan los aplazamientos de capturas públicas, Weblate y Windows ocasional.
 
 <!-- published-alpha:start -->
-## Última publicación verificada: 0.1.0-alpha.41
+## Última publicación verificada: 0.1.0-alpha.42
 
-[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.41). Issues cerrados: #107, #217, #226, #227, #228, #229, #230, #231, #232, #233, #234, #235, #236, #237.
-Permanecen abiertos: #1, #52, #99, #152, #171, #185.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.42). Issues cerrados: #235, #238, #239, #240, #241, #242, #243, #244, #245, #246, #248.
+Permanecen abiertos: #1, #99, #152, #185, #231.
 [Fuente, validación y límites](docs/LATEST_RELEASE.md).
 <!-- published-alpha:end -->
 
