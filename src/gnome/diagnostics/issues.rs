@@ -447,15 +447,33 @@ pub(super) fn issue_sweep_ui_test(
     tools.page("font");
     let fonts = find_widget(&text_popover, "text-font-list").unwrap();
     assert!(fonts.is_mapped(), "Font opens the list immediately");
-    let preview = find_widget(&fonts, "font-preview")
-        .unwrap()
-        .downcast::<gtk::Label>()
-        .unwrap();
-    let attributes = preview.attributes().unwrap().to_string();
-    assert!(attributes.contains("family"));
+    // Missing document families and aliases intentionally use the UI font.
+    // Check actual available previews rather than assuming the first row can
+    // render its own name (the document's "serif" alias may sort first).
+    fn preview_attributes(root: &gtk::Widget, found: &mut usize) {
+        if root.widget_name() == "font-preview" {
+            let label = root.downcast_ref::<gtk::Label>().unwrap();
+            if let Some(attributes) = label.attributes() {
+                let attributes = attributes.to_string();
+                assert!(attributes.contains("family"));
+                assert!(
+                    !attributes.contains("size"),
+                    "preview inherits the menu size"
+                );
+                *found += 1;
+            }
+        }
+        let mut child = root.first_child();
+        while let Some(widget) = child {
+            preview_attributes(&widget, found);
+            child = widget.next_sibling();
+        }
+    }
+    let mut previews = 0;
+    preview_attributes(&fonts, &mut previews);
     assert!(
-        !attributes.contains("size"),
-        "preview inherits the menu size"
+        previews > 0,
+        "installed families provide actual native previews"
     );
     tools.home();
 

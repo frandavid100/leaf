@@ -12,6 +12,10 @@ loads still check identity and revision before replacing live work. Sidebar widt
 is fixed at 240 logical pixels. Start's alignment references the resting single
 page origin independently of a tab strip. Native combined close retains checked
 save/discard semantics, with unique untitled labels and adaptive presentation.
+On libadwaita 1.5, fallback width is set after presentation to avoid its
+unpresented-dialog sizing crash; native wide layout is used on newer runtimes.
+The combined cancel, failed-save and selected-save probe also passes with the
+1.5 runtime loaded locally.
 
 Native split buttons expose last-result actions and independent non-mutating
 options. Pinned panels retain their page, editing focus and scroll. Compact

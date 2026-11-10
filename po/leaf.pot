@@ -349,7 +349,7 @@ msgstr ""
 msgid "Bullets"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:70 src/gnome/annotations.rs:673 src/gnome/close_group.rs:134 src/gnome/columns.rs:519 src/gnome/comment_composer.rs:65 src/gnome/diagnostics/alpha43.rs:480 src/gnome/document_properties_dialog.rs:87 src/gnome/files.rs:18 src/gnome/headers.rs:124 src/gnome/image_options.rs:31 src/gnome/links.rs:67 src/gnome/references.rs:105 src/gnome/templates.rs:397
+#: src/gnome/annotation_dialog.rs:70 src/gnome/annotations.rs:673 src/gnome/close_group.rs:133 src/gnome/columns.rs:519 src/gnome/comment_composer.rs:65 src/gnome/diagnostics/alpha43.rs:480 src/gnome/document_properties_dialog.rs:87 src/gnome/files.rs:18 src/gnome/headers.rs:124 src/gnome/image_options.rs:31 src/gnome/links.rs:67 src/gnome/references.rs:105 src/gnome/templates.rs:397
 msgid "Cancel"
 msgstr ""
 
@@ -981,7 +981,7 @@ msgstr ""
 msgid "Discard"
 msgstr ""
 
-#: src/gnome/close_group.rs:135
+#: src/gnome/close_group.rs:134
 msgid "Discard All"
 msgstr ""
 
@@ -2269,7 +2269,7 @@ msgstr ""
 msgid "Normal Style"
 msgstr ""
 
-#: src/gnome/close_group.rs:191
+#: src/gnome/close_group.rs:190
 msgid "Not saved to a file"
 msgstr ""
 
@@ -2869,7 +2869,7 @@ msgstr ""
 msgid "Russian"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:72 src/gnome/close_group.rs:136 src/gnome/diagnostics/alpha42.rs:231 src/gnome/diagnostics/alpha42.rs:247 src/gnome/diagnostics/localization.rs:20 src/gnome/files.rs:20 src/gnome/image_options.rs:61 src/gnome/menus.rs:538 src/gnome/menus.rs:641
+#: src/gnome/annotation_dialog.rs:72 src/gnome/close_group.rs:135 src/gnome/diagnostics/alpha42.rs:231 src/gnome/diagnostics/alpha42.rs:247 src/gnome/diagnostics/localization.rs:20 src/gnome/files.rs:20 src/gnome/image_options.rs:61 src/gnome/menus.rs:538 src/gnome/menus.rs:641
 msgid "Save"
 msgstr ""
 
@@ -4073,7 +4073,7 @@ msgstr ""
 msgid "{label}: {value}"
 msgstr ""
 
-#: src/gnome/close_group.rs:174
+#: src/gnome/close_group.rs:173
 msgid "{name} ({number})"
 msgstr ""
 
