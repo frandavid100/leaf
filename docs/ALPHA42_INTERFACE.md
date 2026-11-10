@@ -18,6 +18,8 @@ The previous alpha.41 authorization is not reused.
   including Preferences. Existing within-group user choices are retained.
 - #243/#244: wide sidebar preference is separate from a collapsed overlay; search
   options are inside the native search field, with a bundled Nautilus symbol.
+  Adaptive breakpoints belong to each tab so their conditions cannot replace one
+  another; resizing checks revisit both tabs with opposite visibility preferences.
 - #245: Save / Save As / Export / Print remain together, then Document Properties.
 - #246: exact approved blue-quill SVG and symbolic sources; Windows' source icon is
   regenerated too. This does not create a new Windows release or store gallery.

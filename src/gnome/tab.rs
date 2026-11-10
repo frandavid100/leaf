@@ -393,7 +393,12 @@ pub(super) fn build_tab(
     sidebar.set_max_sidebar_width(240.0);
     sidebar.set_sidebar_width_fraction(0.21);
     sidebar.set_pin_sidebar(true);
-    let tab_page = host.tabs.append(&sidebar);
+    // Each tab owns its adaptive condition. A window only activates the last
+    // matching breakpoint, which would leave earlier tabs at the wrong size.
+    let adaptive_page = adw::BreakpointBin::new();
+    adaptive_page.set_size_request(360, 420);
+    adaptive_page.set_child(Some(&sidebar));
+    let tab_page = host.tabs.append(&adaptive_page);
     host.tabs.set_selected_page(&tab_page);
 
     // En estrecho la barra lateral se superpone sobre la página.
@@ -401,7 +406,7 @@ pub(super) fn build_tab(
         adw::BreakpointCondition::parse("max-width: 760sp").expect("condición de ancho válida"),
     );
     narrow.add_setter(&sidebar, "collapsed", Some(&true.to_value()));
-    window.add_breakpoint(narrow);
+    adaptive_page.add_breakpoint(narrow);
     window.set_size_request(360, 420);
 
     let ui = Rc::new(Ui {

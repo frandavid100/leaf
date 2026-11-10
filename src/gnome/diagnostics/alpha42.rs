@@ -118,6 +118,29 @@ pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     );
     ui.sidebar_button.set_active(true);
     settle().await;
+    // A second tab must not replace the first tab's adaptive breakpoint.
+    let host = ui.host.upgrade().unwrap();
+    let original = ui.tab_page.borrow().as_ref().unwrap().clone();
+    blank_tab(&window.application().unwrap(), &host);
+    let second = selected_ui(&host).unwrap();
+    let second_page = second.tab_page.borrow().as_ref().unwrap().clone();
+    settle().await;
+    second.sidebar_button.set_active(false);
+    for page in [&original, &second_page, &original] {
+        host.tabs.set_selected_page(page);
+        settle().await;
+        window.set_default_size(420, 850);
+        settle().await;
+        let active = selected_ui(&host).unwrap();
+        assert!(active.sidebar.is_collapsed() && !active.sidebar.shows_sidebar());
+        window.set_default_size(1280, 850);
+        settle().await;
+        assert!(!active.sidebar.is_collapsed());
+        assert_eq!(active.sidebar.shows_sidebar(), Rc::ptr_eq(&active, ui));
+    }
+    host.tabs.close_page(&second_page);
+    settle().await;
+    assert!(second.closed.get());
     let model = ui
         .document_menu
         .borrow()
@@ -145,7 +168,7 @@ pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     let properties = model.item_link(3, "section").unwrap();
     assert_eq!(properties.n_items(), 1);
     eprintln!(
-        "ALPHA42_CONTROLS_OK order=true entry-transitions=true search-field=true sidebar-preference=true document-menu=true"
+        "ALPHA42_CONTROLS_OK order=true entry-transitions=true search-field=true sidebar-preference=true tab-breakpoints=true document-menu=true"
     );
 }
 pub(super) async fn closing(
