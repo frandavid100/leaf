@@ -1,47 +1,51 @@
-name: Optional text pointer diagnostic
+name: Optional native input and toolbar diagnostic
 on:
   pull_request:
     branches: [main]
 permissions:
   contents: read
-  actions: read
 jobs:
-  text-pointer:
+  native-focus:
     if: contains(github.event.pull_request.title, '[text-debug]')
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 25
+    env:
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_INCREMENTAL: '1'
+      LANGUAGE: es
+      GSK_RENDERER: cairo
     steps:
       - uses: actions/checkout@v4
+      - name: Prepare pinned language data
+        run: bash tools/prepare-language-data.sh
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
         with:
-          fetch-depth: 0
-      - name: Install the same native GTK runtime and pointer tools
+          cache-on-failure: true
+          shared-key: native-focused-debug
+      - name: Install native build and pointer dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libgtk-4-1 libadwaita-1-0 xvfb xauth xdotool scrot xclip adwaita-icon-theme librsvg2-common
-      - name: Select only this source's unpublished diagnostic executable
-        env:
-          GH_TOKEN: ${{ github.token }}
-          EXPECTED_SOURCE: ${{ github.event.pull_request.head.sha }}
+          sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth xdotool scrot xclip adwaita-icon-theme librsvg2-common gettext dbus-x11
+      - name: Build an unpublished diagnostic executable from this checkout
+        id: build
         run: |
-          set -euo pipefail
-          git diff --exit-code "$EXPECTED_SOURCE" -- src Cargo.toml Cargo.lock build.rs vendor data po
-          for attempt in $(seq 1 100); do
-            gh api "repos/$GITHUB_REPOSITORY/actions/runs?event=pull_request&head_sha=$EXPECTED_SOURCE&per_page=20" > runs.json
-            run=$(python3 -c "import json; r=[r for r in json.load(open('runs.json'))['workflow_runs'] if r['path']=='.github/workflows/wordcraft-gnome.yml']; print(r[0]['id'] if r else '')")
-            if test -n "$run" && gh run download "$run" --name leaf-native-unvalidated --dir native 2>/dev/null; then break; fi
-            sleep 5
-          done
-          test -s native/wordcraft-gnome
-          chmod +x native/wordcraft-gnome
-      - name: Observe the native pointer regression through its own timeout
-        env:
-          LANGUAGE: es
-          GSK_RENDERER: cairo
+          python3 tools/update_translations.py --check --compile
+          cargo build --locked --features gui --bin wordcraft-gnome
+      - name: Observe native pointer events without changing assertions
         run: |
           export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d)
-          xvfb-run -a -s '-screen 0 2800x2200x24' timeout 90s bash tools/text-pointer-test.sh "$PWD/native/wordcraft-gnome"
+          xvfb-run -a -s '-screen 0 2800x2200x24' timeout 100s bash tools/text-pointer-test.sh "$PWD/target/debug/wordcraft-gnome"
+      - name: Check shared toolbar geometry and category navigation
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -o pipefail
+          export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d)
+          xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s target/debug/wordcraft-gnome --toolbar41-ui-test 2>&1 | tee focused-toolbar.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: text-pointer-diagnostic
-          path: text18-*
+          name: focused-native-diagnostic
+          path: |
+            text18-*
+            focused-toolbar.log
