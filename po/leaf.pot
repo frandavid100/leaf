@@ -69,11 +69,11 @@ msgstr ""
 msgid "After paragraph (pt)"
 msgstr ""
 
-#: src/gnome/format_bar.rs:561 src/gnome/paragraph.rs:486 src/gnome/paragraph.rs:849 src/gnome/paragraph_options.rs:143 src/gnome/paragraph_options.rs:603
+#: src/gnome/format_bar.rs:554 src/gnome/paragraph.rs:486 src/gnome/paragraph.rs:849 src/gnome/paragraph_options.rs:143 src/gnome/paragraph_options.rs:603
 msgid "Align Left"
 msgstr ""
 
-#: src/gnome/format_bar.rs:565 src/gnome/paragraph.rs:488 src/gnome/paragraph.rs:851 src/gnome/paragraph_options.rs:155 src/gnome/paragraph_options.rs:605
+#: src/gnome/format_bar.rs:558 src/gnome/paragraph.rs:488 src/gnome/paragraph.rs:851 src/gnome/paragraph_options.rs:155 src/gnome/paragraph_options.rs:605
 msgid "Align Right"
 msgstr ""
 
@@ -81,7 +81,7 @@ msgstr ""
 msgid "Alignment"
 msgstr ""
 
-#: src/gnome/format_bar.rs:592 src/gnome/paragraph.rs:495
+#: src/gnome/format_bar.rs:585 src/gnome/paragraph.rs:495
 msgid "Alignment: {value}"
 msgstr ""
 
@@ -409,7 +409,7 @@ msgstr ""
 msgid "Cells"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:244 src/gnome/format_bar.rs:569 src/gnome/paragraph.rs:487 src/gnome/paragraph.rs:850 src/gnome/paragraph_options.rs:149 src/gnome/paragraph_options.rs:604 src/gnome/tables.rs:448
+#: src/gnome/document_properties_dialog.rs:244 src/gnome/format_bar.rs:562 src/gnome/paragraph.rs:487 src/gnome/paragraph.rs:850 src/gnome/paragraph_options.rs:149 src/gnome/paragraph_options.rs:604 src/gnome/tables.rs:448
 msgid "Center"
 msgstr ""
 
@@ -559,10 +559,6 @@ msgstr ""
 
 #: src/gnome/adaptive.rs:463 src/gnome/paragraph.rs:783 src/gnome/paragraph_options.rs:845 src/gnome/text_palette.rs:676
 msgid "Color"
-msgstr ""
-
-#: src/gnome/color_chooser.rs:137
-msgid "Color #{color}"
 msgstr ""
 
 #: src/gnome/adaptive.rs:475 src/gnome/adaptive.rs:593
@@ -787,10 +783,6 @@ msgstr ""
 
 #: src/gnome/columns.rs:129 src/gnome/columns.rs:485 src/gnome/document_properties_dialog.rs:101 src/gnome/list_options.rs:440 src/gnome/paragraph.rs:589 src/gnome/paragraph_options.rs:379 src/gnome/paragraph_options.rs:585
 msgid "Custom"
-msgstr ""
-
-#: src/gnome/color_chooser.rs:108 src/gnome/color_chooser.rs:112 src/gnome/color_chooser.rs:114 src/gnome/color_chooser.rs:230
-msgid "Custom Color…"
 msgstr ""
 
 #: src/gnome/document_properties_dialog.rs:199
@@ -1029,7 +1021,7 @@ msgstr ""
 msgid "Distribute text across the full line, including the final line."
 msgstr ""
 
-#: src/gnome/format_bar.rs:573 src/gnome/paragraph.rs:490 src/gnome/paragraph.rs:853 src/gnome/paragraph.rs:1186 src/gnome/paragraph_options.rs:167
+#: src/gnome/format_bar.rs:566 src/gnome/paragraph.rs:490 src/gnome/paragraph.rs:853 src/gnome/paragraph.rs:1186 src/gnome/paragraph_options.rs:167
 msgid "Distributed Alignment"
 msgstr ""
 
@@ -1453,7 +1445,7 @@ msgstr ""
 msgid "Format text and paragraphs with native controls."
 msgstr ""
 
-#: src/gnome/format_bar.rs:1002 src/gnome/review.rs:303
+#: src/gnome/format_bar.rs:995 src/gnome/review.rs:303
 msgid "Formatting"
 msgstr ""
 
@@ -1801,7 +1793,7 @@ msgstr ""
 msgid "Italic (Ctrl+I)"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:245 src/gnome/format_bar.rs:577 src/gnome/paragraph.rs:489 src/gnome/paragraph.rs:852 src/gnome/paragraph_options.rs:161
+#: src/gnome/document_properties_dialog.rs:245 src/gnome/format_bar.rs:570 src/gnome/paragraph.rs:489 src/gnome/paragraph.rs:852 src/gnome/paragraph_options.rs:161
 msgid "Justify"
 msgstr ""
 
@@ -2033,7 +2025,7 @@ msgstr ""
 msgid "Missing; fallback information unavailable"
 msgstr ""
 
-#: src/gnome/adaptive.rs:196 src/gnome/adaptive.rs:270 src/gnome/adaptive.rs:1010 src/gnome/adaptive.rs:1166 src/gnome/color_chooser.rs:109 src/gnome/format_bar.rs:414 src/gnome/format_bar.rs:579 src/gnome/list_options.rs:438 src/gnome/paragraph.rs:491 src/gnome/paragraph.rs:564 src/gnome/paragraph.rs:571 src/gnome/paragraph.rs:583 src/gnome/paragraph.rs:1087 src/gnome/paragraph_options.rs:111 src/gnome/paragraph_options.rs:139 src/gnome/paragraph_options.rs:558 src/gnome/paragraph_options.rs:710 src/gnome/selection_view.rs:155 src/gnome/tables.rs:346 src/gnome/text_controls.rs:609 src/gnome/text_palette.rs:668
+#: src/gnome/adaptive.rs:196 src/gnome/adaptive.rs:270 src/gnome/adaptive.rs:1010 src/gnome/adaptive.rs:1166 src/gnome/color_chooser.rs:28 src/gnome/format_bar.rs:407 src/gnome/format_bar.rs:572 src/gnome/list_options.rs:438 src/gnome/paragraph.rs:491 src/gnome/paragraph.rs:564 src/gnome/paragraph.rs:571 src/gnome/paragraph.rs:583 src/gnome/paragraph.rs:1087 src/gnome/paragraph_options.rs:111 src/gnome/paragraph_options.rs:139 src/gnome/paragraph_options.rs:558 src/gnome/paragraph_options.rs:710 src/gnome/selection_view.rs:155 src/gnome/tables.rs:346 src/gnome/text_controls.rs:609 src/gnome/text_palette.rs:668
 msgid "Mixed"
 msgstr ""
 
@@ -2049,7 +2041,7 @@ msgstr ""
 msgid "More Elements Options…"
 msgstr ""
 
-#: src/gnome/format_bar.rs:996
+#: src/gnome/format_bar.rs:989
 msgid "More Formatting Options"
 msgstr ""
 
@@ -2345,7 +2337,7 @@ msgstr ""
 msgid "Open…"
 msgstr ""
 
-#: src/gnome/format_bar.rs:784 src/gnome/format_bar.rs:860 src/gnome/text_palette.rs:108
+#: src/gnome/format_bar.rs:777 src/gnome/format_bar.rs:853 src/gnome/text_palette.rs:108
 msgid "Options for {label}"
 msgstr ""
 
@@ -2417,7 +2409,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:405 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/register.rs:347 src/gnome/format_bar.rs:144 src/gnome/paragraph.rs:1337 src/gnome/tab.rs:353 src/gnome/tab.rs:655 src/gnome/toolbar_preferences.rs:236
+#: src/gnome/context.rs:131 src/gnome/context.rs:405 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/register.rs:339 src/gnome/format_bar.rs:144 src/gnome/paragraph.rs:1337 src/gnome/tab.rs:353 src/gnome/tab.rs:655 src/gnome/toolbar_preferences.rs:236
 msgid "Paragraph"
 msgstr ""
 
@@ -2481,7 +2473,7 @@ msgstr ""
 msgid "Place the caret in a table of contents."
 msgstr ""
 
-#: src/gnome/format_bar.rs:507 src/gnome/tables.rs:9 src/gnome/tables.rs:11 src/gnome/tables.rs:16 src/gnome/tables.rs:898
+#: src/gnome/format_bar.rs:500 src/gnome/tables.rs:9 src/gnome/tables.rs:11 src/gnome/tables.rs:16 src/gnome/tables.rs:898
 msgid "Place the caret in a table."
 msgstr ""
 
@@ -2563,10 +2555,6 @@ msgstr ""
 
 #: src/gnome/paragraph.rs:1092
 msgid "RGB Color, for Example 2266AA"
-msgstr ""
-
-#: src/gnome/color_chooser.rs:223
-msgid "Recent Colors"
 msgstr ""
 
 #: src/gnome/templates.rs:518 src/gnome/templates.rs:645 src/gnome/workspace.rs:475
@@ -3073,7 +3061,7 @@ msgstr ""
 msgid "Select an Image"
 msgstr ""
 
-#: src/gnome/format_bar.rs:505 src/gnome/picture_controls.rs:46 src/gnome/picture_controls.rs:282
+#: src/gnome/format_bar.rs:498 src/gnome/picture_controls.rs:46 src/gnome/picture_controls.rs:282
 msgid "Select an image in the document to edit it."
 msgstr ""
 
@@ -3337,7 +3325,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:404 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:432 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:346 src/gnome/styles.rs:524 src/gnome/tab.rs:349 src/gnome/tab.rs:654
+#: src/gnome/context.rs:128 src/gnome/context.rs:404 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:432 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:338 src/gnome/styles.rs:524 src/gnome/tab.rs:349 src/gnome/tab.rs:654
 msgid "Style"
 msgstr ""
 
@@ -3469,7 +3457,7 @@ msgstr ""
 msgid "Templates Folder"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:406 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:348 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/format_bar.rs:143 src/gnome/references.rs:334 src/gnome/tab.rs:305 src/gnome/tab.rs:340 src/gnome/tab.rs:656 src/gnome/toolbar_preferences.rs:235
+#: src/gnome/context.rs:134 src/gnome/context.rs:406 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:340 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/format_bar.rs:143 src/gnome/references.rs:334 src/gnome/tab.rs:305 src/gnome/tab.rs:340 src/gnome/tab.rs:656 src/gnome/toolbar_preferences.rs:235
 msgid "Text"
 msgstr ""
 

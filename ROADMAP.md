@@ -1,5 +1,15 @@
 # Hoja de ruta de Leaf
 
+<!-- candidate-alpha:start -->
+## En preparación: alpha.44 — mantenimiento y colores nativos
+
+David autoriza optimizar Leaf conservando su comportamiento, restaurar los
+selectores de color estándar de GNOME y publicar esta entrega con instalador
+Windows. WordCraft se trabaja por separado y conserva su revisión actual.
+No se prevén cierres de los issues parciales o externos por esta limpieza.
+[Implementación, comparación y validación](docs/ALPHA44_MAINTENANCE.md).
+<!-- candidate-alpha:end -->
+
 
 
 

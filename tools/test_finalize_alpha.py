@@ -83,3 +83,18 @@ class PublishedAlphaVerification(unittest.TestCase):
             self.assertIn('#52', files['PROJECT_STATUS.md'])
             self.assertIn('Permanecen abiertos: #1, #52.', files['PROJECT_STATUS.md'])
             self.assertIn('Permanecen abiertos: #1, #52.', files['docs/LATEST_RELEASE.md'])
+
+    def test_maintenance_report_does_not_claim_empty_issue_closures(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / 'docs').mkdir()
+            for name in ['PROJECT_STATUS.md', 'ROADMAP.md', 'docs/DECISIONS.md']:
+                (root / name).write_text('# Project\n\n## History\nKeep this.\n')
+            (root / 'README.md').write_text('Readme\n')
+            (root / 'docs/ALPHA44_MAINTENANCE.md').write_text('# Maintenance\n\n## Scope\nKeep this.\n')
+            proof = self.check() | {'closed_issues': [], 'release_report': 'docs/ALPHA44_MAINTENANCE.md'}
+            files = document_changes(proof, [1, 99], root)
+            report = files['docs/ALPHA44_MAINTENANCE.md']
+            self.assertIn('claims no issue closures', report)
+            self.assertNotIn(' are completed', report)
+            self.assertIn('## Scope\nKeep this.', report)

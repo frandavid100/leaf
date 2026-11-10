@@ -149,12 +149,12 @@ impl QuickTools {
             title.add_css_class("heading");
             title.set_widget_name(&format!("overflow-section-{group}"));
             self.overflow_main.append(&title);
+            let catalog = wordcraft_gnome::toolbar::tools(group);
             for (id, mode) in wordcraft_gnome::preferences::toolbar_placements(group) {
                 let widget = &tools.iter().find(|(key, _)| key == &id).unwrap().1;
                 if mode != Placement::Adaptive || widget.get_visible() {
                     continue;
                 }
-                let catalog = wordcraft_gnome::toolbar::tools(group);
                 let tool = catalog.iter().find(|t| t.id == id).unwrap();
                 if tool_actions::split_tool(group, &id) {
                     let apply = style_menu_button(tool.label);
@@ -348,6 +348,7 @@ impl QuickTools {
     pub(super) fn filter_menus(&self) {
         let Some(ui) = self.ui.upgrade() else { return };
         for (group, _, tools) in &self.groups {
+            let placements = wordcraft_gnome::preferences::toolbar_placements(group);
             if *group == "elements" {
                 for (id, _) in tools {
                     let row = ui
@@ -364,11 +365,7 @@ impl QuickTools {
                         });
                     if let Some(row) = row {
                         row.set_visible(
-                            wordcraft_gnome::preferences::toolbar_placements(group)
-                                .iter()
-                                .find(|(key, _)| key == id)
-                                .unwrap()
-                                .1
+                            placements.iter().find(|(key, _)| key == id).unwrap().1
                                 == Placement::More,
                         );
                     }
@@ -390,11 +387,7 @@ impl QuickTools {
             if let Some(root) = root {
                 for (id, _widget) in tools {
                     if let Some(row) = find_widget(&root, &format!("format-row-{group}-{id}")) {
-                        let mode = wordcraft_gnome::preferences::toolbar_placements(group)
-                            .into_iter()
-                            .find(|(key, _)| key == id)
-                            .unwrap()
-                            .1;
+                        let mode = placements.iter().find(|(key, _)| key == id).unwrap().1;
                         row.set_visible(mode == Placement::More);
                     }
                 }

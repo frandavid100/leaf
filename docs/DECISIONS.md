@@ -1,5 +1,14 @@
 # Decisiones vigentes
 
+## 10/11/2026 — alpha.44: mantenimiento, colores GNOME y Windows
+
+David autoriza aplicar la limpieza discutida, después publicar otra release,
+restaurar los selectores nativos anteriores y generar instalador para amigos
+que utilizan Windows. La nueva apariencia se limita a los selectores de color.
+Se conservan las comprobaciones y el motor; no se mezclan los cambios de WordCraft
+que se preparan en otra conversación. No se cierran requisitos incompletos.
+[Alcance, mediciones y condiciones de entrega](ALPHA44_MAINTENANCE.md).
+
 
 ## Publicada y verificada automáticamente: 0.1.0-alpha.43
 
