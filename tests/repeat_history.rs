@@ -85,3 +85,22 @@ fn explicit_removal_repeats_without_toggling_or_replaying_io() {
     );
     assert!(!h.repeat_recent(&mut s, 1).unwrap());
 }
+
+#[test]
+fn paragraph_controls_record_explicit_alignment_and_spacing_modes() {
+    let mut s = Session::new(Document::from_text("Alpha\nBeta"));
+    let mut history = RepeatHistory::default();
+    selection::set_caret(&mut s, &Pos::body(0, 0), false).unwrap();
+    s.run("para.align", &json!({"value":"center"})).unwrap();
+    history.record(&s);
+    s.run("para.lineSpacing", &json!({"atLeast":19.})).unwrap();
+    history.record(&s);
+    selection::set_caret(&mut s, &Pos::body(1, 0), false).unwrap();
+    assert!(history.repeat_recent(&mut s, 2).unwrap());
+    let p = wordcraft_engine::cmd::para::selection_para(&s);
+    assert_eq!(p.align, wordcraft_doc::props::Align::Center);
+    assert_eq!(
+        p.line_spacing,
+        wordcraft_doc::props::LineSpacing::AtLeast(19.)
+    );
+}

@@ -157,7 +157,7 @@ pub(super) fn activate(ui: &Rc<Ui>, group: &str, id: &str) {
                 }
                 "language" => tools.reapply_language(),
                 "case" => tools.reapply_case(),
-                "clear" => tools.execute("format.clear", json!({})),
+                "clear" => tools.execute("format.resetChar", json!({})),
                 _ => {}
             }
         }

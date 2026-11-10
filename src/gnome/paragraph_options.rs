@@ -291,7 +291,7 @@ pub(super) fn build(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, page: &str, state: &V
             );
             distance.set_digits(3);
             distance.set_widget_name("paragraph-indentFirst");
-            distance.set_sensitive(mode.selected() != 0);
+            distance.set_sensitive(matches!(mode.selected(), 1 | 2));
             if first.is_none() {
                 distance.set_text("");
             }
@@ -309,7 +309,7 @@ pub(super) fn build(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, page: &str, state: &V
             let weak = Rc::downgrade(ui);
             let n = distance.clone();
             mode.connect_selected_notify(move |m| {
-                n.set_sensitive(m.selected() != 0);
+                n.set_sensitive(matches!(m.selected(), 1 | 2));
                 if let Some(ui) = weak.upgrade() {
                     if m.selected() == 0 {
                         let _ = format_execute(&ui, "para.indents", json!({"firstLine":0.}));
@@ -684,67 +684,7 @@ fn change_edges(
     };
     let recipe = s.border.borrow().clone();
     let ok = tools_change(&ui, |session| {
-        let styles = session.doc.styles.clone();
-        wordcraft_engine::cmd::para::fmt(session, &|p| {
-            let mut borders = styles.resolve_para(p).borders.unwrap_or_default();
-            if let Some((key, value)) = &property {
-                for edge in [
-                    &mut borders.top,
-                    &mut borders.bottom,
-                    &mut borders.left,
-                    &mut borders.right,
-                    &mut borders.between,
-                ]
-                .into_iter()
-                .flatten()
-                {
-                    match *key {
-                        "width" => edge.width = value.as_f64().unwrap_or(0.5) as f32,
-                        "style" => {
-                            edge.style = wordcraft_doc::props::BorderStyle::from_ooxml(
-                                value.as_str().unwrap_or("single"),
-                            )
-                        }
-                        "color" => {
-                            edge.color = value.as_str().and_then(wordcraft_doc::props::Rgb::parse)
-                        }
-                        _ => {}
-                    }
-                }
-            }
-            if let Some(kind) = placement {
-                let line = wordcraft_doc::props::Border {
-                    style: wordcraft_doc::props::BorderStyle::from_ooxml(
-                        recipe["style"].as_str().unwrap_or("single"),
-                    ),
-                    width: recipe["width"].as_f64().unwrap_or(0.5) as f32,
-                    color: recipe["color"]
-                        .as_str()
-                        .and_then(wordcraft_doc::props::Rgb::parse),
-                    space: 1.,
-                };
-                if kind == "none" {
-                    borders = Default::default();
-                } else {
-                    for edge in ["top", "bottom", "left", "right"] {
-                        if edge == kind || matches!(kind, "all" | "outside") {
-                            match edge {
-                                "top" => borders.top = Some(line),
-                                "bottom" => borders.bottom = Some(line),
-                                "left" => borders.left = Some(line),
-                                _ => borders.right = Some(line),
-                            }
-                        }
-                    }
-                    if kind == "all" || kind == "inside" {
-                        borders.between = Some(line);
-                    }
-                }
-            }
-            p.borders = Some(borders);
-        })
-        .map_err(|e| e.to_string())?;
-        Ok(())
+        wordcraft_gnome::paragraph_borders::change(session, placement, property.as_ref(), &recipe)
     });
     if ok {
         s.remember_property("para.borders", &recipe, &ui);

@@ -612,7 +612,7 @@ impl TextTools {
                 let weak = Rc::downgrade(self);
                 clear.connect_clicked(move |_| {
                     if let Some(panel) = weak.upgrade() {
-                        panel.execute("format.clear", serde_json::json!({}));
+                        panel.execute("format.resetChar", serde_json::json!({}));
                     }
                 });
                 let row = gtk::Box::new(gtk::Orientation::Vertical, 0);
@@ -1028,15 +1028,14 @@ pub(super) fn localized_language(tag: &str) -> String {
 }
 impl TextTools {
     pub(super) fn reapply_language(&self) {
-        if let Some(choice) = self.last_language.borrow().clone() {
+        let choice = self.last_language.borrow().clone();
+        if let Some(choice) = choice {
             self.execute("leaf.proofText", serde_json::json!({"choice":choice}));
         }
     }
     pub(super) fn reapply_case(&self) {
-        self.execute(
-            "format.changeCase",
-            serde_json::json!({"mode":self.last_case.borrow().clone()}),
-        );
+        let mode = self.last_case.borrow().clone();
+        self.execute("format.changeCase", serde_json::json!({"mode":mode}));
     }
     pub(super) fn language_remembered(&self) -> bool {
         self.last_language.borrow().is_some()
@@ -1083,12 +1082,38 @@ impl TextTools {
             .borrow()
             .as_ref()
             .map(|d| wordcraft_gnome::proofing_defaults::choice(&d.session));
-        let mut rows = self.language_page.first_child();
-        let Some(choices) = find_widget(&self.language_page, "language-choices") else {
+        let Some(choices) =
+            find_widget(&self.language_page, "language-choices").and_downcast::<gtk::Box>()
+        else {
             return;
         };
-        while let Some(row) = rows {
-            rows = row.next_sibling();
+        let mut tags = wordcraft_gnome::dictionaries::additional_languages();
+        if let Some(d) = ui.current.borrow().as_ref() {
+            tags.push(wordcraft_gnome::proofing_defaults::effective_choice(
+                &d.session,
+            ));
+        }
+        for tag in tags
+            .into_iter()
+            .filter(|t| !matches!(t.as_str(), "mixed" | "off" | "default"))
+        {
+            if find_widget(&choices, &format!("language-choice-{tag}")).is_some() {
+                continue;
+            }
+            let button = style_menu_button(&Self::language_title(ui, &tag));
+            button.set_widget_name(&format!("language-choice-{tag}"));
+            let previous =
+                find_widget(&choices, "language-no-results").and_then(|w| w.prev_sibling());
+            choices.insert_child_after(&button, previous.as_ref());
+            let weak = Rc::downgrade(ui);
+            button.connect_clicked(move |_| {
+                if let Some(ui) = weak.upgrade() {
+                    let tools = ui.text_tools.borrow().clone();
+                    if let Some(tools) = tools {
+                        tools.execute("leaf.proofText", serde_json::json!({"choice":tag}));
+                    }
+                }
+            });
         }
         let mut child = choices.first_child();
         while let Some(row) = child {

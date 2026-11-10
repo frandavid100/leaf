@@ -79,14 +79,23 @@ impl RepeatAction {
             let allowed = match id.as_str() {
                 "format.set" => vec!["props"],
                 "format.changeCase" => vec!["mode"],
-                "format.clear" => vec![],
+                "format.clear" | "format.resetChar" | "format.growFont" | "format.shrinkFont" => {
+                    vec![]
+                }
+                "para.align" => vec!["value"],
+                "para.keepNext"
+                | "para.keepLines"
+                | "para.pageBreakBefore"
+                | "para.widowControl"
+                | "para.ltr"
+                | "para.rtl" => vec!["value"],
                 "leaf.proofText" => vec!["choice"],
                 "format.font" => vec!["name"],
                 "format.size" => vec!["size"],
                 "format.color" | "format.highlight" | "leaf.highlight" => vec!["color"],
                 "para.spacing" => vec!["before", "after"],
                 "para.indents" => vec!["left", "right", "firstLine"],
-                "para.lineSpacing" => vec!["rule", "value"],
+                "para.lineSpacing" => vec!["value", "exactly", "atLeast"],
                 "para.alignLeft" | "para.alignCenter" | "para.alignRight" | "para.justify"
                 | "para.indent" | "para.outdent" => vec![],
                 "para.style" => vec!["style"],

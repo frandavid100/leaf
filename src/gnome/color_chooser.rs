@@ -12,7 +12,7 @@ const COLORS: &[&str] = &[
 ];
 thread_local! {
     static RECENT: RefCell<Vec<String>> = const { RefCell::new(Vec::new()) };
-    static PICKERS: RefCell<Vec<std::rc::Weak<InlineColor>>> = const { RefCell::new(Vec::new()) };
+    static PICKERS: RefCell<Vec<std::rc::Weak<ColorState>>> = const { RefCell::new(Vec::new()) };
 }
 fn normalized(value: &str) -> Option<String> {
     gdk::RGBA::parse(value)
@@ -45,6 +45,16 @@ fn record(value: &str) {
 #[allow(deprecated)]
 pub(super) struct InlineColor {
     pub(super) widget: gtk::Box,
+    controller: Rc<ColorState>,
+}
+impl std::ops::Deref for InlineColor {
+    type Target = ColorState;
+    fn deref(&self) -> &Self::Target {
+        &self.controller
+    }
+}
+#[allow(deprecated)]
+pub(super) struct ColorState {
     pub(super) editor: gtk::ColorChooserWidget,
     stack: gtk::Stack,
     recent: gtk::FlowBox,
@@ -57,7 +67,7 @@ pub(super) struct InlineColor {
     apply: Rc<dyn Fn(&str) -> bool>,
 }
 #[allow(deprecated)]
-impl InlineColor {
+impl ColorState {
     pub(super) fn sync(&self, color: Option<&str>) {
         self.sync_state(color, false);
     }
@@ -227,8 +237,7 @@ pub(super) fn embedded_color_chooser(
     stack.add_named(&editor, Some("custom"));
     stack.set_visible_child_name("palette");
     widget.append(&stack);
-    let picker = Rc::new(InlineColor {
-        widget,
+    let picker = Rc::new(ColorState {
         editor,
         stack,
         recent,
@@ -285,5 +294,14 @@ pub(super) fn embedded_color_chooser(
     picker.sync(initial);
     picker.refresh_recents();
     PICKERS.with(|p| p.borrow_mut().push(Rc::downgrade(&picker)));
-    picker
+    // The widget owns its controller while mounted. The controller owns only
+    // descendants, never the root, so this does not retain a destroyed panel.
+    let keep = picker.clone();
+    widget.connect_destroy(move |_| {
+        let _ = &keep;
+    });
+    Rc::new(InlineColor {
+        widget,
+        controller: picker,
+    })
 }

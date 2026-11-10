@@ -189,6 +189,23 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             selection_character(&ui)["color"],
             json!({"Rgb":[28,113,216]})
         );
+        text.reapply_language();
+        format_execute(&ui, "leaf.proofText", json!({"choice":"es-ES"})).unwrap();
+        text.reapply_language();
+        settle().await;
+        assert_eq!(
+            wordcraft_gnome::proofing_defaults::choice(
+                &ui.current.borrow().as_ref().unwrap().session
+            ),
+            "es-ES"
+        );
+        let palette = text.palette.borrow().as_ref().unwrap().clone();
+        palette.reapply_color(true);
+        settle().await;
+        assert_eq!(
+            selection_character(&ui)["color"],
+            json!({"Rgb":[28,113,216]})
+        );
         text.header.pin.set_active(false);
         pop.popdown();
         settle().await;
@@ -235,6 +252,27 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             )
             .await;
         }
+        paragraph.page("shading");
+        settle().await;
+        test_choose_color(&para_pop, "paragraph-shading-chooser", "1C71D8");
+        settle().await;
+        assert_eq!(
+            selection_paragraph(&ui)["shading"],
+            json!([28, 113, 216]),
+            "shared property chooser survives its builder returning"
+        );
+        paragraph.page("borders");
+        settle().await;
+        click(&para_pop, "paragraph-border-bottom");
+        settle().await;
+        paragraph.page("border-color");
+        settle().await;
+        test_choose_color(&para_pop, "paragraph-border-chooser", "1C71D8");
+        settle().await;
+        assert_eq!(
+            selection_paragraph(&ui)["borders"]["bottom"]["color"],
+            json!([28, 113, 216])
+        );
         paragraph.header.pin.set_active(false);
         para_pop.popdown();
         settle().await;

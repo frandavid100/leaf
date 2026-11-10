@@ -120,11 +120,34 @@ impl FormatTransfer {
         })
     }
     pub fn apply(&self, s: &mut Session) -> Result<(), String> {
+        if s.registry.get("leaf.pasteAppearance").is_none() {
+            let mut specs = s.registry.all().to_vec();
+            specs.push(wordcraft_engine::CommandSpec::new(
+                "leaf.pasteAppearance",
+                "Paste Formatting",
+                "Clipboard",
+                replace_character_appearance,
+            ));
+            s.registry = std::sync::Arc::new(wordcraft_engine::Registry::new(specs));
+        }
         crate::operations::atomic(s, crate::t!("Paste Formatting"), |s| {
-            s.run("format.set", &json!({"props":self.chr}))
+            s.run("leaf.pasteAppearance", &json!({"props":self.chr}))
                 .map_err(|e| e.to_string())?;
             s.run("para.set", &self.para).map_err(|e| e.to_string())?;
             Ok(())
         })
     }
+}
+
+fn replace_character_appearance(
+    s: &mut Session,
+    args: &serde_json::Value,
+) -> wordcraft_engine::CmdResult {
+    let props: wordcraft_doc::CharProps = serde_json::from_value(args["props"].clone())
+        .map_err(|e| wordcraft_engine::CmdError::Params(e.to_string()))?;
+    wordcraft_engine::cmd::format::apply(s, &|c| {
+        let link = c.link.clone();
+        *c = c.cleared().overlaid(&props);
+        c.link = link;
+    })
 }

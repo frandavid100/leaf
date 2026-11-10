@@ -84,3 +84,30 @@ fn ordinary_copy_does_not_replace_an_active_format_painter() {
     payload.apply(&mut s).unwrap();
     assert_eq!(s.painter, painter);
 }
+
+#[test]
+fn source_without_a_text_border_clears_destination_border_without_resetting_paragraph_style() {
+    let source = Session::new(Document::from_text("source"));
+    let transfer = FormatTransfer::capture(&source).unwrap();
+    let mut target = Session::new(Document::from_text("target"));
+    range(&mut target, 0, 6);
+    target.run("format.border", &json!({"value":true})).unwrap();
+    target.run("para.indents", &json!({"left":36.})).unwrap();
+    let style = target
+        .doc
+        .para_at(&Pos::body(0, 0))
+        .unwrap()
+        .props
+        .style
+        .clone();
+    transfer.apply(&mut target).unwrap();
+    assert!(
+        text_properties::selected_resolved(&target)
+            .iter()
+            .all(|p| p.border.is_none())
+    );
+    assert_eq!(
+        target.doc.para_at(&Pos::body(0, 0)).unwrap().props.style,
+        style
+    );
+}

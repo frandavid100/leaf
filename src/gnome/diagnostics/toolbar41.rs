@@ -473,13 +473,14 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         );
         let preview = find_widget(&blank.template_slot, "template-preview").unwrap();
         let preview_y = preview.compute_bounds(&window).unwrap().y();
-        let page_y = blank.current.borrow().as_ref().unwrap().page_frames[0]
-            .compute_bounds(&window)
+        let reference = find_widget(&window, "document-primary-header")
             .unwrap()
-            .y();
+            .compute_bounds(&window)
+            .unwrap();
+        let page_y = reference.y() + reference.height() + viewer_layout::PAGE_GAP as f32;
         assert!(
-            (preview_y - page_y).abs() < 2.0,
-            "Start preview and paper top: {preview_y}/{page_y}"
+            (preview_y - page_y).abs() < 2.,
+            "Start preview and single-document page origin: {preview_y}/{page_y}"
         );
         std::fs::remove_dir_all(folder).unwrap();
         // Leave all three placements represented for the separate cold launch.

@@ -189,3 +189,5 @@ pub mod format_painter;
 mod search_lines;
 
 pub mod toolbar;
+
+pub mod paragraph_borders;

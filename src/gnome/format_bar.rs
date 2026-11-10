@@ -508,6 +508,18 @@ impl QuickTools {
                         }));
                     }
                 }
+                if *group == "paragraph" && tool_actions::split_tool(group, id) {
+                    let available = ui.paragraph.borrow().as_ref().is_some_and(|p| {
+                        if id == "columns" {
+                            p.last_columns.borrow().is_some()
+                        } else {
+                            p.groups.borrow().contains_key(id)
+                        }
+                    });
+                    if let Some(body) = widget.first_child().and_downcast::<gtk::Button>() {
+                        body.set_sensitive(available && tool_actions::enabled(ui, group, id));
+                    }
+                }
                 if id == "language" {
                     if let Some(body) = find_widget(widget, "format-quick-language") {
                         body.set_sensitive(
@@ -556,7 +568,11 @@ impl QuickTools {
                 "format-justify-center-symbolic",
                 wordcraft_gnome::t!("Center"),
             ),
-            Some("justify" | "distribute") => (
+            Some("distribute") => (
+                "format-justify-distribute-symbolic",
+                wordcraft_gnome::t!("Distributed Alignment"),
+            ),
+            Some("justify") => (
                 "format-justify-fill-symbolic",
                 wordcraft_gnome::t!("Justify"),
             ),
@@ -576,6 +592,9 @@ impl QuickTools {
                 wordcraft_gnome::t!("Alignment: {value}"),
                 &[("value", label.into())],
             )));
+        if let Some(tip) = self.alignment.tooltip_text() {
+            accessible_name(&self.alignment, &tip);
+        }
         let list = ui.current.borrow().as_ref().and_then(|d| {
             let p = d.session.doc.para_at(&d.session.sel.focus)?;
             let n = d.session.doc.styles.resolve_para(&p.props).numbering?;
