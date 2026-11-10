@@ -195,6 +195,7 @@ pub(super) async fn closing(
     apply_user_edit(ui, Edit::Insert("close one".into()));
     apply_user_edit(blank, Edit::Insert("close two".into()));
     settle().await;
+    eprintln!("ALPHA42_CLOSE_STAGE request");
     close_workspace(&host);
     let dialog = window
         .visible_dialog()
@@ -213,11 +214,13 @@ pub(super) async fn closing(
     assert_eq!(window.visible_dialog().as_ref(), Some(dialog.upcast_ref()));
     dialog.close();
     dialog_closed_async(&dialog).await;
+    eprintln!("ALPHA42_CLOSE_STAGE cancel-complete");
     assert!(!host.close_pending.get() && !ui.closed.get() && !blank.closed.get());
     let root = std::env::temp_dir().join(format!("leaf-close42-{}", std::process::id()));
     std::fs::create_dir_all(&root).unwrap();
     ui.save_path
         .replace(Some(root.join("missing").join("failure.docx")));
+    eprintln!("ALPHA42_CLOSE_STAGE request");
     close_workspace(&host);
     let dialog = window
         .visible_dialog()
@@ -226,10 +229,12 @@ pub(super) async fn closing(
         .unwrap();
     dialog_presented_async(&dialog).await;
     assert!(response(dialog.upcast_ref(), wordcraft_gnome::t!("Save")));
+    eprintln!("ALPHA42_CLOSE_STAGE save-response");
     settle().await;
     assert!(!host.close_pending.get() && ui.dirty.get() && blank.dirty.get());
     let saved = root.join("saved.docx");
     ui.save_path.replace(Some(saved.clone()));
+    eprintln!("ALPHA42_CLOSE_STAGE request");
     close_workspace(&host);
     let dialog = window
         .visible_dialog()
@@ -240,8 +245,13 @@ pub(super) async fn closing(
     let rows = checks(&dialog.extra_child().unwrap());
     rows[1].set_active(false);
     assert!(response(dialog.upcast_ref(), wordcraft_gnome::t!("Save")));
+    eprintln!("ALPHA42_CLOSE_STAGE save-response");
     settle().await;
     assert!(saved.is_file() && ui.closed.get() && blank.closed.get());
+    assert!(
+        !window.is_visible(),
+        "the tested workspace window actually closed"
+    );
     std::fs::remove_dir_all(root).unwrap();
     eprintln!(
         "ALPHA42_CLOSE_OK combined=true cancel=true no-selection=true reentrant=true failure-keeps-work=true selected-save=true"

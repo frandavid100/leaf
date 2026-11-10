@@ -23,7 +23,17 @@ while kill -0 "$pid" 2>/dev/null; do
     xdotool windowfocus --sync "$window"
   fi
   case "$role" in
-    open|choices|pin) xdotool mousemove --window "$window" "$ax" "$ay" click 1 ;;
+    open)
+      for attempt in $(seq 1 50); do
+        xdotool mousemove --window "$window" "$((ax + attempt % 2))" "$((ay + attempt % 2))"
+        sleep 0.1
+        grep -Fq 'POINTER_TARGET_ENTERED FOLLOWUP19_OPEN' "$log" && break
+      done
+      grep -Fq 'POINTER_TARGET_ENTERED FOLLOWUP19_OPEN' "$log" || { cat "$log"; exit 1; }
+      xdotool mousemove --window "$window" "$ax" "$ay" mousedown 1
+      sleep 0.12
+      xdotool mouseup 1 ;;
+    choices|pin) xdotool mousemove --window "$window" "$ax" "$ay" click 1 ;;
     escape) xdotool key Escape ;;
     font)
       family=$(sed -n 's/^ISSUE19_FAMILY //p' "$log" | head -n1)

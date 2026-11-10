@@ -1389,7 +1389,7 @@ msgstr ""
 msgid "Following Spacing (mm)"
 msgstr ""
 
-#: src/gnome/adaptive.rs:267 src/gnome/adaptive.rs:468 src/gnome/adaptive.rs:848 src/gnome/adaptive.rs:895 src/gnome/diagnostics/format136.rs:100 src/gnome/diagnostics/format136.rs:116 src/gnome/tab.rs:312 src/gnome/tab.rs:315 src/gnome/text_controls.rs:582 src/gnome/text_controls.rs:658 src/history.rs:210 src/toolbar.rs:132
+#: src/gnome/adaptive.rs:267 src/gnome/adaptive.rs:468 src/gnome/adaptive.rs:848 src/gnome/adaptive.rs:895 src/gnome/diagnostics/format136.rs:100 src/gnome/diagnostics/format136.rs:116 src/gnome/tab.rs:312 src/gnome/tab.rs:315 src/gnome/text_controls.rs:608 src/gnome/text_controls.rs:684 src/history.rs:210 src/toolbar.rs:132
 msgid "Font"
 msgstr ""
 
@@ -1401,7 +1401,7 @@ msgstr ""
 msgid "Font Family"
 msgstr ""
 
-#: src/gnome/adaptive.rs:472 src/gnome/tab.rs:326 src/gnome/text_controls.rs:660 src/gnome/tool_actions.rs:282 src/gnome/tool_actions.rs:313 src/history.rs:204 src/history.rs:211 src/toolbar.rs:154
+#: src/gnome/adaptive.rs:472 src/gnome/tab.rs:326 src/gnome/text_controls.rs:686 src/gnome/tool_actions.rs:282 src/gnome/tool_actions.rs:313 src/history.rs:204 src/history.rs:211 src/toolbar.rs:154
 msgid "Font Size"
 msgstr ""
 
@@ -2033,7 +2033,7 @@ msgstr ""
 msgid "Missing; fallback information unavailable"
 msgstr ""
 
-#: src/gnome/adaptive.rs:196 src/gnome/adaptive.rs:270 src/gnome/adaptive.rs:1010 src/gnome/adaptive.rs:1166 src/gnome/color_chooser.rs:109 src/gnome/format_bar.rs:414 src/gnome/format_bar.rs:579 src/gnome/list_options.rs:438 src/gnome/paragraph.rs:491 src/gnome/paragraph.rs:564 src/gnome/paragraph.rs:571 src/gnome/paragraph.rs:583 src/gnome/paragraph.rs:1087 src/gnome/paragraph_options.rs:111 src/gnome/paragraph_options.rs:139 src/gnome/paragraph_options.rs:558 src/gnome/paragraph_options.rs:710 src/gnome/selection_view.rs:155 src/gnome/tables.rs:346 src/gnome/text_controls.rs:583 src/gnome/text_palette.rs:668
+#: src/gnome/adaptive.rs:196 src/gnome/adaptive.rs:270 src/gnome/adaptive.rs:1010 src/gnome/adaptive.rs:1166 src/gnome/color_chooser.rs:109 src/gnome/format_bar.rs:414 src/gnome/format_bar.rs:579 src/gnome/list_options.rs:438 src/gnome/paragraph.rs:491 src/gnome/paragraph.rs:564 src/gnome/paragraph.rs:571 src/gnome/paragraph.rs:583 src/gnome/paragraph.rs:1087 src/gnome/paragraph_options.rs:111 src/gnome/paragraph_options.rs:139 src/gnome/paragraph_options.rs:558 src/gnome/paragraph_options.rs:710 src/gnome/selection_view.rs:155 src/gnome/tables.rs:346 src/gnome/text_controls.rs:609 src/gnome/text_palette.rs:668
 msgid "Mixed"
 msgstr ""
 
@@ -2869,7 +2869,7 @@ msgstr ""
 msgid "Russian"
 msgstr ""
 
-#: src/gnome/annotation_dialog.rs:72 src/gnome/close_group.rs:136 src/gnome/diagnostics/alpha42.rs:228 src/gnome/diagnostics/alpha42.rs:242 src/gnome/diagnostics/localization.rs:20 src/gnome/files.rs:20 src/gnome/image_options.rs:61 src/gnome/menus.rs:538 src/gnome/menus.rs:641
+#: src/gnome/annotation_dialog.rs:72 src/gnome/close_group.rs:136 src/gnome/diagnostics/alpha42.rs:231 src/gnome/diagnostics/alpha42.rs:247 src/gnome/diagnostics/localization.rs:20 src/gnome/files.rs:20 src/gnome/image_options.rs:61 src/gnome/menus.rs:538 src/gnome/menus.rs:641
 msgid "Save"
 msgstr ""
 
