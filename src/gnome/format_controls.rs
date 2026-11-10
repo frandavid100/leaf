@@ -13,7 +13,14 @@ pub(super) fn format_execute(
             wordcraft_gnome::highlight::register(&mut doc.session);
         }
         let rev = doc.session.rev();
-        doc.session.run(command, &args).map_err(|e| e.to_string())?;
+        if matches!(
+            command,
+            "para.bullets" | "para.numbering" | "para.multilevel"
+        ) {
+            wordcraft_gnome::list_design::apply(&mut doc.session, command, &args)?;
+        } else {
+            doc.session.run(command, &args).map_err(|e| e.to_string())?;
+        }
         doc.session.rev() != rev
     };
     if let Some(t) = ui.text_tools.borrow().as_ref() {
@@ -181,7 +188,7 @@ pub(super) fn panel_choice(
         #[weak]
         w,
         move |r| {
-            if !valid() {
+            if !valid() || ui.format_syncing.get() {
                 return;
             }
             if let Some(v) = r

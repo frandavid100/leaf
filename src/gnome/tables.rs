@@ -162,32 +162,35 @@ pub(super) fn table_property_toggle(
     ui: &Rc<Ui>,
     w: &adw::PreferencesDialog,
 ) {
-    let row = adw::SwitchRow::new();
-    row.set_widget_name(&format!("tool-control-table.properties-{key}"));
+    let row = adw::ActionRow::new();
     row.set_title(label);
-    row.set_active(on);
+    let check = gtk::CheckButton::new();
+    check.set_widget_name(&format!("tool-control-table.properties-{key}"));
+    check.set_active(on);
+    check.set_valign(gtk::Align::Center);
+    accessible_name(&check, label);
+    row.add_suffix(&check);
+    row.set_activatable_widget(Some(&check));
     g.add(&row);
-    let ui = ui.clone();
-    let w = w.clone();
-    let valid = panel_target(&ui, &w);
-    row.connect_active_notify(glib::clone!(
-        #[weak]
-        ui,
-        #[weak]
-        w,
-        move |r| {
-            if !valid() {
-                return;
-            }
-            if let Err(e) = format_execute(
-                &ui,
-                "table.properties",
-                serde_json::json!({key:r.is_active()}),
-            ) {
-                w.add_toast(Toast::new(&e));
-            }
+    let valid = panel_target(ui, w);
+    let weak = Rc::downgrade(ui);
+    let window = w.downgrade();
+    check.connect_toggled(move |check| {
+        let (Some(ui), Some(w)) = (weak.upgrade(), window.upgrade()) else {
+            return;
+        };
+        if !valid() || ui.format_syncing.get() {
+            return;
         }
-    ));
+        check.set_inconsistent(false);
+        if let Err(e) = format_execute(
+            &ui,
+            "table.properties",
+            serde_json::json!({key:check.is_active()}),
+        ) {
+            w.add_toast(Toast::new(&e));
+        }
+    });
 }
 
 pub(super) fn table_measurement(
@@ -199,14 +202,14 @@ pub(super) fn table_measurement(
     w: &adw::PreferencesDialog,
     command: &'static str,
     key: &'static str,
-    extra: serde_json::Value,
+    extra: Rc<RefCell<serde_json::Value>>,
 ) {
     let row = adw::ActionRow::new();
     row.set_title(label);
-    let n = gtk::SpinButton::with_range(min, 1584.0, 0.5);
+    let n = gtk::SpinButton::with_range(min / (72. / 2.54), 1584.0 / (72. / 2.54), 0.1);
     n.set_widget_name(&format!("tool-control-{command}-{key}"));
-    n.set_digits(1);
-    n.set_value(value);
+    n.set_digits(3);
+    n.set_value(value / (72. / 2.54));
     n.set_valign(gtk::Align::Center);
     accessible_name(&n, label);
     row.set_activatable_widget(Some(&n));
@@ -222,8 +225,8 @@ pub(super) fn table_measurement(
             );
         }
         let ui = weak.upgrade().ok_or("Document closed")?;
-        let mut args = extra.clone();
-        args[key] = serde_json::json!(value);
+        let mut args = extra.borrow().clone();
+        args[key] = serde_json::json!(value * (72. / 2.54));
         let result = immediate_format(&ui, command, args);
         if let Err(e) = &result {
             if let Some(w) = weak_window.upgrade() {
@@ -255,6 +258,7 @@ pub(super) fn show_table_properties(
             }
         }
     };
+    let state = table_properties::state(ui).unwrap_or(state);
     let w = preferences_dialog(wordcraft_gnome::t!("Table Properties"));
     w.set_search_enabled(false);
     let p = panel_page(&w, wordcraft_gnome::t!("Size"));
@@ -271,6 +275,28 @@ pub(super) fn show_table_properties(
         &w,
         "table.properties",
         "align",
+    );
+    table_measurement(
+        &g,
+        wordcraft_gnome::t!("Table Width (cm)"),
+        state["width"].as_f64().unwrap_or(72.),
+        6.,
+        ui,
+        &w,
+        "table.properties",
+        "width",
+        Rc::new(RefCell::new(serde_json::json!({}))),
+    );
+    table_measurement(
+        &g,
+        wordcraft_gnome::t!("Table Indent (cm)"),
+        state["indent"].as_f64().unwrap_or(0.),
+        -1584.,
+        ui,
+        &w,
+        "table.properties",
+        "indent",
+        Rc::new(RefCell::new(serde_json::json!({}))),
     );
     panel_choice(
         &g,
@@ -301,7 +327,7 @@ pub(super) fn show_table_properties(
         "table.distributeRows",
         serde_json::json!({}),
     );
-    let g = panel_group(&p, wordcraft_gnome::t!("Selected Column and Row (Points)"));
+    let g = panel_group(&p, wordcraft_gnome::t!("Selected Columns and Rows (cm)"));
     table_measurement(
         &g,
         wordcraft_gnome::t!("Column Width"),
@@ -311,18 +337,81 @@ pub(super) fn show_table_properties(
         &w,
         "table.columnWidth",
         "width",
-        serde_json::json!({}),
+        Rc::new(RefCell::new(serde_json::json!({}))),
     );
+    let rule = adw::ComboRow::new();
+    rule.set_title(wordcraft_gnome::t!("Row Height Rule"));
+    rule.set_widget_name("tool-control-table.properties-rowHeightRule");
+    rule.set_model(Some(&gtk::StringList::new(&[
+        wordcraft_gnome::t!("Mixed"),
+        wordcraft_gnome::t!("Automatic"),
+        wordcraft_gnome::t!("At Least"),
+        wordcraft_gnome::t!("Exactly"),
+    ])));
+    g.add(&rule);
+    let row_extra = Rc::new(RefCell::new(
+        serde_json::json!({"rowHeightRule":state["row"]["heightRule"].as_str().filter(|s|*s!="auto").unwrap_or("atLeast")}),
+    ));
+    {
+        let weak = Rc::downgrade(ui);
+        let window = w.downgrade();
+        let valid = panel_target(ui, &w);
+        let extra = row_extra.clone();
+        rule.connect_selected_notify(move |r| {
+            let Some(ui) = weak.upgrade() else { return };
+            if let Some(rule) =
+                ["auto", "atLeast", "exact"].get(r.selected().wrapping_sub(1) as usize)
+            {
+                if *rule != "auto" {
+                    *extra.borrow_mut() = serde_json::json!({"rowHeightRule":rule});
+                }
+                if ui.format_syncing.get() || !valid() {
+                    return;
+                }
+                if let Some(window) = window.upgrade() {
+                    if let Some(height) =
+                        find_widget(&window, "tool-control-table.properties-rowHeight")
+                            .and_downcast::<gtk::SpinButton>()
+                    {
+                        height.set_sensitive(true);
+                        if *rule != "auto"
+                            && table_properties::state(&ui)
+                                .is_some_and(|s| s["_hasAutomaticHeight"] == true)
+                        {
+                            let old = ui.format_syncing.replace(true);
+                            height.set_text("");
+                            ui.format_syncing.set(old);
+                            height.set_tooltip_text(Some(wordcraft_gnome::t!(
+                                "Enter and confirm a height to apply this rule."
+                            )));
+                            height.grab_focus();
+                            return;
+                        }
+                    }
+                }
+                let args = if *rule == "auto" {
+                    serde_json::json!({"rowHeight":null})
+                } else {
+                    serde_json::json!({"rowHeightRule":rule})
+                };
+                if let Err(e) = format_execute(&ui, "table.properties", args) {
+                    if let Some(w) = window.upgrade() {
+                        w.add_toast(Toast::new(&e));
+                    }
+                }
+            }
+        });
+    }
     table_measurement(
         &g,
-        wordcraft_gnome::t!("Minimum Row Height"),
+        wordcraft_gnome::t!("Row Height"),
         state["row"]["height"].as_f64().unwrap_or(18.0),
         1.0,
         ui,
         &w,
-        "table.rowHeight",
-        "height",
-        serde_json::json!({"rule":"atLeast"}),
+        "table.properties",
+        "rowHeight",
+        row_extra,
     );
     panel_action(
         &g,
@@ -353,22 +442,16 @@ pub(super) fn show_table_properties(
     let g = panel_group(&p, wordcraft_gnome::t!("Content Alignment"));
     panel_choice(
         &g,
-        wordcraft_gnome::t!("Horizontal and Vertical Alignment"),
+        wordcraft_gnome::t!("Vertical Alignment"),
         &[
-            (wordcraft_gnome::t!("Top · Left"), "topLeft"),
-            (wordcraft_gnome::t!("Top · Center"), "topCenter"),
-            (wordcraft_gnome::t!("Top · Right"), "topRight"),
-            (wordcraft_gnome::t!("Center · Left"), "centerLeft"),
+            (wordcraft_gnome::t!("Top"), "top"),
             (wordcraft_gnome::t!("Center"), "center"),
-            (wordcraft_gnome::t!("Center · Right"), "centerRight"),
-            (wordcraft_gnome::t!("Bottom · Left"), "bottomLeft"),
-            (wordcraft_gnome::t!("Bottom · Center"), "bottomCenter"),
-            (wordcraft_gnome::t!("Bottom · Right"), "bottomRight"),
+            (wordcraft_gnome::t!("Bottom"), "bottom"),
         ],
         ui,
         &w,
-        "table.cellAlign",
-        "value",
+        "table.properties",
+        "valign",
     );
     panel_choice(
         &g,
@@ -384,7 +467,7 @@ pub(super) fn show_table_properties(
         "value",
     );
     let p = panel_page(&w, wordcraft_gnome::t!("Appearance"));
-    let g = panel_group(&p, wordcraft_gnome::t!("Selection Borders and Shading"));
+    let g = panel_group(&p, wordcraft_gnome::t!("Selected Cell Background"));
     panel_color(
         &g,
         wordcraft_gnome::t!("Background Color"),
@@ -400,6 +483,7 @@ pub(super) fn show_table_properties(
         "table.shading",
         serde_json::json!({"color":null}),
     );
+    let g = panel_group(&p, wordcraft_gnome::t!("Whole Table Borders"));
     panel_choice(
         &g,
         wordcraft_gnome::t!("Borders"),
@@ -469,6 +553,7 @@ pub(super) fn show_table_properties(
             }
         ));
     }
+    table_properties::bind_refresh(ui, &w);
     w.present(Some(parent));
     w
 }

@@ -341,7 +341,7 @@ pub fn tools(group: &str) -> Vec<Tool> {
             (
                 "table-row-height",
                 "view-paged-symbolic",
-                crate::t!("Minimum Row Height"),
+                crate::t!("Row Height"),
                 false,
             ),
             (
@@ -432,6 +432,48 @@ pub fn tools(group: &str) -> Vec<Tool> {
                 "image-caption",
                 "insert-text-symbolic",
                 crate::t!("Image Caption"),
+                false,
+            ),
+            (
+                "image-crop",
+                "image-crop-symbolic",
+                crate::t!("Crop Image"),
+                false,
+            ),
+            (
+                "image-alt",
+                "image-alt-symbolic",
+                crate::t!("Alternative Text"),
+                false,
+            ),
+            (
+                "image-rotate-left",
+                "object-rotate-left-symbolic",
+                crate::t!("Rotate Left"),
+                false,
+            ),
+            (
+                "image-rotate-right",
+                "object-rotate-right-symbolic",
+                crate::t!("Rotate Right"),
+                false,
+            ),
+            (
+                "image-flip-horizontal",
+                "object-flip-horizontal-symbolic",
+                crate::t!("Flip Horizontally"),
+                false,
+            ),
+            (
+                "image-flip-vertical",
+                "object-flip-vertical-symbolic",
+                crate::t!("Flip Vertically"),
+                false,
+            ),
+            (
+                "image-decorative",
+                "image-decorative-symbolic",
+                crate::t!("Mark as Decorative"),
                 false,
             ),
         ],

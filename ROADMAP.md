@@ -1,13 +1,15 @@
 # Hoja de ruta de Leaf
 
-## En preparación: alpha.42, publicación directa autorizada el 10/11/2026
 
-Incluye #235, #238–#246, con el icono de pluma azul aprobado y el nuevo orden del
-menú de documento. Cerrar solo después de verificar las pruebas y la publicación.
-#171 se cierra con la carpeta XDG del sistema aceptada por David; #52 se cierra
-hasta tener más información. Permanecen #1/#99/#152 (motor), #231 (intermitente)
-y #185 (ficha en pausa hasta nuevas capturas). WordCraft sigue en 0.17.0.
-[Alcance y validación](docs/ALPHA42_INTERFACE.md).
+<!-- candidate-alpha:start -->
+## En preparación: alpha.43, publicación directa autorizada
+
+Incluye los nuevos #249–#268 y las reaperturas #50/#236/#238/#240.
+Se cierran únicamente los requisitos completados y verificados; los límites y
+partes pendientes conservan su issue abierto. No se crea una RC para David en
+esta entrega. WordCraft sigue en 0.17.0; #185 permanece en pausa.
+[Alcance, plan de cierre y límites](docs/ALPHA43_TOOLS.md).
+<!-- candidate-alpha:end -->
 
 
 Procedimiento habitual: RC validada para probar; tras el visto bueno de David,

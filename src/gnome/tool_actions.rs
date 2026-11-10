@@ -53,6 +53,7 @@ pub(super) fn source_name(id: &str) -> Option<&'static str> {
         "image-delete" => "picture-delete",
         "image-caption" => "picture-show-caption",
         "image-move" => "picture-move-with-text",
+        "image-decorative" => "picture-decorative",
         _ => return None,
     })
 }
@@ -63,7 +64,13 @@ pub(super) fn source_widget(ui: &Rc<Ui>, id: &str) -> Option<gtk::Widget> {
             .picture
             .borrow()
             .as_ref()
-            .and_then(|p| find_widget(&p.context, name));
+            .and_then(|p| find_widget(&p.context, name))
+            .or_else(|| {
+                ui.elements
+                    .borrow()
+                    .as_ref()
+                    .and_then(|p| find_widget(&p.pop, name))
+            });
     }
     let pop = ui.table_popover.borrow().clone()?;
     find_widget(&pop, name).or_else(|| {
@@ -196,6 +203,12 @@ pub(super) fn activate(ui: &Rc<Ui>, group: &str, id: &str) {
             return;
         }
         match id {
+            "image-crop" => image_options::crop(ui),
+            "image-alt" => image_options::alt_text(ui),
+            "image-rotate-left" => image_options::rotate(ui, "left"),
+            "image-rotate-right" => image_options::rotate(ui, "right"),
+            "image-flip-horizontal" => image_options::rotate(ui, "flipHorizontal"),
+            "image-flip-vertical" => image_options::rotate(ui, "flipVertical"),
             "table-distribute-columns" => table_command(ui, "table.distributeColumns", json!({})),
             "table-distribute-rows" => table_command(ui, "table.distributeRows", json!({})),
             "table-auto-height" => table_command(ui, "table.properties", json!({"rowHeight":null})),
@@ -229,10 +242,10 @@ fn open_table_property(ui: &Rc<Ui>, id: &str) {
         "table-alignment" => "tool-control-table.properties-align",
         "table-autofit" => "tool-control-table.autofit-mode",
         "table-column-width" => "tool-control-table.columnWidth-width",
-        "table-row-height" => "tool-control-table.rowHeight-height",
+        "table-row-height" => "tool-control-table.properties-rowHeight",
         "table-header-row" => "tool-control-table.properties-headerRow",
         "table-split-rows" => "tool-control-table.properties-allowBreak",
-        "cell-alignment" => "tool-control-table.cellAlign-value",
+        "cell-alignment" => "tool-control-table.properties-valign",
         "cell-direction" => "tool-control-table.textDirection-value",
         "cell-shading" => "element-background-chooser",
         "table-borders" => "tool-control-table.borders-kind",

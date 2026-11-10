@@ -3666,3 +3666,132 @@ msgstr "{name} ({number})"
 
 msgid "Inherited"
 msgstr "Heredada"
+
+msgid "Alternative Text"
+msgstr "Texto alternativo"
+
+msgid "Bottom (%)"
+msgstr "Abajo (%)"
+
+msgid "Continue Numbering"
+msgstr "Continuar numeración"
+
+msgid "Crop"
+msgstr "Recortar"
+
+msgid "Crop Image"
+msgstr "Recortar imagen"
+
+msgid "Customize List"
+msgstr "Personalizar lista"
+
+msgid "Customize List…"
+msgstr "Personalizar lista…"
+
+msgid "Describe the image's meaning. A visible caption is separate from alternative text."
+msgstr "Describe el significado de la imagen. La leyenda visible es independiente del texto alternativo."
+
+msgid "Drag a rectangle to keep that part of the original image. Cancel leaves the image unchanged."
+msgstr "Arrastra un rectángulo para conservar esa parte de la imagen original. Cancelar conserva la imagen sin cambios."
+
+msgid "Edits affect every list sharing this definition. Heading links are preserved."
+msgstr "Los cambios afectan a todas las listas que comparten esta definición. Se conservan los vínculos con estilos de título."
+
+msgid "Enter a whole list level from 1 to 9."
+msgstr "Introduce un nivel entero del 1 al 9."
+
+msgid "Flip Horizontally"
+msgstr "Voltear horizontalmente"
+
+msgid "Flip Vertically"
+msgstr "Voltear verticalmente"
+
+msgid "Keep at least 5% of the image in each direction."
+msgstr "Conserva al menos un 5 % de la imagen en cada dirección."
+
+msgid "Left (%)"
+msgstr "Izquierda (%)"
+
+msgid "List Definition"
+msgstr "Definición de lista"
+
+msgid "Mark as Decorative"
+msgstr "Marcar como decorativa"
+
+msgid "Marker Template"
+msgstr "Patrón del marcador"
+
+msgid "Multilevel"
+msgstr "Multinivel"
+
+msgid "No List"
+msgstr "Sin lista"
+
+msgid "No previous compatible list was found."
+msgstr "No se ha encontrado ninguna lista anterior compatible."
+
+msgid "Right (%)"
+msgstr "Derecha (%)"
+
+msgid "Rotate Left"
+msgstr "Girar a la izquierda"
+
+msgid "Rotate Right"
+msgstr "Girar a la derecha"
+
+msgid "Selected Cell Background"
+msgstr "Fondo de las celdas seleccionadas"
+
+msgid "Set Starting Number"
+msgstr "Establecer número inicial"
+
+msgid "Start at"
+msgstr "Empezar en"
+
+msgid "The document has changed; open the image tools again."
+msgstr "El documento ha cambiado; vuelve a abrir las herramientas de imagen."
+
+msgid "This image cannot be previewed in the crop editor."
+msgstr "Esta imagen no se puede previsualizar en el editor de recorte."
+
+msgid "Top (%)"
+msgstr "Arriba (%)"
+
+msgid "Use %1 through %9 for level numbers, or a bullet character."
+msgstr "Usa %1 a %9 para los números de nivel, o un carácter de viñeta."
+
+msgid "Whole Table Borders"
+msgstr "Bordes de toda la tabla"
+
+msgid "WordCraft cannot yet change this numbering design without restarting it. Customize the current list definition instead."
+msgstr "WordCraft aún no puede cambiar este diseño sin reiniciar la numeración. Puedes personalizar la definición de la lista actual."
+
+msgid "At Least"
+msgstr "Mínimo"
+
+msgid "Automatic"
+msgstr "Automática"
+
+msgid "Enter and confirm a height to apply this rule."
+msgstr "Introduce y confirma una altura para aplicar este modo."
+
+msgid "Exactly"
+msgstr "Exacto"
+
+msgid "Mixed or automatic"
+msgstr "Mixto o automático"
+
+msgid "Row Height"
+msgstr "Altura de fila"
+
+msgid "Row Height Rule"
+msgstr "Modo de altura de fila"
+
+msgid "Selected Columns and Rows (cm)"
+msgstr "Columnas y filas seleccionadas (cm)"
+
+msgid "Table Indent (cm)"
+msgstr "Sangría de tabla (cm)"
+
+msgid "Table Width (cm)"
+msgstr "Anchura de tabla (cm)"

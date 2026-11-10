@@ -1,5 +1,14 @@
 # Decisiones vigentes
 
+
+## 10/11/2026 — alpha.43 con los issues nuevos y publicación directa
+
+David añade las propuestas recientes y pide expresamente release, sin RC.
+Se conserva toda la validación y se publica automáticamente esta entrega al pasar.
+Los requisitos parciales se documentan sin cerrarlos; los límites del motor no
+justifican un fork ni controles ficticios. La ficha pública sigue aplazada.
+[Plan de entrega y límites concretos](ALPHA43_TOOLS.md).
+
 ## Publicada y verificada automáticamente: 0.1.0-alpha.42
 
 Se publican los mismos bytes de la candidata tras superar todas las pruebas

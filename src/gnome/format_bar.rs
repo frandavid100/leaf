@@ -634,7 +634,7 @@ impl QuickTools {
                     false,
                 ),
                 "text-border" => (character["border"].is_object(), false),
-                "image-caption" | "table-caption" | "image-move" => {
+                "image-caption" | "table-caption" | "image-move" | "image-decorative" => {
                     let c = tool_actions::source_widget(ui, key).and_downcast::<gtk::CheckButton>();
                     (
                         c.as_ref().is_some_and(|c| c.is_active()),
@@ -889,7 +889,10 @@ pub(super) fn install_quick_tools(
                 });
                 if tool_actions::toggle_command(group, tool.id).is_some()
                     || (group == "elements"
-                        && matches!(tool.id, "image-caption" | "table-caption" | "image-move"))
+                        && matches!(
+                            tool.id,
+                            "image-caption" | "table-caption" | "image-move" | "image-decorative"
+                        ))
                 {
                     let mixed = gtk::Label::new(Some("−"));
                     mixed.set_visible(false);

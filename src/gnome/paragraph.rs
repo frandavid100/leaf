@@ -39,6 +39,7 @@ impl ParagraphPopover {
             )));
         }
         paragraph_options::sync(self, &state);
+        list_options::sync(self, &state);
         if *self.displayed.borrow() == state {
             return;
         }
@@ -306,8 +307,8 @@ impl ParagraphPopover {
                 saved["listLevel"] = args["level"].clone();
                 saved
             } else {
-                // Imported numbering retains its canonical definition in this document.
-                serde_json::json!({"props":props,"document":ui.current.borrow().as_ref().map(|d|d.session.document_id())})
+                // A level edit is not a design choice; do not remember its num ID.
+                return;
             }
         } else if group == "list" {
             serde_json::json!({"command":command,"args":args})
@@ -472,6 +473,15 @@ impl ParagraphPopover {
         let Some(ui) = self.ui.upgrade() else { return };
         let state = selection_paragraph(&ui);
         self.displayed.replace(state.clone());
+        let mut launcher_state = state.clone();
+        for config in self.groups.borrow().values() {
+            if let Some(props) = config["props"].as_object() {
+                for (key, value) in props {
+                    launcher_state[key] = value.clone();
+                }
+            }
+        }
+        let state = launcher_state;
         let alignment = match state["align"].as_str() {
             Some("left") => wordcraft_gnome::t!("Align Left"),
             Some("center") => wordcraft_gnome::t!("Center"),
@@ -488,44 +498,42 @@ impl ParagraphPopover {
             "paragraph-alignment",
             "alignment",
         );
-        let list_kind = {
-            let value = ui.current.borrow();
-            value.as_ref().and_then(|d| {
-                let p = d.session.doc.para_at(&d.session.sel.focus)?;
-                let n = d.session.doc.styles.resolve_para(&p.props).numbering?;
-                d.session
-                    .doc
-                    .numbering
-                    .level(n.num, n.level)
-                    .map(|l| format!("{:?}", l.format))
+        let saved = self.groups.borrow().get("list").cloned();
+        let list_label = saved.as_ref().map(|v| {
+            if v["args"]["off"] == true {
+                wordcraft_gnome::t!("No List").to_owned()
+            } else {
+                match v["args"]["kind"].as_str() {
+                    Some("numbered") => "1. 2. 3.".into(),
+                    Some("numberedParen") => "1) 2) 3)".into(),
+                    Some("upperLetter") => "A. B. C.".into(),
+                    Some("lowerLetter") => "a) b) c)".into(),
+                    Some("lowerRoman") => "i. ii. iii.".into(),
+                    Some("legal") => "1 / 1.1 / 1.1.1".into(),
+                    Some("outline") => "I / A / 1".into(),
+                    Some(glyph) if glyph.chars().count() == 1 => format!("{glyph} {glyph} {glyph}"),
+                    _ => {
+                        if v["command"] == "para.bullets" {
+                            wordcraft_gnome::t!("Bulleted List").into()
+                        } else {
+                            wordcraft_gnome::t!("Numbered List").into()
+                        }
+                    }
+                }
+            }
+        });
+        let label = list_label
+            .map(|value| {
+                wordcraft_gnome::i18n::interpolate(
+                    wordcraft_gnome::t!("{label}: {value}"),
+                    &[
+                        ("label", wordcraft_gnome::t!("List").into()),
+                        ("value", value),
+                    ],
+                )
             })
-        };
-        let mixed_list = state["_mixed"]
-            .as_array()
-            .is_some_and(|a| a.iter().any(|v| v == "numbering"));
-        let list_label = if mixed_list {
-            wordcraft_gnome::t!("Mixed")
-        } else if list_kind
-            .as_ref()
-            .is_some_and(|s| s.to_lowercase().contains("bullet"))
-        {
-            wordcraft_gnome::t!("Bulleted List")
-        } else if list_kind.is_some() {
-            wordcraft_gnome::t!("Numbered List")
-        } else {
-            wordcraft_gnome::t!("None")
-        };
-        self.option_row(
-            &wordcraft_gnome::i18n::interpolate(
-                wordcraft_gnome::t!("{label}: {value}"),
-                &[
-                    ("label", wordcraft_gnome::t!("List").into()),
-                    ("value", list_label.into()),
-                ],
-            ),
-            "paragraph-list",
-            "list",
-        );
+            .unwrap_or_else(|| wordcraft_gnome::t!("List").into());
+        self.option_row(&label, "paragraph-list", "list");
         self.option_row(
             wordcraft_gnome::t!("Columns"),
             "paragraph-columns",
@@ -765,6 +773,7 @@ impl ParagraphPopover {
             "list" => wordcraft_gnome::t!("List"),
             "bullets" => wordcraft_gnome::t!("Bullets"),
             "numbering" => wordcraft_gnome::t!("Numbering"),
+            "multilevel" => wordcraft_gnome::t!("Multilevel List"),
             "indents" => wordcraft_gnome::t!("Indents"),
             "spacing" => wordcraft_gnome::t!("Spacing"),
             "direction" => wordcraft_gnome::t!("Text Direction"),
@@ -776,7 +785,10 @@ impl ParagraphPopover {
             "columns" => wordcraft_gnome::t!("Columns"),
             _ => wordcraft_gnome::t!("More Paragraph Options"),
         };
-        let nested = matches!(page, "bullets" | "numbering" | "border-color");
+        let nested = matches!(
+            page,
+            "bullets" | "numbering" | "multilevel" | "border-color"
+        );
         let border_color = page == "border-color";
         self.header.page(page, title, move || {
             if let Some(s) = weak.upgrade() {

@@ -130,6 +130,9 @@ fn page_link(s: &Rc<ParagraphPopover>, title: &str, page: &'static str) {
 }
 
 pub(super) fn build(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, page: &str, state: &Value) -> bool {
+    if list_options::build(s, ui, page, state) {
+        return true;
+    }
     match page {
         "alignment" => {
             if state["align"].is_null() {

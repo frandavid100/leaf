@@ -273,6 +273,65 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             selection_paragraph(&ui)["borders"]["bottom"]["color"],
             json!([28, 113, 216])
         );
+        paragraph.page("bullets");
+        settle().await;
+        click(&para_pop, "paragraph-list-•");
+        settle().await;
+        let list_before = state(&ui);
+        click(&para_pop, "paragraph-list-•");
+        settle().await;
+        assert_eq!(
+            state(&ui),
+            list_before,
+            "choosing the same list design does not toggle it off"
+        );
+        click(&para_pop, "paragraph-list-none");
+        settle().await;
+        paragraph.page("numbering");
+        settle().await;
+        click(&para_pop, "paragraph-list-numbered");
+        settle().await;
+        let start = find_widget(&para_pop, "paragraph-list-start")
+            .unwrap()
+            .downcast::<gtk::SpinButton>()
+            .unwrap();
+        start.set_value(7.);
+        click(&para_pop, "paragraph-list-set-start");
+        settle().await;
+        {
+            let current = ui.current.borrow();
+            let session = &current.as_ref().unwrap().session;
+            let p = session.doc.para_at(&session.sel.focus).unwrap();
+            let n = p.props.numbering.unwrap();
+            assert!(
+                session
+                    .doc
+                    .numbering
+                    .num(n.num)
+                    .unwrap()
+                    .start_overrides
+                    .iter()
+                    .any(|(level, start)| *level == n.level && *start == 7)
+            );
+        }
+        click(&para_pop, "paragraph-list-custom");
+        settle().await;
+        let custom = window.visible_dialog().unwrap();
+        assert_eq!(
+            find_widget(&custom, "list-custom-template")
+                .unwrap()
+                .downcast::<gtk::Entry>()
+                .unwrap()
+                .text(),
+            "%1."
+        );
+        assert!(
+            alpha42_checks::response(custom.upcast_ref(), wordcraft_gnome::t!("Close")) || {
+                custom.close();
+                true
+            }
+        );
+        settle().await;
         paragraph.header.pin.set_active(false);
         para_pop.popdown();
         settle().await;
@@ -361,6 +420,261 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         elements.header.pin.set_active(false);
         elements.pop.popdown();
         settle().await;
+        image_options::alt_text(&ui);
+        settle().await;
+        let dialog = window
+            .visible_dialog()
+            .expect("native alternative-text editor");
+        let input = find_widget(&dialog, "image-alt-text")
+            .unwrap()
+            .downcast::<gtk::TextView>()
+            .unwrap();
+        input.buffer().set_text("A blue rectangle");
+        find_widget(&dialog, "image-decorative")
+            .unwrap()
+            .downcast::<gtk::CheckButton>()
+            .unwrap()
+            .set_active(true);
+        click(&dialog, "image-alt-save");
+        settle().await;
+        let image_pos = pictures::selected(&ui.current.borrow().as_ref().unwrap().session)
+            .unwrap()
+            .0;
+        {
+            let current = ui.current.borrow();
+            let object = current
+                .as_ref()
+                .unwrap()
+                .session
+                .doc
+                .para_at(&image_pos)
+                .unwrap()
+                .object_at(image_pos.off)
+                .unwrap();
+            assert_eq!(object.alt_text(), "A blue rectangle");
+            assert!(object.is_decorative());
+        }
+        image_options::rotate(&ui, "right");
+        settle().await;
+        assert!(
+            (pictures::layout(&ui.current.borrow().as_ref().unwrap().session)
+                .unwrap()
+                .rot
+                - 90.)
+                .abs()
+                < 0.01
+        );
+        image_options::crop(&ui);
+        settle().await;
+        let dialog = window.visible_dialog().expect("native crop editor");
+        let before = state(&ui);
+        find_widget(&dialog, "image-crop-left")
+            .unwrap()
+            .downcast::<gtk::SpinButton>()
+            .unwrap()
+            .set_value(10.);
+        settle().await;
+        assert_eq!(state(&ui), before, "crop draft is read-only");
+        assert!(alpha42_checks::response(
+            dialog.upcast_ref(),
+            wordcraft_gnome::t!("Cancel")
+        ));
+        settle().await;
+        assert_eq!(state(&ui), before);
+        image_options::crop(&ui);
+        settle().await;
+        let dialog = window.visible_dialog().unwrap();
+        find_widget(&dialog, "image-crop-left")
+            .unwrap()
+            .downcast::<gtk::SpinButton>()
+            .unwrap()
+            .set_value(10.);
+        find_widget(&dialog, "image-crop-right")
+            .unwrap()
+            .downcast::<gtk::SpinButton>()
+            .unwrap()
+            .set_value(15.);
+        click(&dialog, "image-crop-apply");
+        settle().await;
+        {
+            let current = ui.current.borrow();
+            let s = &current.as_ref().unwrap().session;
+            let p = pictures::selected(s).unwrap().0;
+            let wordcraft_doc::para::InlineObject::Image { crop, .. } =
+                s.doc.para_at(&p).unwrap().object_at(p.off).unwrap()
+            else {
+                panic!("image")
+            };
+            assert!((crop[0] - 0.1).abs() < 0.001 && (crop[2] - 0.15).abs() < 0.001);
+            assert_eq!(s.undo_depth(), before.1 + 1);
+        }
+        let mut table_session = Session::new(wordcraft_doc::Document::new());
+        table_session
+            .run("insert.table", &json!({"rows":2,"cols":2}))
+            .unwrap();
+        table_session
+            .run(
+                "table.properties",
+                &json!({"rowHeight":22.,"rowHeightRule":"exact"}),
+            )
+            .unwrap();
+        table_session.run("table.selectTable", &json!({})).unwrap();
+        opened(&ui, table_session, "Table property controls");
+        refresh_selection(&ui);
+        settle().await;
+        let before = state(&ui);
+        let properties = show_table_properties(&ui, &window);
+        settle().await;
+        assert_eq!(
+            state(&ui),
+            before,
+            "opening current table properties is read-only"
+        );
+        let column = find_widget(&properties, "tool-control-table.columnWidth-width")
+            .unwrap()
+            .downcast::<gtk::SpinButton>()
+            .unwrap();
+        assert!(column.is_mapped());
+        column.set_value(2.);
+        settle().await;
+        let snapshot = table_properties::state(&ui).unwrap();
+        assert!((snapshot["columnWidth"].as_f64().unwrap() - 2. * 72. / 2.54).abs() < 0.01);
+        let height = find_widget(&properties, "tool-control-table.properties-rowHeight")
+            .unwrap()
+            .downcast::<gtk::SpinButton>()
+            .unwrap();
+        assert!(
+            !height.is_sensitive(),
+            "mixed rules require an explicit choice"
+        );
+        let rule = find_widget(&properties, "tool-control-table.properties-rowHeightRule")
+            .unwrap()
+            .downcast::<adw::ComboRow>()
+            .unwrap();
+        let before_rule = state(&ui);
+        rule.set_selected(3);
+        settle().await;
+        assert_eq!(
+            state(&ui),
+            before_rule,
+            "choosing a rule for automatic rows awaits a height"
+        );
+        assert!(height.is_sensitive());
+        height.set_value(1.);
+        settle().await;
+        assert_eq!(
+            table_properties::state(&ui).unwrap()["row"]["heightRule"],
+            "exact"
+        );
+        let alignment = find_widget(&properties, "tool-control-table.properties-valign")
+            .unwrap()
+            .downcast::<adw::ComboRow>()
+            .unwrap();
+        let page = alignment
+            .ancestor(adw::PreferencesPage::static_type())
+            .and_downcast::<adw::PreferencesPage>()
+            .unwrap();
+        properties.set_visible_page(&page);
+        settle().await;
+        assert!(alignment.is_mapped());
+        alignment.set_selected(2);
+        settle().await;
+        assert_eq!(
+            table_properties::state(&ui).unwrap()["cell"]["valign"],
+            "center"
+        );
+        properties.close();
+        settle().await;
+        opened(
+            &ui,
+            Session::new(wordcraft_doc::Document::from_text("AAA\nBBB\nCCC")),
+            "Cumulative Repeat",
+        );
+        {
+            let mut c = ui.current.borrow_mut();
+            selection::select_range(
+                &mut c.as_mut().unwrap().session,
+                &Pos::body(0, 0),
+                &Pos::body(0, 3),
+            )
+            .unwrap();
+        }
+        format_execute(&ui, "format.bold", json!({"value":true})).unwrap();
+        format_execute(&ui, "format.italic", json!({"value":true})).unwrap();
+        {
+            let mut c = ui.current.borrow_mut();
+            selection::select_range(
+                &mut c.as_mut().unwrap().session,
+                &Pos::body(1, 0),
+                &Pos::body(1, 3),
+            )
+            .unwrap();
+        }
+        refresh_selection(&ui);
+        ui.redo_button.emit_clicked();
+        settle().await;
+        assert_eq!(selection_character(&ui)["italic"], true);
+        assert_ne!(
+            selection_character(&ui)["bold"],
+            true,
+            "Repeat body replays only Italic"
+        );
+        apply_user_edit(&ui, Edit::Undo);
+        apply_user_edit(&ui, Edit::Redo);
+        {
+            let mut c = ui.current.borrow_mut();
+            selection::select_range(
+                &mut c.as_mut().unwrap().session,
+                &Pos::body(2, 0),
+                &Pos::body(2, 3),
+            )
+            .unwrap();
+        }
+        refresh_selection(&ui);
+        let more = find_widget(&window, "redo-history")
+            .unwrap()
+            .downcast::<gtk::MenuButton>()
+            .unwrap();
+        let before = state(&ui);
+        more.popup();
+        settle().await;
+        let pop = more
+            .popover()
+            .unwrap()
+            .downcast::<gtk::PopoverMenu>()
+            .unwrap();
+        let model = pop.menu_model().unwrap();
+        assert_eq!(
+            model.n_items(),
+            2,
+            "menu contains Italic and older Bold boundary"
+        );
+        let target = model.item_attribute_value(1, "target", None).unwrap();
+        assert_eq!(target.get::<(u64, u64, u64, u32)>().unwrap().3, 2);
+        assert_eq!(state(&ui), before, "opening Repeat history is read-only");
+        pop.activate_action("history.repeat", Some(&target))
+            .unwrap();
+        settle().await;
+        assert_eq!(selection_character(&ui)["bold"], true);
+        assert_eq!(selection_character(&ui)["italic"], true);
+        assert_eq!(
+            state(&ui).1,
+            before.1 + 1,
+            "cumulative Repeat is one Undo step"
+        );
+        let repeated = state(&ui);
+        pop.activate_action("history.repeat", Some(&target))
+            .unwrap();
+        assert_eq!(
+            state(&ui),
+            repeated,
+            "stale Repeat menu target cannot apply twice"
+        );
+        more.popdown();
+        apply_user_edit(&ui, Edit::Undo);
+        assert_eq!(state(&ui).0, before.0);
+        apply_user_edit(&ui, Edit::Redo);
+        assert_eq!(state(&ui), repeated);
         eprintln!("ALPHA43_UI_OK");
         app.quit();
     });

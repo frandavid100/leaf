@@ -62,6 +62,24 @@ impl PicturePopover {
             })
             .unwrap_or(false);
         self.caption.set_active(shown);
+        if let Some(check) =
+            find_widget(&self.context, "picture-decorative").and_downcast::<gtk::CheckButton>()
+        {
+            let on = self.ui.upgrade().is_some_and(|ui| {
+                ui.current.borrow().as_ref().is_some_and(|d| {
+                    target
+                        .as_ref()
+                        .and_then(|(p, _, _)| {
+                            d.session
+                                .doc
+                                .para_at(p)
+                                .and_then(|para| para.object_at(p.off))
+                        })
+                        .is_some_and(|o| o.is_decorative())
+                })
+            });
+            check.set_active(on);
+        }
         let body = target
             .as_ref()
             .is_some_and(|(p, _, _)| p.story == wordcraft_doc::StoryRef::Body);
@@ -278,6 +296,9 @@ pub(super) fn install_picture_controls(
     let caption = gtk::CheckButton::with_label(wordcraft_gnome::t!("Show Caption"));
     caption.set_widget_name("picture-show-caption");
     context.append(&caption);
+    let decorative = gtk::CheckButton::with_label(wordcraft_gnome::t!("Mark as Decorative"));
+    decorative.set_widget_name("picture-decorative");
+    context.append(&decorative);
     context.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     let width = mm_input(3.0, 1.0 / (72. / 2.54), 4000.0 / (72. / 2.54));
     width.set_widget_name("picture-width");
@@ -338,13 +359,41 @@ pub(super) fn install_picture_controls(
     context.append(&replace);
     let delete = style_menu_button(wordcraft_gnome::t!("Delete Image"));
     delete.set_widget_name("picture-delete");
+    context.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
     context.append(&delete);
+    let mut last_transform = original.clone().upcast::<gtk::Widget>();
+    for (title, id) in [
+        (wordcraft_gnome::t!("Crop Image"), "image-crop"),
+        (wordcraft_gnome::t!("Rotate Left"), "image-rotate-left"),
+        (wordcraft_gnome::t!("Rotate Right"), "image-rotate-right"),
+        (
+            wordcraft_gnome::t!("Flip Horizontally"),
+            "image-flip-horizontal",
+        ),
+        (
+            wordcraft_gnome::t!("Flip Vertically"),
+            "image-flip-vertical",
+        ),
+        (wordcraft_gnome::t!("Alternative Text"), "image-alt"),
+    ] {
+        let b = style_menu_button(title);
+        b.set_widget_name(&format!("format-row-elements-{id}"));
+        context.insert_child_after(&b, Some(&last_transform));
+        last_transform = b.clone().upcast();
+        let weak = Rc::downgrade(ui);
+        b.connect_clicked(move |_| {
+            if let Some(ui) = weak.upgrade() {
+                tool_actions::activate(&ui, "elements", id);
+            }
+        });
+    }
     // Stable logical groups are leased, rather than duplicated, by individual tools.
     let size_body = gtk::Box::new(gtk::Orientation::Vertical, 6);
     for control in [
         width.parent().unwrap(),
         height.parent().unwrap(),
         lock.clone().upcast(),
+        original.clone().upcast(),
     ] {
         context.remove(&control);
         size_body.append(&control);
@@ -373,17 +422,19 @@ pub(super) fn install_picture_controls(
     context.insert_child_after(&wrap_slot, Some(&spacing_slot));
     for (widget, id) in [
         (caption.clone().upcast::<gtk::Widget>(), "image-caption"),
+        (decorative.clone().upcast(), "image-decorative"),
         (move_with_text.clone().upcast(), "image-move"),
         (original.clone().upcast(), "image-original"),
         (replace.clone().upcast(), "image-replace"),
         (delete.clone().upcast(), "image-delete"),
     ] {
         let prev = widget.prev_sibling();
-        context.remove(&widget);
+        let owner = widget.parent().unwrap().downcast::<gtk::Box>().unwrap();
+        owner.remove(&widget);
         let slot = gtk::Box::new(gtk::Orientation::Vertical, 0);
         slot.set_widget_name(&format!("format-row-elements-{id}"));
         slot.append(&widget);
-        context.insert_child_after(&slot, prev.as_ref());
+        owner.insert_child_after(&slot, prev.as_ref());
     }
     // Keep the header fixed when the window is short.
     let scroll = gtk::ScrolledWindow::new();
@@ -418,6 +469,20 @@ pub(super) fn install_picture_controls(
         width_changed: Cell::new(true),
         target: RefCell::new(None),
     });
+    {
+        let weak = Rc::downgrade(&state);
+        decorative.connect_toggled(move |check| {
+            let Some(p) = weak.upgrade().filter(|p| !p.syncing.get()) else {
+                return;
+            };
+            let value = check.is_active();
+            p.execute(move |s| {
+                s.run("object.altText", &serde_json::json!({"decorative":value}))
+                    .map(|_| ())
+                    .map_err(|e| e.to_string())
+            });
+        });
+    }
     {
         let weak = Rc::downgrade(&state);
         state.caption.connect_toggled(move |button| {

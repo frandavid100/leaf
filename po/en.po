@@ -3666,3 +3666,132 @@ msgstr "{name} ({number})"
 
 msgid "Inherited"
 msgstr "Inherited"
+
+msgid "Alternative Text"
+msgstr "Alternative Text"
+
+msgid "Bottom (%)"
+msgstr "Bottom (%)"
+
+msgid "Continue Numbering"
+msgstr "Continue Numbering"
+
+msgid "Crop"
+msgstr "Crop"
+
+msgid "Crop Image"
+msgstr "Crop Image"
+
+msgid "Customize List"
+msgstr "Customize List"
+
+msgid "Customize List…"
+msgstr "Customize List…"
+
+msgid "Describe the image's meaning. A visible caption is separate from alternative text."
+msgstr "Describe the image's meaning. A visible caption is separate from alternative text."
+
+msgid "Drag a rectangle to keep that part of the original image. Cancel leaves the image unchanged."
+msgstr "Drag a rectangle to keep that part of the original image. Cancel leaves the image unchanged."
+
+msgid "Edits affect every list sharing this definition. Heading links are preserved."
+msgstr "Edits affect every list sharing this definition. Heading links are preserved."
+
+msgid "Enter a whole list level from 1 to 9."
+msgstr "Enter a whole list level from 1 to 9."
+
+msgid "Flip Horizontally"
+msgstr "Flip Horizontally"
+
+msgid "Flip Vertically"
+msgstr "Flip Vertically"
+
+msgid "Keep at least 5% of the image in each direction."
+msgstr "Keep at least 5% of the image in each direction."
+
+msgid "Left (%)"
+msgstr "Left (%)"
+
+msgid "List Definition"
+msgstr "List Definition"
+
+msgid "Mark as Decorative"
+msgstr "Mark as Decorative"
+
+msgid "Marker Template"
+msgstr "Marker Template"
+
+msgid "Multilevel"
+msgstr "Multilevel"
+
+msgid "No List"
+msgstr "No List"
+
+msgid "No previous compatible list was found."
+msgstr "No previous compatible list was found."
+
+msgid "Right (%)"
+msgstr "Right (%)"
+
+msgid "Rotate Left"
+msgstr "Rotate Left"
+
+msgid "Rotate Right"
+msgstr "Rotate Right"
+
+msgid "Selected Cell Background"
+msgstr "Selected Cell Background"
+
+msgid "Set Starting Number"
+msgstr "Set Starting Number"
+
+msgid "Start at"
+msgstr "Start at"
+
+msgid "The document has changed; open the image tools again."
+msgstr "The document has changed; open the image tools again."
+
+msgid "This image cannot be previewed in the crop editor."
+msgstr "This image cannot be previewed in the crop editor."
+
+msgid "Top (%)"
+msgstr "Top (%)"
+
+msgid "Use %1 through %9 for level numbers, or a bullet character."
+msgstr "Use %1 through %9 for level numbers, or a bullet character."
+
+msgid "Whole Table Borders"
+msgstr "Whole Table Borders"
+
+msgid "WordCraft cannot yet change this numbering design without restarting it. Customize the current list definition instead."
+msgstr "WordCraft cannot yet change this numbering design without restarting it. Customize the current list definition instead."
+
+msgid "At Least"
+msgstr "At Least"
+
+msgid "Automatic"
+msgstr "Automatic"
+
+msgid "Enter and confirm a height to apply this rule."
+msgstr "Enter and confirm a height to apply this rule."
+
+msgid "Exactly"
+msgstr "Exactly"
+
+msgid "Mixed or automatic"
+msgstr "Mixed or automatic"
+
+msgid "Row Height"
+msgstr "Row Height"
+
+msgid "Row Height Rule"
+msgstr "Row Height Rule"
+
+msgid "Selected Columns and Rows (cm)"
+msgstr "Selected Columns and Rows (cm)"
+
+msgid "Table Indent (cm)"
+msgstr "Table Indent (cm)"
+
+msgid "Table Width (cm)"
+msgstr "Table Width (cm)"

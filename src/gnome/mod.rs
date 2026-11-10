@@ -30,7 +30,7 @@ use wordcraft_gnome::{
     pdf_export, pictures,
 };
 
-const APP_VERSION: &str = "0.1.0-alpha.42";
+const APP_VERSION: &str = "0.1.0-alpha.43";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -95,6 +95,7 @@ mod navigation;
 use navigation::*;
 mod paintable;
 use paintable::*;
+mod list_options;
 mod paragraph;
 mod paragraph_options;
 use paragraph::*;
@@ -114,6 +115,7 @@ mod references;
 use references::*;
 mod picture_pointer;
 use picture_pointer::*;
+mod image_options;
 mod picture_controls;
 use picture_controls::*;
 mod pointer_input;
@@ -144,6 +146,7 @@ mod tab;
 use tab::*;
 mod table_pointer;
 use table_pointer::*;
+mod table_properties;
 mod tables;
 use tables::*;
 mod text_controls;

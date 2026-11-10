@@ -292,3 +292,14 @@ keyboard reorder actions, refreshing open windows immediately.
 visible-widget set. Shared format headers remember the actual entry page;
 popover pointing rectangles use the launcher bounds without transferring callback
 ownership. Element bodies keep their internal scrolling and fixed insertion footer.
+
+## Alpha.43 formatting adapters
+
+`history.rs` owns bounded per-document replay intents, while WordCraft owns history
+and document state. `format_painter.rs` captures safe immutable appearance for an
+owned ordinary clipboard offer. `paragraph_borders.rs` and `list_design.rs` register
+public Session commands for targeted edits with normal engine transactions.
+GTK `color_chooser.rs`, `paragraph_options.rs`, `list_options.rs`, `image_options.rs`
+and `table_properties.rs` expose native controls and read-only current state;
+`tool_actions.rs` routes stable customization IDs to these shared tools.
+[Contracts, validation and remaining gaps](ALPHA43_TOOLS.md).

@@ -15,6 +15,7 @@ pub(super) struct ColumnControls {
     pub(super) scopes: Vec<ColumnScope>,
     pub(super) preview: gtk::DrawingArea,
     pub(super) text_width: f32,
+    section: wordcraft_doc::section::SectionProps,
     pub(super) last_count: Cell<u32>,
     pub(super) last_mode: Cell<u32>,
 }
@@ -92,12 +93,13 @@ pub(super) struct ColumnsDialog {
     pub(super) apply: gtk::Button,
 }
 pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> ColumnEditor {
-    let (initial, text_width, can_select, can_forward) = {
+    let (initial, text_width, section, can_select, can_forward) = {
         let state = ui.current.borrow();
         let s = &state.as_ref().unwrap().session;
         (
             ColumnSetup::current(s),
             wordcraft_engine::cmd::page::sect(s).text_width(),
+            wordcraft_engine::cmd::page::sect(s).clone(),
             wordcraft_engine::cmd::page::selection_sectionable(s),
             s.sel.focus.story == wordcraft_doc::StoryRef::Body && s.sel.focus.path.depth() == 0,
         )
@@ -250,6 +252,7 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
         scopes,
         preview,
         text_width,
+        section,
         last_count: Cell::new(initial.count.clamp(1, 12)),
         last_mode: Cell::new(if initial.kind == ColumnKind::Custom {
             3
@@ -300,21 +303,21 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
                 return;
             };
             let color = area.color();
-            let total = c.text_width as f64;
-            let height = h as f64 - 24.;
-            let scale = ((w as f64 - 28.) / total).min(height / (total * 1.414));
-            let frame_width = total * scale;
-            let margin = (w as f64 - frame_width) / 2.;
-            let y = 12.;
+            let paper_w = c.section.page_w as f64;
+            let paper_h = c.section.page_h as f64;
+            let scale = ((w as f64 - 28.) / paper_w).min((h as f64 - 24.) / paper_h);
+            let margin = (w as f64 - paper_w * scale) / 2.;
             cr.set_source_rgba(
                 color.red() as f64,
                 color.green() as f64,
                 color.blue() as f64,
                 0.15,
             );
-            cr.rectangle(margin, y, total * scale, height);
+            cr.rectangle(margin, 12., paper_w * scale, paper_h * scale);
             let _ = cr.stroke();
-            let mut x = margin;
+            let y = 12. + c.section.margin_top as f64 * scale;
+            let height = c.section.text_height() as f64 * scale;
+            let mut x = margin + (c.section.margin_left + c.section.gutter) as f64 * scale;
             for i in 0..cols.count as usize {
                 let (cw, g) = cols.widths.get(i).copied().unwrap_or((
                     (c.text_width - cols.space * (cols.count - 1) as f32) / cols.count as f32,
@@ -331,7 +334,7 @@ pub(super) fn columns_editor(ui: &Rc<Ui>, on_applied: impl Fn() + 'static) -> Co
                     let width = if line == 7 { width * 0.64 } else { width };
                     cr.rectangle(
                         x + 3.0,
-                        y + 8.0 + line as f64 * 8.0,
+                        y + 4.0 + line as f64 * ((height - 12.) / 8.).max(2.),
                         (width - 6.0).max(1.0),
                         2.0,
                     );
@@ -517,9 +520,14 @@ pub(super) fn show_columns(ui: &Rc<Ui>, parent: &ApplicationWindow) -> ColumnsDi
     header.pack_start(&cancel);
     header.pack_end(&editor.apply);
     toolbar.add_top_bar(&header);
+    editor.root.remove(&editor.scope_header);
+    let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
+    body.append(&editor.scope_header);
     let scroll = gtk::ScrolledWindow::new();
+    scroll.set_vexpand(true);
     scroll.set_child(Some(&editor.root));
-    toolbar.set_content(Some(&scroll));
+    body.append(&scroll);
+    toolbar.set_content(Some(&body));
     window.set_child(Some(&toolbar));
     let weak = window.downgrade();
     cancel.connect_clicked(move |_| {
