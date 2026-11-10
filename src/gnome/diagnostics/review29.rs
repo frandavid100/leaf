@@ -214,12 +214,12 @@ fn format_rows_and_elements(ui: &Rc<Ui>) {
     assert!(
         find_widget(&paragraph.main, "paragraph-list")
             .unwrap()
-            .is::<gtk::Button>()
+            .is::<gtk::MenuButton>()
     );
     assert!(
         find_widget(&paragraph.main, "paragraph-more-borders")
             .unwrap()
-            .is::<gtk::Button>()
+            .is::<gtk::MenuButton>()
     );
     paragraph.popover.upgrade().unwrap().popdown();
     let elements = ui.elements.borrow().as_ref().unwrap().clone();
@@ -264,8 +264,18 @@ fn format_rows_and_elements(ui: &Rc<Ui>) {
     let mut order = Vec::new();
     let mut child = context.first_child();
     while let Some(w) = child {
-        if w.widget_name().starts_with("table-") {
-            order.push(w.widget_name().to_string());
+        for name in [
+            "table-select",
+            "table-add",
+            "table-delete",
+            "table-merge",
+            "table-split",
+            "table-properties",
+            "table-show-caption",
+        ] {
+            if find_widget(&w, name).is_some() {
+                order.push(name.to_string());
+            }
         }
         child = w.next_sibling();
     }

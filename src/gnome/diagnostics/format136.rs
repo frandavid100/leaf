@@ -104,11 +104,7 @@ pub(super) fn format136_ui_test(
         (1, "paragraph-alignment", wordcraft_gnome::t!("Alignment")),
         (1, "paragraph-list", wordcraft_gnome::t!("List")),
         (1, "paragraph-more-indents", wordcraft_gnome::t!("Indents")),
-        (
-            1,
-            "paragraph-more-spacing",
-            wordcraft_gnome::t!("Line Spacing"),
-        ),
+        (1, "paragraph-more-spacing", wordcraft_gnome::t!("Spacing")),
         (1, "paragraph-more-borders", wordcraft_gnome::t!("Borders")),
         (1, "paragraph-more-shading", wordcraft_gnome::t!("Shading")),
         (1, "paragraph-columns", wordcraft_gnome::t!("Columns")),
@@ -251,14 +247,17 @@ pub(super) fn format136_ui_test(
                     // Both toolbar history and property rows use this native
                     // component's flat presentation, with its own separator.
                     assert!(split.has_css_class("flat") && !split.has_css_class("raised"));
-                    let repeat = target
-                        .next_sibling()
+                    let body = split
+                        .first_child()
                         .unwrap()
-                        .next_sibling()
+                        .downcast::<gtk::Button>()
+                        .unwrap();
+                    let repeat = split
+                        .last_child()
                         .unwrap()
                         .downcast::<gtk::MenuButton>()
                         .unwrap();
-                    assert!(!target.downcast_ref::<gtk::Button>().unwrap().has_frame());
+                    assert!(!body.has_frame());
                     assert!(!repeat.has_frame());
                     eprintln!(
                         "FORMAT136_SPLIT row={row} classes={:?} repeat_active={}",

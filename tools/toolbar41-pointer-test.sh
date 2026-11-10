@@ -8,7 +8,7 @@ if [[ "$leaf_runner" = *.sh ]]; then leaf_cmd=(bash "$leaf_runner"); fi
 LEAF_TOOLBAR_DND=1 "${leaf_cmd[@]}" --toolbar41-ui-test >"$log" 2>&1 &
 leaf_pid=$!
 trap 'kill "$leaf_pid" 2>/dev/null || true' EXIT
-for picker in alignment list underline-options image; do
+for picker in alignment-options list-options underline-options image; do
   for attempt in $(seq 1 500); do
     if grep -q "^TOOLBAR41_TOGGLE $picker " "$log"; then break; fi
     kill -0 "$leaf_pid" || { cat "$log"; exit 1; }

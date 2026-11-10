@@ -452,6 +452,9 @@ pub(super) fn text_pointer_target(
     widget: &impl IsA<gtk::Widget>,
 ) -> bool {
     use gdk::prelude::PopupExt;
+    if !widget.as_ref().is_mapped() {
+        return false;
+    }
     let r = widget.as_ref().compute_bounds(pop).unwrap();
     let (tx, ty) = pop.surface_transform();
     let (mut x, mut y) = (-tx, -ty);
@@ -580,6 +583,18 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 phase.set(12);
             }
             12 if tools.stack.visible_child_name().as_deref() == Some("detail") => {
+                // The chooser has no redundant Apply row. Return to its genuine
+                // split body, then reapply the last color on the current target.
+                tools.home();
+                settled.set(0);
+                phase.set(13);
+            }
+            13 if tools.stack.visible_child_name().as_deref() == Some("main") => {
+                settled.set(settled.get() + 1);
+                if settled.get() < 5 {
+                    return glib::ControlFlow::Continue;
+                }
+                settled.set(0);
                 let body = find_widget(&pop, "text-ink-apply").unwrap();
                 if !text_pointer_target("TEXT18_INK_BODY", &pop, &body) {
                     return glib::ControlFlow::Continue;
@@ -587,7 +602,7 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 phase.set(3);
             }
             3 if selection_character(&u)["color"] == json!({"Rgb":[28,113,216]}) => {
-                assert_eq!(tools.stack.visible_child_name().as_deref(), Some("detail"));
+                assert_eq!(tools.stack.visible_child_name().as_deref(), Some("main"));
                 select_paragraph(&u, 2);
                 settled.set(0);
                 phase.set(9);
@@ -625,6 +640,12 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
                 phase.set(5);
             }
             5 if palette.last_underline.borrow().as_str() == "double" => {
+                if !pop.is_visible() || tools.stack.visible_child_name().as_deref() != Some("main")
+                {
+                    format_bar::open_group(&u, "text", None);
+                    settled.set(0);
+                    return glib::ControlFlow::Continue;
+                }
                 settled.set(settled.get() + 1);
                 if settled.get() < 5 {
                     return glib::ControlFlow::Continue;

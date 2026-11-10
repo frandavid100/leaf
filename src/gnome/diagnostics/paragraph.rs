@@ -9,16 +9,18 @@ pub(super) fn paragraph_ui_test(
     let ui = s.ui.upgrade().unwrap();
     format_bar::open_group(&ui, "paragraph", None);
     let click = |name: &str| {
-        find_widget(&s.popover.upgrade().unwrap().child().unwrap(), name)
-            .unwrap_or_else(|| panic!("missing {name}"))
-            .downcast::<gtk::Button>()
-            .unwrap()
-            .emit_clicked()
+        let w = find_widget(&s.popover.upgrade().unwrap().child().unwrap(), name)
+            .unwrap_or_else(|| panic!("missing {name}"));
+        if let Some(m) = w.downcast_ref::<gtk::MenuButton>() {
+            m.popup();
+        } else {
+            w.downcast::<gtk::Button>().unwrap().emit_clicked();
+        }
     };
     assert!(
         find_widget(&s.main, "paragraph-list")
             .unwrap()
-            .is::<gtk::Button>()
+            .is::<gtk::MenuButton>()
     );
     click("paragraph-alignment");
     click("paragraph-align-center");
@@ -55,7 +57,9 @@ pub(super) fn paragraph_ui_test(
     assert!(selection_paragraph(&ui)["borders"].is_object());
     click("paragraph-back");
     click("paragraph-more-options");
+    click("format-row-paragraph-sort");
     assert!(find_widget(&s.detail, "paragraph-sort-asc").is_some());
+    click("paragraph-back");
     click("paragraph-back");
     assert_eq!(s.stack.visible_child_name().as_deref(), Some("main"));
     assert_eq!(app.windows().len(), 1);
