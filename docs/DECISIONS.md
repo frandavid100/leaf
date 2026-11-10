@@ -1,5 +1,11 @@
 # Decisiones vigentes
 
+## Publicada y verificada automáticamente: 0.1.0-alpha.44
+
+Se publican los mismos bytes de la candidata tras superar todas las pruebas
+nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
+de cerrar ninguno. [Identidad y límites](LATEST_RELEASE.md).
+
 ## 10/11/2026 — alpha.44: mantenimiento, colores GNOME y Windows
 
 David autoriza aplicar la limpieza discutida, después publicar otra release,

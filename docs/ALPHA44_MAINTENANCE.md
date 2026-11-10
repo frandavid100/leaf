@@ -1,5 +1,7 @@
 # Alpha.44 — frontend maintenance, native colors and Windows
 
+Published and verified; this maintenance release claims no issue closures. See [published identity and validation](LATEST_RELEASE.md).
+
 ## Authorized scope
 
 David requests conservative frontend simplification with the existing appearance

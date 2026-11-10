@@ -1,14 +1,5 @@
 # Hoja de ruta de Leaf
 
-<!-- candidate-alpha:start -->
-## En preparación: alpha.44 — mantenimiento y colores nativos
-
-David autoriza optimizar Leaf conservando su comportamiento, restaurar los
-selectores de color estándar de GNOME y publicar esta entrega con instalador
-Windows. WordCraft se trabaja por separado y conserva su revisión actual.
-No se prevén cierres de los issues parciales o externos por esta limpieza.
-[Implementación, comparación y validación](docs/ALPHA44_MAINTENANCE.md).
-<!-- candidate-alpha:end -->
 
 
 
@@ -31,9 +22,9 @@ al borrar el párrafo completo. También permanecen #1, #52, #99, #171 y #185.
 Se conservan los aplazamientos de capturas públicas, Weblate y Windows ocasional.
 
 <!-- published-alpha:start -->
-## Última publicación verificada: 0.1.0-alpha.43
+## Última publicación verificada: 0.1.0-alpha.44
 
-[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.43). Issues cerrados: #50, #236, #238, #240, #246, #249, #250, #251, #253, #254, #255, #256, #257, #258, #260, #263, #264, #266.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.44). Issues cerrados: ninguno.
 Permanecen abiertos: #1, #99, #152, #185, #231, #252, #259, #261, #262, #265, #267, #268.
 [Fuente, validación y límites](docs/LATEST_RELEASE.md).
 <!-- published-alpha:end -->
