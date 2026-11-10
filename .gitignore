@@ -51,3 +51,8 @@ text18-*.log
 /err-vista-*.png.log
 /out-vista-*.png.log
 /vista-*.png
+
+# Native toolbar and formatting-navigation evidence
+/toolbar41-*.log
+/alpha31-*.log
+/alpha31-*.png

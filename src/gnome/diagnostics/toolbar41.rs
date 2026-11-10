@@ -120,16 +120,13 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         click(&ui.format_toolbar, "format-quick-list-options");
         settle().await;
         assert!(!paragraph.header.arrow.is_visible());
-        for kind in [
-            "view-list-bullet-symbolic",
-            "view-list-ordered-symbolic",
-            "list-remove",
+        for name in [
+            "paragraph-more-bullets",
+            "paragraph-more-numbering",
+            "paragraph-more-multilevel",
+            "paragraph-list-none",
         ] {
-            assert!(
-                find_widget(&paragraph.detail, &format!("paragraph-glyph-{kind}"))
-                    .unwrap()
-                    .is_mapped()
-            );
+            assert!(find_widget(&paragraph.detail, name).unwrap().is_mapped());
         }
         paragraph.page("bullets");
         assert!(paragraph.header.arrow.is_visible());

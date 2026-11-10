@@ -283,6 +283,14 @@ pub(super) fn embedded_color_chooser(
             }
         }
     });
+    // GTK's explicit activation is a choice even when the RGBA value did not
+    // change; merely synchronizing the editor never emits color-activated.
+    let weak = Rc::downgrade(&picker);
+    picker.editor.connect_color_activated(move |_, rgba| {
+        if let Some(s) = weak.upgrade().filter(|s| !s.syncing.get()) {
+            s.choose(&rgba_hex(rgba));
+        }
+    });
     let weak = Rc::downgrade(&picker);
     picker.editor.connect_show_editor_notify(move |editor| {
         if !editor.shows_editor() {
