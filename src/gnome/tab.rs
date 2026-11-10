@@ -606,23 +606,13 @@ pub(super) fn build_tab(
     {
         let g = Rc::downgrade(&format_group);
         let w = window.downgrade();
-        // Observing outside presses must not join GTK gesture arbitration:
-        // native chooser buttons and swatches own their own click sequences.
-        let outside = gtk::EventControllerLegacy::new();
+        let outside = gtk::GestureClick::new();
         outside.set_propagation_phase(gtk::PropagationPhase::Capture);
-        outside.connect_event(move |_, event| {
-            if matches!(
-                event.event_type(),
-                gdk::EventType::ButtonPress | gdk::EventType::TouchBegin
-            ) {
-                if let (Some(g), Some(w), Some((x, y))) =
-                    (g.upgrade(), w.upgrade(), event.position())
-                {
-                    let (tx, ty) = w.surface_transform();
-                    g.outside(event, &w, x - tx, y - ty);
-                }
+        outside.set_button(0);
+        outside.connect_pressed(move |c, _, x, y| {
+            if let (Some(g), Some(w)) = (g.upgrade(), w.upgrade()) {
+                g.outside(c, &w, x, y);
             }
-            glib::Propagation::Proceed
         });
         window.add_controller(outside.clone());
         ui.outside_controller.replace(Some(outside));

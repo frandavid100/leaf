@@ -745,7 +745,7 @@ msgstr ""
 msgid "DOCUMENTS\nOpen DOCX/ODT documents from the main menu. Ctrl+S saves; Ctrl+Shift+S saves a copy. Use DOCX for notes, equations, automatic references, comments and advanced tracked changes.\n\nNAVIGATION AND REVIEW\nF9 shows or hides Pages, Navigation and Review. Ctrl+F searches; Ctrl+H replaces. Review filters corrections, tracked changes and comments. Apply or ignore a correction occurrence, accept/reject changes, and reply to or resolve comments. F7 opens corrections. Edit/Suggest controls whether new edits are tracked.\n\nFORMATTING AND ELEMENTS\nStyle, Paragraph, Text and Elements are in the adaptive header or bottom toolbar. Format rows show current values; mixed checkboxes enable the option across the selection. Arrows open internal options with Back. Reapply remembers that feature’s applied settings. Pins keep panels floating. Elements shares table, image and contents tools with right-click, while keeping Insert available. Ctrl+Z undoes; Ctrl+Shift+Z redoes. Ruler drags snap to 0.5 cm; Escape cancels.\n\nAUTOSAVE\nPreferences can disable autosave, use recovery copies or save directly to the document. Pending recovery documents appear above the blank page in each new tab or window."
 msgstr ""
 
-#: src/gnome/tab.rs:824
+#: src/gnome/tab.rs:814
 msgid "DOCX and ODT Documents"
 msgstr ""
 
@@ -929,7 +929,7 @@ msgstr ""
 msgid "Do Not Check"
 msgstr ""
 
-#: src/gnome/application.rs:130 src/gnome/tab.rs:860 src/save_name.rs:41 src/save_name.rs:109
+#: src/gnome/application.rs:130 src/gnome/tab.rs:850 src/save_name.rs:41 src/save_name.rs:109
 msgid "Document"
 msgstr ""
 
@@ -1897,7 +1897,7 @@ msgstr ""
 msgid "New Comment"
 msgstr ""
 
-#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:146 src/gnome/tab.rs:917 src/gnome/templates.rs:640 src/gnome/workspace.rs:300
+#: src/gnome/diagnostics/localization.rs:8 src/gnome/diagnostics/localization.rs:17 src/gnome/diagnostics/view_tests.rs:146 src/gnome/tab.rs:907 src/gnome/templates.rs:640 src/gnome/workspace.rs:300
 msgid "New Document"
 msgstr ""
 
@@ -2049,7 +2049,7 @@ msgstr ""
 msgid "Only in More Options"
 msgstr ""
 
-#: src/gnome/application.rs:122 src/gnome/tab.rs:849
+#: src/gnome/application.rs:122 src/gnome/tab.rs:839
 msgid "Only local files are supported"
 msgstr ""
 
@@ -2057,7 +2057,7 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: src/gnome/tab.rs:822
+#: src/gnome/tab.rs:812
 msgid "Open Document"
 msgstr ""
 
@@ -2149,7 +2149,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:405 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:337 src/gnome/format_bar.rs:143 src/gnome/paragraph.rs:1277 src/gnome/tab.rs:353 src/gnome/tab.rs:665 src/gnome/toolbar_preferences.rs:230
+#: src/gnome/context.rs:131 src/gnome/context.rs:405 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:337 src/gnome/format_bar.rs:143 src/gnome/paragraph.rs:1277 src/gnome/tab.rs:353 src/gnome/tab.rs:655 src/gnome/toolbar_preferences.rs:230
 msgid "Paragraph"
 msgstr ""
 
@@ -2957,7 +2957,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:404 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:336 src/gnome/styles.rs:524 src/gnome/tab.rs:349 src/gnome/tab.rs:664
+#: src/gnome/context.rs:128 src/gnome/context.rs:404 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:336 src/gnome/styles.rs:524 src/gnome/tab.rs:349 src/gnome/tab.rs:654
 msgid "Style"
 msgstr ""
 
@@ -3069,7 +3069,7 @@ msgstr ""
 msgid "Templates Folder"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:406 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:429 src/gnome/diagnostics/register.rs:338 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/format_bar.rs:142 src/gnome/references.rs:334 src/gnome/tab.rs:305 src/gnome/tab.rs:340 src/gnome/tab.rs:666 src/gnome/toolbar_preferences.rs:229
+#: src/gnome/context.rs:134 src/gnome/context.rs:406 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:429 src/gnome/diagnostics/register.rs:338 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/format_bar.rs:142 src/gnome/references.rs:334 src/gnome/tab.rs:305 src/gnome/tab.rs:340 src/gnome/tab.rs:656 src/gnome/toolbar_preferences.rs:229
 msgid "Text"
 msgstr ""
 

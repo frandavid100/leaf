@@ -26,7 +26,7 @@ jobs:
       - name: Install native build and pointer dependencies
         run: |
           sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth xdotool scrot xclip adwaita-icon-theme librsvg2-common gettext dbus-x11
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev xvfb xauth xdotool scrot xclip adwaita-icon-theme librsvg2-common gettext dbus-x11 gdb
       - name: Build an unpublished diagnostic executable from this checkout
         id: build
         run: |
@@ -42,6 +42,15 @@ jobs:
           set -o pipefail
           export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d)
           xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout 180s target/debug/wordcraft-gnome --toolbar41-ui-test 2>&1 | tee focused-toolbar.log
+      - name: Trace the existing formatting navigation regression
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          cat > /tmp/leaf-focused-gdb.sh <<'SH'
+          #!/usr/bin/env bash
+          exec gdb --batch --return-child-result -ex run -ex 'thread apply all bt' --args "$GITHUB_WORKSPACE/target/debug/wordcraft-gnome" "$@"
+          SH
+          export XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d)
+          xvfb-run -a -s '-screen 0 2800x2200x24' timeout 240s bash tools/format136-pointer-test.sh /tmp/leaf-focused-gdb.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -49,3 +58,4 @@ jobs:
           path: |
             text18-*
             focused-toolbar.log
+            alpha31-format136-*
