@@ -87,6 +87,9 @@ fn followup_wait(t: Rc<Followup>, stage: u8) {
         {
             return glib::ControlFlow::Continue;
         }
+        if t.mode == "font" && stage == 0 && !format_bar::group_pop(&t.ui, "text").is_mapped() {
+            return glib::ControlFlow::Continue;
+        }
         // Wait for the observable debounced result as well as native input.
         // Repagination can queue the final key and ACK in the same main-loop
         // turn; an idle callback alone does not wait for the numeric debounce.
@@ -229,14 +232,12 @@ fn followup_stage_ready(t: Rc<Followup>, stage: u8) {
     t.window.set_title(Some("Leaf Followup Regression"));
     match t.mode.as_str() {
         "font" => match stage {
-            0 => followup_emit(
-                stage,
-                "open",
-                &[followup_point(
-                    &find_widget(&t.menu.popover().unwrap(), "overflow-more-text").unwrap(),
-                    &t.window,
-                )],
-            ),
+            0 => {
+                let pop = t.menu.popover().unwrap();
+                let target = find_widget(&pop, "overflow-more-text").unwrap();
+                observe_pointer_target("FOLLOWUP19_OPEN", &pop, &target);
+                followup_emit(stage, "open", &[followup_point(&target, &t.window)]);
+            }
             1 | 6 => {
                 if stage == 6 {
                     u.font_input.clipboard().set_text(&(t.family.clone() + "x"));
