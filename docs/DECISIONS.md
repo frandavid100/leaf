@@ -4,7 +4,8 @@
 
 David solicita revisar las contribuciones de WordCraft, cerrar lo verificable y
 publicar directamente una nueva alpha. La excepción corresponde solo a esta
-entrega y conserva todas las verificaciones. Se añaden los nuevos #245/#246.
+entrega y conserva todas las verificaciones. Se añaden los nuevos #245/#246/#248, incluido el menú común y las tres
+colocaciones configurables por herramienta.
 Acepta únicamente la carpeta de plantillas del sistema (#171); no se amplían
 permisos. #52 queda cerrado sin atribución confirmada. #185 se mantiene en pausa:
 David hará nuevas capturas después de la próxima alpha y revisará la descripción.

@@ -1,6 +1,7 @@
 //! Native toolbar placement derived from persistent application preferences.
 //! Existing panels and Session commands own every action in either location.
 use super::*;
+use wordcraft_gnome::toolbar::Placement;
 
 pub(super) struct QuickTools {
     style_name: gtk::Label,
@@ -9,6 +10,10 @@ pub(super) struct QuickTools {
     width: Cell<i32>,
     groups: Vec<(&'static str, gtk::Box, Vec<(String, gtk::Widget)>)>,
     toggles: Vec<(gtk::Button, gtk::Label, &'static str)>,
+    pub(super) overflow: gtk::MenuButton,
+    overflow_pop: gtk::Popover,
+    overflow_main: gtk::Box,
+    origins: Vec<(&'static str, gtk::Popover)>,
     swatches: Vec<(&'static str, gtk::DrawingArea)>,
 }
 
@@ -93,31 +98,185 @@ impl QuickTools {
     }
 
     pub(super) fn layout(&self) {
-        let mut available = if self.width.get() < 520 {
-            0
-        } else {
-            (self.width.get() - 330).max(0)
-        };
-        for (group, container, tools) in &self.groups {
-            let order = wordcraft_gnome::preferences::toolbar(group);
-            let mut previous: Option<gtk::Widget> = None;
-            for (id, enabled) in order {
-                let Some((_, widget)) = tools.iter().find(|(key, _)| key == &id) else {
-                    continue;
-                };
-                container.reorder_child_after(widget, previous.as_ref());
-                previous = Some(widget.clone());
-                // Measure the widget even when it was overflowed on the last frame.
+        let mut measured = Vec::new();
+        let mut pinned = 0;
+        for (group, _, tools) in &self.groups {
+            for (id, mode) in wordcraft_gnome::preferences::toolbar_placements(group) {
+                let widget = &tools.iter().find(|(key, _)| key == &id).unwrap().1;
                 widget.set_visible(true);
                 let cost = widget.measure(gtk::Orientation::Horizontal, -1).1.max(34) + 6;
-                let visible = enabled && cost <= available;
+                if mode == Placement::Pinned {
+                    pinned += cost;
+                }
+                measured.push((*group, id, mode, cost));
+            }
+        }
+        // Style, fixed overflow, group separators and normal native spacing.
+        let mut available = (self.width.get() - 270 - pinned).max(0);
+        for (group, container, tools) in &self.groups {
+            let mut previous: Option<gtk::Widget> = None;
+            for (_, id, mode, cost) in measured.iter().filter(|(key, _, _, _)| key == group) {
+                let widget = &tools.iter().find(|(key, _)| key == id).unwrap().1;
+                container.reorder_child_after(widget, previous.as_ref());
+                previous = Some(widget.clone());
+                let visible = *mode == Placement::Pinned
+                    || (*mode == Placement::Adaptive && *cost <= available);
                 widget.set_visible(visible);
-                if visible {
+                if visible && *mode == Placement::Adaptive {
                     available -= cost;
                 }
             }
         }
         self.filter_menus();
+        self.rebuild_overflow();
+    }
+
+    fn rebuild_overflow(&self) {
+        clear_box(&self.overflow_main);
+        for (index, (group, _, tools)) in self.groups.iter().enumerate() {
+            if index > 0 {
+                self.overflow_main
+                    .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+            }
+            let label = match *group {
+                "text" => wordcraft_gnome::t!("Text"),
+                "paragraph" => wordcraft_gnome::t!("Paragraph"),
+                _ => wordcraft_gnome::t!("Elements"),
+            };
+            let title = gtk::Label::new(Some(label));
+            title.set_xalign(0.);
+            title.add_css_class("heading");
+            title.set_widget_name(&format!("overflow-section-{group}"));
+            self.overflow_main.append(&title);
+            for (id, mode) in wordcraft_gnome::preferences::toolbar_placements(group) {
+                let widget = &tools.iter().find(|(key, _)| key == &id).unwrap().1;
+                if mode != Placement::Adaptive || widget.get_visible() {
+                    continue;
+                }
+                let catalog = wordcraft_gnome::toolbar::tools(group);
+                let tool = catalog.iter().find(|t| t.id == id).unwrap();
+                let button = style_menu_button(tool.label);
+                button.set_widget_name(&format!("overflow-tool-{group}-{id}"));
+                let (weak, group, id, widget) = (self.ui.clone(), *group, id, widget.clone());
+                button.connect_clicked(move |_| {
+                    let Some(ui) = weak.upgrade() else { return };
+                    if let Some(button) = widget.downcast_ref::<gtk::Button>() {
+                        button.emit_clicked();
+                        if !ui.format_group.pinned.get() {
+                            if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                                tools.overflow.popdown();
+                            }
+                        }
+                    } else if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                        tools.open_group(group, Some(&id));
+                    }
+                });
+                self.overflow_main.append(&button);
+            }
+            let label = match *group {
+                "text" => wordcraft_gnome::t!("More Text Options…"),
+                "paragraph" => wordcraft_gnome::t!("More Paragraph Options…"),
+                _ => wordcraft_gnome::t!("More Elements Options…"),
+            };
+            let more = style_menu_button(label);
+            more.set_widget_name(&format!("overflow-more-{group}"));
+            let (weak, group) = (self.ui.clone(), *group);
+            more.connect_clicked(move |_| {
+                if let Some(ui) = weak.upgrade() {
+                    if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                        tools.open_group(group, None);
+                    }
+                }
+            });
+            self.overflow_main.append(&more);
+        }
+    }
+
+    pub(super) fn root(&self) {
+        if let Some(pop) = self.overflow.popover() {
+            pop.popdown();
+        }
+        if let Some(owner) = self.overflow_pop.parent().and_downcast::<gtk::MenuButton>() {
+            owner.set_popover(None::<&gtk::Popover>);
+        }
+        self.overflow.set_popover(Some(&self.overflow_pop));
+        self.overflow.popup();
+    }
+    pub(super) fn open_group(&self, group: &str, page: Option<&str>) {
+        let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
+            return;
+        };
+        let Some((_, pop)) = self.origins.iter().find(|(key, _)| *key == group) else {
+            return;
+        };
+        if let Some(current) = self.overflow.popover() {
+            current.popdown();
+        }
+        if let Some(owner) = pop.parent().and_downcast::<gtk::MenuButton>() {
+            owner.set_popover(None::<&gtk::Popover>);
+        }
+        let header = ui
+            .format_group
+            .entries
+            .borrow()
+            .iter()
+            .find(|(p, _)| p.upgrade().as_ref() == Some(pop))
+            .map(|(_, h)| h.clone())
+            .unwrap();
+        header.entry_page.replace(page.map(str::to_owned));
+        let weak = self.ui.clone();
+        header.parent_back.replace(Some(Rc::new(move || {
+            if let Some(ui) = weak.upgrade() {
+                if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                    tools.root();
+                }
+            }
+        })));
+        self.overflow.set_popover(Some(pop));
+        match group {
+            "text" => {
+                let panel = ui.text_tools.borrow().as_ref().unwrap().clone();
+                let transition = panel.stack.transition_type();
+                panel
+                    .stack
+                    .set_transition_type(gtk::StackTransitionType::None);
+                if let Some(page) = page {
+                    panel.page(page);
+                } else {
+                    panel.home();
+                }
+                panel.stack.set_transition_type(transition);
+            }
+            "paragraph" => {
+                let panel = ui.paragraph.borrow().as_ref().unwrap().clone();
+                let transition = panel.stack.transition_type();
+                panel
+                    .stack
+                    .set_transition_type(gtk::StackTransitionType::None);
+                if let Some(page) = page {
+                    panel.page(page);
+                } else {
+                    panel.home();
+                }
+                panel.stack.set_transition_type(transition);
+            }
+            _ => {
+                let panel = ui.elements.borrow().as_ref().unwrap().clone();
+                let transition = panel.stack.transition_type();
+                panel
+                    .stack
+                    .set_transition_type(gtk::StackTransitionType::None);
+                if let Some(page) = page {
+                    panel.requested_page.replace(Some(page.into()));
+                    panel.prepare(page);
+                } else {
+                    panel.home();
+                }
+                panel.stack.set_transition_type(transition);
+            }
+        }
+        self.filter_menus();
+        self.overflow.popup();
     }
 
     pub(super) fn filter_menus(&self) {
@@ -137,9 +296,14 @@ impl QuickTools {
                 _ => ui.elements.borrow().as_ref().and_then(|p| p.pop.child()),
             };
             if let Some(root) = root {
-                for (id, widget) in tools {
+                for (id, _widget) in tools {
                     if let Some(row) = find_widget(&root, &format!("format-row-{group}-{id}")) {
-                        row.set_visible(!widget.get_visible());
+                        let mode = wordcraft_gnome::preferences::toolbar_placements(group)
+                            .into_iter()
+                            .find(|(key, _)| key == id)
+                            .unwrap()
+                            .1;
+                        row.set_visible(mode == Placement::More);
                     }
                 }
             }
@@ -478,40 +642,67 @@ pub(super) fn install_quick_tools(
         }
         groups.push((group, shortcuts, tools));
     }
-    for (group, menu, label) in [
-        (
-            &paragraph_group,
-            paragraph,
-            wordcraft_gnome::t!("More paragraph options"),
-        ),
-        (&text_group, text, wordcraft_gnome::t!("More text options")),
-        (
-            &elements_group,
-            &elements.menu,
-            wordcraft_gnome::t!("More elements"),
-        ),
-    ] {
-        menu.set_icon_name("view-more-symbolic");
-        menu.set_tooltip_text(Some(label));
-        accessible_name(menu, label);
-        if let Some(pop) = menu.popover() {
-            connect_picker(
-                ui,
-                menu,
-                menu,
-                if menu == paragraph {
-                    "paragraph"
-                } else if menu == text {
-                    "text"
-                } else {
-                    "elements"
-                },
-                None,
-            );
-            // Keep the default group popup attached until a direct launcher takes it.
-            menu.set_popover(Some(&pop));
-        }
-        group.append(menu);
+    let origins = vec![
+        ("text", text.popover().unwrap()),
+        ("paragraph", paragraph.popover().unwrap()),
+        ("elements", elements.pop.clone()),
+    ];
+    let overflow = gtk::MenuButton::new();
+    overflow.set_widget_name("format-overflow-menu");
+    overflow.set_icon_name("view-more-symbolic");
+    overflow.set_direction(gtk::ArrowType::Up);
+    overflow.add_css_class("flat");
+    accessible_name(&overflow, wordcraft_gnome::t!("More Formatting Options"));
+    let pop = gtk::Popover::new();
+    let root = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    let header = format_popover_header(
+        &pop,
+        &root,
+        wordcraft_gnome::t!("Formatting"),
+        &ui.format_group,
+    );
+    header.home();
+    let main = gtk::Box::new(gtk::Orientation::Vertical, 6);
+    main.set_width_request(290);
+    let scroll = gtk::ScrolledWindow::new();
+    scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+    scroll.set_max_content_height(480);
+    scroll.set_propagate_natural_height(true);
+    scroll.set_child(Some(&main));
+    root.append(&scroll);
+    pop.set_child(Some(&root));
+    overflow.set_popover(Some(&pop));
+    ui.format_buttons.borrow_mut().push(overflow.clone());
+    // Only the shortcuts scroll. The single menu stays fixed at the far right.
+    let fixed = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    let scroll_bar = gtk::ScrolledWindow::new();
+    scroll_bar.set_widget_name("format-pinned-scroll");
+    scroll_bar.set_policy(gtk::PolicyType::Automatic, gtk::PolicyType::Never);
+    scroll_bar.set_hexpand(true);
+    ui.format_toolbar.set_child(None::<&gtk::Widget>);
+    scroll_bar.set_child(Some(&formats.parent().unwrap()));
+    fixed.append(&scroll_bar);
+    fixed.append(&overflow);
+    ui.format_toolbar
+        .set_policy(gtk::PolicyType::Never, gtk::PolicyType::Never);
+    ui.format_toolbar.set_child(Some(&fixed));
+    for (_, origin) in &origins {
+        let (weak, original) = (Rc::downgrade(ui), origin.downgrade());
+        origin.connect_closed(move |_| {
+            let (weak, original) = (weak.clone(), original.clone());
+            glib::idle_add_local_once(move || {
+                if let (Some(ui), Some(origin)) = (weak.upgrade(), original.upgrade()) {
+                    if let Some(tools) = ui.quick_tools.borrow().as_ref() {
+                        if tools.overflow.popover().as_ref() == Some(&origin)
+                            && !origin.is_visible()
+                            && !ui.format_reflowing.get()
+                        {
+                            tools.overflow.set_popover(Some(&tools.overflow_pop));
+                        }
+                    }
+                }
+            });
+        });
     }
     Rc::new(QuickTools {
         style_name,
@@ -521,6 +712,10 @@ pub(super) fn install_quick_tools(
         groups,
         toggles,
         swatches,
+        overflow,
+        overflow_pop: pop,
+        overflow_main: main,
+        origins,
     })
 }
 
@@ -576,6 +771,7 @@ fn connect_picker(
             .find(|(p, _)| p.upgrade().as_ref() == Some(&pop))
             .map(|(_, h)| h.clone());
         if let Some(header) = header {
+            header.parent_back.borrow_mut().take();
             header.entry_page.replace(page.map(str::to_owned));
         }
         // Existing show handlers prepare overflow home; doing it twice can
@@ -633,4 +829,23 @@ fn connect_picker(
     if page.is_some() {
         ui.format_buttons.borrow_mut().push(button.clone());
     }
+}
+
+/// Open a category at the common native anchor (also used by keyboard actions).
+pub(super) fn open_group(ui: &Rc<Ui>, group: &str, page: Option<&str>) -> gtk::MenuButton {
+    let tools = ui.quick_tools.borrow().as_ref().unwrap().clone();
+    tools.open_group(group, page);
+    tools.overflow.clone()
+}
+pub(super) fn group_pop(ui: &Ui, group: &str) -> gtk::Popover {
+    ui.quick_tools
+        .borrow()
+        .as_ref()
+        .unwrap()
+        .origins
+        .iter()
+        .find(|(key, _)| *key == group)
+        .unwrap()
+        .1
+        .clone()
 }

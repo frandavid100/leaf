@@ -47,7 +47,12 @@ impl ElementsPanel {
         self.stack.set_visible_child_name("home");
     }
     pub(super) fn show(self: &Rc<Self>, page: &str) {
-        if self.ui.upgrade().is_none_or(|ui| ui.closed.get()) {
+        if let Some(ui) = self.ui.upgrade().filter(|ui| !ui.closed.get()) {
+            if ui.quick_tools.borrow().is_some() {
+                format_bar::open_group(&ui, "elements", Some(page));
+                return;
+            }
+        } else {
             return;
         }
         if self.pop.is_visible() && self.pop.parent().as_ref() == Some(self.menu.upcast_ref()) {

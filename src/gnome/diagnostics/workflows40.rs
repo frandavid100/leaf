@@ -267,7 +267,11 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert!(ui.format_toolbar.is_mapped());
         assert!(style_menu.popover().unwrap().is_mapped());
         assert!(!bold.is_mapped());
-        assert!(format_button(&ui, "text-menu").unwrap().is_mapped());
+        assert!(
+            format_button(&ui, "format-overflow-menu")
+                .unwrap()
+                .is_mapped()
+        );
         assert!(
             ui.format_toolbar.hadjustment().upper()
                 <= ui.format_toolbar.hadjustment().page_size() + 1.

@@ -161,19 +161,20 @@ pub(super) fn context_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
                 ] {
                     let edit = show_document_context(&ui, &parent, 100, 150, DocumentContext::Text);
                     context_activate_row(&edit, label);
-                    let m = format_button(&ui, name).unwrap();
+                    let pop = if name == "style-menu" {
+                        format_button(&ui, name).unwrap().popover().unwrap()
+                    } else {
+                        format_bar::group_pop(&ui, name.trim_end_matches("-menu"))
+                    };
+                    assert!(!pop.is_visible(), "context must not open toolbar popup");
                     assert!(
-                        !m.popover().unwrap().is_visible(),
-                        "context must not open toolbar popup"
-                    );
-                    assert!(
-                        m.popover().unwrap().child().is_none(),
+                        pop.child().is_none(),
                         "controls must be embedded in context"
                     );
                     assert_eq!(edit.visible_submenu().as_deref(), Some(label));
                     edit.popdown();
                     assert!(
-                        m.popover().unwrap().child().is_some(),
+                        pop.child().is_some(),
                         "closing context must return controls"
                     );
                 }

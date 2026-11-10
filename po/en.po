@@ -3387,3 +3387,24 @@ msgstr "WordCraft remains at 0.17.0. Unequal-column continuation (#1), table foo
 
 msgid "The store description and new public screenshots (#185) are paused until David prepares captures after this alpha. New Windows packages are occasional."
 msgstr "The store description and new public screenshots (#185) are paused until David prepares captures after this alpha. New Windows packages are occasional."
+
+msgid "Always in Toolbar"
+msgstr "Always in Toolbar"
+
+msgid "In Toolbar When Space Allows"
+msgstr "In Toolbar When Space Allows"
+
+msgid "Only in More Options"
+msgstr "Only in More Options"
+
+msgid "Placement of {label}"
+msgstr "Placement of {label}"
+
+msgid "Choose where each tool appears. Pinned tools stay in the scrollable toolbar; other tools fill available space or remain in More Options. Drag rows or use Move Up and Move Down to reorder them."
+msgstr "Choose where each tool appears. Pinned tools stay in the scrollable toolbar; other tools fill available space or remain in More Options. Drag rows or use Move Up and Move Down to reorder them."
+
+msgid "More Elements Options…"
+msgstr "More Elements Options…"
+
+msgid "More Formatting Options"
+msgstr "More Formatting Options"

@@ -21,7 +21,7 @@ pub(super) fn interaction_pointer_test(
     ui: &Rc<Ui>,
     w: &ApplicationWindow,
     app: &Application,
-    text: &gtk::MenuButton,
+    _text: &gtk::MenuButton,
 ) {
     let trace = gtk::GestureClick::new();
     trace.set_button(gdk::BUTTON_PRIMARY);
@@ -48,7 +48,7 @@ pub(super) fn interaction_pointer_test(
         ui: ui.clone(),
         window: w.clone(),
         app: app.clone(),
-        text: text.clone(),
+        text: ui.quick_tools.borrow().as_ref().unwrap().overflow.clone(),
     });
     let next = t.clone();
     glib::timeout_add_local_once(std::time::Duration::from_millis(400), move || {
@@ -104,9 +104,9 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
                     .unwrap();
                 }
                 refresh_selection(u);
-                t.text.popup();
+                format_bar::open_group(u, "text", None);
             } else {
-                popover_pin(&t.text.popover().unwrap()).set_active(true);
+                popover_pin(&format_bar::group_pop(u, "text")).set_active(true);
             }
             let tools = u.text_tools.borrow().as_ref().unwrap().clone();
             if stage == 6 {
@@ -125,7 +125,7 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
             let next = t.clone();
             glib::timeout_add_local_once(std::time::Duration::from_millis(250), move || {
                 use gdk::prelude::PopupExt;
-                let pop = next.text.popover().unwrap();
+                let pop = format_bar::group_pop(&next.ui, "text");
                 let r = if stage == 6 {
                     next.ui.size_input.compute_bounds(&pop)
                 } else {
@@ -155,7 +155,7 @@ fn interaction_stage(t: Rc<InteractionTest>, stage: u8) {
             });
         }
         7 => {
-            popover_pin(&t.text.popover().unwrap()).set_active(false);
+            popover_pin(&format_bar::group_pop(u, "text")).set_active(false);
             t.text.popdown();
             {
                 let mut v = u.current.borrow_mut();

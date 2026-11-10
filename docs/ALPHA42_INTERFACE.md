@@ -21,6 +21,9 @@ The previous alpha.41 authorization is not reused.
   Adaptive breakpoints belong to each tab so their conditions cannot replace one
   another; resizing checks revisit both tabs with opposite visibility preferences.
 - #245: Save / Save As / Export / Print remain together, then Document Properties.
+- #248: one shared Text / Paragraph / Elements overflow with per-tool pinned,
+  adaptive and More-only placement. Pinned shortcuts scroll without moving the
+  fixed menu; native preferences keep ordering and migrate the old switches.
 - #246: exact approved blue-quill SVG and symbolic sources; Windows' source icon is
   regenerated too. This does not create a new Windows release or store gallery.
 

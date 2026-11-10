@@ -31,7 +31,7 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
         "Sweep18",
     );
     select_paragraph(ui, 0);
-    let menu = format_button(ui, "text-menu").unwrap();
+    let menu = format_bar::open_group(ui, "text", None);
     menu.popup();
     let tools = ui.text_tools.borrow().as_ref().unwrap().clone();
     let palette = tools.palette.borrow().as_ref().unwrap().clone();
@@ -469,8 +469,8 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
         "Text pointer",
     );
     select_paragraph(ui, 0);
-    let menu = format_button(ui, "text-menu").unwrap();
-    let pop = menu.popover().unwrap();
+    let menu = format_bar::open_group(ui, "text", None);
+    let pop = format_bar::group_pop(ui, "text");
     menu.popup();
     let tools = ui.text_tools.borrow().as_ref().unwrap().clone();
     let palette = tools.palette.borrow().as_ref().unwrap().clone();

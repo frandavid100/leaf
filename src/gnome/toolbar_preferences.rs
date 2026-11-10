@@ -1,5 +1,6 @@
 //! Native reorderable preference lists. Changes affect all open documents.
 use super::*;
+use wordcraft_gnome::toolbar::Placement;
 
 fn refresh_windows() {
     WORKSPACES.with(|hosts| {
@@ -12,8 +13,8 @@ fn refresh_windows() {
         }
     });
 }
-fn save(dialog: &adw::PreferencesDialog, group: &str, order: &[(String, bool)]) -> bool {
-    match wordcraft_gnome::preferences::set_toolbar(group, order) {
+fn save(dialog: &adw::PreferencesDialog, group: &str, order: &[(String, Placement)]) -> bool {
+    match wordcraft_gnome::preferences::set_toolbar_placements(group, order) {
         Ok(()) => {
             refresh_windows();
             true
@@ -31,7 +32,7 @@ fn move_to(
     id: &str,
     target: usize,
 ) {
-    let mut order = wordcraft_gnome::preferences::toolbar(group);
+    let mut order = wordcraft_gnome::preferences::toolbar_placements(group);
     let Some(old) = order.iter().position(|(k, _)| k == id) else {
         return;
     };
@@ -140,7 +141,7 @@ fn populate(dialog: &adw::PreferencesDialog, list: &gtk::ListBox, group: &'stati
         list.remove(&child);
     }
     let catalog = wordcraft_gnome::toolbar::tools(group);
-    let order = wordcraft_gnome::preferences::toolbar(group);
+    let order = wordcraft_gnome::preferences::toolbar_placements(group);
     for (index, (id, on)) in order.iter().enumerate() {
         let Some(tool) = catalog.iter().find(|t| t.id == id) else {
             continue;
@@ -155,29 +156,41 @@ fn populate(dialog: &adw::PreferencesDialog, list: &gtk::ListBox, group: &'stati
         handle.set_size_request(24, 24);
         row.add_prefix(&handle);
         row.add_prefix(&gtk::Image::from_icon_name(tool.icon));
-        let switch = gtk::Switch::new();
-        switch.set_widget_name(&format!("toolbar-visible-{group}-{id}"));
-        switch.set_valign(gtk::Align::Center);
-        switch.set_active(*on);
+        let placement = gtk::DropDown::from_strings(&[
+            wordcraft_gnome::t!("Always in Toolbar"),
+            wordcraft_gnome::t!("In Toolbar When Space Allows"),
+            wordcraft_gnome::t!("Only in More Options"),
+        ]);
+        placement.set_widget_name(&format!("toolbar-placement-{group}-{id}"));
+        placement.set_valign(gtk::Align::Center);
+        placement.set_selected(match on {
+            Placement::Pinned => 0,
+            Placement::Adaptive => 1,
+            Placement::More => 2,
+        });
         accessible_name(
-            &switch,
+            &placement,
             &wordcraft_gnome::i18n::interpolate(
-                wordcraft_gnome::t!("Show {label} in toolbar"),
+                wordcraft_gnome::t!("Placement of {label}"),
                 &[("label", tool.label.into())],
             ),
         );
-        row.add_suffix(&switch);
+        row.add_suffix(&placement);
         let weak = dialog.downgrade();
         let id = id.clone();
-        let old = *on;
-        switch.connect_active_notify(move |toggle| {
+        let old = placement.selected();
+        placement.connect_selected_notify(move |choice| {
             let Some(dialog) = weak.upgrade() else { return };
-            let mut order = wordcraft_gnome::preferences::toolbar(group);
-            if let Some((_, on)) = order.iter_mut().find(|(k, _)| k == &id) {
-                *on = toggle.is_active();
+            let mut order = wordcraft_gnome::preferences::toolbar_placements(group);
+            if let Some((_, mode)) = order.iter_mut().find(|(k, _)| k == &id) {
+                *mode = match choice.selected() {
+                    0 => Placement::Pinned,
+                    1 => Placement::Adaptive,
+                    _ => Placement::More,
+                };
             }
-            if !save(&dialog, group, &order) && toggle.is_active() != old {
-                toggle.set_active(old);
+            if !save(&dialog, group, &order) && choice.selected() != old {
+                choice.set_selected(old);
             }
         });
         // Explicit native actions allow keyboard reordering without dragging.
@@ -220,7 +233,7 @@ pub(super) fn add(dialog: &adw::PreferencesDialog) {
         let group = adw::PreferencesGroup::new();
         group.set_title(title);
         if key == "text" {
-            group.set_description(Some(wordcraft_gnome::t!("Enabled items appear from left to right in list order. Other items are available in each group’s ⋮ menu. Drag rows or use Move Up and Move Down to reorder them.")));
+            group.set_description(Some(wordcraft_gnome::t!("Choose where each tool appears. Pinned tools stay in the scrollable toolbar; other tools fill available space or remain in More Options. Drag rows or use Move Up and Move Down to reorder them.")));
         }
         let list = gtk::ListBox::new();
         list.add_css_class("boxed-list");

@@ -635,9 +635,7 @@ pub(super) const TEXT_LANGUAGES: &[(&str, &str)] = &[
     ("gl-ES", "Galego"),
 ];
 pub(super) fn show_text_language(ui: &Rc<Ui>, _parent: &ApplicationWindow) {
-    if let Some(menu) = format_button(ui, "text-menu") {
-        menu.popup();
-    }
+    format_bar::open_group(ui, "text", Some("language"));
     if let Some(tools) = ui.text_tools.borrow().as_ref() {
         tools.page("language");
     }

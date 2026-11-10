@@ -4,9 +4,7 @@ pub(super) struct PinTest {
     pub(super) ui: Rc<Ui>,
     pub(super) sm: gtk::MenuButton,
     pub(super) s: Rc<StylePopover>,
-    pub(super) pm: gtk::MenuButton,
     pub(super) p: Rc<ParagraphPopover>,
-    pub(super) tm: gtk::MenuButton,
     pub(super) tp: gtk::Popover,
     pub(super) tb: gtk::MenuButton,
     pub(super) app: Application,
@@ -16,9 +14,9 @@ pub(super) fn pin_ui_test(
     ui: &Rc<Ui>,
     sm: &gtk::MenuButton,
     s: &Rc<StylePopover>,
-    pm: &gtk::MenuButton,
+    _pm: &gtk::MenuButton,
     p: &Rc<ParagraphPopover>,
-    tm: &gtk::MenuButton,
+    _tm: &gtk::MenuButton,
     tp: &gtk::Popover,
     tb: &gtk::MenuButton,
     app: &Application,
@@ -28,9 +26,7 @@ pub(super) fn pin_ui_test(
             ui: ui.clone(),
             sm: sm.clone(),
             s: s.clone(),
-            pm: pm.clone(),
             p: p.clone(),
-            tm: tm.clone(),
             tp: tp.clone(),
             tb: tb.clone(),
             app: app.clone(),
@@ -65,8 +61,8 @@ pub(super) fn pin_test_step(t: Rc<PinTest>, step: u8) {
                 sp.is_mapped(),
                 "pinned style must stay drawn after apply and focus"
             );
-            t.pm.popup();
-            let pp = t.pm.popover().unwrap();
+            format_bar::open_group(ui, "paragraph", None);
+            let pp = format_bar::group_pop(ui, "paragraph");
             assert!(!sp.is_visible());
             assert!(
                 popover_pin(&pp).is_active(),
@@ -91,21 +87,21 @@ pub(super) fn pin_test_step(t: Rc<PinTest>, step: u8) {
             t.s.main();
             style_click(&t.s, "style-apply-Normal");
             assert!(!t.sm.popover().unwrap().is_visible());
-            t.pm.popup();
-            let pp = t.pm.popover().unwrap();
+            format_bar::open_group(ui, "paragraph", None);
+            let pp = format_bar::group_pop(ui, "paragraph");
             popover_pin(&pp).set_active(true);
             t.p.execute("para.align", serde_json::json!({"value":"center"}));
             assert_eq!(selection_paragraph(ui)["align"], "center");
         }
         3 => {
-            let pp = t.pm.popover().unwrap();
+            let pp = format_bar::group_pop(ui, "paragraph");
             assert!(pp.is_mapped(), "pinned paragraph must stay drawn");
             t.p.page("spacing");
             popover_pin(&pp).set_active(false);
             assert_eq!(t.p.stack.visible_child_name().as_deref(), Some("detail"));
             t.p.execute("para.align", serde_json::json!({"value":"left"}));
             assert!(!pp.is_visible());
-            t.tm.popup();
+            format_bar::open_group(ui, "text", None);
             popover_pin(&t.tp).set_active(true);
             ui.format_bold.set_active(!ui.format_bold.is_active());
         }

@@ -19,7 +19,7 @@ pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Ap
     }
     after_content_change(ui);
     show_text_language(ui, parent);
-    let language = format_button(ui, "text-menu").unwrap();
+    let language = format_button(ui, "format-overflow-menu").unwrap();
     assert!(find_widget(&language.popover().unwrap(), "language-choice-off").is_some());
     assert!(find_widget(&language.popover().unwrap(), "language-choice-default").is_some());
     assert!(find_widget(&language.popover().unwrap(), "install-dictionaries").is_some());

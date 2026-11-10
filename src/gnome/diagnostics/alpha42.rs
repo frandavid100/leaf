@@ -46,7 +46,7 @@ pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
             paragraph.popover.upgrade().unwrap().popdown();
             settle().await;
         }
-        format_button(ui, "paragraph-menu").unwrap().popup();
+        format_bar::open_group(ui, "paragraph", None);
         for _ in 0..15 {
             glib::timeout_future(std::time::Duration::from_millis(10)).await;
             assert!(
@@ -58,7 +58,10 @@ pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
             paragraph.stack.visible_child_name().as_deref(),
             Some("main")
         );
-        assert!(!paragraph.header.arrow.is_visible());
+        assert!(
+            paragraph.header.arrow.is_visible(),
+            "More Options returns to shared menu"
+        );
         paragraph.page("alignment");
         assert_ne!(
             paragraph.stack.transition_type(),
@@ -121,7 +124,14 @@ pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     // A second tab must not replace the first tab's adaptive breakpoint.
     let host = ui.host.upgrade().unwrap();
     let original = ui.tab_page.borrow().as_ref().unwrap().clone();
-    blank_tab(&window.application().unwrap(), &host);
+    blank_tab(
+        &window
+            .application()
+            .unwrap()
+            .downcast::<Application>()
+            .unwrap(),
+        &host,
+    );
     let second = selected_ui(&host).unwrap();
     let second_page = second.tab_page.borrow().as_ref().unwrap().clone();
     settle().await;
@@ -141,6 +151,7 @@ pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     host.tabs.close_page(&second_page);
     settle().await;
     assert!(second.closed.get());
+    shared_overflow(ui, window).await;
     let model = ui
         .document_menu
         .borrow()
@@ -232,5 +243,104 @@ pub(super) async fn closing(
     std::fs::remove_dir_all(root).unwrap();
     eprintln!(
         "ALPHA42_CLOSE_OK combined=true cancel=true no-selection=true reentrant=true failure-keeps-work=true selected-save=true"
+    );
+}
+
+async fn shared_overflow(ui: &Rc<Ui>, window: &ApplicationWindow) {
+    use wordcraft_gnome::{preferences as prefs, toolbar::Placement};
+    let saved: Vec<_> = ["text", "paragraph", "elements"]
+        .into_iter()
+        .map(|group| (group, prefs::toolbar_placements(group)))
+        .collect();
+    for (group, order) in &saved {
+        let order: Vec<_> = order
+            .iter()
+            .map(|(id, _)| {
+                (
+                    id.clone(),
+                    if *group == "text" {
+                        Placement::Pinned
+                    } else {
+                        Placement::Adaptive
+                    },
+                )
+            })
+            .collect();
+        prefs::set_toolbar_placements(group, &order).unwrap();
+    }
+    ui.quick_tools.borrow().as_ref().unwrap().layout();
+    window.set_default_size(420, 850);
+    settle().await;
+    let menu = format_button(ui, "format-overflow-menu").unwrap();
+    let scroll = find_widget(&ui.format_toolbar, "format-pinned-scroll")
+        .unwrap()
+        .downcast::<gtk::ScrolledWindow>()
+        .unwrap();
+    let fixed = menu.compute_bounds(window).unwrap();
+    assert!(fixed.x() >= 0. && fixed.x() + fixed.width() <= window.width() as f32);
+    assert!(scroll.hadjustment().upper() > scroll.hadjustment().page_size());
+    let last = find_widget(&ui.format_toolbar, "format-quick-language").unwrap();
+    assert!(last.is_mapped());
+    last.grab_focus();
+    settle().await;
+    let target = last.compute_bounds(&scroll).unwrap();
+    assert!(
+        target.x() >= -1. && target.x() + target.width() <= scroll.width() as f32 + 1.,
+        "keyboard focus reveals pinned tool"
+    );
+    let after = menu.compute_bounds(window).unwrap();
+    assert!((after.x() - fixed.x()).abs() < 1. && menu.is_mapped());
+    ui.quick_tools.borrow().as_ref().unwrap().root();
+    settle().await;
+    for group in ["text", "paragraph", "elements"] {
+        assert!(
+            find_widget(&ui.format_toolbar, &format!("overflow-section-{group}"))
+                .unwrap()
+                .is_mapped()
+        );
+        assert!(
+            find_widget(&ui.format_toolbar, &format!("overflow-more-{group}"))
+                .unwrap()
+                .is_mapped()
+        );
+    }
+    assert!(find_widget(&ui.format_toolbar, "overflow-tool-text-language").is_none());
+    assert!(find_widget(&ui.format_toolbar, "overflow-tool-elements-image").is_some());
+    let root = find_widget(&ui.format_toolbar, "overflow-section-text")
+        .unwrap()
+        .parent()
+        .unwrap();
+    let mut names = Vec::new();
+    let mut separators = 0;
+    let mut child = root.first_child();
+    while let Some(widget) = child {
+        child = widget.next_sibling();
+        if widget.is::<gtk::Separator>() {
+            separators += 1;
+            assert!(
+                names
+                    .last()
+                    .is_some_and(|n: &String| n.starts_with("overflow-more-"))
+            );
+        }
+        names.push(widget.widget_name().to_string());
+    }
+    assert_eq!(separators, 2);
+    assert_eq!(names.last().unwrap(), "overflow-more-elements");
+    menu.popdown();
+    window.set_default_size(1280, 850);
+    settle().await;
+    assert!(
+        find_widget(&ui.format_toolbar, "format-quick-alignment")
+            .unwrap()
+            .is_mapped()
+    );
+    for (group, order) in &saved {
+        prefs::set_toolbar_placements(group, order).unwrap();
+    }
+    ui.quick_tools.borrow().as_ref().unwrap().layout();
+    settle().await;
+    eprintln!(
+        "OVERFLOW248_OK fixed-menu=true pinned-scroll=true focus-reveal=true sections=true restore=true"
     );
 }

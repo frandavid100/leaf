@@ -115,7 +115,7 @@ impl LifecycleAudit {
             schedule_thumbnail_refresh(&ui);
             if self.extra {
                 show_text_language(&ui, &host.window);
-                if let Some(menu) = format_button(&ui, "text-menu") {
+                if let Some(menu) = format_button(&ui, "format-overflow-menu") {
                     menu.popdown();
                 }
                 show_spelling(&ui, &host.window);

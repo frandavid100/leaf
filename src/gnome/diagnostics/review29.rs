@@ -164,9 +164,9 @@ pub(super) fn review29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
                     } else if panel == "structure" {
                         u.outline.borrow().as_ref().unwrap().show();
                     } else if panel == "elements" {
-                        u.elements.borrow().as_ref().unwrap().menu.popup();
-                    } else if let Some(menu) = format_button(&u, &format!("{panel}-menu")) {
-                        menu.popup();
+                        format_bar::open_group(&u, "elements", None);
+                    } else if matches!(panel.as_str(), "text" | "paragraph") {
+                        format_bar::open_group(&u, &panel, None);
                     }
                 }
                 return glib::ControlFlow::Break;
@@ -176,7 +176,7 @@ pub(super) fn review29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
     });
 }
 fn format_rows_and_elements(ui: &Rc<Ui>) {
-    let text = format_button(ui, "text-menu").unwrap();
+    let text = format_bar::open_group(ui, "text", None);
     text.popup();
     let tools = ui.text_tools.borrow().as_ref().unwrap().clone();
     let palette = tools.palette.borrow().as_ref().unwrap().clone();
@@ -209,7 +209,7 @@ fn format_rows_and_elements(ui: &Rc<Ui>) {
     assert_eq!(*palette.last_ink.borrow(), "1C71D8");
     text.popdown();
     let paragraph = ui.paragraph.borrow().as_ref().unwrap().clone();
-    format_button(ui, "paragraph-menu").unwrap().popup();
+    format_bar::open_group(ui, "paragraph", None);
     paragraph.home();
     assert!(
         find_widget(&paragraph.main, "paragraph-list")
