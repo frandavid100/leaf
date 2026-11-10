@@ -2193,7 +2193,7 @@ msgstr ""
 msgid "Pictures"
 msgstr ""
 
-#: src/gnome/popovers.rs:71 src/gnome/popovers.rs:204 src/gnome/popovers.rs:205
+#: src/gnome/popovers.rs:71 src/gnome/popovers.rs:210 src/gnome/popovers.rs:211
 msgid "Pin"
 msgstr ""
 

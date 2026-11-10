@@ -89,7 +89,13 @@ impl FormatPopoverGroup {
             }
         }
     }
-    pub(super) fn outside(&self, event: &gdk::Event, window: &ApplicationWindow, x: f64, y: f64) {
+    pub(super) fn outside(
+        &self,
+        gesture: &gtk::GestureClick,
+        window: &ApplicationWindow,
+        x: f64,
+        y: f64,
+    ) {
         if self.pinned.get() {
             return;
         }
