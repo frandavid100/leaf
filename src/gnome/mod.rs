@@ -56,6 +56,8 @@ mod caption_cues;
 use caption_cues::*;
 mod clipboard;
 use clipboard::*;
+mod color_chooser;
+use color_chooser::*;
 mod columns;
 use columns::*;
 mod comment_composer;

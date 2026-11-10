@@ -210,8 +210,10 @@ impl ParagraphPopover {
                     if let Some(p) = self.popover.upgrade() {
                         close_format_popover(&p);
                     }
-                    ui.document_box.grab_focus();
-                    caret_ensure_visible(&ui);
+                    if !ui.format_group.pinned.get() {
+                        ui.document_box.grab_focus();
+                        caret_ensure_visible(&ui);
+                    }
                 }
                 Err(e) => {
                     self.message.set_text(&e);
@@ -826,7 +828,13 @@ impl ParagraphPopover {
                 let weak = Rc::downgrade(self);
                 let editor = columns_editor(&ui, move || {
                     if let Some(s) = weak.upgrade() {
-                        s.home();
+                        if !s
+                            .ui
+                            .upgrade()
+                            .is_some_and(|ui| ui.format_group.pinned.get())
+                        {
+                            s.home();
+                        }
                         if let Some(pop) = s.popover.upgrade() {
                             close_format_popover(&pop);
                         }

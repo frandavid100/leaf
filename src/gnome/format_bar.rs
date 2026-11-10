@@ -608,6 +608,7 @@ pub(super) fn install_quick_tools(
                     let split = adw::SplitButton::new();
                     split.add_css_class("flat");
                     split.add_css_class("image-button");
+                    split.add_css_class("leaf-format-split");
                     split.set_valign(gtk::Align::Center);
                     split.set_direction(gtk::ArrowType::Up);
                     // The documented native hierarchy is the same as Undo.

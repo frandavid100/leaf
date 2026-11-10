@@ -32,35 +32,35 @@ pub(super) struct HistoryControls {
     pub(super) actions: gio::SimpleActionGroup,
 }
 pub(super) fn remember_repeat(ui: &Rc<Ui>) {
-    *ui.repeat_action.borrow_mut() = ui
-        .current
-        .borrow()
-        .as_ref()
-        .and_then(|d| engine_history::RepeatAction::capture(&d.session));
+    if let Some(d) = ui.current.borrow().as_ref() {
+        ui.repeat_action.borrow_mut().record(&d.session);
+    }
 }
 pub(super) fn repeat_available(ui: &Ui) -> bool {
-    ui.current.borrow().as_ref().is_some_and(|d| {
-        ui.repeat_action
-            .borrow()
-            .as_ref()
-            .is_some_and(|r| r.applies_to(&d.session))
-    })
+    ui.current
+        .borrow()
+        .as_ref()
+        .is_some_and(|d| ui.repeat_action.borrow().available(&d.session))
 }
-pub(super) fn repeat_last(ui: &Rc<Ui>) {
-    let op = ui.repeat_action.borrow().clone();
-    let result = ui
-        .current
-        .borrow_mut()
-        .as_mut()
-        .zip(op.as_ref())
-        .map(|(d, r)| r.apply(&mut d.session));
+fn repeat_count(ui: &Rc<Ui>, count: usize) {
+    let result = ui.current.borrow_mut().as_mut().map(|d| {
+        ui.repeat_action
+            .borrow_mut()
+            .repeat_recent(&mut d.session, count)
+    });
     match result {
-        Some(Ok(true)) => after_content_change(ui),
+        Some(Ok(true)) => {
+            refresh_after_content_change(ui);
+            schedule_derived_refresh(ui);
+        }
         Some(Ok(false)) => refresh_selection(ui),
         Some(Err(e)) => ui.toasts.add_toast(Toast::new(&e)),
         _ => {}
     }
     ui.document_box.grab_focus();
+}
+pub(super) fn repeat_last(ui: &Rc<Ui>) {
+    repeat_count(ui, 1);
 }
 pub(super) fn redo_or_repeat(ui: &Rc<Ui>) {
     if ui
@@ -133,24 +133,65 @@ impl HistoryControls {
             })
             .unwrap_or_default();
         self.undo.set_sensitive(!undo.is_empty());
-        self.redo.set_sensitive(!redo.is_empty());
+        let repeat = redo.is_empty() && repeat_available(ui);
+        self.redo.set_sensitive(!redo.is_empty() || repeat);
         populate(&self.undo_model, &undo, identity, false);
-        populate(&self.redo_model, &redo, identity, true);
+        if repeat {
+            self.redo_model.remove_all();
+            let history = ui.repeat_action.borrow();
+            for (index, label) in history.descriptions().iter().enumerate() {
+                let item = gio::MenuItem::new(Some(label), None);
+                item.set_action_and_target_value(
+                    Some("history.repeat"),
+                    Some(
+                        &(
+                            identity.0,
+                            identity.1,
+                            history.generation(),
+                            (index + 1) as u32,
+                        )
+                            .to_variant(),
+                    ),
+                );
+                self.redo_model.append_item(&item);
+            }
+        } else {
+            populate(&self.redo_model, &redo, identity, true);
+        }
+        accessible_name(
+            &self.redo,
+            if repeat {
+                wordcraft_gnome::t!("Repeat History")
+            } else {
+                wordcraft_gnome::t!("Redo History")
+            },
+        );
+        self.redo.set_tooltip_text(Some(if repeat {
+            wordcraft_gnome::t!("Repeat History")
+        } else {
+            wordcraft_gnome::t!("Redo History")
+        }));
+        if ui.redo_button.has_css_class("repeat-mode") != repeat {
+            if repeat {
+                ui.redo_button.add_css_class("repeat-mode");
+                ui.redo_button
+                    .set_child(Some(&gtk::Image::from_icon_name("view-refresh-symbolic")));
+            } else {
+                ui.redo_button.remove_css_class("repeat-mode");
+                ui.redo_button.set_child(Some(&history_icon(true)));
+            }
+        }
         self.document_model.remove_all();
         self.document_model
             .append_submenu(Some(wordcraft_gnome::t!("Undo")), &self.undo_model);
-        if redo.is_empty() && repeat_available(ui) {
-            menu_item(
-                &self.document_model,
-                wordcraft_gnome::t!("Repeat Last Action"),
-                "repeat",
-                None,
-            );
-        } else {
-            self.document_model
-                .append_submenu(Some(wordcraft_gnome::t!("Redo")), &self.redo_model);
-        }
-        let repeat = redo.is_empty() && repeat_available(ui);
+        self.document_model.append_submenu(
+            Some(if repeat {
+                wordcraft_gnome::t!("Repeat Last Action")
+            } else {
+                wordcraft_gnome::t!("Redo")
+            }),
+            &self.redo_model,
+        );
         ui.redo_button.set_sensitive(!redo.is_empty() || repeat);
         accessible_name(
             &ui.redo_button,
@@ -236,6 +277,37 @@ pub(super) fn install_history_controls(ui: &Rc<Ui>, toolbar: &gtk::Box) -> Rc<Hi
         ui.document_box.grab_focus();
     });
     actions.add_action(&travel);
+    let repeat = gio::SimpleAction::new(
+        "repeat",
+        Some(&<(u64, u64, u64, u32)>::static_variant_type()),
+    );
+    let weak = Rc::downgrade(ui);
+    repeat.connect_activate(move |_, value| {
+        let (Some(ui), Some((id, rev, generation, count))) = (
+            weak.upgrade(),
+            value.and_then(|v| v.get::<(u64, u64, u64, u32)>()),
+        ) else {
+            return;
+        };
+        if ui.closed.get()
+            || document_identity(&ui) != Some((id, rev))
+            || ui.repeat_action.borrow().generation() != generation
+            || !ui
+                .host
+                .upgrade()
+                .and_then(|h| selected_ui(&h))
+                .is_some_and(|u| Rc::ptr_eq(&u, &ui))
+            || ui
+                .current
+                .borrow()
+                .as_ref()
+                .is_some_and(|d| d.session.can_redo())
+        {
+            return;
+        }
+        repeat_count(&ui, count as usize);
+    });
+    actions.add_action(&repeat);
     clear_box(toolbar);
     for (split, chevron, model, is_redo) in [
         (&undo_split, &undo, &undo_model, false),

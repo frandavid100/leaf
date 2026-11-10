@@ -143,6 +143,7 @@ pub(super) struct TextTools {
     language_value: gtk::Label,
     font_value: gtk::Label,
     font_page: gtk::Box,
+    language_page: gtk::Box,
     last_font: RefCell<Option<String>>,
     last_language: RefCell<Option<String>>,
 }
@@ -185,7 +186,7 @@ impl TextTools {
             let value = wordcraft_gnome::proofing_defaults::choice(&d.session);
             let name = |value: &str| -> String {
                 match value {
-                    "off" => wordcraft_gnome::t!("Do Not Check").into(),
+                    "off" => wordcraft_gnome::t!("Do not check spelling or grammar").into(),
                     "mixed" => wordcraft_gnome::t!("Mixed").into(),
                     "en-US" => wordcraft_gnome::t!("English (United States)").into(),
                     "en-GB" => wordcraft_gnome::t!("English (United Kingdom)").into(),
@@ -220,20 +221,7 @@ impl TextTools {
                 ],
             );
             if self.active_page.borrow().as_deref() == Some("language") {
-                for choice in ["off", "default"]
-                    .into_iter()
-                    .chain(TEXT_LANGUAGES.iter().map(|(tag, _)| *tag))
-                {
-                    if let Some(row) =
-                        find_widget(&self.detail, &format!("language-choice-{choice}"))
-                    {
-                        if value == choice {
-                            row.add_css_class("current-style");
-                        } else {
-                            row.remove_css_class("current-style");
-                        }
-                    }
-                }
+                self.sync_language_rows(&ui);
             }
             self.language_value.set_text(&label);
             self.language_value.set_tooltip_text(Some(&label));
@@ -315,8 +303,10 @@ impl TextTools {
                     if let Some(p) = self.popover.upgrade() {
                         close_format_popover(&p);
                     }
-                    ui.document_box.grab_focus();
-                    caret_ensure_visible(&ui);
+                    if !ui.format_group.pinned.get() {
+                        ui.document_box.grab_focus();
+                        caret_ensure_visible(&ui);
+                    }
                 }
                 Err(e) => ui.toasts.add_toast(Toast::new(&e)),
             }
@@ -391,12 +381,28 @@ impl TextTools {
     pub(super) fn page(self: &Rc<Self>, page: &str) {
         // Never unparent a mapped editable merely to reopen its current page.
         // GTK owns its native focus/clipboard target across pinning and typing.
-        if page == "font"
-            && self.active_page.borrow().as_deref() == Some("font")
+        if matches!(page, "font" | "language")
+            && self.active_page.borrow().as_deref() == Some(page)
             && self.stack.visible_child_name().as_deref() == Some("detail")
-            && self.font_page.parent().as_ref() == Some(self.detail.upcast_ref())
+            && (if page == "font" {
+                &self.font_page
+            } else {
+                &self.language_page
+            })
+            .parent()
+            .as_ref()
+                == Some(self.detail.upcast_ref())
         {
             return;
+        }
+        if let Some(pop) = self.popover.upgrade() {
+            if let Some(root) = pop.child() {
+                root.set_width_request(if matches!(page, "underline" | "strike" | "superscript") {
+                    240
+                } else {
+                    300
+                });
+            }
         }
         self.active_page.replace(Some(page.into()));
         clear_box(&self.detail);
@@ -404,6 +410,18 @@ impl TextTools {
             return;
         };
         let state = selection_character(&ui);
+        if let Some(scroll) = self
+            .detail
+            .ancestor(gtk::ScrolledWindow::static_type())
+            .and_downcast::<gtk::ScrolledWindow>()
+        {
+            let height = ui.host.upgrade().map_or(850, |h| h.window.height());
+            scroll.set_max_content_height(if page == "font" {
+                (height - 150).clamp(220, 650)
+            } else {
+                (height - 150).clamp(180, 460)
+            });
+        }
         let weak = Rc::downgrade(self);
         let home = matches!(
             page,
@@ -411,6 +429,8 @@ impl TextTools {
         );
         let title = match page {
             "underline" => wordcraft_gnome::t!("Underline"),
+            "underline-color" => wordcraft_gnome::t!("Color"),
+            "superscript" => wordcraft_gnome::t!("Text Position"),
             "strike" => wordcraft_gnome::t!("Strikethrough"),
             "ink" => wordcraft_gnome::t!("Text Color"),
             "highlight" => wordcraft_gnome::t!("Highlight"),
@@ -422,9 +442,12 @@ impl TextTools {
             "annotations" => wordcraft_gnome::t!("Annotations"),
             _ => wordcraft_gnome::t!("More Text Options…"),
         };
+        let page_owned = page.to_owned();
         self.header.page(page, title, move || {
             if let Some(s) = weak.upgrade() {
-                if home {
+                if page_owned == "underline-color" {
+                    s.page("underline");
+                } else if home {
                     s.home();
                 } else {
                     s.page("options");
@@ -464,6 +487,9 @@ impl TextTools {
                         gtk::EntryIconPosition::Primary,
                         Some("edit-find-symbolic"),
                     );
+                    ui.font_input
+                        .set_placeholder_text(Some(wordcraft_gnome::t!("Search fonts")));
+                    accessible_name(&ui.font_input, wordcraft_gnome::t!("Search fonts"));
                     self.font_page.append(&ui.font_input);
                     let choices = controls.font_choices.clone();
                     if let Some(parent) = choices
@@ -481,7 +507,11 @@ impl TextTools {
                     list.set_widget_name("text-font-list");
                     list.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
                     list.set_min_content_height(160);
-                    list.set_max_content_height(280);
+                    list.set_max_content_height(
+                        ui.host
+                            .upgrade()
+                            .map_or(400, |h| (h.window.height() - 230).clamp(160, 560)),
+                    );
                     list.set_propagate_natural_height(true);
                     list.set_child(Some(&choices));
                     self.font_page.append(&list);
@@ -503,140 +533,12 @@ impl TextTools {
                 self.detail.append(&self.font_page);
             }
             "language" => {
-                if wordcraft_gnome::dictionaries::refresh(false).unwrap_or(false) {
-                    let weak = Rc::downgrade(&ui);
-                    glib::idle_add_local_once(move || {
-                        if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
-                            refresh_all_proofing(&ui);
-                        }
-                    });
+                self.build_languages(&ui);
+                if let Some(parent) = self.language_page.parent().and_downcast::<gtk::Box>() {
+                    parent.remove(&self.language_page);
                 }
-                let search = gtk::SearchEntry::new();
-                search.set_widget_name("language-search");
-                accessible_name(&search, wordcraft_gnome::t!("Language"));
-                self.detail.append(&search);
-                let choices = gtk::Box::new(gtk::Orientation::Vertical, 2);
-                self.detail.append(&choices);
-                let target = choices.downgrade();
-                search.connect_search_changed(move |entry| {
-                    if let Some(choices) = target.upgrade() {
-                        let query = entry.text().to_lowercase();
-                        let mut child = choices.first_child();
-                        while let Some(w) = child {
-                            child = w.next_sibling();
-                            if let Some(b) = w.downcast_ref::<gtk::Button>() {
-                                w.set_visible(
-                                    matches!(
-                                        w.widget_name().as_str(),
-                                        "language-choice-off" | "language-choice-default"
-                                    ) || b
-                                        .label()
-                                        .is_some_and(|s| s.to_lowercase().contains(&query)),
-                                );
-                            }
-                        }
-                    }
-                });
-                let selected = ui
-                    .current
-                    .borrow()
-                    .as_ref()
-                    .map(|d| wordcraft_gnome::proofing_defaults::choice(&d.session));
-                let mut languages = vec![
-                    (
-                        wordcraft_gnome::t!("Do Not Check").to_owned(),
-                        "off".to_owned(),
-                    ),
-                    (
-                        wordcraft_gnome::t!("Default language").to_owned(),
-                        "default".to_owned(),
-                    ),
-                ];
-                languages.extend(
-                    TEXT_LANGUAGES
-                        .iter()
-                        .map(|(tag, name)| (name.to_string(), tag.to_string())),
-                );
-                for tag in wordcraft_gnome::dictionaries::additional_languages() {
-                    if !languages.iter().any(|(_, choice)| choice == &tag) {
-                        languages.push((tag.clone(), tag));
-                    }
-                }
-                for (label, choice) in languages {
-                    let b = style_menu_button(&label);
-                    b.set_widget_name(&format!("language-choice-{choice}"));
-                    if choice != "off" && choice != "default" {
-                        if wordcraft_gnome::dictionaries::has_dictionary_files(&choice) {
-                            if let Some(path) =
-                                wordcraft_gnome::dictionaries::dictionary_files(&choice)
-                            {
-                                let detail = wordcraft_gnome::t!(
-                                    "Dictionary files found. WordCraft checks them when this language is used."
-                                );
-                                b.set_tooltip_text(Some(&format!(
-                                    "{}\n{detail}",
-                                    path.to_string_lossy()
-                                )));
-                            } else {
-                                b.set_tooltip_text(Some(wordcraft_gnome::t!(
-                                    "Dictionary included with Leaf."
-                                )));
-                            }
-                        } else {
-                            b.add_css_class("dim-label");
-                            b.set_tooltip_text(Some(wordcraft_gnome::t!(
-                                "No spelling dictionary files were found for this language."
-                            )));
-                            b.update_property(&[gtk::accessible::Property::Description(
-                                wordcraft_gnome::t!(
-                                    "No spelling dictionary files were found for this language."
-                                ),
-                            )]);
-                        }
-                    }
-
-                    if selected.as_deref() == Some(choice.as_str()) {
-                        b.add_css_class("current-style");
-                    }
-                    choices.append(&b);
-                    if choice == "default" {
-                        choices.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-                    }
-                    let weak = Rc::downgrade(self);
-                    b.connect_clicked(move |_| {
-                        if let Some(s) = weak.upgrade() {
-                            s.execute("leaf.proofText", serde_json::json!({"choice":choice}));
-                        }
-                    });
-                }
-                let manage = style_menu_button(wordcraft_gnome::t!("Dictionary Settings…"));
-                manage.set_widget_name("dictionary-settings");
-                let weak = Rc::downgrade(self);
-                manage.connect_clicked(move |_| {
-                    let Some(tools) = weak.upgrade() else { return };
-                    let Some(ui) = tools.ui.upgrade() else { return };
-                    if let Some(popover) = tools.popover.upgrade() {
-                        close_format_popover(&popover);
-                    }
-                    show_dictionary_tools(&ui);
-                });
-                self.detail.append(&manage);
-                let install =
-                    style_menu_button(wordcraft_gnome::t!("Install Additional Languages…"));
-                install.set_widget_name("install-dictionaries");
-                let weak = Rc::downgrade(self);
-                install.connect_clicked(move |_| {
-                    let Some(tools) = weak.upgrade() else { return };
-                    let Some(ui) = tools.ui.upgrade() else { return };
-                    let Some(host) = ui.host.upgrade() else {
-                        return;
-                    };
-                    if let Some(popover) = tools.popover.upgrade() {
-                        close_format_popover(&popover);
-                    }
-                    import_dictionary_files(&ui, &host.window);
-                });
-                self.detail.append(&install);
+                self.detail.append(&self.language_page);
+                self.sync_language_rows(&ui);
             }
             "case" => self.choice(
                 wordcraft_gnome::t!("Change Case"),
@@ -651,16 +553,6 @@ impl TextTools {
                 "mode",
             ),
             "options" => {
-                if let Some(p) = self.palette.borrow().as_ref() {
-                    if let Some(parent) = p
-                        .superscript
-                        .parent()
-                        .and_then(|w| w.downcast::<gtk::Box>().ok())
-                    {
-                        parent.remove(&p.superscript);
-                    }
-                    self.detail.append(&p.superscript);
-                }
                 for (label, page) in [
                     (wordcraft_gnome::t!("Font and Characters"), "character"),
                     (wordcraft_gnome::t!("Color and Effects"), "color"),
@@ -896,6 +788,7 @@ pub(super) fn install_text_pages(
         language_value,
         font_value,
         font_page,
+        language_page: gtk::Box::new(gtk::Orientation::Vertical, 6),
         last_font: RefCell::new(None),
         last_language: RefCell::new(None),
         active_page: RefCell::new(None),
@@ -1036,4 +929,243 @@ pub(super) fn install_text_pages(
     ));
     s.home();
     s
+}
+
+pub(super) fn localized_language(tag: &str) -> String {
+    match tag {
+        "off" => wordcraft_gnome::t!("Do not check spelling or grammar"),
+        "mixed" => wordcraft_gnome::t!("Mixed"),
+        "en-US" => wordcraft_gnome::t!("English (United States)"),
+        "en-GB" => wordcraft_gnome::t!("English (United Kingdom)"),
+        "es-ES" => wordcraft_gnome::t!("Spanish (Spain)"),
+        "es-MX" => wordcraft_gnome::t!("Spanish (Mexico)"),
+        "es-AR" => wordcraft_gnome::t!("Spanish (Argentina)"),
+        "fr-FR" => wordcraft_gnome::t!("French"),
+        "de-DE" => wordcraft_gnome::t!("German"),
+        "it-IT" => wordcraft_gnome::t!("Italian"),
+        "pt-BR" => wordcraft_gnome::t!("Portuguese (Brazil)"),
+        "pl-PL" => wordcraft_gnome::t!("Polish"),
+        "ru-RU" => wordcraft_gnome::t!("Russian"),
+        "ca-ES" => wordcraft_gnome::t!("Catalan"),
+        "eu-ES" => wordcraft_gnome::t!("Basque"),
+        "gl-ES" => wordcraft_gnome::t!("Galician"),
+        _ => tag,
+    }
+    .into()
+}
+impl TextTools {
+    pub(super) fn reapply_language(&self) {
+        if let Some(choice) = self.last_language.borrow().clone() {
+            self.execute("leaf.proofText", serde_json::json!({"choice":choice}));
+        }
+    }
+    pub(super) fn language_remembered(&self) -> bool {
+        self.last_language.borrow().is_some()
+    }
+    fn language_title(ui: &Rc<Ui>, choice: &str) -> String {
+        if choice == "default" {
+            let effective = ui
+                .current
+                .borrow()
+                .as_ref()
+                .map(|d| wordcraft_gnome::proofing_defaults::effective_choice(&d.session))
+                .unwrap_or_else(|| "mixed".into());
+            wordcraft_gnome::i18n::interpolate(
+                wordcraft_gnome::t!("Default — {language}"),
+                &[("language", localized_language(&effective))],
+            )
+        } else if choice == "off" {
+            localized_language(choice)
+        } else {
+            let native = TEXT_LANGUAGES
+                .iter()
+                .find(|(tag, _)| *tag == choice)
+                .map(|(_, name)| *name)
+                .unwrap_or(choice);
+            let translated = localized_language(choice);
+            let title = if native == translated {
+                native.to_owned()
+            } else {
+                format!("{native} — {translated}")
+            };
+            if wordcraft_gnome::dictionaries::has_dictionary_files(choice) {
+                title
+            } else {
+                format!(
+                    "{title}\n{}",
+                    wordcraft_gnome::t!("Dictionary not installed")
+                )
+            }
+        }
+    }
+    fn sync_language_rows(&self, ui: &Rc<Ui>) {
+        let current = ui
+            .current
+            .borrow()
+            .as_ref()
+            .map(|d| wordcraft_gnome::proofing_defaults::choice(&d.session));
+        let mut rows = self.language_page.first_child();
+        let Some(choices) = find_widget(&self.language_page, "language-choices") else {
+            return;
+        };
+        while let Some(row) = rows {
+            rows = row.next_sibling();
+        }
+        let mut child = choices.first_child();
+        while let Some(row) = child {
+            child = row.next_sibling();
+            let Some(button) = row.downcast_ref::<gtk::Button>() else {
+                continue;
+            };
+            let name = button.widget_name();
+            let Some(choice) = name.strip_prefix("language-choice-") else {
+                continue;
+            };
+            let selected = current.as_deref() == Some(choice);
+            let title = Self::language_title(ui, choice);
+            button.set_label(&if selected {
+                format!("✓ {title}")
+            } else {
+                title.clone()
+            });
+            accessible_name(button, &title);
+            button.update_state(&[gtk::accessible::State::Pressed(if selected {
+                gtk::AccessibleTristate::True
+            } else {
+                gtk::AccessibleTristate::False
+            })]);
+            if selected {
+                button.add_css_class("current-style");
+            } else {
+                button.remove_css_class("current-style");
+            }
+            if let Some(label) = button.child().and_downcast::<gtk::Label>() {
+                label.set_wrap(true);
+                label.set_max_width_chars(32);
+                label.set_width_chars(1);
+                label.set_xalign(0.);
+            }
+        }
+        if let Some(label) = find_widget(&self.language_page, "language-mixed") {
+            label.set_visible(current.as_deref() == Some("mixed"));
+        }
+    }
+    fn build_languages(self: &Rc<Self>, ui: &Rc<Ui>) {
+        if self.language_page.first_child().is_some() {
+            return;
+        }
+        let search = gtk::SearchEntry::new();
+        search.set_widget_name("language-search");
+        search.set_placeholder_text(Some(wordcraft_gnome::t!("Search languages")));
+        accessible_name(&search, wordcraft_gnome::t!("Search languages"));
+        self.language_page.append(&search);
+        let mixed = gtk::Label::new(Some(wordcraft_gnome::t!("Mixed")));
+        mixed.set_widget_name("language-mixed");
+        self.language_page.append(&mixed);
+        let choices = gtk::Box::new(gtk::Orientation::Vertical, 2);
+        choices.set_widget_name("language-choices");
+        let scroll = gtk::ScrolledWindow::new();
+        scroll.set_policy(gtk::PolicyType::Never, gtk::PolicyType::Automatic);
+        scroll.set_min_content_height(90);
+        let height = ui.host.upgrade().map_or(850, |h| h.window.height());
+        scroll.set_max_content_height((height - 300).clamp(100, 300));
+        scroll.set_propagate_natural_height(true);
+        scroll.set_child(Some(&choices));
+        self.language_page.append(&scroll);
+        let mut tags = vec!["off".to_owned(), "default".to_owned()];
+        tags.extend(TEXT_LANGUAGES.iter().map(|(tag, _)| tag.to_string()));
+        for tag in wordcraft_gnome::dictionaries::additional_languages() {
+            if !tags.contains(&tag) {
+                tags.push(tag);
+            }
+        }
+        for choice in tags {
+            let button = style_menu_button(&Self::language_title(ui, &choice));
+            button.set_widget_name(&format!("language-choice-{choice}"));
+            if !matches!(choice.as_str(), "off" | "default")
+                && !wordcraft_gnome::dictionaries::has_dictionary_files(&choice)
+            {
+                button.set_tooltip_text(Some(wordcraft_gnome::t!("Language can be assigned without a dictionary. Use Dictionary Settings to install proofing support.")));
+            }
+            choices.append(&button);
+            if choice == "default" {
+                choices.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+            }
+            let weak = Rc::downgrade(self);
+            button.connect_clicked(move |_| {
+                if let Some(s) = weak.upgrade() {
+                    s.execute("leaf.proofText", serde_json::json!({"choice":choice}));
+                }
+            });
+        }
+        let target = choices.downgrade();
+        search.connect_search_changed(move |search| {
+            let Some(choices) = target.upgrade() else {
+                return;
+            };
+            let query = search.text().to_lowercase();
+            let mut child = choices.first_child();
+            let mut found = false;
+            while let Some(row) = child {
+                child = row.next_sibling();
+                let name = row.widget_name();
+                let Some(tag) = name.strip_prefix("language-choice-") else {
+                    continue;
+                };
+                let native = TEXT_LANGUAGES
+                    .iter()
+                    .find(|(t, _)| *t == tag)
+                    .map(|(_, n)| *n)
+                    .unwrap_or(tag);
+                let matches = matches!(tag, "off" | "default")
+                    || format!("{native} {} {tag}", localized_language(tag))
+                        .to_lowercase()
+                        .contains(&query);
+                row.set_visible(matches);
+                found |= matches && !matches!(tag, "off" | "default");
+            }
+            if let Some(empty) = choices
+                .last_child()
+                .filter(|w| w.widget_name() == "language-no-results")
+            {
+                empty.set_visible(!found);
+            }
+        });
+        let empty = gtk::Label::new(Some(wordcraft_gnome::t!("No Results")));
+        empty.set_widget_name("language-no-results");
+        empty.set_visible(false);
+        choices.append(&empty);
+        self.language_page
+            .append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+        for (label, name, install) in [
+            (
+                wordcraft_gnome::t!("Dictionary Settings…"),
+                "dictionary-settings",
+                false,
+            ),
+            (
+                wordcraft_gnome::t!("Install Additional Languages…"),
+                "install-dictionaries",
+                true,
+            ),
+        ] {
+            let button = style_menu_button(label);
+            button.set_widget_name(name);
+            self.language_page.append(&button);
+            let weak = Rc::downgrade(self);
+            button.connect_clicked(move |_| {
+                let Some(ui) = weak.upgrade().and_then(|s| s.ui.upgrade()) else {
+                    return;
+                };
+                let Some(host) = ui.host.upgrade() else {
+                    return;
+                };
+                if install {
+                    import_dictionary_files(&ui, &host.window);
+                } else {
+                    show_dictionary_tools(&ui);
+                }
+            });
+        }
+    }
 }

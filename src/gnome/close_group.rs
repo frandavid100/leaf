@@ -124,6 +124,13 @@ pub(super) fn request(host: &Rc<Workspace>) {
             "Select the documents to save. Changes in unchecked documents will be discarded."
         )),
     );
+    // This native preference appeared in libadwaita 1.6. Use it when the
+    // installed runtime provides it without raising Leaf's 1.5 API baseline.
+    if dialog.find_property("prefer-wide-layout").is_some() {
+        dialog.set_property("prefer-wide-layout", true);
+    } else {
+        dialog.set_content_width(620);
+    }
     dialog.add_response("cancel", wordcraft_gnome::t!("Cancel"));
     dialog.add_response("discard", wordcraft_gnome::t!("Discard All"));
     dialog.add_response("save", wordcraft_gnome::t!("Save"));
@@ -141,7 +148,38 @@ pub(super) fn request(host: &Rc<Workspace>) {
     {
         let row = adw::ActionRow::new();
         row.set_use_markup(false);
-        row.set_title(&ui.document_name.borrow());
+        let name = ui.document_name.borrow().clone();
+        let untitled = ui.save_path.borrow().is_none() && ui.source_path.borrow().is_none();
+        let duplicates = group
+            .docs
+            .iter()
+            .filter(|doc| {
+                doc.dirty.get()
+                    && doc.document_name.borrow().as_str() == name
+                    && doc.save_path.borrow().is_none()
+                    && doc.source_path.borrow().is_none()
+            })
+            .count();
+        let title = if untitled && duplicates > 1 {
+            let number = group.docs[..=index]
+                .iter()
+                .filter(|doc| {
+                    doc.dirty.get()
+                        && doc.document_name.borrow().as_str() == name
+                        && doc.save_path.borrow().is_none()
+                        && doc.source_path.borrow().is_none()
+                })
+                .count();
+            wordcraft_gnome::i18n::interpolate(
+                wordcraft_gnome::t!("{name} ({number})"),
+                &[("name", name), ("number", number.to_string())],
+            )
+        } else {
+            name
+        };
+        row.set_title(&title);
+        row.set_title_lines(2);
+        row.set_subtitle_lines(2);
         let path = ui
             .save_path
             .borrow()
@@ -155,7 +193,7 @@ pub(super) fn request(host: &Rc<Workspace>) {
         let check = gtk::CheckButton::new();
         check.set_active(true);
         check.set_valign(gtk::Align::Center);
-        accessible_name(&check, &ui.document_name.borrow());
+        accessible_name(&check, &title);
         row.add_prefix(&check);
         row.set_activatable_widget(Some(&check));
         rows.add(&row);
