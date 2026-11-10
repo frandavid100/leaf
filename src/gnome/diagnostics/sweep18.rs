@@ -445,7 +445,7 @@ pub(super) fn text_pointer_target(
     if !stable {
         return false;
     }
-    if std::env::args().any(|a| a == "--format136-ui-test") {
+    if std::env::args().any(|a| a == "--format136-ui-test" || a == "--text18-pointer-test") {
         observe_pointer_target(marker, pop, widget);
     }
     eprintln!(

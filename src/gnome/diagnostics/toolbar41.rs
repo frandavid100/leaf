@@ -201,6 +201,12 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         settle().await;
         if std::env::var_os("LEAF_TOOLBAR_DND").is_some() {
             window.set_title(Some("Leaf Toolbar41"));
+            // Text now precedes Paragraph. Bring the real row into the native
+            // preferences viewport before asking XTest to drag its handle.
+            find_widget(&dialog, "toolbar-preference-paragraph-list")
+                .unwrap()
+                .grab_focus();
+            settle().await;
             let source = find_widget(&dialog, "toolbar-drag-paragraph-list")
                 .unwrap()
                 .compute_bounds(&window)

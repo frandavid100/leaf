@@ -338,11 +338,18 @@ pub(super) fn embedded_color_chooser(
     if let Some(color) = initial.and_then(|s| gdk::RGBA::parse(s).ok()) {
         picker.set_rgba(&color);
     }
+    let trace =
+        name == "text-ink-chooser" && std::env::args().any(|a| a == "--text18-pointer-test");
     let armed = Rc::new(Cell::new(false));
     let click = gtk::GestureClick::new();
     click.set_propagation_phase(gtk::PropagationPhase::Capture);
     let a = armed.clone();
-    click.connect_pressed(move |_, _, _, _| a.set(true));
+    click.connect_pressed(move |_, _, x, y| {
+        if trace {
+            eprintln!("COLOR_INPUT_PRESS {x},{y}");
+        }
+        a.set(true);
+    });
     picker.add_controller(click);
     let keys = gtk::EventControllerKey::new();
     keys.set_propagation_phase(gtk::PropagationPhase::Capture);
@@ -358,12 +365,26 @@ pub(super) fn embedded_color_chooser(
     let previous = last.clone();
     let action: Rc<dyn Fn(&str)> = Rc::new(move |hex| {
         let changed = previous.borrow().as_deref() != Some(hex);
+        if trace {
+            eprintln!(
+                "COLOR_INPUT_APPLY hex={hex} syncing={} changed={changed}",
+                guard.get()
+            );
+        }
         if !guard.get() && changed && apply(hex) {
             previous.replace(Some(hex.into()));
         }
     });
     let choose = action.clone();
     picker.connect_rgba_notify(move |p| {
+        if trace {
+            eprintln!(
+                "COLOR_INPUT_NOTIFY hex={} armed={} mapped={}",
+                rgba_hex(&p.rgba()),
+                armed.get(),
+                p.is_mapped()
+            );
+        }
         if armed.get() && p.is_mapped() {
             choose(&rgba_hex(&p.rgba()));
         }
