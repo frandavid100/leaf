@@ -160,7 +160,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         }
         assert_eq!(selection_character(&ui)["italic"], true);
         assert_ne!(selection_character(&ui)["underline"], "none");
-        click(&ui, "format-quick-alignment");
+        click(&ui, "format-quick-alignment-options");
         assert!(
             find_widget(
                 &ui.paragraph.borrow().as_ref().unwrap().detail,
@@ -177,7 +177,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         .unwrap();
         alignment.emit_clicked();
         assert_eq!(selection_paragraph(&ui)["align"], "center");
-        click(&ui, "format-quick-list");
+        click(&ui, "format-quick-list-options");
         let panel = ui.paragraph.borrow().as_ref().unwrap().clone();
         assert_eq!(panel.header.label.text(), wordcraft_gnome::t!("List"));
         assert!(!panel.header.arrow.is_visible());

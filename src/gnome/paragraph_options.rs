@@ -449,6 +449,7 @@ pub(super) fn build(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, page: &str, state: &V
             );
             preview(s, state, false);
             let help = gtk::Expander::new(Some(wordcraft_gnome::t!("About paragraph spacing")));
+            help.set_widget_name("paragraph-spacing-help");
             let hint = gtk::Label::new(Some(wordcraft_gnome::t!(
                 "Between paragraphs, the larger adjoining Before or After value is used. Styles can suppress this spacing."
             )));

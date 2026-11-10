@@ -104,9 +104,9 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
     );
     tools.home();
     button(&menu.popover().unwrap(), "text-more-options");
-    assert!(find_widget(&menu.popover().unwrap(), "text-options-case").is_some());
+    assert!(find_widget(&menu.popover().unwrap(), "format-row-text-case").is_some());
     let clear = find_widget(&menu.popover().unwrap(), "text-clear-formatting").unwrap();
-    assert!(clear.next_sibling().is_none());
+    assert!(clear.parent().unwrap().next_sibling().is_none());
     menu.popdown();
     // Document defaults preserve explicit yes and disabled text, independent of app defaults.
     {
