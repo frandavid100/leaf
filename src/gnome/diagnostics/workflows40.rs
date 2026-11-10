@@ -266,7 +266,12 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         until(|| style_menu.popover().unwrap().is_mapped()).await;
         assert!(ui.format_toolbar.is_mapped());
         assert!(style_menu.popover().unwrap().is_mapped());
-        assert!(!bold.is_mapped());
+        // Adaptive tools now use spare width even in a narrow window. A
+        // complete visible button must fit inside the actual toolbar viewport.
+        if bold.is_mapped() {
+            let b = bold.compute_bounds(&ui.format_toolbar).unwrap();
+            assert!(b.x() >= 0. && b.x() + b.width() <= ui.format_toolbar.width() as f32);
+        }
         assert!(
             format_button(&ui, "format-overflow-menu")
                 .unwrap()

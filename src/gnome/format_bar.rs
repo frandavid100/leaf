@@ -225,6 +225,8 @@ impl QuickTools {
         if let Some(owner) = pop.parent().and_downcast::<gtk::MenuButton>() {
             owner.set_popover(None::<&gtk::Popover>);
         }
+        // Restore any body leased by a context menu before preparing its page.
+        ui.format_group.show(pop);
         let header = ui
             .format_group
             .entries

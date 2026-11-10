@@ -55,11 +55,11 @@ pub(super) fn adaptive_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
             style.main();
             style.header.button.emit_clicked();
             assert_eq!(context.visible_submenu().as_deref(), Some("main"));
-            buttons[1].popup();
+            format_bar::open_group(&ui, "paragraph", None);
             assert!(!context.is_visible());
             assert_eq!(origin.child().as_ref(), Some(&body));
-            assert!(buttons[1].popover().unwrap().is_visible());
-            buttons[1].popdown();
+            assert!(format_bar::group_pop(&ui, "paragraph").is_visible());
+            format_bar::group_pop(&ui, "paragraph").popdown();
             popover_pin(&origin).set_active(false);
             let context = show_document_context(&ui, &window, 100, 150, DocumentContext::Text);
             context_activate_row(&context, wordcraft_gnome::t!("Text"));
@@ -77,11 +77,11 @@ pub(super) fn adaptive_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Ap
             let settings = ui.document_box.settings();
             let old = settings.property::<bool>("gtk-enable-animations");
             settings.set_property("gtk-enable-animations", false);
-            buttons[2].popup();
+            format_bar::open_group(&ui, "text", None);
             text.page("options");
             assert!(!text.stack.is_transition_running());
             assert!(text.stack.interpolates_size());
-            buttons[2].popdown();
+            format_bar::group_pop(&ui, "text").popdown();
             settings.set_property("gtk-enable-animations", old);
             eprintln!("ADAPTIVE_UI_OK");
             app.quit();

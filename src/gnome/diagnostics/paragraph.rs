@@ -2,12 +2,12 @@ use super::*;
 
 pub(super) fn paragraph_ui_test(
     s: &Rc<ParagraphPopover>,
-    menu: &gtk::MenuButton,
+    _menu: &gtk::MenuButton,
     app: &Application,
 ) {
     s.header.pin.set_active(true);
-    menu.popup();
     let ui = s.ui.upgrade().unwrap();
+    format_bar::open_group(&ui, "paragraph", None);
     let click = |name: &str| {
         find_widget(&s.popover.upgrade().unwrap().child().unwrap(), name)
             .unwrap_or_else(|| panic!("missing {name}"))

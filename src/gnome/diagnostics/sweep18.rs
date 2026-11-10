@@ -376,11 +376,31 @@ pub(super) fn observe_pointer_target(
     pop: &gtk::Popover,
     widget: &impl IsA<gtk::Widget>,
 ) {
+    if std::env::args().any(|a| a == "--text18-pointer-test") {
+        let events = gtk::EventControllerLegacy::new();
+        events.set_propagation_phase(gtk::PropagationPhase::Capture);
+        let marker = marker.to_owned();
+        events.connect_event(move |_, event| {
+            if matches!(
+                event.event_type(),
+                gdk::EventType::ButtonPress | gdk::EventType::ButtonRelease
+            ) {
+                eprintln!(
+                    "POINTER_POPUP_BUTTON {marker} {:?} xy={:?}",
+                    event.event_type(),
+                    event.position()
+                );
+            }
+            glib::Propagation::Proceed
+        });
+        pop.add_controller(events);
+    }
     let motion = gtk::EventControllerMotion::new();
     motion.set_propagation_phase(gtk::PropagationPhase::Capture);
     let pop = pop.downgrade();
     let widget_weak = widget.as_ref().downgrade();
     let marker = marker.to_owned();
+    let button_marker = marker.clone();
     let seen = Cell::new(false);
     let notify = Rc::new(
         move |controller: &gtk::EventControllerMotion, x: f64, y: f64| {
@@ -406,6 +426,25 @@ pub(super) fn observe_pointer_target(
     motion.connect_enter(move |m, x, y| entered(m, x, y));
     motion.connect_motion(move |m, x, y| notify(m, x, y));
     widget.add_controller(motion);
+    if std::env::args().any(|a| a == "--text18-pointer-test") {
+        let events = gtk::EventControllerLegacy::new();
+        events.set_propagation_phase(gtk::PropagationPhase::Capture);
+        let marker = button_marker;
+        events.connect_event(move |_, event| {
+            if matches!(
+                event.event_type(),
+                gdk::EventType::ButtonPress | gdk::EventType::ButtonRelease
+            ) {
+                eprintln!(
+                    "POINTER_BUTTON {marker} {:?} xy={:?}",
+                    event.event_type(),
+                    event.position()
+                );
+            }
+            glib::Propagation::Proceed
+        });
+        widget.add_controller(events);
+    }
 }
 pub(super) fn text_pointer_target(
     marker: &str,
