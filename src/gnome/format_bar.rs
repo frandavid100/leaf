@@ -346,8 +346,8 @@ pub(super) fn install_quick_tools(
     let text_group = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     let elements_group = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     for (group, name) in [
-        (&paragraph_group, "paragraph"),
         (&text_group, "text"),
+        (&paragraph_group, "paragraph"),
         (&elements_group, "elements"),
     ] {
         formats.append(&gtk::Separator::new(gtk::Orientation::Vertical));
@@ -359,8 +359,8 @@ pub(super) fn install_quick_tools(
     let mut alignment = None;
     let mut swatches = Vec::new();
     for (group, container) in [
-        ("paragraph", &paragraph_group),
         ("text", &text_group),
+        ("paragraph", &paragraph_group),
         ("elements", &elements_group),
     ] {
         let shortcuts = gtk::Box::new(gtk::Orientation::Horizontal, 6);
@@ -384,6 +384,7 @@ pub(super) fn install_quick_tools(
                     split.add_css_class("flat");
                     split.add_css_class("image-button");
                     split.set_valign(gtk::Align::Center);
+                    split.set_direction(gtk::ArrowType::Up);
                     // The documented native hierarchy is the same as Undo.
                     let body = split
                         .first_child()
@@ -453,7 +454,9 @@ pub(super) fn install_quick_tools(
                 } else {
                     content.append(&image);
                 }
-                content.append(&format_chevron());
+                let arrow = gtk::Image::from_icon_name("pan-up-symbolic");
+                arrow.set_pixel_size(16);
+                content.append(&arrow);
                 button.set_child(Some(&content));
                 connect_picker(
                     ui,

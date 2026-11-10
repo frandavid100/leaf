@@ -213,13 +213,13 @@ pub(super) fn add(dialog: &adw::PreferencesDialog) {
     page.set_icon_name(Some("preferences-desktop-display-symbolic"));
     page.set_widget_name("toolbar-preferences");
     for (key, title) in [
-        ("paragraph", wordcraft_gnome::t!("Paragraph")),
         ("text", wordcraft_gnome::t!("Text")),
+        ("paragraph", wordcraft_gnome::t!("Paragraph")),
         ("elements", wordcraft_gnome::t!("Elements")),
     ] {
         let group = adw::PreferencesGroup::new();
         group.set_title(title);
-        if key == "paragraph" {
+        if key == "text" {
             group.set_description(Some(wordcraft_gnome::t!("Enabled items appear from left to right in list order. Other items are available in each group’s ⋮ menu. Drag rows or use Move Up and Move Down to reorder them.")));
         }
         let list = gtk::ListBox::new();

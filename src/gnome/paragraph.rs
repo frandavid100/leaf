@@ -1331,16 +1331,16 @@ pub(super) fn install_paragraph_popover(
         move |_| {
             if !state.ui.upgrade().is_some_and(|u| u.format_reflowing.get()) {
                 let entry = state.header.entry_page.borrow().clone();
+                let transition = state.stack.transition_type();
+                state
+                    .stack
+                    .set_transition_type(gtk::StackTransitionType::None);
                 if let Some(page) = entry {
-                    let transition = state.stack.transition_type();
-                    state
-                        .stack
-                        .set_transition_type(gtk::StackTransitionType::None);
                     state.page(&page);
-                    state.stack.set_transition_type(transition);
                 } else {
                     state.home();
                 }
+                state.stack.set_transition_type(transition);
             }
         }
     ));

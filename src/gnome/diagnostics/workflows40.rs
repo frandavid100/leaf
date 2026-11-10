@@ -112,7 +112,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
             adaptive.history.parent().as_ref(),
             Some(adaptive.top_history.upcast_ref())
         );
-        let groups = ["style", "paragraph", "text", "elements"];
+        let groups = ["style", "text", "paragraph", "elements"];
         let mut previous = 0.;
         for name in groups {
             let group = find_widget(&ui.format_toolbar, &format!("format-{name}-group")).unwrap();
@@ -474,6 +474,24 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         assert_eq!(recovery.next_sibling().as_ref(), Some(&templates_group));
         let rows = children(&recovery.first_child().unwrap());
         assert_eq!(rows.len(), 2);
+        for row in &rows {
+            let preview = find_widget(row, "recovery-preview")
+                .unwrap()
+                .compute_bounds(&window)
+                .unwrap();
+            let discard = find_widget(row, "start-recovery-discard")
+                .unwrap()
+                .compute_bounds(&window)
+                .unwrap();
+            assert!(
+                discard.x() >= preview.x() + 4.0
+                    && discard.y() >= preview.y() + 4.0
+                    && discard.x() + discard.width() <= preview.x() + preview.width() - 4.0
+                    && discard.y() + discard.height() <= preview.y() + preview.height() - 4.0,
+                "discard bounds {discard:?} must be inset inside paper {preview:?}"
+            );
+        }
+
         let dates: Vec<_> = rows
             .iter()
             .map(|row| {

@@ -1,5 +1,16 @@
 # Decisiones vigentes
 
+## 10/11/2026 — alpha.42 y alcance de las plantillas
+
+David solicita revisar las contribuciones de WordCraft, cerrar lo verificable y
+publicar directamente una nueva alpha. La excepción corresponde solo a esta
+entrega y conserva todas las verificaciones. Se añaden los nuevos #245/#246.
+Acepta únicamente la carpeta de plantillas del sistema (#171); no se amplían
+permisos. #52 queda cerrado sin atribución confirmada. #185 se mantiene en pausa:
+David hará nuevas capturas después de la próxima alpha y revisará la descripción.
+[Alcance, pruebas y límites](ALPHA42_INTERFACE.md).
+
+
 ## Publicada y verificada automáticamente: 0.1.0-alpha.41
 
 Se publican los mismos bytes de la candidata tras superar todas las pruebas

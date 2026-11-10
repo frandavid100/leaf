@@ -37,6 +37,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         let paragraph = ui.paragraph.borrow().as_ref().unwrap().clone();
         let text = ui.text_tools.borrow().as_ref().unwrap().clone();
         let elements = ui.elements.borrow().as_ref().unwrap().clone();
+        alpha42_checks::controls(&ui, &window).await;
         let before = state(&ui);
         let style = format_button(&ui, "style-menu").unwrap();
         assert!(style.has_css_class("raised") && style.has_frame());
@@ -441,7 +442,18 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
                 .abs()
                 < 1.0
         );
+        let preview = find_widget(&blank.template_slot, "template-preview").unwrap();
+        let preview_y = preview.compute_bounds(&window).unwrap().y();
+        let page_y = blank.current.borrow().as_ref().unwrap().page_frames[0]
+            .compute_bounds(&window)
+            .unwrap()
+            .y();
+        assert!(
+            (preview_y - page_y).abs() < 2.0,
+            "Start preview and paper top: {preview_y}/{page_y}"
+        );
         std::fs::remove_dir_all(folder).unwrap();
+        alpha42_checks::closing(&ui, &blank, &window, &app).await;
         eprintln!(
             "TOOLBAR41_UI_OK direct=true overflow=true options-read-only=true insertion-fixed=true preferences=true keyboard-reorder=true saved-resize=true"
         );

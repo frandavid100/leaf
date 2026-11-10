@@ -545,6 +545,18 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
         "save-as",
         Some("<Control><Shift>s"),
     );
+    menu_item(
+        &save,
+        wordcraft_gnome::t!("Export to PDF…"),
+        "export-pdf",
+        None,
+    );
+    menu_item(
+        &save,
+        wordcraft_gnome::t!("Print…"),
+        "print",
+        Some("<Control>p"),
+    );
     root.append_section(None, &save);
     let properties = gio::Menu::new();
     menu_item(
@@ -552,18 +564,6 @@ pub(super) fn install_document_menu(button: &gtk::MenuButton, ui: &Rc<Ui>) {
         wordcraft_gnome::t!("Document Properties"),
         "document-properties",
         None,
-    );
-    menu_item(
-        &properties,
-        wordcraft_gnome::t!("Export to PDF…"),
-        "export-pdf",
-        None,
-    );
-    menu_item(
-        &properties,
-        wordcraft_gnome::t!("Print…"),
-        "print",
-        Some("<Control>p"),
     );
     root.append_section(None, &properties);
     let zoom = gio::MenuItem::new(None, None);

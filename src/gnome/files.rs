@@ -111,8 +111,27 @@ pub(super) fn save_document(
     save_as: bool,
     done: Box<dyn FnOnce()>,
 ) {
+    save_document_result(
+        ui,
+        parent,
+        save_as,
+        Box::new(move |saved| {
+            if saved {
+                done();
+            }
+        }),
+    );
+}
+
+pub(super) fn save_document_result(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+    save_as: bool,
+    done: Box<dyn FnOnce(bool)>,
+) {
     if ui.current.borrow().is_none() {
         cancel_tab_close(ui);
+        done(false);
         return;
     }
     let existing = ui
@@ -132,9 +151,10 @@ pub(super) fn save_document(
     if !save_as && !incompatible {
         if let Some(path) = existing {
             if save_to(ui, &path) {
-                done();
+                done(true);
             } else {
                 cancel_tab_close(ui);
+                done(false);
             }
             return;
         }
@@ -151,6 +171,7 @@ pub(super) fn save_document(
             ui,
             move |result| {
                 if ui.closed.get() {
+                    done(false);
                     return;
                 }
                 if document_identity(&ui) != identity {
@@ -158,6 +179,7 @@ pub(super) fn save_document(
                     ui.toasts.add_toast(Toast::new(wordcraft_gnome::t!(
                         "The document has changed; open this dialog again."
                     )));
+                    done(false);
                     return;
                 }
                 match result {
@@ -166,6 +188,7 @@ pub(super) fn save_document(
                             ui.toasts
                                 .add_toast(Toast::new(wordcraft_gnome::t!("Choose a Local File")));
                             cancel_tab_close(&ui);
+                            done(false);
                             return;
                         };
                         // Require an extension so GTK's overwrite confirmation covers the actual target.
@@ -174,12 +197,14 @@ pub(super) fn save_document(
                                 "Include .docx or .odt in the file name"
                             )));
                             cancel_tab_close(&ui);
+                            done(false);
                             return;
                         }
                         if save_to(&ui, &path) {
-                            done();
+                            done(true);
                         } else {
                             cancel_tab_close(&ui);
+                            done(false);
                         }
                     }
                     Err(e)
@@ -187,6 +212,7 @@ pub(super) fn save_document(
                             || e.matches(gtk::DialogError::Cancelled) =>
                     {
                         cancel_tab_close(&ui);
+                        done(false);
                     }
                     Err(e) => {
                         ui.toasts
@@ -195,6 +221,7 @@ pub(super) fn save_document(
                                 &[("e", format!("{}", e))],
                             )));
                         cancel_tab_close(&ui);
+                        done(false);
                     }
                 }
             }
