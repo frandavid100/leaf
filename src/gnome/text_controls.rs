@@ -179,6 +179,8 @@ pub(super) fn bind_numeric(
             return;
         };
         if ui.format_syncing.get() {
+            // A programmatic value change establishes the destination baseline.
+            last.set(numeric_value(n));
             return;
         }
         let text = n.text().trim().replace(',', ".");
@@ -212,6 +214,7 @@ pub(super) fn bind_numeric(
     n.connect_changed(move |_| {
         let Some(ui) = weak.upgrade() else { return };
         if ui.format_syncing.get() {
+            generation.set(generation.get().wrapping_add(1));
             return;
         }
         let next = generation.get().wrapping_add(1);

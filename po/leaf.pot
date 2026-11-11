@@ -97,7 +97,7 @@ msgstr ""
 msgid "All Caps"
 msgstr ""
 
-#: src/gnome/text_controls.rs:480
+#: src/gnome/text_controls.rs:483
 msgid "All Fonts"
 msgstr ""
 
@@ -1477,7 +1477,7 @@ msgstr ""
 msgid "Following Spacing (mm)"
 msgstr ""
 
-#: src/gnome/adaptive.rs:267 src/gnome/adaptive.rs:468 src/gnome/adaptive.rs:848 src/gnome/adaptive.rs:895 src/gnome/diagnostics/format136.rs:100 src/gnome/diagnostics/format136.rs:116 src/gnome/tab.rs:312 src/gnome/tab.rs:315 src/gnome/text_controls.rs:614 src/gnome/text_controls.rs:698 src/history.rs:210 src/toolbar.rs:186
+#: src/gnome/adaptive.rs:267 src/gnome/adaptive.rs:468 src/gnome/adaptive.rs:848 src/gnome/adaptive.rs:895 src/gnome/diagnostics/format136.rs:100 src/gnome/diagnostics/format136.rs:116 src/gnome/tab.rs:312 src/gnome/tab.rs:315 src/gnome/text_controls.rs:617 src/gnome/text_controls.rs:701 src/history.rs:210 src/toolbar.rs:186
 msgid "Font"
 msgstr ""
 
@@ -1493,7 +1493,7 @@ msgstr ""
 msgid "Font Files"
 msgstr ""
 
-#: src/gnome/adaptive.rs:472 src/gnome/tab.rs:326 src/gnome/text_controls.rs:700 src/gnome/tool_actions.rs:365 src/gnome/tool_actions.rs:396 src/history.rs:204 src/history.rs:211 src/toolbar.rs:208
+#: src/gnome/adaptive.rs:472 src/gnome/tab.rs:326 src/gnome/text_controls.rs:703 src/gnome/tool_actions.rs:365 src/gnome/tool_actions.rs:396 src/history.rs:204 src/history.rs:211 src/toolbar.rs:208
 msgid "Font Size"
 msgstr ""
 
@@ -1513,7 +1513,7 @@ msgstr ""
 msgid "Fonts"
 msgstr ""
 
-#: src/gnome/text_controls.rs:473
+#: src/gnome/text_controls.rs:476
 msgid "Fonts in This Document"
 msgstr ""
 
@@ -2145,7 +2145,7 @@ msgstr ""
 msgid "Missing; fallback information unavailable"
 msgstr ""
 
-#: src/gnome/adaptive.rs:196 src/gnome/adaptive.rs:270 src/gnome/adaptive.rs:1010 src/gnome/adaptive.rs:1166 src/gnome/color_chooser.rs:28 src/gnome/format_bar.rs:407 src/gnome/format_bar.rs:572 src/gnome/list_options.rs:507 src/gnome/paragraph.rs:491 src/gnome/paragraph.rs:564 src/gnome/paragraph.rs:571 src/gnome/paragraph.rs:583 src/gnome/paragraph.rs:1089 src/gnome/paragraph_options.rs:111 src/gnome/paragraph_options.rs:139 src/gnome/paragraph_options.rs:558 src/gnome/paragraph_options.rs:710 src/gnome/selection_view.rs:167 src/gnome/tables.rs:346 src/gnome/text_controls.rs:615 src/gnome/text_palette.rs:668
+#: src/gnome/adaptive.rs:196 src/gnome/adaptive.rs:270 src/gnome/adaptive.rs:1010 src/gnome/adaptive.rs:1166 src/gnome/color_chooser.rs:28 src/gnome/format_bar.rs:407 src/gnome/format_bar.rs:572 src/gnome/list_options.rs:507 src/gnome/paragraph.rs:491 src/gnome/paragraph.rs:564 src/gnome/paragraph.rs:571 src/gnome/paragraph.rs:583 src/gnome/paragraph.rs:1089 src/gnome/paragraph_options.rs:111 src/gnome/paragraph_options.rs:139 src/gnome/paragraph_options.rs:558 src/gnome/paragraph_options.rs:710 src/gnome/selection_view.rs:167 src/gnome/tables.rs:346 src/gnome/text_controls.rs:618 src/gnome/text_palette.rs:668
 msgid "Mixed"
 msgstr ""
 
@@ -2317,7 +2317,7 @@ msgstr ""
 msgid "No Matches"
 msgstr ""
 
-#: src/gnome/adaptive.rs:1238 src/gnome/text_controls.rs:488
+#: src/gnome/adaptive.rs:1238 src/gnome/text_controls.rs:491
 msgid "No Results"
 msgstr ""
 
@@ -2389,7 +2389,7 @@ msgstr ""
 msgid "Normal Style"
 msgstr ""
 
-#: src/gnome/font_install.rs:348 src/gnome/text_controls.rs:620
+#: src/gnome/font_install.rs:348 src/gnome/text_controls.rs:623
 msgid "Not available; displayed as"
 msgstr ""
 
@@ -3909,7 +3909,7 @@ msgstr ""
 msgid "This font is not in the download catalog. Choose a local font file."
 msgstr ""
 
-#: src/gnome/text_controls.rs:436
+#: src/gnome/text_controls.rs:439
 msgid "This font is not installed. Its document identity is preserved."
 msgstr ""
 

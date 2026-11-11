@@ -90,6 +90,19 @@ pub(super) fn columns_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
             apply_user_edit(&ui, Edit::Redo);
             settle().await;
         }
+        {
+            let mut current = ui.current.borrow_mut();
+            let s = &mut current.as_mut().unwrap().session;
+            let sections = s.doc.sections();
+            let start = sections[0].0 + 1;
+            let end = sections[1].0 + 1;
+            s.run(
+                "select.range",
+                &serde_json::json!({"anchor":Pos::body(start,0),"focus":Pos::body(end,0)}),
+            )
+            .unwrap();
+        }
+        refresh_selection(&ui);
         let dialog = show_columns(&ui, &parent);
         settle().await;
         assert_eq!(
@@ -98,9 +111,36 @@ pub(super) fn columns_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &App
             "reopen shows actual selected section, excluding selection end boundary"
         );
         let rev = ui.current.borrow().as_ref().unwrap().session.rev();
+        let selected_before = ui.current.borrow().as_ref().unwrap().session.doc.clone();
+        dialog.controls.scope.set_selected(0); // Current Section is the section at the focus end.
+        settle().await;
+        assert_eq!(dialog.controls.count.value_as_int(), 1);
+        assert_eq!(ui.current.borrow().as_ref().unwrap().session.rev(), rev);
+        dialog.controls.count.set_value(2.0); // Same value as the prior scope: must not be deduplicated.
+        settle().await;
+        assert!(
+            ui.current.borrow().as_ref().unwrap().session.rev() > rev,
+            "a value previously used in another scope must edit the current target"
+        );
+        dialog.window.close();
+        settle().await;
+        apply_user_edit(&ui, Edit::Undo);
+        settle().await;
+        assert_eq!(
+            ui.current.borrow().as_ref().unwrap().session.doc,
+            selected_before
+        );
+        let dialog = show_columns(&ui, &parent);
+        settle().await;
+        let rev = ui.current.borrow().as_ref().unwrap().session.rev();
+        dialog.controls.count.set_text("3"); // Incomplete user transaction must not survive a scope refresh.
         dialog.controls.scope.set_selected(1); // Whole Document: mixed section settings.
         settle().await;
         assert!(dialog.controls.mixed.get());
+        assert!(
+            !dialog.controls.count.has_css_class("error"),
+            "programmatic mixed values must cancel older numeric input"
+        );
         assert!(dialog.controls.separator.is_inconsistent());
         assert!(!dialog.controls.count.is_sensitive());
         assert_eq!(

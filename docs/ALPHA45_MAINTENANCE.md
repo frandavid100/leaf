@@ -29,7 +29,8 @@ Pegar formato, conservando los contratos de alpha.43 y sus pruebas.
 #262 mantiene Aplicar a encima de las opciones desplazables, muestra estados
 mixtos y reconoce diseños importados que coinciden con un preajuste. Los valores
 válidos se aplican directamente. Abrir, elegir alcance o actualizar la vista previa
-no crea una edición. El diseño recordado se aplica al destino actual, sin retener
+no crea una edición. Las entradas numéricas sincronizan su valor al cambiar de
+alcance y cancelan la entrada diferida del destino anterior. El diseño recordado se aplica al destino actual, sin retener
 secciones del documento de origen. La vista previa representa geometría: #1,
 flujo de texto en columnas desiguales, sigue siendo un límite del motor. ODT
 conserva el límite previo de exportación de anchuras desiguales.
@@ -57,7 +58,9 @@ prueba personal de GNOME OS, Windows, Orca o impresora física.
 
 Localmente pasan 246 pruebas Rust, 16 Python y 1076 mensajes completos en
 inglés/español. Han pasado las pruebas nativas de zoom, borrado flotante, catálogo y
-columnas; la instalación real de cursiva y negrita cursiva también pasó en un
+columnas, incluida la reutilización de valores entre alcances y la cancelación
+de entradas pendientes. También pasa la regresión completa de controles de
+alpha.43, con apertura no mutante de propiedades de tabla; la instalación real de cursiva y negrita cursiva también pasó en un
 perfil de prueba. El host ya tenía normal/negrita: la aceptación completa de las
 cuatro variantes se reserva expresamente al host limpio de CI. Las verificaciones
 finales del código, traducciones, paquete optimizado y publicación quedan en el
