@@ -1,0 +1,97 @@
+name: Leaf — experimental macOS Apple Silicon package
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/macos.yml'
+      - 'tools/package_macos.py'
+      - 'src/i18n.rs'
+permissions:
+  contents: read
+concurrency:
+  group: leaf-macos-preview
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 120
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install native GTK, packaging and translation dependencies
+        run: |
+          brew install pkgconf gettext gtk4 libadwaita adwaita-icon-theme hicolor-icon-theme shared-mime-info librsvg gdk-pixbuf dylibbundler
+          echo "$(brew --prefix gettext)/bin" >> "$GITHUB_PATH"
+          echo "LIBRARY_PATH=$(brew --prefix gettext)/lib" >> "$GITHUB_ENV"
+          echo "RUSTFLAGS=-L native=$(brew --prefix gettext)/lib" >> "$GITHUB_ENV"
+          pkg-config --modversion gtk4 libadwaita-1
+          uname -m
+      - name: Install required Rust toolchain
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustc --version
+          cargo --version
+      - name: Prepare pinned WordCraft language data
+        run: |
+          bash tools/prepare-language-data.sh
+      - name: Check translations and native build
+        run: |
+          python3 tools/update_translations.py --check --compile
+          cargo test --locked
+          cargo build --release --locked --features gui --bin wordcraft-gnome
+      - name: Create, relocate, and smoke-test Apple Silicon app
+        run: |
+          python3 tools/package_macos.py
+          (cd dist/macos && shasum -a 256 -c SHA256SUMS)
+      - name: Upload preview and integrity records
+        uses: actions/upload-artifact@v4
+        with:
+          name: Leaf-macOS-arm64-preview
+          path: |
+            dist/macos/*.zip
+            dist/macos/*.dmg
+            dist/macos/SHA256SUMS
+            dist/macos/README.txt
+            dist/macos/BUILD.json
+            dist/macos/VERSION
+          if-no-files-found: error
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Leaf-macOS-arm64-preview
+          path: release
+      - name: Verify release files and source identity
+        run: |
+          cd release
+          sha256sum --check SHA256SUMS
+          test "$(python3 -c 'import json;print(json.load(open("BUILD.json"))["source"])')" = "$GITHUB_SHA"
+          test "$(cat VERSION)" = "0.1.0-alpha.45-macos.1"
+      - name: Publish experimental macOS release
+        run: |
+          version=$(cat release/VERSION)
+          cat > notes.md <<'NOTES'
+          First **experimental macOS Apple Silicon** preview of Leaf (based on alpha.45).
+
+          Download the DMG or ZIP, then open Leaf.app. No separate Homebrew or GTK installation should be required. macOS 15 or newer and an Apple Silicon Mac are required.
+
+          The bundle is ad-hoc signed but **not Apple notarized**. If macOS blocks it, open System Settings → Privacy & Security and select Open Anyway for Leaf. Do not bypass security warnings for untrusted downloads.
+
+          **Limited validation:** macOS arm64 compilation, Rust tests, package resource collection, native dependency relocation, CLI startup/version and embedded-language checks, ad-hoc signature and hashes. This is not yet a human-verified macOS release. Please test launching the GUI and reading/editing **copies** of DOCX/ODT; file dialogs, font handling, clipboard and printing remain unverified. Report issues on GitHub.
+
+          Linux and Windows releases are unaffected. GPL-3.0-or-later; third-party components retain their respective licenses.
+          NOTES
+          gh release create "v$version" release/*.zip release/*.dmg release/SHA256SUMS release/README.txt release/BUILD.json --target "$GITHUB_SHA" --title "Leaf $version — macOS preview" --notes-file notes.md --prerelease --latest=false
