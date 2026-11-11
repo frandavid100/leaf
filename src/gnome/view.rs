@@ -285,6 +285,7 @@ pub(super) fn scroll_to_page(ui: &Rc<Ui>, index: usize) {
             .and_then(|doc| doc.arrangement.pages.get(index).map(|p| p.y))
     };
     if let Some(top) = target {
+        cancel_reading_restore(ui);
         let adj = ui.scroll.vadjustment();
         let max = (adj.upper() - adj.page_size()).max(0.0);
         adj.set_value((top + document_content_top(ui) - 10.0).max(0.0).min(max));
@@ -364,7 +365,12 @@ pub(super) fn restore_reading_anchor(ui: &Rc<Ui>, anchor: Option<viewer_layout::
             // An explicit newer navigation owns the viewport after allocation.
             caret_ensure_visible(&ui);
         } else {
+            // The untouched Start page has no reading location. Keep its
+            // browsing offset, while still repainting after native allocation.
             let position = ui.current.borrow().as_ref().and_then(|d| {
+                if templates::keeps_start_state(&ui, d.session.document_id()) {
+                    return None;
+                }
                 anchor.position(
                     &d.arrangement,
                     ui.scroll.hadjustment().page_size(),

@@ -2537,7 +2537,7 @@ msgstr ""
 msgid "Pages"
 msgstr ""
 
-#: src/gnome/diagnostics/sweep20.rs:615 src/gnome/view.rs:34
+#: src/gnome/diagnostics/sweep20.rs:616 src/gnome/view.rs:34
 msgid "Pages: {current} of {total}"
 msgstr ""
 
@@ -2713,7 +2713,7 @@ msgstr ""
 msgid "Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved."
 msgstr ""
 
-#: src/gnome/view.rs:575
+#: src/gnome/view.rs:581
 msgid "Recovery: {e}"
 msgstr ""
 
@@ -3705,7 +3705,7 @@ msgstr ""
 msgid "The document changed. Reopen the font list."
 msgstr ""
 
-#: src/gnome/view.rs:586
+#: src/gnome/view.rs:592
 msgid "The document contains no pages"
 msgstr ""
 
@@ -4273,7 +4273,7 @@ msgstr ""
 msgid "{count}Y"
 msgstr ""
 
-#: src/gnome/diagnostics/view_tests.rs:53 src/gnome/view.rs:729
+#: src/gnome/diagnostics/view_tests.rs:53 src/gnome/view.rs:735
 msgid "{current} of {total}"
 msgstr ""
 

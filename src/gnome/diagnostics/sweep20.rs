@@ -282,7 +282,8 @@ fn stage(t: Rc<Sweep>, n: u8) {
             }
             after_content_change(u);
             zoom_to(u, 0.85);
-            u.scroll.vadjustment().set_value(0.);
+            // Explicit navigation supersedes the deferred zoom restoration.
+            scroll_to_page(u, 0);
             ("hover", vec![(10, 20)])
         }
         45 | 48 | 51 | 54 | 57 => {

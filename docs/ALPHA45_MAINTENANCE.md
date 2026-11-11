@@ -16,7 +16,9 @@ identidad y revisión del documento y ceden ante navegación o entrada posterior
 Siguen las asignaciones reales de tamaño de GTK, también con escalado alto; la
 regresión comprueba que el cursor final queda dentro del visor. El borde superior
 permanece fijo si la vista ya estaba al principio: Inicio conserva la posición del
-folio al escribir, deshacer y rehacer.
+folio al escribir, deshacer y rehacer. La página de Inicio todavía vacía conserva
+su desplazamiento absoluto al cambiar zoom y se repinta después de la asignación
+de tamaño, sin aplicar una referencia de lectura a un documento sin texto.
 #280 conserva esa referencia al borrar/restaurar una imagen flotante, por teclado,
 menús y Deshacer/Rehacer, también cuando hay imágenes consecutivas y el motor
 retiene como objetivo la vecina. Distingue el borrado de imágenes de escribir
