@@ -117,13 +117,8 @@ for p in loaders:
 
 # Rewrite Homebrew library dependencies to the app-local Frameworks directory.
 # Fix plugin dependencies too: the loader modules are opened dynamically.
-run("dylibbundler", "-od", "-b", "-x", MACOS / "leaf-bin",
-    "-d", FRAMEWORKS, "-p", "@executable_path/../Frameworks/")
-for p in sorted(dest_loaders.glob("*.so")):
-    run("dylibbundler", "-od", "-b", "-x", p,
-        "-d", FRAMEWORKS, "-p", "@executable_path/../Frameworks/")
-
-# GdkPixbuf cache stores absolute plugin paths, so substitute at app launch.
+# Capture loader metadata BEFORE relocating their linked libraries: querying
+# plugins after rewriting @executable_path would run outside the app context.
 if loaders:
     cache = subprocess.check_output(
         ["gdk-pixbuf-query-loaders", *map(str, dest_loaders.glob("*.so"))],
@@ -131,6 +126,14 @@ if loaders:
     )
     cache = cache.replace(str(dest_loaders), "@GDK_PIXBUF_MODULEDIR@")
     (LIB / "loaders.cache.in").write_text(cache)
+
+# -od clears the entire destination directory! Supply every plugin and the
+# executable in ONE dylibbundler invocation, keeping their combined closure.
+dependencies = ["dylibbundler", "-od", "-b", "-x", MACOS / "leaf-bin"]
+for plugin in sorted(dest_loaders.glob("*.so")):
+    dependencies.extend(["-x", plugin])
+dependencies.extend(["-d", FRAMEWORKS, "-p", "@executable_path/../Frameworks/"])
+run(*dependencies)
 
 launcher = textwrap.dedent("""\
     #!/bin/sh
