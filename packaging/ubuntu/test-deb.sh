@@ -4,17 +4,9 @@ set -euo pipefail
 . /etc/os-release
 test "$ID" = ubuntu && test "$VERSION_ID" = 26.10
 export DEBIAN_FRONTEND=noninteractive
-# Honor the runner’s configured egress proxy inside the container.
-export https_proxy="${https_proxy:-${HTTPS_PROXY:-}}"
-export http_proxy="${http_proxy:-${HTTP_PROXY:-}}"
-export no_proxy="${no_proxy:-${NO_PROXY:-}}"
-mkdir -p /etc/ssl/certs
-cp /tmp/ubuntu-ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-sed -i 's|http://|https://|g' /etc/apt/sources.list.d/ubuntu.sources
-apt-get -o APT::Update::Error-Mode=any -o Acquire::Retries=1 update
-apt-get install -y --no-install-recommends python3 dpkg-dev libgtk-4-1 libadwaita-1-0 \
-  librsvg2-common shared-mime-info desktop-file-utils xvfb xauth dbus-x11 \
-  fonts-dejavu-core fonts-liberation locales ca-certificates
+# Dependencies were authenticated and downloaded by the host APT into a
+# separate state directory. Install their local files with networking disabled.
+apt-get install -y --no-download --no-install-recommends /work/deb-dependencies/cache/*.deb
 localedef -i en_US -f UTF-8 en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 mkdir -p dist/ubuntu

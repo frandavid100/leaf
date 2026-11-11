@@ -45,15 +45,18 @@ jobs:
                   assert path.stat().st_size == asset['size']
                   assert 'sha256:' + hashlib.sha256(path.read_bytes()).hexdigest() == asset['digest']
           PY
-      - name: Package and exercise the installed app on Ubuntu 26.10
+      - name: Download Ubuntu dependencies with isolated APT state
+        run: |
+          docker pull ubuntu:26.10@sha256:262df65c0ec6bf8d9dcc87454f4330a05fae4b97825f45854af3b136666584c2
+          mkdir -p deb-dependencies
+          docker run --rm --network none ubuntu:26.10@sha256:262df65c0ec6bf8d9dcc87454f4330a05fae4b97825f45854af3b136666584c2 \
+            cat /var/lib/dpkg/status > deb-dependencies/status
+          sudo bash packaging/ubuntu/prepare-dependencies.sh
+      - name: Package and exercise the installed app offline on Ubuntu 26.10
         run: |
           set -o pipefail
-          docker run --rm --network host \
-            --env HTTPS_PROXY --env HTTP_PROXY --env ALL_PROXY --env NO_PROXY \
-            --env https_proxy --env http_proxy --env all_proxy --env no_proxy \
-            --volume "$PWD:/work" \
-            --volume /etc/ssl/certs/ca-certificates.crt:/tmp/ubuntu-ca-certificates.crt:ro \
-            --workdir /work ubuntu:26.10 \
+          docker run --rm --network none --volume "$PWD:/work" --workdir /work \
+            ubuntu:26.10@sha256:262df65c0ec6bf8d9dcc87454f4330a05fae4b97825f45854af3b136666584c2 \
             bash packaging/ubuntu/test-deb.sh 2>&1 | tee ubuntu-deb-validation.log
           cp ubuntu-deb-validation.log dist/ubuntu/
       - uses: actions/upload-artifact@v4
