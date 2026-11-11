@@ -4,6 +4,10 @@ set -euo pipefail
 . /etc/os-release
 test "$ID" = ubuntu && test "$VERSION_ID" = 26.10
 export DEBIAN_FRONTEND=noninteractive
+# Honor the runner’s configured egress proxy inside the container.
+export https_proxy="${https_proxy:-${HTTPS_PROXY:-}}"
+export http_proxy="${http_proxy:-${HTTP_PROXY:-}}"
+export no_proxy="${no_proxy:-${NO_PROXY:-}}"
 mkdir -p /etc/ssl/certs
 cp /tmp/ubuntu-ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 sed -i 's|http://|https://|g' /etc/apt/sources.list.d/ubuntu.sources

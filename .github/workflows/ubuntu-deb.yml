@@ -48,7 +48,10 @@ jobs:
       - name: Package and exercise the installed app on Ubuntu 26.10
         run: |
           set -o pipefail
-          docker run --rm --network host --volume "$PWD:/work" \
+          docker run --rm --network host \
+            --env HTTPS_PROXY --env HTTP_PROXY --env ALL_PROXY --env NO_PROXY \
+            --env https_proxy --env http_proxy --env all_proxy --env no_proxy \
+            --volume "$PWD:/work" \
             --volume /etc/ssl/certs/ca-certificates.crt:/tmp/ubuntu-ca-certificates.crt:ro \
             --workdir /work ubuntu:26.10 \
             bash packaging/ubuntu/test-deb.sh 2>&1 | tee ubuntu-deb-validation.log
