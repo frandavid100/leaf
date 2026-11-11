@@ -1,5 +1,14 @@
 # Decisiones vigentes
 
+## 11/11/2026 — presentación del README
+
+David autoriza usar las cuatro capturas revisadas con el icono nuevo y actualizar
+el texto. La portada es principal; maquetación, revisión y el menú de subrayado
+preferido forman la galería ampliable. Se conservan los PNG originales y su
+procedencia. La transparencia sobre IA permanece visible junto a la presentación.
+No se atribuye una versión exacta a las capturas ni se publica una release o una
+actualización de catálogo por este cambio. [Capturas](screenshots/README.md).
+
 ## 10/11/2026 — Windows alpha.44 publicado y verificado
 
 El instalador y ZIP `0.1.0-alpha.44-windows.1` utilizan la misma fuente

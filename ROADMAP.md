@@ -1,5 +1,14 @@
 # Hoja de ruta de Leaf
 
+## 11/11/2026 — README y capturas aprobadas
+
+La presentación pública usa el icono azul vigente y cuatro capturas reales
+aportadas y aprobadas por David: portada, maquetación, revisión y menú de
+subrayado. El texto resume las funciones actuales, declara el vibe coding y
+distingue FlatPark con actualizaciones de los bundles manuales y Windows
+experimental. [Procedencia](docs/screenshots/README.md). No se publica una nueva
+alpha ni se da por actualizada la galería de la tienda; #185 conserva ese trabajo.
+
 
 
 

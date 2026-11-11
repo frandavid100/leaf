@@ -1,6 +1,43 @@
 # Screenshot provenance
 
-## Current public gallery: alpha.28
+## Current README gallery: 11 November 2026
+
+David supplied and individually approved these four screenshots for the public
+README, including the underline menu in preference to a styles gallery. They are
+reproduced byte for byte: no cropping, recolouring, generated UI or retouching.
+They show the English interface editing an illustrative fourteen-page
+`Portland Head Light Conservation Plan.docx`. The exact installed build and
+display scale were not recorded; these images do not establish a release-specific
+validation result. The case study's findings, quantities, costs and dates are
+fictional, as its cover states.
+
+| Repository image | Original attachment | Pixels | SHA-256 |
+| --- | --- | --- | --- |
+| leaf-2026-11-main.png | `image(20261111-053702).png` | 1074 × 890 | 2fd6be2a3cc104107b5e58636ab148ec848a5c749f7711cda1bbe05a59001a08 |
+| leaf-2026-11-layout.png | `image(20261111-053921).png` | 1074 × 890 | 85c51dcfcb4668f2c6b48d1e742536ff08b05e7050f4c3167899fa217777a2f0 |
+| leaf-2026-11-review.png | `image(20261111-054422).png` | 1074 × 890 | 87f34321e6e29c879a11458cd9bfa1c9b2691d66e18e4a9b5c449e144257484b |
+| leaf-2026-11-format.png | `Untitled(1).png` | 1074 × 890 | ace3a8a7d9c3c71b49548b31d8a5bef8d68eb28d1629413d0fd345523d81da96 |
+
+Scenes: cover and thumbnails; structure navigation and columns with a wrapped
+photograph; Review with a comment and language suggestions; and the native
+underline menu over a multilevel list and table. The previous page fragment in
+the layout scene is intentional, following David's preference.
+
+The document credits its lighthouse photographs to **Rapidfire**. Source images:
+[Portland-Head-Lighthouse.jpg](https://commons.wikimedia.org/wiki/File:Portland-Head-Lighthouse.jpg)
+(2009) and
+[Portland-head-lighthouse.jpg](https://commons.wikimedia.org/wiki/File:Portland-head-lighthouse.jpg)
+(2007), by Rapidfire, available under
+[CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+The photographs are scaled and partly cropped by the document layout/viewport;
+the screenshot files themselves are unchanged. Their photographic content
+retains that license; no endorsement by the photographer is implied.
+
+This delivery refreshes the README only. AppStream/FlatPark gallery publication
+and verification in an installed software client remain separate work under
+[issue #185](https://github.com/frandavid100/leaf/issues/185).
+
+## Historical public gallery: alpha.28
 
 The four `leaf-alpha28-*.png` images are unchanged captures from the installed
 GNOME 49 Flatpak, source `d2ba113d9ed2bc0dbb4794732c6035a195cba755`.
@@ -55,4 +92,4 @@ Original artifact ZIP SHA-256: `3e46a27293358c284d989ae42fc8de0ce4efe862eb0e093d
 
 The screenshots use the synthetic Open Studio Handbook test fixture under Xvfb on Ubuntu 24.04, with Spanish interface strings. They are not photographs of a GNOME OS session and do not demonstrate Flatpak installation. The black area outside the window belongs to the virtual display. No window chrome, text or controls have been retouched.
 
-These captures predate Leaf branding integration; the application/window may still use its development labels. The installed alpha.28 gallery above is now featured in the public README. Screenshots and the test document are not additional shipped sample documents in normal startup.
+These captures predate Leaf branding integration; the application/window may still use its development labels. The maintainer-supplied November 2026 gallery above is now featured in the public README. Screenshots and the test document are not additional shipped sample documents in normal startup.
