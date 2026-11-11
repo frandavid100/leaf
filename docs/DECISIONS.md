@@ -3,8 +3,9 @@
 ## 11/11/2026 — retomar la ficha de FlatPark
 
 David autoriza preparar la actualización de la entrada con las cuatro capturas
-ya revisadas y el icono vigente. Se conserva la descripción EN/ES aprobada y los
-colores existentes. El cambio externo se limita a metainfo e iconos, conservando
+ya revisadas y el icono vigente. Después pide renovar también el texto: se adapta
+el enfoque del README en EN/ES, con ventajas y funciones primero y estado alfa e
+IA al final. Se conservan los colores existentes. El cambio externo se limita a metainfo e iconos, conservando
 pin, permisos, runtime, wrapper y resolver. Las notas vacías se recuperan del
 metainfo upstream para la alpha.44 empaquetada. FlatPark exige presentar el
 borrador y recibir OK humano antes de abrir la PR; preparar y subir la rama sí

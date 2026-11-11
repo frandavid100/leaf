@@ -5,7 +5,8 @@
 David pide retomar la ficha de FlatPark. AppStream usa las cuatro capturas
 aprobadas con transparencia, esquinas y sombra originales. Se prepara en el fork
 una actualización estática de metainfo e iconos, con las novedades bilingües de
-alpha.44/.42/.41/.40 que faltaban. La descripción aprobada se conserva.
+alpha.44/.42/.41/.40 que faltaban. A petición de David, la descripción EN/ES
+se renueva siguiendo el README: potencia y sencillez primero, alfa e IA al final.
 No cambia el ejecutable ni se publica una alpha. La automatización anterior no
 se integró: sigue reservada a FlatPark. PR y comprobación en el cliente pendientes;
 #185 permanece abierto. [Revisión y borrador](docs/FLATPARK_GALLERY_2026_11.md).

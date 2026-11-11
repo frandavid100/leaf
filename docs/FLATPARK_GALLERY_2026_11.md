@@ -6,14 +6,50 @@ David asked to resume the FlatPark listing after supplying and approving four
 current screenshots. Upstream AppStream now references the same unretouched
 images as the README. The FlatPark fork branch is
 [`fix/leaf-gallery-2026-11`](https://github.com/frandavid100/flatpark/tree/fix/leaf-gallery-2026-11).
-Fork commit: `238b74a5c0fa4b957726d06b22ea601ddf561fd2`.
+The branch includes the gallery, icons, release-note backfill and revised copy.
 [Compare the three changed files](https://github.com/flatpark/flatpark/compare/main...frandavid100:flatpark:fix/leaf-gallery-2026-11).
 It is prepared for review; no new FlatPark PR has been opened and the public
 catalogue has not been refreshed by this work.
 
 FlatPark main baseline: `b97446f9361ad5c380a2dee400b480ee7d75c4d9`.
 Packaged version: **0.1.0-alpha.44**, already pinned by FlatPark. The existing
-English/Spanish description and approved light/dark branding colours are kept.
+English/Spanish product description is renewed to follow the README, at David’s
+request. Approved light/dark branding colours are kept.
+
+## Revised product description
+
+The following is the product copy. FlatPark’s existing packaging/permission
+paragraphs remain appended unchanged in its registry metainfo.
+
+### Español
+
+Leaf reúne herramientas avanzadas de edición en una interfaz sencilla e integrada en GNOME. Crea informes con una maquetación cuidada, recorre documentos largos y revisa los cambios, con las herramientas habituales a mano y las opciones detalladas disponibles cuando las necesitas.
+
+- Crea y edita documentos DOCX y ODT con estilos, tablas, imágenes y columnas.
+- Recorre documentos largos mediante miniaturas de páginas, títulos y marcadores.
+- Añade notas al pie y crea índices automáticos, leyendas numeradas y referencias cruzadas en DOCX.
+- Revisa la ortografía, la gramática, los comentarios y el seguimiento de cambios desde un panel lateral.
+- Elige las herramientas de tu barra, trabaja con varios documentos en pestañas y utiliza tus propias plantillas.
+- Utiliza el autoguardado y la recuperación, y exporta el resultado a PDF o imprímelo.
+
+Leaf está en fase alfa. Pruébalo con copias de los documentos importantes: la compatibilidad sigue mejorando y algunas funciones avanzadas requieren DOCX. Leaf bloquea el guardado en ODT cuando detecta estructuras que todavía no puede conservar.
+
+Leaf utiliza el motor de documentos WordCraft. Buena parte de su interfaz nativa, pruebas y empaquetado se ha producido mediante vibe coding con ChatGPT/Codex; el icono también se ha creado con asistencia de IA.
+
+### English
+
+Leaf brings advanced word processing to a simple, native GNOME interface. Create richly formatted reports, navigate long documents and review changes, with everyday tools close at hand and detailed options when you need them.
+
+- Create and edit DOCX and ODT documents with styles, tables, images and columns.
+- Find your way through long documents with page thumbnails, headings and bookmarks.
+- Add footnotes, and build automatic contents, numbered captions and cross-references in DOCX.
+- Review spelling, grammar, comments and tracked changes in a dedicated sidebar.
+- Choose the tools on your toolbar, work across tabs and start from your own templates.
+- Use autosave and recovery, then export to PDF or print.
+
+Leaf is in alpha. Test with copies of important documents: compatibility is still being improved, and some advanced features require DOCX. Leaf blocks ODT saves when it detects structures it cannot yet preserve.
+
+Leaf uses the existing WordCraft document engine. Much of Leaf’s native interface, tests and packaging was produced through vibe coding with ChatGPT/Codex; the icon also used AI assistance.
 
 ## Gallery
 
@@ -65,8 +101,10 @@ The latest four registry release entries also have empty descriptions.
 using immutable upstream URLs and English/Spanish captions. Copy the current
 upstream blue-quill full-colour and symbolic SVG icons. Fill the existing empty
 alpha.44, .42, .41 and .40 release entries from the reviewed upstream alpha.44
-metainfo. Keep the already approved bilingual description, branding colours and
-FlatPark's distribution/permissions paragraphs.
+metainfo. Rewrite the English/Spanish product description around advanced editing
+with a simple GNOME workspace, followed by concrete capabilities and then the
+alpha and AI disclosures. Keep branding colours and FlatPark's
+distribution/permissions paragraphs.
 
 **Packaging and sandbox:** the official alpha.44 extra-data URL, digest and size,
 GNOME 51 runtime, manifest, desktop entry, wrappers, permissions, resolver and
@@ -77,7 +115,7 @@ Leaf is not on Flathub.
 **Tested:** upstream's 16 Python tests, reviewed-news generation and project links;
 FlatPark descriptor parsing/audit and the update-pins regression suite; PNG
 integrity, dimensions and alpha channel; SVG rendering; exact icon identity and
-preservation of package fields. Upstream metadata CI passed on 11 November 2026.
+preservation of package fields. Metadata CI is rerun for the revised product text.
 No local Flatpak build/install/launch or installed-store-client inspection was
 performed in this environment. The AppStream CLI is not installed locally;
 its validation is delegated to the existing upstream metadata CI and FlatPark CI.
@@ -92,7 +130,7 @@ This PR intentionally changes only three data files in Leaf's registry directory
 - Local metadata/news checks, 16 Python tests and project links: passed.
 - FlatPark descriptor parse/audit and update-pins regressions: passed. The
   AppStream-specific regression branch self-skips without appstreamcli.
-- [Upstream Store metadata CI](https://github.com/frandavid100/leaf/actions/runs/42974180620): passed for `4bb9f6fe0f1f118e695a0fc2b254a21070e968a7`, including AppStream validation, gettext compilation, reviewed news, online screenshot URL checks, 16 Python tests and documentation links.
+- [Earlier gallery metadata CI](https://github.com/frandavid100/leaf/actions/runs/42974180620): passed. Validation of the revised description and updated catalogs is pending the next metadata commit.
 - No new Leaf executable, release/tag mutation, runtime or permission changes.
 - FlatPark requires explicit human OK before opening a PR, under its
   [packaging playbook](https://github.com/flatpark/flatpark/blob/main/docs/packagers/playbook.md).

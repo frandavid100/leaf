@@ -9,17 +9,17 @@
   </developer>
   <summary>Create and edit documents in GNOME</summary>
   <description>
-    <p>Leaf is a free word processor with a simple interface that integrates with GNOME. Write from scratch, work with DOCX and ODT documents and export the result to PDF.</p>
-    <p>Shape your documents with styles, tables, images and columns. Add headers, footers, footnotes and tables of contents, and find each section using page thumbnails and the document outline.</p>
+    <p>Leaf brings advanced word processing to a simple, native GNOME interface. Create richly formatted reports, navigate long documents and review changes, with everyday tools close at hand and detailed options when you need them.</p>
     <ul>
-      <li>Format text and paragraphs with native controls.</li>
-      <li>Insert images and adjust their size and position alongside text.</li>
-      <li>Check spelling and work with comments and tracked changes.</li>
-      <li>Search and replace text throughout the document or within a selection.</li>
-      <li>Open several documents in tabs and use your own templates.</li>
+      <li>Create and edit DOCX and ODT documents with styles, tables, images and columns.</li>
+      <li>Find your way through long documents with page thumbnails, headings and bookmarks.</li>
+      <li>Add footnotes, and build automatic contents, numbered captions and cross-references in DOCX.</li>
+      <li>Review spelling, grammar, comments and tracked changes in a dedicated sidebar.</li>
+      <li>Choose the tools on your toolbar, work across tabs and start from your own templates.</li>
+      <li>Use autosave and recovery, then export to PDF or print.</li>
     </ul>
-    <p>Leaf is under development and its current versions are alphas. DOCX and ODT compatibility continues to improve: some documents may have formatting differences or contain features that are not yet supported. Keep a copy of important files.</p>
-    <p>Leaf uses the WordCraft engine. Its development, documentation and artwork have used artificial intelligence assistance.</p>
+    <p>Leaf is in alpha. Test with copies of important documents: compatibility is still being improved, and some advanced features require DOCX. Leaf blocks ODT saves when it detects structures it cannot yet preserve.</p>
+    <p>Leaf uses the existing WordCraft document engine. Much of Leaf’s native interface, tests and packaging was produced through vibe coding with ChatGPT/Codex; the icon also used AI assistance.</p>
   </description>
   <launchable type="desktop-id">io.github.frandavid100.leaf.desktop</launchable>
   <url type="homepage">https://github.com/frandavid100/leaf</url>

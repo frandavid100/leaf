@@ -70,7 +70,8 @@ pins unchanged. Screenshots use immutable URLs, and exported icons must be
 copied explicitly into FlatPark's registry.
 
 The [11 November revision](FLATPARK_GALLERY_2026_11.md) updates only FlatPark's
-metainfo and two icons. It keeps alpha.44's archive pin/runtime/permissions and
+metainfo and two icons. Its revised bilingual copy follows the refreshed README,
+with capabilities first and alpha/AI disclosures at the end of the product text. It keeps alpha.44's archive pin/runtime/permissions and
 resumes the gallery work authorized by David after approving the four captures.
 The fork branch is prepared for review; opening a PR requires explicit human OK
 under FlatPark's [packaging playbook](https://github.com/flatpark/flatpark/blob/main/docs/packagers/playbook.md).

@@ -3795,3 +3795,39 @@ msgstr "Table Indent (cm)"
 
 msgid "Table Width (cm)"
 msgstr "Table Width (cm)"
+
+#: data/*.in
+msgid "Leaf brings advanced word processing to a simple, native GNOME interface. Create richly formatted reports, navigate long documents and review changes, with everyday tools close at hand and detailed options when you need them."
+msgstr "Leaf brings advanced word processing to a simple, native GNOME interface. Create richly formatted reports, navigate long documents and review changes, with everyday tools close at hand and detailed options when you need them."
+
+#: data/*.in
+msgid "Create and edit DOCX and ODT documents with styles, tables, images and columns."
+msgstr "Create and edit DOCX and ODT documents with styles, tables, images and columns."
+
+#: data/*.in
+msgid "Find your way through long documents with page thumbnails, headings and bookmarks."
+msgstr "Find your way through long documents with page thumbnails, headings and bookmarks."
+
+#: data/*.in
+msgid "Add footnotes, and build automatic contents, numbered captions and cross-references in DOCX."
+msgstr "Add footnotes, and build automatic contents, numbered captions and cross-references in DOCX."
+
+#: data/*.in
+msgid "Review spelling, grammar, comments and tracked changes in a dedicated sidebar."
+msgstr "Review spelling, grammar, comments and tracked changes in a dedicated sidebar."
+
+#: data/*.in
+msgid "Choose the tools on your toolbar, work across tabs and start from your own templates."
+msgstr "Choose the tools on your toolbar, work across tabs and start from your own templates."
+
+#: data/*.in
+msgid "Use autosave and recovery, then export to PDF or print."
+msgstr "Use autosave and recovery, then export to PDF or print."
+
+#: data/*.in
+msgid "Leaf is in alpha. Test with copies of important documents: compatibility is still being improved, and some advanced features require DOCX. Leaf blocks ODT saves when it detects structures it cannot yet preserve."
+msgstr "Leaf is in alpha. Test with copies of important documents: compatibility is still being improved, and some advanced features require DOCX. Leaf blocks ODT saves when it detects structures it cannot yet preserve."
+
+#: data/*.in
+msgid "Leaf uses the existing WordCraft document engine. Much of Leaf’s native interface, tests and packaging was produced through vibe coding with ChatGPT/Codex; the icon also used AI assistance."
+msgstr "Leaf uses the existing WordCraft document engine. Much of Leaf’s native interface, tests and packaging was produced through vibe coding with ChatGPT/Codex; the icon also used AI assistance."
