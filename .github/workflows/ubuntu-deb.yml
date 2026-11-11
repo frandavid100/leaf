@@ -60,7 +60,6 @@ jobs:
           docker run --rm --network none --volume "$PWD:/work" --workdir /work \
             ubuntu:26.10@sha256:262df65c0ec6bf8d9dcc87454f4330a05fae4b97825f45854af3b136666584c2 \
             bash packaging/ubuntu/test-deb.sh 2>&1 | tee ubuntu-deb-validation.log
-          cp ubuntu-deb-validation.log dist/ubuntu/
       - uses: actions/upload-artifact@v4
         if: always()
         with:
