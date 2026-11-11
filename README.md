@@ -6,12 +6,6 @@
 
 Leaf brings advanced word processing to a native GNOME interface. Create richly formatted reports, navigate long documents and review changes, with everyday tools close at hand and detailed options when you need them. Keep your attention on your work.
 
-**Built through vibe coding with ChatGPT/Codex.** The maintainer designs the application and tests builds; AI agents write much of the native interface, tests and packaging. [How Leaf is developed](docs/AI_ASSISTANCE.md).
-
-[![Get it on FlatPark](https://flatpark.org/badges/get-it-on-flatpark.svg)](https://flatpark.org/apps/io.github.frandavid100.leaf/)
-
-[Linux installation](docs/INSTALLING.md) · [Flatpak download](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.44) · [Experimental Windows version](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.44-windows.1)
-
 ![Leaf editing a fourteen-page conservation plan, with a coloured cover, lighthouse photograph and page thumbnails](docs/screenshots/leaf-2026-11-main.png)
 
 ## More than a blank page
@@ -23,8 +17,7 @@ Leaf brings advanced word processing to a native GNOME interface. Create richly 
 - **Make the workspace yours:** a configurable bottom toolbar, detailed native formatting menus, tabs, light and dark appearance, and English and Spanish interfaces.
 - **Finish and share:** personal templates, search and replace, autosave and recovery, PDF export and printing.
 
-<details>
-<summary><strong>See layout, review and formatting in action</strong></summary>
+## See Leaf in action
 
 ### Find your way through complex layouts
 
@@ -44,15 +37,23 @@ Detailed formatting in a native menu, here showing underline styles alongside a 
 
 ![Leaf’s underline menu showing line styles, with a multilevel list, table and page thumbnails behind it](docs/screenshots/leaf-2026-11-format.png)
 
-</details>
-
 *[Real application captures supplied and approved by the maintainer. Capture details and photograph credits](docs/screenshots/README.md).*
 
 ## The power behind the interface
 
 [WordCraft](https://github.com/storytold/wordcraft) provides the document engine: editing, layout, rendering and file formats. It offers many of the advanced capabilities familiar from Microsoft Word. Leaf brings that foundation into a simpler GNOME workspace, exposing more of it as each feature is integrated and tested. This is not a claim of full Microsoft Office feature parity or perfect file compatibility.
 
+## Help it grow
+
+Real-document testing and review by experienced developers are welcome. Automated tests do not establish complete compatibility, accessibility or comprehensive human code review. [AI assistance and validation limits](docs/AI_ASSISTANCE.md).
+
+Contributors: work on [`main`](https://github.com/frandavid100/leaf/tree/main). [Build and contribute](CONTRIBUTING.md) · [Roadmap](ROADMAP.md) · [Release notes](docs/RELEASE_NOTES.md)
+
 ## Try Leaf
+
+[![Get it on FlatPark](https://flatpark.org/badges/get-it-on-flatpark.svg)](https://flatpark.org/apps/io.github.frandavid100.leaf/)
+
+[Linux installation](docs/INSTALLING.md) · [Flatpak download](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.44) · [Experimental Windows version](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.44-windows.1)
 
 **Linux:** install from [FlatPark](https://flatpark.org/apps/io.github.frandavid100.leaf/) to receive updates through your Flatpak software manager. You can also download the standalone `.flatpak` from [GitHub Releases](https://github.com/frandavid100/leaf/releases); those bundles are updated manually. [Installation instructions](docs/INSTALLING.md).
 
@@ -62,10 +63,8 @@ Detailed formatting in a native menu, here showing underline styles alongside a 
 
 [Report a problem](https://github.com/frandavid100/leaf/issues/new/choose) · [Testing guide](docs/TESTING.md) · [Help translate on Weblate](https://hosted.weblate.org/projects/leaf/application/) · [Translation guide](docs/TRANSLATING.md)
 
-## Help it grow
+## Development with AI
 
-Real-document testing and review by experienced developers are welcome. Automated tests do not establish complete compatibility, accessibility or comprehensive human code review. [AI assistance and validation limits](docs/AI_ASSISTANCE.md).
-
-Contributors: work on [`main`](https://github.com/frandavid100/leaf/tree/main). [Build and contribute](CONTRIBUTING.md) · [Roadmap](ROADMAP.md) · [Release notes](docs/RELEASE_NOTES.md)
+**Built through vibe coding with ChatGPT/Codex.** The maintainer designs the application and tests builds; AI agents write much of the native interface, tests and packaging. [How Leaf is developed](docs/AI_ASSISTANCE.md).
 
 Leaf is an independent project, not an official GNOME application. Free software under [GPL-3.0-or-later](LICENSE).

@@ -4,8 +4,10 @@
 
 David autoriza usar las cuatro capturas revisadas con el icono nuevo y actualizar
 el texto. La portada es principal; maquetación, revisión y el menú de subrayado
-preferido forman la galería ampliable. Se conservan los PNG originales y su
-procedencia. La transparencia sobre IA permanece visible junto a la presentación.
+preferido forman una galería visible sin desplegable. Se conservan los PNG
+originales y su procedencia. A petición posterior de David, las opciones de
+instalación y el badge de FlatPark van al final, seguidos de la explicación
+explícita del vibe coding.
 No se atribuye una versión exacta a las capturas ni se publica una release o una
 actualización de catálogo por este cambio. [Capturas](screenshots/README.md).
 
