@@ -13,6 +13,8 @@ publicación en [LATEST_RELEASE](LATEST_RELEASE.md).
 #278 conserva una referencia de lectura independiente del cursor durante zoom,
 ajuste al ancho y cambios de tamaño. Las restauraciones diferidas respetan la
 identidad y revisión del documento y ceden ante navegación o entrada posterior.
+Siguen las asignaciones reales de tamaño de GTK, también con escalado alto; la
+regresión comprueba que el cursor final queda dentro del visor.
 #280 conserva esa referencia al borrar/restaurar una imagen flotante, por teclado,
 menús y Deshacer/Rehacer, también cuando hay imágenes consecutivas y el motor
 retiene como objetivo la vecina. Distingue el borrado de imágenes de escribir
@@ -23,7 +25,8 @@ No cambia el anclaje ni la selección del motor.
 operaciones de selección/inserción/borrado/división de tablas, inserción independiente
 de imagen/tabla/índice, campos automáticos y saltos. Se reutilizan las acciones y
 páginas existentes; las nuevas identidades empiezan en Más opciones, sin alterar
-el orden ni la colocación guardados. Copiar normalmente sigue proporcionando
+el orden ni la colocación guardados. Imagen y Tabla mantienen sus primeras
+posiciones y las nuevas inserciones avanzadas se añaden después. Copiar normalmente sigue proporcionando
 Pegar formato, conservando los contratos de alpha.43 y sus pruebas.
 
 #262 mantiene Aplicar a encima de las opciones desplazables, muestra estados

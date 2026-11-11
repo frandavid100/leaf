@@ -340,16 +340,21 @@ pub(super) fn restore_reading_anchor(ui: &Rc<Ui>, anchor: Option<viewer_layout::
     ui.reading_anchor
         .replace(Some((identity, navigation, selection.clone(), anchor)));
     let weak = Rc::downgrade(ui);
-    glib::idle_add_local_once(move || {
+    let frames = Cell::new(0);
+    // Tick precedes layout. Allow one allocation, then follow its final geometry.
+    ui.document_box.add_tick_callback(move |_, _| {
         let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
-            return;
+            return glib::ControlFlow::Break;
         };
         if generation != ui.viewport_restore_generation.get()
             || document_identity(&ui) != Some(identity)
         {
-            return;
+            return glib::ControlFlow::Break;
         }
-        ui.reading_anchor.borrow_mut().take();
+        frames.set(frames.get() + 1);
+        if frames.get() < 2 {
+            return glib::ControlFlow::Continue;
+        }
         let changed = ui
             .current
             .borrow()
@@ -358,27 +363,33 @@ pub(super) fn restore_reading_anchor(ui: &Rc<Ui>, anchor: Option<viewer_layout::
         if navigation != ui.caret_navigation_generation.get() || changed {
             // An explicit newer navigation owns the viewport after allocation.
             caret_ensure_visible(&ui);
-            return;
-        }
-        let position = ui.current.borrow().as_ref().and_then(|d| {
-            anchor.position(
-                &d.arrangement,
-                ui.scroll.hadjustment().page_size(),
-                ui.scroll.vadjustment().page_size(),
-            )
-        });
-        if let Some((x, y)) = position {
-            for (adjustment, value) in [
-                (ui.scroll.hadjustment(), x),
-                (ui.scroll.vadjustment(), y + document_content_top(&ui)),
-            ] {
-                adjustment.set_value(value.clamp(
-                    adjustment.lower(),
-                    (adjustment.upper() - adjustment.page_size()).max(adjustment.lower()),
-                ));
+        } else {
+            let position = ui.current.borrow().as_ref().and_then(|d| {
+                anchor.position(
+                    &d.arrangement,
+                    ui.scroll.hadjustment().page_size(),
+                    ui.scroll.vadjustment().page_size(),
+                )
+            });
+            if let Some((x, y)) = position {
+                for (adjustment, value) in [
+                    (ui.scroll.hadjustment(), x),
+                    (ui.scroll.vadjustment(), y + document_content_top(&ui)),
+                ] {
+                    adjustment.set_value(value.clamp(
+                        adjustment.lower(),
+                        (adjustment.upper() - adjustment.page_size()).max(adjustment.lower()),
+                    ));
+                }
             }
+            refresh_pages(&ui);
         }
-        refresh_pages(&ui);
+        if frames.get() >= 3 {
+            ui.reading_anchor.borrow_mut().take();
+            glib::ControlFlow::Break
+        } else {
+            glib::ControlFlow::Continue
+        }
     });
 }
 fn apply_zoom(ui: &Rc<Ui>, zoom: f32) {

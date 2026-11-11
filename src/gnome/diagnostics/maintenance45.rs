@@ -31,6 +31,30 @@ fn same_reading(ui: &Ui, expected: viewer_layout::ReadingAnchor) {
         "within-page reading anchor changed {anchor:?} vs {expected:?}"
     );
 }
+fn document_end_visible(ui: &Ui) {
+    let caret = ui
+        .selection_data
+        .borrow()
+        .caret
+        .clone()
+        .expect("text caret");
+    let value = ui.current.borrow();
+    let d = value.as_ref().unwrap();
+    assert_eq!(
+        caret.page,
+        d.sizes.len() - 1,
+        "navigation must reach the document end"
+    );
+    let frame = d.page_frames[caret.page]
+        .compute_bounds(&ui.scroll)
+        .unwrap();
+    let y = frame.y() as f64 + caret.y * d.page_zoom(caret.page) as f64;
+    assert!(
+        y >= 0. && y <= ui.scroll.height() as f64,
+        "newer navigation must reveal its caret: y={y}, viewport={}",
+        ui.scroll.height()
+    );
+}
 pub(super) fn zoom(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
@@ -89,13 +113,7 @@ pub(super) fn zoom(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         zoom_to(&ui, 1.5);
         selected_command(&ui, "docEnd", false);
         settle().await;
-        let d = ui.current.borrow();
-        let d = d.as_ref().unwrap();
-        assert_eq!(
-            viewport_page(&ui, d),
-            d.sizes.len() - 1,
-            "newer explicit navigation lost"
-        );
+        document_end_visible(&ui);
         eprintln!("ZOOM278_UI_OK");
         app.quit();
     });
@@ -341,10 +359,7 @@ pub(super) fn picture_delete(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Appl
             );
             selected_command(&ui, "docEnd", false);
             settle().await;
-            assert!(
-                capture_reading_anchor(&ui).unwrap().page > anchor.page + 5,
-                "deliberate caret navigation must still reveal the document end"
-            );
+            document_end_visible(&ui);
         }
         eprintln!("PICTURE280_UI_OK");
         app.quit();

@@ -279,12 +279,6 @@ pub fn tools(group: &str) -> Vec<Tool> {
         ],
         "elements" => &[
             ("image", "insert-image-symbolic", crate::t!("Image"), true),
-            (
-                "insert-new-toc",
-                "list-add-symbolic",
-                crate::t!("Insert Table of Contents…"),
-                false,
-            ),
             ("table", "view-grid-symbolic", crate::t!("Table"), true),
             (
                 "insert-new-table",
@@ -296,6 +290,12 @@ pub fn tools(group: &str) -> Vec<Tool> {
                 "insert-new-image",
                 "insert-image-symbolic",
                 crate::t!("Insert Image…"),
+                false,
+            ),
+            (
+                "insert-new-toc",
+                "list-add-symbolic",
+                crate::t!("Insert Table of Contents…"),
                 false,
             ),
             (

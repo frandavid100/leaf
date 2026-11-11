@@ -1817,7 +1817,7 @@ msgstr ""
 msgid "Insert Image"
 msgstr ""
 
-#: src/gnome/picture_controls.rs:278 src/toolbar.rs:298
+#: src/gnome/picture_controls.rs:278 src/toolbar.rs:292
 msgid "Insert Image…"
 msgstr ""
 
@@ -1849,11 +1849,11 @@ msgstr ""
 msgid "Insert Table"
 msgstr ""
 
-#: src/gnome/elements.rs:253 src/toolbar.rs:285
+#: src/gnome/elements.rs:253 src/toolbar.rs:298
 msgid "Insert Table of Contents…"
 msgstr ""
 
-#: src/gnome/tables.rs:684 src/toolbar.rs:292
+#: src/gnome/tables.rs:684 src/toolbar.rs:286
 msgid "Insert Table…"
 msgstr ""
 
@@ -2453,7 +2453,7 @@ msgstr ""
 msgid "Open Document"
 msgstr ""
 
-#: src/gnome/diagnostics/maintenance45.rs:186 src/gnome/font_install.rs:152 src/gnome/font_install.rs:237
+#: src/gnome/diagnostics/maintenance45.rs:204 src/gnome/font_install.rs:152 src/gnome/font_install.rs:237
 msgid "Open Font File"
 msgstr ""
 
@@ -2713,7 +2713,7 @@ msgstr ""
 msgid "Recovery: a separate copy every 10 seconds. Document file: save every 30 seconds; unnamed documents use recovery until first saved."
 msgstr ""
 
-#: src/gnome/view.rs:564
+#: src/gnome/view.rs:575
 msgid "Recovery: {e}"
 msgstr ""
 
@@ -2909,7 +2909,7 @@ msgstr ""
 msgid "Review Filter"
 msgstr ""
 
-#: src/gnome/diagnostics/maintenance45.rs:148 src/gnome/font_install.rs:71
+#: src/gnome/diagnostics/maintenance45.rs:166 src/gnome/font_install.rs:71
 msgid "Review Fonts"
 msgstr ""
 
@@ -3565,7 +3565,7 @@ msgstr ""
 msgid "Tab stop"
 msgstr ""
 
-#: src/gnome/context.rs:475 src/gnome/context.rs:500 src/gnome/diagnostics/annotations.rs:154 src/gnome/diagnostics/format136.rs:112 src/gnome/elements.rs:185 src/gnome/links.rs:113 src/gnome/menus.rs:452 src/gnome/references.rs:329 src/gnome/tables.rs:62 src/gnome/tables.rs:265 src/gnome/tables.rs:668 src/gnome/tables.rs:681 src/gnome/tables.rs:757 src/gnome/tables.rs:782 src/toolbar.rs:288
+#: src/gnome/context.rs:475 src/gnome/context.rs:500 src/gnome/diagnostics/annotations.rs:154 src/gnome/diagnostics/format136.rs:112 src/gnome/elements.rs:185 src/gnome/links.rs:113 src/gnome/menus.rs:452 src/gnome/references.rs:329 src/gnome/tables.rs:62 src/gnome/tables.rs:265 src/gnome/tables.rs:668 src/gnome/tables.rs:681 src/gnome/tables.rs:757 src/gnome/tables.rs:782 src/toolbar.rs:282
 msgid "Table"
 msgstr ""
 
@@ -3705,7 +3705,7 @@ msgstr ""
 msgid "The document changed. Reopen the font list."
 msgstr ""
 
-#: src/gnome/view.rs:575
+#: src/gnome/view.rs:586
 msgid "The document contains no pages"
 msgstr ""
 
@@ -4273,7 +4273,7 @@ msgstr ""
 msgid "{count}Y"
 msgstr ""
 
-#: src/gnome/diagnostics/view_tests.rs:53 src/gnome/view.rs:718
+#: src/gnome/diagnostics/view_tests.rs:53 src/gnome/view.rs:729
 msgid "{current} of {total}"
 msgstr ""
 
