@@ -48,7 +48,9 @@ jobs:
       - name: Package and exercise the installed app on Ubuntu 26.10
         run: |
           set -o pipefail
-          docker run --rm --volume "$PWD:/work" --workdir /work ubuntu:26.10 \
+          docker run --rm --network host --volume "$PWD:/work" \
+            --volume /etc/ssl/certs/ca-certificates.crt:/tmp/ubuntu-ca-certificates.crt:ro \
+            --workdir /work ubuntu:26.10 \
             bash packaging/ubuntu/test-deb.sh 2>&1 | tee ubuntu-deb-validation.log
           cp ubuntu-deb-validation.log dist/ubuntu/
       - uses: actions/upload-artifact@v4

@@ -4,7 +4,10 @@ set -euo pipefail
 . /etc/os-release
 test "$ID" = ubuntu && test "$VERSION_ID" = 26.10
 export DEBIAN_FRONTEND=noninteractive
-apt-get update
+mkdir -p /etc/ssl/certs
+cp /tmp/ubuntu-ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+sed -i 's|http://|https://|g' /etc/apt/sources.list.d/ubuntu.sources
+apt-get -o APT::Update::Error-Mode=any -o Acquire::Retries=1 update
 apt-get install -y --no-install-recommends python3 dpkg-dev libgtk-4-1 libadwaita-1-0 \
   librsvg2-common shared-mime-info desktop-file-utils xvfb xauth dbus-x11 \
   fonts-dejavu-core fonts-liberation locales ca-certificates
