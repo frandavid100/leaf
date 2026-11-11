@@ -1,15 +1,5 @@
 # Estado actual de Leaf
 
-<!-- candidate-alpha:start -->
-## 11/11/2026 — alpha.45 en validación, publicación directa autorizada
-
-David pide una release nueva y cerrar los issues resolubles, con prioridad al
-más reciente. Incluye #278/#280, ampliación del catálogo #259 y controles de
-columnas #262. #279 incorpora detección y descarga/apertura en el visor del
-sistema, con prueba instalada obligatoria; permanece abierto por los permisos
-de tienda y validaciones pendientes. Motor y aportaciones upstream se conservan
-separados. [Alcance, pruebas y límites](docs/ALPHA45_MAINTENANCE.md).
-<!-- candidate-alpha:end -->
 
 ## 11/11/2026 — ficha de tienda enviada a FlatPark
 
@@ -55,10 +45,10 @@ al borrar el párrafo completo. También permanecen #1, #52, #99, #171 y #185.
 Se conservan los aplazamientos de capturas públicas, Weblate y Windows ocasional.
 
 <!-- published-alpha:start -->
-## Última publicación verificada: 0.1.0-alpha.44
+## Última publicación verificada: 0.1.0-alpha.45
 
-[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.44). Issues cerrados: ninguno.
-Permanecen abiertos: #1, #99, #152, #185, #231, #252, #259, #261, #262, #265, #267, #268.
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.45). Issues cerrados: #259, #262, #278, #280.
+Permanecen abiertos: #1, #99, #152, #185, #231, #252, #261, #265, #267, #268, #277, #279, #281, #282.
 [Fuente, validación y límites](docs/LATEST_RELEASE.md).
 <!-- published-alpha:end -->
 

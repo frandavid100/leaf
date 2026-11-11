@@ -1,5 +1,11 @@
 # Decisiones vigentes
 
+## Publicada y verificada automáticamente: 0.1.0-alpha.45
+
+Se publican los mismos bytes de la candidata tras superar todas las pruebas
+nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
+de cerrar #259, #262, #278, #280. [Identidad y límites](LATEST_RELEASE.md).
+
 ## 11/11/2026 — alpha.45 en validación, publicación directa autorizada
 
 David pide una release nueva y cerrar los issues resolubles, con prioridad al

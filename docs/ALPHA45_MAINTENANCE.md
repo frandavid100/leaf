@@ -1,5 +1,7 @@
 # Alpha.45 — fuentes, posición de lectura y herramientas
 
+Published and verified: #259, #262, #278, #280 are completed. See [published identity and validation](LATEST_RELEASE.md).
+
 ## Alcance y autorización
 
 El 11/11/2026 David pide cerrar todos los issues resolubles, priorizar el más
