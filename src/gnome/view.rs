@@ -299,59 +299,101 @@ pub(super) fn zoom_to(ui: &Rc<Ui>, zoom: f32) {
     apply_zoom(ui, zoom);
 }
 
+pub(super) fn capture_reading_anchor(ui: &Ui) -> Option<viewer_layout::ReadingAnchor> {
+    let value = ui.current.borrow();
+    let d = value.as_ref()?;
+    let identity = (d.session.document_id(), d.session.rev());
+    if let Some((old, navigation, selection, anchor)) = ui.reading_anchor.borrow().as_ref() {
+        if *old == identity
+            && *navigation == ui.caret_navigation_generation.get()
+            && *selection == d.session.sel
+        {
+            return Some(*anchor);
+        }
+    }
+    viewer_layout::ReadingAnchor::capture(
+        &d.arrangement,
+        ui.scroll.hadjustment().value(),
+        document_scroll_y(ui),
+        ui.scroll.hadjustment().page_size(),
+        ui.scroll.vadjustment().page_size(),
+    )
+}
+pub(super) fn cancel_reading_restore(ui: &Ui) {
+    ui.viewport_restore_generation
+        .set(ui.viewport_restore_generation.get().wrapping_add(1));
+    ui.reading_anchor.borrow_mut().take();
+}
+pub(super) fn restore_reading_anchor(ui: &Rc<Ui>, anchor: Option<viewer_layout::ReadingAnchor>) {
+    let Some(anchor) = anchor else {
+        return;
+    };
+    let Some(identity) = document_identity(ui) else {
+        return;
+    };
+    let navigation = ui.caret_navigation_generation.get();
+    let Some(selection) = ui.current.borrow().as_ref().map(|d| d.session.sel.clone()) else {
+        return;
+    };
+    let generation = ui.viewport_restore_generation.get().wrapping_add(1);
+    ui.viewport_restore_generation.set(generation);
+    ui.reading_anchor
+        .replace(Some((identity, navigation, selection.clone(), anchor)));
+    let weak = Rc::downgrade(ui);
+    glib::idle_add_local_once(move || {
+        let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+            return;
+        };
+        if generation != ui.viewport_restore_generation.get()
+            || document_identity(&ui) != Some(identity)
+        {
+            return;
+        }
+        ui.reading_anchor.borrow_mut().take();
+        let changed = ui
+            .current
+            .borrow()
+            .as_ref()
+            .is_none_or(|d| d.session.sel != selection);
+        if navigation != ui.caret_navigation_generation.get() || changed {
+            // An explicit newer navigation owns the viewport after allocation.
+            caret_ensure_visible(&ui);
+            return;
+        }
+        let position = ui.current.borrow().as_ref().and_then(|d| {
+            anchor.position(
+                &d.arrangement,
+                ui.scroll.hadjustment().page_size(),
+                ui.scroll.vadjustment().page_size(),
+            )
+        });
+        if let Some((x, y)) = position {
+            for (adjustment, value) in [
+                (ui.scroll.hadjustment(), x),
+                (ui.scroll.vadjustment(), y + document_content_top(&ui)),
+            ] {
+                adjustment.set_value(value.clamp(
+                    adjustment.lower(),
+                    (adjustment.upper() - adjustment.page_size()).max(adjustment.lower()),
+                ));
+            }
+        }
+        refresh_pages(&ui);
+    });
+}
 fn apply_zoom(ui: &Rc<Ui>, zoom: f32) {
+    let anchor = capture_reading_anchor(ui);
     let zoom = viewer_layout::zoom_clamped(zoom);
-    let current_page;
-    {
-        let mut borrowed = ui.current.borrow_mut();
-        let Some(doc) = borrowed.as_mut() else { return };
-        current_page = doc.active;
+    if let Some(doc) = ui.current.borrow_mut().as_mut() {
         doc.zoom = zoom;
+    } else {
+        return;
     }
     ui.selection_zoom.set(zoom);
     layout_pages(ui);
     refresh_selection(ui);
     update_status(ui);
-    let target = ui.current.borrow().as_ref().map(|doc| {
-        (
-            (doc.session.document_id(), doc.session.rev()),
-            doc.session.sel.clone(),
-            doc.zoom,
-        )
-    });
-    let navigation = ui.caret_navigation_generation.get();
-    let weak = Rc::downgrade(ui);
-    // Wait for allocation without keeping a closed document alive.
-    glib::idle_add_local_once(move || {
-        if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
-            let Some((identity, selection, zoom)) = target else {
-                return;
-            };
-            let restore_page = {
-                let current = ui.current.borrow();
-                let Some(doc) = current.as_ref() else { return };
-                // A replaced/edited document or a later zoom has its own reveal.
-                if (doc.session.document_id(), doc.session.rev()) != identity || doc.zoom != zoom {
-                    return;
-                }
-                navigation == ui.caret_navigation_generation.get()
-                    && doc.session.sel == selection
-                    && doc.active == current_page
-            };
-            if restore_page {
-                if ui.template_eligible.get() {
-                    // A refit invalidates page rasters even while gallery browsing
-                    // keeps the viewport in place. Repaint without moving it.
-                    refresh_pages(&ui);
-                } else {
-                    scroll_to_page(&ui, current_page);
-                }
-            } else {
-                // Resolve newer navigation against the now allocated geometry.
-                caret_ensure_visible(&ui);
-            }
-        }
-    });
+    restore_reading_anchor(ui, anchor);
 }
 
 pub(super) fn zoom_step(ui: &Rc<Ui>, positive: bool) {
@@ -474,8 +516,10 @@ pub(super) fn schedule_layout(ui: &Rc<Ui>) {
         if fit {
             fit_width(&ui);
         } else {
+            let anchor = capture_reading_anchor(&ui);
             layout_pages(&ui);
             refresh_pages(&ui);
+            restore_reading_anchor(&ui, anchor);
         }
     });
 }
@@ -779,6 +823,7 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
         refresh_pages(&ui);
         refresh_thumbnails(&ui);
     });
+    font_install::opened(ui);
 }
 
 pub(super) fn schedule_thumbnail_refresh(ui: &Rc<Ui>) {

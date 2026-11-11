@@ -26,6 +26,45 @@ pub struct Arrangement {
     pub width: f64,
     pub height: f64,
 }
+/// A reading location in page coordinates, independent of the editing caret and
+/// of the number of pages placed in each viewport row.
+#[derive(Clone, Copy, Debug)]
+pub struct ReadingAnchor {
+    pub page: usize,
+    pub x: f64,
+    pub y: f64,
+}
+impl ReadingAnchor {
+    pub fn capture(
+        layout: &Arrangement,
+        left: f64,
+        top: f64,
+        width: f64,
+        height: f64,
+    ) -> Option<Self> {
+        if layout.pages.is_empty() {
+            return None;
+        }
+        let x = left + width * 0.3;
+        let y = top + height * 0.3;
+        let page = layout.page_at(x, y);
+        let rect = layout.pages.get(page)?;
+        Some(Self {
+            page,
+            x: ((x - rect.x) / rect.width).clamp(0., 1.),
+            y: ((y - rect.y) / rect.height).clamp(0., 1.),
+        })
+    }
+    pub fn position(self, layout: &Arrangement, width: f64, height: f64) -> Option<(f64, f64)> {
+        let rect = layout
+            .pages
+            .get(self.page.min(layout.pages.len().checked_sub(1)?))?;
+        Some((
+            rect.x + self.x * rect.width - width * 0.3,
+            rect.y + self.y * rect.height - height * 0.3,
+        ))
+    }
+}
 /// Keep document order, with no cover-page exception. Never shrink to force a spread.
 pub fn arrange(sizes: &[(f32, f32)], zoom: f32, available: f64) -> Arrangement {
     let z = f64::from(zoom_clamped(zoom));

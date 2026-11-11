@@ -41,6 +41,19 @@ pub(super) fn toggle_command(group: &str, id: &str) -> Option<(&'static str, &'s
 }
 pub(super) fn source_name(id: &str) -> Option<&'static str> {
     Some(match id {
+        "table-select-cell" => "table-action-table.selectCell",
+        "table-select-row" => "table-action-table.selectRow",
+        "table-select-column" => "table-action-table.selectColumn",
+        "table-select-all" => "table-action-table.selectTable",
+        "table-insert-row-above" => "table-action-table.insertRowAbove",
+        "table-insert-row-below" => "table-action-table.insertRowBelow",
+        "table-insert-column-left" => "table-action-table.insertColumnLeft",
+        "table-insert-column-right" => "table-action-table.insertColumnRight",
+        "table-delete-row" => "table-action-table.deleteRow",
+        "table-delete-column" => "table-action-table.deleteColumn",
+        "table-delete-all" => "table-action-table.deleteTable",
+        "table-split-cells" => "table-action-leaf.splitCells",
+        "table-split-table" => "table-action-table.splitTable",
         "table-select" => "table-select",
         "table-add" => "table-add",
         "table-delete" => "table-delete",
@@ -92,6 +105,25 @@ pub(super) fn enabled(ui: &Rc<Ui>, group: &str, id: &str) -> bool {
     if wordcraft_engine::cmd::protect::enforced(&d.session.doc) && id != "marks" {
         return false;
     }
+    if group == "paragraph"
+        && matches!(
+            id,
+            "list-remove" | "list-level" | "list-restart" | "list-start" | "list-continue"
+        )
+    {
+        let in_list = wordcraft_gnome::text_properties::paragraph_positions(&d.session)
+            .iter()
+            .any(|p| {
+                d.session
+                    .doc
+                    .para_at(p)
+                    .and_then(|p| d.session.doc.styles.resolve_para(&p.props).numbering)
+                    .is_some_and(|n| n.num > 0)
+            });
+        return in_list
+            && (id != "list-continue"
+                || wordcraft_gnome::list_design::previous_compatible(&d.session).is_some());
+    }
     if group == "elements" && (id.starts_with("table-") || id.starts_with("cell-")) {
         return (wordcraft_gnome::tables::in_table(&d.session)
             || wordcraft_gnome::captions::table_target(&d.session).is_some())
@@ -111,6 +143,10 @@ pub(super) fn direct(group: &str, id: &str) -> bool {
                 | ("paragraph", "reset")
                 | ("paragraph", "indent")
                 | ("paragraph", "outdent")
+                | ("paragraph", "list-remove")
+                | ("paragraph", "list-continue")
+                | ("paragraph", "list-restart")
+                | ("paragraph", "list-custom")
         )
         || (group == "elements"
             && !matches!(
@@ -132,6 +168,27 @@ pub(super) fn direct(group: &str, id: &str) -> bool {
 pub(super) fn activate(ui: &Rc<Ui>, group: &str, id: &str) {
     if !enabled(ui, group, id) {
         return;
+    }
+    if group == "paragraph" {
+        match id {
+            "list-remove" => {
+                let _ = format_execute(ui, "para.bullets", json!({"off":true}));
+                return;
+            }
+            "list-restart" => {
+                let _ = format_execute(ui, "para.restartNumbering", json!({}));
+                return;
+            }
+            "list-continue" => {
+                tools_change(ui, wordcraft_gnome::list_design::continue_previous);
+                return;
+            }
+            "list-custom" => {
+                list_options::customize(ui);
+                return;
+            }
+            _ => {}
+        }
     }
     if let Some((command, key)) = toggle_command(group, id) {
         let state = if group == "text" {
@@ -194,6 +251,27 @@ pub(super) fn activate(ui: &Rc<Ui>, group: &str, id: &str) {
             ui.toasts.add_toast(Toast::new(&e));
         }
     } else if group == "elements" {
+        if let Some(host) = ui.host.upgrade() {
+            match id {
+                "insert-new-toc" => {
+                    show_insert_contents_dialog(ui, &host.window);
+                    return;
+                }
+                "insert-new-table" => {
+                    show_insert_table(ui, &host.window);
+                    return;
+                }
+                "insert-new-image" => {
+                    gio::prelude::ActionGroupExt::activate_action(
+                        &host.window,
+                        "insert-image",
+                        None,
+                    );
+                    return;
+                }
+                _ => {}
+            }
+        }
         if let Some(source) = source_widget(ui, id) {
             if let Some(button) = source.downcast_ref::<gtk::Button>() {
                 button.emit_clicked();
@@ -214,6 +292,11 @@ pub(super) fn activate(ui: &Rc<Ui>, group: &str, id: &str) {
             "table-auto-height" => table_command(ui, "table.properties", json!({"rowHeight":null})),
             id if id.starts_with("table-") || id.starts_with("cell-") => {
                 open_table_property(ui, id)
+            }
+            id if id.starts_with("field-") || id.starts_with("break-") => {
+                if let Some(host) = ui.host.upgrade() {
+                    gio::prelude::ActionGroupExt::activate_action(&host.window, id, None);
+                }
             }
             _ => {
                 let action = match id {

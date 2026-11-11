@@ -264,18 +264,16 @@ impl TextControls {
         }
     }
     fn family_names(&self) -> Vec<String> {
-        let Some(ui) = self.ui.upgrade() else {
-            return vec![];
-        };
-        let mut names: Vec<_> = ui
-            .document_box
-            .pango_context()
-            .list_families()
-            .iter()
-            .map(|f| f.name().to_string())
-            .collect();
+        let mut names = wordcraft_gnome::font_install::families();
         names.sort_by_key(|s| s.to_lowercase());
         names
+    }
+    pub(super) fn invalidate_font_catalog(&self) {
+        clear_box(&self.font_choices);
+        clear_box(&self.font_all_rows);
+        clear_box(&self.font_document_rows);
+        self.font_rows.borrow_mut().clear();
+        self.font_document_key.borrow_mut().clear();
     }
     fn apply_font(&self, value: &str) {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
@@ -600,14 +598,30 @@ impl TextControls {
     }
 
     pub(super) fn mark_current_font(&self, current: Option<&str>) {
+        let substitute = self.ui.upgrade().and_then(|ui| {
+            let value = ui.current.borrow();
+            current.and_then(|name| {
+                value
+                    .as_ref()
+                    .and_then(|d| wordcraft_engine::cmd::font::shown_as(&d.session.doc, name))
+            })
+        });
         if let Some(label) =
             find_widget(&self.font_choices, "font-current-state").and_downcast::<gtk::Label>()
         {
-            label.set_text(&format!(
+            let mut text = format!(
                 "{}: {}",
                 wordcraft_gnome::t!("Font"),
                 current.unwrap_or(wordcraft_gnome::t!("Mixed"))
-            ));
+            );
+            if let Some(substitute) = &substitute {
+                text.push_str(&format!(
+                    " — {} {}",
+                    wordcraft_gnome::t!("Not available; displayed as"),
+                    substitute
+                ));
+            }
+            label.set_text(&text);
         }
 
         for (name, row) in self.font_rows.borrow().iter() {
@@ -623,7 +637,7 @@ impl TextControls {
                 gtk::AccessibleTristate::False
             })]);
             if let Some(mark) = find_widget(row, "font-current-marker") {
-                mark.set_visible(selected);
+                mark.set_visible(selected && substitute.is_none());
             }
         }
     }

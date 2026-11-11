@@ -3831,3 +3831,147 @@ msgstr "Leaf está en fase alfa. Pruébalo con copias de los documentos importan
 #: data/*.in
 msgid "Leaf uses the existing WordCraft document engine. Much of Leaf’s native interface, tests and packaging was produced through vibe coding with ChatGPT/Codex; the icon also used AI assistance."
 msgstr "Leaf utiliza el motor de documentos WordCraft. Buena parte de su interfaz nativa, pruebas y empaquetado se ha producido mediante vibe coding con ChatGPT/Codex; el icono también se ha creado con asistencia de IA."
+
+msgid "All fonts used by this document are now available."
+msgstr "Todas las fuentes utilizadas en este documento están disponibles."
+
+msgid "Bold Italic"
+msgstr "Negrita cursiva"
+
+msgid "Cancelled"
+msgstr "Cancelado"
+
+msgid "Check Installed Fonts"
+msgstr "Comprobar fuentes instaladas"
+
+msgid "Choose a TrueType or OpenType font file."
+msgstr "Elige un archivo de fuente TrueType u OpenType."
+
+msgid "Choose a local file."
+msgstr "Elige un archivo local."
+
+msgid "Column {n}"
+msgstr "Columna {n}"
+
+msgid "Complete the column values before applying them."
+msgstr "Completa los valores de las columnas antes de aplicarlos."
+
+msgid "Continue with Substitutes"
+msgstr "Continuar con las sustitutas"
+
+msgid "Could Not Open the Font Viewer"
+msgstr "No se ha podido abrir el visor de fuentes"
+
+msgid "Could Not Save"
+msgstr "No se ha podido guardar"
+
+msgid "Could not download this font. Check your connection and try again, or open a local font file."
+msgstr "No se ha podido descargar esta fuente. Comprueba la conexión y vuelve a intentarlo, o abre un archivo de fuente local."
+
+msgid "Download and Open"
+msgstr "Descargar y abrir"
+
+msgid "Downloaded. Install this style in the system font viewer, then check again."
+msgstr "Descargada. Instala esta variante en el visor de fuentes del sistema y vuelve a comprobarlo."
+
+msgid "Downloading font and license…"
+msgstr "Descargando fuente y licencia…"
+
+msgid "Enter a whole number of columns from 1 to 12."
+msgstr "Introduce un número entero de columnas entre 1 y 12."
+
+msgid "Enter a whole number."
+msgstr "Introduce un número entero."
+
+msgid "Font Files"
+msgstr "Archivos de fuentes"
+
+msgid "Insert Column to the Left"
+msgstr "Insertar columna a la izquierda"
+
+msgid "Insert Column to the Right"
+msgstr "Insertar columna a la derecha"
+
+msgid "Insert Row Above"
+msgstr "Insertar fila encima"
+
+msgid "Insert Row Below"
+msgstr "Insertar fila debajo"
+
+msgid "Install Missing Fonts…"
+msgstr "Instalar fuentes ausentes…"
+
+msgid "Install each required style in your system font viewer. Opening the viewer does not install a font or replace the document's font names."
+msgstr "Instala cada variante necesaria en el visor de fuentes del sistema. Abrir el visor no instala la fuente ni sustituye los nombres de las fuentes del documento."
+
+msgid "List Level"
+msgstr "Nivel de lista"
+
+msgid "Mixed — choose a layout to edit these sections together."
+msgstr "Mixto: elige un diseño para editar estas secciones conjuntamente."
+
+msgid "No font viewer could open this file. Save it and open it with your system's font installer."
+msgstr "Ningún visor de fuentes ha podido abrir este archivo. Guárdalo y ábrelo con el instalador de fuentes de tu sistema."
+
+msgid "Not available; displayed as"
+msgstr "No disponible; se muestra como"
+
+msgid "Not in the download catalog. Use a local font file or choose a replacement in Document Properties."
+msgstr "No está en el catálogo de descargas. Utiliza un archivo de fuente local o elige una sustituta en Propiedades del documento."
+
+msgid "Open Font File"
+msgstr "Abrir archivo de fuente"
+
+msgid "Open Local Font File…"
+msgstr "Abrir archivo de fuente local…"
+
+msgid "Regular"
+msgstr "Normal"
+
+msgid "Review Fonts"
+msgstr "Revisar fuentes"
+
+msgid "Save Font File"
+msgstr "Guardar archivo de fuente"
+
+msgid "Save Font File…"
+msgstr "Guardar archivo de fuente…"
+
+msgid "Some Fonts Are Unavailable"
+msgstr "Faltan algunas fuentes"
+
+msgid "Still unavailable:"
+msgstr "Siguen sin estar disponibles:"
+
+msgid "The certificate trust file contains no certificates."
+msgstr "El archivo de certificados de confianza no contiene certificados."
+
+msgid "The downloaded file does not contain the requested font."
+msgstr "El archivo descargado no contiene la fuente solicitada."
+
+msgid "The font download failed."
+msgstr "No se ha podido descargar la fuente."
+
+msgid "The font download is too large."
+msgstr "La descarga de la fuente es demasiado grande."
+
+msgid "The font file is empty or too large."
+msgstr "El archivo de fuente está vacío o es demasiado grande."
+
+msgid "The font license could not be verified."
+msgstr "No se ha podido verificar la licencia de la fuente."
+
+msgid "This document uses fonts that are not available. Substitutions can change its appearance and pagination. The original font names have been preserved."
+msgstr "Este documento utiliza fuentes que no están disponibles. Las sustituciones pueden cambiar su aspecto y paginación. Se han conservado los nombres de las fuentes originales."
+
+msgid "This font is not in the download catalog. Choose a local font file."
+msgstr "Esta fuente no está en el catálogo de descargas. Elige un archivo de fuente local."
+
+msgid "This is not a usable font file."
+msgstr "Este archivo de fuente no es válido."
+
+msgid "Unequal widths are preserved in DOCX. In ODT, the engine saves them as equal-width columns. The preview shows column geometry; unequal-column text flow is limited by the current engine."
+msgstr "Las anchuras desiguales se conservan en DOCX. En ODT, el motor las guarda como columnas de igual anchura. La vista previa muestra la geometría de las columnas; el motor actual limita el flujo de texto en columnas desiguales."
+
+msgid "Width of Column {n} (mm)"
+msgstr "Anchura de la columna {n} (mm)"

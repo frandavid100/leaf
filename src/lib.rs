@@ -4,6 +4,7 @@
 extern crate self as wordcraft_gnome;
 pub mod captions;
 pub mod clipboard_html;
+pub mod font_install;
 pub mod highlight;
 pub mod i18n;
 

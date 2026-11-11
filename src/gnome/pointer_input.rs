@@ -20,6 +20,27 @@ pub(super) fn install_pointer_and_view_input(
     compact_app_menu: &gtk::MenuButton,
     compact_search: &gtk::Button,
 ) {
+    // User scrolling/dragging supersedes queued zoom restoration. Adjustment
+    // changes from allocation alone must not be mistaken for a user gesture.
+    let scroll = gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::BOTH_AXES);
+    scroll.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let weak = Rc::downgrade(ui);
+    scroll.connect_scroll(move |_, _, _| {
+        if let Some(ui) = weak.upgrade() {
+            cancel_reading_restore(&ui);
+        }
+        glib::Propagation::Proceed
+    });
+    ui.scroll.add_controller(scroll);
+    let press = gtk::GestureClick::new();
+    press.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let weak = Rc::downgrade(ui);
+    press.connect_pressed(move |_, _, _, _| {
+        if let Some(ui) = weak.upgrade() {
+            cancel_reading_restore(&ui);
+        }
+    });
+    ui.scroll.add_controller(press);
     install_table_hover(ui);
     install_link_tooltip(ui);
     // The centered page stack can be narrower than its viewport. Its surrounding

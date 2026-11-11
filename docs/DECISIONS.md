@@ -1,5 +1,15 @@
 # Decisiones vigentes
 
+## 11/11/2026 — alpha.45 en validación, publicación directa autorizada
+
+David pide una release nueva y cerrar los issues resolubles, con prioridad al
+más reciente. Incluye #278/#280, ampliación del catálogo #259 y controles de
+columnas #262. #279 incorpora detección y descarga/apertura en el visor del
+sistema, con prueba instalada obligatoria; permanece abierto por los permisos
+de tienda y validaciones pendientes. Motor y aportaciones upstream se conservan
+separados. [Alcance, pruebas y límites](ALPHA45_MAINTENANCE.md).
+
+
 ## 11/11/2026 — retomar la ficha de FlatPark
 
 David autoriza preparar la actualización de la entrada con las cuatro capturas

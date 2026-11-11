@@ -208,8 +208,57 @@ pub struct ColumnSetup {
     pub widths: Vec<(f32, f32)>,
 }
 impl ColumnSetup {
+    /// Classify imported fixed widths by their actual proportions, rather than
+    /// treating every explicit-width representation as an unmatched preset.
+    pub fn preset(&self, width: f32) -> Option<(u32, ColumnKind)> {
+        let current = self.resolved(width).ok()?;
+        for (count, kind) in [
+            (1, ColumnKind::Equal),
+            (2, ColumnKind::Equal),
+            (3, ColumnKind::Equal),
+            (2, ColumnKind::Left),
+            (2, ColumnKind::Right),
+        ] {
+            let preset = Self {
+                count,
+                kind,
+                space: self.space,
+                separator: self.separator,
+                widths: Vec::new(),
+            };
+            let Ok(wanted) = preset.resolved(width) else {
+                continue;
+            };
+            let grid = |c: &wordcraft_doc::section::Columns| {
+                if c.widths.is_empty() {
+                    (0..c.count)
+                        .map(|i| {
+                            (
+                                (width - c.space * (c.count - 1) as f32) / c.count as f32,
+                                if i + 1 < c.count { c.space } else { 0. },
+                            )
+                        })
+                        .collect::<Vec<_>>()
+                } else {
+                    c.widths.clone()
+                }
+            };
+            if current.count == wanted.count
+                && grid(&current)
+                    .iter()
+                    .zip(grid(&wanted))
+                    .all(|((w, g), (x, y))| (w - x).abs() < 0.02 && (g - y).abs() < 0.02)
+            {
+                return Some((count, kind));
+            }
+        }
+        None
+    }
     pub fn current(s: &Session) -> Self {
-        let c = page::sect(s).columns;
+        Self::for_scope(s, ColumnScope::Section)
+    }
+    pub fn for_scope(s: &Session, scope: ColumnScope) -> Self {
+        let c = column_section(s, scope).columns;
         Self {
             count: c.count,
             space: c.widths.first().map_or(c.space, |(_, gap)| *gap),
@@ -283,6 +332,59 @@ impl ColumnSetup {
         })
     }
 }
+fn same_columns(a: &wordcraft_doc::section::Columns, b: &wordcraft_doc::section::Columns) -> bool {
+    let near = |x: f32, y: f32| (x - y).abs() < 0.02;
+    if a.count != b.count || !near(a.space, b.space) || a.separator != b.separator {
+        return false;
+    }
+    a.widths.len() == b.widths.len()
+        && a.widths
+            .iter()
+            .zip(&b.widths)
+            .all(|((w, g), (x, y))| near(*w, *x) && near(*g, *y))
+}
+pub fn column_target_sections(s: &Session, scope: ColumnScope) -> Vec<SectionProps> {
+    let current = page::section_index_of_focus(s);
+    let (a, b) = s.sel.ordered();
+    let lo = a.path.0.first().copied().unwrap_or(0) as usize;
+    let raw_hi = b.path.0.first().copied().unwrap_or(0) as usize;
+    let sections = s.doc.sections();
+    let hi = if b.off == 0 && raw_hi > lo && sections.iter().any(|(end, _)| end + 1 == raw_hi) {
+        raw_hi - 1
+    } else {
+        raw_hi
+    };
+    let mut start = 0;
+    let mut targets = Vec::new();
+    for (i, (end, p)) in sections.into_iter().enumerate() {
+        let applies = match scope {
+            ColumnScope::Section => i == current,
+            ColumnScope::Document => true,
+            ColumnScope::Selection => end >= lo && start <= hi,
+            ColumnScope::Forward => i >= current,
+        };
+        if applies {
+            targets.push(p.clone());
+        }
+        start = end + 1;
+    }
+    targets
+}
+pub fn column_section(s: &Session, scope: ColumnScope) -> SectionProps {
+    column_target_sections(s, scope)
+        .into_iter()
+        .next()
+        .unwrap_or_else(|| page::sect(s))
+}
+pub fn columns_mixed(s: &Session, scope: ColumnScope) -> bool {
+    let sections = column_target_sections(s, scope);
+    sections.first().is_some_and(|first| {
+        sections
+            .iter()
+            .skip(1)
+            .any(|p| !same_columns(&first.columns, &p.columns))
+    })
+}
 pub fn apply_columns(
     s: &mut Session,
     setup: &ColumnSetup,
@@ -300,7 +402,7 @@ pub fn apply_columns(
             wordcraft_gnome::t!("Place the cursor in the document body, outside a table.").into(),
         );
     }
-    let focus = page::sect(s);
+    let focus = column_section(s, scope);
     let mut setup = setup.clone();
     let keep = |old: f32, new: f32| if (old - new).abs() < 0.02 { old } else { new };
     setup.space = keep(focus.columns.space, setup.space);

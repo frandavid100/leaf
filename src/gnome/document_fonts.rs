@@ -1,5 +1,19 @@
 //! Font inventory is read-only until an explicit per-font Replace action.
 use super::*;
+pub(super) fn refresh_open(ui: &Rc<Ui>) {
+    let Some(host) = ui.host.upgrade() else {
+        return;
+    };
+    let Some(group) = find_widget(&host.window, "properties-document-fonts")
+        .and_downcast::<adw::PreferencesGroup>()
+    else {
+        return;
+    };
+    if let Some(list) = find_widget(&group, "document-font-list") {
+        group.remove(&list);
+    }
+    refresh(ui, &group, Rc::new(Cell::new(document_identity(ui))));
+}
 pub(super) fn section(
     ui: &Rc<Ui>,
     identity: Rc<Cell<Option<(u64, u64)>>>,
@@ -8,6 +22,15 @@ pub(super) fn section(
     group.set_widget_name("properties-document-fonts");
     group.set_title(wordcraft_gnome::t!("Fonts"));
     group.set_description(Some(wordcraft_gnome::t!("Opening a document preserves its font names. Replace changes the document and can be undone.")));
+    let install = gtk::Button::with_label(wordcraft_gnome::t!("Install Missing Fonts…"));
+    install.set_widget_name("properties-install-fonts");
+    let weak = Rc::downgrade(ui);
+    install.connect_clicked(move |_| {
+        if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
+            font_install::show(&ui);
+        }
+    });
+    group.add(&install);
     refresh(ui, &group, identity);
     group
 }

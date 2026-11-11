@@ -37,6 +37,10 @@ pub(super) fn release_document(ui: &Rc<Ui>) {
     ui.picture_drag.borrow_mut().take();
     ui.document_box.reset();
     stop_dictionary_tools(ui);
+    let font_dialog = ui.font_install_dialog.borrow_mut().take();
+    if let Some(dialog) = font_dialog {
+        dialog.close();
+    }
     let link = ui.link_dialog.borrow_mut().take();
     if let Some(window) = link {
         window.close();

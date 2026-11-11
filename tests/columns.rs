@@ -15,6 +15,45 @@ fn equal(count: u32) -> ColumnSetup {
     }
 }
 #[test]
+fn imported_column_presets_and_mixed_scope_are_reported_without_editing() {
+    let mut s = Session::new(Document::from_text("First\nSecond\nThird"));
+    let layout = ColumnSetup {
+        count: 2,
+        kind: ColumnKind::Left,
+        space: 18.,
+        separator: false,
+        widths: Vec::new(),
+    };
+    let width = page::sect(&s).text_width();
+    let resolved = layout.resolved(width).unwrap();
+    let imported = ColumnSetup {
+        kind: ColumnKind::Custom,
+        widths: resolved.widths.clone(),
+        ..layout
+    };
+    assert_eq!(imported.preset(width), Some((2, ColumnKind::Left)));
+    let mut custom = imported.clone();
+    custom.widths[0].0 += 10.;
+    custom.widths[1].0 -= 10.;
+    assert!(custom.preset(width).is_none());
+    s.run("layout.break", &json!({"kind":"continuous"}))
+        .unwrap();
+    document_properties::apply_columns(&mut s, &equal(2), ColumnScope::Section).unwrap();
+    let before = (s.doc.clone(), s.sel.clone(), s.rev(), s.undo_depth());
+    assert!(document_properties::columns_mixed(
+        &s,
+        ColumnScope::Document
+    ));
+    assert!(!document_properties::columns_mixed(
+        &s,
+        ColumnScope::Section
+    ));
+    assert_eq!(
+        before,
+        (s.doc.clone(), s.sel.clone(), s.rev(), s.undo_depth())
+    );
+}
+#[test]
 fn selected_columns_preserve_text_pending_format_and_one_undo() {
     let mut s = Session::new(Document::from_text("Antes\nalpha beta gamma\nDespués"));
     s.run(

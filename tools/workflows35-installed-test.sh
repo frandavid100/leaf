@@ -54,6 +54,11 @@ cat "toolbar41-reopen-${LANGUAGE}.log"
 LEAF35_PROFILE="$LEAF35_PROFILE/alpha43" "$runner" --alpha43-ui-test > "alpha43-ui-${LANGUAGE}.log" 2>&1 || { cat "alpha43-ui-${LANGUAGE}.log"; exit 1; }
 grep -q ALPHA43_UI_OK "alpha43-ui-${LANGUAGE}.log"
 cat "alpha43-ui-${LANGUAGE}.log"
+for probe in zoom278 picture280 catalog259 columns; do
+  LEAF35_PROFILE="$LEAF35_PROFILE/$probe" "$runner" --$probe-ui-test > "$probe-${LANGUAGE}.log" 2>&1 || { cat "$probe-${LANGUAGE}.log"; exit 1; }
+  grep -q "${probe^^}_UI_OK" "$probe-${LANGUAGE}.log"
+  cat "$probe-${LANGUAGE}.log"
+done
 CHECK
 chmod +x "$temporary/installed.sh"
 if [[ ${CI:-} == true ]]; then export LEAF35_TEST_UID; LEAF35_TEST_UID=$(id -u); fi
@@ -70,6 +75,6 @@ for language in en es; do
       --reuid="$LEAF35_TEST_UID" --regid="$(id -g)" --init-groups --)
   fi
   LANGUAGE=$language GDK_SCALE=$scale xvfb-run -a -s '-screen 0 2800x2200x24' \
-    "${session[@]}" dbus-run-session -- timeout 600s bash "$temporary/check.sh" "$root" "$temporary/installed.sh" "$output"
+    "${session[@]}" dbus-run-session -- timeout 780s bash "$temporary/check.sh" "$root" "$temporary/installed.sh" "$output"
 done
 echo WORKFLOWS35_INSTALLED_OK

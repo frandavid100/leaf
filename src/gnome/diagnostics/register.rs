@@ -55,6 +55,18 @@ pub(super) fn install_diagnostics(
     controls: DiagnosticControls<'_>,
 ) {
     let runner = DiagnosticRunner { ui, window, app };
+    if requested("--zoom278-ui-test") && host.tabs.n_pages() == 1 {
+        runner.window(800, maintenance45_checks::zoom);
+    }
+    if requested("--catalog259-ui-test") && host.tabs.n_pages() == 1 {
+        runner.window(800, maintenance45_checks::catalog);
+    }
+    if requested("--picture280-ui-test") && host.tabs.n_pages() == 1 {
+        runner.window(800, maintenance45_checks::picture_delete);
+    }
+    if requested("--font279-ui-test") && host.tabs.n_pages() == 1 {
+        runner.window(800, maintenance45_checks::fonts);
+    }
     // Older formatting probes exercise the supported all-overflow configuration.
     // The toolbar41 probe independently covers defaults, direct and overflow targets,
     // preferences, reordering and resize. Keep the older interactions accessible.
@@ -89,6 +101,11 @@ pub(super) fn install_diagnostics(
     }
     if command_line().iter().any(|arg| {
         arg.starts_with("--alpha43-")
+            || arg == "--catalog259-ui-test"
+            || arg == "--columns-ui-test"
+            || arg == "--picture280-ui-test"
+            || arg == "--zoom278-ui-test"
+            || arg == "--font279-ui-test"
             || arg.starts_with("--toolbar41-")
             || arg.starts_with("--workflows36-")
             || arg.starts_with("--workflows37-")

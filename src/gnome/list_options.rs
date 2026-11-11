@@ -2,6 +2,75 @@
 use super::*;
 use serde_json::{Value, json};
 pub(super) fn build(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, page: &str, state: &Value) -> bool {
+    if matches!(page, "list-level" | "list-start") {
+        let level = page == "list-level";
+        let start = ui
+            .current
+            .borrow()
+            .as_ref()
+            .and_then(|d| {
+                let num = state["numbering"]["num"].as_u64()? as u32;
+                let level = state["numbering"]["level"].as_u64()? as u8;
+                d.session
+                    .doc
+                    .numbering
+                    .nums
+                    .iter()
+                    .find(|n| n.id == num)
+                    .and_then(|n| {
+                        n.start_overrides
+                            .iter()
+                            .find(|(l, _)| *l == level)
+                            .map(|(_, v)| *v)
+                    })
+                    .or_else(|| d.session.doc.numbering.level(num, level).map(|l| l.start))
+            })
+            .unwrap_or(1);
+        let spin = s.number(
+            if level {
+                wordcraft_gnome::t!("Level (1–9)")
+            } else {
+                wordcraft_gnome::t!("Start at")
+            },
+            if level {
+                state["numbering"]["level"].as_f64().unwrap_or(0.) + 1.
+            } else {
+                start as f64
+            },
+            if level { 1. } else { 0. },
+            if level { 9. } else { 32767. },
+        );
+        spin.set_digits(0);
+        spin.set_widget_name(if level {
+            "paragraph-list-level"
+        } else {
+            "paragraph-list-start"
+        });
+        if state["_mixed"]
+            .as_array()
+            .is_some_and(|m| m.iter().any(|v| v == "numbering"))
+        {
+            spin.set_text("");
+        }
+        let weak = Rc::downgrade(ui);
+        bind_numeric(ui, &spin, move |v| {
+            let ui = weak.upgrade().ok_or("Document closed")?;
+            if v.fract() != 0. {
+                return Err(wordcraft_gnome::t!("Enter a whole number.").into());
+            }
+            if level {
+                immediate_format(
+                    &ui,
+                    "para.listLevel",
+                    json!({"level":(v as u32).saturating_sub(1)}),
+                )
+            } else {
+                tools_change(&ui, |s| wordcraft_gnome::list_design::start_at(s, v as u32));
+                Ok(())
+            }
+        });
+        return true;
+    }
     if !matches!(page, "list" | "bullets" | "numbering" | "multilevel") {
         return false;
     }
@@ -214,7 +283,7 @@ pub(super) fn build(s: &Rc<ParagraphPopover>, ui: &Rc<Ui>, page: &str, state: &V
     sync(s, state);
     true
 }
-fn customize(ui: &Rc<Ui>) {
+pub(super) fn customize(ui: &Rc<Ui>) {
     let Some(host) = ui.host.upgrade() else {
         return;
     };

@@ -774,6 +774,8 @@ impl ParagraphPopover {
             "bullets" => wordcraft_gnome::t!("Bullets"),
             "numbering" => wordcraft_gnome::t!("Numbering"),
             "multilevel" => wordcraft_gnome::t!("Multilevel List"),
+            "list-level" => wordcraft_gnome::t!("List Level"),
+            "list-start" => wordcraft_gnome::t!("Set Starting Number"),
             "indents" => wordcraft_gnome::t!("Indents"),
             "spacing" => wordcraft_gnome::t!("Spacing"),
             "direction" => wordcraft_gnome::t!("Text Direction"),
@@ -882,7 +884,7 @@ impl ParagraphPopover {
                 }
                 self.fixed.append(&editor.scope_header);
                 self.detail.append(&editor.root);
-                self.detail.append(&editor.apply);
+                // Presets and confirmed detail edits share the internal commit action.
             }
             "bullets" | "numbering" => {
                 self.group_separator();

@@ -25,6 +25,14 @@ pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
     let _perf = perf_scope("leaf.after_content_change");
     // A formatting entry owns its edit even when pagination rebuilds the canvas.
     let was_canvas_focused = ui.document_box.has_focus();
+    // Deleting/restoring a floating object exposes an unrelated anchor caret.
+    // Keep the reading position through that transition, including Undo/Redo.
+    let floating_now = ui.current.borrow().as_ref().is_some_and(|d| {
+        pictures::layout(&d.session).is_some_and(|f| f.wrap != wordcraft_doc::para::Wrap::Inline)
+    });
+    let reading = (ui.selected_floating_image.get() != floating_now)
+        .then(|| capture_reading_anchor(ui))
+        .flatten();
     let picture_anchor = {
         let geometry = ui.selection_data.borrow();
         let current = ui.current.borrow();
@@ -109,7 +117,9 @@ pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
                 refresh_thumbnails(&ui);
                 refresh_selection(&ui);
                 restore_picture_anchor(&ui, picture_anchor);
-                if was_canvas_focused || ui.document_box.has_focus() {
+                if reading.is_some() {
+                    restore_reading_anchor(&ui, reading);
+                } else if was_canvas_focused || ui.document_box.has_focus() {
                     caret_ensure_visible(&ui);
                     ui.document_box.grab_focus();
                 }
@@ -126,7 +136,9 @@ pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
                 .filter(|u| !u.closed.get() && document_identity(u) == identity)
             {
                 restore_picture_anchor(&ui, picture_anchor);
-                if was_canvas_focused || ui.document_box.has_focus() {
+                if reading.is_some() {
+                    restore_reading_anchor(&ui, reading);
+                } else if was_canvas_focused || ui.document_box.has_focus() {
                     caret_ensure_visible(&ui);
                 }
             }

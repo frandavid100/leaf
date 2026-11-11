@@ -30,7 +30,7 @@ use wordcraft_gnome::{
     pdf_export, pictures,
 };
 
-const APP_VERSION: &str = "0.1.0-alpha.44";
+const APP_VERSION: &str = "0.1.0-alpha.45";
 const APP_ID: &str = "io.github.frandavid100.leaf";
 const STEPS: &[f32] = &[0.5, 0.67, 0.75, 0.85, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -74,6 +74,7 @@ use document_tools::*;
 mod close_group;
 mod files;
 use files::*;
+mod font_install;
 mod format_controls;
 use format_controls::*;
 mod format_bar;
@@ -314,6 +315,8 @@ mod workflows37_checks;
 mod alpha42_checks;
 #[path = "diagnostics/alpha43.rs"]
 mod alpha43_checks;
+#[path = "diagnostics/maintenance45.rs"]
+mod maintenance45_checks;
 #[path = "diagnostics/toolbar41.rs"]
 mod toolbar41_checks;
 #[path = "diagnostics/workflows38.rs"]

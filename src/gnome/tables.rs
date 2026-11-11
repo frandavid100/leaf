@@ -576,6 +576,7 @@ pub(super) fn show_split_cells(ui: &Rc<Ui>, parent: &ApplicationWindow) {
     hint.add_css_class("dim-label");
     g.add(&hint);
     let b = gtk::Button::with_label(wordcraft_gnome::t!("Split Selected Cells"));
+    b.set_widget_name("table-split-apply");
     g.add(&b);
     {
         let ui = ui.clone();

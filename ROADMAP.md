@@ -1,5 +1,16 @@
 # Hoja de ruta de Leaf
 
+<!-- candidate-alpha:start -->
+## 11/11/2026 — alpha.45 en validación, publicación directa autorizada
+
+David pide una release nueva y cerrar los issues resolubles, con prioridad al
+más reciente. Incluye #278/#280, ampliación del catálogo #259 y controles de
+columnas #262. #279 incorpora detección y descarga/apertura en el visor del
+sistema, con prueba instalada obligatoria; permanece abierto por los permisos
+de tienda y validaciones pendientes. Motor y aportaciones upstream se conservan
+separados. [Alcance, pruebas y límites](docs/ALPHA45_MAINTENANCE.md).
+<!-- candidate-alpha:end -->
+
 ## 11/11/2026 — ficha de tienda enviada a FlatPark
 
 David pide retomar la ficha de FlatPark. AppStream usa las cuatro capturas

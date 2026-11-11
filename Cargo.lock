@@ -2742,8 +2742,10 @@ dependencies = [
  "regex-automata",
  "serde_json",
  "unicode-segmentation",
+ "ureq",
  "wordcraft-doc",
  "wordcraft-engine",
+ "wordcraft-fonts",
  "wordcraft-formats",
  "wordcraft-render",
 ]

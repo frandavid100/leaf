@@ -399,6 +399,17 @@ jobs:
         xvfb-run -a bash tools/table-pointer-test.sh
         xvfb-run -a bash tools/text-pointer-test.sh
       if: ${{ matrix.group == 'text' }}
+    - name: Verify alpha45 reading position and configurable tools
+      if: ${{ matrix.group == 'text' }}
+      run: |
+        set -euo pipefail
+        for language in en es; do
+          scale=1; if test "$language" = es; then scale=2; fi
+          for probe in zoom278 picture280 catalog259; do
+            XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) LANGUAGE=$language GDK_SCALE=$scale GSK_RENDERER=cairo xvfb-run -a -s '-screen 0 2800x2200x24' dbus-run-session -- timeout -k 5s 180s ./target/release/wordcraft-gnome --$probe-ui-test 2>&1 | tee "$probe-$language.log"
+            grep -q "${probe^^}_UI_OK" "$probe-$language.log"
+          done
+        done
     - name: Verify alpha43 shared controls and clipboard appearance
       if: ${{ matrix.group == 'text' }}
       run: |
@@ -570,7 +581,7 @@ jobs:
     - name: Identificar versión de prueba
       run: |
         ./target/release/wordcraft-gnome --version | tee version.txt
-        grep -q "Leaf 0.1.0-alpha.44" version.txt
+        grep -q "Leaf 0.1.0-alpha.45" version.txt
       if: ${{ matrix.group == 'appearance' }}
     - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
       run: |
@@ -1116,7 +1127,7 @@ jobs:
                 path.write_text(uri + '\n')
         PY
         sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi libgtk-4-1 libadwaita-1-0 poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
+        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi libgtk-4-1 libadwaita-1-0 poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext gnome-font-viewer gir1.2-atspi-2.0
         # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
     - name: Validate desktop metadata
@@ -1154,6 +1165,8 @@ jobs:
         if-no-files-found: error
     - name: Verify alpha35 native controls and real portal image transfer on GNOME 49
       run: bash tools/workflows35-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/workflows35-installed
+    - name: Verify actual system font installation and live Flatpak refresh
+      run: bash tools/font279-installed-test.sh io.github.frandavid100.leaf /app/bin/leaf dist/font279-installed
     - name: Verify installed dictionary folder portal and restart
       env:
         LEAF84_GDB: '1'
@@ -1386,9 +1399,9 @@ jobs:
         cp packaging/RELEASE_NOTES.md dist/RELEASE_NOTES.md
         python3 - <<'PYTHON'
         import json, os, pathlib
-        assert json.load(open('data/releases/closures.json'))['version'] == '0.1.0-alpha.44'
+        assert json.load(open('data/releases/closures.json'))['version'] == '0.1.0-alpha.45'
         pathlib.Path('dist/candidate.json').write_text(json.dumps({
-            'version': '0.1.0-alpha.44', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+            'version': '0.1.0-alpha.45', 'source': os.environ['LEAF_CANDIDATE_SHA'],
             'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
             'native_source': os.environ['LEAF_NATIVE_SHA'],
             'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
@@ -1402,7 +1415,7 @@ jobs:
         python3 - <<'PYTHON'
         from pathlib import Path
         from zipfile import ZipFile, ZIP_DEFLATED
-        with ZipFile("dist/Leaf-0.1.0-alpha.44-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
+        with ZipFile("dist/Leaf-0.1.0-alpha.45-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
             for source in sorted(Path("tests/fixtures/dictionary84").iterdir()):
                 if source.is_file(): archive.write(source, "Leaf-dictionary-test/" + source.name)
         PYTHON
@@ -1454,7 +1467,7 @@ jobs:
                 path.write_text(uri + '\n')
         PY
         sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi libgtk-4-1 libadwaita-1-0 poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext
+        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi libgtk-4-1 libadwaita-1-0 poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext gnome-font-viewer gir1.2-atspi-2.0
         # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
     - name: Prepare isolated FlatPark runner
@@ -1464,7 +1477,7 @@ jobs:
     - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
       run: |
         set -o pipefail
-        xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.44-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+        xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.45-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
         grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
     - uses: actions/upload-artifact@v4
       if: always()

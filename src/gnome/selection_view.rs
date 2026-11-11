@@ -2,6 +2,11 @@ use super::*;
 
 pub(super) fn refresh_selection(ui: &Rc<Ui>) {
     let _perf = perf_scope("leaf.refresh_selection");
+    ui.selected_floating_image
+        .set(ui.current.borrow().as_ref().is_some_and(|d| {
+            pictures::layout(&d.session)
+                .is_some_and(|f| f.wrap != wordcraft_doc::para::Wrap::Inline)
+        }));
     let snapshot = {
         let Ok(mut value) = ui.current.try_borrow_mut() else {
             return;

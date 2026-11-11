@@ -3831,3 +3831,147 @@ msgstr "Leaf is in alpha. Test with copies of important documents: compatibility
 #: data/*.in
 msgid "Leaf uses the existing WordCraft document engine. Much of Leaf’s native interface, tests and packaging was produced through vibe coding with ChatGPT/Codex; the icon also used AI assistance."
 msgstr "Leaf uses the existing WordCraft document engine. Much of Leaf’s native interface, tests and packaging was produced through vibe coding with ChatGPT/Codex; the icon also used AI assistance."
+
+msgid "All fonts used by this document are now available."
+msgstr "All fonts used by this document are now available."
+
+msgid "Bold Italic"
+msgstr "Bold Italic"
+
+msgid "Cancelled"
+msgstr "Cancelled"
+
+msgid "Check Installed Fonts"
+msgstr "Check Installed Fonts"
+
+msgid "Choose a TrueType or OpenType font file."
+msgstr "Choose a TrueType or OpenType font file."
+
+msgid "Choose a local file."
+msgstr "Choose a local file."
+
+msgid "Column {n}"
+msgstr "Column {n}"
+
+msgid "Complete the column values before applying them."
+msgstr "Complete the column values before applying them."
+
+msgid "Continue with Substitutes"
+msgstr "Continue with Substitutes"
+
+msgid "Could Not Open the Font Viewer"
+msgstr "Could Not Open the Font Viewer"
+
+msgid "Could Not Save"
+msgstr "Could Not Save"
+
+msgid "Could not download this font. Check your connection and try again, or open a local font file."
+msgstr "Could not download this font. Check your connection and try again, or open a local font file."
+
+msgid "Download and Open"
+msgstr "Download and Open"
+
+msgid "Downloaded. Install this style in the system font viewer, then check again."
+msgstr "Downloaded. Install this style in the system font viewer, then check again."
+
+msgid "Downloading font and license…"
+msgstr "Downloading font and license…"
+
+msgid "Enter a whole number of columns from 1 to 12."
+msgstr "Enter a whole number of columns from 1 to 12."
+
+msgid "Enter a whole number."
+msgstr "Enter a whole number."
+
+msgid "Font Files"
+msgstr "Font Files"
+
+msgid "Insert Column to the Left"
+msgstr "Insert Column to the Left"
+
+msgid "Insert Column to the Right"
+msgstr "Insert Column to the Right"
+
+msgid "Insert Row Above"
+msgstr "Insert Row Above"
+
+msgid "Insert Row Below"
+msgstr "Insert Row Below"
+
+msgid "Install Missing Fonts…"
+msgstr "Install Missing Fonts…"
+
+msgid "Install each required style in your system font viewer. Opening the viewer does not install a font or replace the document's font names."
+msgstr "Install each required style in your system font viewer. Opening the viewer does not install a font or replace the document's font names."
+
+msgid "List Level"
+msgstr "List Level"
+
+msgid "Mixed — choose a layout to edit these sections together."
+msgstr "Mixed — choose a layout to edit these sections together."
+
+msgid "No font viewer could open this file. Save it and open it with your system's font installer."
+msgstr "No font viewer could open this file. Save it and open it with your system's font installer."
+
+msgid "Not available; displayed as"
+msgstr "Not available; displayed as"
+
+msgid "Not in the download catalog. Use a local font file or choose a replacement in Document Properties."
+msgstr "Not in the download catalog. Use a local font file or choose a replacement in Document Properties."
+
+msgid "Open Font File"
+msgstr "Open Font File"
+
+msgid "Open Local Font File…"
+msgstr "Open Local Font File…"
+
+msgid "Regular"
+msgstr "Regular"
+
+msgid "Review Fonts"
+msgstr "Review Fonts"
+
+msgid "Save Font File"
+msgstr "Save Font File"
+
+msgid "Save Font File…"
+msgstr "Save Font File…"
+
+msgid "Some Fonts Are Unavailable"
+msgstr "Some Fonts Are Unavailable"
+
+msgid "Still unavailable:"
+msgstr "Still unavailable:"
+
+msgid "The certificate trust file contains no certificates."
+msgstr "The certificate trust file contains no certificates."
+
+msgid "The downloaded file does not contain the requested font."
+msgstr "The downloaded file does not contain the requested font."
+
+msgid "The font download failed."
+msgstr "The font download failed."
+
+msgid "The font download is too large."
+msgstr "The font download is too large."
+
+msgid "The font file is empty or too large."
+msgstr "The font file is empty or too large."
+
+msgid "The font license could not be verified."
+msgstr "The font license could not be verified."
+
+msgid "This document uses fonts that are not available. Substitutions can change its appearance and pagination. The original font names have been preserved."
+msgstr "This document uses fonts that are not available. Substitutions can change its appearance and pagination. The original font names have been preserved."
+
+msgid "This font is not in the download catalog. Choose a local font file."
+msgstr "This font is not in the download catalog. Choose a local font file."
+
+msgid "This is not a usable font file."
+msgstr "This is not a usable font file."
+
+msgid "Unequal widths are preserved in DOCX. In ODT, the engine saves them as equal-width columns. The preview shows column geometry; unequal-column text flow is limited by the current engine."
+msgstr "Unequal widths are preserved in DOCX. In ODT, the engine saves them as equal-width columns. The preview shows column geometry; unequal-column text flow is limited by the current engine."
+
+msgid "Width of Column {n} (mm)"
+msgstr "Width of Column {n} (mm)"
