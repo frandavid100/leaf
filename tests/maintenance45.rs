@@ -29,6 +29,7 @@ fn a_reading_anchor_clamps_to_the_last_remaining_page() {
         page: 9,
         x: 0.5,
         y: 0.8,
+        at_top: false,
     };
     assert!(anchor.position(&layout, 680., 500.).is_some());
     assert!(
@@ -36,6 +37,16 @@ fn a_reading_anchor_clamps_to_the_last_remaining_page() {
             .position(&viewer_layout::arrange(&[], 1., 680.), 680., 500.)
             .is_none()
     );
+}
+#[test]
+fn a_view_at_the_document_top_stays_at_the_top_when_zoom_changes() {
+    let sizes = [(600., 800.); 3];
+    let old = viewer_layout::arrange(&sizes, 1., 680.);
+    let anchor = ReadingAnchor::capture(&old, 0., 0., 680., 500.).unwrap();
+    for (zoom, width) in [(0.5, 1400.), (1.75, 680.), (1.1, 700.)] {
+        let next = viewer_layout::arrange(&sizes, zoom, width);
+        assert_eq!(anchor.position(&next, width, 500.).unwrap().1, 0.);
+    }
 }
 #[test]
 fn missing_font_notice_uses_drawn_text_and_is_not_a_document_edit() {

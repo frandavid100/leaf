@@ -14,7 +14,9 @@ publicación en [LATEST_RELEASE](LATEST_RELEASE.md).
 ajuste al ancho y cambios de tamaño. Las restauraciones diferidas respetan la
 identidad y revisión del documento y ceden ante navegación o entrada posterior.
 Siguen las asignaciones reales de tamaño de GTK, también con escalado alto; la
-regresión comprueba que el cursor final queda dentro del visor.
+regresión comprueba que el cursor final queda dentro del visor. El borde superior
+permanece fijo si la vista ya estaba al principio: Inicio conserva la posición del
+folio al escribir, deshacer y rehacer.
 #280 conserva esa referencia al borrar/restaurar una imagen flotante, por teclado,
 menús y Deshacer/Rehacer, también cuando hay imágenes consecutivas y el motor
 retiene como objetivo la vecina. Distingue el borrado de imágenes de escribir
@@ -59,9 +61,10 @@ comprobando después las cuatro variantes y el cambio real de renderizado dentro
 del Flatpak. Su éxito es obligatorio para esta entrega. No equivale a una
 prueba personal de GNOME OS, Windows, Orca o impresora física.
 
-Localmente pasan 246 pruebas Rust, 16 Python y 1076 mensajes completos en
+Localmente pasan 247 pruebas Rust, 16 Python y 1076 mensajes completos en
 inglés/español. Han pasado las pruebas nativas de zoom, borrado flotante, catálogo y
-columnas, incluida la reutilización de valores entre alcances y la cancelación
+columnas, Inicio en inglés/español al 100/200 % y apertura de herramientas
+visibles al 200 %, incluida la reutilización de valores entre alcances y la cancelación
 de entradas pendientes. También pasa la regresión completa de controles de
 alpha.43, con apertura no mutante de propiedades de tabla; la instalación real de cursiva y negrita cursiva también pasó en un
 perfil de prueba. El host ya tenía normal/negrita: la aceptación completa de las

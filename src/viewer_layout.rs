@@ -33,6 +33,7 @@ pub struct ReadingAnchor {
     pub page: usize,
     pub x: f64,
     pub y: f64,
+    pub at_top: bool,
 }
 impl ReadingAnchor {
     pub fn capture(
@@ -53,6 +54,7 @@ impl ReadingAnchor {
             page,
             x: ((x - rect.x) / rect.width).clamp(0., 1.),
             y: ((y - rect.y) / rect.height).clamp(0., 1.),
+            at_top: top <= 0.5,
         })
     }
     pub fn position(self, layout: &Arrangement, width: f64, height: f64) -> Option<(f64, f64)> {
@@ -61,7 +63,11 @@ impl ReadingAnchor {
             .get(self.page.min(layout.pages.len().checked_sub(1)?))?;
         Some((
             rect.x + self.x * rect.width - width * 0.3,
-            rect.y + self.y * rect.height - height * 0.3,
+            if self.at_top {
+                0.
+            } else {
+                rect.y + self.y * rect.height - height * 0.3
+            },
         ))
     }
 }

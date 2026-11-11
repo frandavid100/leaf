@@ -389,6 +389,30 @@ pub(super) fn catalog(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application
                 ui.quick_tools.borrow().as_ref().unwrap().layout();
             }
         }
+        async fn place(ui: &Rc<Ui>, group: &str, id: &str) {
+            for name in ["paragraph", "elements"] {
+                let order = wordcraft_gnome::preferences::toolbar_placements(name)
+                    .into_iter()
+                    .map(|(key, _)| {
+                        let mode = if name == group && key == id {
+                            Placement::Pinned
+                        } else {
+                            Placement::More
+                        };
+                        (key, mode)
+                    })
+                    .collect::<Vec<_>>();
+                wordcraft_gnome::preferences::set_toolbar_placements(name, &order).unwrap();
+            }
+            ui.quick_tools.borrow().as_ref().unwrap().layout();
+            settle().await;
+            assert!(
+                find_widget(&ui.format_toolbar, &format!("format-quick-{id}"))
+                    .unwrap()
+                    .is_mapped(),
+                "toolbar launcher must be visible: {group}/{id}"
+            );
+        }
         for id in [
             "table-select-cell",
             "table-select-row",
@@ -417,6 +441,7 @@ pub(super) fn catalog(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application
                 tool_actions::source_widget(&ui, id).is_some(),
                 "missing live source for {id}"
             );
+            place(&ui, "elements", id).await;
             let b = find_widget(&ui.format_toolbar, &format!("format-quick-{id}"))
                 .unwrap()
                 .downcast::<gtk::Button>()
@@ -473,6 +498,7 @@ pub(super) fn catalog(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application
                 id,
             );
             settle().await;
+            place(&ui, "elements", id).await;
             let before = state(&ui);
             find_widget(&ui.format_toolbar, &format!("format-quick-{id}"))
                 .unwrap()
@@ -496,6 +522,7 @@ pub(super) fn catalog(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application
             ("numbering", "numbering"),
             ("multilevel", "multilevel"),
         ] {
+            place(&ui, "paragraph", id).await;
             let before = state(&ui);
             find_widget(&ui.format_toolbar, &format!("format-quick-{id}"))
                 .unwrap()
@@ -519,6 +546,7 @@ pub(super) fn catalog(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application
             ("list-level", "paragraph-list-level", 2.),
             ("list-start", "paragraph-list-start", 7.),
         ] {
+            place(&ui, "paragraph", id).await;
             find_widget(&ui.format_toolbar, &format!("format-quick-{id}"))
                 .unwrap()
                 .downcast::<gtk::MenuButton>()
@@ -537,6 +565,7 @@ pub(super) fn catalog(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application
             assert!(state(&ui).2 > before.2, "inert list option {id}");
             p.popover.upgrade().unwrap().popdown();
         }
+        place(&ui, "paragraph", "list-remove").await;
         let b = find_widget(&ui.format_toolbar, "format-quick-list-remove")
             .unwrap()
             .downcast::<gtk::Button>()
@@ -545,6 +574,7 @@ pub(super) fn catalog(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application
         settle().await;
         assert!(!tool_actions::enabled(&ui, "paragraph", "list-remove"));
         assert!(tool_actions::enabled(&ui, "elements", "insert-new-table"));
+        place(&ui, "elements", "insert-new-table").await;
         find_widget(&ui.format_toolbar, "format-quick-insert-new-table")
             .unwrap()
             .downcast::<gtk::Button>()
