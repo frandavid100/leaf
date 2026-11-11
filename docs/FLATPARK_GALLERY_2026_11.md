@@ -6,6 +6,8 @@ David asked to resume the FlatPark listing after supplying and approving four
 current screenshots. Upstream AppStream now references the same unretouched
 images as the README. The FlatPark fork branch is
 [`fix/leaf-gallery-2026-11`](https://github.com/frandavid100/flatpark/tree/fix/leaf-gallery-2026-11).
+Fork commit: `238b74a5c0fa4b957726d06b22ea601ddf561fd2`.
+[Compare the three changed files](https://github.com/flatpark/flatpark/compare/main...frandavid100:flatpark:fix/leaf-gallery-2026-11).
 It is prepared for review; no new FlatPark PR has been opened and the public
 catalogue has not been refreshed by this work.
 
@@ -75,7 +77,7 @@ Leaf is not on Flathub.
 **Tested:** upstream's 16 Python tests, reviewed-news generation and project links;
 FlatPark descriptor parsing/audit and the update-pins regression suite; PNG
 integrity, dimensions and alpha channel; SVG rendering; exact icon identity and
-preservation of package fields. Upstream metadata CI is tracked below.
+preservation of package fields. Upstream metadata CI passed on 11 November 2026.
 No local Flatpak build/install/launch or installed-store-client inspection was
 performed in this environment. The AppStream CLI is not installed locally;
 its validation is delegated to the existing upstream metadata CI and FlatPark CI.
@@ -90,7 +92,7 @@ This PR intentionally changes only three data files in Leaf's registry directory
 - Local metadata/news checks, 16 Python tests and project links: passed.
 - FlatPark descriptor parse/audit and update-pins regressions: passed. The
   AppStream-specific regression branch self-skips without appstreamcli.
-- Upstream Store metadata CI: pending the metadata commit.
+- [Upstream Store metadata CI](https://github.com/frandavid100/leaf/actions/runs/42974180620): passed for `4bb9f6fe0f1f118e695a0fc2b254a21070e968a7`, including AppStream validation, gettext compilation, reviewed news, online screenshot URL checks, 16 Python tests and documentation links.
 - No new Leaf executable, release/tag mutation, runtime or permission changes.
 - FlatPark requires explicit human OK before opening a PR, under its
   [packaging playbook](https://github.com/flatpark/flatpark/blob/main/docs/packagers/playbook.md).
