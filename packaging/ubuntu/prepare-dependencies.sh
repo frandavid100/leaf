@@ -22,7 +22,5 @@ opts=(
   -o Acquire::https::Timeout=30
 )
 apt-get "${opts[@]}" -o APT::Update::Error-Mode=any update
-apt-get "${opts[@]}" --download-only --no-install-recommends -y install \
-  python3 dpkg-dev libgtk-4-1 libadwaita-1-0 librsvg2-common shared-mime-info \
-  desktop-file-utils xvfb xauth dbus-x11 fonts-dejavu-core fonts-liberation \
-  locales ca-certificates
+mapfile -t packages < packaging/ubuntu/test-packages.txt
+apt-get "${opts[@]}" --download-only --no-install-recommends -y install "${packages[@]}"

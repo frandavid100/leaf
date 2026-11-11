@@ -6,7 +6,12 @@ test "$ID" = ubuntu && test "$VERSION_ID" = 26.10
 export DEBIAN_FRONTEND=noninteractive
 # Dependencies were authenticated and downloaded by the host APT into a
 # separate state directory. Install their local files with networking disabled.
-apt-get install -y --no-download --no-install-recommends /work/deb-dependencies/cache/*.deb
+mapfile -t packages < packaging/ubuntu/test-packages.txt
+apt-get -o Dir::State::lists=/work/deb-dependencies/lists \
+  -o Dir::Cache::archives=/work/deb-dependencies/cache \
+  -o Dir::Etc::sourcelist=/work/deb-dependencies/sources.list \
+  -o Dir::Etc::sourceparts=- \
+  install -y --no-download --no-install-recommends "${packages[@]}"
 localedef -i en_US -f UTF-8 en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 mkdir -p dist/ubuntu

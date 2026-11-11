@@ -1,0 +1,14 @@
+python3
+dpkg-dev
+libgtk-4-1
+libadwaita-1-0
+librsvg2-common
+shared-mime-info
+desktop-file-utils
+xvfb
+xauth
+dbus-x11
+fonts-dejavu-core
+fonts-liberation
+locales
+ca-certificates
