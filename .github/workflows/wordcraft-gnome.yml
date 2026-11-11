@@ -1127,7 +1127,7 @@ jobs:
                 path.write_text(uri + '\n')
         PY
         sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi libgtk-4-1 libadwaita-1-0 poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext gnome-font-viewer gir1.2-atspi-2.0
+        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi libgtk-4-1 libadwaita-1-0 poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext gnome-font-viewer gir1.2-atspi-2.0 at-spi2-core
         # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
     - name: Validate desktop metadata
@@ -1467,7 +1467,7 @@ jobs:
                 path.write_text(uri + '\n')
         PY
         sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi libgtk-4-1 libadwaita-1-0 poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext gnome-font-viewer gir1.2-atspi-2.0
+        sudo env DEBIAN_FRONTEND=noninteractive timeout 300s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends flatpak desktop-file-utils appstream xvfb xauth scrot xcompmgr libgtk-3-bin librsvg2-common fuse3 python3-gi libgtk-4-1 libadwaita-1-0 poppler-utils gdb xclip xdotool xdg-desktop-portal xdg-desktop-portal-gtk dbus-x11 gettext gnome-font-viewer gir1.2-atspi-2.0 at-spi2-core
         # Ubuntu runner AppArmor restricts bubblewrap's user namespaces by default.
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
     - name: Prepare isolated FlatPark runner
