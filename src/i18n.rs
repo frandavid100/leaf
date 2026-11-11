@@ -8,17 +8,17 @@ use std::{
 };
 include!("../po/messages.rs");
 const DOMAIN: &CStr = c"leaf";
-#[cfg_attr(windows, link(name = "intl"))]
+#[cfg_attr(any(windows, target_os = "macos"), link(name = "intl"))]
 unsafe extern "C" {
-    #[cfg_attr(windows, link_name = "libintl_setlocale")]
+    #[cfg_attr(any(windows, target_os = "macos"), link_name = "libintl_setlocale")]
     fn setlocale(category: c_int, locale: *const c_char) -> *mut c_char;
-    #[cfg_attr(windows, link_name = "libintl_bindtextdomain")]
+    #[cfg_attr(any(windows, target_os = "macos"), link_name = "libintl_bindtextdomain")]
     fn bindtextdomain(domain: *const c_char, directory: *const c_char) -> *mut c_char;
-    #[cfg_attr(windows, link_name = "libintl_bind_textdomain_codeset")]
+    #[cfg_attr(any(windows, target_os = "macos"), link_name = "libintl_bind_textdomain_codeset")]
     fn bind_textdomain_codeset(domain: *const c_char, codeset: *const c_char) -> *mut c_char;
-    #[cfg_attr(windows, link_name = "libintl_dgettext")]
+    #[cfg_attr(any(windows, target_os = "macos"), link_name = "libintl_dgettext")]
     fn dgettext(domain: *const c_char, message: *const c_char) -> *mut c_char;
-    #[cfg_attr(windows, link_name = "libintl_dngettext")]
+    #[cfg_attr(any(windows, target_os = "macos"), link_name = "libintl_dngettext")]
     fn dngettext(
         domain: *const c_char,
         singular: *const c_char,
@@ -45,7 +45,8 @@ pub fn init() {
     static LOCALE: std::sync::Once = std::sync::Once::new();
     LOCALE.call_once(|| unsafe {
         // LC_ALL differs between the Windows CRT (0) and glibc (6).
-        setlocale(if cfg!(windows) { 0 } else { 6 }, c"".as_ptr());
+        // Darwin, like Windows, defines LC_ALL as 0; glibc defines it as 6.
+        setlocale(if cfg!(any(windows, target_os = "macos")) { 0 } else { 6 }, c"".as_ptr());
     });
     catalog();
 }
