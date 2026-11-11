@@ -1,6 +1,6 @@
 # Hoja de ruta de Leaf
 
-## 11/11/2026 — galería de tienda preparada
+## 11/11/2026 — ficha de tienda enviada a FlatPark
 
 David pide retomar la ficha de FlatPark. AppStream usa las cuatro capturas
 aprobadas con transparencia, esquinas y sombra originales. Se prepara en el fork
@@ -8,8 +8,10 @@ una actualización estática de metainfo e iconos, con las novedades bilingües 
 alpha.44/.42/.41/.40 que faltaban. A petición de David, la descripción EN/ES
 se renueva siguiendo el README: potencia y sencillez primero, alfa e IA al final.
 No cambia el ejecutable ni se publica una alpha. La automatización anterior no
-se integró: sigue reservada a FlatPark. PR y comprobación en el cliente pendientes;
-#185 permanece abierto. [Revisión y borrador](docs/FLATPARK_GALLERY_2026_11.md).
+se integró: sigue reservada a FlatPark. David aprueba el resultado y se abre la
+[PR #1139](https://github.com/flatpark/flatpark/pull/1139), sin conflictos. Su CI
+necesita autorización de un mantenedor. Publicación y comprobación en el cliente
+siguen pendientes; #185 permanece abierto. [Revisión y borrador](docs/FLATPARK_GALLERY_2026_11.md).
 
 ## 11/11/2026 — README y capturas aprobadas
 

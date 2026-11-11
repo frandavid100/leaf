@@ -7,9 +7,10 @@ ya revisadas y el icono vigente. Después pide renovar también el texto: se ada
 el enfoque del README en EN/ES, con ventajas y funciones primero y estado alfa e
 IA al final. Se conservan los colores existentes. El cambio externo se limita a metainfo e iconos, conservando
 pin, permisos, runtime, wrapper y resolver. Las notas vacías se recuperan del
-metainfo upstream para la alpha.44 empaquetada. FlatPark exige presentar el
-borrador y recibir OK humano antes de abrir la PR; preparar y subir la rama sí
-está permitido. No atribuir publicación ni prueba en Bazaar a una rama preparada.
+metainfo upstream para la alpha.44 empaquetada. David da su visto bueno al resultado y se abre la
+[PR #1139](https://github.com/flatpark/flatpark/pull/1139) el 11/11/2026. La rama
+contiene solo los tres archivos de datos previstos y no tiene conflictos. Su CI
+requiere autorización de un mantenedor; revisión y publicación siguen pendientes. No atribuir publicación ni prueba en Bazaar a una rama preparada.
 [Alcance y validación](FLATPARK_GALLERY_2026_11.md).
 
 ## 11/11/2026 — presentación del README

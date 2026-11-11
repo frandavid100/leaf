@@ -8,8 +8,11 @@ images as the README. The FlatPark fork branch is
 [`fix/leaf-gallery-2026-11`](https://github.com/frandavid100/flatpark/tree/fix/leaf-gallery-2026-11).
 The branch includes the gallery, icons, release-note backfill and revised copy.
 [Compare the three changed files](https://github.com/flatpark/flatpark/compare/main...frandavid100:flatpark:fix/leaf-gallery-2026-11).
-It is prepared for review; no new FlatPark PR has been opened and the public
-catalogue has not been refreshed by this work.
+David approved the revised presentation on 11 November 2026 and
+[FlatPark PR #1139](https://github.com/flatpark/flatpark/pull/1139) is now open,
+with the expected three changed files and no merge conflicts. Its
+[pr-checks run](https://github.com/flatpark/flatpark/actions/runs/42976422643)
+requires maintainer authorization. The public catalogue is not yet refreshed.
 
 FlatPark main baseline: `b97446f9361ad5c380a2dee400b480ee7d75c4d9`.
 Packaged version: **0.1.0-alpha.44**, already pinned by FlatPark. The existing
@@ -89,9 +92,9 @@ detalladas cuando las necesites.
 
 ![Native underline menu](screenshots/leaf-2026-11-format.png)
 
-## Prepared PR draft
+## Submitted PR
 
-**Title:** `fix(leaf): refresh approved gallery, icons and release notes`
+**Title:** `fix(leaf): refresh store description, gallery, icons and release notes`
 
 Leaf (`io.github.frandavid100.leaf`) has a current alpha.44 archive pin, but its
 store gallery and exported icons still show the earlier interface/branding.
@@ -133,8 +136,10 @@ This PR intentionally changes only three data files in Leaf's registry directory
 - [Revised description metadata CI](https://github.com/frandavid100/leaf/actions/runs/42975267698): passed for `3de570d91fe54129a9485ccdc708dfa5fa009e0c`. AppStream validation, complete English/Spanish catalogs, screenshot URLs, 16 Python tests, reviewed news and documentation links passed.
 - The prepared FlatPark branch now ends at `e9a77e8cb70e2eb3d0e0e269b778ad6dab234854`.
 - No new Leaf executable, release/tag mutation, runtime or permission changes.
-- FlatPark requires explicit human OK before opening a PR, under its
-  [packaging playbook](https://github.com/flatpark/flatpark/blob/main/docs/packagers/playbook.md).
+- David explicitly approved the final text, icons and gallery before submission,
+  as required by FlatPark's [packaging playbook](https://github.com/flatpark/flatpark/blob/main/docs/packagers/playbook.md).
+- PR #1139 is open; CI awaits a FlatPark maintainer's authorization. Acceptance,
+  catalogue publication and the installed-client check remain pending.
 - After maintainer publication: refresh the actual FlatPark origin in Bazaar
   and inspect all four images, transparent margins/shadow on light/dark gallery
   backgrounds, blue icon, translated description and alpha.44 news. The website
