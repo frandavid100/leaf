@@ -436,6 +436,7 @@ pub(super) fn build_tab(
         caret_navigation_generation: Cell::new(0),
         viewport_restore_generation: Cell::new(0),
         selected_floating_image: Cell::new(false),
+        selection_floating_objects: RefCell::new(None),
         reading_anchor: RefCell::new(None),
         caret_motion: Rc::new(RefCell::new(Default::default())),
         caret_tick_active: Cell::new(false),

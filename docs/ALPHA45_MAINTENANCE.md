@@ -14,7 +14,10 @@ publicación en [LATEST_RELEASE](LATEST_RELEASE.md).
 ajuste al ancho y cambios de tamaño. Las restauraciones diferidas respetan la
 identidad y revisión del documento y ceden ante navegación o entrada posterior.
 #280 conserva esa referencia al borrar/restaurar una imagen flotante, por teclado,
-menús y Deshacer/Rehacer. No cambia el anclaje ni la selección del motor.
+menús y Deshacer/Rehacer, también cuando hay imágenes consecutivas y el motor
+retiene como objetivo la vecina. Distingue el borrado de imágenes de escribir
+sobre la selección o borrar texto ordinario: esas acciones revelan el cursor.
+No cambia el anclaje ni la selección del motor.
 
 #259 completa el catálogo de herramientas actuales: galerías y opciones de listas,
 operaciones de selección/inserción/borrado/división de tablas, inserción independiente
@@ -52,7 +55,7 @@ comprobando después las cuatro variantes y el cambio real de renderizado dentro
 del Flatpak. Su éxito es obligatorio para esta entrega. No equivale a una
 prueba personal de GNOME OS, Windows, Orca o impresora física.
 
-Localmente pasan 246 pruebas Rust, 16 Python y 1075 mensajes completos en
+Localmente pasan 246 pruebas Rust, 16 Python y 1076 mensajes completos en
 inglés/español. Han pasado las pruebas nativas de zoom, borrado flotante, catálogo y
 columnas; la instalación real de cursiva y negrita cursiva también pasó en un
 perfil de prueba. El host ya tenía normal/negrita: la aceptación completa de las
@@ -71,7 +74,8 @@ misma revisión y ureq 3.5. No cambia el perfil optimizado ni el unwinding.
 comprobaciones restantes. El bundle propio permite red para las descargas
 solicitadas. El manifiesto vigente de FlatPark no la permite: las fuentes locales
 siguen disponibles allí, pero la descarga dentro de Leaf necesita una actualización
-de permisos separada. No se presenta la prueba GNOME 51 como evidencia de un
+de permisos separada. Leaf detecta ese permiso real y ofrece el archivo local,
+sin mostrar una descarga que el paquete no puede realizar. No se presenta la prueba GNOME 51 como evidencia de un
 permiso que la tienda aún no concede.
 
 #281 está remitido a WordCraft #6261; la discusión de bordes parciales es #6262.

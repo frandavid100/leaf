@@ -968,6 +968,7 @@ pub const MESSAGES: &[&str] = &[
     "There is no table at this position",
     "Thick",
     "Thickness (pt)",
+    "This Flatpak package does not permit font downloads. Download the font outside Leaf and open its local file here.",
     "This Section",
     "This also deletes its replies. You can undo this change.",
     "This annotation cannot be added or changed here.",

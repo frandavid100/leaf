@@ -17,9 +17,12 @@ pub(super) fn after_history_change(ui: &Rc<Ui>) {
             }
         }
     }
-    refresh_after_content_change(ui);
+    refresh_content(ui, true);
 }
 pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
+    refresh_content(ui, false);
+}
+fn refresh_content(ui: &Rc<Ui>, history: bool) {
     templates::sync_after_edit(ui);
     image_drop::clear_preview(ui);
     let _perf = perf_scope("leaf.after_content_change");
@@ -27,10 +30,29 @@ pub(super) fn refresh_after_content_change(ui: &Rc<Ui>) {
     let was_canvas_focused = ui.document_box.has_focus();
     // Deleting/restoring a floating object exposes an unrelated anchor caret.
     // Keep the reading position through that transition, including Undo/Redo.
-    let floating_now = ui.current.borrow().as_ref().is_some_and(|d| {
-        pictures::layout(&d.session).is_some_and(|f| f.wrap != wordcraft_doc::para::Wrap::Inline)
+    let floating_deleted_or_restored = ui.current.borrow().as_ref().is_some_and(|d| {
+        let deletion = d
+            .session
+            .last_command
+            .as_ref()
+            .is_some_and(|(id, _)| matches!(id.as_str(), "text.delete" | "text.backspace"));
+        if !history && !deletion {
+            return false;
+        }
+        let floating_now = pictures::layout(&d.session)
+            .is_some_and(|f| f.wrap != wordcraft_doc::para::Wrap::Inline);
+        if !ui.selected_floating_image.get() && !floating_now {
+            return false;
+        }
+        let (pos, count) = selection_float_state(&d.session);
+        ui.selection_floating_objects
+            .borrow()
+            .as_ref()
+            .is_some_and(|(old, prior)| {
+                old.story == pos.story && old.path == pos.path && *prior != count
+            })
     });
-    let reading = (ui.selected_floating_image.get() != floating_now)
+    let reading = floating_deleted_or_restored
         .then(|| capture_reading_anchor(ui))
         .flatten();
     let picture_anchor = {

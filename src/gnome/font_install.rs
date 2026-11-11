@@ -19,6 +19,17 @@ fn report(ui: &Ui) -> Vec<fonts::MissingFont> {
         .map(|d| fonts::missing(&mut d.session))
         .unwrap_or_default()
 }
+fn downloads_allowed() -> bool {
+    let path = Path::new("/.flatpak-info");
+    if !path.exists() {
+        return true;
+    }
+    let info = glib::KeyFile::new();
+    info.load_from_file(path, glib::KeyFileFlags::NONE).is_ok()
+        && info
+            .string_list("Context", "shared")
+            .is_ok_and(|shared| shared.iter().any(|s| s == "network"))
+}
 pub(super) fn opened(ui: &Rc<Ui>) {
     // Legacy synthetic UI probes have their own modal workflows. The dedicated
     // font279 probe exercises this automatic notice with normal product behavior.
@@ -328,6 +339,7 @@ pub(super) fn show(ui: &Rc<Ui>) {
     status.set_xalign(0.);
     status.set_widget_name("font-install-status");
     let cancelled = Arc::new(AtomicBool::new(false));
+    let online = downloads_allowed();
     for font in report(ui) {
         let row = adw::ActionRow::new();
         row.set_title(&font.font);
@@ -337,7 +349,8 @@ pub(super) fn show(ui: &Rc<Ui>) {
             font.shown_as.join(", ")
         ));
         group.add(&row);
-        if fonts::catalog_file(&font.font, "Regular").is_some() {
+        let listed = fonts::catalog_file(&font.font, "Regular").is_some();
+        if listed && online {
             for style in fonts::STYLES {
                 let row = adw::ActionRow::new();
                 row.set_title(match *style {
@@ -377,8 +390,10 @@ pub(super) fn show(ui: &Rc<Ui>) {
                     }
                 });
             }
-        } else {
+        } else if !listed {
             row.set_subtitle(&format!("{}\n{}", row.subtitle().unwrap_or_default(), wordcraft_gnome::t!("Not in the download catalog. Use a local font file or choose a replacement in Document Properties.")));
+        } else {
+            row.set_subtitle(&format!("{}\n{}", row.subtitle().unwrap_or_default(), wordcraft_gnome::t!("This Flatpak package does not permit font downloads. Download the font outside Leaf and open its local file here.")));
         }
     }
     let local = gtk::Button::with_label(wordcraft_gnome::t!("Open Local Font File…"));

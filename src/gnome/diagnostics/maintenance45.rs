@@ -262,7 +262,12 @@ pub(super) fn picture_delete(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Appl
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
         window.set_default_size(1050, 780);
-        for wrap in ["behindText", "square"] {
+        for (wrap, adjacent) in [
+            ("behindText", false),
+            ("square", false),
+            ("behindText", true),
+            ("square", true),
+        ] {
             let text = (0..60)
                 .map(|i| {
                     format!(
@@ -279,6 +284,16 @@ pub(super) fn picture_delete(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Appl
             .unwrap();
             pictures::insert_data(&mut s, &data).unwrap();
             s.run("arrange.wrap", &json!({"wrap":wrap})).unwrap();
+            if adjacent {
+                selection::set_caret(
+                    &mut s,
+                    &Pos::body(0, wordcraft_doc::para::OBJ.len_utf8()),
+                    false,
+                )
+                .unwrap();
+                pictures::insert_data(&mut s, &data).unwrap();
+                s.run("arrange.wrap", &json!({"wrap":wrap})).unwrap();
+            }
             let before = s.doc.clone();
             let depth = s.undo_depth();
             opened(&ui, s, "Floating picture deletion");
@@ -291,7 +306,10 @@ pub(super) fn picture_delete(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Appl
             apply_user_edit(&ui, Edit::Delete);
             settle().await;
             same_reading(&ui, anchor);
-            assert!(pictures::selected(&ui.current.borrow().as_ref().unwrap().session).is_none());
+            assert_eq!(
+                pictures::selected(&ui.current.borrow().as_ref().unwrap().session).is_some(),
+                adjacent
+            );
             assert_eq!(
                 ui.current.borrow().as_ref().unwrap().session.undo_depth(),
                 depth + 1
@@ -309,6 +327,18 @@ pub(super) fn picture_delete(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Appl
             picture.execute(pictures::delete);
             settle().await;
             same_reading(&ui, anchor);
+            apply_user_edit(&ui, Edit::Undo);
+            settle().await;
+            apply_user_edit(
+                &ui,
+                Edit::Insert("Typing replaces the selected object".into()),
+            );
+            settle().await;
+            assert_eq!(
+                capture_reading_anchor(&ui).unwrap().page,
+                0,
+                "typing must reveal its caret instead of retaining an unrelated reading position"
+            );
             selected_command(&ui, "docEnd", false);
             settle().await;
             assert!(

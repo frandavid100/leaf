@@ -112,6 +112,7 @@ pub(super) struct Ui {
     pub(super) caret_navigation_generation: Cell<u64>,
     pub(super) viewport_restore_generation: Cell<u64>,
     pub(super) selected_floating_image: Cell<bool>,
+    pub(super) selection_floating_objects: RefCell<Option<(Pos, usize)>>,
     pub(super) reading_anchor: RefCell<
         Option<(
             (u64, u64),

@@ -1,17 +1,24 @@
 use super::*;
 
+pub(super) fn selection_float_state(s: &Session) -> (Pos, usize) {
+    let count = s.doc.para_at(&s.sel.focus).map_or(0, |p| p.objects.iter().filter(|o| {
+        matches!(o, wordcraft_doc::InlineObject::Image {float, ..} if float.wrap != wordcraft_doc::para::Wrap::Inline)
+    }).count());
+    (s.sel.focus.clone(), count)
+}
 pub(super) fn refresh_selection(ui: &Rc<Ui>) {
     let _perf = perf_scope("leaf.refresh_selection");
-    ui.selected_floating_image
-        .set(ui.current.borrow().as_ref().is_some_and(|d| {
-            pictures::layout(&d.session)
-                .is_some_and(|f| f.wrap != wordcraft_doc::para::Wrap::Inline)
-        }));
     let snapshot = {
         let Ok(mut value) = ui.current.try_borrow_mut() else {
             return;
         };
         let Some(doc) = value.as_mut() else { return };
+        ui.selection_floating_objects
+            .replace(Some(selection_float_state(&doc.session)));
+        ui.selected_floating_image.set(
+            pictures::layout(&doc.session)
+                .is_some_and(|f| f.wrap != wordcraft_doc::para::Wrap::Inline),
+        );
         {
             let _p = perf_scope("boundary.selection_geometry");
             selection::geometry(&mut doc.session)

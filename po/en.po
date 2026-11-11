@@ -3975,3 +3975,6 @@ msgstr "Unequal widths are preserved in DOCX. In ODT, the engine saves them as e
 
 msgid "Width of Column {n} (mm)"
 msgstr "Width of Column {n} (mm)"
+
+msgid "This Flatpak package does not permit font downloads. Download the font outside Leaf and open its local file here."
+msgstr "This Flatpak package does not permit font downloads. Download the font outside Leaf and open its local file here."
