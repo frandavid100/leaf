@@ -5,14 +5,16 @@ root=$(realpath deb-dependencies)
 mkdir -p "$root/lists/partial" "$root/cache/partial"
 test -s "$root/status"
 cat > "$root/sources.list" <<'EOF'
-deb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] https://archive.ubuntu.com/ubuntu stonking main universe
-deb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] https://archive.ubuntu.com/ubuntu stonking-updates main universe
-deb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] https://security.ubuntu.com/ubuntu stonking-security main universe
+deb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] https://mirrors.edge.kernel.org/ubuntu stonking main universe
+deb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] https://mirrors.edge.kernel.org/ubuntu stonking-updates main universe
+deb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] https://mirrors.edge.kernel.org/ubuntu stonking-security main universe
 EOF
 opts=(
   -o "Dir::State::status=$root/status"
   -o "Dir::State::lists=$root/lists"
   -o "Dir::Cache::archives=$root/cache"
+  -o "Dir::Cache::pkgcache=$root/pkgcache.bin"
+  -o "Dir::Cache::srcpkgcache=$root/srcpkgcache.bin"
   -o "Dir::Etc::sourcelist=$root/sources.list"
   -o Dir::Etc::sourceparts=-
   -o APT::Sandbox::User=root

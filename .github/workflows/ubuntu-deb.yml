@@ -51,7 +51,9 @@ jobs:
           mkdir -p deb-dependencies
           docker run --rm --network none ubuntu:26.10@sha256:262df65c0ec6bf8d9dcc87454f4330a05fae4b97825f45854af3b136666584c2 \
             cat /var/lib/dpkg/status > deb-dependencies/status
-          sudo bash packaging/ubuntu/prepare-dependencies.sh
+          set -o pipefail
+          sudo --preserve-env=http_proxy,https_proxy,HTTP_PROXY,HTTPS_PROXY,ALL_PROXY,all_proxy,no_proxy,NO_PROXY \
+            bash packaging/ubuntu/prepare-dependencies.sh 2>&1 | tee ubuntu-dependencies.log
       - name: Package and exercise the installed app offline on Ubuntu 26.10
         run: |
           set -o pipefail
@@ -66,4 +68,5 @@ jobs:
           path: |
             dist/ubuntu/
             ubuntu-deb-validation.log
+            ubuntu-dependencies.log
           if-no-files-found: error
