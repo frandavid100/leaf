@@ -1,0 +1,71 @@
+name: Leaf — experimental Ubuntu deb
+'on':
+  push:
+    branches: [packaging/ubuntu-deb]
+    paths: ['packaging/ubuntu/**', '.github/workflows/ubuntu-deb.yml']
+  workflow_dispatch:
+    inputs:
+      source_tag:
+        description: Published Linux alpha to repackage without recompiling
+        required: true
+        default: v0.1.0-alpha.45
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate and download the existing published application tree
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_TAG: ${{ inputs.source_tag || 'v0.1.0-alpha.45' }}
+        run: |
+          [[ "$SOURCE_TAG" =~ ^v0\.1\.0-alpha\.[0-9]+$ ]]
+          mkdir -p deb-input
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$SOURCE_TAG" > deb-input/release.json
+          gh release download "$SOURCE_TAG" --repo "$GITHUB_REPOSITORY" --dir deb-input \
+            --pattern '*flatpark-x86_64.tar.xz' --pattern candidate.json \
+            --pattern source-commit.txt --pattern SHA256SUMS
+          git rev-parse HEAD > deb-input/packaging-commit.txt
+          SOURCE_TAG="$SOURCE_TAG" python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path('deb-input')
+          release = json.loads((root / 'release.json').read_text())
+          candidate = json.loads((root / 'candidate.json').read_text())
+          assert not release['draft']
+          assert release['tag_name'] == os.environ['SOURCE_TAG'] == 'v' + candidate['version']
+          assert candidate['source'] == (root / 'source-commit.txt').read_text().strip()
+          assert release['target_commitish'] == candidate['source']
+          for asset in release['assets']:
+              path = root / asset['name']
+              if path.is_file():
+                  assert path.stat().st_size == asset['size']
+                  assert 'sha256:' + hashlib.sha256(path.read_bytes()).hexdigest() == asset['digest']
+          PY
+      - name: Download Ubuntu dependencies with isolated APT state
+        run: |
+          docker pull ubuntu:26.10@sha256:262df65c0ec6bf8d9dcc87454f4330a05fae4b97825f45854af3b136666584c2
+          mkdir -p deb-dependencies
+          docker run --rm --network none ubuntu:26.10@sha256:262df65c0ec6bf8d9dcc87454f4330a05fae4b97825f45854af3b136666584c2 \
+            cat /var/lib/dpkg/status > deb-dependencies/status
+          set -o pipefail
+          sudo --preserve-env=http_proxy,https_proxy,HTTP_PROXY,HTTPS_PROXY,ALL_PROXY,all_proxy,no_proxy,NO_PROXY \
+            bash packaging/ubuntu/prepare-dependencies.sh 2>&1 | tee ubuntu-dependencies.log
+      - name: Package and exercise the installed app offline on Ubuntu 26.10
+        run: |
+          set -o pipefail
+          docker run --rm --network none --volume "$PWD:/work" --workdir /work \
+            ubuntu:26.10@sha256:262df65c0ec6bf8d9dcc87454f4330a05fae4b97825f45854af3b136666584c2 \
+            bash packaging/ubuntu/test-deb.sh 2>&1 | tee ubuntu-deb-validation.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: leaf-ubuntu-26.10-experimental
+          path: |
+            dist/ubuntu/
+            ubuntu-deb-validation.log
+            ubuntu-dependencies.log
+          if-no-files-found: error

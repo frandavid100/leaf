@@ -7,6 +7,11 @@ It is not currently published on Flathub. Use copies of important documents whil
 testing the alpha. For the experimental Windows installer and portable ZIP, see
 [Windows installation and limitations](WINDOWS.md).
 
+## Experimental Ubuntu deb
+
+For Ubuntu 26.10 amd64, an optional native deb package is available with alpha.45.
+See [Ubuntu installation and validation](UBUNTU.md).
+
 ## Install from FlatPark
 
 Add the remote and install Leaf:

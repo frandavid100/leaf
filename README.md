@@ -57,6 +57,8 @@ Contributors: work on [`main`](https://github.com/frandavid100/leaf/tree/main). 
 
 **Linux:** install from [FlatPark](https://flatpark.org/apps/io.github.frandavid100.leaf/) to receive updates through your Flatpak software manager. You can also download the standalone `.flatpak` from [GitHub Releases](https://github.com/frandavid100/leaf/releases); those bundles are updated manually. [Installation instructions](docs/INSTALLING.md).
 
+**Ubuntu 26.10 (amd64):** an [experimental native deb package](docs/UBUNTU.md) is also available. It uses Ubuntu’s libraries and does not require Flatpak or Snap. Updates are installed manually.
+
 **Windows:** an [experimental installer and portable ZIP](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.44-windows.1) are available. Windows releases are occasional and unsigned. [Installation and limitations](docs/WINDOWS.md).
 
 **Leaf is in alpha. Use copies of important documents.** Complex document compatibility is still being tested, and some advanced features require DOCX. Leaf blocks ODT saves that would lose supported document structures. [Current capabilities and limitations](PROJECT_STATUS.md).

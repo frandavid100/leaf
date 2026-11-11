@@ -1,5 +1,16 @@
 # Hoja de ruta de Leaf
 
+## 11/11/2026 — paquete deb experimental para Ubuntu 26.10
+
+Publicado como descarga adicional de alpha.45 para un voluntario con Ubuntu
+26.10 amd64, por petición expresa de David. Conserva byte a byte el ejecutable
+y los 44 archivos del árbol publicado; usa bibliotecas de Ubuntu y recursos
+privados en `/opt/leaf`. Instalación/reinstalación, interfaz EN/ES, recursos,
+DOCX/ODT/PDF y preferencias superan la CI en un contenedor Ubuntu 26.10.
+La prueba personal en el escritorio del voluntario sigue pendiente. No se crea
+una nueva alpha ni un repositorio APT; las actualizaciones del deb son manuales.
+[Instalación, fuente, checksum y límites](docs/UBUNTU.md).
+
 
 ## 11/11/2026 — ficha de tienda enviada a FlatPark
 
