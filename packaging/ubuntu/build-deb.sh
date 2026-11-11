@@ -71,7 +71,8 @@ Description: Native GTK word processor (experimental Ubuntu package)
  This package targets Ubuntu 26.10 amd64 and uses system GTK/libadwaita.
  Leaf is in alpha. Test with copies of important documents.
 EOF
-name="leaf_${deb_version}_amd64.deb"
+asset_version=${deb_version//\~/.}
+name="leaf_${asset_version}_amd64.deb"
 dpkg-deb --root-owner-group --build "$stage/root" "$out/$name"
 dpkg-deb --info "$out/$name"
 sha256sum "$binary" | cut -d' ' -f1 > "$out/ubuntu-binary-sha256.txt"

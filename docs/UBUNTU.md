@@ -8,12 +8,12 @@ It remains an experimental package for volunteer desktop testing.
 
 ## Install
 
-Download `leaf_0.1.0~alpha.45-1ubuntu26.10.1_amd64.deb`
+Download `leaf_0.1.0.alpha.45-1ubuntu26.10.1_amd64.deb`
 from [alpha.45](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.45).
 In the download directory:
 
 ```sh
-sudo apt install ./leaf_0.1.0~alpha.45-1ubuntu26.10.1_amd64.deb
+sudo apt install ./leaf_0.1.0.alpha.45-1ubuntu26.10.1_amd64.deb
 ```
 
 APT obtains the required libraries from your configured Ubuntu repositories.
