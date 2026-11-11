@@ -33,8 +33,9 @@ The photographs are scaled and partly cropped by the document layout/viewport;
 the screenshot files themselves are unchanged. Their photographic content
 retains that license; no endorsement by the photographer is implied.
 
-This delivery refreshes the README only. AppStream/FlatPark gallery publication
-and verification in an installed software client remain separate work under
+The same approved gallery is now referenced in upstream AppStream and prepared
+for FlatPark. FlatPark publication and verification in an installed software
+client remain pending under
 [issue #185](https://github.com/frandavid100/leaf/issues/185).
 
 ## Historical public gallery: alpha.28

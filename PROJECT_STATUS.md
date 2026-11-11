@@ -1,5 +1,15 @@
 # Estado actual de Leaf
 
+## 11/11/2026 — galería de tienda preparada
+
+David pide retomar la ficha de FlatPark. AppStream usa las cuatro capturas
+aprobadas con transparencia, esquinas y sombra originales. Se prepara en el fork
+una actualización estática de metainfo e iconos, con las novedades bilingües de
+alpha.44/.42/.41/.40 que faltaban. La descripción aprobada se conserva.
+No cambia el ejecutable ni se publica una alpha. La automatización anterior no
+se integró: sigue reservada a FlatPark. PR y comprobación en el cliente pendientes;
+#185 permanece abierto. [Revisión y borrador](docs/FLATPARK_GALLERY_2026_11.md).
+
 ## 11/11/2026 — README y capturas aprobadas
 
 La presentación pública usa el icono azul vigente y cuatro capturas reales

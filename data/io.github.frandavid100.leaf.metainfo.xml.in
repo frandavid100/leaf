@@ -31,24 +31,24 @@
   </branding>
   <screenshots>
     <screenshot type="default">
-      <caption>Edit documents with page previews and native formatting tools</caption>
-      <caption xml:lang="es">Edita documentos con miniaturas y controles de formato nativos</caption>
-      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/2bbc75e1aa74c1ecd3acb1109062abc2a47f64af/docs/screenshots/leaf-alpha28-main.png</image>
+      <caption>Create illustrated documents with page previews</caption>
+      <caption xml:lang="es">Crea documentos ilustrados con miniaturas de páginas</caption>
+      <image type="source" width="1074" height="890">https://raw.githubusercontent.com/frandavid100/leaf/233d5b9c1e0201c55c79c62ec8b6a56c12970b2c/docs/screenshots/leaf-2026-11-main.png</image>
     </screenshot>
     <screenshot>
-      <caption>Edit automatically numbered footnotes on the page</caption>
-      <caption xml:lang="es">Edita notas al pie numeradas en la propia página</caption>
-      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/2bbc75e1aa74c1ecd3acb1109062abc2a47f64af/docs/screenshots/leaf-alpha28-notes.png</image>
+      <caption>Navigate long documents with columns and text wrapping</caption>
+      <caption xml:lang="es">Recorre documentos largos con columnas y texto alrededor de imágenes</caption>
+      <image type="source" width="1074" height="890">https://raw.githubusercontent.com/frandavid100/leaf/233d5b9c1e0201c55c79c62ec8b6a56c12970b2c/docs/screenshots/leaf-2026-11-layout.png</image>
     </screenshot>
     <screenshot>
-      <caption>Review a document with comment threads</caption>
-      <caption xml:lang="es">Revisa un documento con hilos de comentarios</caption>
-      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/2bbc75e1aa74c1ecd3acb1109062abc2a47f64af/docs/screenshots/leaf-alpha28-review.png</image>
+      <caption>Review comments and language suggestions in context</caption>
+      <caption xml:lang="es">Revisa comentarios y sugerencias de idioma junto al documento</caption>
+      <image type="source" width="1074" height="890">https://raw.githubusercontent.com/frandavid100/leaf/233d5b9c1e0201c55c79c62ec8b6a56c12970b2c/docs/screenshots/leaf-2026-11-review.png</image>
     </screenshot>
     <screenshot>
-      <caption>Apply paragraph formatting with native controls</caption>
-      <caption xml:lang="es">Aplica formato de párrafo con controles nativos</caption>
-      <image type="source">https://raw.githubusercontent.com/frandavid100/leaf/2bbc75e1aa74c1ecd3acb1109062abc2a47f64af/docs/screenshots/leaf-alpha28-format.png</image>
+      <caption>Use detailed formatting tools when you need them</caption>
+      <caption xml:lang="es">Accede a opciones de formato detalladas cuando las necesites</caption>
+      <image type="source" width="1074" height="890">https://raw.githubusercontent.com/frandavid100/leaf/233d5b9c1e0201c55c79c62ec8b6a56c12970b2c/docs/screenshots/leaf-2026-11-format.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1" />

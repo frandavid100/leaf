@@ -1,11 +1,11 @@
 # FlatPark store presentation — revised proposal
 
-Updated 2026-11-09 after [FlatPark's review](https://github.com/flatpark/flatpark/pull/1074#issuecomment-6729671898).
-
-[PR #1074](https://github.com/flatpark/flatpark/pull/1074) now has only two changed data files,
-with head `45f21e53acfd13ced20990ace0d416aa7ea6e7dc` and FlatPark main baseline
-`3c7852ddc2fa7b4ebd4a1990485f2195982d1213`. GitHub reports no merge conflicts.
-It remains open, unmerged and unpublished. Leaf issue #185 remains open.
+Historical proposal revised on 9 November 2026 after
+[FlatPark's review](https://github.com/flatpark/flatpark/pull/1074#issuecomment-6729671898).
+[PR #1074](https://github.com/flatpark/flatpark/pull/1074) merged that day with only
+two data files. The generic importer and resolver changes described in the older
+patch did not land. This page preserves that revision's evidence; the current
+follow-up is [the 11 November gallery update](FLATPARK_GALLERY_2026_11.md).
 
 The earlier [store-sync.patch](../packaging/flatpark/store-sync.patch) is retained
 only as a historical proposal. It is superseded: do not apply its generic importer,
