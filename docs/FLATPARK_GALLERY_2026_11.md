@@ -115,7 +115,7 @@ Leaf is not on Flathub.
 **Tested:** upstream's 16 Python tests, reviewed-news generation and project links;
 FlatPark descriptor parsing/audit and the update-pins regression suite; PNG
 integrity, dimensions and alpha channel; SVG rendering; exact icon identity and
-preservation of package fields. Metadata CI is rerun for the revised product text.
+preservation of package fields. [Metadata CI for the revised copy](https://github.com/frandavid100/leaf/actions/runs/42975267698) passed, including AppStream, gettext compilation, screenshot URLs and the 16 Python tests.
 No local Flatpak build/install/launch or installed-store-client inspection was
 performed in this environment. The AppStream CLI is not installed locally;
 its validation is delegated to the existing upstream metadata CI and FlatPark CI.
@@ -130,7 +130,8 @@ This PR intentionally changes only three data files in Leaf's registry directory
 - Local metadata/news checks, 16 Python tests and project links: passed.
 - FlatPark descriptor parse/audit and update-pins regressions: passed. The
   AppStream-specific regression branch self-skips without appstreamcli.
-- [Earlier gallery metadata CI](https://github.com/frandavid100/leaf/actions/runs/42974180620): passed. Validation of the revised description and updated catalogs is pending the next metadata commit.
+- [Revised description metadata CI](https://github.com/frandavid100/leaf/actions/runs/42975267698): passed for `3de570d91fe54129a9485ccdc708dfa5fa009e0c`. AppStream validation, complete English/Spanish catalogs, screenshot URLs, 16 Python tests, reviewed news and documentation links passed.
+- The prepared FlatPark branch now ends at `e9a77e8cb70e2eb3d0e0e269b778ad6dab234854`.
 - No new Leaf executable, release/tag mutation, runtime or permission changes.
 - FlatPark requires explicit human OK before opening a PR, under its
   [packaging playbook](https://github.com/flatpark/flatpark/blob/main/docs/packagers/playbook.md).
