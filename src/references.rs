@@ -181,17 +181,41 @@ fn has_derived_fields(doc: &wordcraft_doc::Document) -> bool {
 /// Refresh only document-derived values. Other fields retain their values and locks.
 /// Generated values are recomputed after source Undo/Redo without adding a history step.
 pub fn refresh_derived(s: &mut Session) -> Result<bool, String> {
-    if !has_derived_fields(&s.doc) {
+    let Some(mut probe) = derived_probe(s) else {
         return Ok(false);
+    };
+    if !compute_derived(&mut probe)? {
+        return Ok(false);
+    }
+    apply_derived(s, probe);
+    Ok(true)
+}
+
+/// A separate session holding a copy of the document, on which derived values
+/// can be recomputed without touching the live session. `None` when the
+/// document has no derived fields. The probe can be moved to a worker thread.
+pub fn derived_probe(s: &Session) -> Option<Session> {
+    if !has_derived_fields(&s.doc) {
+        return None;
     }
     let mut probe = Session::new(s.doc.clone());
     probe.sel = s.sel.clone();
     probe.page_hint = s.page_hint;
     probe.path = s.path.clone();
     probe.pending = s.pending.clone();
-    if !refresh_derived_inner(&mut probe)? {
-        return Ok(false);
-    }
+    Some(probe)
+}
+
+/// Recomputes derived values on a probe from `derived_probe`.
+/// Returns whether anything changed.
+pub fn compute_derived(probe: &mut Session) -> Result<bool, String> {
+    refresh_derived_inner(probe)
+}
+
+/// Installs a probe's recomputed values in the live session.
+/// The caller must make sure the live document has not changed since the probe
+/// was taken.
+pub fn apply_derived(s: &mut Session, probe: Session) {
     // Derived values are recomputable document data, not a separate user edit.
     // Keep the engine's source undo/redo stacks intact, including redo after Undo.
     let dirty = s.dirty;
@@ -199,7 +223,6 @@ pub fn refresh_derived(s: &mut Session) -> Result<bool, String> {
     s.sel = probe.sel;
     s.touch();
     s.dirty = dirty;
-    Ok(true)
 }
 
 fn refresh_derived_inner(s: &mut Session) -> Result<bool, String> {
@@ -435,4 +458,13 @@ pub fn toc_destination(s: &Session, pos: &Pos) -> Option<String> {
         .iter()
         .any(|(n, _)| n == name)
         .then_some(url)
+}
+
+#[cfg(test)]
+mod worker_tests {
+    #[test]
+    fn probe_can_move_to_a_worker_thread() {
+        fn assert_send<T: Send>() {}
+        assert_send::<wordcraft_engine::Session>();
+    }
 }

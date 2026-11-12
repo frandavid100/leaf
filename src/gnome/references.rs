@@ -438,47 +438,112 @@ pub(super) fn schedule_derived_refresh(ui: &Rc<Ui>) {
             return;
         };
         ui.derived_source.borrow_mut().take();
-        let modal = ui.host.upgrade().is_some_and(|h| {
-            h.window.visible_dialog().is_some()
-                || gtk::Window::list_toplevels()
-                    .iter()
-                    .filter_map(|w| w.downcast_ref::<gtk::Window>())
-                    .any(|w| {
-                        w.is_visible()
-                            && w.is_modal()
-                            && w.transient_for().as_ref() == Some(h.window.upcast_ref())
-                    })
-        });
-        if modal || ui.picture_drag.borrow().is_some() || table_pointer_active(&ui) {
+        if derived_refresh_blocked(&ui) {
             schedule_derived_refresh(&ui);
             return;
         }
         if document_identity(&ui) != identity {
             return;
         }
+        start_derived_worker(&ui, identity);
+    });
+    ui.derived_source.replace(Some(source));
+}
+
+/// Dialogs and pointer gestures hold positions in the document; derived values
+/// wait until they finish.
+fn derived_refresh_blocked(ui: &Rc<Ui>) -> bool {
+    let modal = ui.host.upgrade().is_some_and(|h| {
+        h.window.visible_dialog().is_some()
+            || gtk::Window::list_toplevels()
+                .iter()
+                .filter_map(|w| w.downcast_ref::<gtk::Window>())
+                .any(|w| {
+                    w.is_visible()
+                        && w.is_modal()
+                        && w.transient_for().as_ref() == Some(h.window.upcast_ref())
+                })
+    });
+    modal || ui.picture_drag.borrow().is_some() || table_pointer_active(ui)
+}
+
+/// Recomputing fields and the table of contents lays out the whole document,
+/// which took hundreds of milliseconds in long documents. It now runs on a
+/// copy in a worker thread; the result is installed only if the document,
+/// selection and pending formatting are still exactly as they were.
+fn start_derived_worker(ui: &Rc<Ui>, identity: Option<(u64, u64)>) {
+    let captured = {
+        let current = ui.current.borrow();
+        current.as_ref().and_then(|d| {
+            references::derived_probe(&d.session)
+                .map(|probe| (probe, d.session.sel.clone(), d.session.pending.clone()))
+        })
+    };
+    let Some((mut probe, sel, pending)) = captured else {
+        return;
+    };
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let result =
+            references::compute_derived(&mut probe).map(|changed| changed.then_some(probe));
+        let _ = tx.send(result);
+    });
+    let weak = Rc::downgrade(ui);
+    let source = glib::timeout_add_local(std::time::Duration::from_millis(25), move || {
+        let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) else {
+            return glib::ControlFlow::Break;
+        };
+        let result = match rx.try_recv() {
+            Ok(result) => result,
+            Err(std::sync::mpsc::TryRecvError::Empty) => return glib::ControlFlow::Continue,
+            Err(std::sync::mpsc::TryRecvError::Disconnected) => {
+                ui.derived_source.borrow_mut().take();
+                return glib::ControlFlow::Break;
+            }
+        };
+        ui.derived_source.borrow_mut().take();
+        let probe = match result {
+            Ok(Some(probe)) => probe,
+            Ok(None) => return glib::ControlFlow::Break,
+            Err(e) => {
+                ui.toasts.add_toast(Toast::new(&e));
+                return glib::ControlFlow::Break;
+            }
+        };
+        let unchanged = document_identity(&ui) == identity
+            && ui
+                .current
+                .borrow()
+                .as_ref()
+                .is_some_and(|d| d.session.sel == sel && d.session.pending == pending);
+        if !unchanged {
+            // Edits restart the timer themselves; caret moves and pending
+            // formatting do not, so try again after the next pause.
+            if document_identity(&ui) == identity {
+                schedule_derived_refresh(&ui);
+            }
+            return glib::ControlFlow::Break;
+        }
+        if derived_refresh_blocked(&ui) {
+            schedule_derived_refresh(&ui);
+            return glib::ControlFlow::Break;
+        }
         let scroll = (
             ui.scroll.hadjustment().value(),
             ui.scroll.vadjustment().value(),
         );
-        let result = {
-            let mut c = ui.current.borrow_mut();
-            c.as_mut()
-                .map(|d| references::refresh_derived(&mut d.session))
-        };
-        match result {
-            Some(Ok(true)) => {
-                refresh_after_content_change(&ui);
-                let weak = Rc::downgrade(&ui);
-                glib::idle_add_local_once(move || {
-                    if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
-                        ui.scroll.hadjustment().set_value(scroll.0);
-                        ui.scroll.vadjustment().set_value(scroll.1);
-                    }
-                });
-            }
-            Some(Err(e)) => ui.toasts.add_toast(Toast::new(&e)),
-            _ => {}
+        if let Some(d) = ui.current.borrow_mut().as_mut() {
+            references::apply_derived(&mut d.session, probe);
         }
+        refresh_after_content_change(&ui);
+        let weak = Rc::downgrade(&ui);
+        glib::idle_add_local_once(move || {
+            if let Some(ui) = weak.upgrade().filter(|u| !u.closed.get()) {
+                ui.scroll.hadjustment().set_value(scroll.0);
+                ui.scroll.vadjustment().set_value(scroll.1);
+            }
+        });
+        glib::ControlFlow::Break
     });
     ui.derived_source.replace(Some(source));
 }
