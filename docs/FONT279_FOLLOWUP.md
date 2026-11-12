@@ -53,6 +53,7 @@ de la corrección de código de esta rama.
 La política de FlatPark exige probar el paquete y enseñar un borrador antes de
 pedir autorización para abrir la PR. No se ha abierto esa PR ni modificado la
 tienda. La autorización de CI no se interpreta como aprobación de esa PR.
+[Borrador concreto, pruebas y límite de primer uso](FONT279_FLATPARK_PR.md).
 
 ## Estado de aceptación
 
@@ -80,6 +81,10 @@ comparación con Writer. No se amplían permisos ni se registran fuentes privada
 Esta corrección y el recorrido de reinicio requieren validación de la nueva
 fuente. Se conserva la prueba del paquete FlatPark oficial, cuyos bytes y
 manifiesto no cambian, sin repetirla para una modificación del código de Leaf.
+El paquete de prueba usa los recursos base de alpha.45 con el catálogo EN/ES
+compilado de la fuente actual; registra las sumas de ambos MO. La recuperación
+en español se comprueba también a través del texto accesible del diálogo, para
+evitar aceptar silenciosamente el inglés por faltar una traducción empaquetada.
 
 La ejecución [43167291346](https://github.com/frandavid100/leaf/actions/runs/43167291346)
 valida `f7cc1e7`: 248 pruebas Rust, compilación optimizada, cinco grupos

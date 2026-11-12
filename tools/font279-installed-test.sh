@@ -36,6 +36,9 @@ cat > "$temporary/test.sh" <<'RUN'
 #!/usr/bin/env bash
 set -euo pipefail
 dbus-update-activation-environment DISPLAY XAUTHORITY XDG_CONFIG_HOME XDG_CURRENT_DESKTOP GTK_A11Y NO_AT_BRIDGE
+if [[ ${LEAF279_ABSENT_FONT_DIR:-0} == 1 && ${LANGUAGE:-en} == es* ]]; then
+  export LEAF279_RESTART_LANGUAGE=es
+fi
 flatpak run --socket=x11 --nosocket=wayland --env="LANGUAGE=${LANGUAGE:-en}" --env=LC_ALL=C.UTF-8 --env="GDK_SCALE=${GDK_SCALE:-1}" \
   --env=GSK_RENDERER=cairo --env=GTK_A11Y=atspi --env=LEAF279_ACK_DIR="$LEAF279_ACK_DIR" \
   --env="LEAF279_REFERENCE=${LEAF279_REFERENCE:-0}" \

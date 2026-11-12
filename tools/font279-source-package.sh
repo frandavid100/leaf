@@ -27,6 +27,8 @@ mkdir -p "$prefix"
 tar -xJf "$archive" -C "$prefix"
 install -m0755 "$binary" "$prefix/bin/leaf"
 cmp "$binary" "$prefix/bin/leaf"
+python3 tools/update_translations.py --check --compile
+cp -R po/locale/. "$prefix/share/locale/"
 server_pid=
 trap 'test -z "$server_pid" || kill "$server_pid" 2>/dev/null || true' EXIT
 if [[ "$runtime" == 51 ]]; then
@@ -73,4 +75,5 @@ flatpak --user install -y --noninteractive "font279-source-$runtime" "$app_id"
 mkdir -p dist/font279
 flatpak --user info --show-metadata "$app_id" > "dist/font279/metadata-$runtime.ini"
 printf '%s\n' "source=${LEAF279_NATIVE_SOURCE:-$GITHUB_SHA}" "validation_source=$GITHUB_SHA" "binary=$(sha256sum "$binary" | cut -d' ' -f1)" "resource_archive=138cdb67333384a086cd56190d5fe2f146c2202708fa6ac75751c8db31199203" > "dist/font279/identity-$runtime.txt"
+sha256sum "$prefix/share/locale/en/LC_MESSAGES/leaf.mo" "$prefix/share/locale/es/LC_MESSAGES/leaf.mo" >> "dist/font279/identity-$runtime.txt"
 echo "FONT279_SOURCE_PACKAGE_OK runtime=$runtime app_id=$app_id"

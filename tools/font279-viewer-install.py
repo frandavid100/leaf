@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise the real system font viewer's accessible Install button in CI."""
 import time
+import os
 import gi
 gi.require_version('Atspi', '2.0')
 from gi.repository import Atspi
@@ -18,6 +19,28 @@ def descendants(root):
         except Exception:
             pass
 
+
+if os.environ.get('LEAF279_RESTART_LANGUAGE') == 'es':
+    expected = 'Si has instalado estas fuentes, guarda tu trabajo y reinicia Leaf'
+    found = False
+    for attempt in range(50):
+        desktop = Atspi.get_desktop(0)
+        for i in range(desktop.get_child_count()):
+            app = desktop.get_child_at_index(i)
+            if not any(name in app.get_name().lower() for name in ('wordcraft', 'leaf')):
+                continue
+            for node in descendants(app):
+                try:
+                    if expected in node.get_name():
+                        found = True
+                        break
+                except Exception:
+                    pass
+        if found:
+            break
+        time.sleep(0.2)
+    assert found, 'The running Spanish UI did not expose the translated restart instruction'
+    print('FONT279_RESTART_MESSAGE_LOCALIZED_OK language=es', flush=True)
 
 deadline = time.monotonic() + 60
 while time.monotonic() < deadline:
