@@ -53,10 +53,16 @@ for stage in 0 1 2 3; do
       scrot "${log%.log}-stage-$stage.png" ;;
     image)
       xclip -selection clipboard -t image/png -i "$folder/image.png"
-      xdotool windowfocus --sync "$window" key ctrl+v ;;
+      # Give GTK time to take keyboard focus before the shortcut; without this
+      # pause the paste was lost in roughly 4 of 10 runs at GDK_SCALE=2.
+      xdotool windowfocus --sync "$window"
+      sleep 1
+      xdotool key ctrl+v ;;
     plain)
       printf Plain | xclip -selection clipboard
-      xdotool windowfocus --sync "$window" key ctrl+shift+v ;;
+      xdotool windowfocus --sync "$window"
+      sleep 1
+      xdotool key ctrl+shift+v ;;
     heading)
       xdotool windowfocus --sync "$window" mousemove --window "$window" "$ax" "$ay" mousedown 1
       sleep .2
