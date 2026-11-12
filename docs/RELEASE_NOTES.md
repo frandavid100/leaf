@@ -15,7 +15,7 @@ The new inline template gallery uses the read-only XDG Templates directory.
 Custom folder selection is unavailable in the Flatpak because the folder portal
 cannot provide the required narrowed grant; #171 remains open. Nine other
 reports are closed after native/installed validation and public checksum checks.
-[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36) · [Evidence and limits](ALPHA36_INTERFACE.md).
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36) · [Evidence and limits](history/ALPHA36_INTERFACE.md).
 
 ## Alpha.35 — accepted editing workflows
 
@@ -25,7 +25,7 @@ and replacement, document font inventory/substitution, and external image paste
 and drops. Thirteen issues completed after full native and installed GNOME 49/51
 validation and verification of all thirteen public release assets. Changed next
 styles require DOCX when the pinned ODT exporter cannot preserve the choice.
-[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.35) · [Behavior, verification and limits](ALPHA35_WORKFLOWS.md).
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.35) · [Behavior, verification and limits](history/ALPHA35_WORKFLOWS.md).
 
 ## Alpha.34 — dictionary integration test candidate
 
@@ -35,7 +35,7 @@ Language choices discover readable files without parsing unrelated dictionaries;
 WordCraft validates their format when used. Native checks and installed GNOME
 49/51 controls passed; all thirteen public assets were verified. David subsequently verified the GNOME OS case and issue #84 is closed.
 [Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34) ·
-[Evidence and limits](ALPHA34_VALIDATION.md) ·
+[Evidence and limits](history/ALPHA34_VALIDATION.md) ·
 [Manual test](../tests/fixtures/dictionary84/README.md).
 
 ## Alpha.33 — published and verified
@@ -47,7 +47,7 @@ their own navigation. Paragraph spacing explains adjoining Before/After values;
 #156 is completed after full native and installed GNOME 49/51 validation and
 verification of all twelve public assets.
 [Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33) ·
-[Evidence and limits](ALPHA33_VALIDATION.md).
+[Evidence and limits](history/ALPHA33_VALIDATION.md).
 
 ## Alpha.21 — published and verified
 
@@ -60,7 +60,7 @@ Four reports closed (#18, #48, #51, #61); ten remain open. 141 Rust tests, four
 Python tests, 678 messages and complete native/installed CI pass. Public assets,
 checksums and actual installed appearance are verified.
 [Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.21) ·
-[Scope and validation](ISSUE_SWEEP_ALPHA21.md).
+[Scope and validation](history/ISSUE_SWEEP_ALPHA21.md).
 
 ## Alpha.20 — previous delivery
 
@@ -69,7 +69,7 @@ Existing save guards protect four additional structures that ODT loses; advanced
 native authoring remains incomplete. The outstanding theme/ruler visual review
 and revised ruler/history/font presentation were completed in alpha.21.
 [Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.20) ·
-[Recorded scope](ISSUE_SWEEP_ALPHA20.md).
+[Recorded scope](history/ISSUE_SWEEP_ALPHA20.md).
 
 ## Alpha.19 — published and verified
 
@@ -79,11 +79,11 @@ refinements. Font/Size input preserves edits and focus across live reflow; insta
 GNOME 49 testing reproduced and verified the decimal-input correction. Nine
 reports were closed after native/installed checks and public asset verification.
 [Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.19) ·
-[Scope and validation](ISSUE_SWEEP_ALPHA19.md).
+[Scope and validation](history/ISSUE_SWEEP_ALPHA19.md).
 
 ## Recorded alpha updates
 
-Alpha.16 adds immediate formatting and compact editable Font/Size selectors, selection-link editing, comment-anchor navigation, theme/zoom/editing-mode menus, user identity preferences, direct saving of opened files, current-cursor page numbers and page-view refinements. The issue review closed 14 reports and leaves 18 open, including eight added during the work and the partially improved selection-sync report. [Detailed results and validation](ISSUE_SWEEP_ALPHA16.md).
+Alpha.16 adds immediate formatting and compact editable Font/Size selectors, selection-link editing, comment-anchor navigation, theme/zoom/editing-mode menus, user identity preferences, direct saving of opened files, current-cursor page numbers and page-view refinements. The issue review closed 14 reports and leaves 18 open, including eight added during the work and the partially improved selection-sync report. [Detailed results and validation](history/ISSUE_SWEEP_ALPHA16.md).
 
 Alpha.15 integrates bookmarks under navigation headings, combines each comment thread into one bubble and makes spelling rows navigate directly to their text. Document Properties adds title, subject, author, keywords and category. DOCX preserves all five fields; ODT cannot retain category, so Leaf proposes DOCX when it is set. [Validation and limits](SIDEBAR_REFINEMENT_VALIDATION.json).
 

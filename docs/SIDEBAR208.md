@@ -53,6 +53,6 @@ urgent correction. Public store screenshots remain David's captures.
 
 ## Included in alpha.38
 
-The source-only correction above subsequently ships in [alpha.38](ALPHA38_START_VIEW.md),
+The source-only correction above subsequently ships in [alpha.38](history/ALPHA38_START_VIEW.md),
 with complete native and installed GNOME 49/51 validation, executable comparison
 and public-asset verification. #207/#209 are completed in the same release.

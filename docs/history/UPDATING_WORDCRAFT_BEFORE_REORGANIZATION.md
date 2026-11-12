@@ -246,7 +246,7 @@ The hermetic print portal is test-only, never installed. Run it only on a privat
 
 The alpha.6 lifecycle changes are host-only: explicit Workspace owners, weak signal captures, removable timers/controllers, popover teardown and embedded TabBar disconnection. They require no engine changes. Do not change weak callbacks back to strong captures without checking the ownership graph. Stop/unmap the embedded tab bar before detaching its view so animation callbacks finish while their tab records remain valid.
 
-`src/gnome_lifecycle.rs` adds focused diagnostic workloads (`--lifecycle-ui-test`, `--lifecycle-dialog-test`) exercised natively and, for the main workload, inside the installed Flatpak. See [the audit](../../docs/GTK_LIFECYCLE_AUDIT_2026-10-31.md) and its JSON evidence. These are brief object-lifetime regressions; the full compatibility corpus remains manual.
+`src/gnome_lifecycle.rs` adds focused diagnostic workloads (`--lifecycle-ui-test`, `--lifecycle-dialog-test`) exercised natively and, for the main workload, inside the installed Flatpak. See [the audit](../GTK_LIFECYCLE_AUDIT_2026-10-31.md) and its JSON evidence. These are brief object-lifetime regressions; the full compatibility corpus remains manual.
 
 ## Localization and screen appearance
 

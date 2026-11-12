@@ -1,6 +1,6 @@
 # Alpha.41: final interface revision
 
-Published and verified: #107, #217, #226, #227, #228, #229, #230, #231, #232, #233, #234, #235, #236, #237 are completed. See [published identity and validation](LATEST_RELEASE.md).
+Published and verified: #107, #217, #226, #227, #228, #229, #230, #231, #232, #233, #234, #235, #236, #237 are completed. See [published identity and validation](../LATEST_RELEASE.md).
 
 ## Changes after the earlier RC
 
@@ -39,7 +39,7 @@ Before publication, the candidate workflow must pass the optimized default GUI
 build and all native/installed gates. Promotion verifies source identity, checksums
 and the same tested executable; it publishes the existing candidate bytes. The
 publisher records the final run/source/checksum evidence in
-[LATEST_RELEASE](LATEST_RELEASE.md) after verifying the public release assets.
+[LATEST_RELEASE](../LATEST_RELEASE.md) after verifying the public release assets.
 
 ## Follow-up from the first remote run
 

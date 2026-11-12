@@ -9,7 +9,7 @@ The relevant table-flow, notes and page sources are unchanged on main
 
 ## Reproduce
 
-Run the [public diagnostic](../examples/pending_notes_audit.rs):
+Run the [public diagnostic](../../examples/pending_notes_audit.rs):
 
 ```sh
 bash tools/prepare-language-data.sh

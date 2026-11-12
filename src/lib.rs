@@ -1,5 +1,5 @@
-//! Integración headless entre WordCraft y nuestra interfaz GNOME.
-//! La lógica de apertura, paginación y renderizado no utiliza GTK ni egui.
+//! GTK-independent adapters between WordCraft and Leaf's GNOME interface.
+//! Opening, pagination and rendering logic here does not depend on GTK.
 
 extern crate self as wordcraft_gnome;
 pub mod captions;
@@ -12,7 +12,7 @@ use std::path::Path;
 use wordcraft_doc::Document;
 use wordcraft_engine::Session;
 
-/// La vista contiene pixels RGBA en vez de widgets egui.
+/// A rendered page as RGBA pixels.
 pub struct PageImage {
     pub width: u32,
     pub height: u32,

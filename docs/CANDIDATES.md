@@ -31,7 +31,7 @@ La [candidata 42361339472](https://github.com/frandavid100/leaf/actions/runs/423
 superó las instalaciones GNOME 49/51 y exigió el éxito de toda la batería nativa
 42360443648. La [promoción automática](https://github.com/frandavid100/leaf/actions/runs/42362957503)
 publicó los mismos archivos el 7/11/2026. Verificados los doce digests públicos.
-[Fuente, sumas y alcance](ALPHA31_REMAINING.md).
+[Fuente, sumas y alcance](history/ALPHA31_REMAINING.md).
 
 ## Generar y probar
 

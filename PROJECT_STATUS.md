@@ -1,6 +1,17 @@
 # Estado actual de Leaf
 
 
+## 12/11/2026 — limpieza sin riesgo
+
+Primer PR de la revisión de peso, velocidad y claridad. Los 44 informes de
+alfas y barridos pasan de `docs/` a `docs/history/` con enlaces actualizados; se
+retiran los workflows de investigaciones cerradas (alpha31-locale-check,
+clipboard217) y tres capturas de CI antiguas sin referencias, que quedan en el
+historial de git; `ARCHITECTURE.md` ya no empieza con una nota de versión; se
+corrigen comentarios desfasados (egui, guardado). Sin cambios de comportamiento,
+dependencias, motor ni publicación. Validación: formato, pruebas Python,
+catálogos, enlaces y `cargo test --locked` (247 pruebas).
+
 ## 11/11/2026 — ficha de tienda enviada a FlatPark
 
 David pide retomar la ficha de FlatPark. AppStream usa las cuatro capturas
@@ -37,7 +48,7 @@ sin esperar otra prueba personal. Se incorporan #233–#237: miniaturas grandes 
 Inicio, pie fijo, estilo único, desplegables nativos y separación/iconos corregidos.
 La validación de la nueva fuente precede a la publicación; la RC anterior queda
 como evidencia histórica, no como validación de estos cambios.
-[Alcance, pruebas y límites](docs/ALPHA41_FINAL.md).
+[Alcance, pruebas y límites](docs/history/ALPHA41_FINAL.md).
 
 #152 permanece abierto: la reproducción sin GTK confirma que WordCraft 0.17
 conserva el formato al borrar texto y luego el párrafo vacío, pero lo transfiere
@@ -66,7 +77,7 @@ retiran suavemente hacia arriba sin borrar copias pendientes ni bloquear la entr
 Batería nativa optimizada, instalación GNOME 49 y prefijo GNOME 51 superados;
 comparación final del ejecutable, tag y trece archivos públicos verificados.
 Se conservan WordCraft 0.16.0, permisos, parches y la versión ocasional de Windows.
-[Fuentes, ejecución, digests y límites](docs/ALPHA38_START_VIEW.md).
+[Fuentes, ejecución, digests y límites](docs/history/ALPHA38_START_VIEW.md).
 
 Informes que permanecen abiertos: #1, #52, #99, #107, #152, #171, #185.
 
@@ -93,7 +104,7 @@ Batería nativa optimizada e instalaciones GNOME 49 y GNOME 51 superadas;
 publicados los mismos bytes validados, con tag y trece archivos públicos verificados.
 WordCraft sigue en 0.16.0. Se conservan los límites de #171, los aplazamientos y
 el trabajo de tienda y Windows en sus conversaciones.
-[Fuente, pruebas y límites](docs/ALPHA37_INTERFACE.md).
+[Fuente, pruebas y límites](docs/history/ALPHA37_INTERFACE.md).
 
 Quedan ocho informes: los siete anteriores y la nueva propuesta #207 de filas
 de plantillas y recuperación, registrada después de publicar esta alpha.
@@ -126,7 +137,7 @@ concede escritura y rechaza retirar ese permiso. No se amplía el acceso al host
 211 pruebas Rust, nueve Python y 892 mensajes completos en/es; batería nativa
 optimizada, GNOME 49 y prefijo GNOME 51 correctos. Mismos bytes validados,
 sin recompilar; tag y trece archivos públicos verificados.
-[Fuente, pruebas y límites](docs/ALPHA36_INTERFACE.md).
+[Fuente, pruebas y límites](docs/history/ALPHA36_INTERFACE.md).
 
 Quedan siete: #1/#52/#99/#107/#152/#171/#185. Se conservan los aplazamientos de
 David y los bloqueos de integración del motor. Las nuevas capturas públicas
@@ -154,7 +165,7 @@ y [corrección de ciclo de vida #184](https://github.com/frandavid100/leaf/pull/
 controles y gestos reales a escala 1/2, instalación GNOME 49 y prefijo FlatPark
 GNOME 51 superados. Publicados los mismos bytes validados, sin recompilar;
 tag, identidad y trece archivos públicos comprobados.
-[Fuente, ejecución, alcance y límites](docs/ALPHA35_WORKFLOWS.md).
+[Fuente, ejecución, alcance y límites](docs/history/ALPHA35_WORKFLOWS.md).
 
 El estilo siguiente modificado requiere DOCX cuando el exportador ODT perdería
 la elección. La carpeta de plantillas se lee sin modificar los originales.
@@ -179,7 +190,7 @@ WordCraft. #52 queda aplazado por decisión de David. #84 ya fue probado y cerra
 en la conversación de validación. Los nuevos #170–#182 se cerraron inicialmente con alpha.35; #171 se mantiene
 abierto tras revisar el diseño y los permisos. Los demás reabiertos se verificaron
 con alpha.36.
-[Auditoría histórica de los bloqueos](docs/REMAINING_AFTER_ALPHA34.md).
+[Auditoría histórica de los bloqueos](docs/history/REMAINING_AFTER_ALPHA34.md).
 
 ## Histórica: alpha.33 publicada y verificada — Fin/Inicio y restauración de zoom
 
@@ -200,7 +211,7 @@ comparación final del ejecutable y
 correctas. Tag y doce archivos públicos comprobados; once sumas internas verificadas.
 Fuente publicada `529e086d7e6aec85c1ed4409af8c7e55aaa6c8b7`.
 Quedan ocho: #1/#2/#9/#52/#84/#99/#107/#152.
-[Evidencia y límites](docs/ALPHA33_VALIDATION.md).
+[Evidencia y límites](docs/history/ALPHA33_VALIDATION.md).
 
 ## Histórica: alpha.32 publicada y verificada — WordCraft 0.16 y optimización
 
@@ -227,7 +238,7 @@ Fuente publicada `2524dbc789cfbfa0f3b6e153fde16f1df5887b8a`.
 La actualización inicial no cerró informes adicionales. La revisión posterior
 ha cerrado #100: números y navegación de notas verificados en esta misma release.
 Después de aquella revisión inicial quedaron nueve: #1/#2/#9/#52/#84/#99/#107/#152/#156.
-[Comprobaciones y límites pendientes](docs/ISSUE_TRIAGE_AFTER_ALPHA32.md).
+[Comprobaciones y límites pendientes](docs/history/ISSUE_TRIAGE_AFTER_ALPHA32.md).
 
 ## Histórica: alpha.31 publicada y verificada
 
@@ -247,7 +258,7 @@ Fuente publicada `e3bdb1f318cd078d7e24e0a7fef8c84e3a192756`.
 Al publicar alpha.31 quedaron abiertos diez informes: #1, #2, #9, #52, #84, #99, #100, #107, #152 y #156.
 Columnas #1/#2 se trabajan aparte en WordCraft; los límites de motor/host y casos
 sin reproducción no se presentan como resueltos.
-[Implementación, identidad y límites](docs/ALPHA31_REMAINING.md).
+[Implementación, identidad y límites](docs/history/ALPHA31_REMAINING.md).
 
 ## Histórica: tercera candidata alpha.31 — Leyendas y navegación
 
@@ -290,7 +301,7 @@ original de fuente/pegado mantiene su secuencia y aserciones.
 
 Fuente del paquete `79292491050943559df21d9082657fe38ee46254`; ejecutable de
 `179ef4bec1609c355c3dae325c3358fd6bb948a8`, con equivalencia y bytes comprobados.
-[Alcance, identidad, sumas y límites](docs/ALPHA31_UI_VALIDATION.md).
+[Alcance, identidad, sumas y límites](docs/history/ALPHA31_UI_VALIDATION.md).
 En aquella entrega quedaban 13 issues: #1, #2, #9, #52, #84, #99, #100, #107, #121, #124, #126, #127 y #132.
 En aquella entrega alpha.30 seguía siendo la última versión pública y se
 requería probar y aprobar la candidata. La autorización posterior de publicación
@@ -302,7 +313,7 @@ La [primera candidata](https://github.com/frandavid100/leaf/actions/runs/4223042
 solo cerró #133 sobre la interfaz de Alpha.30. Superó 175 pruebas Rust, cuatro
 Python y las instalaciones GNOME 49/51. En aquella entrega se retiraron los
 experimentos de #134–#136 tras fallar la entrada instalada; quedaron 16 issues.
-Su [identidad y evidencia](docs/ALPHA31_VALIDATION.md) se conservan como historial.
+Su [identidad y evidencia](docs/history/ALPHA31_VALIDATION.md) se conservan como historial.
 La segunda candidata incorpora esa corrección y resuelve los tres informes de
 interfaz después de aislar la captura de eventos de la regla.
 
@@ -321,7 +332,7 @@ Cerrados siete issues de esta pasada: #122, #123, #125, #128, #129, #130 y #131.
 Incluye viewport de imágenes estable, cursores, miniaturas por caret, índice
 navegable, tarjetas de revisión, Texto/Párrafo y Navegación Páginas/Estructura.
 Acumula toda la candidata alpha.29. 173 pruebas Rust, cuatro Python y 855 mensajes
-completos inglés/español. [Evidencia, sumas y límites](docs/ALPHA30_VALIDATION.md).
+completos inglés/español. [Evidencia, sumas y límites](docs/history/ALPHA30_VALIDATION.md).
 
 Al finalizar alpha.30 quedaron abiertos 12: #121/#124 parciales, #126/#127 pendientes de asociación canónica
 de leyendas, y los ocho antiguos #1, #2, #9, #52, #84, #99, #100 y #107. No se
@@ -342,7 +353,7 @@ correcciones, cambios sugeridos y comentarios; Texto/Párrafo usan filas y
 Elementos comparte las herramientas del objeto. Incluye reglas con imán de
 0,5 cm, referencias automáticas, notas, imágenes y miniaturas mejoradas.
 Los casos #99, #100, #107 y #121 conservan trabajo pendiente o limitaciones;
-#1, #2, #9, #52 y #84 siguen abiertos. [Evidencia y límites](docs/ALPHA29_VALIDATION.md).
+#1, #2, #9, #52 y #84 siguen abiertos. [Evidencia y límites](docs/history/ALPHA29_VALIDATION.md).
 
 La candidata alpha.29 no se publicó por separado: sus cambios se distribuyen en
 alpha.30, autorizada y verificada. El manifiesto y SHA256SUMS identifican los
@@ -366,7 +377,7 @@ portales de archivos e impresión, reinstalación, texto AT-SPI y salida Orca.
 Son comprobaciones automáticas; no sustituyen pruebas humanas de dispositivos.
 
 La edición/guardado/reapertura y el PDF se comprobaron con muestras externas de
-Word y Writer, incluida una nota importada de Word. [Evidencia y límites](docs/ALPHA28_VALIDATION.md).
+Word y Writer, incluida una nota importada de Word. [Evidencia y límites](docs/history/ALPHA28_VALIDATION.md).
 Estas estructuras avanzadas requieren DOCX: las guardas ODT siguen evitando
 pérdidas. No se modificaron motor, renderer, dependencias ni parches.
 
@@ -471,8 +482,8 @@ anchuras acotadas y Tamaño a fila completa. Las reglas ocultas dejan pasar clic
 [CI completa nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41496070439) superada, incluidas las pruebas de interacción,
 HiDPI, actualización/reinstalación, portales, impresión y regresión Orca existente.
 Capturas finales instaladas revisadas en claro/oscuro y ventanas estrechas a 1×/2×.
-[Resultado y límites](docs/ISSUE_SWEEP_ALPHA21.md) ·
-[evidencia](docs/ISSUE_SWEEP_ALPHA21_VALIDATION.json).
+[Resultado y límites](docs/history/ISSUE_SWEEP_ALPHA21.md) ·
+[evidencia](docs/history/ISSUE_SWEEP_ALPHA21_VALIDATION.json).
 
 Estado: **50 cerrados y 10 abiertos**: #1, #2, #7, #9, #37 y #52–#56.
 La auditoría sintética del motor actualizado conserva en DOCX índice automático,
@@ -508,8 +519,8 @@ Al cerrar alpha.20, el entorno de ejecución se desconectó. Quedaron pendientes
 la revisión visual completa de sus capturas instaladas y la descarga
 independiente de sus assets; publicación, fuente/tag y digests sí están confirmados
 por GitHub. No se afirma validación humana de Wayland, IME o dispositivos.
-[Alcance y pendientes](docs/ISSUE_SWEEP_ALPHA20.md) ·
-[evidencia](docs/ISSUE_SWEEP_ALPHA20_VALIDATION.json).
+[Alcance y pendientes](docs/history/ISSUE_SWEEP_ALPHA20.md) ·
+[evidencia](docs/history/ISSUE_SWEEP_ALPHA20_VALIDATION.json).
 
 Estado histórico de aquella entrega: **47 cerrados y 12 abiertos**. Se preservan releases, etiquetas, archivo de
 ApexDesk, wordcraft-saving y la PR de Weblate separada.
@@ -527,8 +538,8 @@ legibles y escritura estable, enlaces con Ctrl+K/contexto/URL visible, arrastre
 por párrafos, contexto de títulos y ajustes de revisión/marcadores.
 Superadas 128 pruebas Rust, cuatro Python, 588 mensajes gettext y compilación
 optimizada. La [CI nativa](https://github.com/frandavid100/leaf/actions/runs/41439845294) y la [validación instalada](https://github.com/frandavid100/leaf/actions/runs/41442198035) también han pasado, incluidas actualización,
-portales, impresión y Orca automatizada. [Alcance](docs/ISSUE_SWEEP_ALPHA19.md) ·
-[evidencia](docs/ISSUE_SWEEP_ALPHA19_VALIDATION.json).
+portales, impresión y Orca automatizada. [Alcance](docs/history/ISSUE_SWEEP_ALPHA19.md) ·
+[evidencia](docs/history/ISSUE_SWEEP_ALPHA19_VALIDATION.json).
 
 #35 se reprodujo realmente en GNOME 49 (`18,75` acababa en `75`) antes de corregir
 el filtro numérico y el foco de los delegados durante la repaginación. Ambos
@@ -549,8 +560,8 @@ No hay feed automático ni publicación en Flathub.
 
 **Diez informes cerrados:** #5, #6, #14–#16, #30 y #40–#43. Incluye gestos de
 ratón de tablas, idioma/revisión heredados, Texto compacto, iconos GNOME exactos,
-selección nativa y título activo según caret. [Alcance](docs/ISSUE_SWEEP_ALPHA18.md)
-y [evidencia](docs/ISSUE_SWEEP_ALPHA18_VALIDATION.json).
+selección nativa y título activo según caret. [Alcance](docs/history/ISSUE_SWEEP_ALPHA18.md)
+y [evidencia](docs/history/ISSUE_SWEEP_ALPHA18_VALIDATION.json).
 
 123 pruebas Rust, cuatro Python, 587 mensajes gettext y la ronda gráfica nativa
 completa superadas. Flatpak instalado: actualización/reinstalación, portales,
@@ -568,7 +579,7 @@ se reabrieron #18, #25, #26, #28, #34, #35 y #37. Sus nuevos requisitos quedaron
 pendientes de aquella entrega; alpha.18 no los daba por resueltos. La cuarta
 revisión y su resultado actualizado están descritos arriba.
 
-La [alpha.17 anterior](docs/ISSUE_SWEEP_ALPHA17.md) y sus resultados se conservan
+La [alpha.17 anterior](docs/history/ISSUE_SWEEP_ALPHA17.md) y sus resultados se conservan
 como historial. La prueba de flecha de Párrafo se simplificó y ahora envía movimiento
 y clic de forma coherente, sin añadir controladores de captura al caso ensayado.
 

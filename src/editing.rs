@@ -15,8 +15,8 @@ pub enum Edit {
     Redo,
 }
 
-/// Devuelve true solo cuando cambia la revisión (no al editar en solo lectura).
-/// El documento real no se escribe en disco hasta implementar el guardado.
+/// Returns true only when the document revision changes (not for edits
+/// rejected in read-only mode). Applying an edit never writes to disk.
 pub fn apply(session: &mut Session, edit: Edit) -> Result<bool, String> {
     let rev = session.rev();
     let (command, args) = match edit {

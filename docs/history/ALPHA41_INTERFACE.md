@@ -13,7 +13,7 @@ The authorized WordCraft 0.17 base is
 `d9f5e5353d4acf38f6b551714307ac9bcb356fe1`, pinned to upstream
 `5574b32600aa7d782c64f5a6c6bb24696152220d`. Language data retains upstream's
 unchanged pin. The formats snapshot was recopied and the residual ODT preservation
-delta reapplied; see [compatibility patch](../patches/README.md). Other engine,
+delta reapplied; see [compatibility patch](../../patches/README.md). Other engine,
 layout, document and renderer crates are unmodified upstream dependencies.
 
 

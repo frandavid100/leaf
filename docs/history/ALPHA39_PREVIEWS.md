@@ -1,6 +1,6 @@
 # Alpha.39 — start previews and parallel release validation
 
-Published and verified: #212, #213, #214 are completed. See [published identity and validation](LATEST_RELEASE.md).
+Published and verified: #212, #213, #214 are completed. See [published identity and validation](../LATEST_RELEASE.md).
 
 ## Resulting behavior
 

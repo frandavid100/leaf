@@ -22,7 +22,7 @@ checks are evidence for the proposals, not for inclusion in Leaf.
 
 The four upstream implementations already exist and should not be duplicated.
 No unmerged fork revision, engine patch, host layout workaround or forced issue
-closure is introduced. The existing [engine boundary](../UPDATING_WORDCRAFT.md)
+closure is introduced. The existing [engine boundary](../../UPDATING_WORDCRAFT.md)
 still applies. WordCraft maintainers control approval/integration of their PRs.
 
 Automatic publication is authorized for the next verified code fixes. This

@@ -1,6 +1,6 @@
 # Alpha.40 — panel inicial y barra de formato
 
-Published and verified: #218, #219, #220, #221, #222 are completed. See [published identity and validation](LATEST_RELEASE.md).
+Published and verified: #218, #219, #220, #221, #222 are completed. See [published identity and validation](../LATEST_RELEASE.md).
 
 ## Comportamiento
 
@@ -62,7 +62,7 @@ El entorno local permite compilar y ejecutar las pruebas sin interfaz, pero
 rechaza crear sockets de D-Bus/Xvfb. La validación nativa y de las instalaciones
 GNOME 49/51 se realiza en GitHub Actions antes de publicar. El estado final,
 ejecuciones, fuente y trece archivos públicos se registran tras la verificación
-en [la última entrega](LATEST_RELEASE.md).
+en [la última entrega](../LATEST_RELEASE.md).
 
 ## Límites
 

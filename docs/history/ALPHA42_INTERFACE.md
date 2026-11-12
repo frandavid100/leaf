@@ -1,6 +1,6 @@
 # Alpha.42 — controls, window closing and approved icon
 
-Published and verified: #235, #238, #239, #240, #241, #242, #243, #244, #245, #246, #248 are completed. See [published identity and validation](LATEST_RELEASE.md).
+Published and verified: #235, #238, #239, #240, #241, #242, #243, #244, #245, #246, #248 are completed. See [published identity and validation](../LATEST_RELEASE.md).
 
 ## Scope
 

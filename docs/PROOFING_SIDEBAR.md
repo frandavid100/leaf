@@ -23,6 +23,6 @@ La configuración del documento se puede deshacer. La apertura, el análisis y
 la navegación no cambian contenido ni estado modificado. Los diccionarios sin
 instalar se indican en el selector; no se añaden motores alternativos.
 
-[Alcance y validación alpha.18](ISSUE_SWEEP_ALPHA18.md) ·
+[Alcance y validación alpha.18](history/ISSUE_SWEEP_ALPHA18.md) ·
 [Panel](../src/gnome/spellcheck.rs) · [Modelo](../src/proofing_defaults.rs) ·
 [Preferencias](../src/gnome/workspace.rs).

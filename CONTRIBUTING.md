@@ -68,13 +68,13 @@ bash tools/workflows35-pointer-test.sh ./target/release/wordcraft-gnome
 The pointer driver needs the X11 tools installed by CI and a 2800×2200 display;
 it launches a separate native GTK file source. CI repeats it in English/Spanish
 and at HiDPI, then uses `tools/workflows35-installed-test.sh` for the real Flatpak
-portal and relocated-prefix checks. See [workflow behavior and limits](docs/ALPHA35_WORKFLOWS.md).
+portal and relocated-prefix checks. See [workflow behavior and limits](docs/history/ALPHA35_WORKFLOWS.md).
 
 The revised alpha36 controls add `--workflows36-ui-test`,
 `tools/workflows36-pointer-test.sh` and
 `tools/workflows36-template-folder-test.sh`. The installed runner executes these
 alongside the alpha35 and existing mandatory regressions on both runtimes.
-[Behavior and limits](docs/ALPHA36_INTERFACE.md).
+[Behavior and limits](docs/history/ALPHA36_INTERFACE.md).
 
 ## Reporting and translations
 

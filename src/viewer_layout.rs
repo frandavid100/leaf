@@ -1,4 +1,4 @@
-//! Geometría del visor; no depende ni de GTK ni de egui.
+//! Viewer geometry; does not depend on GTK.
 pub const PAGE_GAP: f64 = 22.0;
 pub const MIN_ZOOM: f32 = 0.5;
 pub const MAX_ZOOM: f32 = 2.0;

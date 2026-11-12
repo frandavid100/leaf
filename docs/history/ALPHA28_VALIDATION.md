@@ -27,7 +27,7 @@ humanas de accesibilidad, Wayland, IME ni impresoras físicas.
 
 Se descargaron de la release el bundle, el archivo FlatPark, `source-commit.txt`
 y `SHA256SUMS`; sus sumas coinciden. La etiqueta y el archivo de fuente señalan
-la revisión indicada. La [galería y su procedencia](screenshots/README.md)
+la revisión indicada. La [galería y su procedencia](../screenshots/README.md)
 corresponden al Flatpak instalado de esa misma revisión.
 
 ## Documentos externos

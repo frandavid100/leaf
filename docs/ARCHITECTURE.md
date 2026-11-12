@@ -1,11 +1,5 @@
 # Leaf architecture and code map
 
-La revisión alpha.36 añade `context_clipboard.rs` para las acciones divididas,
-`search_lines.rs` para el índice efímero de saltos pegados y diagnósticos en
-`diagnostics/workflows36.rs`. Plantillas y arrastre conservan identidad/revisión,
-callbacks débiles y cancelación por ciclo de vida. [Contrato](ALPHA36_INTERFACE.md).
-
-
 Leaf is a GTK4/libadwaita host for the pinned WordCraft document engine.
 The active branch is **main**. Start with [current state](../PROJECT_STATUS.md)
 and [contribution instructions](../CONTRIBUTING.md); past release details live
@@ -103,7 +97,7 @@ checks remain at their original registration points.
 
 ## Alpha35 editing workflows
 
-[Accepted workflows and verification](ALPHA35_WORKFLOWS.md) map to these adapters:
+[Accepted workflows and verification](history/ALPHA35_WORKFLOWS.md) map to these adapters:
 
 | Workflow | Native controls | Document operation |
 | --- | --- | --- |
@@ -149,7 +143,7 @@ frames before it can receive input or close.
 production and the first-save cancellation regression. The public engine and
 format preservation guards remain authoritative.
 
-See [behavior, sources and validation](ALPHA37_INTERFACE.md) and the real input
+See [behavior, sources and validation](history/ALPHA37_INTERFACE.md) and the real input
 driver `tools/workflows37-pointer-test.sh`.
 
 ## Alpha38 start recovery and dismissal
@@ -166,7 +160,7 @@ reads its updated size request after update and before layout, compensating only
 scrolling already consumed by the start area. Completion/closure releases both
 signal handlers and the child; disabled animations clear it immediately. The
 same-document pagination path retains the current transition. New tabs, windows,
-real inputs and process restart are covered by the [alpha38 driver and report](ALPHA38_START_VIEW.md).
+real inputs and process restart are covered by the [alpha38 driver and report](history/ALPHA38_START_VIEW.md).
 
 ## Invariants to preserve
 
@@ -279,7 +273,7 @@ and read permissions; they do not parse unrelated dictionaries. WordCraft owns
 format validation and spelling when a language is used.
 [src/gnome/dictionaries.rs](../src/gnome/dictionaries.rs) owns the weak/cancellable
 folder and import UI; the native/Flatpak chooser returns the authorized path.
-[Issue #84](ISSUE84_DICTIONARIES.md) records precedence, checks and GNOME OS limits.
+[Issue #84](history/ISSUE84_DICTIONARIES.md) records precedence, checks and GNOME OS limits.
 
 
 ## Customizable bottom toolbar
@@ -302,7 +296,7 @@ public Session commands for targeted edits with normal engine transactions.
 GTK `color_chooser.rs`, `paragraph_options.rs`, `list_options.rs`, `image_options.rs`
 and `table_properties.rs` expose native controls and read-only current state;
 `tool_actions.rs` routes stable customization IDs to these shared tools.
-[Contracts, validation and remaining gaps](ALPHA43_TOOLS.md).
+[Contracts, validation and remaining gaps](history/ALPHA43_TOOLS.md).
 
 ## Alpha44 maintenance
 
@@ -311,4 +305,4 @@ Color properties reuse the native GTK palette/editor through the small guarded
 registries are removed. Toolbar filtering reuses per-group catalogs/placements.
 `DiagnosticRunner` centralizes common callback ownership while preserving the
 existing opt-in test registrations and distributed-executable verification.
-See [maintenance scope and measurement limits](ALPHA44_MAINTENANCE.md).
+See [maintenance scope and measurement limits](history/ALPHA44_MAINTENANCE.md).
