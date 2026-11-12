@@ -130,7 +130,7 @@ pub(super) struct Ui {
     pub(super) drag_anchor: RefCell<Option<Pos>>,
     pub(super) pointer_moved: Cell<bool>,
     pub(super) dirty: Cell<bool>,
-    pub(super) thumbnail_refresh_pending: Cell<bool>,
+    pub(super) thumbnail_refresh_pending: Debounce,
     pub(super) thumbnail_bounds_pending: Cell<bool>,
     pub(super) tab_page: RefCell<Option<adw::TabPage>>,
     pub(super) closed: Cell<bool>,

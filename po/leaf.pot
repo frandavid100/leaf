@@ -29,7 +29,7 @@ msgstr ""
 msgid "About paragraph spacing"
 msgstr ""
 
-#: src/gnome/review.rs:372
+#: src/gnome/review.rs:388
 msgid "Accept"
 msgstr ""
 
@@ -89,7 +89,7 @@ msgstr ""
 msgid "Alignment: {value}"
 msgstr ""
 
-#: src/gnome/navigation.rs:1042 src/gnome/paragraph.rs:1153 src/gnome/paragraph_options.rs:718 src/gnome/review.rs:424 src/gnome/tables.rs:491
+#: src/gnome/navigation.rs:1038 src/gnome/paragraph.rs:1153 src/gnome/paragraph_options.rs:718 src/gnome/review.rs:440 src/gnome/tables.rs:491
 msgid "All"
 msgstr ""
 
@@ -229,7 +229,7 @@ msgstr ""
 msgid "Automatic Color"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:159 src/gnome/diagnostics/annotations.rs:171 src/gnome/menus.rs:518 src/gnome/navigation.rs:1053 src/navigation.rs:323 src/toolbar.rs:425
+#: src/gnome/diagnostics/annotations.rs:159 src/gnome/diagnostics/annotations.rs:171 src/gnome/menus.rs:518 src/gnome/navigation.rs:1049 src/navigation.rs:323 src/toolbar.rs:425
 msgid "Automatic Fields"
 msgstr ""
 
@@ -301,7 +301,7 @@ msgstr ""
 msgid "Bookmark Name"
 msgstr ""
 
-#: src/gnome/navigation.rs:1044
+#: src/gnome/navigation.rs:1040
 msgid "Bookmarks"
 msgstr ""
 
@@ -385,7 +385,7 @@ msgstr ""
 msgid "Caption"
 msgstr ""
 
-#: src/gnome/navigation.rs:1048
+#: src/gnome/navigation.rs:1044
 msgid "Captions"
 msgstr ""
 
@@ -441,7 +441,7 @@ msgstr ""
 msgid "Change List Level"
 msgstr ""
 
-#: src/gnome/review.rs:426
+#: src/gnome/review.rs:442
 msgid "Changes"
 msgstr ""
 
@@ -469,7 +469,7 @@ msgstr ""
 msgid "Check the page size and margins"
 msgstr ""
 
-#: src/gnome/review.rs:257 src/gnome/spellcheck.rs:166 src/gnome/spellcheck.rs:213
+#: src/gnome/review.rs:273 src/gnome/spellcheck.rs:166 src/gnome/spellcheck.rs:213
 msgid "Checking…"
 msgstr ""
 
@@ -577,11 +577,11 @@ msgstr ""
 msgid "Close Tab"
 msgstr ""
 
-#: src/gnome/navigation.rs:280
+#: src/gnome/navigation.rs:276
 msgid "Collapse"
 msgstr ""
 
-#: src/gnome/navigation.rs:271
+#: src/gnome/navigation.rs:267
 msgid "Collapse Section"
 msgstr ""
 
@@ -645,7 +645,7 @@ msgstr ""
 msgid "Comment Text"
 msgstr ""
 
-#: src/gnome/annotations.rs:157 src/gnome/review.rs:427
+#: src/gnome/annotations.rs:157 src/gnome/review.rs:443
 msgid "Comments"
 msgstr ""
 
@@ -709,7 +709,7 @@ msgstr ""
 msgid "Correction Options"
 msgstr ""
 
-#: src/gnome/review.rs:425
+#: src/gnome/review.rs:441
 msgid "Corrections"
 msgstr ""
 
@@ -973,7 +973,7 @@ msgstr ""
 msgid "Delete Table"
 msgstr ""
 
-#: src/gnome/review.rs:300
+#: src/gnome/review.rs:316
 msgid "Deletion"
 msgstr ""
 
@@ -1273,7 +1273,7 @@ msgstr ""
 msgid "Endnote"
 msgstr ""
 
-#: src/gnome/navigation.rs:1050
+#: src/gnome/navigation.rs:1046
 msgid "Endnotes"
 msgstr ""
 
@@ -1341,7 +1341,7 @@ msgstr ""
 msgid "Equation"
 msgstr ""
 
-#: src/gnome/navigation.rs:1051
+#: src/gnome/navigation.rs:1047
 msgid "Equations"
 msgstr ""
 
@@ -1369,11 +1369,11 @@ msgstr ""
 msgid "Existing Format"
 msgstr ""
 
-#: src/gnome/navigation.rs:278
+#: src/gnome/navigation.rs:274
 msgid "Expand"
 msgstr ""
 
-#: src/gnome/navigation.rs:269
+#: src/gnome/navigation.rs:265
 msgid "Expand Section"
 msgstr ""
 
@@ -1413,7 +1413,7 @@ msgstr ""
 msgid "File Name"
 msgstr ""
 
-#: src/gnome/navigation.rs:1058
+#: src/gnome/navigation.rs:1054
 msgid "Filter Navigation"
 msgstr ""
 
@@ -1537,11 +1537,11 @@ msgstr ""
 msgid "Footnote Options"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:385 src/gnome/navigation.rs:1049
+#: src/gnome/document_properties_dialog.rs:385 src/gnome/navigation.rs:1045
 msgid "Footnotes"
 msgstr ""
 
-#: src/gnome/format_bar.rs:995 src/gnome/review.rs:303
+#: src/gnome/format_bar.rs:995 src/gnome/review.rs:319
 msgid "Formatting"
 msgstr ""
 
@@ -1577,7 +1577,7 @@ msgstr ""
 msgid "German"
 msgstr ""
 
-#: src/gnome/review.rs:347
+#: src/gnome/review.rs:363
 msgid "Go to Change"
 msgstr ""
 
@@ -1629,7 +1629,7 @@ msgstr ""
 msgid "Heading"
 msgstr ""
 
-#: src/gnome/navigation.rs:396
+#: src/gnome/navigation.rs:392
 msgid "Heading Actions: {heading}"
 msgstr ""
 
@@ -1637,7 +1637,7 @@ msgstr ""
 msgid "Heading Levels"
 msgstr ""
 
-#: src/gnome/navigation.rs:1043
+#: src/gnome/navigation.rs:1039
 msgid "Headings"
 msgstr ""
 
@@ -1725,7 +1725,7 @@ msgstr ""
 msgid "Image spacing must be between 0 and 144 points."
 msgstr ""
 
-#: src/gnome/navigation.rs:1045
+#: src/gnome/navigation.rs:1041
 msgid "Images"
 msgstr ""
 
@@ -1865,7 +1865,7 @@ msgstr ""
 msgid "Insert and Edit Tables"
 msgstr ""
 
-#: src/gnome/review.rs:299
+#: src/gnome/review.rs:315
 msgid "Insertion"
 msgstr ""
 
@@ -2085,7 +2085,7 @@ msgstr ""
 msgid "Linked to Previous Section"
 msgstr ""
 
-#: src/gnome/navigation.rs:1052
+#: src/gnome/navigation.rs:1048
 msgid "Links"
 msgstr ""
 
@@ -2193,11 +2193,11 @@ msgstr ""
 msgid "Move Down"
 msgstr ""
 
-#: src/gnome/navigation.rs:411
+#: src/gnome/navigation.rs:407
 msgid "Move Section Down"
 msgstr ""
 
-#: src/gnome/navigation.rs:405
+#: src/gnome/navigation.rs:401
 msgid "Move Section Up"
 msgstr ""
 
@@ -2213,11 +2213,11 @@ msgstr ""
 msgid "Move with Text"
 msgstr ""
 
-#: src/gnome/review.rs:301
+#: src/gnome/review.rs:317
 msgid "Moved From"
 msgstr ""
 
-#: src/gnome/review.rs:302
+#: src/gnome/review.rs:318
 msgid "Moved To"
 msgstr ""
 
@@ -2297,11 +2297,11 @@ msgstr ""
 msgid "No Borders"
 msgstr ""
 
-#: src/gnome/annotations.rs:162 src/gnome/review.rs:264
+#: src/gnome/annotations.rs:162 src/gnome/review.rs:280
 msgid "No Comments"
 msgstr ""
 
-#: src/gnome/navigation.rs:1035
+#: src/gnome/navigation.rs:1031
 msgid "No Headings in This Document"
 msgstr ""
 
@@ -2321,7 +2321,7 @@ msgstr ""
 msgid "No Results"
 msgstr ""
 
-#: src/gnome/review.rs:265
+#: src/gnome/review.rs:281
 msgid "No Review Items"
 msgstr ""
 
@@ -2333,7 +2333,7 @@ msgstr ""
 msgid "No Styles Found"
 msgstr ""
 
-#: src/gnome/review.rs:263
+#: src/gnome/review.rs:279
 msgid "No Tracked Changes"
 msgstr ""
 
@@ -2341,7 +2341,7 @@ msgstr ""
 msgid "No additional dictionary folder selected."
 msgstr ""
 
-#: src/gnome/review.rs:260 src/gnome/spellcheck.rs:304
+#: src/gnome/review.rs:276 src/gnome/spellcheck.rs:304
 msgid "No corrections found in text with available proofing tools."
 msgstr ""
 
@@ -2349,7 +2349,7 @@ msgstr ""
 msgid "No document"
 msgstr ""
 
-#: src/gnome/navigation.rs:539
+#: src/gnome/navigation.rs:535
 msgid "No elements of this type in the document."
 msgstr ""
 
@@ -2745,7 +2745,7 @@ msgstr ""
 msgid "Regular Expressions"
 msgstr ""
 
-#: src/gnome/review.rs:373
+#: src/gnome/review.rs:389
 msgid "Reject"
 msgstr ""
 
@@ -2901,11 +2901,11 @@ msgstr ""
 msgid "Restore Original Size"
 msgstr ""
 
-#: src/gnome/annotations.rs:155 src/gnome/diagnostics/navigation131.rs:93 src/gnome/diagnostics/review29.rs:31 src/gnome/document_properties_dialog.rs:358 src/gnome/navigation.rs:39 src/gnome/review.rs:268 src/gnome/tab.rs:218 src/gnome/tab.rs:220
+#: src/gnome/annotations.rs:155 src/gnome/diagnostics/navigation131.rs:93 src/gnome/diagnostics/review29.rs:31 src/gnome/document_properties_dialog.rs:358 src/gnome/navigation.rs:39 src/gnome/review.rs:284 src/gnome/tab.rs:218 src/gnome/tab.rs:220
 msgid "Review"
 msgstr ""
 
-#: src/gnome/review.rs:434
+#: src/gnome/review.rs:450
 msgid "Review Filter"
 msgstr ""
 
@@ -3165,7 +3165,7 @@ msgstr ""
 msgid "Section Links"
 msgstr ""
 
-#: src/gnome/document_properties_dialog.rs:76 src/gnome/navigation.rs:586 src/gnome/navigation.rs:615
+#: src/gnome/document_properties_dialog.rs:76 src/gnome/navigation.rs:582 src/gnome/navigation.rs:611
 msgid "Section Properties"
 msgstr ""
 
@@ -3177,7 +3177,7 @@ msgstr ""
 msgid "Section Text Direction"
 msgstr ""
 
-#: src/gnome/navigation.rs:565
+#: src/gnome/navigation.rs:561
 msgid "Section {number}"
 msgstr ""
 
@@ -3605,7 +3605,7 @@ msgstr ""
 msgid "Table Width (cm)"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:101 src/gnome/diagnostics/format136.rs:114 src/gnome/elements.rs:187 src/gnome/menus.rs:454 src/gnome/navigation.rs:1047 src/gnome/references.rs:208 src/navigation.rs:319 src/toolbar.rs:382
+#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:101 src/gnome/diagnostics/format136.rs:114 src/gnome/elements.rs:187 src/gnome/menus.rs:454 src/gnome/navigation.rs:1043 src/gnome/references.rs:208 src/navigation.rs:319 src/toolbar.rs:382
 msgid "Table of Contents"
 msgstr ""
 
@@ -3613,7 +3613,7 @@ msgstr ""
 msgid "Table {number}"
 msgstr ""
 
-#: src/gnome/navigation.rs:1046
+#: src/gnome/navigation.rs:1042
 msgid "Tables"
 msgstr ""
 
@@ -4041,7 +4041,7 @@ msgstr ""
 msgid "UnicodeMath: (a+b)/(c+d), x^2, x_1, √(x). Use ordinary Unicode symbols; this is not a LaTeX editor."
 msgstr ""
 
-#: src/gnome/review.rs:312
+#: src/gnome/review.rs:328
 msgid "Unknown Author"
 msgstr ""
 
@@ -4277,7 +4277,7 @@ msgstr ""
 msgid "{current} of {total}"
 msgstr ""
 
-#: src/gnome/review.rs:306
+#: src/gnome/review.rs:322
 msgid "{kind} — {author}"
 msgstr ""
 

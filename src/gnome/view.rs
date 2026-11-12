@@ -844,25 +844,22 @@ pub(super) fn opened(ui: &Rc<Ui>, mut session: Session, label: &str) {
 }
 
 pub(super) fn schedule_thumbnail_refresh(ui: &Rc<Ui>) {
-    if ui.thumbnail_refresh_pending.replace(true) {
-        return;
-    }
-    let weak = Rc::downgrade(ui);
-    glib::timeout_add_local_once(std::time::Duration::from_millis(120), move || {
-        let Some(ui) = weak.upgrade() else {
-            return;
-        };
-        ui.thumbnail_refresh_pending.set(false);
-        if ui.closed.get() {
-            return;
-        }
-        if let Some(doc) = ui.current.borrow_mut().as_mut() {
-            for index in doc.painted_thumbs.drain() {
-                doc.thumbs[index].set_paintable(None::<&gdk::Paintable>);
+    ui.thumbnail_refresh_pending.schedule(
+        ui,
+        std::time::Duration::from_millis(400),
+        |ui| &ui.thumbnail_refresh_pending,
+        |ui| {
+            if ui.closed.get() {
+                return;
             }
-        }
-        refresh_thumbnails(&ui);
-    });
+            if let Some(doc) = ui.current.borrow_mut().as_mut() {
+                for index in doc.painted_thumbs.drain() {
+                    doc.thumbs[index].set_paintable(None::<&gdk::Paintable>);
+                }
+            }
+            refresh_thumbnails(ui);
+        },
+    );
 }
 
 /// Only called for an active-page change or when the Pages panel is revealed.

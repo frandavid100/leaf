@@ -281,7 +281,7 @@ impl SpellReview {
                     s.identity.set(identity);
                     s.checked.set(identity);
                     if let Some(review) = ui.review.borrow().as_ref() {
-                        review.schedule();
+                        review.refresh_soon();
                     }
                     glib::ControlFlow::Break
                 }
@@ -289,7 +289,7 @@ impl SpellReview {
         });
         self.source.replace(Some(id));
         if let Some(review) = ui.review.borrow().as_ref() {
-            review.schedule();
+            review.refresh_soon();
         }
     }
     pub(super) fn render_list(self: &Rc<Self>) {
@@ -479,7 +479,7 @@ impl SpellReview {
         self.cards.replace(cards);
         if let Some(ui) = self.ui.upgrade() {
             if let Some(review) = ui.review.borrow().as_ref() {
-                review.schedule();
+                review.refresh_soon();
             }
         }
     }

@@ -62,7 +62,7 @@ pub(super) struct OutlinePanel {
     pub(super) status: gtk::Label,
     pub(super) collapsed: RefCell<std::collections::HashSet<String>>,
     pub(super) positions: RefCell<Vec<Pos>>,
-    pub(super) pending: Cell<bool>,
+    pub(super) pending: Debounce,
     headings: RefCell<Vec<wordcraft_gnome::navigation::Heading>>,
     caret: RefCell<Option<(u64, u64, Pos)>>,
     rendered_identity: Cell<Option<(u64, u64)>>,
@@ -112,16 +112,12 @@ impl OutlinePanel {
         {
             return;
         }
-        if self.pending.replace(true) {
-            return;
-        }
-        let weak = Rc::downgrade(self);
-        glib::timeout_add_local_once(std::time::Duration::from_millis(160), move || {
-            if let Some(s) = weak.upgrade() {
-                s.pending.set(false);
-                s.ensure_fresh();
-            }
-        });
+        self.pending.schedule(
+            self,
+            std::time::Duration::from_millis(250),
+            |s| &s.pending,
+            |s| s.ensure_fresh(),
+        );
     }
     pub(super) fn refresh(self: &Rc<Self>) {
         let Some(ui) = self.ui.upgrade().filter(|u| !u.closed.get()) else {
@@ -1099,7 +1095,7 @@ pub(super) fn install_outline(
         status,
         collapsed: RefCell::new(Default::default()),
         positions: RefCell::new(Vec::new()),
-        pending: Cell::new(false),
+        pending: Debounce::default(),
         headings: RefCell::new(Vec::new()),
         caret: RefCell::new(None),
         rendered_identity: Cell::new(None),
