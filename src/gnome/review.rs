@@ -34,7 +34,8 @@ pub(super) struct ReviewPanel {
     status: gtk::Label,
     scroll: gtk::ScrolledWindow,
     pub(super) rebuilding: Cell<bool>,
-    pending: Cell<bool>,
+    pending: Debounce,
+    idle_pending: Cell<bool>,
     document: Cell<Option<u64>>,
     changes: RefCell<Vec<(revisions::Change, gtk::Widget)>>,
 }
@@ -80,13 +81,28 @@ impl ReviewPanel {
         self.refresh();
     }
     pub(super) fn schedule(self: &Rc<Self>) {
-        if self.rebuilding.get() || !self.toggle.is_active() || self.pending.replace(true) {
+        if self.rebuilding.get() || !self.toggle.is_active() {
+            return;
+        }
+        // Wait for a pause in typing: rebuilding the cards on every keystroke
+        // cost more than the time between keystrokes in long documents.
+        self.pending.schedule(
+            self,
+            std::time::Duration::from_millis(300),
+            |s| &s.pending,
+            |s| s.refresh(),
+        );
+    }
+    /// Rebuilds on the next idle cycle. Used when findings arrive or the user
+    /// acts on the panel, so cards never lag behind the findings they show.
+    pub(super) fn refresh_soon(self: &Rc<Self>) {
+        if self.rebuilding.get() || !self.toggle.is_active() || self.idle_pending.replace(true) {
             return;
         }
         let weak = Rc::downgrade(self);
         glib::idle_add_local_once(move || {
             if let Some(s) = weak.upgrade() {
-                s.pending.set(false);
+                s.idle_pending.set(false);
                 s.refresh();
             }
         });
@@ -403,7 +419,7 @@ fn revision_card(
                 _ => {}
             }
             if let Some(review) = ui.review.borrow().as_ref() {
-                review.schedule();
+                review.refresh_soon();
             }
         });
         actions.append(&button);
@@ -458,7 +474,8 @@ pub(super) fn install_review(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Revi
         status,
         scroll: annotations.scroll.clone(),
         rebuilding: Cell::new(false),
-        pending: Cell::new(false),
+        pending: Debounce::default(),
+        idle_pending: Cell::new(false),
         document: Cell::new(None),
         changes: RefCell::new(Vec::new()),
     });
@@ -482,7 +499,7 @@ pub(super) fn install_review(ui: &Rc<Ui>, toggle: &gtk::ToggleButton) -> Rc<Revi
     s.filter.connect_selected_notify(move |_| {
         if let Some(s) = weak.upgrade() {
             s.scroll.vadjustment().set_value(0.);
-            s.schedule();
+            s.refresh_soon();
         }
     });
     s

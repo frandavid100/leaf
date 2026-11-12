@@ -447,7 +447,7 @@ pub(super) fn build_tab(
         drag_anchor: RefCell::new(None),
         pointer_moved: Cell::new(false),
         dirty: Cell::new(false),
-        thumbnail_refresh_pending: Cell::new(false),
+        thumbnail_refresh_pending: Debounce::default(),
         thumbnail_bounds_pending: Cell::new(false),
         tab_page: RefCell::new(Some(tab_page.clone())),
         closed: Cell::new(false),

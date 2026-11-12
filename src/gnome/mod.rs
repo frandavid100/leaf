@@ -41,6 +41,8 @@ mod adaptive;
 mod dictionaries;
 use adaptive::*;
 use dictionaries::*;
+mod debounce;
+use debounce::Debounce;
 #[path = "diagnostics/dictionaries84.rs"]
 mod dictionaries84_checks;
 use dictionaries84_checks::*;
