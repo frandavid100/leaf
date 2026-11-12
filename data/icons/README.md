@@ -4,6 +4,11 @@ The approved blue leaf-shaped quill over a sheet of paper replaces the former
 folded-corner document for alpha.42 (#246). Original vector artwork prepared with
 AI assistance and approved by David. GPL-3.0-or-later; see ../../LICENSE.
 
+November 2026 revision, approved by David: the quill's midrib now runs to the tip
+and the light/dark halves of the blade split along it; the veins start on the
+midrib. The symbolic icon is redrawn as a portrait sheet with two text lines and
+the same quill, so it no longer resembles the generic edit symbol.
+
 - `hicolor/scalable/apps/io.github.frandavid100.leaf.svg`: exact approved 128×128
   full-color source, transparent, no embedded fonts, rasters or external resources.
 - `hicolor/symbolic/apps/io.github.frandavid100.leaf-symbolic.svg`: exact approved

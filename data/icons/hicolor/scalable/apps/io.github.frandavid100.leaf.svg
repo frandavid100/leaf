@@ -13,7 +13,7 @@
   <!-- A shorter quill keeps the combined silhouette horizontally centered. -->
   <path fill="#1a5fb4" d="M58 86C50 58 72 20 108 20c0 36-22 62-50 66Z"/>
   <path fill="#3584e4" d="M58 82C50 54 72 16 108 16c0 36-22 62-50 66Z"/>
-  <path fill="#62a0ea" d="M58 82C50 54 72 16 108 16Z"/>
-  <path d="M50 96C60 72 76 50 96 30" fill="none" stroke="#1a5fb4" stroke-width="6" stroke-linecap="round"/>
-  <path d="m72 58-2-14m14 0 12-2" fill="none" stroke="#1a5fb4" stroke-width="4" stroke-linecap="round"/>
+  <path fill="#62a0ea" d="M58 82C50 54 72 16 108 16l-4 4c-20.6 20.6-36.2 42.5-46.7 61.6Z"/>
+  <path d="M50 96C60 74 78 46 104 20" fill="none" stroke="#1a5fb4" stroke-width="6" stroke-linecap="round"/>
+  <path d="M68.5 63.5 66 52m9.5 1 10.5-1.5" fill="none" stroke="#1a5fb4" stroke-width="4" stroke-linecap="round"/>
 </svg>
