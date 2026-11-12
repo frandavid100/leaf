@@ -8,7 +8,7 @@ Las fases siguientes son propuestas; no implican autorización para implementarl
 
 ## Completado: diagnóstico y optimización del host — alpha.13
 
-Por petición del usuario, cambios limitados a Leaf y frontera WordCraft comprobada. Se evita generar todas las miniaturas antes de la asignación GTK; búsqueda binaria de visibilidad, repintado solo de capas afectadas y búsqueda cerrada sin trabajo redundante. 99 tests, comparación AB/BA en documentos sintéticos de 11/55/164 páginas y regresiones gráficas/instaladas completas. Alpha.13 publicada y artefactos/assets verificados. [Resultados y límites](../../docs/HOST_PERFORMANCE_AUDIT.md).
+Por petición del usuario, cambios limitados a Leaf y frontera WordCraft comprobada. Se evita generar todas las miniaturas antes de la asignación GTK; búsqueda binaria de visibilidad, repintado solo de capas afectadas y búsqueda cerrada sin trabajo redundante. 99 tests, comparación AB/BA en documentos sintéticos de 11/55/164 páginas y regresiones gráficas/instaladas completas. Alpha.13 publicada y artefactos/assets verificados. [Resultados y límites](../HOST_PERFORMANCE_AUDIT.md).
 
 Primera maquetación y escritura sin mejora consistente; los ahorros observados son de trabajo del host, sin promesa universal de velocidad/memoria. Motor, renderizador, parches y dependencias intactos. No se ha aislado un defecto del motor que amerite una propuesta upstream; cualquier futura optimización allí se propondrá en WordCraft.
 
@@ -16,31 +16,31 @@ El usuario aplaza nuevas tareas de Orca y la validación humana hasta que haya u
 
 ## Completado: texto accesible del documento — alpha.12
 
-GtkAccessibleText en el lienzo visible: texto Unicode, líneas reales, cursor, selección y notificaciones de edición. WordCraft sigue siendo el modelo y motor de edición. 97 tests y regresiones GTK correctos. Auditoría independiente con AT-SPI y Orca 46.1, seguida de la misma prueba dentro del Flatpak: lectura, selección, carácter escrito y restauración al deshacer. Alpha.12 publicada, artefactos y ocho assets verificados. [Diseño, evidencia y alcance](../../docs/ACCESSIBLE_DOCUMENT_TEXT.md).
+GtkAccessibleText en el lienzo visible: texto Unicode, líneas reales, cursor, selección y notificaciones de edición. WordCraft sigue siendo el modelo y motor de edición. 97 tests y regresiones GTK correctos. Auditoría independiente con AT-SPI y Orca 46.1, seguida de la misma prueba dentro del Flatpak: lectura, selección, carácter escrito y restauración al deshacer. Alpha.12 publicada, artefactos y ocho assets verificados. [Diseño, evidencia y alcance](../ACCESSIBLE_DOCUMENT_TEXT.md).
 
 Pendiente de trabajo futuro: semántica de tablas/imágenes/campos, atributos ricos, filtrado según vistas y operaciones AT avanzadas. Las transcripciones automáticas no sustituyen una sesión humana con Orca/braille. Propuesta siguiente: recoger esas sesiones y corregir fallos reproducibles; no ampliar funciones sin autorización. Weblate/capturas públicas siguen a cargo del usuario; corpus completo sin repetir.
 
 ## Completado: comprobación independiente y geometría ODT — alpha.11
 
-Cuatro DOCX/ODT generados y editados realmente con Writer; reabiertos/guardados otra vez con Leaf y ODT importados sin atributos Leaf. Corregidas distancias y reservas de encabezados/pies mediante ODF estándar y prioridad de propiedades estándar frente a datos privados obsoletos. Alpha.11 publicada. Cuatro regresiones nuevas; 91 tests, validación nativa/Flatpak completa y actualización desde alpha.10 comprobada. Artefactos descargados y hashes verificados. [Método, resultados y límites](../../docs/INTEROPERABILITY_AUDIT.md).
+Cuatro DOCX/ODT generados y editados realmente con Writer; reabiertos/guardados otra vez con Leaf y ODT importados sin atributos Leaf. Corregidas distancias y reservas de encabezados/pies mediante ODF estándar y prioridad de propiedades estándar frente a datos privados obsoletos. Alpha.11 publicada. Cuatro regresiones nuevas; 91 tests, validación nativa/Flatpak completa y actualización desde alpha.10 comprobada. Artefactos descargados y hashes verificados. [Método, resultados y límites](../INTEROPERABILITY_AUDIT.md).
 
 Writer elimina la exclusión de revisión de DOCX y convierte partes vinculadas en copias independientes en esta muestra; el contenido visible permanece. Esas diferencias quedan registradas, no se ocultan tras un resultado global correcto. Auditoría manual opcional, sin obligación por versión; corpus completo sin repetir. No se han implementado más funciones ni accesibilidad completa del lienzo. Siguiente propuesta: recoger reproducciones de usuarios y revisión manual GNOME OS; Weblate/capturas públicas pendientes del usuario.
 
 ## Completado: secciones, revisión e idioma — alpha.10
 
-Configuración de primera página, pares/impares, distancias, numeración y vínculos/copia independiente por sección en Propiedades del documento. Revisión ortográfica local en menú/F7/contextual, diccionario personal, idioma por texto/documento y preferencia para nuevos documentos. Inglés y diccionarios españoles incluidos. Correcciones ODT aisladas y reproducibles, con límites de interoperabilidad documentados. [Uso y evidencia](../../docs/PAGE_OPTIONS_PROOFING.md). 87 tests y CI nativa/Flatpak completos; artefactos descargados y verificados; actualización desde alpha.9 comprobada.
+Configuración de primera página, pares/impares, distancias, numeración y vínculos/copia independiente por sección en Propiedades del documento. Revisión ortográfica local en menú/F7/contextual, diccionario personal, idioma por texto/documento y preferencia para nuevos documentos. Inglés y diccionarios españoles incluidos. Correcciones ODT aisladas y reproducibles, con límites de interoperabilidad documentados. [Uso y evidencia](../PAGE_OPTIONS_PROOFING.md). 87 tests y CI nativa/Flatpak completos; artefactos descargados y verificados; actualización desde alpha.9 comprobada.
 
 Propuesta siguiente: recoger pruebas reales de GNOME OS y documentos del usuario, corregir pérdidas o interacciones reproducibles y avanzar en accesibilidad del lienzo. Mantener el corpus completo manual, sin exigirlo por versión. Nuevas funciones siguen requiriendo una petición o autorización concreta. Weblate y capturas públicas quedan para el usuario.
 
 ## Completado: encabezados, pies y numeración — alpha.9
 
-Opciones dentro de «Insertar», edición directa sobre la página, salida al cuerpo con Esc, numeración automática sin reemplazar el contenido previo y conservación de PAGE/NUMPAGES en ODT mediante parche aislado. Tests nativos y del Flatpak, actualización desde alpha.8 y artefactos verificados. [Uso, evidencia y límites](../../docs/HEADERS_FOOTERS.md).
+Opciones dentro de «Insertar», edición directa sobre la página, salida al cuerpo con Esc, numeración automática sin reemplazar el contenido previo y conservación de PAGE/NUMPAGES en ODT mediante parche aislado. Tests nativos y del Flatpak, actualización desde alpha.8 y artefactos verificados. [Uso, evidencia y límites](../HEADERS_FOOTERS.md).
 
 Los controles de primera página/paridad y vinculación se completaron en alpha.10. Se sigue priorizando fiabilidad con documentos reales y accesibilidad del lienzo.
 
 ## Completado: español/inglés y documento oscuro — alpha.8
 
-Publicada alpha.8 con 520 textos gettext, metadatos localizados y catálogos en el Flatpak; documento y miniaturas oscuros mediante API existente de WordCraft, siguiendo GNOME en vivo. Pruebas nativas y del paquete superadas, artefactos verificados. [Informe](../../docs/LOCALIZATION_DARK_MODE.md).
+Publicada alpha.8 con 520 textos gettext, metadatos localizados y catálogos en el Flatpak; documento y miniaturas oscuros mediante API existente de WordCraft, siguiendo GNOME en vivo. Pruebas nativas y del paquete superadas, artefactos verificados. [Informe](../LOCALIZATION_DARK_MODE.md).
 
 **Pendiente de participación del usuario:** capturas públicas y acceso/alta de Weblate con autorización GitHub. Guía/configuración preparadas; todavía no existe un portal Leaf de traducciones verificado. Mientras tanto se aceptan catálogos por PR. La aceptación del plan Libre depende de Weblate. Conviene revisión humana de traducciones y prueba real GNOME OS; se mantiene el trabajo pendiente de accesibilidad completa.
 
@@ -48,19 +48,19 @@ Encabezados, pies y numeración básica ya están implementados en alpha.9; los 
 
 ## Completado: auditoría GTK y alpha.6
 
-Corregidos ciclos de referencias y liberación de documentos/ventanas, menús, controladores y temporizadores. Tres tandas de apertura/cierre: cero objetos comprobados retenidos, también en Flatpak; medición nativa antes/después y límites en [el informe](../../docs/GTK_LIFECYCLE_AUDIT_2026-10-31.md). Alpha.6 publicada, CI completa y artefactos descargados/verificados. Motor y dependencias sin cambios. No se ha repetido el corpus completo de compatibilidad.
+Corregidos ciclos de referencias y liberación de documentos/ventanas, menús, controladores y temporizadores. Tres tandas de apertura/cierre: cero objetos comprobados retenidos, también en Flatpak; medición nativa antes/después y límites en [el informe](../GTK_LIFECYCLE_AUDIT_2026-10-31.md). Alpha.6 publicada, CI completa y artefactos descargados/verificados. Motor y dependencias sin cambios. No se ha repetido el corpus completo de compatibilidad.
 
 Pendiente: prueba manual en GNOME OS y sesiones reales largas, incluida revisión humana de GObject y posibles casos no cubiertos. No interpretar las sondas de objetos y RSS como una auditoría exhaustiva de toda la memoria. Mantener la regresión breve de ciclo de vida; no convertir el corpus de 24 archivos en requisito por versión.
 
 ## Ahora: validar impresión y accesibilidad con usuarios
 
-Alpha.5 publicada: impresión nativa (menú del documento/Ctrl+P), navegación F6/Mayús+F6 y F10, etiquetas accesibles y versión Acerca de corregida. Pruebas nativas y del Flatpak superadas; [evidencia y límites](../../docs/KEYBOARD_PRINTING.md). Motor y dependencias Rust sin cambios. GTK mínimo 4.14 para código fuente; GNOME 49 en Flatpak.
+Alpha.5 publicada: impresión nativa (menú del documento/Ctrl+P), navegación F6/Mayús+F6 y F10, etiquetas accesibles y versión Acerca de corregida. Pruebas nativas y del Flatpak superadas; [evidencia y límites](../KEYBOARD_PRINTING.md). Motor y dependencias Rust sin cambios. GTK mínimo 4.14 para código fuente; GNOME 49 en Flatpak.
 
 Siguiente trabajo propuesto, aún no autorizado como ampliación: recoger pruebas con impresoras reales y documentos del usuario, comprobar Orca/contraste alto y diseñar cómo exponer el texto del lienzo mediante GtkAccessibleText. Las etiquetas no resuelven por sí solas la accesibilidad del documento. Documentado el comportamiento Escape/Cancelar del portal GTK antiguo. Mantener pruebas pequeñas de fallos concretos; el corpus completo sigue siendo manual.
 
 ## Entrega anterior: conservación de ODT
 
-Alpha.4 publicada: corregidos los fallos de conservación de cabeceras/pies ODT y filas repetidas descubiertos en la auditoría inicial. [Seguimiento, segunda ejecución de 24 archivos y límites](../../docs/ODT_PRESERVATION_2026-10-31.md). Siete regresiones pequeñas, comprobación independiente con LibreOffice, CI GTK y Flatpak superadas. Parche aislado de wordcraft-formats con procedencia y actualización documentadas; resto del motor sin cambios. Pendiente prueba manual con documentos reales. La auditoría sigue siendo manual, sin requisito automático por versión. Prioridad siguiente: recoger fallos concretos de usuarios y ampliar reproducciones pequeñas; no implica autorización para nuevas funciones.
+Alpha.4 publicada: corregidos los fallos de conservación de cabeceras/pies ODT y filas repetidas descubiertos en la auditoría inicial. [Seguimiento, segunda ejecución de 24 archivos y límites](../ODT_PRESERVATION_2026-10-31.md). Siete regresiones pequeñas, comprobación independiente con LibreOffice, CI GTK y Flatpak superadas. Parche aislado de wordcraft-formats con procedencia y actualización documentadas; resto del motor sin cambios. Pendiente prueba manual con documentos reales. La auditoría sigue siendo manual, sin requisito automático por versión. Prioridad siguiente: recoger fallos concretos de usuarios y ampliar reproducciones pequeñas; no implica autorización para nuevas funciones.
 
 ## Validar HiDPI, columnas y recoger tareas bloqueadas
 
@@ -68,7 +68,7 @@ Alpha.3 publicada: resolución de páginas/miniaturas corregida para pantalla Hi
 
 Alpha.2 publicada con Columnas en Párrafo e iconos simbólicos GTK. Pruebas nativas y Flatpak superadas; detalles y revisión en PROJECT_STATUS.md. Pendiente de prueba manual. Probar selección y sección, deshacer, guardar/reabrir DOCX y ODT, y comparar anchuras desiguales (ODT las iguala por limitación del motor).
 
-[Investigación sobre frecuencia de funciones](../../docs/FEATURE_PRIORITIES.md): preservar edición/guardado/portapapeles; investigar con probadores impresión, ortografía/idiomas y encabezados/pies/numeración. Son candidatos, no autorización ni clasificación universal por popularidad.
+[Investigación sobre frecuencia de funciones](../FEATURE_PRIORITIES.md): preservar edición/guardado/portapapeles; investigar con probadores impresión, ortografía/idiomas y encabezados/pies/numeración. Son candidatos, no autorización ni clasificación universal por popularidad.
 
 ## Entregas anteriores: imágenes, propiedades de documento y exportación PDF
 

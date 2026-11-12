@@ -3,7 +3,7 @@
 La candidata continúa la pasada autorizada de issues con prioridad #99–#109 y los nuevos #111–#121.
 La [PR #110](https://github.com/frandavid100/leaf/pull/110) contiene los cambios.
 Todavía no se ha publicado una release: David debe probar el paquete y aprobar
-su promoción sin recompilar. [Proceso y comandos de instalación](CANDIDATES.md).
+su promoción sin recompilar. [Proceso y comandos de instalación](../CANDIDATES.md).
 
 ## Resultado por issue
 

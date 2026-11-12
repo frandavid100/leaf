@@ -47,4 +47,4 @@ changes are included. No additional issue is marked resolved by this candidate.
 
 [Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.34) ·
 [Public asset proof](ALPHA34_ASSET_VERIFICATION.json) ·
-[Manual test](../tests/fixtures/dictionary84/README.md).
+[Manual test](../../tests/fixtures/dictionary84/README.md).

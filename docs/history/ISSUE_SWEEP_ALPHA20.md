@@ -29,7 +29,7 @@ visual review:** #18 and #48. Final issue count: 47 closed / 12 open.
 #18 now uses actual grouped GtkCheckButtons and the attributed GNOME Text Editor
 stylesheet: 44 logical-pixel previews, native accent/check and diagonal System.
 Libpanel is absent from the supported native/locked build and needs a dependency
-change outside this frontend pass. [Attribution](../data/THEME_SELECTOR_SOURCES.md).
+change outside this frontend pass. [Attribution](../../data/THEME_SELECTOR_SOURCES.md).
 Functional/persistence checks and eight native/installed light/dark/high-contrast
 1×/2× capture/keyboard-preference cases pass. Native variants and normal installed
 rendering were inspected. Complete final installed-image comparison remains pending.

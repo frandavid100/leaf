@@ -1,5 +1,5 @@
-//! Bridge entre la selección de WordCraft y la representación GTK.
-//! El código es independiente de egui y de GTK.
+//! Bridge between WordCraft's selection and its GTK representation.
+//! This module does not depend on GTK.
 use serde_json::json;
 use wordcraft_doc::{Pos, StoryRef};
 use wordcraft_engine::Session;

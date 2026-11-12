@@ -37,7 +37,7 @@ sin esperar otra prueba personal. Se incorporan #233–#237: miniaturas grandes 
 Inicio, pie fijo, estilo único, desplegables nativos y separación/iconos corregidos.
 La validación de la nueva fuente precede a la publicación; la RC anterior queda
 como evidencia histórica, no como validación de estos cambios.
-[Alcance, pruebas y límites](docs/ALPHA41_FINAL.md).
+[Alcance, pruebas y límites](docs/history/ALPHA41_FINAL.md).
 
 #152 permanece abierto: la reproducción sin GTK confirma que WordCraft 0.17
 conserva el formato al borrar texto y luego el párrafo vacío, pero lo transfiere
@@ -66,7 +66,7 @@ retiran suavemente hacia arriba sin borrar copias pendientes ni bloquear la entr
 Batería nativa optimizada, instalación GNOME 49 y prefijo GNOME 51 superados;
 comparación final del ejecutable, tag y trece archivos públicos verificados.
 Se conservan WordCraft 0.16.0, permisos, parches y la versión ocasional de Windows.
-[Fuentes, ejecución, digests y límites](docs/ALPHA38_START_VIEW.md).
+[Fuentes, ejecución, digests y límites](docs/history/ALPHA38_START_VIEW.md).
 
 Informes que permanecen abiertos: #1, #52, #99, #107, #152, #171, #185.
 
@@ -95,7 +95,7 @@ Batería nativa optimizada e instalaciones GNOME 49 y GNOME 51 superadas;
 publicados los mismos bytes validados, con tag y trece archivos públicos verificados.
 WordCraft sigue en 0.16.0. Se conservan los límites de #171, los aplazamientos y
 el trabajo de tienda y Windows en sus conversaciones.
-[Fuente, pruebas y límites](docs/ALPHA37_INTERFACE.md).
+[Fuente, pruebas y límites](docs/history/ALPHA37_INTERFACE.md).
 
 Quedan ocho informes: los siete anteriores y la nueva propuesta #207 de filas
 de plantillas y recuperación, registrada después de publicar esta alpha.
@@ -128,7 +128,7 @@ concede escritura y rechaza retirar ese permiso. No se amplía el acceso al host
 211 pruebas Rust, nueve Python y 892 mensajes completos en/es; batería nativa
 optimizada, GNOME 49 y prefijo GNOME 51 correctos. Mismos bytes validados,
 sin recompilar; tag y trece archivos públicos verificados.
-[Fuente, pruebas y límites](docs/ALPHA36_INTERFACE.md).
+[Fuente, pruebas y límites](docs/history/ALPHA36_INTERFACE.md).
 
 Quedan siete: #1/#52/#99/#107/#152/#171/#185. Se conservan los aplazamientos de
 David y los bloqueos de integración del motor. Las nuevas capturas públicas
@@ -156,7 +156,7 @@ y [corrección de ciclo de vida #184](https://github.com/frandavid100/leaf/pull/
 controles y gestos reales a escala 1/2, instalación GNOME 49 y prefijo FlatPark
 GNOME 51 superados. Publicados los mismos bytes validados, sin recompilar;
 tag, identidad y trece archivos públicos comprobados.
-[Fuente, ejecución, alcance y límites](docs/ALPHA35_WORKFLOWS.md).
+[Fuente, ejecución, alcance y límites](docs/history/ALPHA35_WORKFLOWS.md).
 
 El estilo siguiente modificado requiere DOCX cuando el exportador ODT perdería
 la elección. La carpeta de plantillas se lee sin modificar los originales.
@@ -173,7 +173,7 @@ WordCraft. #52 queda aplazado por decisión de David. #84 ya fue probado y cerra
 en la conversación de validación. Los nuevos #170–#182 se cerraron inicialmente con alpha.35; #171 se mantiene
 abierto tras revisar el diseño y los permisos. Los demás reabiertos se verificaron
 con alpha.36.
-[Auditoría histórica de los bloqueos](docs/REMAINING_AFTER_ALPHA34.md).
+[Auditoría histórica de los bloqueos](docs/history/REMAINING_AFTER_ALPHA34.md).
 
 ## Completado: alpha.33 — revisión de #9/#99/#156
 
@@ -182,7 +182,7 @@ el 7/11/2026. Cerrado #156 tras dos reproducciones nativas antes/después, bater
 completa e instalaciones GNOME 49/51. Promovidos los mismos bytes; tag y doce
 archivos públicos verificados. #9 conserva la copia editada por confirmar, con
 controles y explicación ya entregados. #99 tiene una reproducción pública del
-motor y sigue pendiente de corrección. [Evidencia](docs/ALPHA33_VALIDATION.md).
+motor y sigue pendiente de corrección. [Evidencia](docs/history/ALPHA33_VALIDATION.md).
 
 ## Completado: alpha.32 — actualización y rendimiento
 
@@ -192,7 +192,7 @@ y pegado HTML/RTF. Optimización medida del cliente e índices/código de portap
 más claros. Batería nativa, GNOME 49/51 y publicación de los mismos bytes
 completados; doce archivos públicos verificados. La revisión posterior cierra
 #100, ya implementado y comprobado en esa release; no cambia el ejecutable.
-[Revisión de los nueve pendientes](docs/ISSUE_TRIAGE_AFTER_ALPHA32.md).
+[Revisión de los nueve pendientes](docs/history/ISSUE_TRIAGE_AFTER_ALPHA32.md).
 [Alcance, mediciones y evidencia](docs/WORDCRAFT_016_REVIEW.md).
 
 ## Completado: alpha.31 automática
@@ -201,7 +201,7 @@ completados; doce archivos públicos verificados. La revisión posterior cierra
 el 7/11/2026 sin otro visto bueno, conforme a la autorización de David. Últimos
 cierres: #135/#149/#150/#151/#155; integra las candidatas previas. Batería nativa
 completa, GNOME 49 y FlatPark/GNOME 51 superados; promovidos los mismos bytes y
-verificados los doce archivos públicos. [Evidencia y límites](docs/ALPHA31_REMAINING.md).
+verificados los doce archivos públicos. [Evidencia y límites](docs/history/ALPHA31_REMAINING.md).
 
 Pendientes actuales: #1/#2/#9/#52/#84/#99/#107/#152. Columnas #1/#2 se trabajan en
 WordCraft aparte; #152 reproduce un defecto del modelo upstream. Conservar
@@ -220,8 +220,8 @@ pasada permite publicar automáticamente después de las comprobaciones. #132 ce
 con el documento original, sin atribuir una causa o corrección no identificada. Después de aquella candidata se reabrió #135 y surgieron #149–#152; no quedaban
 resueltos por esos cuatro cierres. El apartado actual recoge los cierres posteriores.
 
-La segunda candidata de interfaz queda como [evidencia histórica](docs/ALPHA31_UI_VALIDATION.md).
-La primera, que solo cerraba #133, conserva su [registro histórico](docs/ALPHA31_VALIDATION.md).
+La segunda candidata de interfaz queda como [evidencia histórica](docs/history/ALPHA31_UI_VALIDATION.md).
+La primera, que solo cerraba #133, conserva su [registro histórico](docs/history/ALPHA31_VALIDATION.md).
 Sus listas de issues describen aquellas entregas y no sustituyen el estado actual.
 
 ## Completado: alpha.30
@@ -230,7 +230,7 @@ Sus listas de issues describen aquellas entregas y no sustituyen el estado actua
 automáticamente por autorización de David. Acumula la candidata alpha.29 y cierra
 #122, #123, #125, #128, #129, #130 y #131 tras validar código e instalaciones
 GNOME 49/51. Promovidos los mismos bytes de la candidata; 12 archivos públicos
-verificados por SHA-256. [Evidencia y límites](docs/ALPHA30_VALIDATION.md).
+verificados por SHA-256. [Evidencia y límites](docs/history/ALPHA30_VALIDATION.md).
 
 Conservan trabajo #121, #124, #126 y #127; los ocho issues antiguos revisados
 siguen abiertos. Resolver la asociación canónica objeto/leyenda antes de ofrecer
@@ -284,7 +284,7 @@ completa. Assets públicos, fuente, sumas y capturas instaladas comprobados.
 Estado final: **50 cerrados / 10 abiertos**. #1, #2, #7, #9, #37 y #52–#56
 conservan sus requisitos; actualización del motor no equivale a autoría avanzada.
 [PR #62](https://github.com/frandavid100/leaf/pull/62) ·
-[Alcance](docs/ISSUE_SWEEP_ALPHA21.md) · [Evidencia](docs/ISSUE_SWEEP_ALPHA21_VALIDATION.json).
+[Alcance](docs/history/ISSUE_SWEEP_ALPHA21.md) · [Evidencia](docs/history/ISSUE_SWEEP_ALPHA21_VALIDATION.json).
 Weblate #57 permanece separada; sin Flathub, nuevas etapas de Orca ni cambio de
 capturas públicas. Historiales y etiquetas anteriores conservados.
 
@@ -297,7 +297,7 @@ completó durante alpha.21.
 141 pruebas Rust, cuatro Python, 678 mensajes y CI nativa/instalada correctos.
 ODT queda protegido ante cuatro pérdidas estructurales adicionales; #53–#56 no
 se consideran completos. Estado: 47 cerrados / 12 abiertos.
-[Alcance](docs/ISSUE_SWEEP_ALPHA20.md) · [evidencia](docs/ISSUE_SWEEP_ALPHA20_VALIDATION.json).
+[Alcance](docs/history/ISSUE_SWEEP_ALPHA20.md) · [evidencia](docs/history/ISSUE_SWEEP_ALPHA20_VALIDATION.json).
 Motor/dependencias intactos; no se amplía Weblate, Flathub, Orca ni el corpus.
 
 ## Completado: cuarta revisión y alpha.19
@@ -305,8 +305,8 @@ Motor/dependencias intactos; no se amplía Weblate, Flathub, Orca ni el corpus.
 Publicada y verificada: nueve cierres (#25, #26, #28, #34, #35 y #44–#47).
 128 pruebas Rust, cuatro Python, 588 mensajes gettext y CI nativa/Flatpak
 instalado completas. #35 se reprodujo en el runtime instalado y se verificó
-tras corregir entrada y foco. [Alcance](docs/ISSUE_SWEEP_ALPHA19.md) ·
-[evidencia](docs/ISSUE_SWEEP_ALPHA19_VALIDATION.json).
+tras corregir entrada y foco. [Alcance](docs/history/ISSUE_SWEEP_ALPHA19.md) ·
+[evidencia](docs/history/ISSUE_SWEEP_ALPHA19_VALIDATION.json).
 
 Quedan 18 informes abiertos al terminar; consultar GitHub antes de elegir
 otra tarea. No ampliar automáticamente con funciones nuevas, cambios del motor,
@@ -324,8 +324,8 @@ nueva release. [Revisión y validación](docs/MAIN_MIGRATION.md) ·
 
 Publicada y verificada. Diez informes cerrados de los catorce iniciales: #5, #6,
 #14–#16, #30 y #40–#43. 123 pruebas Rust, cuatro Python y CI nativa/Flatpak
-instalado completas. [Alcance y pendientes](docs/ISSUE_SWEEP_ALPHA18.md) ·
-[evidencia](docs/ISSUE_SWEEP_ALPHA18_VALIDATION.json).
+instalado completas. [Alcance y pendientes](docs/history/ISSUE_SWEEP_ALPHA18.md) ·
+[evidencia](docs/history/ISSUE_SWEEP_ALPHA18_VALIDATION.json).
 
 Estado histórico tras alpha.18: 32 cerrados y 20 abiertos, de 52. Los cuatro
 pendientes de la pasada inicial eran #1, #2, #7 y #9. Los nueve nuevos (#44–#52)
@@ -363,8 +363,8 @@ Publicada y verificada: 18 informes resueltos (#12, #18, #19, #22, #25–#29,
 #31–#39). La entrega incluye selección por palabras y con Mayús, entrada de texto,
 enlaces utilizables, menús de revisión, navegación y refinamientos nativos.
 117 pruebas Rust y CI nativa/Flatpak instalado completas, incluida actualización,
-portales y Orca automatizada. [Resultado](docs/ISSUE_SWEEP_ALPHA17.md) y
-[evidencia](docs/ISSUE_SWEEP_ALPHA17_VALIDATION.json).
+portales y Orca automatizada. [Resultado](docs/history/ISSUE_SWEEP_ALPHA17.md) y
+[evidencia](docs/history/ISSUE_SWEEP_ALPHA17_VALIDATION.json).
 
 Al terminar aquella entrega quedaban 14 issues abiertos, incluidos #40–#43.
 La tercera revisión y el estado actual están descritos arriba. La rama de aquella entrega fue `wordcraft-saving`; el desarrollo actual está en `main`.
@@ -376,7 +376,7 @@ Publicada y verificada tras revisar 32 issues (24 iniciales y ocho nuevos).
 pero queda abierta por el editor de columnas y la cobertura restante. Columnas,
 tablas avanzadas, pares/impares, el caso de espaciado, herencia de revisión y los
 ocho nuevos informes conservan sus tareas pendientes.
-[Resultado y comprobaciones](docs/ISSUE_SWEEP_ALPHA16.md).
+[Resultado y comprobaciones](docs/history/ISSUE_SWEEP_ALPHA16.md).
 
 ## Completado: refinamiento de paneles y metadatos para alpha.15
 

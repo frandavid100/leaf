@@ -1,5 +1,14 @@
 # Decisiones vigentes
 
+## 12/11/2026 — revisión de peso, velocidad y claridad
+
+Tras una revisión del código, David decide: (1) la app publicada no incluirá el
+código de diagnóstico gráfico; seguirá en el repositorio y la CI lo compilará y
+ejecutará mediante una feature de Cargo; (2) de serie se incluirá solo el
+diccionario `es_ES`, y `es_MX`/`es_AR` se podrán añadir desde Preferencias;
+(3) la documentación para colaboradores pasará al inglés, salvo `AGENTS.md` y
+`CONTINUING.md`. Se aplicará en PRs pequeños; ninguno implica publicar.
+
 ## Publicada y verificada automáticamente: 0.1.0-alpha.45
 
 Se publican los mismos bytes de la candidata tras superar todas las pruebas
@@ -13,7 +22,7 @@ más reciente. Incluye #278/#280, ampliación del catálogo #259 y controles de
 columnas #262. #279 incorpora detección y descarga/apertura en el visor del
 sistema, con prueba instalada obligatoria; permanece abierto por los permisos
 de tienda y validaciones pendientes. Motor y aportaciones upstream se conservan
-separados. [Alcance, pruebas y límites](ALPHA45_MAINTENANCE.md).
+separados. [Alcance, pruebas y límites](history/ALPHA45_MAINTENANCE.md).
 
 
 ## 11/11/2026 — retomar la ficha de FlatPark
@@ -64,7 +73,7 @@ restaurar los selectores nativos anteriores y generar instalador para amigos
 que utilizan Windows. La nueva apariencia se limita a los selectores de color.
 Se conservan las comprobaciones y el motor; no se mezclan los cambios de WordCraft
 que se preparan en otra conversación. No se cierran requisitos incompletos.
-[Alcance, mediciones y condiciones de entrega](ALPHA44_MAINTENANCE.md).
+[Alcance, mediciones y condiciones de entrega](history/ALPHA44_MAINTENANCE.md).
 
 
 ## Publicada y verificada automáticamente: 0.1.0-alpha.43
@@ -79,7 +88,7 @@ David añade las propuestas recientes y pide expresamente release, sin RC.
 Se conserva toda la validación y se publica automáticamente esta entrega al pasar.
 Los requisitos parciales se documentan sin cerrarlos; los límites del motor no
 justifican un fork ni controles ficticios. La ficha pública sigue aplazada.
-[Plan de entrega y límites concretos](ALPHA43_TOOLS.md).
+[Plan de entrega y límites concretos](history/ALPHA43_TOOLS.md).
 
 ## Publicada y verificada automáticamente: 0.1.0-alpha.42
 
@@ -96,7 +105,7 @@ colocaciones configurables por herramienta.
 Acepta únicamente la carpeta de plantillas del sistema (#171); no se amplían
 permisos. #52 queda cerrado sin atribución confirmada. #185 se mantiene en pausa:
 David hará nuevas capturas después de la próxima alpha y revisará la descripción.
-[Alcance, pruebas y límites](ALPHA42_INTERFACE.md).
+[Alcance, pruebas y límites](history/ALPHA42_INTERFACE.md).
 
 
 ## Publicada y verificada automáticamente: 0.1.0-alpha.41
@@ -113,7 +122,7 @@ validar la nueva fuente, con los mismos bytes comprobados; no sustituye la regla
 habitual de RC y visto bueno para futuras entregas. Se cierran solo los informes
 resueltos: #233–#237 se incorporan al plan de cierre, #152 se retira del plan.
 Se mantienen los otros cinco bloqueos y las capturas públicas reservadas a David.
-[Alcance y límites](ALPHA41_FINAL.md).
+[Alcance y límites](history/ALPHA41_FINAL.md).
 
 ## 9/11/2026 — #152 reabierto tras probar la RC
 
@@ -144,7 +153,7 @@ recompilar; la candidata `d6adbe5` verifica equivalencia de fuente y bytes.
 Los ajustes posteriores afectan solo a la descarga de artefactos y a perfiles/
 sincronización de los controladores de pruebas. La RC queda descargable para
 probarla; la última alpha pública sigue siendo la 40. Se mantienen los cinco
-informes pendientes y los aplazamientos. [Identidad y evidencia](ALPHA41_INTERFACE.md).
+informes pendientes y los aplazamientos. [Identidad y evidencia](history/ALPHA41_INTERFACE.md).
 
 ## 9/11/2026 — candidata 0.17 y nuevos issues
 
@@ -171,7 +180,7 @@ David autoriza resolver los issues nuevos verificables y publicar otra alpha.
 el motor y los permisos. El descarte exige confirmación porque la API pública
 no ofrece una retención reversible que permita Deshacer con garantías. Las
 capturas públicas, Windows ocasional y los bloqueos externos conservan su alcance.
-[Implementación, pruebas y límites](ALPHA40_INTERFACE.md).
+[Implementación, pruebas y límites](history/ALPHA40_INTERFACE.md).
 
 
 
@@ -189,7 +198,7 @@ se reparten trabajos y runtimes, y las capturas esperan a la escena renderizada.
 Las recuperaciones se previsualizan sobre copias privadas mediante API pública;
 los registros originales conservan sus bytes y disponibilidad. La publicación
 verifica trece archivos antes de cerrar el plan explícito y actualizar documentos.
-[Alcance y medición pendiente](ALPHA39_PREVIEWS.md).
+[Alcance y medición pendiente](history/ALPHA39_PREVIEWS.md).
 
 ## 8/11/2026 — alpha.38 publicada y verificada
 
@@ -204,7 +213,7 @@ de asignar posiciones; no usa el tamaño del fotograma anterior.
 Cierres posteriores a validación nativa, GNOME 49/51, comparación del ejecutable
 y verificación de trece assets. Permanecen los bloqueos del motor/portal/tienda y
 los aplazamientos de David. Se conserva la entrega Windows ocasional; esta alpha
-es Linux. [Fuente, pruebas y límites](ALPHA38_START_VIEW.md).
+es Linux. [Fuente, pruebas y límites](history/ALPHA38_START_VIEW.md).
 
 ## 8/11/2026 — Navegación/Revisión fija al pie del panel
 
@@ -236,7 +245,7 @@ sin cambiar su versión, Cargo.lock, motor, perfiles ni parches. Esta excepción
 concreta queda comprobada en CI. Los nombres sugeridos son una operación de
 lectura: no modifican título, selección ni historial. Se conservan Windows,
 los bloqueos anteriores y las capturas públicas de David.
-[Fuente, ejecución y límites](ALPHA37_INTERFACE.md).
+[Fuente, ejecución y límites](history/ALPHA37_INTERFACE.md).
 
 ## 8/11/2026 — Windows publicada y comprobada
 
@@ -267,7 +276,7 @@ arrastre es pasivo y su posición es el único destino válido de la importació
 Publicada y verificada con nueve cierres. #171 permanece abierto: se conserva
 `xdg-templates:ro` y se desactiva el selector de otra carpeta en Flatpak mientras
 el portal no permita el acceso mínimo requerido. No sustituirlo por acceso de
-escritura ni por un permiso amplio. [Fuente, verificación y límites](ALPHA36_INTERFACE.md).
+escritura ni por un permiso amplio. [Fuente, verificación y límites](history/ALPHA36_INTERFACE.md).
 
 
 ## 2026-11-08: ficha, colores y novedades
@@ -294,32 +303,32 @@ mediante su API pública: WordCraft mantiene protección, transacciones, revisi�
 historial. No se modifica el motor ni el snapshot de formatos. Los límites de
 selección de búsqueda invalidan resultados tras cambios ajenos. Se verifican
 las nuevas acciones con pruebas sin GUI, controles GTK y gestos reales, también
-en los paquetes GNOME 49/51. [Detalle](ALPHA35_WORKFLOWS.md).
+en los paquetes GNOME 49/51. [Detalle](history/ALPHA35_WORKFLOWS.md).
 
 
 Alpha.35 publicada y verificada el 8/11/2026; los trece informes están cerrados.
 Se conservan la prueba de ciclo de vida de los controles, las regresiones nativas
 e instaladas y la comparación del ejecutable antes de promoverlo sin recompilar.
 La publicación rechaza candidatas superadas por otra fuente en main.
-[Identidad y comprobaciones](ALPHA35_WORKFLOWS.md).
+[Identidad y comprobaciones](history/ALPHA35_WORKFLOWS.md).
 
 Estas decisiones proceden de David y del trabajo ya aceptado. Prevalecen sobre
 propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funciones.
 
 | Tema | Decisión | Consecuencia al modificar código |
 | --- | --- | --- |
-| Publicación autónoma de arreglos pendientes | David pide resolver los issues restantes y generar la siguiente release sin otro visto bueno el 7/11/2026. | Publicar tras verificar arreglos reales; mantener abiertos los bloqueos de integración o prueba. La revisión actual no aporta cambios de código. [Seis pendientes](REMAINING_AFTER_ALPHA34.md). |
-| Diccionarios #84 — alpha.34 publicada | David autoriza preparar una candidata para probar en su sistema el 7/11/2026. | Carpeta mediante el selector/portal, sin ampliar permisos del host; conservar importación, datos incluidos, idioma/documento e historial. Issue abierto hasta su prueba GNOME OS. [Alcance](ISSUE84_DICTIONARIES.md) y [validación de la entrega](ALPHA34_VALIDATION.md). |
-| Alpha.33 publicada/verificada | David pide actuar sobre #9/#99/#156 y conserva la autorización de publicación automática tras comprobar la entrega. | Cerrado #156 por dos fallos nativos reproducidos y corregidos; #9 tiene explicación/controles y #99 reproducción pública del motor. Ambos permanecen abiertos. Batería completa, GNOME 49/51 y doce archivos públicos verificados. [Fuentes y límites](ALPHA33_VALIDATION.md). |
-| Revisión posterior de alpha.32 | David pide revisar si pueden cerrarse los diez informes restantes. | Cerrado #100 por requisitos verificados en la release existente; no atribuir una causa histórica desconocida ni exigirla como condición de cierre. #152 sigue reproducible en 0.16.0. [Evidencia y nueve pendientes](ISSUE_TRIAGE_AFTER_ALPHA32.md). |
+| Publicación autónoma de arreglos pendientes | David pide resolver los issues restantes y generar la siguiente release sin otro visto bueno el 7/11/2026. | Publicar tras verificar arreglos reales; mantener abiertos los bloqueos de integración o prueba. La revisión actual no aporta cambios de código. [Seis pendientes](history/REMAINING_AFTER_ALPHA34.md). |
+| Diccionarios #84 — alpha.34 publicada | David autoriza preparar una candidata para probar en su sistema el 7/11/2026. | Carpeta mediante el selector/portal, sin ampliar permisos del host; conservar importación, datos incluidos, idioma/documento e historial. Issue abierto hasta su prueba GNOME OS. [Alcance](history/ISSUE84_DICTIONARIES.md) y [validación de la entrega](history/ALPHA34_VALIDATION.md). |
+| Alpha.33 publicada/verificada | David pide actuar sobre #9/#99/#156 y conserva la autorización de publicación automática tras comprobar la entrega. | Cerrado #156 por dos fallos nativos reproducidos y corregidos; #9 tiene explicación/controles y #99 reproducción pública del motor. Ambos permanecen abiertos. Batería completa, GNOME 49/51 y doce archivos públicos verificados. [Fuentes y límites](history/ALPHA33_VALIDATION.md). |
+| Revisión posterior de alpha.32 | David pide revisar si pueden cerrarse los diez informes restantes. | Cerrado #100 por requisitos verificados en la release existente; no atribuir una causa histórica desconocida ni exigirla como condición de cierre. #152 sigue reproducible en 0.16.0. [Evidencia y nueve pendientes](history/ISSUE_TRIAGE_AFTER_ALPHA32.md). |
 | Alpha.32 publicada/verificada | David autoriza el 7/11/2026 actualizar a la última WordCraft estable, adaptar Leaf, optimizar rendimiento y claridad y publicar otra release. | Publicada con WordCraft 0.16.0, mayor ODT y pegado HTML/RTF, después de la batería nativa y GNOME 49/51. Datos fijados, compatibilidad residual revisada y comparación con el mismo motor; doce archivos públicos comprobados. No se cierran issues adicionales. [Revisión](WORDCRAFT_016_REVIEW.md). |
-| Alpha.31 publicada/verificada | David autoriza el 7/11/2026 resolver/cerrar lo verificable y publicar automáticamente sin otro visto bueno. | Publicada el 7/11/2026 tras toda la validación nativa/instalada, con los mismos bytes y doce digests públicos comprobados. Cerrados #135/#149/#150/#151/#155; sustituye las aprobaciones pendientes para esta entrega. [Resultados y límites](ALPHA31_REMAINING.md). |
+| Alpha.31 publicada/verificada | David autoriza el 7/11/2026 resolver/cerrar lo verificable y publicar automáticamente sin otro visto bueno. | Publicada el 7/11/2026 tras toda la validación nativa/instalada, con los mismos bytes y doce digests públicos comprobados. Cerrados #135/#149/#150/#151/#155; sustituye las aprobaciones pendientes para esta entrega. [Resultados y límites](history/ALPHA31_REMAINING.md). |
 | Tercera candidata alpha.31 validada | Completados #121/#124/#126/#127 mediante propiedad canónica de leyendas, controles compartidos, navegación tipada y decoración temporal. Batería nativa completa y GNOME 49/51 verificados. | [Fuente, sumas y límites](CAPTION_OWNERSHIP.md). Conservar texto/historial, no inferir propiedad por proximidad sin atribuir a #132 una corrección no identificada; David confirmó el original y se cerró el 7/11/2026. La aprobación previa de aquella candidata quedó sustituida por la autorización posterior de publicación automática tras todas las comprobaciones. |
-| Segunda candidata alpha.31 histórica | En aquella entrega se cerraron #134–#136; #135 se reabrió después y volvió a cerrarse en la última pasada. Se aisló la captura de eventos de la regla; conserva #133. Batería nativa completa, GNOME 49/51 y menús realmente traducidos verificados sobre los mismos archivos. | [Fuente, sumas y límites](ALPHA31_UI_VALIDATION.md). La aprobación previa de aquella candidata quedó sustituida por la autorización posterior para la última pasada alpha.31; conservar su evidencia histórica. |
-| Primera candidata alpha.31 histórica | Solo cerraba #133; los experimentos de interfaz se retiraron en aquella entrega. | [Identidad histórica](ALPHA31_VALIDATION.md). La segunda candidata la sustituye; no reutilizar su lista de issues como estado actual. |
+| Segunda candidata alpha.31 histórica | En aquella entrega se cerraron #134–#136; #135 se reabrió después y volvió a cerrarse en la última pasada. Se aisló la captura de eventos de la regla; conserva #133. Batería nativa completa, GNOME 49/51 y menús realmente traducidos verificados sobre los mismos archivos. | [Fuente, sumas y límites](history/ALPHA31_UI_VALIDATION.md). La aprobación previa de aquella candidata quedó sustituida por la autorización posterior para la última pasada alpha.31; conservar su evidencia histórica. |
+| Primera candidata alpha.31 histórica | Solo cerraba #133; los experimentos de interfaz se retiraron en aquella entrega. | [Identidad histórica](history/ALPHA31_VALIDATION.md). La segunda candidata la sustituye; no reutilizar su lista de issues como estado actual. |
 | Revisión visual #111–#121 | David autoriza incorporar los once issues nuevos a la misma candidata. Revisión reúne correcciones/cambios/comentarios; modos Editar/Sugerir, filas de formato con casillas mixtas y Elementos en cabecera con creación/propiedades compartidas. | Conservar flotación fijada, selección, herencia y API públicas. #121 sustituye nombre/ubicación de Insertar de #109, #116 el icono anterior, #120 las rejillas anteriores; conservar capacidades. |
 | Navegación #131 | Una entrada principal Navegación, con Páginas/Estructura dentro del panel; Revisión es la otra entrada principal. Sustituye los tres destinos principales anteriores. | Conservar por pestaña representación, filtro, expansión y scroll independiente; sincronizar destino real sin alterar selección/documento al cambiar de vista. |
-| Alpha.30 publicada/verificada | Publicación automática autorizada y completada el 6/11/2026; integra la candidata 29 y siete cierres nuevos. | [CI, fuente, sumas y límites](ALPHA30_VALIDATION.md). Sin recompilar al promover; #121/#124/#126/#127 conservan trabajo. |
+| Alpha.30 publicada/verificada | Publicación automática autorizada y completada el 6/11/2026; integra la candidata 29 y siete cierres nuevos. | [CI, fuente, sumas y límites](history/ALPHA30_VALIDATION.md). Sin recompilar al promover; #121/#124/#126/#127 conservan trabajo. |
 | Candidatas y alpha.30 | David autoriza explícitamente publicar esta nueva pasada automáticamente, sin esperar su visto bueno. | Conservar pruebas nativas e instaladas y promover los mismos bytes; `[auto-publish-alpha]` habilita la promoción automática solo después del éxito de una candidata de main. Sin ese marcador se mantiene el proceso de aprobación. |
 | Alpha.28 publicada/verificada | David autoriza el 5/11/2026 notas al pie, índice, referencias cruzadas, imágenes flotantes, zoom/navegación y galería pública. | Reutilizar historias, campos y comandos de WordCraft, verificar DOCX/PDF e historial y conservar las guardas ODT. La autorización de galería sustituye el aplazamiento anterior para esta entrega. [CI nativa e instalada completa](https://github.com/frandavid100/leaf/actions/runs/42057994674). |
 | Rama de desarrollo | `main` para desarrollo, compilación y PR; ambos historiales integrados. | ApexDesk archivado en `archive/apexdesk-main-2026-11-02`; conservar `wordcraft-saving` y releases/tags existentes. [Revisión](MAIN_MIGRATION.md). |
@@ -335,12 +344,12 @@ propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funcion
 | Metadatos | Editar título, asunto, autor, palabras clave y categoría en Propiedades → Información, usando `file.properties`. | No sobrescribir otras propiedades ni la identidad de la sesión. DOCX conserva los cinco campos; bloquear ODT con categoría para impedir su pérdida. Aplicar es un solo paso de deshacer. |
 | Alpha.23 / issues | Cerrados #64, #65, #7 y #37 tras validar la alpha instalada. | Guardar como DOCX para los saltos que el exportador ODT no conserva. Propiedades usa el selector inline desde libadwaita 1.7 y mantiene el selector anterior en versiones compatibles más antiguas. |
 | Alpha.22 / issues | Publicada con WordCraft 0.14.0, impresión y optimización, siete cierres y validación del Flatpak instalado. | Estilos usa la galería rápida cuando existe. Las sangrías conservan sus controles directos tras evaluar la alternativa agrupada. Mantener abiertos #65 y #69 hasta resolver las limitaciones descritas en [la revisión](FORMAT_POPOVER_REVIEW.md). |
-| Alpha.21 / issues | Publicada y verificada con WordCraft 0.14.0; cuatro cierres (#18, #48, #51, #61) y diez abiertos. Reglas transitorias finas, historial AdwSplitButton y Fuente/Tamaño acotados. | [Alcance](ISSUE_SWEEP_ALPHA21.md) y [evidencia](ISSUE_SWEEP_ALPHA21_VALIDATION.json). Mantener guardas ODT y límites de autoría; actualizar la referencia de reutilización solo a fuente/CI validadas. |
-| Alpha.20 / issues (histórico) | Publicada; seis cierres y 12 pendientes. Regla y selector GNOME quedaron con revisión visual pendiente, completada en alpha.21. Cuatro guardas ODT adicionales evitan pérdida estructural. | [Alcance](ISSUE_SWEEP_ALPHA20.md) y [evidencia](ISSUE_SWEEP_ALPHA20_VALIDATION.json). No presentar el bloqueo ODT como autoría avanzada completa; el diseño con pin de alpha.20 queda sustituido por #48. |
-| Alpha.19 / issues | Publicada y verificada; nueve cierres de los nueve informes autorizados. #35 reproducido en Flatpak GNOME 49 y verificado tras corregir filtro y foco. | [Alcance](ISSUE_SWEEP_ALPHA19.md) y [validación](ISSUE_SWEEP_ALPHA19_VALIDATION.json). Mantener eventos reales, drenaje de entrada antes de aserciones y pruebas instaladas; no afirmar cobertura humana Wayland/IME. |
-| Alpha.18 / issues | Publicada y verificada; diez cierres de la pasada inicial y 20 abiertos tras nuevos/reabiertos. | [Alcance](ISSUE_SWEEP_ALPHA18.md) y [validación](ISSUE_SWEEP_ALPHA18_VALIDATION.json). No dar por resueltos requisitos posteriores con pruebas de las especificaciones anteriores. |
-| Alpha.17 / issues | Publicada y verificada; 18 informes cerrados y 14 abiertos al finalizar. | [Alcance](ISSUE_SWEEP_ALPHA17.md) y [validación](ISSUE_SWEEP_ALPHA17_VALIDATION.json). Nuevos #40–#43 quedan fuera de esta entrega; en aquella entrega main conservaba el prototipo. |
-| Alpha.16 / issues | Publicada; 32 revisados, 14 cerrados y 18 abiertos. #12 conserva trabajo parcial pendiente. | [Evidencia y límites](ISSUE_SWEEP_ALPHA16.md); cerrar solo lo verificado y mantener las tareas restantes. |
+| Alpha.21 / issues | Publicada y verificada con WordCraft 0.14.0; cuatro cierres (#18, #48, #51, #61) y diez abiertos. Reglas transitorias finas, historial AdwSplitButton y Fuente/Tamaño acotados. | [Alcance](history/ISSUE_SWEEP_ALPHA21.md) y [evidencia](history/ISSUE_SWEEP_ALPHA21_VALIDATION.json). Mantener guardas ODT y límites de autoría; actualizar la referencia de reutilización solo a fuente/CI validadas. |
+| Alpha.20 / issues (histórico) | Publicada; seis cierres y 12 pendientes. Regla y selector GNOME quedaron con revisión visual pendiente, completada en alpha.21. Cuatro guardas ODT adicionales evitan pérdida estructural. | [Alcance](history/ISSUE_SWEEP_ALPHA20.md) y [evidencia](history/ISSUE_SWEEP_ALPHA20_VALIDATION.json). No presentar el bloqueo ODT como autoría avanzada completa; el diseño con pin de alpha.20 queda sustituido por #48. |
+| Alpha.19 / issues | Publicada y verificada; nueve cierres de los nueve informes autorizados. #35 reproducido en Flatpak GNOME 49 y verificado tras corregir filtro y foco. | [Alcance](history/ISSUE_SWEEP_ALPHA19.md) y [validación](history/ISSUE_SWEEP_ALPHA19_VALIDATION.json). Mantener eventos reales, drenaje de entrada antes de aserciones y pruebas instaladas; no afirmar cobertura humana Wayland/IME. |
+| Alpha.18 / issues | Publicada y verificada; diez cierres de la pasada inicial y 20 abiertos tras nuevos/reabiertos. | [Alcance](history/ISSUE_SWEEP_ALPHA18.md) y [validación](history/ISSUE_SWEEP_ALPHA18_VALIDATION.json). No dar por resueltos requisitos posteriores con pruebas de las especificaciones anteriores. |
+| Alpha.17 / issues | Publicada y verificada; 18 informes cerrados y 14 abiertos al finalizar. | [Alcance](history/ISSUE_SWEEP_ALPHA17.md) y [validación](history/ISSUE_SWEEP_ALPHA17_VALIDATION.json). Nuevos #40–#43 quedan fuera de esta entrega; en aquella entrega main conservaba el prototipo. |
+| Alpha.16 / issues | Publicada; 32 revisados, 14 cerrados y 18 abiertos. #12 conserva trabajo parcial pendiente. | [Evidencia y límites](history/ISSUE_SWEEP_ALPHA16.md); cerrar solo lo verificado y mantener las tareas restantes. |
 | Guardado explícito | Ctrl+S guarda sobre el archivo abierto; Guardar como elige otro destino. | Recuperación sigue predeterminada; fallos conservan los cambios. |
 | Controles de formato | Cambios escalares válidos inmediatos; paneles fijados siguen selección. | Validar entrada, evitar ediciones al sincronizar y agrupar deshacer. Excepciones atómicas documentadas en la revisión. |
 | Modos Editar/Sugerir | Elegir si las nuevas ediciones se registran como propuestas por documento (#117). | Cambiar de modo no acepta/rechaza ni descarta revisiones existentes; sus acciones siguen disponibles en ambos modos y son independientes de ortografía/comentarios. |

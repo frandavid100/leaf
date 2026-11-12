@@ -64,7 +64,7 @@ permissions stay unchanged. Selection and restart share one test namespace.
 ## Manual test and limits
 
 The separate `Leaf-0.1.0-alpha.34-dictionary-test.zip` contains a minimal synthetic
-Italian dictionary and [Spanish instructions](../tests/fixtures/dictionary84/README.md).
+Italian dictionary and [Spanish instructions](../../tests/fixtures/dictionary84/README.md).
 It is never installed automatically as a production dictionary. David still
 needs to test the workflow on GNOME OS, including an actual host dictionary
 folder when available. Synthetic data validates the folder workflow, not GNOME

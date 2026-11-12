@@ -134,7 +134,7 @@ The promotion rechecks native success and candidate identity.
   `388c04a759eb9a22cd2f03310c965cf7909e7a6f2fba3fd548ffdc711b7b30b0`.
 
 At publication the engine update itself closed no additional issues. Subsequent
-[functional triage](ISSUE_TRIAGE_AFTER_ALPHA32.md) closes #100 on the same published
+[functional triage](history/ISSUE_TRIAGE_AFTER_ALPHA32.md) closes #100 on the same published
 binary: labels and direct note navigation meet the current requirements, without
 attributing an unidentified historical cause. Nine remain: #1, #2, #9, #52, #84,
 #99, #107, #152 and #156. In particular,
