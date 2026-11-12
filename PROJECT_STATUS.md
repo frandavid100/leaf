@@ -1,12 +1,17 @@
 # Estado actual de Leaf
 
-## 12/11/2026 — seguimiento #279 en rama de revisión
+## 12/11/2026 — seguimiento #279 validado en rama de revisión
 
-David autoriza subir la rama y ejecutar CI. Tras perderse el entorno local
-anterior se reconstruye el refresco de fuentes de todas las pestañas sobre el
-main actual, conservando macOS. Se preparan regresiones instaladas GNOME 49/51
-y la validación del manifiesto FlatPark ya guardado en el fork. No se publica
-una versión ni se cierra #279 sin los resultados nuevos.
+David autoriza subir la rama y ejecutar CI. La fuente `a32c9e8` supera 248 pruebas
+Rust, 16 Python, 1077 mensajes EN/ES, compilación optimizada y los cinco grupos
+gráficos. La ejecución instalada `43186108526` pasa en GNOME 49/51: cuatro estilos,
+refresco entre pestañas, cierre sin instalar, DOCX/ODT y recuperación tras reinicio
+cuando la carpeta de fuentes no existía al iniciar el sandbox. El aviso español
+se comprueba en la interfaz real. El paquete FlatPark propuesto pasa por separado;
+su rama actual `438eca9` conserva los archivos Leaf y herramientas ya probados.
+Todo sigue en ramas de revisión: sin integración en main, PR externa ni release.
+#279 permanece abierto; no se dan por revalidados los casos negativos adicionales
+del entorno perdido ni se afirma una prueba humana del documento original.
 [Fuente, recuperación, aceptación y límites](docs/FONT279_FOLLOWUP.md).
 
 

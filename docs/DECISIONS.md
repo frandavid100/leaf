@@ -1,12 +1,16 @@
 # Decisiones vigentes
 
-## 12/11/2026 — rama y CI autorizadas para #279
+## 12/11/2026 — rama y CI autorizadas y validadas para #279
 
 David autoriza subir la rama de revisión y ejecutar GitHub Actions. El entorno
 previo se perdió antes del push; se reconstruye la corrección sobre main actual,
-sin atribuir sus pruebas antiguas a la nueva fuente. No se modifica main ni se
-publica una versión. La PR externa de FlatPark se prepara para aprobación
-después de comprobar el paquete. [Seguimiento](FONT279_FOLLOWUP.md).
+sin atribuir sus pruebas antiguas a la nueva fuente. La fuente `a32c9e8` pasa todos
+los gates nativos; `43186108526` pasa instalación GNOME 49/51 y recuperación de
+primer uso, con texto español observado. Ese límite del sandbox se explica al
+usuario; no se añaden permisos de archivos ni fuentes privadas. La propuesta
+FlatPark conserva el paquete y herramientas ya comprobados y está sin conflictos.
+No se modifica main ni se publica una versión. La PR externa está preparada para
+aprobación después de comprobar el paquete. [Seguimiento](FONT279_FOLLOWUP.md).
 
 ## Publicada y verificada automáticamente: 0.1.0-alpha.45
 
