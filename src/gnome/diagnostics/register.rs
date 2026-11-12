@@ -55,6 +55,9 @@ pub(super) fn install_diagnostics(
     controls: DiagnosticControls<'_>,
 ) {
     let runner = DiagnosticRunner { ui, window, app };
+    if requested("--font279-acceptance-test") && host.tabs.n_pages() == 1 {
+        runner.window(800, fonts279_checks::test);
+    }
     if requested("--zoom278-ui-test") && host.tabs.n_pages() == 1 {
         runner.window(800, maintenance45_checks::zoom);
     }
@@ -106,6 +109,7 @@ pub(super) fn install_diagnostics(
             || arg == "--picture280-ui-test"
             || arg == "--zoom278-ui-test"
             || arg == "--font279-ui-test"
+            || arg == "--font279-acceptance-test"
             || arg.starts_with("--toolbar41-")
             || arg.starts_with("--workflows36-")
             || arg.starts_with("--workflows37-")

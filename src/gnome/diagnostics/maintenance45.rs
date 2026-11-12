@@ -264,13 +264,22 @@ pub(super) fn fonts(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
                 .unwrap()
                 .rgba
         };
-        assert_ne!(
-            image_before, image_after,
+        assert!(
+            image_before != image_after,
             "new font did not affect actual rendering"
         );
         dialog.close();
         settle().await;
         assert!(window.visible_dialog().is_none());
+        if std::env::var("LEAF279_REFERENCE").as_deref() == Ok("1") {
+            let before = state(&ui);
+            pdf_export::export(
+                &mut ui.current.borrow_mut().as_mut().unwrap().session,
+                &ack.join("font279-leaf.pdf"),
+            )
+            .unwrap();
+            assert_eq!(before, state(&ui), "reference export changed the document");
+        }
         eprintln!("FONT279_SYSTEM_INSTALL_OK styles={}", styles.join(","));
         app.quit();
     });

@@ -1,0 +1,131 @@
+name: Font279 installed acceptance
+on:
+  workflow_call:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  flatpark:
+    name: Proposed FlatPark manifest with official alpha45
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: frandavid100/flatpark
+          ref: 32c2bcaf41f3d99c4b967d29e1f1cac85792aa96
+          path: flatpark-review
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install local repository and font validation tools
+        run: |
+          sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|https://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends flatpak flatpak-builder ostree gnupg appstream desktop-file-utils xvfb xauth scrot x11-utils xdotool dbus-x11 xdg-desktop-portal xdg-desktop-portal-gtk gnome-font-viewer python3-gi gir1.2-atspi-2.0 at-spi2-core
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Audit, unpack as system install and install from the local signed repository
+        working-directory: flatpark-review
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          FLATPARK_VERIFY_KEEP: '1'
+        run: |
+          test ! -s "$HOME/.local/share/flatpak/overrides/global"
+          flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          node scripts/read-descriptor.mjs registry/io.github.frandavid100.leaf/flatpark.yml
+          node scripts/audit-descriptor.mjs registry/io.github.frandavid100.leaf/flatpark.yml
+          bash scripts/check-apply-extra.sh io.github.frandavid100.leaf
+          bash scripts/publish.sh --verify io.github.frandavid100.leaf
+      - name: Check granted permissions and persistent sandbox data across processes
+        run: |
+          mkdir -p dist/font279-flatpark
+          flatpak --user info --show-metadata io.github.frandavid100.leaf | tee dist/font279-flatpark/metadata.ini
+          python3 - <<'PY'
+          import configparser
+          config = configparser.ConfigParser()
+          config.read('dist/font279-flatpark/metadata.ini')
+          assert 'network' in config['Context']['shared'].split(';')
+          assert not config['Context'].get('filesystems', '').strip(';')
+          PY
+          flatpak run --command=sh io.github.frandavid100.leaf -c 'printf retained > "$XDG_DATA_HOME/font279-persistence"'
+          flatpak run --command=sh io.github.frandavid100.leaf -c 'test "$(cat "$XDG_DATA_HOME/font279-persistence")" = retained'
+      - name: Exercise the exact published binary through the system viewer
+        run: bash tools/font279-installed-test.sh io.github.frandavid100.leaf /app/extra/leaf/bin/leaf dist/font279-flatpark/installed
+      - name: Capture actual startup and window class
+        run: |
+          xvfb-run -a -s '-screen 0 1400x1000x24' dbus-run-session -- bash -euc '
+            flatpak run --socket=x11 --nosocket=wayland --env=GSK_RENDERER=cairo io.github.frandavid100.leaf > dist/font279-flatpark/startup.log 2>&1 &
+            pid=$!
+            trap '\''kill "$pid" 2>/dev/null || true'\'' EXIT
+            sleep 6
+            kill -0 "$pid"
+            scrot dist/font279-flatpark/startup.png
+            xwininfo -root -tree > dist/font279-flatpark/windows.txt
+            flatpak kill io.github.frandavid100.leaf
+          '
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: flatpark-font279-review
+          path: dist/font279-flatpark/
+          if-no-files-found: warn
+  source:
+    name: Installed source on GNOME ${{ matrix.runtime }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: ['49', '51']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: wordcraft-gnome-fase3d-linux
+          path: validated-native
+      - name: Install font viewer, portals and reference processor
+        run: |
+          sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|https://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends flatpak xvfb xauth scrot xclip xdotool dbus-x11 xdg-desktop-portal xdg-desktop-portal-gtk gnome-font-viewer python3-gi python3-fonttools gir1.2-atspi-2.0 at-spi2-core libreoffice-writer poppler-utils
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Install the exact validated source executable
+        id: package
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash tools/font279-source-package.sh '${{ matrix.runtime }}' validated-native/wordcraft-gnome
+      - name: First use with no user font directory and Writer comparison
+        id: first_use
+        continue-on-error: true
+        env:
+          LEAF279_ABSENT_FONT_DIR: '1'
+          LEAF279_REFERENCE: '1'
+        run: bash tools/font279-installed-test.sh io.github.frandavid100.leaf.Font279Acceptance${{ matrix.runtime }} '${{ matrix.runtime == '49' && '/app/bin/leaf' || '/app/extra/leaf/bin/leaf' }}' dist/font279/first-use
+      - name: Existing font directory and Writer comparison
+        if: always() && steps.package.outcome == 'success'
+        env:
+          LEAF279_REFERENCE: '1'
+        run: bash tools/font279-installed-test.sh io.github.frandavid100.leaf.Font279Acceptance${{ matrix.runtime }} '${{ matrix.runtime == '49' && '/app/bin/leaf' || '/app/extra/leaf/bin/leaf' }}' dist/font279/existing-directory
+      - name: Local file, dismiss without installing, cross-tab refresh and round trips
+        if: always() && steps.package.outcome == 'success'
+        run: |
+          for mode in dismiss local; do
+            for language in en es; do
+              scale=1
+              if test "$language" = es; then scale=2; fi
+              LEAF279_MODE=$mode LANGUAGE=$language GDK_SCALE=$scale bash tools/font279-local-installed-test.sh io.github.frandavid100.leaf.Font279Acceptance${{ matrix.runtime }} '${{ matrix.runtime == '49' && '/app/bin/leaf' || '/app/extra/leaf/bin/leaf' }}' dist/font279/$mode-$language
+            done
+          done
+      - name: Require genuine first-use success
+        if: always() && steps.package.outcome == 'success'
+        env:
+          FIRST_USE_RESULT: ${{ steps.first_use.outcome }}
+        run: test "$FIRST_USE_RESULT" = success
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: font279-source-${{ matrix.runtime }}
+          path: dist/font279/
+          if-no-files-found: error

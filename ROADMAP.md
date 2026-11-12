@@ -1,5 +1,13 @@
 # Hoja de ruta de Leaf
 
+## En validación — refresco de fuentes #279
+
+La rama de revisión reconstruye el refresco compartido entre pestañas y prueba
+instalación real, posición de lectura y comparación con LibreOffice en GNOME
+49/51. Falta confirmar los resultados de CI y la propuesta de permisos de
+FlatPark antes de dar el requisito por completado.
+[Seguimiento y límites](docs/FONT279_FOLLOWUP.md).
+
 
 ## 11/11/2026 — ficha de tienda enviada a FlatPark
 

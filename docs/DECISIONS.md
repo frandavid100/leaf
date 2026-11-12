@@ -1,5 +1,13 @@
 # Decisiones vigentes
 
+## 12/11/2026 — rama y CI autorizadas para #279
+
+David autoriza subir la rama de revisión y ejecutar GitHub Actions. El entorno
+previo se perdió antes del push; se reconstruye la corrección sobre main actual,
+sin atribuir sus pruebas antiguas a la nueva fuente. No se modifica main ni se
+publica una versión. La PR externa de FlatPark se prepara para aprobación
+después de comprobar el paquete. [Seguimiento](FONT279_FOLLOWUP.md).
+
 ## Publicada y verificada automáticamente: 0.1.0-alpha.45
 
 Se publican los mismos bytes de la candidata tras superar todas las pruebas

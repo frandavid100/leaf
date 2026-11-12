@@ -1,5 +1,14 @@
 # Estado actual de Leaf
 
+## 12/11/2026 — seguimiento #279 en rama de revisión
+
+David autoriza subir la rama y ejecutar CI. Tras perderse el entorno local
+anterior se reconstruye el refresco de fuentes de todas las pestañas sobre el
+main actual, conservando macOS. Se preparan regresiones instaladas GNOME 49/51
+y la validación del manifiesto FlatPark ya guardado en el fork. No se publica
+una versión ni se cierra #279 sin los resultados nuevos.
+[Fuente, recuperación, aceptación y límites](docs/FONT279_FOLLOWUP.md).
+
 
 ## 11/11/2026 — ficha de tienda enviada a FlatPark
 

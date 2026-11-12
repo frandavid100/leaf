@@ -6,7 +6,13 @@ app_id=${1:?Missing installed application ID}
 binary=${2:?Missing installed executable}
 output=$(realpath -m "${3:?Missing evidence folder}")
 root=$(cd "$(dirname "$0")/.." && pwd)
-mkdir -p "$output" "$HOME/.local/share/fonts" "$HOME/.var/app/$app_id/cache"
+mkdir -p "$output" "$HOME/.var/app/$app_id/cache"
+if [[ ${LEAF279_ABSENT_FONT_DIR:-} == 1 ]]; then
+  test ! -e "$HOME/.local/share/fonts"
+  echo FONT279_START_WITHOUT_USER_FONT_DIRECTORY
+else
+  mkdir -p "$HOME/.local/share/fonts"
+fi
 temporary=$(mktemp -d)
 acks=$(mktemp -d "$HOME/.var/app/$app_id/cache/font279.XXXXXX")
 export XDG_CONFIG_HOME="$temporary/config" XDG_CURRENT_DESKTOP=GNOME GTK_A11Y=atspi NO_AT_BRIDGE=0
@@ -26,6 +32,7 @@ set -euo pipefail
 dbus-update-activation-environment DISPLAY XAUTHORITY XDG_CONFIG_HOME XDG_CURRENT_DESKTOP GTK_A11Y NO_AT_BRIDGE
 flatpak run --socket=x11 --nosocket=wayland --env=LANGUAGE=en --env=LC_ALL=C.UTF-8 --env=GDK_SCALE=1 \
   --env=GSK_RENDERER=cairo --env=GTK_A11Y=atspi --env=LEAF279_ACK_DIR="$LEAF279_ACK_DIR" \
+  --env="LEAF279_REFERENCE=${LEAF279_REFERENCE:-0}" \
   --command="$LEAF279_BINARY" "$LEAF279_APP_ID" --font279-ui-test > "$LEAF279_OUTPUT/leaf.log" 2>&1 &
 app=$!
 trap 'kill "$app" 2>/dev/null || true' EXIT
@@ -54,8 +61,16 @@ PY
   xdotool search --onlyvisible --class 'gnome-font-viewer' windowclose || true
   touch "$LEAF279_ACK_DIR/installed-$style"
 done
-wait "$app"
+wait "$app" || { cat "$LEAF279_OUTPUT/leaf.log"; exit 1; }
 grep -q 'FONT279_SYSTEM_INSTALL_OK styles=Regular,Bold,Italic,BoldItalic' "$LEAF279_OUTPUT/leaf.log"
+if [[ ${LEAF279_REFERENCE:-} == 1 ]]; then
+  mkdir -p "$LEAF279_OUTPUT/reference"
+  cp "$LEAF279_ACK_DIR/font279.docx" "$LEAF279_ACK_DIR/font279-leaf.pdf" "$LEAF279_OUTPUT/"
+  timeout 60s libreoffice -env:UserInstallation="file://$LEAF279_OUTPUT/lo-profile" --headless \
+    --convert-to pdf --outdir "$LEAF279_OUTPUT/reference" "$LEAF279_OUTPUT/font279.docx"
+  python3 "$LEAF279_ROOT/tools/font279-reference-compare.py" \
+    "$LEAF279_OUTPUT/font279-leaf.pdf" "$LEAF279_OUTPUT/reference/font279.pdf" | tee "$LEAF279_OUTPUT/reference.log"
+fi
 RUN
 cleanup() {
   # Delete only this test's exact downloaded bytes; never a pre-existing font.

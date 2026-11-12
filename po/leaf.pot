@@ -101,7 +101,7 @@ msgstr ""
 msgid "All Fonts"
 msgstr ""
 
-#: src/gnome/font_install.rs:301
+#: src/gnome/font_install.rs:310
 msgid "All fonts used by this document are now available."
 msgstr ""
 
@@ -277,7 +277,7 @@ msgstr ""
 msgid "Body Text"
 msgstr ""
 
-#: src/gnome/accessibility.rs:106 src/gnome/font_install.rs:357 src/gnome/menus.rs:655 src/gnome/tab.rs:286 src/gnome/text_palette.rs:41 src/history.rs:196 src/toolbar.rs:161
+#: src/gnome/accessibility.rs:106 src/gnome/font_install.rs:366 src/gnome/menus.rs:655 src/gnome/tab.rs:286 src/gnome/text_palette.rs:41 src/history.rs:196 src/toolbar.rs:161
 msgid "Bold"
 msgstr ""
 
@@ -285,7 +285,7 @@ msgstr ""
 msgid "Bold (Ctrl+B)"
 msgstr ""
 
-#: src/gnome/font_install.rs:359
+#: src/gnome/font_install.rs:368
 msgid "Bold Italic"
 msgstr ""
 
@@ -457,7 +457,7 @@ msgstr ""
 msgid "Character Spacing"
 msgstr ""
 
-#: src/gnome/font_install.rs:409
+#: src/gnome/font_install.rs:418
 msgid "Check Installed Fonts"
 msgstr ""
 
@@ -1113,7 +1113,7 @@ msgstr ""
 msgid "Document File"
 msgstr ""
 
-#: src/gnome/font_install.rs:327
+#: src/gnome/font_install.rs:336
 msgid "Document Fonts"
 msgstr ""
 
@@ -1181,7 +1181,7 @@ msgstr ""
 msgid "Double Strikethrough"
 msgstr ""
 
-#: src/gnome/font_install.rs:363
+#: src/gnome/font_install.rs:372
 msgid "Download and Open"
 msgstr ""
 
@@ -1881,7 +1881,7 @@ msgstr ""
 msgid "Install Missing Fonts…"
 msgstr ""
 
-#: src/gnome/font_install.rs:336
+#: src/gnome/font_install.rs:345
 msgid "Install each required style in your system font viewer. Opening the viewer does not install a font or replace the document's font names."
 msgstr ""
 
@@ -1901,7 +1901,7 @@ msgstr ""
 msgid "Italian"
 msgstr ""
 
-#: src/gnome/accessibility.rs:107 src/gnome/font_install.rs:358 src/gnome/menus.rs:656 src/gnome/tab.rs:289 src/gnome/text_palette.rs:42 src/history.rs:198 src/toolbar.rs:165
+#: src/gnome/accessibility.rs:107 src/gnome/font_install.rs:367 src/gnome/menus.rs:656 src/gnome/tab.rs:289 src/gnome/text_palette.rs:42 src/history.rs:198 src/toolbar.rs:165
 msgid "Italic"
 msgstr ""
 
@@ -2389,11 +2389,11 @@ msgstr ""
 msgid "Normal Style"
 msgstr ""
 
-#: src/gnome/font_install.rs:348 src/gnome/text_controls.rs:623
+#: src/gnome/font_install.rs:357 src/gnome/text_controls.rs:623
 msgid "Not available; displayed as"
 msgstr ""
 
-#: src/gnome/font_install.rs:394
+#: src/gnome/font_install.rs:403
 msgid "Not in the download catalog. Use a local font file or choose a replacement in Document Properties."
 msgstr ""
 
@@ -2457,7 +2457,7 @@ msgstr ""
 msgid "Open Font File"
 msgstr ""
 
-#: src/gnome/font_install.rs:399
+#: src/gnome/font_install.rs:408
 msgid "Open Local Font File…"
 msgstr ""
 
@@ -2549,7 +2549,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:405 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/register.rs:356 src/gnome/format_bar.rs:144 src/gnome/paragraph.rs:1339 src/gnome/tab.rs:353 src/gnome/tab.rs:661 src/gnome/toolbar_preferences.rs:236
+#: src/gnome/context.rs:131 src/gnome/context.rs:405 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/register.rs:360 src/gnome/format_bar.rs:144 src/gnome/paragraph.rs:1339 src/gnome/tab.rs:353 src/gnome/tab.rs:661 src/gnome/toolbar_preferences.rs:236
 msgid "Paragraph"
 msgstr ""
 
@@ -2737,7 +2737,7 @@ msgstr ""
 msgid "Refresh Dictionaries"
 msgstr ""
 
-#: src/gnome/font_install.rs:360
+#: src/gnome/font_install.rs:369
 msgid "Regular"
 msgstr ""
 
@@ -3485,7 +3485,7 @@ msgstr ""
 msgid "Starting Page Number"
 msgstr ""
 
-#: src/gnome/font_install.rs:305
+#: src/gnome/font_install.rs:314
 msgid "Still unavailable:"
 msgstr ""
 
@@ -3501,7 +3501,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:404 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:432 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:355 src/gnome/styles.rs:524 src/gnome/tab.rs:349 src/gnome/tab.rs:660
+#: src/gnome/context.rs:128 src/gnome/context.rs:404 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:432 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:359 src/gnome/styles.rs:524 src/gnome/tab.rs:349 src/gnome/tab.rs:660
 msgid "Style"
 msgstr ""
 
@@ -3633,7 +3633,7 @@ msgstr ""
 msgid "Templates Folder"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:406 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:357 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/format_bar.rs:143 src/gnome/references.rs:334 src/gnome/tab.rs:305 src/gnome/tab.rs:340 src/gnome/tab.rs:662 src/gnome/toolbar_preferences.rs:235
+#: src/gnome/context.rs:134 src/gnome/context.rs:406 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:361 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/format_bar.rs:143 src/gnome/references.rs:334 src/gnome/tab.rs:305 src/gnome/tab.rs:340 src/gnome/tab.rs:662 src/gnome/toolbar_preferences.rs:235
 msgid "Text"
 msgstr ""
 
@@ -3877,7 +3877,7 @@ msgstr ""
 msgid "Thickness (pt)"
 msgstr ""
 
-#: src/gnome/font_install.rs:396
+#: src/gnome/font_install.rs:405
 msgid "This Flatpak package does not permit font downloads. Download the font outside Leaf and open its local file here."
 msgstr ""
 

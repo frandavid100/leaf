@@ -261,27 +261,36 @@ fn local_file(dialog: &adw::Dialog, status: &gtk::Label) {
     });
 }
 fn refresh(ui: &Rc<Ui>, status: &gtk::Label) {
-    let names = ui
-        .current
-        .borrow()
-        .as_ref()
-        .map(|d| {
-            wordcraft_gnome::document_fonts::inventory(&d.session)
-                .into_iter()
-                .filter(|f| !f.uses.is_empty())
-                .map(|f| f.name)
-                .collect::<Vec<_>>()
-        })
-        .unwrap_or_default();
-    fonts::refresh_installed(&names);
     let documents = WORKSPACES.with(|hosts| {
         let mut documents = Vec::new();
         for host in hosts.borrow().iter() {
-            documents.extend(host.docs.borrow().iter().map(|(_, ui)| ui.clone()));
+            documents.extend(
+                host.docs
+                    .borrow()
+                    .iter()
+                    .filter(|(_, ui)| !ui.closed.get())
+                    .map(|(_, ui)| ui.clone()),
+            );
         }
         documents
     });
-    for ui in documents.into_iter().filter(|u| !u.closed.get()) {
+    // The font provider is shared: a local file can install a family used only
+    // by another tab. Refresh all live documents' families before any relayout.
+    let mut names = Vec::new();
+    for ui in &documents {
+        if let Some(d) = ui.current.borrow().as_ref() {
+            names.extend(
+                wordcraft_gnome::document_fonts::inventory(&d.session)
+                    .into_iter()
+                    .filter(|f| !f.uses.is_empty())
+                    .map(|f| f.name),
+            );
+        }
+    }
+    names.sort();
+    names.dedup();
+    fonts::refresh_installed(&names);
+    for ui in documents {
         let dirty = ui.dirty.get();
         let anchor = capture_reading_anchor(&ui);
         if let Some(doc) = ui.current.borrow_mut().as_mut() {

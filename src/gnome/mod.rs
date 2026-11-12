@@ -315,6 +315,8 @@ mod workflows37_checks;
 mod alpha42_checks;
 #[path = "diagnostics/alpha43.rs"]
 mod alpha43_checks;
+#[path = "diagnostics/fonts279.rs"]
+mod fonts279_checks;
 #[path = "diagnostics/maintenance45.rs"]
 mod maintenance45_checks;
 #[path = "diagnostics/toolbar41.rs"]
