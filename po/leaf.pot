@@ -1325,7 +1325,7 @@ msgstr ""
 msgid "Enter some comment text."
 msgstr ""
 
-#: src/preferences.rs:174
+#: src/preferences.rs:193
 msgid "Enter your name."
 msgstr ""
 
@@ -2697,7 +2697,7 @@ msgstr ""
 msgid "RGB Color, for Example 2266AA"
 msgstr ""
 
-#: src/gnome/templates.rs:518 src/gnome/templates.rs:645 src/gnome/workspace.rs:479
+#: src/gnome/templates.rs:518 src/gnome/templates.rs:645 src/gnome/workspace.rs:497
 msgid "Recovered Document"
 msgstr ""
 
@@ -4045,7 +4045,7 @@ msgstr ""
 msgid "Unknown Author"
 msgstr ""
 
-#: src/preferences.rs:61
+#: src/preferences.rs:80
 msgid "Unknown Autosave Mode"
 msgstr ""
 
@@ -4101,7 +4101,7 @@ msgstr ""
 msgid "Use a .docx or .odt extension"
 msgstr ""
 
-#: src/preferences.rs:85 src/proofing.rs:189
+#: src/preferences.rs:104 src/proofing.rs:189
 msgid "Use a language tag such as es-ES or en-GB."
 msgstr ""
 

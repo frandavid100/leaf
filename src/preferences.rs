@@ -48,13 +48,32 @@ pub fn recovery_root() -> PathBuf {
         .join("wordcraft-gnome/recovery")
 }
 /// 0 disabled, 1 recovery (default), 2 document file.
+///
+/// The autosave timer asks for this every second, so the parsed value is kept
+/// in memory and the file is read again only when its path, size or
+/// modification time changes. Edits made by other processes are still seen.
 pub fn autosave_mode() -> u32 {
-    std::fs::read(config_root().join("preferences.json"))
+    type Stamp = (PathBuf, Option<(u64, std::time::SystemTime)>);
+    static CACHE: std::sync::Mutex<Option<(Stamp, u32)>> = std::sync::Mutex::new(None);
+    let path = config_root().join("preferences.json");
+    let stamp = std::fs::metadata(&path)
+        .ok()
+        .and_then(|m| Some((m.len(), m.modified().ok()?)));
+    let key = (path, stamp);
+    let mut cache = CACHE.lock().unwrap_or_else(|e| e.into_inner());
+    if let Some((cached, mode)) = cache.as_ref()
+        && *cached == key
+    {
+        return *mode;
+    }
+    let mode = std::fs::read(&key.0)
         .ok()
         .and_then(|v| serde_json::from_slice::<serde_json::Value>(&v).ok())
         .and_then(|v| v["autosave"].as_u64())
         .filter(|v| *v <= 2)
-        .unwrap_or(1) as u32
+        .unwrap_or(1) as u32;
+    *cache = Some((key, mode));
+    mode
 }
 pub fn set_autosave_mode(mode: u32) -> Result<(), String> {
     if mode > 2 {
