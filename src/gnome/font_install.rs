@@ -309,7 +309,7 @@ fn refresh(ui: &Rc<Ui>, status: &gtk::Label) {
     status.set_text(&if missing.is_empty() {
         wordcraft_gnome::t!("All fonts used by this document are now available.").into()
     } else {
-        format!(
+        let mut message = format!(
             "{} {}",
             wordcraft_gnome::t!("Still unavailable:"),
             missing
@@ -321,7 +321,12 @@ fn refresh(ui: &Rc<Ui>, status: &gtk::Label) {
                 })
                 .collect::<Vec<_>>()
                 .join(", ")
-        )
+        );
+        if Path::new("/.flatpak-info").exists() {
+            message.push('\n');
+            message.push_str(wordcraft_gnome::t!("If you have installed these fonts, save your work and restart Leaf so it can access the new system fonts."));
+        }
+        message
     });
 }
 pub(super) fn show(ui: &Rc<Ui>) {

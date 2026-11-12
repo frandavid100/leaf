@@ -56,6 +56,31 @@ tienda. La autorización de CI no se interpreta como aprobación de esa PR.
 
 ## Estado de aceptación
 
+La ejecución instalada
+[43173821014](https://github.com/frandavid100/leaf/actions/runs/43173821014)
+comprueba el mismo ejecutable `f7cc1e7` tras corregir requisitos del runner:
+lector SVG, caché MIME del visor y clon completo para el generador de FlatPark.
+El paquete exacto FlatPark `32c2bca` supera desempaquetado como root sin
+capacidades, instalación desde repositorio local firmado, permisos, datos entre
+procesos, cuatro estilos Poppins mediante el visor, arranque y captura observada.
+No está enviado ni publicado en la tienda.
+
+En GNOME 49/51 pasan instalación con directorio existente, comparación con
+LibreOffice (máxima diferencia de anchura 0,036 puntos), cierre sin instalar,
+archivo local, refresco de otra pestaña, lectura, texto nuevo/Undo y DOCX/ODT;
+los dos últimos casos se ejercitan en EN 100 % y ES 200 %.
+
+Queda demostrado un límite real: si el directorio de fuentes no existía al
+crear el sandbox, instalar en el host no lo vuelve visible en ese proceso. Se
+añade una indicación EN/ES para guardar y reiniciar Leaf cuando sigue habiendo
+fuentes ausentes después de instalarlas. La nueva prueba conserva el directorio
+ausente de partida, instala los cuatro estilos por el visor, comprueba el aviso
+y estado intacto y abre un proceso nuevo para verificar fuentes, renderizado y
+comparación con Writer. No se amplían permisos ni se registran fuentes privadas.
+Esta corrección y el recorrido de reinicio requieren validación de la nueva
+fuente. Se conserva la prueba del paquete FlatPark oficial, cuyos bytes y
+manifiesto no cambian, sin repetirla para una modificación del código de Leaf.
+
 La ejecución [43167291346](https://github.com/frandavid100/leaf/actions/runs/43167291346)
 valida `f7cc1e7`: 248 pruebas Rust, compilación optimizada, cinco grupos
 gráficos y gate nativo correctos. El grupo de edición pasó al repetirlo sin
@@ -79,7 +104,7 @@ recompila ni se repite una batería nativa ya superada por cambios de CI.
 Formato Rust, 16 pruebas Python, 1076 mensajes completos EN/ES, sintaxis de
 scripts y enlaces de documentación comprobados localmente; actionlint también
 superado. Compilación y batería nativa de esta reconstrucción superadas en CI.
-Faltan resultados positivos de Flatpak. #279 permanece abierto. Los casos negativos
+Falta validar la indicación y recuperación de primer uso. #279 permanece abierto. Los casos negativos
 adicionales de descarga/cancelación, visor ausente y fuentes incrustadas del
 entorno perdido no se dan por revalidados con estos nuevos diagnósticos.
 

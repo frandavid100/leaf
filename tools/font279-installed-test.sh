@@ -36,9 +36,10 @@ cat > "$temporary/test.sh" <<'RUN'
 #!/usr/bin/env bash
 set -euo pipefail
 dbus-update-activation-environment DISPLAY XAUTHORITY XDG_CONFIG_HOME XDG_CURRENT_DESKTOP GTK_A11Y NO_AT_BRIDGE
-flatpak run --socket=x11 --nosocket=wayland --env=LANGUAGE=en --env=LC_ALL=C.UTF-8 --env=GDK_SCALE=1 \
+flatpak run --socket=x11 --nosocket=wayland --env="LANGUAGE=${LANGUAGE:-en}" --env=LC_ALL=C.UTF-8 --env="GDK_SCALE=${GDK_SCALE:-1}" \
   --env=GSK_RENDERER=cairo --env=GTK_A11Y=atspi --env=LEAF279_ACK_DIR="$LEAF279_ACK_DIR" \
   --env="LEAF279_REFERENCE=${LEAF279_REFERENCE:-0}" \
+  --env="LEAF279_FIRST_USE_RECOVERY=${LEAF279_ABSENT_FONT_DIR:-0}" \
   --command="$LEAF279_BINARY" "$LEAF279_APP_ID" --font279-ui-test > "$LEAF279_OUTPUT/leaf.log" 2>&1 &
 app=$!
 trap 'kill "$app" 2>/dev/null || true' EXIT
@@ -74,7 +75,17 @@ PY
   touch "$LEAF279_ACK_DIR/installed-$style"
 done
 wait "$app" || { cat "$LEAF279_OUTPUT/leaf.log"; exit 1; }
-grep -q 'FONT279_SYSTEM_INSTALL_OK styles=Regular,Bold,Italic,BoldItalic' "$LEAF279_OUTPUT/leaf.log"
+if grep -q 'FONT279_RESTART_REQUIRED styles=Regular,Bold,Italic,BoldItalic' "$LEAF279_OUTPUT/leaf.log"; then
+  test "${LEAF279_ABSENT_FONT_DIR:-0}" = 1
+  flatpak run --socket=x11 --nosocket=wayland --env="LANGUAGE=${LANGUAGE:-en}" --env=LC_ALL=C.UTF-8 \
+    --env="GDK_SCALE=${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=GTK_A11Y=atspi \
+    --env="LEAF279_ACK_DIR=$LEAF279_ACK_DIR" --env="LEAF279_REFERENCE=${LEAF279_REFERENCE:-0}" \
+    --command="$LEAF279_BINARY" "$LEAF279_APP_ID" --font279-restart-test > "$LEAF279_OUTPUT/restart.log" 2>&1 || { cat "$LEAF279_OUTPUT/restart.log"; exit 1; }
+  grep -q 'FONT279_RESTART_RECOVERY_OK styles=Regular,Bold,Italic,BoldItalic' "$LEAF279_OUTPUT/restart.log"
+  cat "$LEAF279_OUTPUT/restart.log"
+else
+  grep -q 'FONT279_SYSTEM_INSTALL_OK styles=Regular,Bold,Italic,BoldItalic' "$LEAF279_OUTPUT/leaf.log"
+fi
 if [[ ${LEAF279_REFERENCE:-} == 1 ]]; then
   mkdir -p "$LEAF279_OUTPUT/reference"
   cp "$LEAF279_ACK_DIR/font279.docx" "$LEAF279_ACK_DIR/font279-leaf.pdf" "$LEAF279_OUTPUT/"
@@ -101,7 +112,7 @@ PY
 trap cleanup EXIT
 runtime=$(mktemp -d "${RUNNER_TEMP:-/tmp}/font279-runtime.XXXXXX")
 uid=$(id -u)
-xvfb-run -a -s '-screen 0 1800x1400x24' sudo -E unshare --mount --propagation private -- \
+xvfb-run -a -s '-screen 0 2800x2200x24' sudo -E unshare --mount --propagation private -- \
   bash -euc 'mount --bind "$1" "$2"; shift 2; exec setpriv "$@"' font279-mount "$runtime" "${XDG_RUNTIME_DIR:?Missing runtime directory}" \
   --reuid="$uid" --regid="$(id -g)" --init-groups -- dbus-run-session -- timeout 600s bash "$temporary/test.sh"
 echo FONT279_INSTALLED_PORTAL_OK

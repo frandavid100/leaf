@@ -123,6 +123,7 @@ pub(super) fn fonts(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
     glib::spawn_future_local(async move {
         use wordcraft_gnome::font_install as fonts;
         let focused = std::env::var("LEAF279_STYLES").ok();
+        let first_use_recovery = std::env::var("LEAF279_FIRST_USE_RECOVERY").as_deref() == Ok("1");
         if focused.is_none() {
             assert!(
                 !fonts::available("Poppins"),
@@ -187,6 +188,9 @@ pub(super) fn fonts(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
                 .unwrap()
                 .rgba
         };
+        if first_use_recovery {
+            std::fs::write(ack.join("font279-fallback.rgba"), &image_before).unwrap();
+        }
         for style in &styles {
             let button = find_widget(&dialog, &format!("font-download-{style}"))
                 .unwrap()
@@ -244,7 +248,30 @@ pub(super) fn fonts(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
                 state(&ui),
                 "installation changed authored content/selection/history/dirty state"
             );
-            assert!(fonts::available("Poppins"));
+            if !fonts::available("Poppins") {
+                assert!(
+                    first_use_recovery,
+                    "installed Poppins did not become available"
+                );
+                assert!(Path::new("/.flatpak-info").exists());
+                let status = find_widget(&dialog, "font-install-status")
+                    .unwrap()
+                    .downcast::<gtk::Label>()
+                    .unwrap();
+                assert!(status.text().contains(wordcraft_gnome::t!("If you have installed these fonts, save your work and restart Leaf so it can access the new system fonts.")), "no explicit restart recovery was offered");
+            }
+        }
+        if first_use_recovery && !fonts::available("Poppins") {
+            assert_eq!(before, state(&ui));
+            assert!(
+                fonts::missing(&mut ui.current.borrow_mut().as_mut().unwrap().session)
+                    .iter()
+                    .any(|f| f.font == "Poppins")
+            );
+            std::fs::write(ack.join("restart-required"), b"save work and reopen Leaf").unwrap();
+            eprintln!("FONT279_RESTART_REQUIRED styles={}", styles.join(","));
+            app.quit();
+            return;
         }
         assert!(
             fonts::missing(&mut ui.current.borrow_mut().as_mut().unwrap().session)
@@ -281,6 +308,68 @@ pub(super) fn fonts(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
             assert_eq!(before, state(&ui), "reference export changed the document");
         }
         eprintln!("FONT279_SYSTEM_INSTALL_OK styles={}", styles.join(","));
+        app.quit();
+    });
+}
+
+/// A fresh sandbox must see fonts installed after the original sandbox started.
+pub(super) fn fonts_restart(ui: &Rc<Ui>, _window: &ApplicationWindow, app: &Application) {
+    let (ui, app) = (ui.clone(), app.clone());
+    glib::spawn_future_local(async move {
+        use wordcraft_gnome::font_install as fonts;
+        let ack = PathBuf::from(std::env::var("LEAF279_ACK_DIR").unwrap());
+        assert!(ack.join("restart-required").exists());
+        let path = ack.join("font279.docx");
+        let original = std::fs::read(&path).unwrap();
+        opened(
+            &ui,
+            open_document(&path).unwrap(),
+            "Font 279 restart recovery",
+        );
+        settle().await;
+        let before = state(&ui);
+        assert!(fonts::available("Poppins"));
+        assert!(
+            fonts::missing(&mut ui.current.borrow_mut().as_mut().unwrap().session)
+                .iter()
+                .all(|f| f.font != "Poppins"),
+            "restart did not load every requested face"
+        );
+        assert!(
+            wordcraft_gnome::document_fonts::inventory(
+                &ui.current.borrow().as_ref().unwrap().session
+            )
+            .iter()
+            .any(|f| f.name == "Poppins" && !f.uses.is_empty())
+        );
+        let image = wordcraft_gnome::render_page(
+            &mut ui.current.borrow_mut().as_mut().unwrap().session,
+            0,
+            1.,
+        )
+        .unwrap()
+        .rgba;
+        assert!(
+            image != std::fs::read(ack.join("font279-fallback.rgba")).unwrap(),
+            "restart did not change the actual fallback rendering"
+        );
+        assert!(
+            !wordcraft_fonts::FontDb::global()
+                .user_fonts()
+                .iter()
+                .any(|f| f.families().iter().any(|n| n == "Poppins")),
+            "restart used private font installation"
+        );
+        if std::env::var("LEAF279_REFERENCE").as_deref() == Ok("1") {
+            pdf_export::export(
+                &mut ui.current.borrow_mut().as_mut().unwrap().session,
+                &ack.join("font279-leaf.pdf"),
+            )
+            .unwrap();
+        }
+        assert_eq!(before, state(&ui));
+        assert_eq!(original, std::fs::read(&path).unwrap());
+        eprintln!("FONT279_RESTART_RECOVERY_OK styles=Regular,Bold,Italic,BoldItalic");
         app.quit();
     });
 }

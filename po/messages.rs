@@ -420,6 +420,7 @@ pub const MESSAGES: &[&str] = &[
     "Horizontal",
     "Horizontal Line",
     "If you continue without saving, your changes will be lost.",
+    "If you have installed these fonts, save your work and restart Leaf so it can access the new system fonts.",
     "Ignore",
     "Ignore All",
     "Ignore This Occurrence",

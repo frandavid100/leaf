@@ -8,6 +8,9 @@ on:
       native_source:
         required: true
         type: string
+      verify_flatpark:
+        type: boolean
+        default: true
 permissions:
   contents: read
   actions: read
@@ -40,6 +43,7 @@ jobs:
           PY
   flatpark:
     name: Proposed FlatPark manifest with official alpha45
+    if: inputs.verify_flatpark
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -145,6 +149,8 @@ jobs:
         env:
           LEAF279_ABSENT_FONT_DIR: '1'
           LEAF279_REFERENCE: '1'
+          LANGUAGE: ${{ matrix.runtime == '51' && 'es' || 'en' }}
+          GDK_SCALE: ${{ matrix.runtime == '51' && '2' || '1' }}
         run: bash tools/font279-installed-test.sh io.github.frandavid100.leaf '${{ matrix.runtime == '49' && '/app/bin/leaf' || '/app/extra/leaf/bin/leaf' }}' dist/font279/first-use
       - name: Existing font directory and Writer comparison
         if: always() && steps.package.outcome == 'success'

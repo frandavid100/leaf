@@ -58,6 +58,9 @@ pub(super) fn install_diagnostics(
     if requested("--font279-acceptance-test") && host.tabs.n_pages() == 1 {
         runner.window(800, fonts279_checks::test);
     }
+    if requested("--font279-restart-test") && host.tabs.n_pages() == 1 {
+        runner.window(800, maintenance45_checks::fonts_restart);
+    }
     if requested("--zoom278-ui-test") && host.tabs.n_pages() == 1 {
         runner.window(800, maintenance45_checks::zoom);
     }
@@ -110,6 +113,7 @@ pub(super) fn install_diagnostics(
             || arg == "--zoom278-ui-test"
             || arg == "--font279-ui-test"
             || arg == "--font279-acceptance-test"
+            || arg == "--font279-restart-test"
             || arg.starts_with("--toolbar41-")
             || arg.starts_with("--workflows36-")
             || arg.starts_with("--workflows37-")

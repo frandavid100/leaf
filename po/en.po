@@ -3978,3 +3978,6 @@ msgstr "Width of Column {n} (mm)"
 
 msgid "This Flatpak package does not permit font downloads. Download the font outside Leaf and open its local file here."
 msgstr "This Flatpak package does not permit font downloads. Download the font outside Leaf and open its local file here."
+
+msgid "If you have installed these fonts, save your work and restart Leaf so it can access the new system fonts."
+msgstr "If you have installed these fonts, save your work and restart Leaf so it can access the new system fonts."

@@ -21,6 +21,7 @@ jobs:
     with:
       native_run: ${{ contains(github.event.head_commit.message, '[font279-ci-only]') && '43167291346' || github.run_id }}
       native_source: ${{ contains(github.event.head_commit.message, '[font279-ci-only]') && 'f7cc1e7ac0121b1ee5a93bfef0d5fa08b56c0aee' || github.sha }}
+      verify_flatpark: ${{ !contains(github.event.head_commit.message, '[font279-source-only]') }}
   build-native:
     env:
       # Debug symbols for the expanded 0.17 test graph exhausted 61 GiB locally.

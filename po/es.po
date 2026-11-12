@@ -3978,3 +3978,6 @@ msgstr "Anchura de la columna {n} (mm)"
 
 msgid "This Flatpak package does not permit font downloads. Download the font outside Leaf and open its local file here."
 msgstr "Este paquete Flatpak no permite descargar fuentes. Descarga la fuente fuera de Leaf y abre aquí el archivo local."
+
+msgid "If you have installed these fonts, save your work and restart Leaf so it can access the new system fonts."
+msgstr "Si has instalado estas fuentes, guarda tu trabajo y reinicia Leaf para que pueda acceder a las nuevas fuentes del sistema."
