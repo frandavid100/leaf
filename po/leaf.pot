@@ -3697,7 +3697,7 @@ msgstr ""
 msgid "The columns do not fit in the text area. Reduce their number, width or spacing."
 msgstr ""
 
-#: src/references.rs:296
+#: src/references.rs:319
 msgid "The current engine supports one table of contents per document. Edit the existing table of contents instead."
 msgstr ""
 
@@ -3857,7 +3857,7 @@ msgstr ""
 msgid "The style will use the formatting of the current selection."
 msgstr ""
 
-#: src/references.rs:338
+#: src/references.rs:361
 msgid "The table of contents could not be found."
 msgstr ""
 
