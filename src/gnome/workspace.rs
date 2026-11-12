@@ -411,6 +411,9 @@ pub(super) fn show_preferences(parent: &ApplicationWindow) -> adw::PreferencesDi
 pub(super) fn install_autosave(ui: &Rc<Ui>) {
     let weak = Rc::downgrade(ui);
     let ticks = Rc::new(Cell::new(0u32));
+    // The ODT check walks the whole document, so it is only computed when the
+    // document-file mode needs it, and reused while the document is unchanged.
+    let preservation = RefCell::new(None);
     let source = glib::timeout_add_local(std::time::Duration::from_secs(1), move || {
         let Some(ui) = weak.upgrade() else {
             return glib::ControlFlow::Break;
@@ -431,9 +434,24 @@ pub(super) fn install_autosave(ui: &Rc<Ui>) {
                     .borrow()
                     .clone()
                     .or_else(|| doc.session.path.clone());
-                let blocked = path.as_ref().and_then(|p| {
-                    wordcraft_gnome::saving::format_preservation_error(&doc.session, p)
-                });
+                let blocked = match path.as_ref() {
+                    Some(p) if mode == 2 => {
+                        let key = (doc.session.document_id(), doc.session.rev(), p.clone());
+                        let mut cached = preservation.borrow_mut();
+                        match cached.as_ref() {
+                            Some((k, result)) if *k == key => *result,
+                            _ => {
+                                let result = wordcraft_gnome::saving::format_preservation_error(
+                                    &doc.session,
+                                    p,
+                                );
+                                *cached = Some((key, result));
+                                result
+                            }
+                        }
+                    }
+                    _ => None,
+                };
                 if mode == 1
                     || (mode == 2 && path.is_none())
                     || (mode == 2 && blocked.is_some())
