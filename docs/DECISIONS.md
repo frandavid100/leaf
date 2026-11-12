@@ -1,5 +1,13 @@
 # Decisiones vigentes
 
+## 13/11/2026 — revisión del icono
+
+David aprueba corregir el icono a color (el nervio de la pluma llega a la punta y
+separa las dos mitades de la hoja; las venas salen del nervio) y redibujar el
+monocromo como folio vertical con dos líneas y la misma pluma. Descarta la
+variante de portapapeles. Se regenera `packaging/windows/leaf.ico` desde el SVG.
+No implica publicar; avisar a FlatPark del cambio de iconos cuando se publique.
+
 ## 12/11/2026 — revisión de peso, velocidad y claridad
 
 Tras una revisión del código, David decide: (1) la app publicada no incluirá el
