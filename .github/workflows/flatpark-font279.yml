@@ -61,9 +61,10 @@ jobs:
         run: |
           sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|https://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
           sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends flatpak flatpak-builder ostree gnupg appstream desktop-file-utils shared-mime-info fuse3 librsvg2-common xvfb xauth scrot x11-utils xdotool dbus-x11 xdg-desktop-portal xdg-desktop-portal-gtk gnome-font-viewer python3-gi gir1.2-atspi-2.0 at-spi2-core
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends flatpak locales flatpak-builder ostree gnupg appstream desktop-file-utils shared-mime-info fuse3 librsvg2-common xvfb xauth scrot x11-utils xdotool dbus-x11 xdg-desktop-portal xdg-desktop-portal-gtk gnome-font-viewer python3-gi gir1.2-atspi-2.0 at-spi2-core
           sudo update-desktop-database /usr/share/applications
           gio mime font/ttf
+          sudo locale-gen en_US.UTF-8
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Audit, unpack as system install and install from the local signed repository
         working-directory: flatpark-review
@@ -133,9 +134,10 @@ jobs:
         run: |
           sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|https://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
           sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
-          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends flatpak gettext desktop-file-utils shared-mime-info fuse3 librsvg2-common x11-utils xvfb xauth scrot xclip xdotool dbus-x11 xdg-desktop-portal xdg-desktop-portal-gtk gnome-font-viewer python3-gi python3-fonttools gir1.2-atspi-2.0 at-spi2-core libreoffice-writer poppler-utils
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends flatpak gettext locales desktop-file-utils shared-mime-info fuse3 librsvg2-common x11-utils xvfb xauth scrot xclip xdotool dbus-x11 xdg-desktop-portal xdg-desktop-portal-gtk gnome-font-viewer python3-gi python3-fonttools gir1.2-atspi-2.0 at-spi2-core libreoffice-writer poppler-utils
           sudo update-desktop-database /usr/share/applications
           gio mime font/ttf
+          sudo locale-gen en_US.UTF-8
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Install the exact validated source executable
         id: package

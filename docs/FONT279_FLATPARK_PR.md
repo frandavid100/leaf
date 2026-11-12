@@ -20,6 +20,11 @@ application bytes, wrapper and GNOME 51 runtime are unchanged.
 
 Validation of commit 32c2bcaf41f3d99c4b967d29e1f1cac85792aa96:
 
+Current proposal head 438eca97cde7134179b1fa622b6437ab627e0188 merges the
+latest main. Its Leaf registry files, packaging scripts and site tooling are
+byte-identical to the tested revision; the automatic release-note insertion
+conflict is resolved.
+
 | Check | Result |
 | --- | --- |
 | Descriptor audit | Passed |

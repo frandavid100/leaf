@@ -19,8 +19,8 @@ jobs:
     needs: [build-native, native-validated]
     uses: ./.github/workflows/flatpark-font279.yml
     with:
-      native_run: ${{ contains(github.event.head_commit.message, '[font279-ci-only]') && '43175424712' || github.run_id }}
-      native_source: ${{ contains(github.event.head_commit.message, '[font279-ci-only]') && '4da4d76a03a2c39ffc3b49c43ebbbd166eb91f81' || github.sha }}
+      native_run: ${{ contains(github.event.head_commit.message, '[font279-ci-only]') && '43181264250' || github.run_id }}
+      native_source: ${{ contains(github.event.head_commit.message, '[font279-ci-only]') && 'a32c9e8291d93f9ea62e679baf31ed1200818acf' || github.sha }}
       verify_flatpark: ${{ !contains(github.event.head_commit.message, '[font279-source-only]') }}
   build-native:
     env:

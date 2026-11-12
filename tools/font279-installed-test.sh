@@ -39,7 +39,7 @@ dbus-update-activation-environment DISPLAY XAUTHORITY XDG_CONFIG_HOME XDG_CURREN
 if [[ ${LEAF279_ABSENT_FONT_DIR:-0} == 1 && ${LANGUAGE:-en} == es* ]]; then
   export LEAF279_RESTART_LANGUAGE=es
 fi
-flatpak run --socket=x11 --nosocket=wayland --env="LANGUAGE=${LANGUAGE:-en}" --env=LC_ALL=C.UTF-8 --env="GDK_SCALE=${GDK_SCALE:-1}" \
+flatpak run --socket=x11 --nosocket=wayland --env="LANGUAGE=${LANGUAGE:-en}" --env=LC_ALL=en_US.UTF-8 --env="GDK_SCALE=${GDK_SCALE:-1}" \
   --env=GSK_RENDERER=cairo --env=GTK_A11Y=atspi --env=LEAF279_ACK_DIR="$LEAF279_ACK_DIR" \
   --env="LEAF279_REFERENCE=${LEAF279_REFERENCE:-0}" \
   --env="LEAF279_FIRST_USE_RECOVERY=${LEAF279_ABSENT_FONT_DIR:-0}" \
@@ -80,7 +80,7 @@ done
 wait "$app" || { cat "$LEAF279_OUTPUT/leaf.log"; exit 1; }
 if grep -q 'FONT279_RESTART_REQUIRED styles=Regular,Bold,Italic,BoldItalic' "$LEAF279_OUTPUT/leaf.log"; then
   test "${LEAF279_ABSENT_FONT_DIR:-0}" = 1
-  flatpak run --socket=x11 --nosocket=wayland --env="LANGUAGE=${LANGUAGE:-en}" --env=LC_ALL=C.UTF-8 \
+  flatpak run --socket=x11 --nosocket=wayland --env="LANGUAGE=${LANGUAGE:-en}" --env=LC_ALL=en_US.UTF-8 \
     --env="GDK_SCALE=${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=GTK_A11Y=atspi \
     --env="LEAF279_ACK_DIR=$LEAF279_ACK_DIR" --env="LEAF279_REFERENCE=${LEAF279_REFERENCE:-0}" \
     --command="$LEAF279_BINARY" "$LEAF279_APP_ID" --font279-restart-test > "$LEAF279_OUTPUT/restart.log" 2>&1 || { cat "$LEAF279_OUTPUT/restart.log"; exit 1; }

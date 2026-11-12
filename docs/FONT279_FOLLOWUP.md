@@ -57,6 +57,20 @@ tienda. La autorización de CI no se interpreta como aprobación de esa PR.
 
 ## Estado de aceptación
 
+La fuente `a32c9e8` pasa 248 pruebas Rust, 16 Python, 1077 mensajes, build
+optimizado y los cinco grupos gráficos a la primera. GNOME 49 pasa todo, incluido
+el reinicio real. La comprobación visible ES en GNOME 51 detecta que el
+controlador imponía LC_ALL=C.UTF-8 y dejaba la interfaz en inglés. Se utiliza
+en_US.UTF-8 con LANGUAGE=es, como las demás comprobaciones de localización.
+Solo cambia el entorno del controlador; se reutiliza el mismo ejecutable tras
+verificar de nuevo los siete gates y la identidad exacta.
+
+FlatPark ya actualizó automáticamente el pin a alpha.45. Se resuelve el conflicto
+de sus notas mediante el merge `438eca9`; registro Leaf completo y herramientas
+de paquete/sitio idénticos a `32c2bca`, cuya instalación quedó comprobada. No se
+ha abierto la PR.
+
+
 La fuente `4da4d76` supera 248 pruebas Rust, 16 Python, 1077 mensajes EN/ES y
 compilación optimizada. En la ejecución
 [43175424712](https://github.com/frandavid100/leaf/actions/runs/43175424712)

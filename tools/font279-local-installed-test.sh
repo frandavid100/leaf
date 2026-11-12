@@ -34,7 +34,7 @@ cat > "$temporary/test.sh" <<'RUN'
 #!/usr/bin/env bash
 set -euo pipefail
 dbus-update-activation-environment DISPLAY XAUTHORITY XDG_CONFIG_HOME XDG_CURRENT_DESKTOP GTK_A11Y NO_AT_BRIDGE
-flatpak run --socket=x11 --nosocket=wayland --env="LANGUAGE=${LANGUAGE:-en}" --env=LC_ALL=C.UTF-8 \
+flatpak run --socket=x11 --nosocket=wayland --env="LANGUAGE=${LANGUAGE:-en}" --env=LC_ALL=en_US.UTF-8 \
   --env="GDK_SCALE=${GDK_SCALE:-1}" --env=GSK_RENDERER=cairo --env=GTK_A11Y=atspi \
   --env="LEAF279_ACK_DIR=$LEAF279_ACK_DIR" --env="LEAF279_MODE=$LEAF279_MODE" \
   --command="$LEAF279_BINARY" "$LEAF279_APP_ID" --font279-acceptance-test > "$LEAF279_OUTPUT/leaf.log" 2>&1 &
