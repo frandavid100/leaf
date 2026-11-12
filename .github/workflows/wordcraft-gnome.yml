@@ -282,7 +282,9 @@ jobs:
       if: ${{ matrix.group == 'editing' && (always()) }}
       with:
         name: workflows35-native-controls
-        path: workflows35-*.log
+        path: |
+          workflows35-*.log
+          workflows35-*.png
     - name: Investigate spacing and real End viewport behavior
       run: |
         set +e

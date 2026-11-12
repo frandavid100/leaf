@@ -57,6 +57,18 @@ tienda. La autorización de CI no se interpreta como aprobación de esa PR.
 
 ## Estado de aceptación
 
+La fuente `4da4d76` supera 248 pruebas Rust, 16 Python, 1077 mensajes EN/ES y
+compilación optimizada. En la ejecución
+[43175424712](https://github.com/frandavid100/leaf/actions/runs/43175424712)
+pasan cuatro grupos gráficos, pero el controlador alpha35 se bloquea al pegar
+la imagen en español al 200 %, también al repetirlo. La modificación de fuentes
+no se ejecuta en ese recorrido nativo. Se añade una sincronización observable:
+el proceso GTK anuncia que su portapapeles ya ofrece image/png y solo entonces
+el controlador envía Ctrl+V. Se conservan la transferencia externa, el gesto
+real y las aserciones de documento, imagen e historial. Se retienen capturas de
+esa prueba también al fallar. Este ajuste diagnóstico requiere una compilación
+nueva y una validación completa; no cambia el pegado del producto.
+
 La ejecución instalada
 [43173821014](https://github.com/frandavid100/leaf/actions/runs/43173821014)
 comprueba el mismo ejecutable `f7cc1e7` tras corregir requisitos del runner:

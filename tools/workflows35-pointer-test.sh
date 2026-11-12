@@ -53,6 +53,12 @@ for stage in 0 1 2 3; do
       scrot "${log%.log}-stage-$stage.png" ;;
     image)
       xclip -selection clipboard -t image/png -i "$folder/image.png"
+      for attempt in $(seq 1 300); do
+        grep -q '^WORKFLOWS35_IMAGE_CLIPBOARD_READY$' "$log" && break
+        kill -0 "$pid" || { cat "$log"; exit 1; }
+        sleep .05
+      done
+      grep -q '^WORKFLOWS35_IMAGE_CLIPBOARD_READY$' "$log"
       xdotool windowfocus --sync "$window" key ctrl+v ;;
     plain)
       printf Plain | xclip -selection clipboard

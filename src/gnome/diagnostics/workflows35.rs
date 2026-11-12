@@ -389,6 +389,17 @@ pub(super) fn pointer(
             let (x, y) = canvas_point(&ui, &window, 7);
             let depth = ui.current.borrow().as_ref().unwrap().session.undo_depth();
             eprintln!("WORKFLOWS35_POINTER {stage} {role} {x} {y}");
+            if role == "image" {
+                wait(|| {
+                    ui.document_box
+                        .display()
+                        .clipboard()
+                        .formats()
+                        .contain_mime_type("image/png")
+                })
+                .await;
+                eprintln!("WORKFLOWS35_IMAGE_CLIPBOARD_READY");
+            }
             if role == "plain" {
                 wait(|| text(&ui) == "Before Plainafter").await;
             } else {
