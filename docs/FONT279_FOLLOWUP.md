@@ -56,10 +56,30 @@ tienda. La autorización de CI no se interpreta como aprobación de esa PR.
 
 ## Estado de aceptación
 
-Antes de subir: formato Rust, 16 pruebas Python, 1076 mensajes completos EN/ES,
-sintaxis de scripts y enlaces de documentación comprobados localmente. La
-compilación, las pruebas Rust y las pruebas de Flatpak de esta reconstrucción
-requieren resultados nuevos de CI. #279 permanece abierto. Los casos negativos
+La ejecución [43167291346](https://github.com/frandavid100/leaf/actions/runs/43167291346)
+valida `f7cc1e7`: 248 pruebas Rust, compilación optimizada, cinco grupos
+gráficos y gate nativo correctos. El grupo de edición pasó al repetirlo sin
+cambiar el ejecutable; el primer intento se atascó en el pegado de una imagen
+en español al 200 %, después de superar el arrastre de archivo.
+
+La primera preparación instalada falló: el comprobador FlatPark necesitaba
+instalar antes su runtime; el exportador Flatpak omite un `files/extra` añadido
+a mano; y el controlador GNOME 49 no encontró el botón Install. Se corrigen las
+dos primeras causas usando instalación de runtime y extra-data real, y se
+añaden capturas/árbol accesible para el visor. Se usa la identidad real de la
+app en cada runner limpio, con escritorio/iconos exportados, sin perfiles
+personales. Esto todavía no demuestra el caso de directorio de fuentes ausente.
+
+La repetición `[font279-ci-only]` reutiliza el ejecutable de esa ejecución:
+comprueba por API los siete gates nativos, la revisión exacta y que no cambió
+ninguna entrada de compilación. Registra por separado fuente del ejecutable y
+fuente del controlador; solo se repiten paquetes y pruebas afectadas. No se
+recompila ni se repite una batería nativa ya superada por cambios de CI.
+
+Formato Rust, 16 pruebas Python, 1076 mensajes completos EN/ES, sintaxis de
+scripts y enlaces de documentación comprobados localmente; actionlint también
+superado. Compilación y batería nativa de esta reconstrucción superadas en CI.
+Faltan resultados positivos de Flatpak. #279 permanece abierto. Los casos negativos
 adicionales de descarga/cancelación, visor ausente y fuentes incrustadas del
 entorno perdido no se dan por revalidados con estos nuevos diagnósticos.
 

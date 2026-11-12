@@ -1,10 +1,43 @@
 name: Font279 installed acceptance
 on:
   workflow_call:
+    inputs:
+      native_run:
+        required: true
+        type: string
+      native_source:
+        required: true
+        type: string
 permissions:
   contents: read
   actions: read
 jobs:
+  native-inputs:
+    name: Verify immutable validated native inputs
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require identical application source and all native gates
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NATIVE_RUN: ${{ inputs.native_run }}
+          NATIVE_SOURCE: ${{ inputs.native_source }}
+        run: |
+          git diff --exit-code "$NATIVE_SOURCE" "$GITHUB_SHA" -- . ':!tools' ':!.github' ':!docs' ':!PROJECT_STATUS.md' ':!ROADMAP.md'
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$NATIVE_RUN" > native-run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$NATIVE_RUN/jobs?per_page=100" > native-jobs.json
+          python3 - <<'PY'
+          import json, os
+          run = json.load(open('native-run.json'))
+          assert run['head_sha'] == os.environ['NATIVE_SOURCE']
+          required = {'Build the optimized executable once', 'Require every native regression group'}
+          required.update(f'Native regressions ({group})' for group in ['editing', 'documents', 'text', 'lifecycle', 'appearance'])
+          jobs = json.load(open('native-jobs.json'))['jobs']
+          assert required <= {job['name'] for job in jobs if job['conclusion'] == 'success'}
+          print('FONT279_VALIDATED_NATIVE_INPUTS_OK', run['id'], run['head_sha'])
+          PY
   flatpark:
     name: Proposed FlatPark manifest with official alpha45
     runs-on: ubuntu-24.04
@@ -36,6 +69,7 @@ jobs:
           flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
           node scripts/read-descriptor.mjs registry/io.github.frandavid100.leaf/flatpark.yml
           node scripts/audit-descriptor.mjs registry/io.github.frandavid100.leaf/flatpark.yml
+          flatpak --user install -y --noninteractive flathub org.gnome.Platform//51
           bash scripts/check-apply-extra.sh io.github.frandavid100.leaf
           bash scripts/publish.sh --verify io.github.frandavid100.leaf
       - name: Check granted permissions and persistent sandbox data across processes
@@ -73,6 +107,7 @@ jobs:
           if-no-files-found: warn
   source:
     name: Installed source on GNOME ${{ matrix.runtime }}
+    needs: native-inputs
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     strategy:
@@ -85,6 +120,8 @@ jobs:
         with:
           name: wordcraft-gnome-fase3d-linux
           path: validated-native
+          run-id: ${{ inputs.native_run }}
+          github-token: ${{ github.token }}
       - name: Install font viewer, portals and reference processor
         run: |
           sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|https://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
@@ -95,6 +132,7 @@ jobs:
         id: package
         env:
           GH_TOKEN: ${{ github.token }}
+          LEAF279_NATIVE_SOURCE: ${{ inputs.native_source }}
         run: bash tools/font279-source-package.sh '${{ matrix.runtime }}' validated-native/wordcraft-gnome
       - name: First use with no user font directory and Writer comparison
         id: first_use
@@ -102,12 +140,12 @@ jobs:
         env:
           LEAF279_ABSENT_FONT_DIR: '1'
           LEAF279_REFERENCE: '1'
-        run: bash tools/font279-installed-test.sh io.github.frandavid100.leaf.Font279Acceptance${{ matrix.runtime }} '${{ matrix.runtime == '49' && '/app/bin/leaf' || '/app/extra/leaf/bin/leaf' }}' dist/font279/first-use
+        run: bash tools/font279-installed-test.sh io.github.frandavid100.leaf '${{ matrix.runtime == '49' && '/app/bin/leaf' || '/app/extra/leaf/bin/leaf' }}' dist/font279/first-use
       - name: Existing font directory and Writer comparison
         if: always() && steps.package.outcome == 'success'
         env:
           LEAF279_REFERENCE: '1'
-        run: bash tools/font279-installed-test.sh io.github.frandavid100.leaf.Font279Acceptance${{ matrix.runtime }} '${{ matrix.runtime == '49' && '/app/bin/leaf' || '/app/extra/leaf/bin/leaf' }}' dist/font279/existing-directory
+        run: bash tools/font279-installed-test.sh io.github.frandavid100.leaf '${{ matrix.runtime == '49' && '/app/bin/leaf' || '/app/extra/leaf/bin/leaf' }}' dist/font279/existing-directory
       - name: Local file, dismiss without installing, cross-tab refresh and round trips
         if: always() && steps.package.outcome == 'success'
         run: |
@@ -115,7 +153,7 @@ jobs:
             for language in en es; do
               scale=1
               if test "$language" = es; then scale=2; fi
-              LEAF279_MODE=$mode LANGUAGE=$language GDK_SCALE=$scale bash tools/font279-local-installed-test.sh io.github.frandavid100.leaf.Font279Acceptance${{ matrix.runtime }} '${{ matrix.runtime == '49' && '/app/bin/leaf' || '/app/extra/leaf/bin/leaf' }}' dist/font279/$mode-$language
+              LEAF279_MODE=$mode LANGUAGE=$language GDK_SCALE=$scale bash tools/font279-local-installed-test.sh io.github.frandavid100.leaf '${{ matrix.runtime == '49' && '/app/bin/leaf' || '/app/extra/leaf/bin/leaf' }}' dist/font279/$mode-$language
             done
           done
       - name: Require genuine first-use success

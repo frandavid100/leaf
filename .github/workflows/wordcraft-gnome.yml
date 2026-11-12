@@ -15,9 +15,12 @@ permissions:
 jobs:
   font279-acceptance:
     name: Complete font279 acceptance on the review branch
-    if: github.ref == 'refs/heads/fix/font279-acceptance'
+    if: always() && github.ref == 'refs/heads/fix/font279-acceptance' && (needs.native-validated.result == 'success' || contains(github.event.head_commit.message, '[font279-ci-only]'))
     needs: [build-native, native-validated]
     uses: ./.github/workflows/flatpark-font279.yml
+    with:
+      native_run: ${{ contains(github.event.head_commit.message, '[font279-ci-only]') && '43167291346' || github.run_id }}
+      native_source: ${{ contains(github.event.head_commit.message, '[font279-ci-only]') && 'f7cc1e7ac0121b1ee5a93bfef0d5fa08b56c0aee' || github.sha }}
   build-native:
     env:
       # Debug symbols for the expanded 0.17 test graph exhausted 61 GiB locally.

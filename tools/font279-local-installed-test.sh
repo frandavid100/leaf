@@ -33,7 +33,7 @@ flatpak run --socket=x11 --nosocket=wayland --env="LANGUAGE=${LANGUAGE:-en}" --e
   --env="LEAF279_ACK_DIR=$LEAF279_ACK_DIR" --env="LEAF279_MODE=$LEAF279_MODE" \
   --command="$LEAF279_BINARY" "$LEAF279_APP_ID" --font279-acceptance-test > "$LEAF279_OUTPUT/leaf.log" 2>&1 &
 app=$!
-trap 'kill "$app" 2>/dev/null || true' EXIT
+trap 'scrot "$LEAF279_OUTPUT/final.png" 2>/dev/null || true; xwininfo -root -tree > "$LEAF279_OUTPUT/windows.txt" 2>/dev/null || true; kill "$app" 2>/dev/null || true' EXIT
 for n in $(seq 1 900); do
   test ! -f "$LEAF279_ACK_DIR/ready-local" || break
   kill -0 "$app" || { cat "$LEAF279_OUTPUT/leaf.log"; exit 1; }

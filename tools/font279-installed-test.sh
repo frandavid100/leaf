@@ -43,7 +43,12 @@ for style in Regular Bold Italic BoldItalic; do
     sleep 0.1
   done
   test -f "$LEAF279_ACK_DIR/ready-$style"
-  python3 "$LEAF279_ROOT/tools/font279-viewer-install.py" | tee "$LEAF279_OUTPUT/viewer-$style.log"
+  if ! python3 "$LEAF279_ROOT/tools/font279-viewer-install.py" | tee "$LEAF279_OUTPUT/viewer-$style.log"; then
+    scrot "$LEAF279_OUTPUT/viewer-failure-$style.png"
+    xwininfo -root -tree > "$LEAF279_OUTPUT/windows-$style.txt"
+    cat "$LEAF279_OUTPUT/leaf.log"
+    exit 1
+  fi
   installed="$HOME/.local/share/fonts/Poppins-$style.ttf"
   for n in $(seq 1 150); do test ! -s "$installed" || break; sleep 0.1; done
   test -s "$installed"

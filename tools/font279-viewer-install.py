@@ -49,4 +49,15 @@ while time.monotonic() < deadline:
         except Exception:
             pass
     time.sleep(0.2)
+desktop = Atspi.get_desktop(0)
+for i in range(desktop.get_child_count()):
+    app = desktop.get_child_at_index(i)
+    print('FONT279_ATSPI_APP', repr(app.get_name()), flush=True)
+    for n, node in enumerate(descendants(app)):
+        if n > 200:
+            break
+        try:
+            print('FONT279_ATSPI_NODE', node.get_role_name(), repr(node.get_name()), flush=True)
+        except Exception:
+            pass
 raise SystemExit('The system font viewer did not expose an enabled Install button')
