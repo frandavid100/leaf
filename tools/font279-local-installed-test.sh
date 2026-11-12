@@ -22,6 +22,12 @@ cat > "$XDG_CONFIG_HOME/mimeapps.list" <<'MIME'
 font/ttf=org.gnome.font-viewer.desktop;
 application/x-font-ttf=org.gnome.font-viewer.desktop;
 MIME
+python3 - <<'PY'
+from gi.repository import Gio
+apps = Gio.AppInfo.get_all_for_type('font/ttf')
+assert any(app.get_id() == 'org.gnome.font-viewer.desktop' for app in apps), [app.get_id() for app in apps]
+print('FONT279_HOST_FONT_HANDLER_OK')
+PY
 export LEAF279_ACK_DIR="$acks" LEAF279_APP_ID="$app_id" LEAF279_BINARY="$binary"
 export LEAF279_OUTPUT="$output" LEAF279_ROOT="$root" LEAF279_FONT="$font" LEAF279_TARGET="$target" LEAF279_MODE="$mode"
 cat > "$temporary/test.sh" <<'RUN'

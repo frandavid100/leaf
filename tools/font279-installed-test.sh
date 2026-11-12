@@ -25,6 +25,12 @@ cat > "$XDG_CONFIG_HOME/mimeapps.list" <<'MIME'
 font/ttf=org.gnome.font-viewer.desktop;
 application/x-font-ttf=org.gnome.font-viewer.desktop;
 MIME
+python3 - <<'PY'
+from gi.repository import Gio
+apps = Gio.AppInfo.get_all_for_type('font/ttf')
+assert any(app.get_id() == 'org.gnome.font-viewer.desktop' for app in apps), [app.get_id() for app in apps]
+print('FONT279_HOST_FONT_HANDLER_OK')
+PY
 export LEAF279_ACK_DIR="$acks" LEAF279_APP_ID="$app_id" LEAF279_BINARY="$binary" LEAF279_ROOT="$root" LEAF279_OUTPUT="$output"
 cat > "$temporary/test.sh" <<'RUN'
 #!/usr/bin/env bash
@@ -43,6 +49,7 @@ for style in Regular Bold Italic BoldItalic; do
     sleep 0.1
   done
   test -f "$LEAF279_ACK_DIR/ready-$style"
+  find "$HOME/.var/app/$LEAF279_APP_ID/cache/leaf/font-downloads" -name "Poppins-$style.ttf" -exec gio info -a standard::content-type '{}' \;
   if ! python3 "$LEAF279_ROOT/tools/font279-viewer-install.py" | tee "$LEAF279_OUTPUT/viewer-$style.log"; then
     scrot "$LEAF279_OUTPUT/viewer-failure-$style.png"
     xwininfo -root -tree > "$LEAF279_OUTPUT/windows-$style.txt"
