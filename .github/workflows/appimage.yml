@@ -1,0 +1,121 @@
+name: Leaf — experimental AppImage package
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the built AppImage as a separate prerelease (only after David approves the candidate)
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/appimage.yml'
+      - 'tools/package_appimage.py'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/appimage.yml'
+      - 'tools/package_appimage.py'
+permissions:
+  contents: read
+concurrency:
+  group: leaf-appimage-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    # Ubuntu 24.04 sets the minimum glibc (2.39) of the bundled GTK libraries.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      LC_ALL: C.UTF-8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prepare pinned WordCraft language data
+        run: bash tools/prepare-language-data.sh
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+          shared-key: appimage
+      - name: Install GTK, packaging and translation dependencies
+        run: |
+          sudo timeout 180s apt-get -o Acquire::Retries=2 update
+          sudo env DEBIAN_FRONTEND=noninteractive timeout 400s apt-get -o Acquire::Retries=2 install -y --no-install-recommends \
+            pkg-config libgtk-4-dev libgtk-4-bin libadwaita-1-dev librsvg2-common adwaita-icon-theme gettext \
+            patchelf squashfs-tools desktop-file-utils xvfb xauth dbus-x11
+          pkg-config --modversion gtk4 libadwaita-1
+          ldd --version | head -1
+      - name: Check translations and build the optimized executable
+        run: |
+          python3 tools/update_translations.py --check --compile
+          cargo test --locked
+          cargo build --release --locked --features gui --bin wordcraft-gnome
+      - name: Create and check the AppImage
+        run: |
+          python3 tools/package_appimage.py target/release/wordcraft-gnome
+          (cd dist/appimage && sha256sum --check SHA256SUMS)
+      - name: Start the packaged AppImage
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: '1'
+          NO_CLEANUP: '1'
+        run: |
+          image=$(ls dist/appimage/*.AppImage)
+          "$image" --version
+          "$image" --language-data-licenses > /dev/null
+          # The window must open on a clean display and stay up without critical errors.
+          set +e
+          timeout 20s xvfb-run -a dbus-run-session -- "$image" tests/fixtures/wrapped-control.docx 2> appimage-gui.log
+          status=$?
+          set -e
+          cat appimage-gui.log
+          test "$status" -eq 124
+          if grep -E 'CRITICAL|Failed to load|cannot open shared object|Settings schema .* is not installed' appimage-gui.log; then
+            exit 1
+          fi
+      - name: Upload AppImage candidate and integrity records
+        uses: actions/upload-artifact@v4
+        with:
+          name: Leaf-AppImage-x86_64
+          path: |
+            dist/appimage/*.AppImage
+            dist/appimage/SHA256SUMS
+            dist/appimage/README.txt
+            dist/appimage/BUILD.json
+            dist/appimage/VERSION
+          if-no-files-found: error
+  publish:
+    needs: build
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Leaf-AppImage-x86_64
+          path: release
+      - name: Verify release files and source identity
+        run: |
+          cd release
+          sha256sum --check SHA256SUMS
+          test "$(python3 -c 'import json;print(json.load(open("BUILD.json"))["source"])')" = "$GITHUB_SHA"
+      - name: Publish experimental AppImage release
+        run: |
+          version="$(cat release/VERSION)-appimage.1"
+          cat > notes.md <<'NOTES'
+          First **experimental AppImage** of Leaf for Linux x86_64, built from the same source as the alpha it is named after.
+
+          Download the `.AppImage`, make it executable (`chmod +x`, or "Allow executing file as program" in your file manager) and open it. GTK and libadwaita are included; it needs glibc 2.39 or newer (Ubuntu 24.04, Fedora 40, Debian 13 or newer) and FUSE.
+
+          Unlike the Flatpak, the AppImage runs without a sandbox, does not add itself to your launcher and has no automatic updates. The Flatpak remains the recommended installation.
+
+          **Limited validation:** compilation, Rust tests, bundled library closure, CLI startup and an automated window start on a virtual display. Please test with **copies** of your documents and report problems on GitHub.
+
+          GPL-3.0-or-later; bundled components retain their respective licenses.
+          NOTES
+          gh release create "v$version" release/*.AppImage release/SHA256SUMS release/README.txt release/BUILD.json --target "$GITHUB_SHA" --title "Leaf $version — AppImage preview" --notes-file notes.md --prerelease --latest=false

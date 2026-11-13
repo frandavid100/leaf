@@ -1,5 +1,19 @@
 # Decisiones vigentes
 
+## 13/11/2026 — AppImage experimental (#285)
+
+David pide atender #285 creando una AppImage. `tools/package_appimage.py` empaqueta
+el ejecutable optimizado de Ubuntu 24.04 con GTK, libadwaita y sus bibliotecas;
+glibc, controladores gráficos, fontconfig y el resto de la lista de exclusión de
+AppImage vienen del sistema, por lo que requiere glibc 2.39 o posterior. Las
+bibliotecas usan RUNPATH relativo, no LD_LIBRARY_PATH, para no afectar a los
+programas del sistema que Leaf abre. El runtime tipo 2 está fijado por etiqueta y
+SHA-256. `.github/workflows/appimage.yml` genera la candidata y comprueba arranque,
+datos incrustados, cierre de dependencias y apertura de ventana en Xvfb. Publicar
+una prerelease separada exige el visto bueno de David y lanzar el workflow con
+`publish`. Flatpak sigue siendo la instalación recomendada; la AppImage no tiene
+sandbox, integración con el lanzador ni actualizaciones automáticas.
+
 ## 12/11/2026 — revisión de peso, velocidad y claridad
 
 Tras una revisión del código, David decide: (1) la app publicada no incluirá el
