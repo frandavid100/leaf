@@ -10,7 +10,7 @@ fn click(root: &impl IsA<gtk::Widget>, name: &str) {
 }
 
 /// Exercise the real controls against synthetic documents, both native and installed.
-pub(super) fn issue_sweep_ui_test(
+pub(in crate::gnome) fn issue_sweep_ui_test(
     ui: &Rc<Ui>,
     window: &ApplicationWindow,
     host: &Rc<Workspace>,
@@ -498,7 +498,7 @@ pub(super) fn issue_sweep_ui_test(
 }
 
 /// The same test is run on a normal path and a real Flatpak document-portal grant.
-pub(super) fn save_current_file_ui_test(
+pub(in crate::gnome) fn save_current_file_ui_test(
     ui: &Rc<Ui>,
     window: &ApplicationWindow,
     app: &Application,
@@ -542,7 +542,11 @@ fn anchor_coordinates(ui: &Rc<Ui>, window: &ApplicationWindow) -> (i32, i32, i32
     )
 }
 
-pub(super) fn comment_pointer_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn comment_pointer_ui_test(
+    ui: &Rc<Ui>,
+    window: &ApplicationWindow,
+    app: &Application,
+) {
     opened(
         ui,
         Session::new(wordcraft_doc::Document::from_text(

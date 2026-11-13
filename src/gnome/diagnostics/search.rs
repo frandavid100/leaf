@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn search_ui_test(
+pub(in crate::gnome) fn search_ui_test(
     ui: &Rc<Ui>,
     s: &Rc<SearchPanel>,
     app: &Application,

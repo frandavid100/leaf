@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn navigation_ui_test(
+pub(in crate::gnome) fn navigation_ui_test(
     ui: &Rc<Ui>,
     s: &Rc<OutlinePanel>,
     titles: &gtk::ToggleButton,
@@ -78,7 +78,11 @@ pub(super) fn navigation_ui_test(
 }
 
 /// Check the deferred scroll using allocated native geometry, including two-page rows.
-pub(super) fn heading_top_ui_test(ui: &Rc<Ui>, panel: &Rc<OutlinePanel>, app: &Application) {
+pub(in crate::gnome) fn heading_top_ui_test(
+    ui: &Rc<Ui>,
+    panel: &Rc<OutlinePanel>,
+    app: &Application,
+) {
     let text = (0..100).map(|n| format!("Heading {n}. Following section content fills the page. More text for this section. Further text remains visible after navigation.")).collect::<Vec<_>>().join("\n");
     opened(
         ui,

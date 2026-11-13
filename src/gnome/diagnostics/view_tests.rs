@@ -2,7 +2,7 @@ use super::*;
 
 // Real GTK regression: focus restoration after a bottom popover must not pan
 // the tall canvas before the subsequent pointer event is hit-tested.
-pub(super) fn view_pointer_test(
+pub(in crate::gnome) fn view_pointer_test(
     ui: &Rc<Ui>,
     menu: &gtk::MenuButton,
     window: &ApplicationWindow,
@@ -140,7 +140,7 @@ pub(super) fn view_pointer_test(
 }
 
 // Start without a fixture: the shipped application must open a clean document.
-pub(super) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Application) {
+pub(in crate::gnome) fn chrome_ui_test(ui: &Rc<Ui>, menu: &gtk::MenuButton, app: &Application) {
     assert_eq!(
         &*ui.document_name.borrow(),
         wordcraft_gnome::t!("New Document")

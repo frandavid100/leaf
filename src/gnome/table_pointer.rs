@@ -108,7 +108,7 @@ pub(super) fn table_pointer_press(
     let Some((page, px, py)) = page_point(ui, x, y, None) else {
         return false;
     };
-    if std::env::args().any(|a| a.starts_with("--table18-")) {
+    if diagnostics::any_flag(|a| a.starts_with("--table18-")) {
         eprintln!(
             "TABLE18_PRESS count={count} canvas={x},{y} page={page} point={px},{py} hit={}",
             hit(ui, page, px, py).is_some()
@@ -227,7 +227,7 @@ pub(super) fn table_pointer_update(ui: &Rc<Ui>, x: f64, y: f64, mods: gdk::Modif
     let Some((_, px, py)) = page_point(ui, x, y, Some(drag.page)) else {
         return true;
     };
-    if std::env::args().any(|a| a.starts_with("--table18-")) {
+    if diagnostics::any_flag(|a| a.starts_with("--table18-")) {
         eprintln!("TABLE18_DRAG {px},{py}");
     }
     drag.end = (px, py);
@@ -258,7 +258,7 @@ pub(super) fn table_pointer_finish(ui: &Rc<Ui>) -> bool {
     let Some(d) = drag else {
         return cancelled;
     };
-    if std::env::args().any(|a| a.starts_with("--table18-")) {
+    if diagnostics::any_flag(|a| a.starts_with("--table18-")) {
         eprintln!("TABLE18_FINISH moved={} inserted={}", d.moved, d.inserted);
     }
     if d.moved

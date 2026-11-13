@@ -2,53 +2,14 @@ use super::*;
 
 pub(super) fn run() {
     wordcraft_gnome::i18n::init();
-    if std::env::args().any(|a| a == "--workflows38-prepare-startup") {
-        workflows38_checks::prepare_startup();
+    if diagnostics::startup_commands::run_command() {
         return;
     }
-    if std::env::args().any(|arg| arg == "--workflows35-template-restart-test") {
-        workflows35_checks::template_restart();
-        return;
-    }
-    if std::env::args().any(|arg| arg == "--workflows36-template-create") {
-        let folder = PathBuf::from(std::env::var_os("LEAF36_TEMPLATE_SOURCE").unwrap());
-        std::fs::create_dir_all(&folder).unwrap();
-        let mut session = Session::new(wordcraft_doc::Document::from_text("Read-only template"));
-        wordcraft_gnome::saving::save(&mut session, &folder.join("Personal.docx")).unwrap();
-        return;
-    }
-    if std::env::args().any(|arg| arg == "--workflows36-template-restart-test") {
-        let folder = wordcraft_gnome::templates::folder().unwrap();
-        let session = wordcraft_gnome::templates::open(&folder.join("Personal.docx")).unwrap();
-        assert_eq!(
-            session.doc.plain_text(wordcraft_doc::StoryRef::Body),
-            "Read-only template"
-        );
-        assert!(session.file_name.is_none());
-        if std::env::var_os("FLATPAK_ID").is_some() {
-            assert!(
-                std::fs::OpenOptions::new()
-                    .write(true)
-                    .open(folder.join("Personal.docx"))
-                    .is_err(),
-                "portal must deny writing to the source"
-            );
-        }
-        println!(
-            "WORKFLOWS36_TEMPLATE_RESTART_OK sandbox_read_only={}",
-            std::env::var_os("FLATPAK_ID").is_some()
-        );
-        return;
-    }
-    if std::env::args().any(|arg| arg == "--windows-package-test") {
-        windows_checks::package_test();
-        return;
-    }
-    if std::env::args().any(|arg| arg == "--version") {
+    if diagnostics::flag("--version") {
         println!("Leaf {APP_VERSION}");
         return;
     }
-    if std::env::args().any(|arg| arg == "--language-data-licenses") {
+    if diagnostics::flag("--language-data-licenses") {
         assert!(
             wordcraft_engine::proof::packs::embedded_locales().contains(&"en-us"),
             "release must embed its pinned Language data"
@@ -58,42 +19,18 @@ pub(super) fn run() {
         }
         return;
     }
-    if std::env::args().any(|a| a == "--package-storage-test") {
-        let root = wordcraft_gnome::preferences::recovery_root();
-        let data = std::env::var_os("XDG_DATA_HOME").expect("sandbox data home");
-        assert!(
-            root.starts_with(Path::new(&data)),
-            "recovery stays in persistent sandbox data"
-        );
-        std::fs::create_dir_all(&root).unwrap();
-        std::fs::write(root.join("package-test"), b"persistent").unwrap();
-        wordcraft_gnome::preferences::set_autosave_mode(0).unwrap();
-        assert_eq!(wordcraft_gnome::preferences::autosave_mode(), 0);
-        println!("PACKAGE_STORAGE_OK");
-        return;
-    }
-    if std::env::args().any(|a| a == "--issue-preferences-read-test") {
-        assert_eq!(wordcraft_gnome::preferences::user_name(), "Leaf QA");
-        assert_eq!(wordcraft_gnome::preferences::theme(), 2);
-        println!("ISSUE_PREFERENCES_RESTART_OK");
-        return;
-    }
-    if std::env::args().any(|arg| arg == "--workflows35-drag-source") {
-        workflows35_checks::drag_source();
-        return;
-    }
     glib::set_application_name("Leaf");
     let input_files: Vec<_> = std::env::args_os()
         .skip(1)
         .filter(|a| !a.to_string_lossy().starts_with("--"))
         .collect();
-    let sample_on_start = std::env::args().any(|arg| arg == "--test-document");
-    let sidebar_on_start = std::env::args().any(|arg| arg == "--sidebar");
-    let narrow_on_start = std::env::args().any(|arg| arg == "--narrow");
-    let dark_on_start = std::env::args().any(|arg| arg == "--dark");
-    let selection_demo = std::env::args().any(|arg| arg == "--select-demo");
-    let editing_demo = std::env::args().any(|arg| arg == "--edit-demo");
-    let formatting_demo = std::env::args().any(|arg| arg == "--format-demo");
+    let sample_on_start = diagnostics::flag("--test-document");
+    let sidebar_on_start = diagnostics::flag("--sidebar");
+    let narrow_on_start = diagnostics::flag("--narrow");
+    let dark_on_start = diagnostics::flag("--dark");
+    let selection_demo = diagnostics::flag("--select-demo");
+    let editing_demo = diagnostics::flag("--edit-demo");
+    let formatting_demo = diagnostics::flag("--format-demo");
     // Permite probar versiones simultáneas sin activar una ventana anterior por D-Bus.
     let app = Application::builder()
         .application_id(APP_ID)
@@ -133,7 +70,7 @@ pub(super) fn run() {
                     });
                 match result {
                     Ok(initial) => {
-                        if std::env::args().any(|a| a == "--launch-file-test") {
+                        if diagnostics::flag("--launch-file-test") {
                             assert!(initial.1.contains("launch-test"));
                             assert!(
                                 initial
@@ -154,7 +91,7 @@ pub(super) fn run() {
                             false,
                             Some(initial),
                         );
-                        if std::env::args().any(|a| a == "--launch-file-test") {
+                        if diagnostics::flag("--launch-file-test") {
                             let app = app.clone();
                             glib::timeout_add_local_once(
                                 std::time::Duration::from_millis(1600),
@@ -170,7 +107,7 @@ pub(super) fn run() {
                         }
                     }
                     Err(error) => {
-                        if std::env::args().any(|a| a == "--launch-file-test") {
+                        if diagnostics::flag("--launch-file-test") {
                             panic!("external file failed: {error}");
                         }
                         let window =
@@ -186,43 +123,8 @@ pub(super) fn run() {
             }
             return;
         }
-        if std::env::args().any(|a| a == "--multiwindow-test") {
-            let first = make_window(
-                app,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                Some((sample_session(), "Primero".into())),
-            );
-            let _second = make_window(
-                app,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                Some((sample_session(), "Segundo".into())),
-            );
-            let app = app.clone();
-            glib::timeout_add_local_once(std::time::Duration::from_millis(1000), move || {
-                if app.windows().len() != 2 {
-                    std::process::exit(1);
-                }
-                first.close();
-                glib::timeout_add_local_once(std::time::Duration::from_millis(150), move || {
-                    if app.windows().len() != 1 {
-                        std::process::exit(1);
-                    }
-                    eprintln!("MULTIWINDOW_OK");
-                    app.quit();
-                });
-            });
+        if diagnostics::flag("--multiwindow-test") {
+            diagnostics::startup_commands::multiwindow_test(app);
             return;
         }
         make_window(

@@ -109,9 +109,9 @@ impl FormatPopoverGroup {
             .collect::<Vec<_>>();
         for weak in &hosts {
             if let Some(p) = weak.upgrade() {
-                if std::env::args()
-                    .any(|a| a == "--split-states-demo" || a == "--text18-pointer-test")
-                    && p.is_visible()
+                if diagnostics::any_flag(|a| {
+                    a == "--split-states-demo" || a == "--text18-pointer-test"
+                }) && p.is_visible()
                 {
                     eprintln!(
                         "SPLIT_OUTSIDE event={surface:?} popup={:?} same={} xy={x},{y}",

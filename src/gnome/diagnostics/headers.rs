@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn header_footer_ui_test(
+pub(in crate::gnome) fn header_footer_ui_test(
     ui: &Rc<Ui>,
     parent: &ApplicationWindow,
     app: &Application,

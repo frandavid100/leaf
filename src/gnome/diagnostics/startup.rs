@@ -1,6 +1,9 @@
 use super::*;
 
-pub(super) fn install_menu_demos(text_menu: &gtk::MenuButton, zoom_menu: &gtk::MenuButton) {
+pub(in crate::gnome) fn install_menu_demos(
+    text_menu: &gtk::MenuButton,
+    zoom_menu: &gtk::MenuButton,
+) {
     if std::env::args().any(|a| a == "--text-menu-demo") {
         let menu = text_menu.clone();
         capture_ready::after(std::time::Duration::from_millis(1100), move || menu.popup());
@@ -11,7 +14,7 @@ pub(super) fn install_menu_demos(text_menu: &gtk::MenuButton, zoom_menu: &gtk::M
     }
 }
 
-pub(super) fn install_content_demos(
+pub(in crate::gnome) fn install_content_demos(
     ui: &Rc<Ui>,
     formatting_demo: bool,
     editing_demo: bool,

@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn document_tools_fixture(ui: &Rc<Ui>) {
+pub(in crate::gnome) fn document_tools_fixture(ui: &Rc<Ui>) {
     let file = std::env::temp_dir().join(format!("wordcraft-picture-{}.png", std::process::id()));
     std::fs::write(
         &file,
@@ -21,7 +21,7 @@ pub(super) fn document_tools_fixture(ui: &Rc<Ui>) {
     opened(ui, session, "Documento con imagen.docx");
 }
 
-pub(super) fn document_tools_ui_test(
+pub(in crate::gnome) fn document_tools_ui_test(
     ui: &Rc<Ui>,
     panel: &Rc<PicturePopover>,
     menu: &gtk::MenuButton,

@@ -9,7 +9,11 @@ fn click(root: &impl IsA<gtk::Widget>, name: &str) {
         widget.downcast_ref::<gtk::MenuButton>().unwrap().popup();
     }
 }
-pub(super) fn alpha30_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn alpha30_ui_test(
+    ui: &Rc<Ui>,
+    window: &ApplicationWindow,
+    app: &Application,
+) {
     window.set_default_size(1200, 950);
     window.set_title(Some("Leaf Alpha30 Regression"));
     let file = std::env::temp_dir().join(format!("leaf30-{}.png", std::process::id()));

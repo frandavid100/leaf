@@ -17,7 +17,7 @@ fn button(root: &impl IsA<gtk::Widget>, name: &str) {
         .unwrap()
         .emit_clicked();
 }
-pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
     let display = gdk::Display::default().unwrap();
     let theme = gtk::IconTheme::for_display(&display);
     for name in ["headings-allcap-symbolic", "font-symbolic"] {
@@ -196,7 +196,7 @@ pub(super) fn sweep18_ui_test(ui: &Rc<Ui>, app: &Application) {
     app.quit();
 }
 
-pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String) {
+pub(in crate::gnome) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String) {
     ui.host
         .upgrade()
         .unwrap()
@@ -371,7 +371,7 @@ pub(super) fn table_pointer_ui_test(ui: &Rc<Ui>, app: &Application, case: String
 thread_local! { static TEXT_POINTER_GEOMETRY: RefCell<std::collections::HashMap<String, ([f64;4],u8)>> = RefCell::new(std::collections::HashMap::new()); }
 /// Opt-in test handshake: stable geometry does not prove that GTK delivered a
 /// native pointer event to the newly mapped popup control. Consume no events.
-pub(super) fn observe_pointer_target(
+pub(in crate::gnome) fn observe_pointer_target(
     marker: &str,
     pop: &gtk::Popover,
     widget: &impl IsA<gtk::Widget>,
@@ -446,7 +446,7 @@ pub(super) fn observe_pointer_target(
         widget.add_controller(events);
     }
 }
-pub(super) fn text_pointer_target(
+pub(in crate::gnome) fn text_pointer_target(
     marker: &str,
     pop: &gtk::Popover,
     widget: &impl IsA<gtk::Widget>,
@@ -497,7 +497,7 @@ pub(super) fn text_pointer_target(
     );
     true
 }
-pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
     ui.host
         .upgrade()
         .unwrap()
@@ -686,7 +686,7 @@ pub(super) fn text18_pointer_test(ui: &Rc<Ui>, app: &Application) {
 }
 
 #[allow(deprecated)]
-pub(super) fn test_choose_color(root: &impl IsA<gtk::Widget>, name: &str, hex: &str) {
+pub(in crate::gnome) fn test_choose_color(root: &impl IsA<gtk::Widget>, name: &str, hex: &str) {
     let picker = find_widget(root, name).unwrap();
     assert!(picker.is_mapped(), "shared chooser must be shown: {name}");
     let editor = find_widget(&picker, "color-custom-editor")
@@ -697,7 +697,10 @@ pub(super) fn test_choose_color(root: &impl IsA<gtk::Widget>, name: &str, hex: &
     editor.set_rgba(&rgba);
     editor.emit_by_name::<()>("color-activated", &[&rgba]);
 }
-pub(super) fn native_color_swatch(root: &gtk::Widget, color: &gdk::RGBA) -> Option<gtk::Widget> {
+pub(in crate::gnome) fn native_color_swatch(
+    root: &gtk::Widget,
+    color: &gdk::RGBA,
+) -> Option<gtk::Widget> {
     if root.type_().name() == "GtkColorSwatch"
         && root.find_property("rgba").is_some()
         && root.property::<Option<gdk::RGBA>>("rgba").as_ref() == Some(color)

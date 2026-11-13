@@ -36,7 +36,11 @@ fn composer(ui: &Rc<Ui>) -> (gtk::Widget, gtk::TextView, gtk::Button) {
     (root, text, submit)
 }
 
-pub(super) fn annotations_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn annotations_ui_test(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+    app: &Application,
+) {
     let toggle = find_widget(&ui.sidebar_selector, "sidebar-review")
         .unwrap()
         .downcast::<gtk::ToggleButton>()

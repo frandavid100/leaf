@@ -47,7 +47,7 @@ async fn capture(window: &ApplicationWindow, widget: &impl IsA<gtk::Widget>, nam
         .save_to_png(dir.join(format!("{name}.png")))
         .unwrap();
 }
-pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
         window.set_default_size(1280, 850);

@@ -2,20 +2,20 @@ use super::*;
 
 // Diagnostic ownership probes. Never retain the objects being measured.
 thread_local! {
-    pub(super) static LIFE_HOSTS: RefCell<Vec<std::rc::Weak<Workspace>>> = const { RefCell::new(Vec::new()) };
-    pub(super) static LIFE_STARTED: Cell<bool> = const { Cell::new(false) };
+    pub(in crate::gnome) static LIFE_HOSTS: RefCell<Vec<std::rc::Weak<Workspace>>> = const { RefCell::new(Vec::new()) };
+    pub(in crate::gnome) static LIFE_STARTED: Cell<bool> = const { Cell::new(false) };
 }
-pub(super) fn lifecycle_mode() -> bool {
+pub(in crate::gnome) fn lifecycle_mode() -> bool {
     std::env::args().any(|a| {
         a == "--lifecycle-audit" || a == "--lifecycle-ui-test" || a == "--lifecycle-dialog-test"
     })
 }
-pub(super) fn lifecycle_track(host: &Rc<Workspace>) {
+pub(in crate::gnome) fn lifecycle_track(host: &Rc<Workspace>) {
     if lifecycle_mode() {
         LIFE_HOSTS.with(|v| v.borrow_mut().push(Rc::downgrade(host)));
     }
 }
-pub(super) fn lifecycle_rss() -> Option<u64> {
+pub(in crate::gnome) fn lifecycle_rss() -> Option<u64> {
     let status = std::fs::read_to_string("/proc/self/status").ok()?;
     status
         .lines()
@@ -26,7 +26,7 @@ pub(super) fn lifecycle_rss() -> Option<u64> {
         .ok()
 }
 #[cfg(target_os = "linux")]
-pub(super) fn lifecycle_trim() {
+pub(in crate::gnome) fn lifecycle_trim() {
     unsafe extern "C" {
         fn malloc_trim(pad: usize) -> i32;
     }
@@ -35,28 +35,29 @@ pub(super) fn lifecycle_trim() {
     }
 }
 #[cfg(not(target_os = "linux"))]
-pub(super) fn lifecycle_trim() {}
-pub(super) struct ClosedTabProbe {
-    pub(super) controller: glib::WeakRef<gtk::GestureClick>,
-    pub(super) controls: Vec<glib::WeakRef<gtk::Widget>>,
-    pub(super) ui: std::rc::Weak<Ui>,
-    pub(super) picture: glib::WeakRef<gtk::Picture>,
-    pub(super) body: std::sync::Weak<wordcraft_doc::Block>,
+pub(in crate::gnome) fn lifecycle_trim() {}
+pub(in crate::gnome) struct ClosedTabProbe {
+    pub(in crate::gnome) controller: glib::WeakRef<gtk::GestureClick>,
+    pub(in crate::gnome) controls: Vec<glib::WeakRef<gtk::Widget>>,
+    pub(in crate::gnome) ui: std::rc::Weak<Ui>,
+    pub(in crate::gnome) picture: glib::WeakRef<gtk::Picture>,
+    pub(in crate::gnome) body: std::sync::Weak<wordcraft_doc::Block>,
 }
-pub(super) struct LifecycleAudit {
-    pub(super) host: RefCell<Option<Rc<Workspace>>>,
-    pub(super) app: Application,
-    pub(super) file: PathBuf,
-    pub(super) tabs: RefCell<Vec<ClosedTabProbe>>,
-    pub(super) windows: RefCell<Vec<(std::rc::Weak<Workspace>, glib::WeakRef<ApplicationWindow>)>>,
-    pub(super) wave: Cell<u32>,
-    pub(super) strict: bool,
-    pub(super) extra: bool,
-    pub(super) dialogs: RefCell<Vec<glib::WeakRef<adw::Dialog>>>,
-    pub(super) columns: RefCell<Vec<std::rc::Weak<ColumnControls>>>,
+pub(in crate::gnome) struct LifecycleAudit {
+    pub(in crate::gnome) host: RefCell<Option<Rc<Workspace>>>,
+    pub(in crate::gnome) app: Application,
+    pub(in crate::gnome) file: PathBuf,
+    pub(in crate::gnome) tabs: RefCell<Vec<ClosedTabProbe>>,
+    pub(in crate::gnome) windows:
+        RefCell<Vec<(std::rc::Weak<Workspace>, glib::WeakRef<ApplicationWindow>)>>,
+    pub(in crate::gnome) wave: Cell<u32>,
+    pub(in crate::gnome) strict: bool,
+    pub(in crate::gnome) extra: bool,
+    pub(in crate::gnome) dialogs: RefCell<Vec<glib::WeakRef<adw::Dialog>>>,
+    pub(in crate::gnome) columns: RefCell<Vec<std::rc::Weak<ColumnControls>>>,
 }
 impl LifecycleAudit {
-    pub(super) fn probe(&self, ui: &Rc<Ui>) {
+    pub(in crate::gnome) fn probe(&self, ui: &Rc<Ui>) {
         let current = ui.current.borrow();
         let d = current.as_ref().unwrap();
         let mut controls = vec![ui.sidebar.clone().upcast::<gtk::Widget>().downgrade()];
@@ -80,7 +81,7 @@ impl LifecycleAudit {
             body: std::sync::Arc::downgrade(&d.session.doc.body[0]),
         });
     }
-    pub(super) fn open(self: &Rc<Self>) {
+    pub(in crate::gnome) fn open(self: &Rc<Self>) {
         let host = self.host.borrow().as_ref().unwrap().clone();
         for n in 0..3 {
             let session = open_document(&self.file).unwrap();
@@ -174,7 +175,7 @@ impl LifecycleAudit {
         let next = self.clone();
         glib::timeout_add_local_once(std::time::Duration::from_millis(550), move || next.close());
     }
-    pub(super) fn close(self: &Rc<Self>) {
+    pub(in crate::gnome) fn close(self: &Rc<Self>) {
         let host = self.host.borrow().as_ref().unwrap().clone();
         while host.tabs.n_pages() > 1 {
             let page = host.tabs.nth_page(host.tabs.n_pages() - 1);
@@ -190,7 +191,7 @@ impl LifecycleAudit {
             next.sample()
         });
     }
-    pub(super) fn sample(self: &Rc<Self>) {
+    pub(in crate::gnome) fn sample(self: &Rc<Self>) {
         let wave = self.wave.get() + 1;
         self.wave.set(wave);
         let tabs = self.tabs.borrow();
@@ -313,7 +314,7 @@ impl LifecycleAudit {
         });
     }
 }
-pub(super) fn lifecycle_start(host: &Rc<Workspace>, app: &Application) {
+pub(in crate::gnome) fn lifecycle_start(host: &Rc<Workspace>, app: &Application) {
     if !lifecycle_mode() || LIFE_STARTED.with(|s| s.replace(true)) {
         return;
     }

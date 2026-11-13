@@ -140,7 +140,7 @@ fn fixed_modes(ui: &Ui, window: &ApplicationWindow) -> f32 {
     bar.y()
 }
 
-pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     if STARTED.with(|s| s.replace(true)) {
         return;
     }

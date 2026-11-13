@@ -1,10 +1,18 @@
 # Decisiones vigentes
 
+## 13/11/2026 — el código de diagnóstico sigue en la app publicada
+
+Se revisa la decisión (1) del 12/11. La CI ejecuta unas 25 comprobaciones de
+diagnóstico sobre el Flatpak instalado que se publica; quitarlas obligaría a
+validar un paquete distinto del publicado y a rehacer la CI y el proceso de RC.
+El ahorro medido es de unos 1,3 MB de 47,8 MB. David decide mantenerlo y lograr
+la claridad reuniendo todo el diagnóstico en `src/gnome/diagnostics/`, con un
+único punto de entrada para los ganchos dentro del código de producto.
+
 ## 12/11/2026 — revisión de peso, velocidad y claridad
 
-Tras una revisión del código, David decide: (1) la app publicada no incluirá el
-código de diagnóstico gráfico; seguirá en el repositorio y la CI lo compilará y
-ejecutará mediante una feature de Cargo; (2) de serie se incluirá solo el
+Tras una revisión del código, David decide: (1) [revisada el 13/11, ver abajo] la app
+publicada no incluirá el código de diagnóstico gráfico; (2) de serie se incluirá solo el
 diccionario `es_ES`, y `es_MX`/`es_AR` se podrán añadir desde Preferencias;
 (3) la documentación para colaboradores pasará al inglés, salvo `AGENTS.md` y
 `CONTINUING.md`. Se aplicará en PRs pequeños; ninguno implica publicar.

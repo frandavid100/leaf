@@ -52,7 +52,7 @@ fn text(ui: &Ui) -> String {
         .doc
         .plain_text(wordcraft_doc::StoryRef::Body)
 }
-pub(super) fn folder(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn folder(ui: &Rc<Ui>, app: &Application) {
     if STARTED.with(|s| s.replace(true)) {
         return;
     }
@@ -87,7 +87,7 @@ pub(super) fn folder(ui: &Rc<Ui>, app: &Application) {
         app.quit();
     });
 }
-pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     if STARTED.with(|s| s.replace(true)) {
         return;
     }

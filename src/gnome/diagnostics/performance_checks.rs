@@ -1,7 +1,7 @@
 use super::*;
 
 // GUI regressions for the host-only invalidation and visibility policies.
-pub(super) fn host_cache_ui_test(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn host_cache_ui_test(ui: &Rc<Ui>, app: &Application) {
     ui.document_box
         .settings()
         .set_property("gtk-enable-animations", false);

@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn paragraph_ui_test(
+pub(in crate::gnome) fn paragraph_ui_test(
     s: &Rc<ParagraphPopover>,
     _menu: &gtk::MenuButton,
     app: &Application,

@@ -16,7 +16,7 @@ fn state(ui: &Ui) -> (wordcraft_doc::Document, usize) {
     let s = &current.as_ref().unwrap().session;
     (s.doc.clone(), s.undo_depth())
 }
-pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
         window.set_default_size(1280, 850);
@@ -503,7 +503,7 @@ pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     });
 }
 
-pub(super) fn reopen(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn reopen(ui: &Rc<Ui>, app: &Application) {
     for (group, first) in [
         ("paragraph", "list"),
         ("text", "italic"),

@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn accessible_document_ui_test(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn accessible_document_ui_test(ui: &Rc<Ui>, app: &Application) {
     let fixture = "First paragraph for Orca.\nCafé, español y 😀.\nFinal paragraph.";
     opened(
         ui,

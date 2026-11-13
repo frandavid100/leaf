@@ -64,7 +64,7 @@ pub(super) fn install_pointer_and_view_input(
                     && y <= (r.y() + r.height()) as f64
             })
         };
-        if std::env::args().any(|a| a == "--headers-pointer-test") {
+        if diagnostics::flag("--headers-pointer-test") {
             eprintln!(
                 "HEADER_VIEWPORT_CLICK x={x} y={y} document={} vertical={} horizontal={}",
                 contains(ui.document_box.upcast_ref()),

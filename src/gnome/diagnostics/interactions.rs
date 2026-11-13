@@ -17,7 +17,7 @@ fn pointer_pos(ui: &Rc<Ui>, w: &ApplicationWindow, off: usize) -> (i32, i32) {
         (r.y() as f64 + (c.top + c.height / 2.0) as f64 * d.zoom as f64 + ty).round() as i32,
     )
 }
-pub(super) fn interaction_pointer_test(
+pub(in crate::gnome) fn interaction_pointer_test(
     ui: &Rc<Ui>,
     w: &ApplicationWindow,
     app: &Application,

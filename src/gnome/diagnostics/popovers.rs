@@ -1,16 +1,16 @@
 use super::*;
 
-pub(super) struct PinTest {
-    pub(super) ui: Rc<Ui>,
-    pub(super) sm: gtk::MenuButton,
-    pub(super) s: Rc<StylePopover>,
-    pub(super) p: Rc<ParagraphPopover>,
-    pub(super) tp: gtk::Popover,
-    pub(super) tb: gtk::MenuButton,
-    pub(super) app: Application,
+pub(in crate::gnome) struct PinTest {
+    pub(in crate::gnome) ui: Rc<Ui>,
+    pub(in crate::gnome) sm: gtk::MenuButton,
+    pub(in crate::gnome) s: Rc<StylePopover>,
+    pub(in crate::gnome) p: Rc<ParagraphPopover>,
+    pub(in crate::gnome) tp: gtk::Popover,
+    pub(in crate::gnome) tb: gtk::MenuButton,
+    pub(in crate::gnome) app: Application,
 }
 
-pub(super) fn pin_ui_test(
+pub(in crate::gnome) fn pin_ui_test(
     ui: &Rc<Ui>,
     sm: &gtk::MenuButton,
     s: &Rc<StylePopover>,
@@ -35,7 +35,7 @@ pub(super) fn pin_ui_test(
     );
 }
 
-pub(super) fn pin_test_step(t: Rc<PinTest>, step: u8) {
+pub(in crate::gnome) fn pin_test_step(t: Rc<PinTest>, step: u8) {
     let ui = &t.ui;
     match step {
         0 => {

@@ -1,6 +1,10 @@
 use super::*;
 
-pub(super) fn proofing_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn proofing_ui_test(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+    app: &Application,
+) {
     opened(
         ui,
         Session::new(wordcraft_doc::Document::from_text(

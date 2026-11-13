@@ -305,7 +305,7 @@ pub(super) fn launch_document_link(ui: &Rc<Ui>, url: &str) {
     let Some(host) = ui.host.upgrade() else {
         return;
     };
-    if std::env::args().any(|a| a == "--interaction-pointer-test") {
+    if diagnostics::flag("--interaction-pointer-test") {
         eprintln!("LINK_ACTIVATED {url}");
         return;
     }
@@ -339,7 +339,7 @@ pub(super) fn install_link_tooltip(ui: &Rc<Ui>) {
             let Some(url) = url else {
                 return false;
             };
-            if std::env::args().any(|a| a == "--followup19-link") {
+            if diagnostics::flag("--followup19-link") {
                 eprintln!("ISSUE19_TOOLTIP {url}");
             }
             let label = gtk::Label::new(Some(&format!(

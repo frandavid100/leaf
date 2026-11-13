@@ -371,7 +371,7 @@ impl Gallery {
             launcher.set_writable(false);
             let weak = Rc::downgrade(&ui);
             launcher.launch(Some(&host.window), gio::Cancellable::NONE, move |result| {
-                if std::env::args().any(|arg| arg == "--workflows40-folder-test") {
+                if diagnostics::flag("--workflows40-folder-test") {
                     eprintln!("WORKFLOWS40_FOLDER_RESULT success={}", result.is_ok());
                 }
                 if let (Some(ui), Err(error)) = (weak.upgrade().filter(|u| !u.closed.get()), result)

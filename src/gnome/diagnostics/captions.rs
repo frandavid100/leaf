@@ -42,7 +42,11 @@ fn select_image(ui: &Rc<Ui>, n: usize) {
         .unwrap();
     wordcraft_gnome::navigation::activate_element(s, &entry).unwrap();
 }
-pub(super) fn captions_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn captions_ui_test(
+    ui: &Rc<Ui>,
+    window: &ApplicationWindow,
+    app: &Application,
+) {
     let compact = std::env::var("GDK_SCALE").as_deref() == Ok("2");
     window.set_default_size(if compact { 540 } else { 1250 }, 950);
     window.set_title(Some("Leaf Caption Regression"));

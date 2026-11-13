@@ -1,6 +1,10 @@
 use super::*;
 
-pub(super) fn adaptive_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn adaptive_ui_test(
+    ui: &Rc<Ui>,
+    window: &ApplicationWindow,
+    app: &Application,
+) {
     let a = ui.adaptive.borrow().as_ref().unwrap().clone();
     assert!(!a.narrow.get());
     assert!(ui.format_toolbar.is_visible());

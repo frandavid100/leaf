@@ -189,7 +189,7 @@ async fn check(ui: &Rc<Ui>, has_templates: bool, has_recovery: bool) {
     assert!(text(ui).is_empty());
     assert!(!ui.dirty.get());
 }
-pub(super) fn write_pending(root: PathBuf) {
+pub(in crate::gnome) fn write_pending(root: PathBuf) {
     let before = records(&root).len();
     let mut s = Session::new(wordcraft_doc::Document::new());
     s.enable_recovery(root.clone(), std::sync::Arc::new(|| {}))
@@ -223,7 +223,7 @@ async fn seed(root: PathBuf) {
         .await
         .unwrap();
 }
-pub(super) fn prepare_startup() {
+pub(in crate::gnome) fn prepare_startup() {
     let root = wordcraft_gnome::preferences::recovery_root();
     assert!(
         wordcraft_gnome::recovery::inventory(&root)
@@ -240,7 +240,7 @@ pub(super) fn prepare_startup() {
     write_pending(root);
     println!("WORKFLOWS38_STARTUP_PREPARED");
 }
-pub(super) fn startup(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn startup(ui: &Rc<Ui>, app: &Application) {
     let (ui, app) = (ui.clone(), app.clone());
     glib::spawn_future_local(async move {
         check(&ui, true, true).await;
@@ -301,7 +301,7 @@ fn records(root: &Path) -> Vec<Vec<u8>> {
     paths.sort();
     paths.iter().map(|p| std::fs::read(p).unwrap()).collect()
 }
-pub(super) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     if STARTED.with(|s| s.replace(true)) {
         return;
     }

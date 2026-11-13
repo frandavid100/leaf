@@ -15,7 +15,7 @@ fn checks(root: &gtk::Widget) -> Vec<gtk::CheckButton> {
     }
     result
 }
-pub(super) fn response(root: &gtk::Widget, label: &str) -> bool {
+pub(in crate::gnome) fn response(root: &gtk::Widget, label: &str) -> bool {
     if let Some(button) = root.downcast_ref::<gtk::Button>() {
         if button.label().as_deref() == Some(label) {
             button.emit_clicked();
@@ -31,7 +31,7 @@ pub(super) fn response(root: &gtk::Widget, label: &str) -> bool {
     }
     false
 }
-pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
+pub(in crate::gnome) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
     let text = find_widget(&ui.format_toolbar, "format-text-group").unwrap();
     let para = find_widget(&ui.format_toolbar, "format-paragraph-group").unwrap();
     assert!(
@@ -184,7 +184,7 @@ pub(super) async fn controls(ui: &Rc<Ui>, window: &ApplicationWindow) {
         "ALPHA42_CONTROLS_OK order=true entry-transitions=true search-field=true sidebar-preference=true tab-breakpoints=true document-menu=true"
     );
 }
-pub(super) async fn closing(
+pub(in crate::gnome) async fn closing(
     ui: &Rc<Ui>,
     blank: &Rc<Ui>,
     window: &ApplicationWindow,

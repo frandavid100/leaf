@@ -18,7 +18,7 @@ fn row_offset(row: &gtk::Widget, scroll: &gtk::ScrolledWindow) -> f64 {
         .y() as f64
         - scroll.vadjustment().value()
 }
-pub(super) fn test(
+pub(in crate::gnome) fn test(
     ui: &Rc<Ui>,
     window: &ApplicationWindow,
     app: &Application,
@@ -462,7 +462,7 @@ fn point(widget: &impl IsA<gtk::Widget>, window: &ApplicationWindow) -> (i32, i3
         ((b.y() + b.height() / 2.) * scale) as i32,
     )
 }
-pub(super) fn pointer(
+pub(in crate::gnome) fn pointer(
     ui: &Rc<Ui>,
     window: &ApplicationWindow,
     app: &Application,
@@ -719,7 +719,11 @@ pub(super) fn pointer(
 }
 
 /// Verify read-only XDG access in the sandbox and the native custom chooser.
-pub(super) fn template_folder(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn template_folder(
+    ui: &Rc<Ui>,
+    window: &ApplicationWindow,
+    app: &Application,
+) {
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
         wordcraft_gnome::preferences::reset_template_folder().unwrap();

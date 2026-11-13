@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn hidpi_ui_test(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn hidpi_ui_test(ui: &Rc<Ui>, app: &Application) {
     opened(ui, sample_session(), "Prueba HiDPI");
     ui.sidebar.set_show_sidebar(true);
     ui.current.borrow_mut().as_mut().unwrap().fit_to_width = false;

@@ -83,7 +83,7 @@ impl AdaptiveTools {
                     for (menu, identity) in pending {
                         if identity == document_identity(&ui) {
                             if let Some(menu) = menu.upgrade() {
-                                if std::env::args().any(|a| a == "--workflows40-ui-test") {
+                                if diagnostics::flag("--workflows40-ui-test") {
                                     eprintln!(
                                         "WORKFLOWS40_REFLOW anchor={} mapped={} width={width}",
                                         menu.widget_name(),

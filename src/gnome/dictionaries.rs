@@ -175,7 +175,7 @@ impl DictionaryTools {
                         return;
                     }
                 };
-                if std::env::args().any(|a| a == "--dictionary84-ui-test") {
+                if diagnostics::flag("--dictionary84-ui-test") {
                     eprintln!("DICTIONARY84_SELECTED path={:?}", file.path());
                 }
                 let result = file

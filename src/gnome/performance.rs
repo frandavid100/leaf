@@ -13,7 +13,7 @@ thread_local! {
 pub(super) fn perf_enabled() -> bool {
     static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
     *ENABLED.get_or_init(|| {
-        std::env::args().any(|a| a == "--performance-ui-test" || a == "--host-cache-ui-test")
+        diagnostics::any_flag(|a| a == "--performance-ui-test" || a == "--host-cache-ui-test")
     })
 }
 pub(super) struct PerfSpan(Option<(&'static str, std::time::Instant)>);

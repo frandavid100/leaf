@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn keyboard_ui_test(
+pub(in crate::gnome) fn keyboard_ui_test(
     ui: &Rc<Ui>,
     parent: &ApplicationWindow,
     main: &gtk::MenuButton,
