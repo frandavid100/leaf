@@ -117,7 +117,7 @@ fn followup_wait(t: Rc<Followup>, stage: u8) {
         glib::ControlFlow::Break
     });
 }
-pub(super) fn followup_pointer_test(
+pub(in crate::gnome) fn followup_pointer_test(
     ui: &Rc<Ui>,
     w: &ApplicationWindow,
     app: &Application,

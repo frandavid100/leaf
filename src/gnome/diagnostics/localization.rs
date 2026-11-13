@@ -1,7 +1,7 @@
 use super::*;
 
 // Focused end-to-end checks run in separate processes for each locale.
-pub(super) fn localization_ui_test(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn localization_ui_test(ui: &Rc<Ui>, app: &Application) {
     let language = std::env::var("LANGUAGE").unwrap_or_default();
     let spanish = language.starts_with("es");
     assert_eq!(

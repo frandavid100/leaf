@@ -1,6 +1,10 @@
 use super::*;
 
-pub(super) fn columns_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn columns_ui_test(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+    app: &Application,
+) {
     let (ui, parent, app) = (ui.clone(), parent.clone(), app.clone());
     glib::spawn_future_local(async move {
         async fn settle() {

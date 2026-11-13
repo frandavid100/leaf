@@ -8,7 +8,11 @@ fn click(root: &impl IsA<gtk::Widget>, name: &str) {
         .unwrap()
         .emit_clicked();
 }
-pub(super) fn review29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn review29_ui_test(
+    ui: &Rc<Ui>,
+    window: &ApplicationWindow,
+    app: &Application,
+) {
     window.set_default_size(1250, 950);
     window.set_title(Some("Leaf Alpha29 Review Regression"));
     let mut s = Session::new(wordcraft_doc::Document::from_text(

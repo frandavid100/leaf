@@ -58,7 +58,7 @@ fn action_widget(root: &gtk::Widget, name: &str) -> Option<gtk::Widget> {
     None
 }
 #[allow(deprecated)]
-pub(super) fn format136_ui_test(
+pub(in crate::gnome) fn format136_ui_test(
     ui: &Rc<Ui>,
     window: &ApplicationWindow,
     app: &Application,

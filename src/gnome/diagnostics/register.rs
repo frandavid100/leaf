@@ -1,21 +1,21 @@
 use super::*;
 
 /// Existing controls borrowed only while opt-in diagnostic callbacks are installed.
-pub(super) struct DiagnosticControls<'a> {
-    pub(super) app_menu: &'a gtk::MenuButton,
-    pub(super) style_menu: &'a gtk::MenuButton,
-    pub(super) align_menu: &'a gtk::MenuButton,
-    pub(super) text_menu: &'a gtk::MenuButton,
-    pub(super) table_menu: &'a gtk::MenuButton,
-    pub(super) menu_button: &'a gtk::MenuButton,
-    pub(super) picture_menu: &'a gtk::MenuButton,
-    pub(super) style_popover: &'a Rc<StylePopover>,
-    pub(super) paragraph_popover: &'a Rc<ParagraphPopover>,
-    pub(super) text_popover: &'a gtk::Popover,
-    pub(super) picture_panel: &'a Rc<PicturePopover>,
-    pub(super) outline_panel: &'a Rc<OutlinePanel>,
-    pub(super) titles_toggle: &'a gtk::ToggleButton,
-    pub(super) search_panel: &'a Rc<SearchPanel>,
+pub(in crate::gnome) struct DiagnosticControls<'a> {
+    pub(in crate::gnome) app_menu: &'a gtk::MenuButton,
+    pub(in crate::gnome) style_menu: &'a gtk::MenuButton,
+    pub(in crate::gnome) align_menu: &'a gtk::MenuButton,
+    pub(in crate::gnome) text_menu: &'a gtk::MenuButton,
+    pub(in crate::gnome) table_menu: &'a gtk::MenuButton,
+    pub(in crate::gnome) menu_button: &'a gtk::MenuButton,
+    pub(in crate::gnome) picture_menu: &'a gtk::MenuButton,
+    pub(in crate::gnome) style_popover: &'a Rc<StylePopover>,
+    pub(in crate::gnome) paragraph_popover: &'a Rc<ParagraphPopover>,
+    pub(in crate::gnome) text_popover: &'a gtk::Popover,
+    pub(in crate::gnome) picture_panel: &'a Rc<PicturePopover>,
+    pub(in crate::gnome) outline_panel: &'a Rc<OutlinePanel>,
+    pub(in crate::gnome) titles_toggle: &'a gtk::ToggleButton,
+    pub(in crate::gnome) search_panel: &'a Rc<SearchPanel>,
 }
 
 // One captured owner set and callback type per diagnostic signature. Preserve
@@ -47,7 +47,7 @@ fn requested(flag: &str) -> bool {
     command_line().iter().any(|arg| arg == flag)
 }
 
-pub(super) fn install_diagnostics(
+pub(in crate::gnome) fn install_diagnostics(
     ui: &Rc<Ui>,
     window: &ApplicationWindow,
     host: &Rc<Workspace>,

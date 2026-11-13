@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn style_click(s: &StylePopover, name: &str) {
+pub(in crate::gnome) fn style_click(s: &StylePopover, name: &str) {
     find_widget(&s.stack, name)
         .unwrap_or_else(|| panic!("missing widget {name}"))
         .downcast::<gtk::Button>()
@@ -8,7 +8,11 @@ pub(super) fn style_click(s: &StylePopover, name: &str) {
         .emit_clicked();
 }
 
-pub(super) fn style_ui_test(s: &Rc<StylePopover>, menu: &gtk::MenuButton, app: &Application) {
+pub(in crate::gnome) fn style_ui_test(
+    s: &Rc<StylePopover>,
+    menu: &gtk::MenuButton,
+    app: &Application,
+) {
     menu.popup();
     let ui = s.ui.upgrade().unwrap();
     let revision = ui.current.borrow().as_ref().unwrap().session.rev();

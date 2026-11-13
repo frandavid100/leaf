@@ -731,9 +731,9 @@ pub(super) fn context_table_editor(ui: &Rc<Ui>) {
     }
 }
 pub(super) fn tool_diagnostics() -> bool {
-    std::env::args().any(|a| {
+    diagnostics::any_flag(|a| {
         matches!(
-            a.as_str(),
+            a,
             "--pin-ui-test"
                 | "--table-menu-demo"
                 | "--table-properties-demo"

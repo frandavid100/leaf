@@ -108,7 +108,11 @@ fn later_position(ui: &Ui, fraction: f32) -> (usize, Pos) {
         },
     )
 }
-pub(super) fn pending_end_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn pending_end_ui_test(
+    ui: &Rc<Ui>,
+    window: &ApplicationWindow,
+    app: &Application,
+) {
     exit_on_assertion();
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
@@ -288,7 +292,7 @@ pub(super) fn pending_end_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: 
         app.quit();
     });
 }
-pub(super) fn pending_spacing_ui_test(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn pending_spacing_ui_test(ui: &Rc<Ui>, app: &Application) {
     exit_on_assertion();
     let (ui, app) = (ui.clone(), app.clone());
     glib::spawn_future_local(async move {

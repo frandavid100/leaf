@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn print_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn print_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
     let document = ui.current.borrow().as_ref().unwrap().session.doc.clone();
     let ui = ui.clone();
     let parent = parent.clone();

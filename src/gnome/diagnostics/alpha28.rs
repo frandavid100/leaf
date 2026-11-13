@@ -1,7 +1,11 @@
 use super::*;
 use serde_json::json;
 
-pub(super) fn alpha28_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn alpha28_ui_test(
+    ui: &Rc<Ui>,
+    window: &ApplicationWindow,
+    app: &Application,
+) {
     window.set_default_size(1250, 900);
     let mut s = Session::new(wordcraft_doc::Document::from_text(
         &(0..100)
@@ -118,7 +122,7 @@ pub(super) fn alpha28_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &App
 }
 
 /// Synthetic public showcase, captured from the real application window.
-pub(super) fn alpha28_gallery(ui: &Rc<Ui>, window: &ApplicationWindow) {
+pub(in crate::gnome) fn alpha28_gallery(ui: &Rc<Ui>, window: &ApplicationWindow) {
     window.set_default_size(1080, 800);
     let variant = std::env::var("LEAF_GALLERY").unwrap_or_default();
     let mut s = sample_session();

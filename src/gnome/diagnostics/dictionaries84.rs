@@ -26,7 +26,7 @@ async fn ready(panel: &Rc<DictionaryTools>, stage: usize, role: &str, name: &str
     }
     panic!("dictionary driver did not acknowledge stage {stage}");
 }
-pub(super) fn dictionaries84_ui_test(ui: &Rc<Ui>, app: &Application, mode: &'static str) {
+pub(in crate::gnome) fn dictionaries84_ui_test(ui: &Rc<Ui>, app: &Application, mode: &'static str) {
     let previous = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
         previous(info);

@@ -1342,7 +1342,7 @@ fn restore_navigation_browsing(ui: &Rc<Ui>) {
 
 fn trace_navigation(ui: &Ui, event: &str) {
     if std::env::var_os("LEAF_NAVIGATION_TRACE").is_none()
-        && !std::env::args().any(|a| a == "--alpha30-ui-test")
+        && !diagnostics::flag("--alpha30-ui-test")
     {
         return;
     }

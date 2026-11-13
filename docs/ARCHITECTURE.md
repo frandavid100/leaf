@@ -90,10 +90,17 @@ Shared widget lookup (`find_widget`) and box clearing live in
 [widgets.rs](../src/gnome/widgets.rs), independently of the Styles panel.
 Paragraph glyphs live in [paragraph_icons.rs](../src/gnome/paragraph_icons.rs);
 paragraph.rs owns the settings form.
-Graphical checks are grouped under diagnostics with the same existing CLI flags.
-[register.rs](../src/gnome/diagnostics/register.rs) receives typed borrowed controls
-and installs only the explicitly requested diagnostic callbacks. Startup/motion
-checks remain at their original registration points.
+Graphical checks live under [src/gnome/diagnostics](../src/gnome/diagnostics) and run
+only when Leaf is started with a test flag. They ship in the release binary on
+purpose: CI runs them against the installed Flatpak that is published.
+- [diagnostics/mod.rs](../src/gnome/diagnostics/mod.rs) declares every check
+  module; `src/gnome/mod.rs` has a single `mod diagnostics;`.
+- [startup_commands.rs](../src/gnome/diagnostics/startup_commands.rs) handles test
+  commands that run before the application starts.
+- [register.rs](../src/gnome/diagnostics/register.rs) receives typed borrowed
+  controls and installs only the explicitly requested diagnostic callbacks.
+- The few hooks that must sit inside product code ask `diagnostics::flag` or
+  `diagnostics::any_flag`; search for those names to find every one.
 
 ## Alpha35 editing workflows
 

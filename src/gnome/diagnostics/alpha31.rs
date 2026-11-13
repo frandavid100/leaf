@@ -1,7 +1,11 @@
 use super::*;
 use serde_json::json;
 
-pub(super) fn alpha31_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn alpha31_ui_test(
+    ui: &Rc<Ui>,
+    window: &ApplicationWindow,
+    app: &Application,
+) {
     let compact = std::env::var("GDK_SCALE").as_deref() == Ok("2");
     window.set_default_size(if compact { 480 } else { 1250 }, 950);
     if compact {
@@ -266,7 +270,7 @@ I recieve text.",
         glib::ControlFlow::Continue
     });
 }
-pub(super) fn check_headers(ui: &Rc<Ui>, window: &ApplicationWindow) {
+pub(in crate::gnome) fn check_headers(ui: &Rc<Ui>, window: &ApplicationWindow) {
     assert!(
         find_widget(&ui.sidebar, "sidebar-header-secondary").is_none(),
         "selectors must not reserve a fixed header band"

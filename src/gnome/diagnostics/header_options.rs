@@ -1,6 +1,10 @@
 use super::*;
 
-pub(super) fn page_options_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn page_options_ui_test(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+    app: &Application,
+) {
     let mut d = wordcraft_doc::Document::from_text("First section\nSecond section\nThird section");
     for i in 0..2 {
         if let wordcraft_doc::Block::Para(p) = std::sync::Arc::make_mut(&mut d.body[i]) {

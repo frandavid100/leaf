@@ -37,7 +37,11 @@ fn selected(ui: &Rc<Ui>, n: usize) {
     }
     refresh_selection(ui);
 }
-pub(super) fn sweep20_pointer_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn sweep20_pointer_test(
+    ui: &Rc<Ui>,
+    window: &ApplicationWindow,
+    app: &Application,
+) {
     window.set_title(Some("Leaf Sweep20 Regression"));
     let icons = gtk::IconTheme::for_display(&gdk::Display::default().unwrap());
     assert!(icons.has_icon("compass-symbolic") && icons.has_icon("comment-symbolic"));

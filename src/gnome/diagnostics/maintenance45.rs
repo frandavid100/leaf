@@ -55,7 +55,7 @@ fn document_end_visible(ui: &Ui) {
         ui.scroll.height()
     );
 }
-pub(super) fn zoom(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn zoom(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
         window.set_default_size(1050, 780);
@@ -118,7 +118,7 @@ pub(super) fn zoom(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
         app.quit();
     });
 }
-pub(super) fn fonts(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn fonts(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
         use wordcraft_gnome::font_install as fonts;
@@ -276,7 +276,7 @@ pub(super) fn fonts(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) 
     });
 }
 
-pub(super) fn picture_delete(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn picture_delete(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
         window.set_default_size(1050, 780);
@@ -366,7 +366,7 @@ pub(super) fn picture_delete(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Appl
     });
 }
 
-pub(super) fn catalog(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn catalog(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
     let (ui, window, app) = (ui.clone(), window.clone(), app.clone());
     glib::spawn_future_local(async move {
         use wordcraft_gnome::{

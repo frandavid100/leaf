@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn performance_ui_test(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn performance_ui_test(ui: &Rc<Ui>, app: &Application) {
     ui.document_box
         .settings()
         .set_property("gtk-enable-animations", false);

@@ -1,7 +1,7 @@
 //! Relocated Windows package check: no resources from the developer prefix.
 use super::*;
 
-pub(super) fn package_test() {
+pub(in crate::gnome) fn package_test() {
     gtk::init().unwrap();
     let executable = std::env::current_exe().unwrap();
     let prefix = executable.parent().unwrap().parent().unwrap();

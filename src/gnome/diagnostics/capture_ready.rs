@@ -4,7 +4,7 @@ thread_local! { static PENDING: Cell<usize> = const { Cell::new(0) }; }
 fn enabled() -> bool {
     std::env::var_os("LEAF_CAPTURE_READY").is_some()
 }
-pub(super) fn after(delay: std::time::Duration, callback: impl FnOnce() + 'static) {
+pub(in crate::gnome) fn after(delay: std::time::Duration, callback: impl FnOnce() + 'static) {
     let capture = enabled();
     if capture {
         PENDING.with(|v| v.set(v.get() + 1));
@@ -46,7 +46,7 @@ fn fingerprint(
         child = widget.next_sibling();
     }
 }
-pub(super) fn install(ui: &Rc<Ui>, window: &ApplicationWindow) {
+pub(in crate::gnome) fn install(ui: &Rc<Ui>, window: &ApplicationWindow) {
     if !enabled() {
         return;
     }

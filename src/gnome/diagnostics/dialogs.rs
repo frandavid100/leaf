@@ -5,7 +5,7 @@ use super::*;
 
 /// Await GTK frames without recursively polling GLib's future executor.
 /// Async probes must not call the legacy nested-main-loop helpers below.
-pub(super) async fn dialog_presented_async(dialog: &impl IsA<adw::Dialog>) {
+pub(in crate::gnome) async fn dialog_presented_async(dialog: &impl IsA<adw::Dialog>) {
     let dialog = dialog.as_ref();
     let frames = Rc::new(Cell::new(0));
     let count = frames.clone();
@@ -38,7 +38,7 @@ pub(super) async fn dialog_presented_async(dialog: &impl IsA<adw::Dialog>) {
     );
 }
 
-pub(super) async fn dialog_closed_async(dialog: &impl IsA<adw::Dialog>) {
+pub(in crate::gnome) async fn dialog_closed_async(dialog: &impl IsA<adw::Dialog>) {
     let dialog = dialog.as_ref();
     for _ in 0..150 {
         if dialog.root().is_none() && !dialog.is_mapped() {
@@ -52,7 +52,7 @@ pub(super) async fn dialog_closed_async(dialog: &impl IsA<adw::Dialog>) {
     );
 }
 
-pub(super) fn wait_dialog_presented(dialog: &impl IsA<adw::Dialog>) {
+pub(in crate::gnome) fn wait_dialog_presented(dialog: &impl IsA<adw::Dialog>) {
     let dialog = dialog.as_ref();
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(3);
     let context = glib::MainContext::default();
@@ -81,7 +81,7 @@ pub(super) fn wait_dialog_presented(dialog: &impl IsA<adw::Dialog>) {
     );
 }
 
-pub(super) fn assert_dialog_closed(dialog: &impl IsA<adw::Dialog>) {
+pub(in crate::gnome) fn assert_dialog_closed(dialog: &impl IsA<adw::Dialog>) {
     let dialog = dialog.as_ref();
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(3);
     let context = glib::MainContext::default();

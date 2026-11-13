@@ -14,7 +14,11 @@ fn has_submenu(menu: &gio::MenuModel, label: &str) -> bool {
     })
 }
 
-pub(super) fn context_ui_test(ui: &Rc<Ui>, parent: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn context_ui_test(
+    ui: &Rc<Ui>,
+    parent: &ApplicationWindow,
+    app: &Application,
+) {
     use gdk::prelude::PopupExt;
     opened(
         ui,

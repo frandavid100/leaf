@@ -11,7 +11,11 @@ fn apply_reference_dialog(window: &adw::Dialog) {
     assert_dialog_closed(window);
 }
 
-pub(super) fn alpha29_ui_test(ui: &Rc<Ui>, window: &ApplicationWindow, app: &Application) {
+pub(in crate::gnome) fn alpha29_ui_test(
+    ui: &Rc<Ui>,
+    window: &ApplicationWindow,
+    app: &Application,
+) {
     window.set_default_size(1250, 950);
     let text = (0..300)
         .map(|i| format!("Paragraph {i}: a long document for sidebar navigation.\n"))

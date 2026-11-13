@@ -267,7 +267,7 @@ pub(super) fn make_window(
         format_demo,
         initial,
     );
-    if std::env::args().any(|a| a == "--tabs-test") {
+    if diagnostics::flag("--tabs-test") {
         blank_tab(app, &host);
         let host2 = host.clone();
         let app = app.clone();

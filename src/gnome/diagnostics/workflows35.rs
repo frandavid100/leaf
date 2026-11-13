@@ -19,7 +19,7 @@ fn text(ui: &Ui) -> String {
         .doc
         .plain_text(wordcraft_doc::StoryRef::Body)
 }
-pub(super) fn test(
+pub(in crate::gnome) fn test(
     ui: &Rc<Ui>,
     window: &ApplicationWindow,
     app: &Application,
@@ -359,7 +359,7 @@ fn canvas_point(ui: &Ui, window: &ApplicationWindow, off: usize) -> (i32, i32) {
             as i32,
     )
 }
-pub(super) fn pointer(
+pub(in crate::gnome) fn pointer(
     ui: &Rc<Ui>,
     window: &ApplicationWindow,
     app: &Application,
@@ -454,7 +454,7 @@ pub(super) fn pointer(
 }
 /// A separate native process exports a real GDK FileList. In installed checks,
 /// the target must receive the host file through GTK's document portal transfer.
-pub(super) fn drag_source() {
+pub(in crate::gnome) fn drag_source() {
     let app = Application::builder()
         .application_id("io.github.frandavid100.leaf.DragSourceTest")
         .flags(gio::ApplicationFlags::NON_UNIQUE)
@@ -519,7 +519,7 @@ pub(super) fn drag_source() {
     app.run_with_args(&["leaf-workflows35-source"]);
 }
 
-pub(super) fn template_restart() {
+pub(in crate::gnome) fn template_restart() {
     let folder = wordcraft_gnome::templates::folder().unwrap();
     assert_eq!(
         Some(folder.clone()),

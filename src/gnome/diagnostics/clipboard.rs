@@ -11,7 +11,7 @@ async fn wait_for_transfer(ui: &Ui) {
     panic!("clipboard transfer did not complete");
 }
 
-pub(super) fn clipboard_ui_test(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn clipboard_ui_test(ui: &Rc<Ui>, app: &Application) {
     let ui = ui.clone();
     let app = app.clone();
     glib::spawn_future_local(async move {

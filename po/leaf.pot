@@ -61,7 +61,7 @@ msgstr ""
 msgid "Add or Update Tab Stop"
 msgstr ""
 
-#: src/gnome/context.rs:786 src/gnome/diagnostics/spellcheck.rs:142 src/gnome/diagnostics/spellcheck.rs:156
+#: src/gnome/context.rs:786 src/gnome/diagnostics/spellcheck.rs:146 src/gnome/diagnostics/spellcheck.rs:160
 msgid "Add to Dictionary"
 msgstr ""
 
@@ -101,7 +101,7 @@ msgstr ""
 msgid "All Fonts"
 msgstr ""
 
-#: src/gnome/font_install.rs:301
+#: src/gnome/font_install.rs:300
 msgid "All fonts used by this document are now available."
 msgstr ""
 
@@ -205,7 +205,7 @@ msgstr ""
 msgid "At Least (pt)"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:175 src/gnome/document_properties_dialog.rs:341 src/gnome/menus.rs:510 src/toolbar.rs:486
+#: src/gnome/diagnostics/annotations.rs:179 src/gnome/document_properties_dialog.rs:341 src/gnome/menus.rs:510 src/toolbar.rs:486
 msgid "Author"
 msgstr ""
 
@@ -229,7 +229,7 @@ msgstr ""
 msgid "Automatic Color"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:159 src/gnome/diagnostics/annotations.rs:171 src/gnome/menus.rs:518 src/gnome/navigation.rs:1049 src/navigation.rs:323 src/toolbar.rs:425
+#: src/gnome/diagnostics/annotations.rs:163 src/gnome/diagnostics/annotations.rs:175 src/gnome/menus.rs:518 src/gnome/navigation.rs:1049 src/navigation.rs:323 src/toolbar.rs:425
 msgid "Automatic Fields"
 msgstr ""
 
@@ -277,7 +277,7 @@ msgstr ""
 msgid "Body Text"
 msgstr ""
 
-#: src/gnome/accessibility.rs:106 src/gnome/font_install.rs:357 src/gnome/menus.rs:655 src/gnome/tab.rs:286 src/gnome/text_palette.rs:41 src/history.rs:196 src/toolbar.rs:161
+#: src/gnome/accessibility.rs:106 src/gnome/font_install.rs:356 src/gnome/menus.rs:655 src/gnome/tab.rs:286 src/gnome/text_palette.rs:41 src/history.rs:196 src/toolbar.rs:161
 msgid "Bold"
 msgstr ""
 
@@ -285,7 +285,7 @@ msgstr ""
 msgid "Bold (Ctrl+B)"
 msgstr ""
 
-#: src/gnome/font_install.rs:359
+#: src/gnome/font_install.rs:358
 msgid "Bold Italic"
 msgstr ""
 
@@ -309,7 +309,7 @@ msgstr ""
 msgid "Bookmarks can only be added to the editable document body."
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:156 src/gnome/menus.rs:468 src/toolbar.rs:394
+#: src/gnome/diagnostics/annotations.rs:160 src/gnome/menus.rs:468 src/toolbar.rs:394
 msgid "Bookmark…"
 msgstr ""
 
@@ -345,7 +345,7 @@ msgstr ""
 msgid "Bottom to Top"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:160 src/gnome/menus.rs:523 src/toolbar.rs:428
+#: src/gnome/diagnostics/annotations.rs:164 src/gnome/menus.rs:523 src/toolbar.rs:428
 msgid "Breaks"
 msgstr ""
 
@@ -457,7 +457,7 @@ msgstr ""
 msgid "Character Spacing"
 msgstr ""
 
-#: src/gnome/font_install.rs:409
+#: src/gnome/font_install.rs:408
 msgid "Check Installed Fonts"
 msgstr ""
 
@@ -517,7 +517,7 @@ msgstr ""
 msgid "Choose a local dictionary folder."
 msgstr ""
 
-#: src/gnome/font_install.rs:218
+#: src/gnome/font_install.rs:217
 msgid "Choose a local file."
 msgstr ""
 
@@ -565,7 +565,7 @@ msgstr ""
 msgid "Clickable Entries"
 msgstr ""
 
-#: src/gnome/application.rs:182 src/gnome/columns.rs:727 src/gnome/diagnostics/alpha43.rs:329 src/gnome/font_install.rs:190 src/gnome/font_install.rs:227
+#: src/gnome/application.rs:119 src/gnome/columns.rs:727 src/gnome/diagnostics/alpha43.rs:329 src/gnome/font_install.rs:189 src/gnome/font_install.rs:226
 msgid "Close"
 msgstr ""
 
@@ -593,7 +593,7 @@ msgstr ""
 msgid "Color and Effects"
 msgstr ""
 
-#: src/gnome/context.rs:474 src/gnome/context.rs:499 src/gnome/diagnostics/context.rs:228 src/gnome/tables.rs:756 src/gnome/tables.rs:781
+#: src/gnome/context.rs:474 src/gnome/context.rs:499 src/gnome/diagnostics/context.rs:232 src/gnome/tables.rs:756 src/gnome/tables.rs:781
 msgid "Column"
 msgstr ""
 
@@ -649,7 +649,7 @@ msgstr ""
 msgid "Comments"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:157 src/gnome/diagnostics/annotations.rs:186 src/gnome/menus.rs:474 src/toolbar.rs:400
+#: src/gnome/diagnostics/annotations.rs:161 src/gnome/diagnostics/annotations.rs:190 src/gnome/menus.rs:474 src/toolbar.rs:400
 msgid "Comment…"
 msgstr ""
 
@@ -669,7 +669,7 @@ msgstr ""
 msgid "Contents"
 msgstr ""
 
-#: src/gnome/diagnostics/context.rs:24
+#: src/gnome/diagnostics/context.rs:28
 msgid "Contexts"
 msgstr ""
 
@@ -681,7 +681,7 @@ msgstr ""
 msgid "Continue from Previous Section"
 msgstr ""
 
-#: src/gnome/font_install.rs:70
+#: src/gnome/font_install.rs:69
 msgid "Continue with Substitutes"
 msgstr ""
 
@@ -689,7 +689,7 @@ msgstr ""
 msgid "Continuous"
 msgstr ""
 
-#: src/gnome/context.rs:657 src/gnome/context_clipboard.rs:15 src/gnome/diagnostics/context.rs:74 src/gnome/diagnostics/context.rs:296 src/gnome/diagnostics/spellcheck.rs:146 src/save_name.rs:52
+#: src/gnome/context.rs:657 src/gnome/context_clipboard.rs:15 src/gnome/diagnostics/context.rs:78 src/gnome/diagnostics/context.rs:300 src/gnome/diagnostics/spellcheck.rs:150 src/save_name.rs:52
 msgid "Copy"
 msgstr ""
 
@@ -725,7 +725,7 @@ msgstr ""
 msgid "Could Not Load Recovery List"
 msgstr ""
 
-#: src/gnome/application.rs:179
+#: src/gnome/application.rs:116
 msgid "Could Not Open Document"
 msgstr ""
 
@@ -737,7 +737,7 @@ msgstr ""
 msgid "Could Not Open Template"
 msgstr ""
 
-#: src/gnome/font_install.rs:189
+#: src/gnome/font_install.rs:188
 msgid "Could Not Open the Font Viewer"
 msgstr ""
 
@@ -757,7 +757,7 @@ msgstr ""
 msgid "Could Not Read Image"
 msgstr ""
 
-#: src/gnome/font_install.rs:226
+#: src/gnome/font_install.rs:225
 msgid "Could Not Save"
 msgstr ""
 
@@ -769,7 +769,7 @@ msgstr ""
 msgid "Could Not Save: {e}"
 msgstr ""
 
-#: src/gnome/font_install.rs:161
+#: src/gnome/font_install.rs:160
 msgid "Could not download this font. Check your connection and try again, or open a local font file."
 msgstr ""
 
@@ -809,7 +809,7 @@ msgstr ""
 msgid "Crop Image"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha28.rs:91 src/gnome/references.rs:324
+#: src/gnome/diagnostics/alpha28.rs:95 src/gnome/references.rs:324
 msgid "Cross-reference"
 msgstr ""
 
@@ -869,7 +869,7 @@ msgstr ""
 msgid "Customize Toolbar"
 msgstr ""
 
-#: src/gnome/context.rs:376 src/gnome/diagnostics/context.rs:132 src/gnome/diagnostics/spellcheck.rs:145
+#: src/gnome/context.rs:376 src/gnome/diagnostics/context.rs:136 src/gnome/diagnostics/spellcheck.rs:149
 msgid "Cut"
 msgstr ""
 
@@ -893,7 +893,7 @@ msgstr ""
 msgid "Dashes"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:178 src/gnome/menus.rs:513 src/toolbar.rs:504
+#: src/gnome/diagnostics/annotations.rs:182 src/gnome/menus.rs:513 src/toolbar.rs:504
 msgid "Date"
 msgstr ""
 
@@ -925,7 +925,7 @@ msgstr ""
 msgid "Default — {language}"
 msgstr ""
 
-#: src/gnome/annotations.rs:674 src/gnome/context.rs:495 src/gnome/diagnostics/context.rs:222 src/gnome/tables.rs:777 src/history.rs:334
+#: src/gnome/annotations.rs:674 src/gnome/context.rs:495 src/gnome/diagnostics/context.rs:226 src/gnome/tables.rs:777 src/history.rs:334
 msgid "Delete"
 msgstr ""
 
@@ -985,7 +985,7 @@ msgstr ""
 msgid "Describe the image's meaning. A visible caption is separate from alternative text."
 msgstr ""
 
-#: src/gnome/diagnostics/context.rs:301 src/gnome/links.rs:120 src/gnome/links.rs:121
+#: src/gnome/diagnostics/context.rs:305 src/gnome/links.rs:120 src/gnome/links.rs:121
 msgid "Destination"
 msgstr ""
 
@@ -1097,7 +1097,7 @@ msgstr ""
 msgid "Do not check spelling or grammar"
 msgstr ""
 
-#: src/gnome/application.rs:130 src/gnome/tab.rs:856 src/save_name.rs:41 src/save_name.rs:109
+#: src/gnome/application.rs:67 src/gnome/tab.rs:856 src/save_name.rs:41 src/save_name.rs:109
 msgid "Document"
 msgstr ""
 
@@ -1113,7 +1113,7 @@ msgstr ""
 msgid "Document File"
 msgstr ""
 
-#: src/gnome/font_install.rs:327
+#: src/gnome/font_install.rs:326
 msgid "Document Fonts"
 msgstr ""
 
@@ -1133,7 +1133,7 @@ msgstr ""
 msgid "Document Sent to Printer"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:176 src/gnome/menus.rs:511 src/toolbar.rs:492
+#: src/gnome/diagnostics/annotations.rs:180 src/gnome/menus.rs:511 src/toolbar.rs:492
 msgid "Document Title"
 msgstr ""
 
@@ -1181,15 +1181,15 @@ msgstr ""
 msgid "Double Strikethrough"
 msgstr ""
 
-#: src/gnome/font_install.rs:363
+#: src/gnome/font_install.rs:362
 msgid "Download and Open"
 msgstr ""
 
-#: src/gnome/font_install.rs:153
+#: src/gnome/font_install.rs:152
 msgid "Downloaded. Install this style in the system font viewer, then check again."
 msgstr ""
 
-#: src/gnome/font_install.rs:115
+#: src/gnome/font_install.rs:114
 msgid "Downloading font and license…"
 msgstr ""
 
@@ -1249,7 +1249,7 @@ msgstr ""
 msgid "Effects"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:152 src/gnome/diagnostics/annotations.rs:170 src/gnome/diagnostics/annotations.rs:185 src/gnome/diagnostics/format136.rs:433 src/gnome/elements.rs:192 src/gnome/elements.rs:350 src/gnome/elements.rs:351 src/gnome/elements.rs:368 src/gnome/format_bar.rs:145 src/gnome/menus.rs:528 src/gnome/toolbar_preferences.rs:237
+#: src/gnome/diagnostics/annotations.rs:156 src/gnome/diagnostics/annotations.rs:174 src/gnome/diagnostics/annotations.rs:189 src/gnome/diagnostics/format136.rs:433 src/gnome/elements.rs:192 src/gnome/elements.rs:350 src/gnome/elements.rs:351 src/gnome/elements.rs:368 src/gnome/format_bar.rs:145 src/gnome/menus.rs:528 src/gnome/toolbar_preferences.rs:237
 msgid "Elements"
 msgstr ""
 
@@ -1337,7 +1337,7 @@ msgstr ""
 msgid "Equal"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha29.rs:171 src/gnome/equations.rs:10 src/navigation.rs:315
+#: src/gnome/diagnostics/alpha29.rs:175 src/gnome/equations.rs:10 src/navigation.rs:315
 msgid "Equation"
 msgstr ""
 
@@ -1409,7 +1409,7 @@ msgstr ""
 msgid "Figure"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:177 src/gnome/menus.rs:512 src/toolbar.rs:498
+#: src/gnome/diagnostics/annotations.rs:181 src/gnome/menus.rs:512 src/toolbar.rs:498
 msgid "File Name"
 msgstr ""
 
@@ -1489,7 +1489,7 @@ msgstr ""
 msgid "Font Family"
 msgstr ""
 
-#: src/gnome/font_install.rs:239
+#: src/gnome/font_install.rs:238
 msgid "Font Files"
 msgstr ""
 
@@ -1517,7 +1517,7 @@ msgstr ""
 msgid "Fonts in This Document"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:165 src/gnome/menus.rs:501 src/toolbar.rs:419
+#: src/gnome/diagnostics/annotations.rs:169 src/gnome/menus.rs:501 src/toolbar.rs:419
 msgid "Footer"
 msgstr ""
 
@@ -1533,7 +1533,7 @@ msgstr ""
 msgid "Footnote"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha28.rs:93 src/gnome/references.rs:378
+#: src/gnome/diagnostics/alpha28.rs:97 src/gnome/references.rs:378
 msgid "Footnote Options"
 msgstr ""
 
@@ -1601,11 +1601,11 @@ msgstr ""
 msgid "Hanging"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:165 src/gnome/menus.rs:495 src/toolbar.rs:413
+#: src/gnome/diagnostics/annotations.rs:169 src/gnome/menus.rs:495 src/toolbar.rs:413
 msgid "Header"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:158 src/gnome/diagnostics/annotations.rs:164 src/gnome/menus.rs:505
+#: src/gnome/diagnostics/annotations.rs:162 src/gnome/diagnostics/annotations.rs:168 src/gnome/menus.rs:505
 msgid "Header and Footer"
 msgstr ""
 
@@ -1697,7 +1697,7 @@ msgstr ""
 msgid "Ignore This Occurrence"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:155 src/gnome/diagnostics/format136.rs:113 src/gnome/elements.rs:186 src/gnome/elements.rs:191 src/gnome/menus.rs:453 src/gnome/picture_controls.rs:266 src/gnome/picture_controls.rs:277 src/navigation.rs:301 src/toolbar.rs:281
+#: src/gnome/diagnostics/annotations.rs:159 src/gnome/diagnostics/format136.rs:113 src/gnome/elements.rs:186 src/gnome/elements.rs:191 src/gnome/menus.rs:453 src/gnome/picture_controls.rs:266 src/gnome/picture_controls.rs:277 src/navigation.rs:301 src/toolbar.rs:281
 msgid "Image"
 msgstr ""
 
@@ -1709,7 +1709,7 @@ msgstr ""
 msgid "Image Size"
 msgstr ""
 
-#: src/gnome/context.rs:421 src/gnome/diagnostics/context.rs:278
+#: src/gnome/context.rs:421 src/gnome/diagnostics/context.rs:282
 msgid "Image Size…"
 msgstr ""
 
@@ -1793,7 +1793,7 @@ msgstr ""
 msgid "Inline images move with the text automatically."
 msgstr ""
 
-#: src/gnome/context.rs:479 src/gnome/diagnostics/context.rs:221 src/gnome/headers.rs:126 src/gnome/links.rs:71 src/gnome/references.rs:107 src/gnome/tables.rs:761
+#: src/gnome/context.rs:479 src/gnome/diagnostics/context.rs:225 src/gnome/headers.rs:126 src/gnome/links.rs:71 src/gnome/references.rs:107 src/gnome/tables.rs:761
 msgid "Insert"
 msgstr ""
 
@@ -1881,7 +1881,7 @@ msgstr ""
 msgid "Install Missing Fonts…"
 msgstr ""
 
-#: src/gnome/font_install.rs:336
+#: src/gnome/font_install.rs:335
 msgid "Install each required style in your system font viewer. Opening the viewer does not install a font or replace the document's font names."
 msgstr ""
 
@@ -1901,7 +1901,7 @@ msgstr ""
 msgid "Italian"
 msgstr ""
 
-#: src/gnome/accessibility.rs:107 src/gnome/font_install.rs:358 src/gnome/menus.rs:656 src/gnome/tab.rs:289 src/gnome/text_palette.rs:42 src/history.rs:198 src/toolbar.rs:165
+#: src/gnome/accessibility.rs:107 src/gnome/font_install.rs:357 src/gnome/menus.rs:656 src/gnome/tab.rs:289 src/gnome/text_palette.rs:42 src/history.rs:198 src/toolbar.rs:165
 msgid "Italic"
 msgstr ""
 
@@ -2181,7 +2181,7 @@ msgstr ""
 msgid "More Styles…"
 msgstr ""
 
-#: src/gnome/context.rs:578 src/gnome/diagnostics/context.rs:235
+#: src/gnome/context.rs:578 src/gnome/diagnostics/context.rs:239
 msgid "More Table Options…"
 msgstr ""
 
@@ -2353,7 +2353,7 @@ msgstr ""
 msgid "No elements of this type in the document."
 msgstr ""
 
-#: src/gnome/font_install.rs:188
+#: src/gnome/font_install.rs:187
 msgid "No font viewer could open this file. Save it and open it with your system's font installer."
 msgstr ""
 
@@ -2389,11 +2389,11 @@ msgstr ""
 msgid "Normal Style"
 msgstr ""
 
-#: src/gnome/font_install.rs:348 src/gnome/text_controls.rs:623
+#: src/gnome/font_install.rs:347 src/gnome/text_controls.rs:623
 msgid "Not available; displayed as"
 msgstr ""
 
-#: src/gnome/font_install.rs:394
+#: src/gnome/font_install.rs:393
 msgid "Not in the download catalog. Use a local font file or choose a replacement in Document Properties."
 msgstr ""
 
@@ -2441,7 +2441,7 @@ msgstr ""
 msgid "Only in More Options"
 msgstr ""
 
-#: src/gnome/application.rs:122 src/gnome/tab.rs:845
+#: src/gnome/application.rs:59 src/gnome/tab.rs:845
 msgid "Only local files are supported"
 msgstr ""
 
@@ -2453,11 +2453,11 @@ msgstr ""
 msgid "Open Document"
 msgstr ""
 
-#: src/gnome/diagnostics/maintenance45.rs:204 src/gnome/font_install.rs:152 src/gnome/font_install.rs:237
+#: src/gnome/diagnostics/maintenance45.rs:204 src/gnome/font_install.rs:151 src/gnome/font_install.rs:236
 msgid "Open Font File"
 msgstr ""
 
-#: src/gnome/font_install.rs:399
+#: src/gnome/font_install.rs:398
 msgid "Open Local Font File…"
 msgstr ""
 
@@ -2513,7 +2513,7 @@ msgstr ""
 msgid "Page Break Before"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:173 src/gnome/headers.rs:116 src/gnome/menus.rs:508 src/gnome/references.rs:335 src/header_footer.rs:175 src/toolbar.rs:474
+#: src/gnome/diagnostics/annotations.rs:177 src/gnome/headers.rs:116 src/gnome/menus.rs:508 src/gnome/references.rs:335 src/header_footer.rs:175 src/toolbar.rs:474
 msgid "Page Number"
 msgstr ""
 
@@ -2537,7 +2537,7 @@ msgstr ""
 msgid "Pages"
 msgstr ""
 
-#: src/gnome/diagnostics/sweep20.rs:616 src/gnome/view.rs:34
+#: src/gnome/diagnostics/sweep20.rs:620 src/gnome/view.rs:34
 msgid "Pages: {current} of {total}"
 msgstr ""
 
@@ -2549,7 +2549,7 @@ msgstr ""
 msgid "Paper Size"
 msgstr ""
 
-#: src/gnome/context.rs:131 src/gnome/context.rs:405 src/gnome/diagnostics/context.rs:159 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/register.rs:356 src/gnome/format_bar.rs:144 src/gnome/paragraph.rs:1339 src/gnome/tab.rs:353 src/gnome/tab.rs:661 src/gnome/toolbar_preferences.rs:236
+#: src/gnome/context.rs:131 src/gnome/context.rs:405 src/gnome/diagnostics/context.rs:163 src/gnome/diagnostics/format136.rs:431 src/gnome/diagnostics/register.rs:356 src/gnome/format_bar.rs:144 src/gnome/paragraph.rs:1339 src/gnome/tab.rs:353 src/gnome/tab.rs:661 src/gnome/toolbar_preferences.rs:236
 msgid "Paragraph"
 msgstr ""
 
@@ -2565,7 +2565,7 @@ msgstr ""
 msgid "Paragraph borders"
 msgstr ""
 
-#: src/gnome/context.rs:658 src/gnome/context_clipboard.rs:22 src/gnome/diagnostics/clipboard.rs:49 src/gnome/diagnostics/context.rs:116 src/history.rs:330
+#: src/gnome/context.rs:658 src/gnome/context_clipboard.rs:22 src/gnome/diagnostics/clipboard.rs:49 src/gnome/diagnostics/context.rs:120 src/history.rs:330
 msgid "Paste"
 msgstr ""
 
@@ -2737,7 +2737,7 @@ msgstr ""
 msgid "Refresh Dictionaries"
 msgstr ""
 
-#: src/gnome/font_install.rs:360
+#: src/gnome/font_install.rs:359
 msgid "Regular"
 msgstr ""
 
@@ -2901,7 +2901,7 @@ msgstr ""
 msgid "Restore Original Size"
 msgstr ""
 
-#: src/gnome/annotations.rs:155 src/gnome/diagnostics/navigation131.rs:93 src/gnome/diagnostics/review29.rs:31 src/gnome/document_properties_dialog.rs:358 src/gnome/navigation.rs:39 src/gnome/review.rs:284 src/gnome/tab.rs:218 src/gnome/tab.rs:220
+#: src/gnome/annotations.rs:155 src/gnome/diagnostics/navigation131.rs:93 src/gnome/diagnostics/review29.rs:35 src/gnome/document_properties_dialog.rs:358 src/gnome/navigation.rs:39 src/gnome/review.rs:284 src/gnome/tab.rs:218 src/gnome/tab.rs:220
 msgid "Review"
 msgstr ""
 
@@ -2909,7 +2909,7 @@ msgstr ""
 msgid "Review Filter"
 msgstr ""
 
-#: src/gnome/diagnostics/maintenance45.rs:166 src/gnome/font_install.rs:71
+#: src/gnome/diagnostics/maintenance45.rs:166 src/gnome/font_install.rs:70
 msgid "Review Fonts"
 msgstr ""
 
@@ -3029,11 +3029,11 @@ msgstr ""
 msgid "Save Document — DOCX or ODT"
 msgstr ""
 
-#: src/gnome/font_install.rs:202
+#: src/gnome/font_install.rs:201
 msgid "Save Font File"
 msgstr ""
 
-#: src/gnome/font_install.rs:190
+#: src/gnome/font_install.rs:189
 msgid "Save Font File…"
 msgstr ""
 
@@ -3185,11 +3185,11 @@ msgstr ""
 msgid "Sections cannot move across page-section breaks or while tracking changes. The document has been kept unchanged."
 msgstr ""
 
-#: src/gnome/context.rs:469 src/gnome/diagnostics/context.rs:220 src/gnome/diagnostics/context.rs:227 src/gnome/tables.rs:751
+#: src/gnome/context.rs:469 src/gnome/diagnostics/context.rs:224 src/gnome/diagnostics/context.rs:231 src/gnome/tables.rs:751
 msgid "Select"
 msgstr ""
 
-#: src/gnome/context.rs:392 src/gnome/diagnostics/context.rs:147
+#: src/gnome/context.rs:392 src/gnome/diagnostics/context.rs:151
 msgid "Select All"
 msgstr ""
 
@@ -3365,7 +3365,7 @@ msgstr ""
 msgid "Small Caps"
 msgstr ""
 
-#: src/gnome/font_install.rs:65
+#: src/gnome/font_install.rs:64
 msgid "Some Fonts Are Unavailable"
 msgstr ""
 
@@ -3433,7 +3433,7 @@ msgstr ""
 msgid "Spelling and Grammar"
 msgstr ""
 
-#: src/gnome/context.rs:557 src/gnome/diagnostics/context.rs:223 src/gnome/tables.rs:806
+#: src/gnome/context.rs:557 src/gnome/diagnostics/context.rs:227 src/gnome/tables.rs:806
 msgid "Split"
 msgstr ""
 
@@ -3485,7 +3485,7 @@ msgstr ""
 msgid "Starting Page Number"
 msgstr ""
 
-#: src/gnome/font_install.rs:305
+#: src/gnome/font_install.rs:304
 msgid "Still unavailable:"
 msgstr ""
 
@@ -3501,7 +3501,7 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: src/gnome/context.rs:128 src/gnome/context.rs:404 src/gnome/diagnostics/adaptive.rs:44 src/gnome/diagnostics/adaptive.rs:47 src/gnome/diagnostics/context.rs:158 src/gnome/diagnostics/format136.rs:432 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:355 src/gnome/styles.rs:524 src/gnome/tab.rs:349 src/gnome/tab.rs:660
+#: src/gnome/context.rs:128 src/gnome/context.rs:404 src/gnome/diagnostics/adaptive.rs:48 src/gnome/diagnostics/adaptive.rs:51 src/gnome/diagnostics/context.rs:162 src/gnome/diagnostics/format136.rs:432 src/gnome/diagnostics/performance_checks.rs:77 src/gnome/diagnostics/register.rs:355 src/gnome/styles.rs:524 src/gnome/tab.rs:349 src/gnome/tab.rs:660
 msgid "Style"
 msgstr ""
 
@@ -3565,7 +3565,7 @@ msgstr ""
 msgid "Tab stop"
 msgstr ""
 
-#: src/gnome/context.rs:475 src/gnome/context.rs:500 src/gnome/diagnostics/annotations.rs:154 src/gnome/diagnostics/format136.rs:112 src/gnome/elements.rs:185 src/gnome/links.rs:113 src/gnome/menus.rs:452 src/gnome/references.rs:329 src/gnome/tables.rs:62 src/gnome/tables.rs:265 src/gnome/tables.rs:668 src/gnome/tables.rs:681 src/gnome/tables.rs:757 src/gnome/tables.rs:782 src/toolbar.rs:282
+#: src/gnome/context.rs:475 src/gnome/context.rs:500 src/gnome/diagnostics/annotations.rs:158 src/gnome/diagnostics/format136.rs:112 src/gnome/elements.rs:185 src/gnome/links.rs:113 src/gnome/menus.rs:452 src/gnome/references.rs:329 src/gnome/tables.rs:62 src/gnome/tables.rs:265 src/gnome/tables.rs:668 src/gnome/tables.rs:681 src/gnome/tables.rs:757 src/gnome/tables.rs:782 src/toolbar.rs:282
 msgid "Table"
 msgstr ""
 
@@ -3605,7 +3605,7 @@ msgstr ""
 msgid "Table Width (cm)"
 msgstr ""
 
-#: src/gnome/diagnostics/alpha28.rs:88 src/gnome/diagnostics/alpha29.rs:101 src/gnome/diagnostics/format136.rs:114 src/gnome/elements.rs:187 src/gnome/menus.rs:454 src/gnome/navigation.rs:1043 src/gnome/references.rs:208 src/navigation.rs:319 src/toolbar.rs:382
+#: src/gnome/diagnostics/alpha28.rs:92 src/gnome/diagnostics/alpha29.rs:105 src/gnome/diagnostics/format136.rs:114 src/gnome/elements.rs:187 src/gnome/menus.rs:454 src/gnome/navigation.rs:1043 src/gnome/references.rs:208 src/navigation.rs:319 src/toolbar.rs:382
 msgid "Table of Contents"
 msgstr ""
 
@@ -3633,7 +3633,7 @@ msgstr ""
 msgid "Templates Folder"
 msgstr ""
 
-#: src/gnome/context.rs:134 src/gnome/context.rs:406 src/gnome/diagnostics/adaptive.rs:65 src/gnome/diagnostics/context.rs:160 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:357 src/gnome/diagnostics/spellcheck.rs:147 src/gnome/format_bar.rs:143 src/gnome/references.rs:334 src/gnome/tab.rs:305 src/gnome/tab.rs:340 src/gnome/tab.rs:662 src/gnome/toolbar_preferences.rs:235
+#: src/gnome/context.rs:134 src/gnome/context.rs:406 src/gnome/diagnostics/adaptive.rs:69 src/gnome/diagnostics/context.rs:164 src/gnome/diagnostics/format136.rs:430 src/gnome/diagnostics/register.rs:357 src/gnome/diagnostics/spellcheck.rs:151 src/gnome/format_bar.rs:143 src/gnome/references.rs:334 src/gnome/tab.rs:305 src/gnome/tab.rs:340 src/gnome/tab.rs:662 src/gnome/toolbar_preferences.rs:235
 msgid "Text"
 msgstr ""
 
@@ -3773,7 +3773,7 @@ msgstr ""
 msgid "The folder path cannot be represented as UTF-8."
 msgstr ""
 
-#: src/gnome/font_install.rs:167
+#: src/gnome/font_install.rs:166
 msgid "The font download failed."
 msgstr ""
 
@@ -3877,7 +3877,7 @@ msgstr ""
 msgid "Thickness (pt)"
 msgstr ""
 
-#: src/gnome/font_install.rs:396
+#: src/gnome/font_install.rs:395
 msgid "This Flatpak package does not permit font downloads. Download the font outside Leaf and open its local file here."
 msgstr ""
 
@@ -3901,7 +3901,7 @@ msgstr ""
 msgid "This comment has no visible anchor in the document."
 msgstr ""
 
-#: src/gnome/font_install.rs:66
+#: src/gnome/font_install.rs:65
 msgid "This document uses fonts that are not available. Substitutions can change its appearance and pagination. The original font names have been preserved."
 msgstr ""
 
@@ -3937,7 +3937,7 @@ msgstr ""
 msgid "Three"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:179 src/gnome/menus.rs:514 src/toolbar.rs:510
+#: src/gnome/diagnostics/annotations.rs:183 src/gnome/menus.rs:514 src/toolbar.rs:510
 msgid "Time"
 msgstr ""
 
@@ -3961,7 +3961,7 @@ msgstr ""
 msgid "Top to Bottom"
 msgstr ""
 
-#: src/gnome/diagnostics/annotations.rs:174 src/gnome/menus.rs:509 src/toolbar.rs:480
+#: src/gnome/diagnostics/annotations.rs:178 src/gnome/menus.rs:509 src/toolbar.rs:480
 msgid "Total Pages"
 msgstr ""
 

@@ -2,7 +2,7 @@ use super::*;
 
 /// Exercise persistent native representations without conflating a sidebar
 /// scroll position with the document's editing target or viewport.
-pub(super) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
+pub(in crate::gnome) fn navigation131_test(ui: &Rc<Ui>, finish: impl FnOnce() + 'static) {
     let u = ui.clone();
     let mut original = {
         let c = u.current.borrow();

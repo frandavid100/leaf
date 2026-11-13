@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn install_motion_check(ui: &Rc<Ui>, app: &Application) {
+pub(in crate::gnome) fn install_motion_check(ui: &Rc<Ui>, app: &Application) {
     if std::env::args().any(|a| a == "--motion-ui-test") {
         assert!(
             ui.sidebar.shows_sidebar(),

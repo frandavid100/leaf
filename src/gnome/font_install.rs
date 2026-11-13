@@ -33,8 +33,7 @@ fn downloads_allowed() -> bool {
 pub(super) fn opened(ui: &Rc<Ui>) {
     // Legacy synthetic UI probes have their own modal workflows. The dedicated
     // font279 probe exercises this automatic notice with normal product behavior.
-    let args = std::env::args().collect::<Vec<_>>();
-    if args.iter().any(|a| a.ends_with("-test")) && !args.iter().any(|a| a == "--font279-ui-test") {
+    if diagnostics::any_flag(|a| a.ends_with("-test")) && !diagnostics::flag("--font279-ui-test") {
         return;
     }
     let Some(id) = current_id(ui) else { return };
