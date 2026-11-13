@@ -62,31 +62,31 @@ def verify(release, tag, candidate, manifest, notes, native, run):
 
 def document_changes(proof, remaining, root):
     version, source = proof['version'], proof['source']
-    closed = ', '.join('#' + str(n) for n in proof['closed_issues']) or 'ninguno'
+    closed = ', '.join('#' + str(n) for n in proof['closed_issues']) or 'none'
     # GitHub's issue list can lag its successful close responses.
     remaining = sorted(set(remaining) - set(proof['closed_issues']))
-    open_issues = ', '.join('#' + str(n) for n in remaining) or 'ninguno'
-    report = f'''# Última release verificada: {version}
+    open_issues = ', '.join('#' + str(n) for n in remaining) or 'none'
+    report = f'''# Latest verified release: {version}
 
-[Release y descargas]({proof['release_url']}).
-Cerrados tras verificar la publicación: {closed}. Permanecen abiertos: {open_issues}.
+[Release and downloads]({proof['release_url']}).
+Closed after verifying the release: {closed}. Still open: {open_issues}.
 
-- Fuente/tag: `{source}`.
-- [Batería nativa completa](https://github.com/frandavid100/leaf/actions/runs/{proof['native_run']}).
-- [Paquetes instalados, ambos runtimes y comparación del ejecutable](https://github.com/frandavid100/leaf/actions/runs/{proof['candidate_run']}).
-- Trece archivos públicos, SHA-256, notas y fuente comprobados contra la candidata.
-- [Prueba de identidad y digests](LATEST_RELEASE_ASSETS.json).
+- Source/tag: `{source}`.
+- [Full native suite](https://github.com/frandavid100/leaf/actions/runs/{proof['native_run']}).
+- [Installed packages, both runtimes and executable comparison](https://github.com/frandavid100/leaf/actions/runs/{proof['candidate_run']}).
+- Thirteen public files, SHA-256, notes and source checked against the candidate.
+- [Identity and digest proof](LATEST_RELEASE_ASSETS.json).
 
-La validación es automática; no implica pruebas humanas con GNOME OS, impresoras o dispositivos físicos.
+Validation is automatic; it does not imply human testing on GNOME OS, printers or physical devices.
 '''
     files = {'docs/LATEST_RELEASE.md': report,
              'docs/LATEST_RELEASE_ASSETS.json': json.dumps(proof, indent=2) + '\n'}
     block = f'''<!-- published-alpha:start -->
-## Última publicación verificada: {version}
+## Latest verified release: {version}
 
-[Release]({proof['release_url']}). Issues cerrados: {closed}.
-Permanecen abiertos: {open_issues}.
-[Fuente, validación y límites](docs/LATEST_RELEASE.md).
+[Release]({proof['release_url']}). Closed issues: {closed}.
+Still open: {open_issues}.
+[Source, validation and limits](docs/LATEST_RELEASE.md).
 <!-- published-alpha:end -->
 '''
     report_path = proof.get('release_report')
@@ -110,11 +110,11 @@ Permanecen abiertos: {open_issues}.
     files['README.md'] = re.sub(r'(\*\*\[Try the Flatpak alpha\]\()https://github.com/frandavid100/leaf/releases/tag/[^)]+',
                                 r'\g<1>' + proof['release_url'], readme)
     decisions = (root / 'docs/DECISIONS.md').read_text()
-    entry = f'''## Publicada y verificada automáticamente: {version}
+    entry = f'''## Published and verified automatically: {version}
 
-Se publican los mismos bytes de la candidata tras superar todas las pruebas
-nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
-de cerrar {closed}. [Identidad y límites](LATEST_RELEASE.md).
+The candidate's exact bytes are published after passing every native and
+installation check. Source, tag and thirteen public files are verified before
+closing {closed}. [Identity and limits](LATEST_RELEASE.md).
 
 '''
     at = decisions.index('\n## ')

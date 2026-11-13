@@ -1,656 +1,656 @@
-# Estado actual de Leaf
+# Current state of Leaf
 
 
-## 12/11/2026 — limpieza sin riesgo
+## 12/11/2026 — risk-free cleanup
 
-Primer PR de la revisión de peso, velocidad y claridad. Los 44 informes de
-alfas y barridos pasan de `docs/` a `docs/history/` con enlaces actualizados; se
-retiran los workflows de investigaciones cerradas (alpha31-locale-check,
-clipboard217) y tres capturas de CI antiguas sin referencias, que quedan en el
-historial de git; `ARCHITECTURE.md` ya no empieza con una nota de versión; se
-corrigen comentarios desfasados (egui, guardado). Sin cambios de comportamiento,
-dependencias, motor ni publicación. Validación: formato, pruebas Python,
-catálogos, enlaces y `cargo test --locked` (247 pruebas).
+First PR of the size, speed and clarity review. The 44 alpha and sweep reports
+move from `docs/` to `docs/history/` with updated links; the workflows of
+closed investigations (alpha31-locale-check, clipboard217) and three old,
+unreferenced CI screenshots are removed and remain in the git history;
+`ARCHITECTURE.md` no longer starts with a version note; outdated comments
+(egui, saving) are corrected. No changes to behavior, dependencies, engine or
+publishing. Validation: formatting, Python tests, catalogs, links and
+`cargo test --locked` (247 tests).
 
-## 11/11/2026 — ficha de tienda enviada a FlatPark
+## 11/11/2026 — store listing submitted to FlatPark
 
-David pide retomar la ficha de FlatPark. AppStream usa las cuatro capturas
-aprobadas con transparencia, esquinas y sombra originales. Se prepara en el fork
-una actualización estática de metainfo e iconos, con las novedades bilingües de
-alpha.44/.42/.41/.40 que faltaban. A petición de David, la descripción EN/ES
-se renueva siguiendo el README: potencia y sencillez primero, alfa e IA al final.
-No cambia el ejecutable ni se publica una alpha. La automatización anterior no
-se integró: sigue reservada a FlatPark. David aprueba el resultado y se abre la
-[PR #1139](https://github.com/flatpark/flatpark/pull/1139), sin conflictos. Su CI
-necesita autorización de un mantenedor. Publicación y comprobación en el cliente
-siguen pendientes; #185 permanece abierto. [Revisión y borrador](docs/FLATPARK_GALLERY_2026_11.md).
+David asks to resume the FlatPark listing. AppStream uses the four approved
+screenshots with their original transparency, corners and shadow. A static
+metainfo and icon update is prepared in the fork, with the missing bilingual
+release notes for alpha.44/.42/.41/.40. At David's request, the EN/ES description
+is renewed following the README: power and simplicity first, alpha and AI last.
+The executable does not change and no alpha is published. The earlier automation
+was not integrated: it remains reserved for FlatPark. David approves the result
+and [PR #1139](https://github.com/flatpark/flatpark/pull/1139) is opened, with no
+conflicts. Its CI needs authorization from a maintainer. Publication and checking
+in the client are still pending; #185 stays open. [Review and draft](docs/FLATPARK_GALLERY_2026_11.md).
 
-## 11/11/2026 — README y capturas aprobadas
+## 11/11/2026 — README and approved screenshots
 
-La presentación pública usa el icono azul vigente y cuatro capturas reales
-aportadas y aprobadas por David: portada, maquetación, revisión y menú de
-subrayado. El texto resume las funciones actuales, declara el vibe coding y
-distingue FlatPark con actualizaciones de los bundles manuales y Windows
-experimental. [Procedencia](docs/screenshots/README.md). No se publica una nueva
-alpha ni se da por actualizada la galería de la tienda; #185 conserva ese trabajo.
-
-
+The public presentation uses the current blue icon and four real screenshots
+provided and approved by David: front page, layout, review and the underline
+menu. The text summarizes the current features, declares the vibe coding and
+distinguishes FlatPark, with updates, from the manual bundles and experimental
+Windows. [Provenance](docs/screenshots/README.md). No new alpha is published
+and the store gallery is not considered updated; #185 keeps that work.
 
 
 
-Procedimiento habitual: RC validada para probar; tras el visto bueno de David,
-promoción de los mismos archivos sin recompilar. [Proceso](docs/CANDIDATES.md).
 
-## Alpha.41: revisión final y publicación directa autorizada
 
-David autoriza el 9/11/2026 publicar esta entrega automáticamente al terminar,
-sin esperar otra prueba personal. Se incorporan #233–#237: miniaturas grandes en
-Inicio, pie fijo, estilo único, desplegables nativos y separación/iconos corregidos.
-La validación de la nueva fuente precede a la publicación; la RC anterior queda
-como evidencia histórica, no como validación de estos cambios.
-[Alcance, pruebas y límites](docs/history/ALPHA41_FINAL.md).
+Usual procedure: a validated RC for testing; after David's approval, promotion
+of the same files without recompiling. [Process](docs/CANDIDATES.md).
 
-#152 permanece abierto: la reproducción sin GTK confirma que WordCraft 0.17
-conserva el formato al borrar texto y luego el párrafo vacío, pero lo transfiere
-al borrar el párrafo completo. También permanecen #1, #52, #99, #171 y #185.
-Se conservan los aplazamientos de capturas públicas, Weblate y Windows ocasional.
+## Alpha.41: final review and authorized direct publication
+
+On 9/11/2026 David authorizes publishing this delivery automatically when done,
+without waiting for another personal test. #233–#237 are incorporated: large
+thumbnails in Start, fixed footer, single style, native dropdowns and fixed
+spacing/icons. Validation of the new source precedes publication; the previous
+RC remains as historical evidence, not as validation of these changes.
+[Scope, tests and limits](docs/history/ALPHA41_FINAL.md).
+
+#152 stays open: the reproduction without GTK confirms that WordCraft 0.17
+keeps the formatting when deleting text and then the empty paragraph, but
+transfers it when deleting the whole paragraph. #1, #52, #99, #171 and #185 also stay open.
+The deferrals of public screenshots, Weblate and occasional Windows are kept.
 
 <!-- published-alpha:start -->
-## Última publicación verificada: 0.1.0-alpha.45
+## Latest verified release: 0.1.0-alpha.45
 
-[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.45). Issues cerrados: #259, #262, #278, #280.
-Permanecen abiertos: #1, #99, #152, #185, #231, #252, #261, #265, #267, #268, #277, #279, #281, #282.
-[Fuente, validación y límites](docs/LATEST_RELEASE.md).
+[Release](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.45). Closed issues: #259, #262, #278, #280.
+Still open: #1, #99, #152, #185, #231, #252, #261, #265, #267, #268, #277, #279, #281, #282.
+[Source, validation and limits](docs/LATEST_RELEASE.md).
 <!-- published-alpha:end -->
 
-## Publicada y verificada: alpha.38 — vista inicial y recuperación
-
-[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.38).
-Cerrados #207 y #209. Incluye la corrección de #208/PR #210: las pestañas
-Navegación/Revisión permanecen fijas y compartidas por todas las vistas.
-Las ventanas y pestañas nuevas ofrecen filas con título para plantillas y
-recuperaciones solo cuando contienen elementos, seguidas del folio editable.
-La recuperación sustituye su antiguo menú/diálogo; al escribir, las filas se
-retiran suavemente hacia arriba sin borrar copias pendientes ni bloquear la entrada.
-
-215 pruebas Rust, nueve Python y 891 mensajes completos en inglés/español.
-Batería nativa optimizada, instalación GNOME 49 y prefijo GNOME 51 superados;
-comparación final del ejecutable, tag y trece archivos públicos verificados.
-Se conservan WordCraft 0.16.0, permisos, parches y la versión ocasional de Windows.
-[Fuentes, ejecución, digests y límites](docs/history/ALPHA38_START_VIEW.md).
-
-Informes que permanecen abiertos: #1, #52, #99, #107, #152, #171, #185.
-
-## Corrección urgente posterior a alpha.37 — #208
-
-La barra inferior de Navegación/Revisión vuelve a pertenecer al contenedor fijo
-del panel lateral. Los selectores superiores conservan su desplazamiento; se
-retiran las barras de modo duplicadas de Estructura y Revisión. La aclaración de
-David corrige el alcance anterior de #200. Integrada en main mediante
-[PR #210](https://github.com/frandavid100/leaf/pull/210), con la batería nativa
-completa superada. Distribuida y comprobada también como Flatpak con alpha.38. [Alcance y pruebas](docs/SIDEBAR208.md).
-
-## Publicada y verificada: alpha.37 — desplazamiento, foco y diálogos
-
-[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.37).
-Cerrados #199–#204: galería y página con desplazamiento común, controles del panel
-lateral dentro de su contenido, diálogos adaptativos integrados, restauración de
-posición cancelable por nueva entrada, continuidad del foco y sugerencias de nombre
-al guardar. Los reajustes de una página con galería también recuperan su imagen
-sin mover la posición de exploración.
-
-214 pruebas Rust, nueve Python y 893 mensajes completos en inglés/español.
-Batería nativa optimizada e instalaciones GNOME 49 y GNOME 51 superadas;
-publicados los mismos bytes validados, con tag y trece archivos públicos verificados.
-WordCraft sigue en 0.16.0. Se conservan los límites de #171, los aplazamientos y
-el trabajo de tienda y Windows en sus conversaciones.
-[Fuente, pruebas y límites](docs/history/ALPHA37_INTERFACE.md).
-
-Quedan ocho informes: los siete anteriores y la nueva propuesta #207 de filas
-de plantillas y recuperación, registrada después de publicar esta alpha.
-
-## Publicada: primera versión experimental para Windows
-
-[Windows 0.1.0-alpha.36-windows.1](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36-windows.1), publicada el 8/11/2026: instalador por usuario y ZIP x86_64 con GTK/libadwaita,
-diccionarios y traducciones incluidos. 210 pruebas Rust en Windows y 211 en Linux;
-nueve Python y 892 mensajes completos. ZIP trasladado a ruta con espacios/ñ,
-interfaz en/es, DOCX/ODT/PDF, preferencias, ventanas, instalación y eliminación
-comprobados automáticamente. Avisos completos añadidos sin cambiar el ejecutable,
-y paquetes finales comprobados otra vez antes de publicar; cuatro assets públicos
-con digests SHA-256 y tag de la fuente verificados. Entregas Windows ocasionales;
-no se inicia otra alpha Linux ni se cierran issues por este port.
-[Fuentes, ejecución y límites](docs/WINDOWS.md).
-
-
-## Publicada y verificada: alpha.36 — revisión de interfaz
-
-[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36). Cerrados #177/#181/#182/#186–#191,
-incluido el nuevo #191: búsqueda literal y opciones compactas, fuentes dentro de
-Propiedades, filas divididas de Copiar/Pegar, recuperación del espacio de pestañas,
-estabilidad y menús de Estructura y marcador exacto para arrastrar imágenes.
-
-#171 queda parcial y abierto. La galería usa miniaturas reales sobre cada nuevo
-documento; el Flatpak usa por defecto la carpeta XDG de plantillas en solo lectura.
-La elección de otra carpeta está desactivada en el sandbox porque el portal
-concede escritura y rechaza retirar ese permiso. No se amplía el acceso al host.
-
-211 pruebas Rust, nueve Python y 892 mensajes completos en/es; batería nativa
-optimizada, GNOME 49 y prefijo GNOME 51 correctos. Mismos bytes validados,
-sin recompilar; tag y trece archivos públicos verificados.
-[Fuente, pruebas y límites](docs/history/ALPHA36_INTERFACE.md).
-
-Quedan siete: #1/#52/#99/#107/#152/#171/#185. Se conservan los aplazamientos de
-David y los bloqueos de integración del motor. Las nuevas capturas públicas
-siguen a cargo de David; esta entrega ya corrige #186/#191.
-
-## Ficha de tienda y novedades — #185
-
-Preparados la descripción aprobada en inglés/español, los colores claro/oscuro y
-una fuente común de novedades para AppStream y GitHub. Se conservan las capturas
-anteriores con referencias inmutables. No es una nueva versión del ejecutable.
-FlatPark PR #1074 espera autorización/aceptación de sus mantenedores. Las nuevas
-capturas ya pueden prepararse tras corregir #186/#191; falta comprobar el catálogo
-publicado en Bazaar.
-[Proceso, fuente editorial y límites](docs/STORE_METADATA.md).
-
-## Publicada y verificada: alpha.35 — propuestas aceptadas
-
-[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.35). Implementados y cerrados los trece issues
-#170–#182: estilo siguiente, plantillas personales, pegado sin formato,
-movimiento de apartados, pincel de formato, búsqueda avanzada, fuentes del
-documento e imágenes externas. [PR #183](https://github.com/frandavid100/leaf/pull/183)
-y [corrección de ciclo de vida #184](https://github.com/frandavid100/leaf/pull/184).
-
-205 pruebas Rust (quince regresiones nuevas), cuatro Python y 879 mensajes en/es;
-controles y gestos reales a escala 1/2, instalación GNOME 49 y prefijo FlatPark
-GNOME 51 superados. Publicados los mismos bytes validados, sin recompilar;
-tag, identidad y trece archivos públicos comprobados.
-[Fuente, ejecución, alcance y límites](docs/history/ALPHA35_WORKFLOWS.md).
-
-El estilo siguiente modificado requiere DOCX cuando el exportador ODT perdería
-la elección. La carpeta de plantillas se lee sin modificar los originales.
-#84 ya fue comprobado y cerrado por David en la conversación de pruebas.
-
-Actualizado: 8 de noviembre de 2026. Esta página describe el presente;
-el [historial](docs/history/README.md) conserva entregas y decisiones anteriores.
-
-## Dónde trabajar
-
-- Repositorio: https://github.com/frandavid100/leaf
-- Rama activa, compilación y destino de PR: **`main`**. ApexDesk se conserva en
-  `archive/apexdesk-main-2026-11-02`; `wordcraft-saving` sigue disponible.
-- [Integración de historiales y validación](docs/MAIN_MIGRATION.md).
-- [Cómo retomar el proyecto](docs/CONTINUING.md), [arquitectura y mapa de archivos](docs/ARCHITECTURE.md),
-  [decisiones vigentes](docs/DECISIONS.md), [plan de trabajo](ROADMAP.md).
-
-## Informes anteriores a las nuevas propuestas
-
-#1/#99/#107/#152 esperan la integración de las correcciones propuestas en
-WordCraft. #52 queda aplazado por decisión de David. #84 ya fue probado y cerrado
-en la conversación de validación. Los nuevos #170–#182 se cerraron inicialmente con alpha.35; #171 se mantiene
-abierto tras revisar el diseño y los permisos. Los demás reabiertos se verificaron
-con alpha.36.
-[Auditoría histórica de los bloqueos](docs/history/REMAINING_AFTER_ALPHA34.md).
-
-## Histórica: alpha.33 publicada y verificada — Fin/Inicio y restauración de zoom
-
-[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33),
-publicada automáticamente el 7/11/2026. Cerrado #156: el editor recibe Fin/Inicio
-antes de los atajos de scroll de GTK y el zoom pendiente respeta una navegación
-posterior, incluso cuando Fin no cambia la posición por estar ya al final de línea.
-
-#9 tiene controles nativos medidos y explicación visible del espaciado; falta
-confirmar su copia editada concreta. #99 tiene reproducción sintética de nota en
-tabla debajo del footer; necesita corrección del motor. Ambos siguen abiertos.
-
-189 pruebas Rust, cuatro Python, 811 mensajes completos y
-[batería nativa completa](https://github.com/frandavid100/leaf/actions/runs/42381417100)
-correctos. [Instalaciones GNOME 49/51](https://github.com/frandavid100/leaf/actions/runs/42382604979),
-comparación final del ejecutable y
-[publicación sin recompilar](https://github.com/frandavid100/leaf/actions/runs/42384540865)
-correctas. Tag y doce archivos públicos comprobados; once sumas internas verificadas.
-Fuente publicada `529e086d7e6aec85c1ed4409af8c7e55aaa6c8b7`.
-Quedan ocho: #1/#2/#9/#52/#84/#99/#107/#152.
-[Evidencia y límites](docs/history/ALPHA33_VALIDATION.md).
-
-## Histórica: alpha.32 publicada y verificada — WordCraft 0.16 y optimización
-
-[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.32),
-publicada automáticamente el 7/11/2026 conforme a la autorización de David.
-Motor actualizado de WordCraft 0.14.0 a la última estable 0.16.0, con formatos
-recopiado y compatibilidad residual documentada. ODT conserva notas, comentarios,
-imágenes flotantes, ecuaciones básicas nuevas y anchuras de columnas; se mantienen
-las protecciones para opciones sin fidelidad demostrada. Datos lingüísticos
-fijados y licencias incluidas. Pegado HTML/RTF nativo con cancelación de destinos
-obsoletos; portapapeles e índices derivados separados para facilitar la revisión.
-
-Las pruebas medidas reducen recorridos repetidos del índice (80→0) y refrescos
-de regla (160→80) durante 80 movimientos del cursor; medianas de esa fase ~5–10%
-menores. No se extrapola a toda la aplicación ni se afirma menor memoria global.
-[Integración, resultados y límites](docs/WORDCRAFT_016_REVIEW.md).
-
-189 pruebas Rust, cuatro Python, 810 mensajes completos inglés/español y
-[batería nativa completa](https://github.com/frandavid100/leaf/actions/runs/42371069496)
-superados. [Instalaciones GNOME 49/51](https://github.com/frandavid100/leaf/actions/runs/42372618858)
-y [promoción sin recompilar](https://github.com/frandavid100/leaf/actions/runs/42374275590)
-correctas. Once sumas internas y los doce archivos públicos verificados.
-Fuente publicada `2524dbc789cfbfa0f3b6e153fde16f1df5887b8a`.
-La actualización inicial no cerró informes adicionales. La revisión posterior
-ha cerrado #100: números y navegación de notas verificados en esta misma release.
-Después de aquella revisión inicial quedaron nueve: #1/#2/#9/#52/#84/#99/#107/#152/#156.
-[Comprobaciones y límites pendientes](docs/history/ISSUE_TRIAGE_AFTER_ALPHA32.md).
-
-## Histórica: alpha.31 publicada y verificada
-
-[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.31),
-publicada automáticamente el 7/11/2026 con autorización de David. En esta última
-pasada se cierran #135, #149, #150, #151 y #155: selector de Navegación, revisión
-con el panel oculto y ajustes de Párrafo, Texto y Tabla. Acumula las candidatas
-alpha.31 anteriores. WordCraft y sus dependencias conservan la revisión fijada.
-
-[Batería nativa completa](https://github.com/frandavid100/leaf/actions/runs/42360443648),
-[instalaciones GNOME 49/51](https://github.com/frandavid100/leaf/actions/runs/42361339472)
-y [promoción sin recompilar](https://github.com/frandavid100/leaf/actions/runs/42362957503)
-correctas. 187 pruebas Rust, cuatro Python y 811 mensajes completos inglés/español;
-las once sumas internas y los doce archivos públicos coinciden por SHA-256.
-Fuente publicada `e3bdb1f318cd078d7e24e0a7fef8c84e3a192756`.
-
-Al publicar alpha.31 quedaron abiertos diez informes: #1, #2, #9, #52, #84, #99, #100, #107, #152 y #156.
-Columnas #1/#2 se trabajan aparte en WordCraft; los límites de motor/host y casos
-sin reproducción no se presentan como resueltos.
-[Implementación, identidad y límites](docs/history/ALPHA31_REMAINING.md).
-
-## Histórica: tercera candidata alpha.31 — Leyendas y navegación
-
-Completados #121, #124, #126 y #127: propiedades compartidas de Elementos,
-asociación explícita de imágenes/tablas y leyendas, Mostrar leyenda reversible,
-navegación con destinos tipados y decoración temporal de la relación.
-
-[La candidata verificada](https://github.com/frandavid100/leaf/actions/runs/42304211527/artifacts/13547105434)
-supera la batería nativa completa (187 pruebas Rust, cuatro Python y controles
-GTK), instalación GNOME 49 y archivo FlatPark reubicado en GNOME 51. Incluye
-clics/teclado, DOCX, historial y comprobaciones en inglés/español, claro/oscuro y
-escala 1×/2×. Se conserva la regresión original de fuente/pegado/canvas sin cambios.
-Se han verificado las once sumas de la descarga. [Fuente, sumas y límites](docs/CAPTION_OWNERSHIP.md).
-
-Fuente del paquete `da5b3f96c672eceb41218855e73ffba0897c126d`; ejecutable nativo de
-`486a8b2c2050f09a6ffd31ce47cacab48e5051f8`. Esta candidata requería aprobación antes de publicarse; la nueva autorización
-de publicación automática para la última pasada sustituye ese requisito.
-
-#132 cerrado el 7/11/2026 tras la comprobación de David con una copia idéntica
-del documento original: confirma que parece arreglado en su entorno. No se ha
-identificado el disparador original ni la corrección concreta responsable. La creación de leyendas numeradas se limita al cuerpo y DOCX;
-las leyendas importadas sin asociación explícita no se asignan por proximidad.
-Después de aquella candidata se reabrió #135 y surgieron #149–#152; no formaban
-parte de esos cuatro cierres. La última pasada descrita arriba fija su estado actual.
-
-## Histórica: segunda candidata alpha.31 — Interfaz nativa
-
-[Candidata para probar](https://github.com/frandavid100/leaf/actions/runs/42265503961/artifacts/13527444066), sin publicación automática.
-Cerrados #134, #135 y #136: cabeceras alineadas, selector nativo Páginas/Estructura
-y refinamientos comunes de Texto, Párrafo, Estilo y Elementos. Se conserva #133.
-La regla rechaza eventos de superficies flotantes, evitando que el selector de
-fuentes pierda el foco y desvíe el teclado al documento.
-
-178 pruebas Rust, cuatro Python y 824 mensajes completos inglés/español.
-[CI nativa](https://github.com/frandavid100/leaf/actions/runs/42263872786),
-[instalaciones GNOME 49 / FlatPark GNOME 51](https://github.com/frandavid100/leaf/actions/runs/42265503961)
-y [menús realmente traducidos en ambos entornos](https://github.com/frandavid100/leaf/actions/runs/42269593968)
-superados. Descarga, once sumas y capturas instaladas comprobadas; la regresión
-original de fuente/pegado mantiene su secuencia y aserciones.
-
-Fuente del paquete `79292491050943559df21d9082657fe38ee46254`; ejecutable de
-`179ef4bec1609c355c3dae325c3358fd6bb948a8`, con equivalencia y bytes comprobados.
-[Alcance, identidad, sumas y límites](docs/history/ALPHA31_UI_VALIDATION.md).
-En aquella entrega quedaban 13 issues: #1, #2, #9, #52, #84, #99, #100, #107, #121, #124, #126, #127 y #132.
-En aquella entrega alpha.30 seguía siendo la última versión pública y se
-requería probar y aprobar la candidata. La autorización posterior de publicación
-automática sustituye ese requisito para la última pasada alpha.31.
-
-## Primera candidata alpha.31 — Histórica, sustituida por la segunda
-
-La [primera candidata](https://github.com/frandavid100/leaf/actions/runs/42230422027/artifacts/13510771784)
-solo cerró #133 sobre la interfaz de Alpha.30. Superó 175 pruebas Rust, cuatro
-Python y las instalaciones GNOME 49/51. En aquella entrega se retiraron los
-experimentos de #134–#136 tras fallar la entrada instalada; quedaron 16 issues.
-Su [identidad y evidencia](docs/history/ALPHA31_VALIDATION.md) se conservan como historial.
-La segunda candidata incorpora esa corrección y resuelve los tres informes de
-interfaz después de aislar la captura de eventos de la regla.
-
-## Versión anterior publicada: alpha.30
-
-[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.30).
-Publicada automáticamente con autorización de David, tras superar la
-[CI nativa](https://github.com/frandavid100/leaf/actions/runs/42184270093),
-[instalaciones GNOME 49 y FlatPark/GNOME 51](https://github.com/frandavid100/leaf/actions/runs/42187179877)
-y [promoción sin recompilar](https://github.com/frandavid100/leaf/actions/runs/42189125319).
-Fuente publicada `85d0134e413f1cb4587e2cf2de9d9928a1e85a1c`; ejecutable de
-`3f898df0f42f280d932eaa2bb3790dd6b45d1190`, con equivalencia y bytes comprobados.
-Los 12 archivos públicos coinciden con la candidata por SHA-256.
-
-Cerrados siete issues de esta pasada: #122, #123, #125, #128, #129, #130 y #131.
-Incluye viewport de imágenes estable, cursores, miniaturas por caret, índice
-navegable, tarjetas de revisión, Texto/Párrafo y Navegación Páginas/Estructura.
-Acumula toda la candidata alpha.29. 173 pruebas Rust, cuatro Python y 855 mensajes
-completos inglés/español. [Evidencia, sumas y límites](docs/history/ALPHA30_VALIDATION.md).
-
-Al finalizar alpha.30 quedaron abiertos 12: #121/#124 parciales, #126/#127 pendientes de asociación canónica
-de leyendas, y los ocho antiguos #1, #2, #9, #52, #84, #99, #100 y #107. No se
-actualiza el motor ni se ocultan requisitos pendientes mediante cierres parciales.
-
-## Candidata alpha.29: incorporada a alpha.30
-
-La [PR #110](https://github.com/frandavid100/leaf/pull/110) integra la pasada
-#99–#109 y #111–#121, además del editor básico de ecuaciones (#56).
-[Validación nativa completa](https://github.com/frandavid100/leaf/actions/runs/42142299796) y
-[empaquetado e instalaciones GNOME 49/FlatPark 51](https://github.com/frandavid100/leaf/actions/runs/42143216380) superados.
-Fuente de la candidata `361a25c286a1a06f6c007b9abdf23d7d1d36b8e3`; fuente del ejecutable
-`25ae0ba569bc374e84ad78d0a314fe7b9c611b5b`, con equivalencia comprobada.
-171 pruebas Rust, cuatro Python y 837 mensajes completos inglés/español.
-
-Resueltos 19 issues: #56, #101–#106, #108–#109 y #111–#120. Revisión reúne
-correcciones, cambios sugeridos y comentarios; Texto/Párrafo usan filas y
-Elementos comparte las herramientas del objeto. Incluye reglas con imán de
-0,5 cm, referencias automáticas, notas, imágenes y miniaturas mejoradas.
-Los casos #99, #100, #107 y #121 conservan trabajo pendiente o limitaciones;
-#1, #2, #9, #52 y #84 siguen abiertos. [Evidencia y límites](docs/history/ALPHA29_VALIDATION.md).
-
-La candidata alpha.29 no se publicó por separado: sus cambios se distribuyen en
-alpha.30, autorizada y verificada. El manifiesto y SHA256SUMS identifican los
-archivos. [Proceso de candidatas](docs/CANDIDATES.md).
-
-## Entrega anterior: alpha.28
-
-[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.28).
-[CI nativa, Flatpak GNOME 49 y archivo FlatPark GNOME 51](https://github.com/frandavid100/leaf/actions/runs/42057994674)
-completas. Fuente `d2ba113d9ed2bc0dbb4794732c6035a195cba755`.
-
-Incluye zoom por sección y navegación/miniaturas (#89, #94, #95), imágenes
-flotantes con ajuste, separación y gestos de ratón (#53), notas al pie (#55),
-índice automático (#54), leyendas y referencias cruzadas. La [PR #98](https://github.com/frandavid100/leaf/pull/98)
-integra controles nativos mediante las API públicas de WordCraft. Se corrigió
-además la invalidación de maquetación al cambiar el ajuste de una imagen.
-
-151 pruebas Rust, cuatro Python y 766 mensajes completos inglés/español.
-Verificados historial, interfaz, idiomas, HiDPI, actualización desde alpha.27,
-portales de archivos e impresión, reinstalación, texto AT-SPI y salida Orca.
-Son comprobaciones automáticas; no sustituyen pruebas humanas de dispositivos.
-
-La edición/guardado/reapertura y el PDF se comprobaron con muestras externas de
-Word y Writer, incluida una nota importada de Word. [Evidencia y límites](docs/history/ALPHA28_VALIDATION.md).
-Estas estructuras avanzadas requieren DOCX: las guardas ODT siguen evitando
-pérdidas. No se modificaron motor, renderer, dependencias ni parches.
-
-La [galería pública](docs/screenshots/README.md) usa cuatro capturas reales del
-Flatpak instalado, expresamente autorizadas por David. La ficha AppStream de
-Leaf está actualizada; FlatPark mantiene otra copia que sus responsables deben
-actualizar para incorporar la galería y la descripción nuevas.
-
-## Entrega anterior: alpha.27
-
-[Release y descargas](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.27).
-[CI nativa completa](https://github.com/frandavid100/leaf/actions/runs/41995941521)
-y [empaquetado e instalaciones GNOME 49/51](https://github.com/frandavid100/leaf/actions/runs/42000544951)
-superados. Fuente de la release `1259aa95fbde9650fe17d5a9476cb4d1e73685cc`;
-el ejecutable reutiliza la compilación validada de `74865717f99d63bab8000f1470db7b42718ba761`,
-con equivalencia de fuentes comprobada por CI.
-
-Incluye el tarball solicitado por FlatPark, con `bin/` y `share/` en la raíz,
-su checksum y `flatpark-smoke.log`. La prueba instala el archivo mediante
-extra-data en `/app/extra/leaf` con GNOME 51 y verifica traducciones inglés/español
-y revisión ortográfica. El bundle habitual usa GNOME 49 y verifica actualización
-desde alpha.26, interacción, guardado mediante portal, impresión y Orca/AT-SPI.
-La primera prueba del tarball falló por omitir Flatpak el directorio reservado
-`extra` al exportar el paquete de prueba. El comprobador corregido usa descarga
-HTTP local con checksum y `apply_extra` durante la instalación.
-
-FlatPark ha aceptado la inclusión; su publicación en el catálogo queda pendiente
-del empaquetado de sus responsables. Avisarles de cambios de desktop/iconos/
-metainfo y futuros requisitos de runtime. Las pruebas anteriores son automáticas.
-
-## Entrega anterior: alpha.25
+## Published and verified: alpha.38 — start view and recovery
+
+[Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.38).
+#207 and #209 closed. Includes the fix for #208/PR #210: the Navigation/Review
+tabs stay fixed and shared by all views.
+New windows and tabs offer titled rows for templates and recoveries only when
+they contain items, followed by the editable sheet.
+Recovery replaces its old menu/dialog; when typing, the rows slide smoothly
+upward without deleting pending copies or blocking input.
+
+215 Rust tests, nine Python tests and 891 complete messages in English/Spanish.
+Optimized native suite, GNOME 49 installation and GNOME 51 prefix passed;
+final comparison of the executable, tag and thirteen public files verified.
+WordCraft 0.16.0, permissions, patches and the occasional Windows version are kept.
+[Sources, execution, digests and limits](docs/history/ALPHA38_START_VIEW.md).
+
+Reports that stay open: #1, #52, #99, #107, #152, #171, #185.
+
+## Urgent fix after alpha.37 — #208
+
+The bottom Navigation/Review bar belongs again to the fixed container of the
+sidebar. The top selectors keep their scrolling; the duplicated mode bars of
+Structure and Review are removed. David's clarification corrects the earlier
+scope of #200. Merged into main through
+[PR #210](https://github.com/frandavid100/leaf/pull/210), with the full native
+suite passed. Also distributed and checked as a Flatpak with alpha.38. [Scope and tests](docs/SIDEBAR208.md).
+
+## Published and verified: alpha.37 — scrolling, focus and dialogs
+
+[Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.37).
+#199–#204 closed: gallery and page with shared scrolling, sidebar controls
+inside their content, integrated adaptive dialogs, position restoration that
+new input can cancel, focus continuity and name suggestions
+when saving. Re-layouts of a page with a gallery also recover its image
+without moving the browsing position.
+
+214 Rust tests, nine Python tests and 893 complete messages in English/Spanish.
+Optimized native suite and GNOME 49 and GNOME 51 installations passed;
+the same validated bytes were published, with tag and thirteen public files verified.
+WordCraft stays at 0.16.0. The limits of #171, the deferrals and the
+store and Windows work in their own conversations are kept.
+[Source, tests and limits](docs/history/ALPHA37_INTERFACE.md).
+
+Eight reports remain: the previous seven and the new proposal #207 for template
+and recovery rows, filed after this alpha was published.
+
+## Published: first experimental version for Windows
+
+[Windows 0.1.0-alpha.36-windows.1](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36-windows.1), published on 8/11/2026: per-user installer and x86_64 ZIP with GTK/libadwaita,
+dictionaries and translations included. 210 Rust tests on Windows and 211 on Linux;
+nine Python tests and 892 complete messages. ZIP moved to a path with spaces/ñ,
+en/es interface, DOCX/ODT/PDF, preferences, windows, installation and removal
+checked automatically. Complete notices added without changing the executable,
+and final packages checked again before publishing; four public assets
+with SHA-256 digests and the source tag verified. Occasional Windows deliveries;
+no other Linux alpha is started and no issues are closed for this port.
+[Sources, execution and limits](docs/WINDOWS.md).
+
+
+## Published and verified: alpha.36 — interface review
+
+[Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.36). #177/#181/#182/#186–#191 closed,
+including the new #191: literal search and compact options, fonts inside
+Properties, split Copy/Paste rows, recovery of the tab space,
+stability and menus of Structure, and an exact marker for dragging images.
+
+#171 remains partial and open. The gallery uses real thumbnails over each new
+document; the Flatpak uses the XDG templates folder in read-only mode by default.
+Choosing another folder is disabled in the sandbox because the portal
+grants write access and refuses to withdraw that permission. Host access is not widened.
+
+211 Rust tests, nine Python tests and 892 complete en/es messages; optimized
+native suite, GNOME 49 and GNOME 51 prefix correct. Same validated bytes,
+without recompiling; tag and thirteen public files verified.
+[Source, tests and limits](docs/history/ALPHA36_INTERFACE.md).
+
+Seven remain: #1/#52/#99/#107/#152/#171/#185. David's deferrals and the engine
+integration blockers are kept. The new public screenshots
+remain David's responsibility; this delivery already fixes #186/#191.
+
+## Store listing and release notes — #185
+
+Prepared: the approved English/Spanish description, the light/dark colors and
+a shared source of release notes for AppStream and GitHub. The previous
+screenshots are kept with immutable references. It is not a new executable version.
+FlatPark PR #1074 awaits authorization/acceptance from its maintainers. The new
+screenshots can now be prepared after fixing #186/#191; checking the published
+catalog in Bazaar is still pending.
+[Process, editorial source and limits](docs/STORE_METADATA.md).
+
+## Published and verified: alpha.35 — accepted proposals
+
+[Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.35). The thirteen issues #170–#182 are
+implemented and closed: next style, personal templates, paste without formatting,
+moving sections, format painter, advanced search, document
+fonts and external images. [PR #183](https://github.com/frandavid100/leaf/pull/183)
+and [lifecycle fix #184](https://github.com/frandavid100/leaf/pull/184).
+
+205 Rust tests (fifteen new regressions), four Python tests and 879 en/es messages;
+real controls and gestures at 1/2 scale, GNOME 49 installation and FlatPark
+GNOME 51 prefix passed. The same validated bytes were published, without recompiling;
+tag, identity and thirteen public files checked.
+[Source, execution, scope and limits](docs/history/ALPHA35_WORKFLOWS.md).
+
+A modified next style requires DOCX when the ODT exporter would lose
+the choice. The templates folder is read without modifying the originals.
+#84 was already checked and closed by David in the testing conversation.
+
+Updated: 8 November 2026. This page describes the present;
+the [history](docs/history/README.md) keeps earlier deliveries and decisions.
+
+## Where to work
+
+- Repository: https://github.com/frandavid100/leaf
+- Active branch, build and PR target: **`main`**. ApexDesk is kept in
+  `archive/apexdesk-main-2026-11-02`; `wordcraft-saving` is still available.
+- [Integration of histories and validation](docs/MAIN_MIGRATION.md).
+- [How to resume the project](docs/CONTINUING.md), [architecture and file map](docs/ARCHITECTURE.md),
+  [current decisions](docs/DECISIONS.md), [work plan](ROADMAP.md).
+
+## Reports predating the new proposals
+
+#1/#99/#107/#152 await the integration of the fixes proposed in
+WordCraft. #52 is deferred by David's decision. #84 was already tested and closed
+in the validation conversation. The new #170–#182 were initially closed with alpha.35; #171 is kept
+open after reviewing the design and permissions. The other reopened ones were verified
+with alpha.36.
+[Historical audit of the blockers](docs/history/REMAINING_AFTER_ALPHA34.md).
+
+## Historical: alpha.33 published and verified — End/Home and zoom restoration
+
+[Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.33),
+published automatically on 7/11/2026. #156 closed: the editor receives End/Home
+before GTK's scroll shortcuts, and the pending zoom respects a later
+navigation, even when End does not change the position because it is already at the end of the line.
+
+#9 has measured native controls and a visible explanation of the spacing; its
+specific edited copy still needs confirmation. #99 has a synthetic reproduction of a note in
+a table below the footer; it needs an engine fix. Both stay open.
+
+189 Rust tests, four Python tests, 811 complete messages and
+[full native suite](https://github.com/frandavid100/leaf/actions/runs/42381417100)
+correct. [GNOME 49/51 installations](https://github.com/frandavid100/leaf/actions/runs/42382604979),
+final comparison of the executable and
+[publication without recompiling](https://github.com/frandavid100/leaf/actions/runs/42384540865)
+correct. Tag and twelve public files checked; eleven internal checksums verified.
+Published source `529e086d7e6aec85c1ed4409af8c7e55aaa6c8b7`.
+Eight remain: #1/#2/#9/#52/#84/#99/#107/#152.
+[Evidence and limits](docs/history/ALPHA33_VALIDATION.md).
+
+## Historical: alpha.32 published and verified — WordCraft 0.16 and optimization
+
+[Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.32),
+published automatically on 7/11/2026 in accordance with David's authorization.
+Engine updated from WordCraft 0.14.0 to the latest stable 0.16.0, with formats
+re-copied and residual compatibility documented. ODT keeps notes, comments,
+floating images, new basic equations and column widths; the safeguards for
+options without demonstrated fidelity are kept. Language data
+pinned and licenses included. Native HTML/RTF paste with cancellation of stale
+targets; clipboard and derived indexes separated to make review easier.
+
+The measured tests reduce repeated traversals of the index (80→0) and ruler
+refreshes (160→80) during 80 cursor movements; medians for that phase ~5–10%
+lower. This is not extrapolated to the whole application, nor is lower overall memory claimed.
+[Integration, results and limits](docs/WORDCRAFT_016_REVIEW.md).
+
+189 Rust tests, four Python tests, 810 complete English/Spanish messages and
+[full native suite](https://github.com/frandavid100/leaf/actions/runs/42371069496)
+passed. [GNOME 49/51 installations](https://github.com/frandavid100/leaf/actions/runs/42372618858)
+and [promotion without recompiling](https://github.com/frandavid100/leaf/actions/runs/42374275590)
+correct. Eleven internal checksums and the twelve public files verified.
+Published source `2524dbc789cfbfa0f3b6e153fde16f1df5887b8a`.
+The initial update did not close additional reports. The later review
+closed #100: note numbers and navigation verified in this same release.
+After that initial review nine remained: #1/#2/#9/#52/#84/#99/#107/#152/#156.
+[Pending checks and limits](docs/history/ISSUE_TRIAGE_AFTER_ALPHA32.md).
+
+## Historical: alpha.31 published and verified
+
+[Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.31),
+published automatically on 7/11/2026 with David's authorization. In this last
+pass #135, #149, #150, #151 and #155 are closed: Navigation selector, review
+with the panel hidden and Paragraph, Text and Table settings. It accumulates the earlier
+alpha.31 candidates. WordCraft and its dependencies keep the pinned revision.
+
+[Full native suite](https://github.com/frandavid100/leaf/actions/runs/42360443648),
+[GNOME 49/51 installations](https://github.com/frandavid100/leaf/actions/runs/42361339472)
+and [promotion without recompiling](https://github.com/frandavid100/leaf/actions/runs/42362957503)
+correct. 187 Rust tests, four Python tests and 811 complete English/Spanish messages;
+the eleven internal checksums and the twelve public files match by SHA-256.
+Published source `e3bdb1f318cd078d7e24e0a7fef8c84e3a192756`.
+
+When alpha.31 was published, ten reports remained open: #1, #2, #9, #52, #84, #99, #100, #107, #152 and #156.
+Columns #1/#2 are worked on separately in WordCraft; engine/host limits and cases
+without a reproduction are not presented as resolved.
+[Implementation, identity and limits](docs/history/ALPHA31_REMAINING.md).
+
+## Historical: third alpha.31 candidate — Captions and navigation
+
+#121, #124, #126 and #127 completed: shared Elements properties,
+explicit association of images/tables and captions, reversible Show Caption,
+navigation with typed targets and temporary decoration of the relationship.
+
+[The verified candidate](https://github.com/frandavid100/leaf/actions/runs/42304211527/artifacts/13547105434)
+passes the full native suite (187 Rust tests, four Python tests and GTK
+controls), GNOME 49 installation and a relocated FlatPark archive on GNOME 51. Includes
+clicks/keyboard, DOCX, history and checks in English/Spanish, light/dark and
+1×/2× scale. The original font/paste/canvas regression is kept unchanged.
+The eleven checksums of the download have been verified. [Source, checksums and limits](docs/CAPTION_OWNERSHIP.md).
+
+Package source `da5b3f96c672eceb41218855e73ffba0897c126d`; native executable from
+`486a8b2c2050f09a6ffd31ce47cacab48e5051f8`. This candidate required approval before being published; the new authorization
+for automatic publication of the last pass replaces that requirement.
+
+#132 closed on 7/11/2026 after David's check with an identical copy
+of the original document: he confirms it seems fixed in his environment. Neither the original
+trigger nor the specific responsible fix has been identified. Creation of numbered captions is limited to the body and DOCX;
+imported captions without an explicit association are not assigned by proximity.
+After that candidate #135 was reopened and #149–#152 appeared; they were not
+part of those four closures. The last pass described above sets their current state.
+
+## Historical: second alpha.31 candidate — Native interface
+
+[Candidate for testing](https://github.com/frandavid100/leaf/actions/runs/42265503961/artifacts/13527444066), without automatic publication.
+#134, #135 and #136 closed: aligned headers, native Pages/Structure selector
+and shared refinements of Text, Paragraph, Style and Elements. #133 is kept.
+The ruler rejects events from floating surfaces, preventing the font
+selector from losing focus and diverting the keyboard to the document.
+
+178 Rust tests, four Python tests and 824 complete English/Spanish messages.
+[Native CI](https://github.com/frandavid100/leaf/actions/runs/42263872786),
+[GNOME 49 / FlatPark GNOME 51 installations](https://github.com/frandavid100/leaf/actions/runs/42265503961)
+and [menus actually translated in both environments](https://github.com/frandavid100/leaf/actions/runs/42269593968)
+passed. Download, eleven checksums and installed screenshots checked; the original
+font/paste regression keeps its sequence and assertions.
+
+Package source `79292491050943559df21d9082657fe38ee46254`; executable from
+`179ef4bec1609c355c3dae325c3358fd6bb948a8`, with equivalence and bytes checked.
+[Scope, identity, checksums and limits](docs/history/ALPHA31_UI_VALIDATION.md).
+At that delivery 13 issues remained: #1, #2, #9, #52, #84, #99, #100, #107, #121, #124, #126, #127 and #132.
+At that delivery alpha.30 was still the latest public version and the
+candidate had to be tested and approved. The later authorization of automatic
+publication replaces that requirement for the last alpha.31 pass.
+
+## First alpha.31 candidate — Historical, replaced by the second
+
+The [first candidate](https://github.com/frandavid100/leaf/actions/runs/42230422027/artifacts/13510771784)
+only closed #133 on top of the Alpha.30 interface. It passed 175 Rust tests, four
+Python tests and the GNOME 49/51 installations. In that delivery the
+experiments for #134–#136 were withdrawn after installed input failed; 16 issues remained.
+Its [identity and evidence](docs/history/ALPHA31_VALIDATION.md) are kept as history.
+The second candidate incorporates that fix and resolves the three interface
+reports after isolating the ruler's event capture.
+
+## Previous published version: alpha.30
+
+[Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.30).
+Published automatically with David's authorization, after passing the
+[native CI](https://github.com/frandavid100/leaf/actions/runs/42184270093),
+[GNOME 49 and FlatPark/GNOME 51 installations](https://github.com/frandavid100/leaf/actions/runs/42187179877)
+and [promotion without recompiling](https://github.com/frandavid100/leaf/actions/runs/42189125319).
+Published source `85d0134e413f1cb4587e2cf2de9d9928a1e85a1c`; executable from
+`3f898df0f42f280d932eaa2bb3790dd6b45d1190`, with equivalence and bytes checked.
+The 12 public files match the candidate by SHA-256.
+
+Seven issues closed in this pass: #122, #123, #125, #128, #129, #130 and #131.
+Includes a stable image viewport, cursors, thumbnails by caret, a navigable
+index, review cards, Text/Paragraph and Pages/Structure Navigation.
+Accumulates the whole alpha.29 candidate. 173 Rust tests, four Python tests and 855 complete
+English/Spanish messages. [Evidence, checksums and limits](docs/history/ALPHA30_VALIDATION.md).
+
+When alpha.30 was finished 12 remained open: #121/#124 partial, #126/#127 pending canonical caption
+association, and the eight old ones #1, #2, #9, #52, #84, #99, #100 and #107. The
+engine is not updated and pending requirements are not hidden through partial closures.
+
+## Alpha.29 candidate: incorporated into alpha.30
+
+[PR #110](https://github.com/frandavid100/leaf/pull/110) integrates the pass
+#99–#109 and #111–#121, plus the basic equation editor (#56).
+[Full native validation](https://github.com/frandavid100/leaf/actions/runs/42142299796) and
+[packaging and GNOME 49/FlatPark 51 installations](https://github.com/frandavid100/leaf/actions/runs/42143216380) passed.
+Candidate source `361a25c286a1a06f6c007b9abdf23d7d1d36b8e3`; executable source
+`25ae0ba569bc374e84ad78d0a314fe7b9c611b5b`, with equivalence checked.
+171 Rust tests, four Python tests and 837 complete English/Spanish messages.
+
+19 issues resolved: #56, #101–#106, #108–#109 and #111–#120. Review brings together
+corrections, suggested changes and comments; Text/Paragraph use rows and
+Elements shares the object tools. Includes rulers that snap to
+0.5 cm, automatic references, notes, and improved images and thumbnails.
+Cases #99, #100, #107 and #121 keep pending work or limitations;
+#1, #2, #9, #52 and #84 stay open. [Evidence and limits](docs/history/ALPHA29_VALIDATION.md).
+
+The alpha.29 candidate was not published separately: its changes are distributed in
+alpha.30, authorized and verified. The manifest and SHA256SUMS identify the
+files. [Candidate process](docs/CANDIDATES.md).
+
+## Previous delivery: alpha.28
+
+[Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.28).
+[Native CI, GNOME 49 Flatpak and GNOME 51 FlatPark archive](https://github.com/frandavid100/leaf/actions/runs/42057994674)
+complete. Source `d2ba113d9ed2bc0dbb4794732c6035a195cba755`.
+
+Includes per-section zoom and navigation/thumbnails (#89, #94, #95), floating
+images with wrapping, spacing and mouse gestures (#53), footnotes (#55),
+automatic index (#54), captions and cross-references. [PR #98](https://github.com/frandavid100/leaf/pull/98)
+integrates native controls through WordCraft's public APIs. Layout invalidation
+when changing an image's wrapping was also fixed.
+
+151 Rust tests, four Python tests and 766 complete English/Spanish messages.
+Verified: history, interface, languages, HiDPI, update from alpha.27,
+file and print portals, reinstallation, AT-SPI text and Orca output.
+These are automatic checks; they do not replace human tests on devices.
+
+Editing/saving/reopening and PDF were checked with external samples from
+Word and Writer, including a note imported from Word. [Evidence and limits](docs/history/ALPHA28_VALIDATION.md).
+These advanced structures require DOCX: the ODT safeguards still prevent
+losses. Engine, renderer, dependencies and patches were not modified.
+
+The [public gallery](docs/screenshots/README.md) uses four real screenshots of the
+installed Flatpak, expressly authorized by David. Leaf's AppStream listing
+is updated; FlatPark keeps another copy that its maintainers must
+update to incorporate the new gallery and description.
+
+## Previous delivery: alpha.27
+
+[Release and downloads](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.27).
+[Full native CI](https://github.com/frandavid100/leaf/actions/runs/41995941521)
+and [packaging and GNOME 49/51 installations](https://github.com/frandavid100/leaf/actions/runs/42000544951)
+passed. Release source `1259aa95fbde9650fe17d5a9476cb4d1e73685cc`;
+the executable reuses the validated build from `74865717f99d63bab8000f1470db7b42718ba761`,
+with source equivalence checked by CI.
+
+Includes the tarball requested by FlatPark, with `bin/` and `share/` at the root,
+its checksum and `flatpark-smoke.log`. The test installs the archive through
+extra-data in `/app/extra/leaf` with GNOME 51 and verifies English/Spanish translations
+and spell checking. The usual bundle uses GNOME 49 and verifies updating
+from alpha.26, interaction, saving through the portal, printing and Orca/AT-SPI.
+The first tarball test failed because Flatpak omitted the reserved directory
+`extra` when exporting the test package. The corrected checker uses a local HTTP
+download with checksum and `apply_extra` during installation.
+
+FlatPark has accepted the inclusion; its publication in the catalog is pending
+packaging by its maintainers. Notify them of changes to desktop/icons/
+metainfo and future runtime requirements. The tests above are automatic.
+
+## Previous delivery: alpha.25
 
 [Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.25).
-[CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41649488931)
-superada. Incluye comentarios plegables, vistas previas de estilos y cambios
-en miniaturas y reglas. La integración con los ajustes de idioma del sistema
-(#84) y las comprobaciones específicas de desplazamiento y arrastre de
-márgenes (#83, #87) siguen pendientes.
+[Native and installed CI](https://github.com/frandavid100/leaf/actions/runs/41649488931)
+passed. Includes collapsible comments, style previews and changes
+to thumbnails and rulers. Integration with the system language settings
+(#84) and the specific checks for scrolling and dragging
+margins (#83, #87) are still pending.
 
 [Alpha.24](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.24)
-incorporó propiedades de sección, reglas translúcidas e importación de diccionarios.
+added section properties, translucent rulers and dictionary import.
 
-## Validación de compatibilidad para el MVP
+## Compatibility validation for the MVP
 
-[Auditoría con LibreOffice Writer](https://github.com/frandavid100/leaf/actions/runs/41630136413).
-La ficha DOCX creada en Writer conserva la edición de Leaf, las celdas de tabla
-y el espaciado de 24 puntos al reabrirla. El PDF exportado conserva el texto
-editado y el contenido de la tabla. El informe de CI recoge diferencias
-en los vínculos entre secciones y en la exclusión de texto de la revisión
-ortográfica tras guardar desde Writer. El caso original de espaciado (#9)
-sigue pendiente de reproducción.
+[Audit with LibreOffice Writer](https://github.com/frandavid100/leaf/actions/runs/41630136413).
+The DOCX sheet created in Writer keeps Leaf's edit, the table cells
+and the 24-point spacing when reopened. The exported PDF keeps the edited
+text and the table content. The CI report records differences
+in the links between sections and in excluding text from spell
+checking after saving from Writer. The original spacing case (#9)
+is still awaiting reproduction.
 
-## Entrega anterior: alpha.23
+## Previous delivery: alpha.23
 
-[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.23), fuente `9cda589709aff7d0c21446c9b9b105b0d0750acc`. [CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41606977263) superada y sumas de las descargas verificadas. Cerrados #64, #65, #7 y #37.
+[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.23), source `9cda589709aff7d0c21446c9b9b105b0d0750acc`. [Native and installed CI](https://github.com/frandavid100/leaf/actions/runs/41606977263) passed and download checksums verified. #64, #65, #7 and #37 closed.
 
-## Entrega anterior: alpha.22 — formato, comentarios e impresión
+## Previous delivery: alpha.22 — formatting, comments and printing
 
 [Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.22).
-Fuente: `1cda6b2df2eeabd46dbc3331c5adb64c452b679f`. GNOME 49 y actualización
-desde alpha.21. [CI nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41597951947)
-superada. Verificados los ocho archivos públicos, las sumas y la fuente del paquete.
+Source: `1cda6b2df2eeabd46dbc3331c5adb64c452b679f`. GNOME 49 and update
+from alpha.21. [Native and installed CI](https://github.com/frandavid100/leaf/actions/runs/41597951947)
+passed. The eight public files, the checksums and the package source verified.
 
-Incluye WordCraft 0.14.0, su API específica para impresión, la optimización del
-panel Estilos y la limpieza del cliente. Siete cierres: #66–#68, #70, #71,
-#73 y #74. #69 sigue abierto para el enlace de instalación de diccionarios.
+Includes WordCraft 0.14.0, its specific API for printing, the optimization of the
+Styles panel and the client cleanup. Seven closures: #66–#68, #70, #71,
+#73 and #74. #69 stays open for the dictionary installation link.
 
-## Revisión de formato, comentarios e inserción
+## Review of formatting, comments and insertion
 
-La [PR #72](https://github.com/frandavid100/leaf/pull/72) compacta Fuente,
-Tamaño, Texto, Párrafo y Estilos (#66–#71), añade un editor de comentarios y
-respuestas en el panel lateral (#73) y comparte el submenú Insertar entre
-Documento y el menú contextual (#74). El [informe de revisión](docs/FORMAT_POPOVER_REVIEW.md)
-recoge la comparación de prototipos y las reproducciones pendientes de
-columnas (#1, #2), saltos (#65) y diccionarios (#69).
+[PR #72](https://github.com/frandavid100/leaf/pull/72) compacts Font,
+Size, Text, Paragraph and Styles (#66–#71), adds an editor for comments and
+replies in the sidebar (#73) and shares the Insert submenu between
+Document and the context menu (#74). The [review report](docs/FORMAT_POPOVER_REVIEW.md)
+records the comparison of prototypes and the pending reproductions of
+columns (#1, #2), breaks (#65) and dictionaries (#69).
 
-## Revisión adicional: integración y claridad del código
+## Additional review: integration and code clarity
 
-David autoriza revisar el aprovechamiento de WordCraft 0.14 y limpiar estructura,
-formato y trabajo redundante del cliente. Se integra la API de PDF para impresión,
-se separan controladores y diálogos y se evita recorrer estilos ocultos. La
-[PR #63](https://github.com/frandavid100/leaf/pull/63) está integrada tras superar la
-[CI nativa](https://github.com/frandavid100/leaf/actions/runs/41508412922). [Investigación y alcance](docs/WORDCRAFT_014_REVIEW.md).
+David authorizes reviewing the use made of WordCraft 0.14 and cleaning up the client's structure,
+formatting and redundant work. The PDF API is integrated for printing,
+controllers and dialogs are separated and traversing hidden styles is avoided.
+[PR #63](https://github.com/frandavid100/leaf/pull/63) is merged after passing the
+[native CI](https://github.com/frandavid100/leaf/actions/runs/41508412922). [Research and scope](docs/WORDCRAFT_014_REVIEW.md).
 
-## Entrega anterior: alpha.21 — WordCraft 0.14.0
+## Previous delivery: alpha.21 — WordCraft 0.14.0
 
-[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.21), publicado y verificado el 2 de noviembre de 2026.
-Fuente/tag: `3849d2973670ba05093f178108bab182778579f1`. GNOME 49; actualización desde alpha.20.
-Descarga independiente de los ocho assets públicos, sumas y fuente comprobadas.
+[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.21), published and verified on 2 November 2026.
+Source/tag: `3849d2973670ba05093f178108bab182778579f1`. GNOME 49; update from alpha.20.
+Independent download of the eight public assets, checksums and source checked.
 Bundle: 11028040 bytes; SHA256 `6b332768aeb50d26c8db44f769a5e014fa71fb546fffc413591bcf2ad2290f40`.
 
-Motor actualizado a WordCraft **0.14.0**, commit
-`5cd53f184aab11def13b7fced18727159b9bc96a`, con copia nueva de formatos y los
-cuatro parches ODT reaplicados. Perfil optimizado habitual conservado.
+Engine updated to WordCraft **0.14.0**, commit
+`5cd53f184aab11def13b7fced18727159b9bc96a`, with a new copy of formats and the
+four ODT patches reapplied. Usual optimized profile kept.
 
-**Cuatro cierres:** #18, #48, #51 y #61. Selector de tema revisado en las ocho
-variantes instaladas anteriores; reglas blancas finas por hoja y solo transitorias;
-Deshacer/Rehacer con el mismo AdwSplitButton que Párrafo; Fuente/Tamaño con
-anchuras acotadas y Tamaño a fila completa. Las reglas ocultas dejan pasar clics.
+**Four closures:** #18, #48, #51 and #61. Theme selector reviewed in the eight
+earlier installed variants; thin white rulers per sheet and only transient;
+Undo/Redo with the same AdwSplitButton as Paragraph; Font/Size with
+bounded widths and Size on a full row. Hidden rulers let clicks through.
 
-141 pruebas Rust, cuatro Python, 678 mensajes gettext, formato y enlaces correctos.
-[CI completa nativa e instalada](https://github.com/frandavid100/leaf/actions/runs/41496070439) superada, incluidas las pruebas de interacción,
-HiDPI, actualización/reinstalación, portales, impresión y regresión Orca existente.
-Capturas finales instaladas revisadas en claro/oscuro y ventanas estrechas a 1×/2×.
-[Resultado y límites](docs/history/ISSUE_SWEEP_ALPHA21.md) ·
-[evidencia](docs/history/ISSUE_SWEEP_ALPHA21_VALIDATION.json).
+141 Rust tests, four Python tests, 678 gettext messages, formatting and links correct.
+[Full native and installed CI](https://github.com/frandavid100/leaf/actions/runs/41496070439) passed, including interaction,
+HiDPI, update/reinstallation, portals, printing and existing Orca regression tests.
+Final installed screenshots reviewed in light/dark and narrow windows at 1×/2×.
+[Result and limits](docs/history/ISSUE_SWEEP_ALPHA21.md) ·
+[evidence](docs/history/ISSUE_SWEEP_ALPHA21_VALIDATION.json).
 
-Estado: **50 cerrados y 10 abiertos**: #1, #2, #7, #9, #37 y #52–#56.
-La auditoría sintética del motor actualizado conserva en DOCX índice automático,
-notas, ecuaciones e imágenes flotantes; ODT sigue perdiendo esas estructuras y
-se mantienen las guardas. Sus interfaces completas no están implementadas.
-No se afirma validación humana de Wayland, IME, dispositivos o documentos arbitrarios.
-La PR #57 de Weblate permanece separada; archivo, rama de referencia y etiquetas
-anteriores se conservan.
+Status: **50 closed and 10 open**: #1, #2, #7, #9, #37 and #52–#56.
+The synthetic audit of the updated engine keeps automatic index, notes,
+equations and floating images in DOCX; ODT still loses those structures and
+the safeguards are kept. Their complete interfaces are not implemented.
+No human validation of Wayland, IME, devices or arbitrary documents is claimed.
+Weblate PR #57 stays separate; the archive, reference branch and earlier
+tags are kept.
 
-## Entrega anterior: alpha.20 (estado histórico)
+## Previous delivery: alpha.20 (historical state)
 
 [Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.20),
-publicado el 2 de noviembre de 2026. Fuente/tag: `e5d65dde0c788ef563b5263dbcf3e4e823df92ba`.
-GNOME 49; actualización desde alpha.19. Ocho assets públicos y digests registrados
-por GitHub. Bundle: 11.059.320 bytes; SHA256
+published on 2 November 2026. Source/tag: `e5d65dde0c788ef563b5263dbcf3e4e823df92ba`.
+GNOME 49; update from alpha.19. Eight public assets and digests recorded
+by GitHub. Bundle: 11,059,320 bytes; SHA256
 `0e178093f421f08be493086198943c042c4e719d431506a8381a41de89e90e5b`.
 
-**Seis informes cerrados:** #49–#51 y #58–#60. Cursor con fundido, Repetir,
-historiales Deshacer/Rehacer, iconos de Navegación/Comentarios y tooltip de páginas.
-La regla (#48) y el selector GNOME (#18) están implementados y pasan las pruebas
-automáticas; permanecen abiertos para completar la comparación visual instalada.
-Leaf también bloquea guardar en ODT notas, ecuaciones, índice automático e imágenes
-flotantes que el exportador perdería; sus interfaces completas (#53–#56) siguen pendientes.
+**Six reports closed:** #49–#51 and #58–#60. Fading cursor, Repeat,
+Undo/Redo histories, Navigation/Comments icons and pages tooltip.
+The ruler (#48) and the GNOME selector (#18) are implemented and pass the automatic
+tests; they stay open to complete the installed visual comparison.
+Leaf also blocks saving to ODT notes, equations, automatic index and floating
+images that the exporter would lose; their complete interfaces (#53–#56) are still pending.
 
-141 pruebas Rust, cuatro Python, 678 mensajes gettext y build optimizado correctos.
-[CI nativa](https://github.com/frandavid100/leaf/actions/runs/41466739518) y
-[Flatpak instalado](https://github.com/frandavid100/leaf/actions/runs/41471767320)
-completos, con equivalencia de fuentes comprobada antes de reutilizar el ejecutable.
-Incluye gestos, actualización/reinstalación, portales, impresión y la regresión
-Orca existente; las ocho capturas de tema verifican también el cambio real por teclado.
+141 Rust tests, four Python tests, 678 gettext messages and optimized build correct.
+[Native CI](https://github.com/frandavid100/leaf/actions/runs/41466739518) and
+[installed Flatpak](https://github.com/frandavid100/leaf/actions/runs/41471767320)
+complete, with source equivalence checked before reusing the executable.
+Includes gestures, update/reinstallation, portals, printing and the existing Orca
+regression; the eight theme screenshots also verify the actual change by keyboard.
 
-Al cerrar alpha.20, el entorno de ejecución se desconectó. Quedaron pendientes
-la revisión visual completa de sus capturas instaladas y la descarga
-independiente de sus assets; publicación, fuente/tag y digests sí están confirmados
-por GitHub. No se afirma validación humana de Wayland, IME o dispositivos.
-[Alcance y pendientes](docs/history/ISSUE_SWEEP_ALPHA20.md) ·
-[evidencia](docs/history/ISSUE_SWEEP_ALPHA20_VALIDATION.json).
+When alpha.20 was closed, the execution environment disconnected. Still pending were
+the complete visual review of its installed screenshots and the independent
+download of its assets; publication, source/tag and digests are confirmed
+by GitHub. No human validation of Wayland, IME or devices is claimed.
+[Scope and pending items](docs/history/ISSUE_SWEEP_ALPHA20.md) ·
+[evidence](docs/history/ISSUE_SWEEP_ALPHA20_VALIDATION.json).
 
-Estado histórico de aquella entrega: **47 cerrados y 12 abiertos**. Se preservan releases, etiquetas, archivo de
-ApexDesk, wordcraft-saving y la PR de Weblate separada.
+Historical state of that delivery: **47 closed and 12 open**. Releases, tags, the
+ApexDesk archive, wordcraft-saving and the separate Weblate PR are preserved.
 
-## Entrega anterior: alpha.19
+## Previous delivery: alpha.19
 
-[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.19), publicado y verificado el 2 de noviembre
-de 2026. Fuente/tag: `1f8694dd8cf51c8f981baf8aa23093ea4e09b625`. Runtime GNOME 49;
-actualización desde alpha.18, ocho assets públicos y sumas verificados.
-Bundle: 10.984.832 bytes; SHA256
+[Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.19), published and verified on 2 November
+2026. Source/tag: `1f8694dd8cf51c8f981baf8aa23093ea4e09b625`. GNOME 49 runtime;
+update from alpha.18, eight public assets and checksums verified.
+Bundle: 10,984,832 bytes; SHA256
 `71656fe9c658fff1f24804f2ee7c2ed9d9086de72919b66053594efa9ffdf39c`.
 
-**Nueve informes cerrados:** #25, #26, #28, #34, #35 y #44–#47. Listas de fuentes
-legibles y escritura estable, enlaces con Ctrl+K/contexto/URL visible, arrastre
-por párrafos, contexto de títulos y ajustes de revisión/marcadores.
-Superadas 128 pruebas Rust, cuatro Python, 588 mensajes gettext y compilación
-optimizada. La [CI nativa](https://github.com/frandavid100/leaf/actions/runs/41439845294) y la [validación instalada](https://github.com/frandavid100/leaf/actions/runs/41442198035) también han pasado, incluidas actualización,
-portales, impresión y Orca automatizada. [Alcance](docs/history/ISSUE_SWEEP_ALPHA19.md) ·
-[evidencia](docs/history/ISSUE_SWEEP_ALPHA19_VALIDATION.json).
+**Nine reports closed:** #25, #26, #28, #34, #35 and #44–#47. Readable font
+lists and stable typing, links with Ctrl+K/context/visible URL, dragging
+by paragraphs, heading context and review/bookmark settings.
+128 Rust tests, four Python tests, 588 gettext messages and optimized
+build passed. The [native CI](https://github.com/frandavid100/leaf/actions/runs/41439845294) and the [installed validation](https://github.com/frandavid100/leaf/actions/runs/41442198035) have also passed, including update,
+portals, printing and automated Orca. [Scope](docs/history/ISSUE_SWEEP_ALPHA19.md) ·
+[evidence](docs/history/ISSUE_SWEEP_ALPHA19_VALIDATION.json).
 
-#35 se reprodujo realmente en GNOME 49 (`18,75` acababa en `75`) antes de corregir
-el filtro numérico y el foco de los delegados durante la repaginación. Ambos
-campos se verificaron con teclado real; no equivale a prueba humana Wayland/IME.
-Estado al terminar: 41 cerrados y 18 abiertos. Las funciones nuevas,
-los límites del motor y los informes posteriores conservan su alcance propio.
+#35 was actually reproduced on GNOME 49 (`18,75` ended up as `75`) before fixing
+the numeric filter and the focus of the delegates during repagination. Both
+fields were verified with a real keyboard; this is not equivalent to a human Wayland/IME test.
+State when finished: 41 closed and 18 open. The new features,
+the engine limits and the later reports keep their own scope.
 
-## Entrega anterior: alpha.18
+## Previous delivery: alpha.18
 
 [Alpha.18, Flatpak x86_64](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.18),
-publicada y verificada el 2 de noviembre de 2026. Fuente y tag:
+published and verified on 2 November 2026. Source and tag:
 `a8207cbdb5b11f050373287a44aecd835aefd50c`.
-ID `io.github.frandavid100.leaf`, runtime GNOME 49; actualización desde alpha.17.
-Bundle: 10.956.624 bytes; SHA256
+ID `io.github.frandavid100.leaf`, GNOME 49 runtime; update from alpha.17.
+Bundle: 10,956,624 bytes; SHA256
 `2c3aeff8a530f7ba644825a099922f53c30a93b743487e79146fde9974c783e5`.
-Descarga pública de los ocho assets, sumas y fuente comprobadas.
-No hay feed automático ni publicación en Flathub.
+Public download of the eight assets, checksums and source checked.
+There is no automatic feed and no publication on Flathub.
 
-**Diez informes cerrados:** #5, #6, #14–#16, #30 y #40–#43. Incluye gestos de
-ratón de tablas, idioma/revisión heredados, Texto compacto, iconos GNOME exactos,
-selección nativa y título activo según caret. [Alcance](docs/history/ISSUE_SWEEP_ALPHA18.md)
-y [evidencia](docs/history/ISSUE_SWEEP_ALPHA18_VALIDATION.json).
+**Ten reports closed:** #5, #6, #14–#16, #30 and #40–#43. Includes table mouse
+gestures, inherited language/review, compact Text, exact GNOME icons,
+native selection and active heading according to the caret. [Scope](docs/history/ISSUE_SWEEP_ALPHA18.md)
+and [evidence](docs/history/ISSUE_SWEEP_ALPHA18_VALIDATION.json).
 
-123 pruebas Rust, cuatro Python, 587 mensajes gettext y la ronda gráfica nativa
-completa superadas. Flatpak instalado: actualización/reinstalación, portales,
-entrada de texto, impresión, enlaces y regresión Orca/AT-SPI automatizada.
-[CI completa](https://github.com/frandavid100/leaf/actions/runs/41402369921).
-No equivale a pruebas humanas de todos los documentos o dispositivos.
+123 Rust tests, four Python tests, 587 gettext messages and the full native graphical
+round passed. Installed Flatpak: update/reinstallation, portals,
+text input, printing, links and automated Orca/AT-SPI regression.
+[Full CI](https://github.com/frandavid100/leaf/actions/runs/41402369921).
+This is not equivalent to human tests of all documents or devices.
 
-DOCX conserva la herencia y las excepciones de revisión. ODT aplana la herencia
-de idioma; Leaf exige DOCX para revisión predeterminada desactivada o excepciones
-explícitas de revisión activada que ODT perdería. No se alteró WordCraft.
+DOCX keeps the inheritance and the review exceptions. ODT flattens language
+inheritance; Leaf requires DOCX for disabled default review or explicit
+exceptions with review enabled that ODT would lose. WordCraft was not altered.
 
-**Estado histórico tras alpha.18: 32 cerrados y 20 abiertos, de 52 informes.** Quedaban
-#1, #2, #7 y #9 de la pasada inicial. Durante el trabajo aparecieron #44–#52 y
-se reabrieron #18, #25, #26, #28, #34, #35 y #37. Sus nuevos requisitos quedaron
-pendientes de aquella entrega; alpha.18 no los daba por resueltos. La cuarta
-revisión y su resultado actualizado están descritos arriba.
+**Historical state after alpha.18: 32 closed and 20 open, out of 52 reports.** Remaining were
+#1, #2, #7 and #9 from the initial pass. During the work #44–#52 appeared and
+#18, #25, #26, #28, #34, #35 and #37 were reopened. Their new requirements remained
+pending from that delivery; alpha.18 did not consider them resolved. The fourth
+review and its updated result are described above.
 
-La [alpha.17 anterior](docs/history/ISSUE_SWEEP_ALPHA17.md) y sus resultados se conservan
-como historial. La prueba de flecha de Párrafo se simplificó y ahora envía movimiento
-y clic de forma coherente, sin añadir controladores de captura al caso ensayado.
+The [earlier alpha.17](docs/history/ISSUE_SWEEP_ALPHA17.md) and its results are kept
+as history. The Paragraph arrow test was simplified and now sends movement
+and click consistently, without adding capture controllers to the tested case.
 
-## Entrega acumulada completada
+## Completed cumulative delivery
 
-**Navegación** integra los marcadores bajo su título, con plegado de la sección;
-los anteriores al primer título aparecen al principio. La tercera pestaña queda
-solo para **Comentarios**: cada hilo comparte una burbuja, con separadores entre
-mensajes y guías para las respuestas. Se conservan todas las acciones e historial.
-[Detalle](docs/BOOKMARKS_COMMENTS.md).
+**Navigation** integrates bookmarks under their heading, with section folding;
+those before the first heading appear at the beginning. The third tab is left
+only for **Comments**: each thread shares a bubble, with separators between
+messages and guides for replies. All actions and history are kept.
+[Details](docs/BOOKMARKS_COMMENTS.md).
 
-**Ortografía y gramática** conserva la lista lateral, sin instrucciones iniciales
-ni bloque de correcciones. Pulsar una fila solo selecciona y muestra el texto.
-Se retira la entrada del menú de documento; F7 y el selector lateral la abren.
-Las correcciones siguen en el contexto del texto; la nueva pasada cambia la
-revisión a herencia por documento con preferencias solo para documentos nuevos. [Detalle](docs/PROOFING_SIDEBAR.md).
+**Spelling and Grammar** keeps the side list, without initial instructions
+or a corrections block. Clicking a row only selects and shows the text.
+The entry in the document menu is removed; F7 and the side selector open it.
+Corrections remain in the text's context menu; the new pass changes
+review to per-document inheritance, with preferences only for new documents. [Details](docs/PROOFING_SIDEBAR.md).
 
-**Propiedades → Información** permite editar título, asunto, autor, palabras clave
-y categoría. Aplicar confirma metadatos, página y encabezados en un solo paso de
-deshacer; Cancelar descarta el formulario. El autor del documento no cambia la
-identidad de nuevos comentarios. [Uso](docs/USER_GUIDE_ES.md).
+**Properties → Information** allows editing title, subject, author, keywords
+and category. Apply confirms metadata, page and headers in a single undo
+step; Cancel discards the form. The document author does not change the
+identity of new comments. [Usage](docs/USER_GUIDE_ES.md).
 
-DOCX conserva los cinco campos y los hilos. El exportador ODT fijado **omite
-comentarios y categoría, y convierte intervalos de marcador en posiciones**.
-Leaf impide perder comentarios/categoría al guardar ODT, propone DOCX y conserva
-recuperación si el autoguardado directo es incompatible. Los otros cuatro campos
-se conservan en ODT. Motor, dependencias, vendor y parches permanecen intactos.
-La reproducción upstream está documentada; no se ha abierto una issue desde aquí.
+DOCX keeps the five fields and the threads. The pinned ODT exporter **omits
+comments and category, and converts bookmark ranges into positions**.
+Leaf prevents losing comments/category when saving ODT, proposes DOCX and keeps
+recovery if direct autosave is incompatible. The other four fields
+are kept in ODT. Engine, dependencies, vendor and patches remain intact.
+The upstream reproduction is documented; no issue has been opened from here.
 
-La revisión anterior de organización y continuidad está terminada y validada:
-[revisión](docs/MAINTAINABILITY_REVIEW.md), [evidencia](docs/MAINTAINABILITY_VALIDATION.json).
+The earlier organization and continuity review is finished and validated:
+[review](docs/MAINTAINABILITY_REVIEW.md), [evidence](docs/MAINTAINABILITY_VALIDATION.json).
 
-## Qué está implementado
+## What is implemented
 
-| Área | Estado y detalle |
+| Area | Status and details |
 | --- | --- |
-| Documentos | DOCX/ODT, edición, formato, estilos, tablas, imágenes en línea, deshacer/rehacer y guardado. [Guía](docs/USER_GUIDE_ES.md) |
-| Página | Columnas, propiedades, encabezados/pies, campos de página y opciones por sección. [Encabezados](docs/HEADERS_FOOTERS.md), [opciones e idioma](docs/PAGE_OPTIONS_PROOFING.md) |
-| Revisión y anotaciones | Lista lateral de errores, revisión al escribir en Preferencias, marcadores e hilos de comentarios. [Revisión](docs/PROOFING_SIDEBAR.md), [anotaciones](docs/BOOKMARKS_COMMENTS.md) |
-| Interfaz | Regla superpuesta, historiales y repetición de formato; GTK4/libadwaita, pestañas/ventanas, búsqueda/reemplazo, miniaturas/títulos, contexto nativo y controles adaptables. |
-| Salida y recuperación | PDF, impresión por portal y preferencias de autoguardado/recuperación. [Impresión](docs/KEYBOARD_PRINTING.md) |
-| Idiomas y apariencia | 678 mensajes gettext, inglés/español y páginas oscuras. [Traducciones](docs/TRANSLATING.md) |
-| Accesibilidad | Texto normal, cursor y selección mediante GtkAccessibleText; prueba real AT-SPI/Orca automatizada. [Alcance](docs/ACCESSIBLE_DOCUMENT_TEXT.md) |
-| Rendimiento | Miniaturas acotadas, invalidación de capas afectadas y búsqueda cerrada sin trabajo redundante. [Mediciones](docs/HOST_PERFORMANCE_AUDIT.md) |
+| Documents | DOCX/ODT, editing, formatting, styles, tables, inline images, undo/redo and saving. [Guide](docs/USER_GUIDE_ES.md) |
+| Page | Columns, properties, headers/footers, page fields and per-section options. [Headers](docs/HEADERS_FOOTERS.md), [options and language](docs/PAGE_OPTIONS_PROOFING.md) |
+| Review and annotations | Side list of errors, check-as-you-type in Preferences, bookmarks and comment threads. [Review](docs/PROOFING_SIDEBAR.md), [annotations](docs/BOOKMARKS_COMMENTS.md) |
+| Interface | Overlaid ruler, histories and format repetition; GTK4/libadwaita, tabs/windows, search/replace, thumbnails/headings, native context menu and adaptive controls. |
+| Output and recovery | PDF, printing through the portal and autosave/recovery preferences. [Printing](docs/KEYBOARD_PRINTING.md) |
+| Languages and appearance | 678 gettext messages, English/Spanish and dark pages. [Translations](docs/TRANSLATING.md) |
+| Accessibility | Plain text, cursor and selection through GtkAccessibleText; real automated AT-SPI/Orca test. [Scope](docs/ACCESSIBLE_DOCUMENT_TEXT.md) |
+| Performance | Bounded thumbnails, invalidation of affected layers and closed search without redundant work. [Measurements](docs/HOST_PERFORMANCE_AUDIT.md) |
 
-## Límites que siguen abiertos
+## Limits that remain open
 
-- Fidelidad de documentos complejos; [ODT](docs/ODT_PRESERVATION_2026-10-31.md)
-  y [límites observados con Writer](docs/INTEROPERABILITY_AUDIT.md).
-- Columnas: David comunica fallos de anchuras desiguales y separadores al aplicar
-  columnas a texto seleccionado; también los observa en WordCraft. [Informe humano
-  y alcance de las pruebas](docs/TEST_RESULTS.md). Pendiente de reproducción mínima;
-  conservar propiedades DOCX no demuestra una maquetación visual correcta.
-- Imágenes flotantes, tiradores de tablas, fórmulas y otras funciones avanzadas
-  aún no implementadas. No se consideran tareas autorizadas por esta lista.
-- Semántica accesible completa de tablas/imágenes/campos y operaciones AT
-  avanzadas; ampliaciones y validación humana aplazadas por el usuario.
-- Confirmación humana de Wayland/escalado fraccionario/multimonitor,
-  impresora física y sesiones largas, cuando haya usuarios disponibles.
+- Fidelity of complex documents; [ODT](docs/ODT_PRESERVATION_2026-10-31.md)
+  and [limits observed with Writer](docs/INTEROPERABILITY_AUDIT.md).
+- Columns: David reports failures with unequal widths and separators when applying
+  columns to selected text; he also observes them in WordCraft. [Human report
+  and test scope](docs/TEST_RESULTS.md). Awaiting a minimal reproduction;
+  keeping DOCX properties does not prove a correct visual layout.
+- Floating images, table handles, formulas and other advanced features
+  not yet implemented. They are not considered tasks authorized by this list.
+- Complete accessible semantics for tables/images/fields and advanced AT
+  operations; extensions and human validation deferred by the user.
+- Human confirmation of Wayland/fractional scaling/multi-monitor,
+  a physical printer and long sessions, when users are available.
 
-## Quién tiene lo pendiente
+## Who owns what is pending
 
-David ha aportado la captura principal del README, incorporada con su
-[procedencia](docs/screenshots/README.md). La presentación pública y la guía de
-instalación se han simplificado; las notas de versiones siguen enlazadas en
-[docs](docs/RELEASE_NOTES.md). El alta de Weblate sigue pendiente de David.
-No sustituir capturas públicas por otras de CI ni repetir el intento de acceso
-en el navegador remoto.
-Las traducciones por PR ya son posibles. La preparación de Flathub requerirá
-revisar sus requisitos vigentes y participación humana; no se inicia ahora.
+David has provided the main README screenshot, incorporated with its
+[provenance](docs/screenshots/README.md). The public presentation and the installation
+guide have been simplified; the release notes are still linked in
+[docs](docs/RELEASE_NOTES.md). Weblate registration is still pending on David's side.
+Do not replace public screenshots with CI ones or repeat the access attempt
+in the remote browser.
+Translations through PRs are already possible. Preparing for Flathub will require
+reviewing its current requirements and human participation; it is not started now.
 
-Consultar las incidencias actuales en GitHub; no inferir su estado de este resumen.
-La [hoja de ruta](ROADMAP.md) distingue propuestas y trabajo aplazado: no añade
-funciones automáticamente ni bloquea el desarrollo esperando probadores.
+Check the current issues on GitHub; do not infer their status from this summary.
+The [roadmap](ROADMAP.md) separates proposals and deferred work: it does not add
+features automatically or block development waiting for testers.

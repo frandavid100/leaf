@@ -81,8 +81,8 @@ class PublishedAlphaVerification(unittest.TestCase):
                 self.assertIn('## Historical section\nKeep this.', files[name])
             self.assertIn('212', files['docs/LATEST_RELEASE.md'])
             self.assertIn('#52', files['PROJECT_STATUS.md'])
-            self.assertIn('Permanecen abiertos: #1, #52.', files['PROJECT_STATUS.md'])
-            self.assertIn('Permanecen abiertos: #1, #52.', files['docs/LATEST_RELEASE.md'])
+            self.assertIn('Still open: #1, #52.', files['PROJECT_STATUS.md'])
+            self.assertIn('Still open: #1, #52.', files['docs/LATEST_RELEASE.md'])
 
     def test_maintenance_report_does_not_claim_empty_issue_closures(self):
         with tempfile.TemporaryDirectory() as folder:
