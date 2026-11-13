@@ -1,88 +1,90 @@
-# Accesibilidad inicial del texto del documento
+# Initial accessibility of the document text
 
-Esta primera etapa permite exponer texto normal, cursor y selección a lectores
-de pantalla mediante la interfaz nativa `GtkAccessibleText`, implementada por
-el propio lienzo visible. No se añade un editor oculto ni se sustituye WordCraft.
+This first stage exposes normal text, the cursor and the selection to screen
+readers through the native `GtkAccessibleText` interface, implemented by the
+visible canvas itself. No hidden editor is added and WordCraft is not replaced.
 
-## Diseño
+## Design
 
-`src/accessible_text.rs` construye un índice de lectura de la historia activa.
-Traduce caracteres Unicode de AT-SPI a posiciones UTF-8 de WordCraft, conserva
-los párrafos vacíos y evita truncar una cadena por un NUL incrustado. Palabras
-y oraciones usan las reglas Unicode de la biblioteca de segmentación que ya
-utilizaba el motor; no se actualiza ninguna dependencia transitiva. Las líneas
-visuales se consultan en `DocLayout::line_span`, incluida la división por ajuste
-de línea y el salto entre párrafos.
+`src/accessible_text.rs` builds a reading index of the active story. It
+translates AT-SPI Unicode characters into WordCraft UTF-8 positions, keeps
+empty paragraphs and avoids truncating a string at an embedded NUL. Words and
+sentences use the Unicode rules of the segmentation library the engine already
+used; no transitive dependency is updated. Visual lines are queried through
+`DocLayout::line_span`, including line-wrap breaks and the break between
+paragraphs.
 
-`src/gnome_canvas.rs` añade la interfaz al lienzo `GtkFixed` que ya contiene las
-páginas. Su función accesible es cuadro de texto multilínea. Las consultas leen
-el índice; la escritura, el movimiento, la selección y deshacer continúan por
-los controladores y comandos de WordCraft existentes. Las posiciones del cursor
-y de la selección proceden de la sesión, no de una selección mantenida aparte.
+`src/gnome_canvas.rs` adds the interface to the `GtkFixed` canvas that already
+contains the pages. Its accessible role is multi-line text box. Queries read
+the index; typing, movement, selection and undo still go through the existing
+WordCraft controllers and commands. The cursor and selection positions come
+from the session, not from a separately maintained selection.
 
-El índice se reconstruye solo al cambiar revisión, documento o historia activa;
-mover el cursor no vuelve a copiar el texto. Es una representación derivada y
-no editable. Cada cambio compara prefijo/sufijo Unicode y notifica la mínima
-sustitución contigua: primero borrado, mientras sigue disponible el texto
-anterior, después inserción con el texto nuevo. No se mantiene un préstamo
-RefCell durante esas notificaciones. Los callbacks y el widget solo guardan
-referencias débiles al estado de la pestaña; el índice se vacía al cerrarla.
+The index is rebuilt only when the revision, document or active story changes;
+moving the cursor does not copy the text again. It is a derived, non-editable
+representation. Each change compares the Unicode prefix/suffix and notifies the
+minimal contiguous replacement: first the deletion, while the previous text is
+still available, then the insertion with the new text. No RefCell borrow is
+held during those notifications. Callbacks and the widget keep only weak
+references to the tab state; the index is cleared when the tab is closed.
 
-El estado de solo lectura refleja las restricciones generales del documento;
-las comprobaciones reales de edición y de regiones protegidas siguen siendo
-responsabilidad del motor. La interfaz no concede permisos adicionales.
+The read-only state reflects the document's general restrictions; the actual
+checks for editing and protected regions remain the engine's responsibility.
+The interface grants no additional permissions.
 
-## Comprobación
+## Verification
 
-Los seis tests de `tests/accessible_text.rs` comprueban caracteres multibyte,
-emoji con ZWJ, espacios y párrafos vacíos, límites inválidos, palabras/oraciones,
-coordenadas de líneas ajustadas, selecciones, encabezados y ausencia de cambios
-en documento/historial durante las consultas.
+The six tests in `tests/accessible_text.rs` check multibyte characters, ZWJ
+emoji, spaces and empty paragraphs, invalid boundaries, words/sentences,
+wrapped-line coordinates, selections, headings and the absence of changes to
+the document/history during queries.
 
-La prueba independiente usa AT-SPI desde Python, teclas reales mediante xdotool
-y Orca sin modificar. Consulta el texto y sus desplazamientos, selecciona una
-palabra con acento, la sustituye y deshace; el proceso Leaf comprueba que su
-documento canónico vuelve exactamente al inicial. Se registran eventos de
-inserción, borrado, cursor y selección, y el texto de los anuncios generados por
-Orca. Se usa un perfil temporal con contenido sintético, sin documentos privados.
+The independent test uses AT-SPI from Python, real keystrokes through xdotool
+and unmodified Orca. It queries the text and its offsets, selects an accented
+word, replaces it and undoes; the Leaf process checks that its canonical
+document returns exactly to the initial one. Insertion, deletion, cursor and
+selection events are recorded, along with the text of the announcements
+generated by Orca. A temporary profile with synthetic content is used, with no
+private documents.
 
-La comparación anterior usa el ejecutable publicado de alpha.11: los controles
-nativos aparecen en el árbol AT-SPI, pero su lienzo genérico está omitido. La
-prueba nueva exige que aparezca como área de texto y que responda a `Text`.
-Los resultados, revisiones y hashes verificados quedan en
+The earlier comparison uses the published alpha.11 executable: the native
+controls appear in the AT-SPI tree, but its generic canvas is omitted. The new
+test requires it to appear as a text area and to respond to `Text`.
+The verified results, revisions and hashes are in
 [`ACCESSIBLE_DOCUMENT_VALIDATION.json`](ACCESSIBLE_DOCUMENT_VALIDATION.json).
-La validación nativa supera 97 tests y la prueba independiente con Orca 46.1
-confirma anuncios de párrafo, selección, carácter escrito y texto restaurado.
-F6 recorre panel, herramientas y documento antes de iniciar la lectura.
-El Flatpak instalado supera la misma prueba con Orca 46.1 y se publica como
+Native validation passes 97 tests, and the independent test with Orca 46.1
+confirms announcements of paragraph, selection, typed character and restored
+text. F6 cycles through the sidebar, tools and document before reading starts.
+The installed Flatpak passes the same test with Orca 46.1 and is published as
 [alpha.12](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.12).
-Se han descargado y verificado independientemente ambos ZIP de auditoría/paquete,
-los siete checksums y los ocho assets publicados.
-La prueba anterior confirma que alpha.11 no exponía el texto del lienzo;
-la nueva confirma 61 caracteres Unicode, selección Café (26–30), sustitución
-por X y restauración exacta del documento canónico al deshacer.
+Both audit/package ZIPs, the seven checksums and the eight published assets have
+been downloaded and verified independently.
+The earlier test confirms that alpha.11 did not expose the canvas text;
+the new one confirms 61 Unicode characters, the selection Café (26–30),
+replacement with X and exact restoration of the canonical document on undo.
 
-Las transcripciones son evidencia de los anuncios generados automáticamente;
-no equivalen a escuchar una sesión completa ni a probar una línea braille.
-Las capturas públicas y Weblate continúan a cargo del usuario.
+The transcripts are evidence of the automatically generated announcements;
+they are not equivalent to listening to a full session or testing a braille
+display. Public screenshots and Weblate remain the user's responsibility.
 
-## Alcance de esta entrega
+## Scope of this delivery
 
-Se prioriza lectura y edición de texto normal mediante teclado. El índice
-expone el texto fuente de la historia activa: todavía no es una representación
-estructural completa del documento. Los campos y objetos conservan sus marcas
-en el texto; tablas, imágenes, relaciones entre celdas, atributos ricos, filtrado
-según revisiones/texto oculto y otras estructuras necesitan trabajo posterior.
+Reading and editing of normal text by keyboard take priority. The index
+exposes the source text of the active story: it is not yet a complete
+structural representation of the document. Fields and objects keep their
+markers in the text; tables, images, relationships between cells, rich
+attributes, filtering by revisions/hidden text and other structures need later
+work.
 
-No se anuncian como implementadas las operaciones remotas de `EditableText`,
-la colocación del cursor/selección mediante las API de GTK 4.22 ni la geometría
-por carácter de las API posteriores a GTK 4.14. Se conserva GTK mínimo 4.14 y el
-runtime GNOME 49. Las limitaciones de esos métodos deben distinguirse de mover
-el cursor, seleccionar y escribir con las teclas normales, que siguen usando
-el editor real. El acceso completo mediante pantalla táctil/braille y lectores
-más recientes requiere validación específica.
+The remote `EditableText` operations, cursor/selection placement through the
+GTK 4.22 APIs and per-character geometry from the APIs after GTK 4.14 are not
+announced as implemented. The GTK 4.14 minimum and the GNOME 49 runtime are
+kept. The limitations of those methods must be distinguished from moving the
+cursor, selecting and typing with the normal keys, which still use the real
+editor. Full access through touchscreen/braille and newer readers requires
+specific validation.
 
-Documentación primaria consultada:
+Primary documentation consulted:
 
 - https://docs.gtk.org/gtk4/iface.AccessibleText.html
 - https://docs.gtk.org/gtk4/section-accessibility.html
@@ -90,9 +92,9 @@ Documentación primaria consultada:
 - https://github.com/GNOME/gtk/blob/4.14.5/gtk/gtkaccessibletext.c
 - https://github.com/GNOME/orca/tree/ORCA_46_1
 
-## Repetir el diagnóstico
+## Repeating the diagnosis
 
-En una sesión de pruebas con Orca y `python3-pyatspi`:
+In a test session with Orca and `python3-pyatspi`:
 
 ```sh
 GTK_A11Y=atspi NO_AT_BRIDGE=0 GSK_RENDERER=cairo LANGUAGE=en \
@@ -100,7 +102,7 @@ GTK_A11Y=atspi NO_AT_BRIDGE=0 GSK_RENDERER=cairo LANGUAGE=en \
   tools/accessibility_audit.py ./target/release/wordcraft-gnome
 ```
 
-El flujo opcional `accessibility-audit.yml` instala los clientes y usa el
-ejecutable previamente validado. No exige volver a ejecutar el corpus de
-documentos. No usar el marcador de fin del test sobre una sesión de trabajo
-normal: la opción `--a11y-ui-test` crea exclusivamente el documento sintético.
+The optional `accessibility-audit.yml` workflow installs the clients and uses
+the previously validated executable. It does not require running the document
+corpus again. Do not use the test's end marker on a normal working session:
+the `--a11y-ui-test` option creates only the synthetic document.
