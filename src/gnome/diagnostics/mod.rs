@@ -2,6 +2,34 @@
 //! setup driven by command-line flags. None of this runs during normal use;
 //! every entry point is reached only through a test flag. Leaf ships these
 //! checks so CI can run them against the installed Flatpak it publishes.
+//!
+//! Most files are named after what they check. The ones below are release
+//! regression bundles, named after the alpha or issue sweep that introduced
+//! them; each covers several unrelated features, so it keeps its name and
+//! this index says what is inside. `register.rs` maps flags to checks.
+//!
+//! | Module | Covers |
+//! | --- | --- |
+//! | `alpha28` | Page sections and fit, thumbnails and active page, note actions, reference dialogs, picture move/resize |
+//! | `alpha29` | Picture handles and inline/floating moves, automatic references, captions, fields, links, TOC settings, footnotes, equations |
+//! | `alpha30` | Caret page, image viewport, font/language repeat, paragraph pairs, disabled elements, Review type filter, TOC navigation |
+//! | `alpha31` | Incremental pending formatting, headers |
+//! | `alpha42` | Start view controls, search field, sidebar preference, tab breakpoints, document menu, closing with unsaved work |
+//! | `alpha43` | Image alt text, crop and decorative flag, picture placement, language search, list templates and start numbers, Redo history, table tool control
+//! | `dictionaries84` | Hunspell dictionary folder chooser, live refresh, persistent access (issue #84) |
+//! | `format136` | Format menu families, native colours, direct fonts, pointer back navigation (issue #136) |
+//! | `maintenance45` | Zoom (#278), system font install (#279), picture delete (#280), style catalogue (#259) |
+//! | `navigation131` | Sidebar representations, independent scroll, return from Review and Search (issue #131) |
+//! | `review29` | Review panel filters, mixed items, apply, revisions, shared elements, table group history |
+//! | `sweep18` | Icons, compact mode, reapply, language, theme, navigation; table and text pointer cases |
+//! | `sweep19` | Font menu, paragraph drag, links (issue sweep 19 follow-ups) |
+//! | `sweep20` | Pointer interactions from issue sweep 20 |
+//! | `toolbar41` | Bottom toolbar: direct and overflow controls, preferences, reorder, resize, reopen |
+//! | `workflows35` | Search, selection, regex errors, next style, plain paste, format painter, images, outline, fonts, templates, drag and drop, clipboard images |
+//! | `workflows36` | Tabs, search, fonts, template folder |
+//! | `workflows37` | Gallery, thumbnails, geometry, modal input, first save |
+//! | `workflows38` | Start view combinations with recovery records, appearance modes |
+//! | `workflows40` | Start folder, bottom bar groups, reversible sidebar |
 use super::*;
 
 /// True when Leaf was started with the given command-line flag. Diagnostic
