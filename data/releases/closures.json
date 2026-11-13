@@ -1,10 +1,5 @@
 {
-  "version": "0.1.0-alpha.45",
-  "issues": [
-    259,
-    262,
-    278,
-    280
-  ],
-  "report": "docs/ALPHA45_MAINTENANCE.md"
+  "version": "0.1.0-alpha.46",
+  "issues": [],
+  "report": "docs/ALPHA46_REVIEW.md"
 }

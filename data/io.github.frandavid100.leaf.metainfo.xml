@@ -63,6 +63,27 @@
   </screenshots>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.1.0-alpha.46" date="2026-11-13" type="development">
+      <url type="details">https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.46</url>
+      <description>
+        <p>Smoother typing in long documents and a clearer codebase</p>
+        <p xml:lang="es">Escritura más fluida en documentos largos y un código más claro</p>
+        <ul>
+          <li>The Review panel, Outline and page thumbnails now refresh once typing pauses instead of after every keystroke. With Review open in a long document, the work done between keystrokes dropped to about a seventh.</li>
+          <li>Fields, cross-references and the table of contents are recomputed on a background thread after a typing pause. In a 131-page document with a table of contents, the longest freeze went from about 460 ms to about 50 ms.</li>
+          <li>Autosave no longer rereads preferences from disk or rechecks ODT documents every second while nothing changes.</li>
+          <li>Diagnostic checks are gathered behind a single module, contributor documentation is in English and historical reports are archived, so the code is easier to review.</li>
+          <li xml:lang="es">Los paneles Revisión, Esquema y las miniaturas se actualizan al hacer una pausa al escribir, no tras cada tecla. Con Revisión abierto en un documento largo, el trabajo entre pulsaciones baja a una séptima parte.</li>
+          <li xml:lang="es">Los campos, las referencias cruzadas y el índice se recalculan en segundo plano tras una pausa al escribir. En un documento de 131 páginas con índice, el bloqueo más largo baja de unos 460 ms a unos 50 ms.</li>
+          <li xml:lang="es">El autoguardado ya no vuelve a leer las preferencias ni a comprobar los documentos ODT cada segundo cuando no hay cambios.</li>
+          <li xml:lang="es">Las comprobaciones de diagnóstico se reúnen en un solo módulo, la documentación para colaboradores está en inglés y los informes históricos se archivan, para que el código sea más fácil de revisar.</li>
+        </ul>
+        <p>WordCraft remains at the same 0.17.0 revision and its open engine issues are unchanged. Undo and Redo still refresh fields synchronously.</p>
+        <p>Speed measurements used synthetic documents in a virtual machine with software rendering; gains on real hardware will differ. No issues are closed by this release.</p>
+        <p xml:lang="es">WordCraft conserva la misma revisión de 0.17.0 y sus issues abiertos del motor no cambian. Deshacer y Rehacer siguen actualizando los campos de forma síncrona.</p>
+        <p xml:lang="es">Las mediciones de velocidad usaron documentos sintéticos en una máquina virtual con renderizado por software; la mejora en equipos reales será distinta. Esta versión no cierra ningún issue.</p>
+      </description>
+    </release>
     <release version="0.1.0-alpha.45" date="2026-11-11" type="development">
       <url type="details">https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.45</url>
       <description>
