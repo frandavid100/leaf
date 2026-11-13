@@ -56,3 +56,6 @@ text18-*.log
 /toolbar41-*.log
 /alpha31-*.log
 /alpha31-*.png
+
+# Local packaging output (CI uploads it as an artifact)
+/dist/
