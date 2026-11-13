@@ -1,100 +1,102 @@
-# Diagnóstico y optimización del host Leaf
+# Leaf host diagnosis and optimization
 
-Petición: medir rendimiento y corregir exclusivamente la capa Leaf. Cualquier
-posible cambio de WordCraft debe proponerse a upstream, sin modificarlo aquí.
+Request: measure performance and fix only the Leaf layer. Any possible
+WordCraft change must be proposed upstream, without modifying it here.
 
-## Método
+## Method
 
-Se instrumenta primero el host de alpha.12 sin cambiar su comportamiento y se
-conserva ese ejecutable optimizado como referencia. Se compara con el candidato
-en el mismo runner Ubuntu 24.04, GTK/Xvfb y GSK Cairo, usando orden AB/BA y dos
-procesos nuevos por versión y tamaño. Cada proceso usa un perfil temporal y
-solo documentos sintéticos de 120, 600 o 1800 párrafos con texto acentuado.
+The alpha.12 host is first instrumented without changing its behavior, and that
+optimized executable is kept as the reference. It is compared with the candidate
+on the same Ubuntu 24.04 runner, GTK/Xvfb and GSK Cairo, using AB/BA ordering
+and two fresh processes per version and size. Each process uses a temporary
+profile and only synthetic documents of 120, 600 or 1800 paragraphs with
+accented text.
 
-La generación/guardado de fixtures queda fuera de los tiempos de importación.
-Se importan DOCX y ODT desde archivos recién creados (caché de disco caliente),
-se mide la primera maquetación y después los widgets/rasteres iniciales. Se
-comprueban movimientos de cursor, desplazamiento, escritura/deshacer y búsqueda
-activa/cerrada. El documento canónico debe acabar idéntico al inicial.
+Fixture generation/saving is excluded from import timings. DOCX and ODT are
+imported from freshly created files (warm disk cache), the first layout is
+measured, and then the initial widgets/rasters. Cursor movements, scrolling,
+typing/undo and active/closed search are checked. The canonical document must
+end up identical to the initial one.
 
-Los spans `leaf.*` son inclusivos. Los `boundary.*` delimitan llamadas a las
-API públicas del motor a través de los adaptadores: incluyen su pequeño coste
-Leaf, no son un perfil exclusivo de CPU de WordCraft. Los contadores añaden un pequeño coste de instrumentación a ambas versiones;
-los tiempos describen este diagnóstico, no una sesión normal. No sumar spans anidados
-ni atribuir todo el tiempo de una operación a un solo componente.
+The `leaf.*` spans are inclusive. The `boundary.*` spans delimit calls to the
+engine's public APIs through the adapters: they include their small Leaf cost,
+and are not an exclusive CPU profile of WordCraft. The counters add a small
+instrumentation cost to both versions; the timings describe this diagnosis, not
+a normal session. Do not add up nested spans or attribute all the time of an
+operation to a single component.
 
-Además del tiempo se cuentan solicitudes de repintado, consultas de límites
-GTK y filas de búsqueda creadas. Esos contadores distinguen trabajo eliminado
-de fluctuaciones de CI. Se registra RSS por fase: incluye los documentos y
-copias de comprobación de esta prueba, y no equivale al consumo de una sesión
-normal ni a una promesa de menor memoria. Los rasteres ya tenían caché limitada
-al área visible; se conserva esa política.
+Besides time, repaint requests, GTK bounds queries and created search rows are
+counted. These counters distinguish eliminated work from CI fluctuations. RSS
+is recorded per phase: it includes this test's documents and verification
+copies, and is not equivalent to the consumption of a normal session nor a
+promise of lower memory. Rasters already had a cache limited to the visible
+area; that policy is kept.
 
-## Cambios exclusivos de Leaf
+## Leaf-only changes
 
-- La capa de selección repinta la unión de las páginas anteriores y actuales;
-  así desaparecen las marcas al deseleccionar, cerrar búsqueda o cambiar de
-  página. Durante la animación del cursor solo se invalida su página. Entrar o
-  salir de encabezados/pies mantiene invalidación completa de sus guías.
-- Las miniaturas consultan por búsqueda binaria los límites actuales de los
-  widgets GTK. No se guardan alturas CSS que puedan quedar obsoletas al cambiar
-  la ventana. Antes de la asignación se usan los mismos límites aproximados de
-  la versión anterior, precalculados al construir la lista. Los límites aún
-  coincidentes de widgets recién añadidos se consideran sin asignar; no todas
-  las miniaturas visibles. Un callback débil y agrupado actualiza los límites
-  después de cambiar el ajuste/tamaño del panel. Solo se recorren
-  las miniaturas visibles y la pequeña caché para expulsar las anteriores.
-- La búsqueda cerrada conserva la consulta, pero deja de ejecutar el buscador
-  y reconstruir sus filas al editar. Al volver a abrirla se recalcula contra la
-  revisión actual. Miniaturas ocultas por búsqueda/títulos no se rasterizan.
+- The selection layer repaints the union of the previous and current pages;
+  this removes the marks left when deselecting, closing search or changing
+  page. During the cursor animation only its page is invalidated. Entering or
+  leaving headers/footers keeps full invalidation of their guides.
+- Thumbnails query the current bounds of the GTK widgets by binary search. No
+  CSS heights that could become stale when the window changes are stored.
+  Before allocation, the same approximate bounds as the previous version are
+  used, precomputed when building the list. Still-matching bounds of newly
+  added widgets are treated as unallocated; not all visible thumbnails are. A
+  weak, coalesced callback updates the bounds after the panel's fit/size
+  changes. Only the visible thumbnails and the small cache are traversed to
+  evict the previous ones.
+- Closed search keeps the query, but stops running the searcher and rebuilding
+  its rows on edit. When reopened, it is recomputed against the current
+  revision. Thumbnails hidden by search/headings are not rasterized.
 
-No cambia `Cargo.toml`, `Cargo.lock`, `vendor/`, `patches/`, la revisión de
-WordCraft ni el renderizador. El workflow comprueba esa frontera por `git diff`.
+`Cargo.toml`, `Cargo.lock`, `vendor/`, `patches/`, the WordCraft revision and
+the renderer do not change. The workflow checks that boundary via `git diff`.
 
-## Corrección
+## Correctness
 
-Los tests sin GUI comparan la búsqueda binaria con un recorrido completo en
-listas de alturas variables, huecos y bordes exactos, además de una lista de
-10 000 entradas con número acotado de consultas. La prueba GTK compara la
-caché con todos los límites reales en inicio, mitad y final del panel; comprueba
-repintado de selección anterior, cierre y reapertura de búsqueda tras editar,
-y restauración exacta del documento por deshacer. Se mantienen regresiones
-existentes de encabezados, zoom/HiDPI, animación, búsqueda y ciclo de vida.
+The non-GUI tests compare the binary search with a full traversal on lists
+with variable heights, gaps and exact edges, plus a list of 10,000 entries with
+a bounded number of queries. The GTK test compares the cache with all real
+bounds at the start, middle and end of the panel; it checks repainting of the
+previous selection, closing and reopening search after editing, and exact
+restoration of the document through undo. Existing regressions for headers,
+zoom/HiDPI, animation, search and lifecycle are kept.
 
-## Resultados
+## Results
 
-La comparación AB/BA pasa en los tres tamaños. Cada versión se ejecuta dos
-veces por tamaño en el mismo runner. Medianas de la fase de construcción de
-widgets y rasteres iniciales, **sin incluir importación ni primera maquetación**:
+The AB/BA comparison passes at all three sizes. Each version runs twice per
+size on the same runner. Medians of the widget and initial raster construction
+phase, **not including import or first layout**:
 
-| Páginas | Miniaturas rasterizadas inicialmente | Fase inicial, ms (antes → después) |
+| Pages | Thumbnails initially rasterized | Initial phase, ms (before → after) |
 | --- | --- | --- |
 | 11 | 11 → 4 | 29.02 → 16.68 |
 | 55 | 55 → 4 | 111.95 → 20.92 |
 | 164 | 164 → 4 | 315.90 → 30.83 |
 
-En 164 páginas, 80 movimientos de cursor: **13.120 → 80** operaciones (`overlay_queue`), 1.259 → 0.991 ms en esta muestra.
+At 164 pages, 80 cursor movements: **13,120 → 80** operations (`overlay_queue`), 1.259 → 0.991 ms in this sample.
 
-En 164 páginas, 80 actualizaciones de miniaturas en caché: **13.120 → 1.440** operaciones (`thumbnail_bounds`), 2.581 → 0.324 ms en esta muestra.
+At 164 pages, 80 cached thumbnail updates: **13,120 → 1,440** operations (`thumbnail_bounds`), 2.581 → 0.324 ms in this sample.
 
-En 164 páginas, 4 actualizaciones solicitadas con búsqueda cerrada: **288 → 0** operaciones (`search_rows`), 103.335 → 0.002 ms en esta muestra.
+At 164 pages, 4 requested updates with search closed: **288 → 0** operations (`search_rows`), 103.335 → 0.002 ms in this sample.
 
-La primera maquetación y las ocho inserciones/deshacer no presentan una
-mejora consistente que deba atribuirse a estos cambios. No se modifica ni se
-acelera internamente WordCraft. La menor RSS observada en los documentos grandes
-es compatible con evitar los rasteres iniciales innecesarios, pero dos muestras
-no justifican una promesa general de memoria. Los contadores de trabajo son la
-evidencia más directa; no multiplicar sus ratios por la velocidad de toda la app.
+The first layout and the eight inserts/undos show no consistent improvement
+that should be attributed to these changes. WordCraft is not modified or
+internally sped up. The lower RSS observed on the large documents is
+consistent with avoiding unnecessary initial rasters, but two samples do not
+justify a general memory promise. The work counters are the most direct
+evidence; do not multiply their ratios by the speed of the whole app.
 
-No se ha aislado un defecto concreto del motor que justifique una incidencia
-upstream. Las fases importación/maquetación/rasterización quedan registradas para
-una futura reproducción si aparece un caso problemático; cualquier cambio allí
-se propondrá a WordCraft, manteniendo esta rama sin modificaciones del motor.
+No specific engine defect has been isolated that would justify an upstream
+issue. The import/layout/rasterization phases are recorded for a future
+reproduction if a problematic case appears; any change there will be proposed
+to WordCraft, keeping this branch free of engine modifications.
 
-[Evidencia durable, revisiones y resultados por fase](HOST_PERFORMANCE_VALIDATION.json).
+[Durable evidence, revisions and per-phase results](HOST_PERFORMANCE_VALIDATION.json).
 
 
-## Repetir
+## Reproduce
 
 ```sh
 cargo test --locked
@@ -105,22 +107,23 @@ XDG_CONFIG_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d) \
 python tools/performance_compare.py /ruta/referencia /ruta/candidato
 ```
 
-El marcador `--performance-ui-test` activa métricas exclusivamente para ese
-diagnóstico sintético. No se registran documentos ni métricas en uso normal.
-No es una nueva batería de compatibilidad por versión ni repite el corpus de
-24 archivos. Tampoco sustituye la prueba humana Wayland/GNOME OS o con GPU.
+The `--performance-ui-test` flag enables metrics exclusively for that synthetic
+diagnosis. No documents or metrics are recorded in normal use. It is not a new
+per-version compatibility suite, nor does it repeat the 24-file corpus. Nor
+does it replace the human Wayland/GNOME OS or GPU test.
 
-Documentación GTK consultada:
+GTK documentation consulted:
 
 - https://docs.gtk.org/gtk4/drawing-model.html
 - https://docs.gtk.org/gtk4/method.Widget.queue_draw.html
 - https://docs.gtk.org/gtk4/method.Widget.compute_bounds.html
 
-## Entrega
+## Delivery
 
 [Alpha.13](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.13)
-publicada después de superar la regresión de caché en el Flatpak instalado,
-actualización desde alpha.12 y la prueba real AT-SPI/Orca. 99 tests y regresiones
-GTK completos. Artefactos descargados/verificados y ocho assets contrastados;
-revisiones, hashes y resultados instalados están en el JSON enlazado.
-Las capturas públicas no se han sustituido y Weblate sigue a cargo del usuario.
+published after passing the cache regression on the installed Flatpak, the
+update from alpha.12 and the real AT-SPI/Orca test. 99 tests and full GTK
+regressions. Artifacts downloaded/verified and eight assets cross-checked;
+revisions, hashes and installed results are in the linked JSON.
+The public screenshots have not been replaced and Weblate remains the user's
+responsibility.

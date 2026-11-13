@@ -1,28 +1,28 @@
-# Ortografía, gramática e idioma
+# Spelling, grammar and language
 
-La tercera revisión sustituye el interruptor global de revisión al escribir.
-Preferencias ofrece idioma y revisión predeterminados **solo para documentos
-nuevos**; Propiedades → Información cambia la herencia del documento. Texto →
-Idioma ofrece No revisar, Predeterminado y los idiomas. Predeterminado borra las
-propiedades directas; un idioma explícito activa revisión en ese fragmento.
-Los estilos y fragmentos explícitos no se reescriben al cambiar el documento.
+The third revision replaces the global check-as-you-type switch. Preferences
+offers a default language and default checking **only for new documents**;
+Properties → Information changes the document's inheritance. Text → Language
+offers Do Not Check, Default and the languages. Default clears the direct
+properties; an explicit language enables checking in that run. Styles and
+explicit runs are not rewritten when the document changes.
 
-La cuarta pestaña lateral muestra la lista sin instrucciones iniciales ni botón
-Actualizar. Se renueva con debounce tras ediciones o cambios de configuración,
-descartando resultados de otra identidad/revisión. Clic solo selecciona y revela
-el texto; las correcciones están en el menú contextual. F7 abre la misma lista.
-La revisión automática usa las propiedades efectivas de cada fragmento. Cambiar
-Preferencias no altera documentos abiertos, errores visibles ni su historial.
+The fourth sidebar tab shows the list without initial instructions or a Refresh
+button. It is refreshed with a debounce after edits or configuration changes,
+discarding results from another identity/revision. A click only selects and
+reveals the text; corrections are in the context menu. F7 opens the same list.
+Automatic checking uses each run's effective properties. Changing Preferences
+does not alter open documents, visible errors or their history.
 
-DOCX conserva herencia y excepciones; el exportador ODT fijado aplana los idiomas
-y pierde ciertos valores false. Leaf requiere DOCX al desactivar revisión en el
-documento o crear una excepción explícita que la active. La herencia de idioma
-por sí sola sigue siendo una limitación del ODT ordinario.
+DOCX keeps inheritance and exceptions; the pinned ODT exporter flattens
+languages and loses certain false values. Leaf requires DOCX when checking is
+disabled in the document or when an explicit exception enables it. Language
+inheritance by itself remains a limitation of ordinary ODT.
 
-La configuración del documento se puede deshacer. La apertura, el análisis y
-la navegación no cambian contenido ni estado modificado. Los diccionarios sin
-instalar se indican en el selector; no se añaden motores alternativos.
+The document configuration can be undone. Opening, analysis and navigation do
+not change content or the modified state. Uninstalled dictionaries are marked
+in the selector; no alternative engines are added.
 
-[Alcance y validación alpha.18](history/ISSUE_SWEEP_ALPHA18.md) ·
-[Panel](../src/gnome/spellcheck.rs) · [Modelo](../src/proofing_defaults.rs) ·
-[Preferencias](../src/gnome/workspace.rs).
+[alpha.18 scope and validation](history/ISSUE_SWEEP_ALPHA18.md) ·
+[Panel](../src/gnome/spellcheck.rs) · [Model](../src/proofing_defaults.rs) ·
+[Preferences](../src/gnome/workspace.rs).

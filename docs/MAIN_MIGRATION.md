@@ -1,35 +1,36 @@
-# Consolidación de Leaf en main — 2 de noviembre de 2026
+# Consolidation of Leaf on main — November 2, 2026
 
-## Estado previo y conservación
+## Previous state and preservation
 
-- Main anterior: `58da57efcfd03e7b442b20629703d32a697274f4`, archivado sin cambios
-  en [archive/apexdesk-main-2026-11-02](https://github.com/frandavid100/leaf/tree/archive/apexdesk-main-2026-11-02).
-- Leaf remoto: `61f3045d63eb5c0f985c4adacc338f51172daa52`, conservado en
+- Previous main: `58da57efcfd03e7b442b20629703d32a697274f4`, archived unchanged
+  in [archive/apexdesk-main-2026-11-02](https://github.com/frandavid100/leaf/tree/archive/apexdesk-main-2026-11-02).
+- Remote Leaf: `61f3045d63eb5c0f985c4adacc338f51172daa52`, preserved in
   [wordcraft-saving](https://github.com/frandavid100/leaf/tree/wordcraft-saving).
-- Ancestro común: `6ab4b958c9ae78b87706fff8d8e629791e2e21de`.
-  Main tenía 19 commits exclusivos; Leaf, 473. La integración usa un commit de
-  fusión con ambos extremos como padres; no reemplaza ni aplasta sus historiales.
-- Checkout previo limpio. Sus 12 commits locales y los 12 remotos divergentes
-  tenían el mismo árbol final; se mantiene el checkout original y la rama local
-  `archive/local-wordcraft-saving-2026-11-02`. Trabajo aislado en otro worktree.
-- No había pull requests abiertas que redirigir.
-- Última release: [v0.1.0-alpha.18](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.18),
-  fuente/tag `a8207cbdb5b11f050373287a44aecd835aefd50c`. No se crea otra release
-  ni se mueven etiquetas por esta migración.
+- Common ancestor: `6ab4b958c9ae78b87706fff8d8e629791e2e21de`.
+  Main had 19 exclusive commits; Leaf, 473. The integration uses a merge commit
+  with both tips as parents; it does not replace or squash their histories.
+- Previous checkout clean. Its 12 local commits and the 12 divergent remote ones
+  had the same final tree; the original checkout and the local branch
+  `archive/local-wordcraft-saving-2026-11-02` are kept. Work isolated in another
+  worktree.
+- There were no open pull requests to redirect.
+- Latest release: [v0.1.0-alpha.18](https://github.com/frandavid100/leaf/releases/tag/v0.1.0-alpha.18),
+  source/tag `a8207cbdb5b11f050373287a44aecd835aefd50c`. No other release is
+  created and no tags are moved for this migration.
 
-## Revisión de cambios exclusivos
+## Review of exclusive changes
 
-Comparados los 19 commits propios de main y su diff completo desde el ancestro:
-solo cambiaban seis archivos. La fusión del resto de Leaf fue automática.
+The 19 commits specific to main and their complete diff from the ancestor were
+compared: only six files changed. The merge of the rest of Leaf was automatic.
 
-| Archivos de main | Resolución |
+| Files from main | Resolution |
 | --- | --- |
-| README.md | Misma presentación actual de Leaf en ambas ramas; se conservan texto, atribución y captura de David. Enlaces e imágenes relativos resuelven ahora desde main. |
-| AGENTS.md y CONTRIBUTING.md | Las versiones de main eran guías de redirección. Se conservan las guías completas de Leaf, actualizadas para desarrollar, compilar y contribuir en main. |
-| Tres formularios/configuración de issues | Coinciden con Leaf; se conservan. El enlace activo a TESTING pasa a main. |
-| Código, dependencias y binarios antiguos ApexDesk | La evolución de Leaf desde el ancestro común reemplaza el prototipo. El estado exacto anterior sigue accesible en la rama de archivo y en el historial de la fusión. |
+| README.md | Same current Leaf presentation on both branches; David's text, attribution and screenshot are kept. Relative links and images now resolve from main. |
+| AGENTS.md and CONTRIBUTING.md | The main versions were redirection guides. The complete Leaf guides are kept, updated for developing, building and contributing on main. |
+| Three issue forms/configuration | They match Leaf; they are kept. The active link to TESTING moves to main. |
+| Old ApexDesk code, dependencies and binaries | Leaf's evolution from the common ancestor replaces the prototype. The exact previous state remains accessible in the archive branch and in the merge history. |
 
-Commits exclusivos de main revisados (orden cronológico):
+Exclusive main commits reviewed (chronological order):
 
 ```
 c4b0be9 Point Leaf landing page to current development and enable testing issue forms [skip ci]
@@ -53,35 +54,35 @@ fe04fc4 docs: link alpha.13 host performance release from landing page [skip ci]
 58da57e Condense Leaf presentation around focused editing, capabilities and transparent development
 ```
 
-En el lado Leaf se conserva íntegro el árbol de desarrollo actual, salvo los
-ajustes de migración: guías y enlaces activos, URL de ayuda/traducciones en About
-y AppStream, filtros de rama y guardas de publicación en Actions, y preparación
-de Weblate. Se conservan Cargo.toml/Cargo.lock, vendor, parches, pruebas,
-catálogos, capturas e informes históricos. La URL de About cambia en una sola
-línea, sin alterar mensajes gettext ni su localización en el código.
+On the Leaf side, the current development tree is kept in full, except for the
+migration adjustments: guides and active links, help/translation URL in About
+and AppStream, branch filters and publication guards in Actions, and Weblate
+preparation. Cargo.toml/Cargo.lock, vendor, patches, tests, catalogs,
+screenshots and historical reports are kept. The About URL changes in a single
+line, without altering gettext messages or their location in the code.
 
-## Validación
+## Validation
 
-Comprobaciones locales: formato del paquete correcto, cuatro pruebas Python,
-587 mensajes gettext con catálogos completos y compilados, enlaces de 14
-documentos y YAML de cinco workflows correctos. 123 pruebas Rust superadas.
-Compilación GUI release optimizada superada (3 min 26 s); `--version` conserva
-alpha.18. Diez advertencias de compilación preexistentes; sin errores.
-Commit de integración publicado: `770a43cfa094db05308cef9980c5f0273e68a3e5`.
-[CI de la integración en main](https://github.com/frandavid100/leaf/actions/runs/41410124180):
-**superada**, concluida a las 08:25:56 UTC del 2 de noviembre de 2026.
-Trabajo nativo `125161018239`: compilación y regresiones gráficas completas,
-controles/ratón, idiomas/tema oscuro, encabezados, secciones, comentarios,
-memoria GTK, teclado/impresión, comparación debug/release y escalado 100/200 %.
-La publicación Flatpak y la auditoría de base opcional se omitieron según sus
-condiciones. No se publicó otra versión.
+Local checks: package formatting correct, four Python tests, 587 gettext
+messages with complete and compiled catalogs, links in 14 documents and YAML of
+five workflows correct. 123 Rust tests passed.
+Optimized release GUI build passed (3 min 26 s); `--version` keeps alpha.18.
+Ten pre-existing build warnings; no errors.
+Integration commit published: `770a43cfa094db05308cef9980c5f0273e68a3e5`.
+[CI of the integration on main](https://github.com/frandavid100/leaf/actions/runs/41410124180):
+**passed**, completed at 08:25:56 UTC on November 2, 2026.
+Native job `125161018239`: build and complete graphical regressions,
+controls/mouse, languages/dark theme, headers, sections, comments, GTK memory,
+keyboard/printing, debug/release comparison and 100/200% scaling.
+The Flatpak publication and the optional base audit were skipped according to
+their conditions. No other version was published.
 
-Se verificaron los dos padres y la identidad
-del árbol local/remoto. Las 17 etiquetas y las 17 releases (incluidos sus assets)
-conservan sus identificadores y contenido.
-La publicación Flatpak sigue requiriendo `[release-alpha]`. El commit posterior
-solo registra esta evidencia en este informe (`[skip ci]`); no modifica código,
-configuración, workflows ni catálogos respecto al commit validado.
-Las auditorías opcionales conservan sus hashes, fuentes y condiciones históricas.
+The two parents and the identity of the local/remote tree were verified. The 17
+tags and the 17 releases (including their assets) keep their identifiers and
+content.
+Flatpak publication still requires `[release-alpha]`. The later commit only
+records this evidence in this report (`[skip ci]`); it does not modify code,
+configuration, workflows or catalogs relative to the validated commit.
+The optional audits keep their historical hashes, sources and conditions.
 
-[Configuración y pasos pendientes de Weblate](WEBLATE_SETUP.md).
+[Weblate configuration and pending steps](WEBLATE_SETUP.md).

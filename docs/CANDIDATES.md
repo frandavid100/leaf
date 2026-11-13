@@ -1,95 +1,97 @@
-# Candidatas y publicación
+# Candidates and publication
 
-El procedimiento habitual acordado con David el 9/11/2026 es generar y validar
-primero una RC, entregársela para probarla y publicar cuando dé el visto bueno
-a esa candidata concreta. Si se aprueba sin cambios, se promueven los mismos
-archivos y notas congeladas, sin recompilar ni repetir la batería ya superada.
-Al publicar se verifican fuente, tag y sumas de los archivos descargados.
+The usual procedure agreed with David on 9/11/2026 is to first generate and
+validate an RC, deliver it to him for testing, and publish once he approves that
+specific candidate. If it is approved without changes, the same files and frozen
+notes are promoted, without rebuilding or repeating the test suite already
+passed. On publication, the source, tag and checksums of the downloaded files
+are verified.
 
-Si aparecen fallos que exigen correcciones, se genera otra RC con nueva fuente,
-ejecución y sumas; se valida y se entrega de nuevo para probarla. Preparar una RC
-no autoriza por sí solo su publicación. Las autorizaciones automáticas de
-entregas anteriores pertenecen a su historial y no se aplican a futuras versiones.
+If failures appear that require fixes, another RC is generated with a new
+source, run and checksums; it is validated and delivered again for testing.
+Preparing an RC does not by itself authorize its publication. Automatic
+authorizations from earlier deliveries belong to their history and do not apply
+to future versions.
 
-Cada candidata contiene la revisión fuente, el identificador de la ejecución,
-las notas de versión y las sumas SHA-256 de los paquetes. Su versión interna es
-la Alpha prevista; «candidata 1», «candidata 2», etc. distinguen las compilaciones
-por su ejecución y hash, sin cambiar el paquete antes de publicarlo.
+Each candidate contains the source revision, the run identifier, the release
+notes and the SHA-256 checksums of the packages. Its internal version is the
+planned Alpha; "candidate 1", "candidate 2", etc. distinguish the builds by
+their run and hash, without changing the package before publishing it.
 
-## Alpha.32 publicada
+## Alpha.32 published
 
-La [candidata 42372618858](https://github.com/frandavid100/leaf/actions/runs/42372618858)
-superó GNOME 49/51 y la batería nativa completa 42371069496. La
-[promoción automática](https://github.com/frandavid100/leaf/actions/runs/42374275590)
-publicó los mismos archivos el 7/11/2026. Verificados el tag y los doce archivos
-públicos; fuente `2524dbc789cfbfa0f3b6e153fde16f1df5887b8a`.
-[Actualización, mediciones y límites](WORDCRAFT_016_REVIEW.md).
+[Candidate 42372618858](https://github.com/frandavid100/leaf/actions/runs/42372618858)
+passed GNOME 49/51 and the complete native test suite 42371069496. The
+[automatic promotion](https://github.com/frandavid100/leaf/actions/runs/42374275590)
+published the same files on 7/11/2026. The tag and the twelve public files were
+verified; source `2524dbc789cfbfa0f3b6e153fde16f1df5887b8a`.
+[Update, measurements and limits](WORDCRAFT_016_REVIEW.md).
 
-## Alpha.31 publicada
+## Alpha.31 published
 
-La [candidata 42361339472](https://github.com/frandavid100/leaf/actions/runs/42361339472)
-superó las instalaciones GNOME 49/51 y exigió el éxito de toda la batería nativa
-42360443648. La [promoción automática](https://github.com/frandavid100/leaf/actions/runs/42362957503)
-publicó los mismos archivos el 7/11/2026. Verificados los doce digests públicos.
-[Fuente, sumas y alcance](history/ALPHA31_REMAINING.md).
+[Candidate 42361339472](https://github.com/frandavid100/leaf/actions/runs/42361339472)
+passed the GNOME 49/51 installations and required the success of the entire
+native test suite 42360443648. The [automatic promotion](https://github.com/frandavid100/leaf/actions/runs/42362957503)
+published the same files on 7/11/2026. The twelve public digests were verified.
+[Source, checksums and scope](history/ALPHA31_REMAINING.md).
 
-## Generar y probar
+## Generating and testing
 
-El commit de integración en `main` lleva `[candidate-alpha]`. El mismo marcador
-en el título de su PR omite solo la comparación opcional de rendimiento; no
-omite pruebas funcionales nativas ni instaladas. La batería nativa
-y las comprobaciones instaladas generan el artefacto `leaf-flatpak-alpha`.
-El marcador habitual es solo `[candidate-alpha]`, sin `[auto-publish-alpha]`:
-los paquetes quedan disponibles para probar y esperan el visto bueno de David.
-El mecanismo `[auto-publish-alpha]` se conserva para una excepción posterior
-expresamente autorizada para una entrega concreta, no como procedimiento habitual.
+The integration commit on `main` carries `[candidate-alpha]`. The same marker in
+the title of its PR skips only the optional performance comparison; it does not
+skip native or installed functional tests. The native test suite and the
+installed checks generate the `leaf-flatpak-alpha` artifact.
+The usual marker is `[candidate-alpha]` alone, without `[auto-publish-alpha]`:
+the packages become available for testing and wait for David's approval.
+The `[auto-publish-alpha]` mechanism is kept for a later exception expressly
+authorized for a specific delivery, not as the usual procedure.
 
-El commit de integración puede añadir `[bundle-only] [native-run:ID]`, con el
-identificador real de una ejecución nativa del mismo repositorio/flujo. No se
-cambian constantes de fuentes en el flujo para cada candidata.
+The integration commit may add `[bundle-only] [native-run:ID]`, with the actual
+identifier of a native run from the same repository/workflow. Source constants
+in the workflow are not changed for each candidate.
 
-Una compilación nativa puede ceder su ejecutable al empaquetado después de pasar
-los controles nuevos y las regresiones de menú contextual, fijación y Párrafo,
-ejecutadas una sola vez antes de crear el artefacto reutilizable, mientras continúa las regresiones anteriores. El flujo
-comprueba identidad y equivalencia de fuentes; aplica el mismo strip optimizado,
-valida las instalaciones en paralelo y exige el éxito completo de la ejecución
-nativa antes de aceptar la candidata. Finalmente compara ambos ejecutables byte
-a byte. El manifiesto conserva también la fuente y la ejecución nativas. La
-promoción vuelve a comprobar ese resultado. Una prueba fallida no produce una
-candidata aprobable.
+A native build may hand its executable over to packaging after passing the new
+controls and the context menu, pinning and Paragraph regressions, run only once
+before creating the reusable artifact, while it continues with the earlier
+regressions. The workflow checks source identity and equivalence; it applies the
+same optimized strip, validates the installations in parallel and requires the
+complete success of the native run before accepting the candidate. Finally, it
+compares both executables byte by byte. The manifest also keeps the native
+source and run. The promotion checks that result again. A failed test does not
+produce an approvable candidate.
 
-Para instalar el bundle descargado:
+To install the downloaded bundle:
 
 ```sh
 flatpak install --user ./Leaf-0.1.0-alpha.32-x86_64.flatpak
 flatpak run --user --branch=alpha io.github.frandavid100.leaf
 ```
 
-Al probarla, confirma que «Acerca de Leaf» muestra `0.1.0-alpha.32`, especialmente
-si tienes abiertas ventanas de varias versiones. El paquete completo incluye
-`SHA256SUMS`; `sha256sum -c SHA256SUMS` verifica los archivos descargados.
+When testing it, confirm that "About Leaf" shows `0.1.0-alpha.32`, especially if
+you have windows of several versions open. The complete package includes
+`SHA256SUMS`; `sha256sum -c SHA256SUMS` verifies the downloaded files.
 
-Se conserva el mismo identificador de aplicación y sus datos. Una candidata
-reemplaza la versión de esa misma rama instalada desde un bundle. La rama de
-FlatPark puede estar instalada también; usar `--branch=alpha` elige explícitamente
-la candidata. Para volver, reinstalar el bundle publicado anterior.
+The same application identifier and its data are kept. A candidate replaces the
+version of that same branch installed from a bundle. The FlatPark branch may
+also be installed; using `--branch=alpha` explicitly selects the candidate. To
+go back, reinstall the previous published bundle.
 
-Las comprobaciones de la candidata deben cubrir los cambios indicados en sus
-notas y los documentos donde aparecieron los problemas. Un fallo produce otra
-candidata, con nueva fuente, ejecución y sumas.
+The candidate's checks must cover the changes listed in its notes and the
+documents where the problems appeared. A failure produces another candidate,
+with a new source, run and checksums.
 
-## Promover una candidata validada
+## Promoting a validated candidate
 
-El flujo `Publish a validated Alpha candidate without rebuilding` se ejecuta
-manualmente con el identificador de la RC aprobada por David. La promoción
-automática queda reservada a la excepción expresa descrita arriba. Comprueba
-que la ejecución terminó correctamente, pertenece a la rama y al flujo de
-candidatas de este repositorio, y que coinciden la fuente, el manifiesto y todas
-las sumas de verificación. Publica esos archivos y sus notas congeladas, creando
-la etiqueta en la fuente que produjo la candidata.
+The `Publish a validated Alpha candidate without rebuilding` workflow is run
+manually with the identifier of the RC approved by David. Automatic promotion is
+reserved for the express exception described above. It checks that the run
+finished successfully, belongs to the candidate branch and workflow of this
+repository, and that the source, the manifest and all the checksums match. It
+publishes those files and their frozen notes, creating the tag on the source
+that produced the candidate.
 
-La promoción reutiliza el artefacto aprobado y sus pruebas completas, con las
-verificaciones de identidad e integridad de la publicación. No vuelve a ejecutar
-la compilación ni la batería funcional de esa misma candidata. No sustituir
-los paquetes de una release ya publicada: cualquier corrección posterior genera
-una nueva versión.
+The promotion reuses the approved artifact and its complete tests, with the
+identity and integrity checks of the publication. It does not run the build or
+the functional test suite of that same candidate again. Do not replace the
+packages of a release that has already been published: any later fix generates
+a new version.
