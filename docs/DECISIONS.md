@@ -1,387 +1,388 @@
-# Decisiones vigentes
-
-## 13/11/2026 — el código de diagnóstico sigue en la app publicada
+# Current decisions
+
+## 13/11/2026 — diagnostic code stays in the published app
 
-Se revisa la decisión (1) del 12/11. La CI ejecuta unas 25 comprobaciones de
-diagnóstico sobre el Flatpak instalado que se publica; quitarlas obligaría a
-validar un paquete distinto del publicado y a rehacer la CI y el proceso de RC.
-El ahorro medido es de unos 1,3 MB de 47,8 MB. David decide mantenerlo y lograr
-la claridad reuniendo todo el diagnóstico en `src/gnome/diagnostics/`, con un
-único punto de entrada para los ganchos dentro del código de producto.
+Decision (1) of 12/11 is revised. CI runs about 25 diagnostic checks on the
+installed Flatpak that gets published; removing them would require validating a
+package different from the published one and redoing CI and the RC process.
+The measured saving is about 1.3 MB out of 47.8 MB. David decides to keep it and
+achieve clarity by gathering all diagnostics in `src/gnome/diagnostics/`, with a
+single entry point for the hooks inside the product code.
 
-## 12/11/2026 — revisión de peso, velocidad y claridad
+## 12/11/2026 — review of size, speed and clarity
 
-Tras una revisión del código, David decide: (1) [revisada el 13/11, ver abajo] la app
-publicada no incluirá el código de diagnóstico gráfico; (2) de serie se incluirá solo el
-diccionario `es_ES`, y `es_MX`/`es_AR` se podrán añadir desde Preferencias;
-(3) la documentación para colaboradores pasará al inglés, salvo `AGENTS.md` y
-`CONTINUING.md`. Se aplicará en PRs pequeños; ninguno implica publicar.
+After a code review, David decides: (1) [revised on 13/11, see above] the published
+app will not include the graphical diagnostics code; (2) only the `es_ES` dictionary
+will be included by default, and `es_MX`/`es_AR` can be added from Preferences;
+(3) contributor documentation will move to English, except `AGENTS.md` and
+`CONTINUING.md`. It will be applied in small PRs; none of them involves publishing.
 
-## Publicada y verificada automáticamente: 0.1.0-alpha.45
+## Published and automatically verified: 0.1.0-alpha.45
 
-Se publican los mismos bytes de la candidata tras superar todas las pruebas
-nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
-de cerrar #259, #262, #278, #280. [Identidad y límites](LATEST_RELEASE.md).
+The same bytes as the candidate are published after passing all native and
+installation tests. Source, tag and thirteen public files are verified before
+closing #259, #262, #278, #280. [Identity and limits](LATEST_RELEASE.md).
 
-## 11/11/2026 — alpha.45 en validación, publicación directa autorizada
+## 11/11/2026 — alpha.45 in validation, direct publication authorized
 
-David pide una release nueva y cerrar los issues resolubles, con prioridad al
-más reciente. Incluye #278/#280, ampliación del catálogo #259 y controles de
-columnas #262. #279 incorpora detección y descarga/apertura en el visor del
-sistema, con prueba instalada obligatoria; permanece abierto por los permisos
-de tienda y validaciones pendientes. Motor y aportaciones upstream se conservan
-separados. [Alcance, pruebas y límites](history/ALPHA45_MAINTENANCE.md).
-
+David asks for a new release and for closing the resolvable issues, prioritizing
+the most recent one. It includes #278/#280, the catalog expansion #259 and the
+column controls #262. #279 adds detection and download/opening in the system
+viewer, with a mandatory installed test; it remains open because of the store
+permissions and pending validations. Engine and upstream contributions are kept
+separate. [Scope, tests and limits](history/ALPHA45_MAINTENANCE.md).
+
 
-## 11/11/2026 — retomar la ficha de FlatPark
+## 11/11/2026 — resuming the FlatPark listing
 
-David autoriza preparar la actualización de la entrada con las cuatro capturas
-ya revisadas y el icono vigente. Después pide renovar también el texto: se adapta
-el enfoque del README en EN/ES, con ventajas y funciones primero y estado alfa e
-IA al final. Se conservan los colores existentes. El cambio externo se limita a metainfo e iconos, conservando
-pin, permisos, runtime, wrapper y resolver. Las notas vacías se recuperan del
-metainfo upstream para la alpha.44 empaquetada. David da su visto bueno al resultado y se abre la
-[PR #1139](https://github.com/flatpark/flatpark/pull/1139) el 11/11/2026. La rama
-contiene solo los tres archivos de datos previstos y no tiene conflictos. Su CI
-requiere autorización de un mantenedor; revisión y publicación siguen pendientes. No atribuir publicación ni prueba en Bazaar a una rama preparada.
-[Alcance y validación](FLATPARK_GALLERY_2026_11.md).
+David authorizes preparing the entry update with the four already reviewed
+screenshots and the current icon. He then asks to renew the text as well: the
+README's approach is adapted in EN/ES, with advantages and features first and
+alpha status and AI at the end. The existing colors are kept. The external change is limited to metainfo and icons, keeping
+pin, permissions, runtime, wrapper and resolver. The empty notes are recovered from the
+upstream metainfo for the packaged alpha.44. David approves the result, and
+[PR #1139](https://github.com/flatpark/flatpark/pull/1139) is opened on 11/11/2026. The branch
+contains only the three planned data files and has no conflicts. Its CI
+requires a maintainer's authorization; review and publication remain pending. Do not attribute publication or testing in Bazaar to a prepared branch.
+[Scope and validation](FLATPARK_GALLERY_2026_11.md).
 
-## 11/11/2026 — presentación del README
-
-David autoriza usar las cuatro capturas revisadas con el icono nuevo y actualizar
-el texto. La portada es principal; maquetación, revisión y el menú de subrayado
-preferido forman una galería visible sin desplegable. Se conservan los PNG
-originales y su procedencia. A petición posterior de David, las opciones de
-instalación y el badge de FlatPark van al final, seguidos de la explicación
-explícita del vibe coding.
-No se atribuye una versión exacta a las capturas ni se publica una release o una
-actualización de catálogo por este cambio. [Capturas](screenshots/README.md).
-
-## 10/11/2026 — Windows alpha.44 publicado y verificado
-
-El instalador y ZIP `0.1.0-alpha.44-windows.1` utilizan la misma fuente
-`534c86eab70e05ae5de8c4d1d9c95d075d8ae666` que la release Linux alpha.44.
-Las pruebas de compilación, paquete portátil, instalación y desinstalación
-superan la [CI de Windows](https://github.com/frandavid100/leaf/actions/runs/42900734179).
-Se verifican tag y cuatro archivos públicos; los hashes del artefacto descargado
-coinciden con los digests públicos y `SHA256SUMS`. [Descarga, identidad y límites](WINDOWS.md).
-No se atribuyen pruebas humanas en equipos Windows. Ambas publicaciones quedan
-completadas sin modificar WordCraft ni cerrar requisitos parciales.
-
-## Publicada y verificada automáticamente: 0.1.0-alpha.44
-
-Se publican los mismos bytes de la candidata tras superar todas las pruebas
-nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
-de cerrar ninguno. [Identidad y límites](LATEST_RELEASE.md).
-
-## 10/11/2026 — alpha.44: mantenimiento, colores GNOME y Windows
-
-David autoriza aplicar la limpieza discutida, después publicar otra release,
-restaurar los selectores nativos anteriores y generar instalador para amigos
-que utilizan Windows. La nueva apariencia se limita a los selectores de color.
-Se conservan las comprobaciones y el motor; no se mezclan los cambios de WordCraft
-que se preparan en otra conversación. No se cierran requisitos incompletos.
-[Alcance, mediciones y condiciones de entrega](history/ALPHA44_MAINTENANCE.md).
+## 11/11/2026 — README presentation
+
+David authorizes using the four reviewed screenshots with the new icon and updating
+the text. The cover screenshot is the main one; layout, review and the preferred
+underline menu form a visible gallery without a drop-down. The original PNGs and
+their provenance are kept. At David's later request, the installation options and
+the FlatPark badge go at the end, followed by the explicit explanation of vibe
+coding.
+No exact version is attributed to the screenshots, and no release or catalog
+update is published because of this change. [Screenshots](screenshots/README.md).
+
+## 10/11/2026 — Windows alpha.44 published and verified
+
+The `0.1.0-alpha.44-windows.1` installer and ZIP use the same source
+`534c86eab70e05ae5de8c4d1d9c95d075d8ae666` as the Linux alpha.44 release.
+The build, portable package, installation and uninstallation tests
+pass on [Windows CI](https://github.com/frandavid100/leaf/actions/runs/42900734179).
+Tag and four public files are verified; the hashes of the downloaded artifact
+match the public digests and `SHA256SUMS`. [Download, identity and limits](WINDOWS.md).
+No human testing on Windows computers is attributed. Both publications are
+completed without modifying WordCraft or closing partial requirements.
+
+## Published and automatically verified: 0.1.0-alpha.44
+
+The same bytes as the candidate are published after passing all native and
+installation tests. Source, tag and thirteen public files are verified before
+closing any. [Identity and limits](LATEST_RELEASE.md).
+
+## 10/11/2026 — alpha.44: maintenance, GNOME colors and Windows
+
+David authorizes applying the discussed cleanup, then publishing another release,
+restoring the previous native pickers and generating an installer for friends
+who use Windows. The new appearance is limited to the color pickers.
+The checks and the engine are kept; the WordCraft changes being prepared in
+another conversation are not mixed in. Incomplete requirements are not closed.
+[Scope, measurements and delivery conditions](history/ALPHA44_MAINTENANCE.md).
+
+
+## Published and automatically verified: 0.1.0-alpha.43
+
+The same bytes as the candidate are published after passing all native and
+installation tests. Source, tag and thirteen public files are verified before
+closing #50, #236, #238, #240, #246, #249, #250, #251, #253, #254, #255, #256, #257, #258, #260, #263, #264, #266. [Identity and limits](LATEST_RELEASE.md).
+
+## 10/11/2026 — alpha.43 with the new issues and direct publication
+
+David adds the recent proposals and explicitly asks for a release, without an RC.
+All validation is kept, and this delivery is published automatically once it passes.
+Partial requirements are documented without closing them; the engine's limits do
+not justify a fork or fake controls. The public listing remains postponed.
+[Delivery plan and specific limits](history/ALPHA43_TOOLS.md).
 
-
-## Publicada y verificada automáticamente: 0.1.0-alpha.43
-
-Se publican los mismos bytes de la candidata tras superar todas las pruebas
-nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
-de cerrar #50, #236, #238, #240, #246, #249, #250, #251, #253, #254, #255, #256, #257, #258, #260, #263, #264, #266. [Identidad y límites](LATEST_RELEASE.md).
-
-## 10/11/2026 — alpha.43 con los issues nuevos y publicación directa
-
-David añade las propuestas recientes y pide expresamente release, sin RC.
-Se conserva toda la validación y se publica automáticamente esta entrega al pasar.
-Los requisitos parciales se documentan sin cerrarlos; los límites del motor no
-justifican un fork ni controles ficticios. La ficha pública sigue aplazada.
-[Plan de entrega y límites concretos](history/ALPHA43_TOOLS.md).
+## Published and automatically verified: 0.1.0-alpha.42
 
-## Publicada y verificada automáticamente: 0.1.0-alpha.42
+The same bytes as the candidate are published after passing all native and
+installation tests. Source, tag and thirteen public files are verified before
+closing #235, #238, #239, #240, #241, #242, #243, #244, #245, #246, #248. [Identity and limits](LATEST_RELEASE.md).
 
-Se publican los mismos bytes de la candidata tras superar todas las pruebas
-nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
-de cerrar #235, #238, #239, #240, #241, #242, #243, #244, #245, #246, #248. [Identidad y límites](LATEST_RELEASE.md).
+## 10/11/2026 — alpha.42 and template scope
 
-## 10/11/2026 — alpha.42 y alcance de las plantillas
+David asks to review the WordCraft contributions, close what can be verified and
+directly publish a new alpha. The exception applies only to this
+delivery and keeps all verifications. The new #245/#246/#248 are added, including the common menu and the three
+configurable placements per tool.
+He accepts only the system templates folder (#171); permissions are not expanded.
+#52 is closed without confirmed attribution. #185 remains on hold:
+David will take new screenshots after the next alpha and review the description.
+[Scope, tests and limits](history/ALPHA42_INTERFACE.md).
 
-David solicita revisar las contribuciones de WordCraft, cerrar lo verificable y
-publicar directamente una nueva alpha. La excepción corresponde solo a esta
-entrega y conserva todas las verificaciones. Se añaden los nuevos #245/#246/#248, incluido el menú común y las tres
-colocaciones configurables por herramienta.
-Acepta únicamente la carpeta de plantillas del sistema (#171); no se amplían
-permisos. #52 queda cerrado sin atribución confirmada. #185 se mantiene en pausa:
-David hará nuevas capturas después de la próxima alpha y revisará la descripción.
-[Alcance, pruebas y límites](history/ALPHA42_INTERFACE.md).
-
-
-## Publicada y verificada automáticamente: 0.1.0-alpha.41
-
-Se publican los mismos bytes de la candidata tras superar todas las pruebas
-nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
-de cerrar #107, #217, #226, #227, #228, #229, #230, #231, #232, #233, #234, #235, #236, #237. [Identidad y límites](LATEST_RELEASE.md).
-
-## 9/11/2026 — excepción explícita: publicar alpha.41 al terminar
-
-David pide resolver los issues abiertos y publicar directamente porque se va a
-dormir. Esta instrucción autoriza la promoción automática de esta entrega tras
-validar la nueva fuente, con los mismos bytes comprobados; no sustituye la regla
-habitual de RC y visto bueno para futuras entregas. Se cierran solo los informes
-resueltos: #233–#237 se incorporan al plan de cierre, #152 se retira del plan.
-Se mantienen los otros cinco bloqueos y las capturas públicas reservadas a David.
-[Alcance y límites](history/ALPHA41_FINAL.md).
-
-## 9/11/2026 — #152 reabierto tras probar la RC
-
-David aporta cinco capturas y distingue dos operaciones: seleccionar y borrar
-el párrafo completo con triple clic todavía impone su formato al siguiente;
-borrar solo el texto y eliminar después el párrafo ya vacío conserva el formato.
-El arreglo y las regresiones anteriores cubrían el segundo caso. Se reabre #152,
-con ambas rutas, resultados y capturas; no se da por confirmada la capa causante
-del caso restante sin inspeccionar selección y modelo. Esta actualización registra
-el fallo; no modifica el ejecutable ni publica la RC. [Issue](https://github.com/frandavid100/leaf/issues/152).
-
-## 9/11/2026 — procedimiento habitual: RC, prueba y promoción sin cambios
-
-David establece como procedimiento habitual entregar primero una RC validada
-para probarla. Con su visto bueno para esa candidata y sin correcciones, publicar
-los mismos archivos y notas congeladas, sin recompilar ni repetir la batería ya
-superada. Se conservan las verificaciones de fuente, tag y SHA-256 al publicar.
-Si encuentra fallos y hay cambios, preparar otra RC validada para volver a probar.
-Las autorizaciones automáticas anteriores fueron para aquellas entregas; no son
-una autorización permanente para publicar futuras versiones. La alpha.41 sigue
-como candidata hasta recibir su visto bueno. [Procedimiento](CANDIDATES.md).
-
-## 9/11/2026 — RC alpha.41 verificada y diez cierres
-
-Se cierran #107, #152, #217 y #226–#232 después de validar código, interfaz y
-paquetes instalados GNOME 49/51. El ejecutable de `2d9b1fd` se conserva sin
-recompilar; la candidata `d6adbe5` verifica equivalencia de fuente y bytes.
-Los ajustes posteriores afectan solo a la descarga de artefactos y a perfiles/
-sincronización de los controladores de pruebas. La RC queda descargable para
-probarla; la última alpha pública sigue siendo la 40. Se mantienen los cinco
-informes pendientes y los aplazamientos. [Identidad y evidencia](history/ALPHA41_INTERFACE.md).
-
-## 9/11/2026 — candidata 0.17 y nuevos issues
-
-David pide una RC con WordCraft 0.17 y #217, añadiendo los issues recientes
-#226–#232. Se adapta el par neutro predominante del HTML externo de Chrome;
-los colores locales intencionados se conservan. WordCraft sigue siendo el
-modelo, el renderizador y el historial. Preferencias solo guarda disposición
-de controles, nunca datos del documento. Las copias de documentos vivos siguen
-escribiéndose pero no se ofrecen como recuperación ni para descarte. No publicar
-ni cerrar por una validación parcial; registrar pruebas y límites de la candidata.
-
-
-## Publicada y verificada automáticamente: 0.1.0-alpha.40
-
-Se publican los mismos bytes de la candidata tras superar todas las pruebas
-nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
-de cerrar #218, #219, #220, #221, #222. [Identidad y límites](LATEST_RELEASE.md).
-
-## 9/11/2026 — nueva revisión y alpha.40
-
-David autoriza resolver los issues nuevos verificables y publicar otra alpha.
-#218 sustituye la galería sobre el folio por un Inicio reversible en el lateral;
-#219–#222 devuelven el formato a una barra inferior con cuatro grupos. Se conserva
-el motor y los permisos. El descarte exige confirmación porque la API pública
-no ofrece una retención reversible que permita Deshacer con garantías. Las
-capturas públicas, Windows ocasional y los bloqueos externos conservan su alcance.
-[Implementación, pruebas y límites](history/ALPHA40_INTERFACE.md).
-
-
-
-## Publicada y verificada automáticamente: 0.1.0-alpha.39
-
-Se publican los mismos bytes de la candidata tras superar todas las pruebas
-nativas y de instalación. Se verifican fuente, tag y trece archivos públicos antes
-de cerrar #212, #213, #214. [Identidad y límites](LATEST_RELEASE.md).
-
-## 8/11/2026 — alpha.39: miniaturas y proceso de publicación
-
-David autoriza aplicar la aceleración de CI, resolver los issues nuevos y publicar
-otra alpha. Se conservan las comprobaciones completas y los bytes del único build;
-se reparten trabajos y runtimes, y las capturas esperan a la escena renderizada.
-Las recuperaciones se previsualizan sobre copias privadas mediante API pública;
-los registros originales conservan sus bytes y disponibilidad. La publicación
-verifica trece archivos antes de cerrar el plan explícito y actualizar documentos.
-[Alcance y medición pendiente](history/ALPHA39_PREVIEWS.md).
-
-## 8/11/2026 — alpha.38 publicada y verificada
-
-David autoriza otra release cerrando lo verificable e incluyendo PR #210.
-Se completan #207/#209 y se distribuye #208: filas iniciales condicionales,
-recuperación directa y retirada nativa de 180 ms al escribir, con Navegación/Revisión
-fija. El folio sigue editable; cargar, cancelar o retirar las filas no descarta
-copias pendientes. Los resultados obsoletos no sustituyen ediciones ni quitan el
-foco a otra pestaña. La compensación observa la solicitud de tamaño de GTK antes
-de asignar posiciones; no usa el tamaño del fotograma anterior.
-
-Cierres posteriores a validación nativa, GNOME 49/51, comparación del ejecutable
-y verificación de trece assets. Permanecen los bloqueos del motor/portal/tienda y
-los aplazamientos de David. Se conserva la entrega Windows ocasional; esta alpha
-es Linux. [Fuente, pruebas y límites](history/ALPHA38_START_VIEW.md).
-
-## 8/11/2026 — Navegación/Revisión fija al pie del panel
-
-David aclara #200 tras observar la regresión #208: las dos pestañas inferiores
-deben permanecer fijas; los selectores superiores sí pertenecen al contenido
-desplazable. Se mantiene una sola barra en el AdwToolbarView común, accesible
-también desde Búsqueda, sin copias en las listas. La prueba geométrica anterior
-esperaba erróneamente que se desplazase y se corrige junto con la interfaz.
-Integrada en main mediante PR #210 después de superar la batería nativa completa;
-no se publica una nueva alpha. #209 registra por separado la retirada animada
-hacia arriba de las filas transitorias al empezar a editar.
-[Implementación y validación](SIDEBAR208.md).
-
-## 8/11/2026 — alpha.37 publicada y verificada
-
-David autoriza crear los informes de salto de Estructura, foco/continuidad y
-nombre de guardado, resolver los bugs recientes y publicar otra alpha.
-Se cierran #199–#204 después de la batería nativa completa, GNOME 49/51,
-comparación del ejecutable y verificación del tag y trece archivos públicos.
-
-Galería y página comparten desplazamiento; cada panel conserva sus propios
-controles y posición. Las restauraciones esperan la asignación de tamaño de GTK
-y se cancelan si interviene el usuario. Los reajustes repintan la página sin
-mover la galería. Los diálogos propios se integran en su ventana; los portales
-siguen siendo nativos y los campos conservan Deshacer/Rehacer.
-
-Para #201 se activa exclusivamente la API v1_5 del crate libadwaita existente,
-sin cambiar su versión, Cargo.lock, motor, perfiles ni parches. Esta excepción
-concreta queda comprobada en CI. Los nombres sugeridos son una operación de
-lectura: no modifican título, selección ni historial. Se conservan Windows,
-los bloqueos anteriores y las capturas públicas de David.
-[Fuente, ejecución y límites](history/ALPHA37_INTERFACE.md).
-
-## 8/11/2026 — Windows publicada y comprobada
-
-Publicada `0.1.0-alpha.36-windows.1`: 210 pruebas Rust Windows, 211 Linux y
-comprobaciones reales de los paquetes portátiles e instalados en/es, incluido
-traslado a ruta Unicode, guardado/reapertura, SVG, PDF, preferencias y ventanas.
-Los avisos finales se completan sin alterar el ejecutable; después se repiten
-las pruebas de ambos paquetes y se publican esos bytes, con cuatro assets y tag
-verificados. Impresión física, accesibilidad y GPU reales quedan sin validación.
-[Identidad, ejecuciones y digests](WINDOWS.md).
-
-## 8/11/2026 — primera versión para Windows
-
-David solicita preparar una primera versión experimental del estado actual.
-Se mantiene el cliente GTK/libadwaita, WordCraft y los parches fijados.
-Las entregas Windows se generan de forma ocasional, sin exigir paridad con cada
-alpha Linux. El instalador es por usuario, sin privilegios administrativos;
-el ZIP usa las mismas carpetas de configuración y recuperación del usuario.
-Publicar solo los bytes comprobados en Windows, registrando las limitaciones
-de impresión, accesibilidad y pruebas humanas. [Detalle](WINDOWS.md).
-
-## 8/11/2026 — revisión de interfaz alpha.36
-
-La galería transitoria sustituye el diálogo de plantillas. Fuentes vive dentro
-de Propiedades; la búsqueda recibe caracteres pegados sin selector especial.
-Estructura conserva anclas visuales y usa menús para mover títulos. El cursor de
-arrastre es pasivo y su posición es el único destino válido de la importación.
-Publicada y verificada con nueve cierres. #171 permanece abierto: se conserva
-`xdg-templates:ro` y se desactiva el selector de otra carpeta en Flatpak mientras
-el portal no permita el acceso mínimo requerido. No sustituirlo por acceso de
-escritura ni por un permiso amplio. [Fuente, verificación y límites](history/ALPHA36_INTERFACE.md).
-
-
-## 2026-11-08: ficha, colores y novedades
-
-David aprueba la descripción y los colores claro `#E4F2E8` y oscuro `#1B3327`,
-y autoriza implementar las novedades y su sincronización. Las nuevas capturas
-siguen a su cargo y esperan corregir el espacio de la barra de título; se
-revisarán una a una. No se inicia una release de binarios por este cambio.
-La fuente editorial bilingüe genera AppStream y las notas utilizadas por la
-publicación de GitHub. FlatPark debe importar metadatos de la versión exacta
-que distribuye, conservando su política y los detalles de instalación.
-[Proceso y límites](STORE_METADATA.md).
-
-## 2026-11-07: propuestas aceptadas para alpha.35
-
-David autoriza crear los trece issues #170–#182, implementarlos, cerrar solo los
-verificados y publicar automáticamente una alpha. Se mantiene el flujo de estilos
-basado en el documento; solo se añade el estilo siguiente. Las plantillas son
-archivos normales de la carpeta XDG Templates o de una carpeta elegida mediante
-el portal. Se aplazan protección frente a conflictos y selector de símbolos.
-
-Las operaciones estructurales y de fuentes se registran como comandos del motor
-mediante su API pública: WordCraft mantiene protección, transacciones, revisión e
-historial. No se modifica el motor ni el snapshot de formatos. Los límites de
-selección de búsqueda invalidan resultados tras cambios ajenos. Se verifican
-las nuevas acciones con pruebas sin GUI, controles GTK y gestos reales, también
-en los paquetes GNOME 49/51. [Detalle](history/ALPHA35_WORKFLOWS.md).
-
-
-Alpha.35 publicada y verificada el 8/11/2026; los trece informes están cerrados.
-Se conservan la prueba de ciclo de vida de los controles, las regresiones nativas
-e instaladas y la comparación del ejecutable antes de promoverlo sin recompilar.
-La publicación rechaza candidatas superadas por otra fuente en main.
-[Identidad y comprobaciones](history/ALPHA35_WORKFLOWS.md).
-
-Estas decisiones proceden de David y del trabajo ya aceptado. Prevalecen sobre
-propuestas históricas; una hoja de ruta no autoriza por sí sola nuevas funciones.
-
-| Tema | Decisión | Consecuencia al modificar código |
+
+## Published and automatically verified: 0.1.0-alpha.41
+
+The same bytes as the candidate are published after passing all native and
+installation tests. Source, tag and thirteen public files are verified before
+closing #107, #217, #226, #227, #228, #229, #230, #231, #232, #233, #234, #235, #236, #237. [Identity and limits](LATEST_RELEASE.md).
+
+## 9/11/2026 — explicit exception: publish alpha.41 when finished
+
+David asks to resolve the open issues and publish directly because he is going
+to sleep. This instruction authorizes the automatic promotion of this delivery after
+validating the new source, with the same checked bytes; it does not replace the usual
+rule of RC and approval for future deliveries. Only the resolved reports are
+closed: #233–#237 are added to the closing plan, #152 is removed from the plan.
+The other five blockers and the public screenshots reserved for David are kept.
+[Scope and limits](history/ALPHA41_FINAL.md).
+
+## 9/11/2026 — #152 reopened after testing the RC
+
+David provides five screenshots and distinguishes two operations: selecting and
+deleting the whole paragraph with a triple click still imposes its formatting on
+the next one; deleting only the text and then removing the now-empty paragraph
+keeps the formatting. The fix and the earlier regression tests covered the second
+case. #152 is reopened, with both paths, results and screenshots; the layer causing
+the remaining case is not taken as confirmed without inspecting selection and model.
+This update records the failure; it does not modify the executable or publish the
+RC. [Issue](https://github.com/frandavid100/leaf/issues/152).
+
+## 9/11/2026 — usual procedure: RC, testing and promotion without changes
+
+David establishes as the usual procedure to first deliver a validated RC
+for him to test. With his approval for that candidate and no fixes, publish
+the same files and frozen notes, without recompiling or repeating the test suite
+already passed. Source, tag and SHA-256 checks are kept when publishing.
+If he finds failures and there are changes, prepare another validated RC to test again.
+The earlier automatic authorizations were for those deliveries; they are not
+a permanent authorization to publish future versions. Alpha.41 remains
+a candidate until it receives his approval. [Procedure](CANDIDATES.md).
+
+## 9/11/2026 — RC alpha.41 verified and ten closures
+
+#107, #152, #217 and #226–#232 are closed after validating code, interface and
+installed GNOME 49/51 packages. The executable from `2d9b1fd` is kept without
+recompiling; candidate `d6adbe5` verifies source and byte equivalence.
+The later adjustments affect only artifact downloading and the test drivers'
+profiles/synchronization. The RC remains downloadable for testing; the
+latest public alpha is still 40. The five pending reports and the deferrals
+are kept. [Identity and evidence](history/ALPHA41_INTERFACE.md).
+
+## 9/11/2026 — 0.17 candidate and new issues
+
+David asks for an RC with WordCraft 0.17 and #217, adding the recent issues
+#226–#232. The predominant neutral pair of Chrome's external HTML is adapted;
+intentional local colors are kept. WordCraft remains the
+model, the renderer and the history. Preferences only stores the layout
+of controls, never document data. Copies of live documents are still
+written but are not offered for recovery or for discarding. Do not publish
+or close based on a partial validation; record the candidate's tests and limits.
+
+
+## Published and automatically verified: 0.1.0-alpha.40
+
+The same bytes as the candidate are published after passing all native and
+installation tests. Source, tag and thirteen public files are verified before
+closing #218, #219, #220, #221, #222. [Identity and limits](LATEST_RELEASE.md).
+
+## 9/11/2026 — new review and alpha.40
+
+David authorizes resolving the new verifiable issues and publishing another alpha.
+#218 replaces the gallery over the page with a reversible Start in the sidebar;
+#219–#222 return formatting to a bottom bar with four groups. The engine and the
+permissions are kept. Discarding requires confirmation because the public API
+does not offer a reversible retention that allows Undo with guarantees. The
+public screenshots, occasional Windows builds and the external blockers keep their scope.
+[Implementation, tests and limits](history/ALPHA40_INTERFACE.md).
+
+
+
+## Published and automatically verified: 0.1.0-alpha.39
+
+The same bytes as the candidate are published after passing all native and
+installation tests. Source, tag and thirteen public files are verified before
+closing #212, #213, #214. [Identity and limits](LATEST_RELEASE.md).
+
+## 8/11/2026 — alpha.39: thumbnails and publishing process
+
+David authorizes applying the CI speed-up, resolving the new issues and publishing
+another alpha. The full checks and the bytes of the single build are kept;
+jobs and runtimes are split up, and the screenshots wait for the rendered scene.
+Recoveries are previewed on private copies through the public API;
+the original records keep their bytes and availability. Publishing verifies
+thirteen files before closing the explicit plan and updating documents.
+[Scope and pending measurement](history/ALPHA39_PREVIEWS.md).
+
+## 8/11/2026 — alpha.38 published and verified
+
+David authorizes another release closing what can be verified and including PR #210.
+#207/#209 are completed and #208 is distributed: conditional initial rows,
+direct recovery and native 180 ms retraction when typing, with Navigation/Review
+fixed. The page remains editable; loading, canceling or retracting the rows does
+not discard pending copies. Stale results do not replace edits or take focus
+away from another tab. The compensation observes GTK's size request before
+assigning positions; it does not use the size of the previous frame.
+
+Closures after native validation, GNOME 49/51, executable comparison
+and verification of thirteen assets. The engine/portal/store blockers and
+David's deferrals remain. The occasional Windows delivery is kept; this alpha
+is Linux. [Source, tests and limits](history/ALPHA38_START_VIEW.md).
+
+## 8/11/2026 — Navigation/Review fixed at the bottom of the panel
+
+David clarifies #200 after observing regression #208: the two bottom tabs
+must stay fixed; the top selectors do belong to the scrollable content.
+A single bar is kept in the common AdwToolbarView, also reachable
+from Search, without copies in the lists. The previous geometric test
+wrongly expected it to scroll and is fixed together with the interface.
+Merged into main through PR #210 after passing the full native test suite;
+no new alpha is published. #209 separately records the animated upward
+retraction of the transient rows when editing starts.
+[Implementation and validation](SIDEBAR208.md).
+
+## 8/11/2026 — alpha.37 published and verified
+
+David authorizes creating the reports on Structure jumps, focus/continuity and
+save name, resolving the recent bugs and publishing another alpha.
+#199–#204 are closed after the full native test suite, GNOME 49/51,
+executable comparison and verification of the tag and thirteen public files.
+
+Gallery and page share scrolling; each panel keeps its own
+controls and position. Restorations wait for GTK's size allocation
+and are canceled if the user intervenes. Readjustments repaint the page without
+moving the gallery. Custom dialogs are integrated into their window; portals
+remain native and fields keep Undo/Redo.
+
+For #201, only the v1_5 API of the existing libadwaita crate is enabled,
+without changing its version, Cargo.lock, engine, profiles or patches. This
+specific exception is checked in CI. Suggested names are a read
+operation: they do not modify title, selection or history. Windows,
+the earlier blockers and David's public screenshots are kept.
+[Source, execution and limits](history/ALPHA37_INTERFACE.md).
+
+## 8/11/2026 — Windows published and checked
+
+Published `0.1.0-alpha.36-windows.1`: 210 Windows Rust tests, 211 Linux ones and
+real checks of the portable and installed packages in en/es, including
+moving to a Unicode path, save/reopen, SVG, PDF, preferences and windows.
+The final warnings are completed without altering the executable; then the tests
+of both packages are repeated and those bytes are published, with four assets and
+tag verified. Physical printing, accessibility and real GPUs remain unvalidated.
+[Identity, runs and digests](WINDOWS.md).
+
+## 8/11/2026 — first version for Windows
+
+David asks to prepare a first experimental version of the current state.
+The GTK/libadwaita client, WordCraft and the pinned patches are kept.
+Windows deliveries are generated occasionally, without requiring parity with each
+Linux alpha. The installer is per-user, without administrative privileges;
+the ZIP uses the same user configuration and recovery folders.
+Publish only the bytes checked on Windows, recording the limitations
+in printing, accessibility and human testing. [Details](WINDOWS.md).
+
+## 8/11/2026 — alpha.36 interface review
+
+The transient gallery replaces the templates dialog. Fonts lives inside
+Properties; search receives pasted characters without a special picker.
+Structure keeps visual anchors and uses menus to move headings. The drag
+cursor is passive and its position is the only valid destination for the import.
+Published and verified with nine closures. #171 remains open: `xdg-templates:ro`
+is kept and the picker for another folder is disabled in Flatpak as long as
+the portal does not allow the minimum required access. Do not replace it with write
+access or a broad permission. [Source, verification and limits](history/ALPHA36_INTERFACE.md).
+
+
+## 2026-11-08: listing, colors and what's new
+
+David approves the description and the light `#E4F2E8` and dark `#1B3327` colors,
+and authorizes implementing the what's-new notes and their synchronization. The
+new screenshots remain his responsibility and wait for the title bar spacing to be
+fixed; they will be reviewed one by one. No binary release is started because of
+this change. The bilingual editorial source generates AppStream and the notes used
+by the GitHub release. FlatPark must import metadata from the exact version
+it distributes, keeping its policy and the installation details.
+[Process and limits](STORE_METADATA.md).
+
+## 2026-11-07: accepted proposals for alpha.35
+
+David authorizes creating the thirteen issues #170–#182, implementing them, closing
+only the verified ones and automatically publishing an alpha. The document-based
+style workflow is kept; only the next style is added. Templates are
+normal files in the XDG Templates folder or in a folder chosen through
+the portal. Conflict protection and the symbol picker are postponed.
+
+Structural and font operations are recorded as engine commands
+through its public API: WordCraft keeps protection, transactions, review and
+history. Neither the engine nor the formats snapshot is modified. Search
+selection limits invalidate results after external changes. The new actions
+are verified with headless tests, GTK controls and real gestures, also
+in the GNOME 49/51 packages. [Details](history/ALPHA35_WORKFLOWS.md).
+
+
+Alpha.35 published and verified on 8/11/2026; the thirteen reports are closed.
+The control lifecycle test, the native and installed regression tests and the
+executable comparison before promoting it without recompiling are kept.
+Publishing rejects candidates superseded by another source on main.
+[Identity and checks](history/ALPHA35_WORKFLOWS.md).
+
+These decisions come from David and from work already accepted. They take
+precedence over historical proposals; a roadmap does not by itself authorize new features.
+
+| Topic | Decision | Consequence when modifying code |
 | --- | --- | --- |
-| Publicación autónoma de arreglos pendientes | David pide resolver los issues restantes y generar la siguiente release sin otro visto bueno el 7/11/2026. | Publicar tras verificar arreglos reales; mantener abiertos los bloqueos de integración o prueba. La revisión actual no aporta cambios de código. [Seis pendientes](history/REMAINING_AFTER_ALPHA34.md). |
-| Diccionarios #84 — alpha.34 publicada | David autoriza preparar una candidata para probar en su sistema el 7/11/2026. | Carpeta mediante el selector/portal, sin ampliar permisos del host; conservar importación, datos incluidos, idioma/documento e historial. Issue abierto hasta su prueba GNOME OS. [Alcance](history/ISSUE84_DICTIONARIES.md) y [validación de la entrega](history/ALPHA34_VALIDATION.md). |
-| Alpha.33 publicada/verificada | David pide actuar sobre #9/#99/#156 y conserva la autorización de publicación automática tras comprobar la entrega. | Cerrado #156 por dos fallos nativos reproducidos y corregidos; #9 tiene explicación/controles y #99 reproducción pública del motor. Ambos permanecen abiertos. Batería completa, GNOME 49/51 y doce archivos públicos verificados. [Fuentes y límites](history/ALPHA33_VALIDATION.md). |
-| Revisión posterior de alpha.32 | David pide revisar si pueden cerrarse los diez informes restantes. | Cerrado #100 por requisitos verificados en la release existente; no atribuir una causa histórica desconocida ni exigirla como condición de cierre. #152 sigue reproducible en 0.16.0. [Evidencia y nueve pendientes](history/ISSUE_TRIAGE_AFTER_ALPHA32.md). |
-| Alpha.32 publicada/verificada | David autoriza el 7/11/2026 actualizar a la última WordCraft estable, adaptar Leaf, optimizar rendimiento y claridad y publicar otra release. | Publicada con WordCraft 0.16.0, mayor ODT y pegado HTML/RTF, después de la batería nativa y GNOME 49/51. Datos fijados, compatibilidad residual revisada y comparación con el mismo motor; doce archivos públicos comprobados. No se cierran issues adicionales. [Revisión](WORDCRAFT_016_REVIEW.md). |
-| Alpha.31 publicada/verificada | David autoriza el 7/11/2026 resolver/cerrar lo verificable y publicar automáticamente sin otro visto bueno. | Publicada el 7/11/2026 tras toda la validación nativa/instalada, con los mismos bytes y doce digests públicos comprobados. Cerrados #135/#149/#150/#151/#155; sustituye las aprobaciones pendientes para esta entrega. [Resultados y límites](history/ALPHA31_REMAINING.md). |
-| Tercera candidata alpha.31 validada | Completados #121/#124/#126/#127 mediante propiedad canónica de leyendas, controles compartidos, navegación tipada y decoración temporal. Batería nativa completa y GNOME 49/51 verificados. | [Fuente, sumas y límites](CAPTION_OWNERSHIP.md). Conservar texto/historial, no inferir propiedad por proximidad sin atribuir a #132 una corrección no identificada; David confirmó el original y se cerró el 7/11/2026. La aprobación previa de aquella candidata quedó sustituida por la autorización posterior de publicación automática tras todas las comprobaciones. |
-| Segunda candidata alpha.31 histórica | En aquella entrega se cerraron #134–#136; #135 se reabrió después y volvió a cerrarse en la última pasada. Se aisló la captura de eventos de la regla; conserva #133. Batería nativa completa, GNOME 49/51 y menús realmente traducidos verificados sobre los mismos archivos. | [Fuente, sumas y límites](history/ALPHA31_UI_VALIDATION.md). La aprobación previa de aquella candidata quedó sustituida por la autorización posterior para la última pasada alpha.31; conservar su evidencia histórica. |
-| Primera candidata alpha.31 histórica | Solo cerraba #133; los experimentos de interfaz se retiraron en aquella entrega. | [Identidad histórica](history/ALPHA31_VALIDATION.md). La segunda candidata la sustituye; no reutilizar su lista de issues como estado actual. |
-| Revisión visual #111–#121 | David autoriza incorporar los once issues nuevos a la misma candidata. Revisión reúne correcciones/cambios/comentarios; modos Editar/Sugerir, filas de formato con casillas mixtas y Elementos en cabecera con creación/propiedades compartidas. | Conservar flotación fijada, selección, herencia y API públicas. #121 sustituye nombre/ubicación de Insertar de #109, #116 el icono anterior, #120 las rejillas anteriores; conservar capacidades. |
-| Navegación #131 | Una entrada principal Navegación, con Páginas/Estructura dentro del panel; Revisión es la otra entrada principal. Sustituye los tres destinos principales anteriores. | Conservar por pestaña representación, filtro, expansión y scroll independiente; sincronizar destino real sin alterar selección/documento al cambiar de vista. |
-| Alpha.30 publicada/verificada | Publicación automática autorizada y completada el 6/11/2026; integra la candidata 29 y siete cierres nuevos. | [CI, fuente, sumas y límites](history/ALPHA30_VALIDATION.md). Sin recompilar al promover; #121/#124/#126/#127 conservan trabajo. |
-| Candidatas y alpha.30 | David autoriza explícitamente publicar esta nueva pasada automáticamente, sin esperar su visto bueno. | Conservar pruebas nativas e instaladas y promover los mismos bytes; `[auto-publish-alpha]` habilita la promoción automática solo después del éxito de una candidata de main. Sin ese marcador se mantiene el proceso de aprobación. |
-| Alpha.28 publicada/verificada | David autoriza el 5/11/2026 notas al pie, índice, referencias cruzadas, imágenes flotantes, zoom/navegación y galería pública. | Reutilizar historias, campos y comandos de WordCraft, verificar DOCX/PDF e historial y conservar las guardas ODT. La autorización de galería sustituye el aplazamiento anterior para esta entrega. [CI nativa e instalada completa](https://github.com/frandavid100/leaf/actions/runs/42057994674). |
-| Rama de desarrollo | `main` para desarrollo, compilación y PR; ambos historiales integrados. | ApexDesk archivado en `archive/apexdesk-main-2026-11-02`; conservar `wordcraft-saving` y releases/tags existentes. [Revisión](MAIN_MIGRATION.md). |
-| Modelo del documento | WordCraft es la fuente de verdad. | Usar Session, layout y comandos públicos; sin editor oculto ni historial paralelo. |
-| Frontera con upstream | Optimizar Leaf; proponer en WordCraft los cambios de su motor. | No modificar engine/render ni dependencias para un ajuste del cliente. Conservar las excepciones ODT ya registradas en [patches](../patches/README.md). |
-| Actualizaciones de la base | David autoriza el 2/11/2026 actualizar a la última versión estable: WordCraft 0.14.0, commit `5cd53f184aab11def13b7fced18727159b9bc96a`. | Motor y ajustes de interfaz en cambios separados; formatos recopiado y cuatro parches ODT reaplicados. Seguir [UPDATING_WORDCRAFT](../UPDATING_WORDCRAFT.md) y validar antes de publicar. |
-| Regla | Escalas transitorias limitadas a la hoja visible; números más legibles y arrastres con imán de 0,5 cm (#118). | Conservar teclado, geometría importada y precisión de entradas numéricas. Márgenes en ambos ejes, sangrías/tabulaciones con su origen correcto, vista previa, cancelación y un paso de Deshacer. |
-| Revisión tras alpha.21 | Integrar el PDF específico de impresión de WordCraft 0.14; separar entrada/diálogos y limpiar formato; evitar trabajo de estilos ocultos. | [Investigación y comprobaciones](WORDCRAFT_014_REVIEW.md). Mantener el motor/dependencias y el comportamiento restante; no es autorización para implementar toda la interfaz de WordCraft. |
-| Diseño | GTK4/libadwaita y convenciones GNOME. | Conservar controles nativos, orden Estilo → Párrafo → Texto, adaptación ancho/estrecho y menús contextuales contenidos. |
-| Ciclo de vida | Propietarios explícitos, callbacks débiles y limpieza al cerrar. | No reintroducir ciclos Rc/widget; comprobar cierre de pestañas/ventanas y trabajadores. |
-| Marcadores y comentarios | Marcadores bajo sus títulos en Navegación; comentarios y respuestas en Revisión junto a correcciones y cambios (#117/#119). Creación desde Elementos/contexto (#121). | WordCraft conserva datos e historial. Mantener conectores y autoría; DOCX conserva los hilos y ODT queda protegido mientras su exportador los omita. |
-| Ortografía y gramática | Correcciones en el panel Revisión con Aplicar/Ignorar y acciones ampliadas. Preferencias fija nuevos documentos; Propiedades fija herencia y Texto las excepciones. | Invalidar posiciones obsoletas, coalescer el trabajo y cancelarlo al cerrar la pestaña. El modo Editar/Sugerir es independiente. |
-| Metadatos | Editar título, asunto, autor, palabras clave y categoría en Propiedades → Información, usando `file.properties`. | No sobrescribir otras propiedades ni la identidad de la sesión. DOCX conserva los cinco campos; bloquear ODT con categoría para impedir su pérdida. Aplicar es un solo paso de deshacer. |
-| Alpha.23 / issues | Cerrados #64, #65, #7 y #37 tras validar la alpha instalada. | Guardar como DOCX para los saltos que el exportador ODT no conserva. Propiedades usa el selector inline desde libadwaita 1.7 y mantiene el selector anterior en versiones compatibles más antiguas. |
-| Alpha.22 / issues | Publicada con WordCraft 0.14.0, impresión y optimización, siete cierres y validación del Flatpak instalado. | Estilos usa la galería rápida cuando existe. Las sangrías conservan sus controles directos tras evaluar la alternativa agrupada. Mantener abiertos #65 y #69 hasta resolver las limitaciones descritas en [la revisión](FORMAT_POPOVER_REVIEW.md). |
-| Alpha.21 / issues | Publicada y verificada con WordCraft 0.14.0; cuatro cierres (#18, #48, #51, #61) y diez abiertos. Reglas transitorias finas, historial AdwSplitButton y Fuente/Tamaño acotados. | [Alcance](history/ISSUE_SWEEP_ALPHA21.md) y [evidencia](history/ISSUE_SWEEP_ALPHA21_VALIDATION.json). Mantener guardas ODT y límites de autoría; actualizar la referencia de reutilización solo a fuente/CI validadas. |
-| Alpha.20 / issues (histórico) | Publicada; seis cierres y 12 pendientes. Regla y selector GNOME quedaron con revisión visual pendiente, completada en alpha.21. Cuatro guardas ODT adicionales evitan pérdida estructural. | [Alcance](history/ISSUE_SWEEP_ALPHA20.md) y [evidencia](history/ISSUE_SWEEP_ALPHA20_VALIDATION.json). No presentar el bloqueo ODT como autoría avanzada completa; el diseño con pin de alpha.20 queda sustituido por #48. |
-| Alpha.19 / issues | Publicada y verificada; nueve cierres de los nueve informes autorizados. #35 reproducido en Flatpak GNOME 49 y verificado tras corregir filtro y foco. | [Alcance](history/ISSUE_SWEEP_ALPHA19.md) y [validación](history/ISSUE_SWEEP_ALPHA19_VALIDATION.json). Mantener eventos reales, drenaje de entrada antes de aserciones y pruebas instaladas; no afirmar cobertura humana Wayland/IME. |
-| Alpha.18 / issues | Publicada y verificada; diez cierres de la pasada inicial y 20 abiertos tras nuevos/reabiertos. | [Alcance](history/ISSUE_SWEEP_ALPHA18.md) y [validación](history/ISSUE_SWEEP_ALPHA18_VALIDATION.json). No dar por resueltos requisitos posteriores con pruebas de las especificaciones anteriores. |
-| Alpha.17 / issues | Publicada y verificada; 18 informes cerrados y 14 abiertos al finalizar. | [Alcance](history/ISSUE_SWEEP_ALPHA17.md) y [validación](history/ISSUE_SWEEP_ALPHA17_VALIDATION.json). Nuevos #40–#43 quedan fuera de esta entrega; en aquella entrega main conservaba el prototipo. |
-| Alpha.16 / issues | Publicada; 32 revisados, 14 cerrados y 18 abiertos. #12 conserva trabajo parcial pendiente. | [Evidencia y límites](history/ISSUE_SWEEP_ALPHA16.md); cerrar solo lo verificado y mantener las tareas restantes. |
-| Guardado explícito | Ctrl+S guarda sobre el archivo abierto; Guardar como elige otro destino. | Recuperación sigue predeterminada; fallos conservan los cambios. |
-| Controles de formato | Cambios escalares válidos inmediatos; paneles fijados siguen selección. | Validar entrada, evitar ediciones al sincronizar y agrupar deshacer. Excepciones atómicas documentadas en la revisión. |
-| Modos Editar/Sugerir | Elegir si las nuevas ediciones se registran como propuestas por documento (#117). | Cambiar de modo no acepta/rechaza ni descarta revisiones existentes; sus acciones siguen disponibles en ambos modos y son independientes de ortografía/comentarios. |
-| Identidad | Preferencias configura autor de nuevos comentarios y revisiones. | Valor inicial de cuenta del sistema; no reescribir autorías anteriores ni metadatos. |
-| Alpha.15 acumulada | Publicada con refinamiento de paneles y metadatos; CI nativa e instalada y descarga verificadas. | Mantener [evidencia y límites](SIDEBAR_REFINEMENT_VALIDATION.json); las propuestas posteriores no son tareas automáticas. |
-| Alpha.14 acumulada | Publicada con anotaciones y revisión lateral tras validación nativa/instalada. | Conservar alcance, evidencia y límites de [la entrega](BOOKMARKS_COMMENTS_VALIDATION.json); nuevas ampliaciones requieren su propia petición. |
-| Conflictos con cambios externos | Aplazados para priorizar marcadores/comentarios. | No iniciar esa ampliación ahora. |
-| Orca | La primera etapa se conserva; ampliaciones aplazadas. | Mantener las regresiones actuales sin iniciar tablas/imágenes accesibles por cuenta propia. |
-| Pruebas con personas | Esperar a que haya usuarios disponibles. | Diferenciar éxito automático de prueba humana; no bloquear trabajo independiente. |
-| Capturas | Usar capturas públicas reales proporcionadas por David; la principal ya está incorporada al README. | Conservar procedencia; no sustituirlas por capturas de CI. Las capturas internas son solo validación. |
-| Traducciones | Inglés/español disponibles; colaboración por PO. Weblate preparado para `main`; alta/autorización pendientes de David. | No repetir el acceso remoto; conservar mensajes/placeholders y herramientas gettext. |
-| Corpus | Comprobaciones extensas manuales cuando se justifiquen. | No imponer el corpus completo por versión; usar regresiones pequeñas para fallos concretos. |
-| FlatPark | Publicar el árbol `/app` en `Leaf-<version>-flatpark-x86_64.tar.xz`, sin carpeta contenedora. | Recursos relativos al ejecutable; validar extracción bajo `/app/extra/leaf` con GNOME 51 antes de publicar. Avisar a FlatPark de cambios de desktop/iconos/metainfo y nuevos requisitos de runtime. Confirmar por separado la publicación en su catálogo. |
-| Distribución | GitHub Flatpak experimental, GNOME 49, permisos mínimos y portales. | Una nueva release exige fuentes identificables y pruebas instaladas. No iniciar Flathub automáticamente. |
-| Licencia y autoría | GPL-3.0-or-later y desarrollo con IA declarado. | No cambiar licencia, atribuciones ni prometer revisión humana inexistente. |
+| Autonomous publication of pending fixes | David asks on 7/11/2026 to resolve the remaining issues and generate the next release without further approval. | Publish after verifying real fixes; keep integration or testing blockers open. The current review contributes no code changes. [Six pending](history/REMAINING_AFTER_ALPHA34.md). |
+| Dictionaries #84 — alpha.34 published | David authorizes on 7/11/2026 preparing a candidate to test on his system. | Folder through the picker/portal, without expanding host permissions; keep import, bundled data, language/document and history. Issue open until his GNOME OS test. [Scope](history/ISSUE84_DICTIONARIES.md) and [delivery validation](history/ALPHA34_VALIDATION.md). |
+| Alpha.33 published/verified | David asks to act on #9/#99/#156 and keeps the authorization for automatic publication after checking the delivery. | #156 closed for two native failures reproduced and fixed; #9 has an explanation/controls and #99 a public engine reproduction. Both remain open. Full test suite, GNOME 49/51 and twelve public files verified. [Sources and limits](history/ALPHA33_VALIDATION.md). |
+| Post-alpha.32 review | David asks to review whether the ten remaining reports can be closed. | #100 closed for requirements verified in the existing release; do not attribute an unknown historical cause or require it as a closing condition. #152 is still reproducible in 0.16.0. [Evidence and nine pending](history/ISSUE_TRIAGE_AFTER_ALPHA32.md). |
+| Alpha.32 published/verified | David authorizes on 7/11/2026 updating to the latest stable WordCraft, adapting Leaf, optimizing performance and clarity, and publishing another release. | Published with WordCraft 0.16.0, broader ODT support and HTML/RTF pasting, after the native test suite and GNOME 49/51. Pinned data, residual compatibility reviewed and comparison with the same engine; twelve public files checked. No additional issues are closed. [Review](WORDCRAFT_016_REVIEW.md). |
+| Alpha.31 published/verified | David authorizes on 7/11/2026 resolving/closing what can be verified and publishing automatically without further approval. | Published on 7/11/2026 after all native/installed validation, with the same bytes and twelve public digests checked. Closed #135/#149/#150/#151/#155; replaces the pending approvals for this delivery. [Results and limits](history/ALPHA31_REMAINING.md). |
+| Third alpha.31 candidate validated | Completed #121/#124/#126/#127 through canonical caption ownership, shared controls, typed navigation and temporary decoration. Full native test suite and GNOME 49/51 verified. | [Source, checksums and limits](CAPTION_OWNERSHIP.md). Keep text/history, do not infer ownership by proximity without attributing an unidentified fix to #132; David confirmed the original and it was closed on 7/11/2026. The earlier approval of that candidate was replaced by the later authorization of automatic publication after all checks. |
+| Historical second alpha.31 candidate | In that delivery #134–#136 were closed; #135 was later reopened and closed again in the last pass. The ruler's event capture was isolated; it keeps #133. Full native test suite, GNOME 49/51 and actually translated menus verified on the same files. | [Source, checksums and limits](history/ALPHA31_UI_VALIDATION.md). The earlier approval of that candidate was replaced by the later authorization for the last alpha.31 pass; keep its historical evidence. |
+| Historical first alpha.31 candidate | It only closed #133; the interface experiments were removed in that delivery. | [Historical identity](history/ALPHA31_VALIDATION.md). The second candidate replaces it; do not reuse its issue list as the current state. |
+| Visual review #111–#121 | David authorizes adding the eleven new issues to the same candidate. Review gathers corrections/changes/comments; Edit/Suggest modes, format rows with mixed checkboxes and Elements in the header with shared creation/properties. | Keep pinned floating, selection, inheritance and public APIs. #121 replaces the name/location of Insert from #109, #116 the previous icon, #120 the previous grids; keep capabilities. |
+| Navigation #131 | A single main Navigation entry, with Pages/Structure inside the panel; Review is the other main entry. Replaces the three previous main destinations. | Keep representation, filter, expansion and independent scrolling per tab; sync the real destination without altering selection/document when switching views. |
+| Alpha.30 published/verified | Automatic publication authorized and completed on 6/11/2026; integrates candidate 29 and seven new closures. | [CI, source, checksums and limits](history/ALPHA30_VALIDATION.md). No recompiling when promoting; #121/#124/#126/#127 keep work. |
+| Candidates and alpha.30 | David explicitly authorizes publishing this new pass automatically, without waiting for his approval. | Keep native and installed tests and promote the same bytes; `[auto-publish-alpha]` enables automatic promotion only after a successful candidate from main. Without that marker, the approval process is kept. |
+| Alpha.28 published/verified | David authorizes on 5/11/2026 footnotes, index, cross-references, floating images, zoom/navigation and public gallery. | Reuse WordCraft stories, fields and commands, verify DOCX/PDF and history, and keep the ODT guards. The gallery authorization replaces the earlier deferral for this delivery. [Full native and installed CI](https://github.com/frandavid100/leaf/actions/runs/42057994674). |
+| Development branch | `main` for development, building and PRs; both histories merged. | ApexDesk archived in `archive/apexdesk-main-2026-11-02`; keep `wordcraft-saving` and existing releases/tags. [Review](MAIN_MIGRATION.md). |
+| Document model | WordCraft is the source of truth. | Use Session, layout and public commands; no hidden editor or parallel history. |
+| Upstream boundary | Optimize Leaf; propose changes to its engine in WordCraft. | Do not modify engine/render or dependencies for a client adjustment. Keep the ODT exceptions already recorded in [patches](../patches/README.md). |
+| Base updates | David authorizes on 2/11/2026 updating to the latest stable version: WordCraft 0.14.0, commit `5cd53f184aab11def13b7fced18727159b9bc96a`. | Engine and interface adjustments in separate changes; formats recopied and four ODT patches reapplied. Follow [UPDATING_WORDCRAFT](../UPDATING_WORDCRAFT.md) and validate before publishing. |
+| Ruler | Transient scales limited to the visible sheet; more legible numbers and drags snapping to 0.5 cm (#118). | Keep keyboard, imported geometry and precision of numeric inputs. Margins on both axes, indents/tabs with their correct origin, preview, cancellation and a single Undo step. |
+| Post-alpha.21 review | Integrate WordCraft 0.14's print-specific PDF; separate input/dialogs and clear formatting; avoid hidden style work. | [Research and checks](WORDCRAFT_014_REVIEW.md). Keep the engine/dependencies and the remaining behavior; it is not an authorization to implement the whole WordCraft interface. |
+| Design | GTK4/libadwaita and GNOME conventions. | Keep native controls, the Style → Paragraph → Text order, wide/narrow adaptation and contained context menus. |
+| Lifecycle | Explicit owners, weak callbacks and cleanup on close. | Do not reintroduce Rc/widget cycles; check closing of tabs/windows and workers. |
+| Bookmarks and comments | Bookmarks under their headings in Navigation; comments and replies in Review alongside corrections and changes (#117/#119). Creation from Elements/context (#121). | WordCraft keeps data and history. Keep connectors and authorship; DOCX keeps the threads and ODT stays protected while its exporter omits them. |
+| Spelling and grammar | Corrections in the Review panel with Apply/Ignore and extended actions. Preferences sets new documents; Properties sets inheritance and Text the exceptions. | Invalidate stale positions, coalesce the work and cancel it when the tab is closed. Edit/Suggest mode is independent. |
+| Metadata | Edit title, subject, author, keywords and category in Properties → Information, using `file.properties`. | Do not overwrite other properties or the session identity. DOCX keeps the five fields; block ODT with a category to prevent its loss. Apply is a single undo step. |
+| Alpha.23 / issues | Closed #64, #65, #7 and #37 after validating the installed alpha. | Save as DOCX for the breaks that the ODT exporter does not keep. Properties uses the inline picker from libadwaita 1.7 and keeps the previous picker on older compatible versions. |
+| Alpha.22 / issues | Published with WordCraft 0.14.0, printing and optimization, seven closures and validation of the installed Flatpak. | Styles uses the quick gallery when it exists. Indents keep their direct controls after evaluating the grouped alternative. Keep #65 and #69 open until the limitations described in [the review](FORMAT_POPOVER_REVIEW.md) are resolved. |
+| Alpha.21 / issues | Published and verified with WordCraft 0.14.0; four closures (#18, #48, #51, #61) and ten open. Thin transient rulers, AdwSplitButton history and bounded Font/Size. | [Scope](history/ISSUE_SWEEP_ALPHA21.md) and [evidence](history/ISSUE_SWEEP_ALPHA21_VALIDATION.json). Keep ODT guards and authorship limits; update the reuse reference only to validated source/CI. |
+| Alpha.20 / issues (historical) | Published; six closures and 12 pending. Ruler and GNOME picker were left with a pending visual review, completed in alpha.21. Four additional ODT guards prevent structural loss. | [Scope](history/ISSUE_SWEEP_ALPHA20.md) and [evidence](history/ISSUE_SWEEP_ALPHA20_VALIDATION.json). Do not present the ODT block as complete advanced authoring; the pinned design of alpha.20 is replaced by #48. |
+| Alpha.19 / issues | Published and verified; nine closures out of the nine authorized reports. #35 reproduced in Flatpak GNOME 49 and verified after fixing filter and focus. | [Scope](history/ISSUE_SWEEP_ALPHA19.md) and [validation](history/ISSUE_SWEEP_ALPHA19_VALIDATION.json). Keep real events, input draining before assertions and installed tests; do not claim human Wayland/IME coverage. |
+| Alpha.18 / issues | Published and verified; ten closures from the initial pass and 20 open after new/reopened ones. | [Scope](history/ISSUE_SWEEP_ALPHA18.md) and [validation](history/ISSUE_SWEEP_ALPHA18_VALIDATION.json). Do not consider later requirements resolved with tests of the earlier specifications. |
+| Alpha.17 / issues | Published and verified; 18 reports closed and 14 open at the end. | [Scope](history/ISSUE_SWEEP_ALPHA17.md) and [validation](history/ISSUE_SWEEP_ALPHA17_VALIDATION.json). New #40–#43 are outside this delivery; in that delivery main kept the prototype. |
+| Alpha.16 / issues | Published; 32 reviewed, 14 closed and 18 open. #12 keeps pending partial work. | [Evidence and limits](history/ISSUE_SWEEP_ALPHA16.md); close only what is verified and keep the remaining tasks. |
+| Explicit saving | Ctrl+S saves over the open file; Save As chooses another destination. | Recovery remains the default; failures keep the changes. |
+| Formatting controls | Valid scalar changes are immediate; pinned panels follow the selection. | Validate input, avoid edits while syncing and group undo. Atomic exceptions documented in the review. |
+| Edit/Suggest modes | Choose per document whether new edits are recorded as proposals (#117). | Switching modes does not accept/reject or discard existing revisions; their actions remain available in both modes and are independent of spelling/comments. |
+| Identity | Preferences sets the author of new comments and revisions. | Initial value from the system account; do not rewrite earlier authorship or metadata. |
+| Cumulative alpha.15 | Published with panel and metadata refinement; native and installed CI and download verified. | Keep [evidence and limits](SIDEBAR_REFINEMENT_VALIDATION.json); later proposals are not automatic tasks. |
+| Cumulative alpha.14 | Published with annotations and side review after native/installed validation. | Keep the scope, evidence and limits of [the delivery](BOOKMARKS_COMMENTS_VALIDATION.json); new extensions require their own request. |
+| Conflicts with external changes | Postponed to prioritize bookmarks/comments. | Do not start that extension now. |
+| Orca | The first stage is kept; extensions postponed. | Keep the current regression tests without starting accessible tables/images on your own initiative. |
+| Testing with people | Wait until users are available. | Distinguish automated success from human testing; do not block independent work. |
+| Screenshots | Use real public screenshots provided by David; the main one is already included in the README. | Keep provenance; do not replace them with CI screenshots. Internal screenshots are for validation only. |
+| Translations | English/Spanish available; collaboration through PO files. Weblate prepared for `main`; registration/authorization pending from David. | Do not repeat the remote access; keep messages/placeholders and gettext tools. |
+| Corpus | Extensive manual checks when justified. | Do not impose the full corpus per version; use small regression tests for specific failures. |
+| FlatPark | Publish the `/app` tree in `Leaf-<version>-flatpark-x86_64.tar.xz`, without a containing folder. | Resources relative to the executable; validate extraction under `/app/extra/leaf` with GNOME 51 before publishing. Notify FlatPark of desktop/icon/metainfo changes and new runtime requirements. Confirm publication in its catalog separately. |
+| Distribution | Experimental GitHub Flatpak, GNOME 49, minimal permissions and portals. | A new release requires identifiable sources and installed tests. Do not start Flathub automatically. |
+| License and authorship | GPL-3.0-or-later and declared AI-assisted development. | Do not change the license or attributions, or promise nonexistent human review. |
 
-Las leyendas usan propiedad explícita en el documento canónico: marcadores para
-imágenes y leyendas, controles OOXML desbloqueados para tablas. Mostrar/ocultar
-retiene el texto y el historial nativo; no se atribuyen leyendas por proximidad.
-Navegación y decoración derivan de esos datos. #132 se cerró el 7/11/2026 tras
-la confirmación de David con el documento original; el disparador y la corrección
-concreta siguen sin identificar.
-[Implementación y límites](CAPTION_OWNERSHIP.md).
+Captions use explicit ownership in the canonical document: bookmarks for
+images and captions, unlocked OOXML controls for tables. Show/hide
+retains the text and the native history; captions are not attributed by proximity.
+Navigation and decoration derive from that data. #132 was closed on 7/11/2026 after
+David's confirmation with the original document; the trigger and the specific
+fix remain unidentified.
+[Implementation and limits](CAPTION_OWNERSHIP.md).
 
-El [historial](history/README.md) conserva el razonamiento y las entregas anteriores.
-Las propuestas del [plan](../ROADMAP.md) pueden elegirse en una conversación
-posterior; las decisiones de esta página deben seguir visibles al hacerlo.
+The [history](history/README.md) keeps the reasoning and the earlier deliveries.
+The proposals in the [plan](../ROADMAP.md) can be chosen in a later
+conversation; the decisions on this page must remain visible when doing so.
