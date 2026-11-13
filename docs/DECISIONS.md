@@ -1,5 +1,12 @@
 # Current decisions
 
+## 13/11/2026 — alpha.46 candidate prepared, not authorized for publication
+
+David asks for a release candidate with the review's merged changes. It is
+built with `[candidate-alpha]` only, without `[auto-publish-alpha]`: it waits
+for his testing and approval of this specific candidate.
+[Scope and limits](ALPHA46_REVIEW.md).
+
 ## 13/11/2026 — diagnostic code stays in the published app
 
 Decision (1) of 12/11 is revised. CI runs about 25 diagnostic checks on the

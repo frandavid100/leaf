@@ -581,7 +581,7 @@ jobs:
     - name: Identificar versión de prueba
       run: |
         ./target/release/wordcraft-gnome --version | tee version.txt
-        grep -q "Leaf 0.1.0-alpha.45" version.txt
+        grep -q "Leaf 0.1.0-alpha.46" version.txt
       if: ${{ matrix.group == 'appearance' }}
     - name: Probar escritorio ancho, ventana estrecha, panel y tema oscuro
       run: |
@@ -1399,9 +1399,9 @@ jobs:
         cp packaging/RELEASE_NOTES.md dist/RELEASE_NOTES.md
         python3 - <<'PYTHON'
         import json, os, pathlib
-        assert json.load(open('data/releases/closures.json'))['version'] == '0.1.0-alpha.45'
+        assert json.load(open('data/releases/closures.json'))['version'] == '0.1.0-alpha.46'
         pathlib.Path('dist/candidate.json').write_text(json.dumps({
-            'version': '0.1.0-alpha.45', 'source': os.environ['LEAF_CANDIDATE_SHA'],
+            'version': '0.1.0-alpha.46', 'source': os.environ['LEAF_CANDIDATE_SHA'],
             'run_id': int(os.environ['LEAF_CANDIDATE_RUN']),
             'native_source': os.environ['LEAF_NATIVE_SHA'],
             'native_run_id': int(os.environ['LEAF_NATIVE_RUN']),
@@ -1415,7 +1415,7 @@ jobs:
         python3 - <<'PYTHON'
         from pathlib import Path
         from zipfile import ZipFile, ZIP_DEFLATED
-        with ZipFile("dist/Leaf-0.1.0-alpha.45-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
+        with ZipFile("dist/Leaf-0.1.0-alpha.46-dictionary-test.zip", "w", ZIP_DEFLATED) as archive:
             for source in sorted(Path("tests/fixtures/dictionary84").iterdir()):
                 if source.is_file(): archive.write(source, "Leaf-dictionary-test/" + source.name)
         PYTHON
@@ -1477,7 +1477,7 @@ jobs:
     - name: Verify FlatPark archive on GNOME 51 at its relocated prefix
       run: |
         set -o pipefail
-        xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.45-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
+        xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- bash packaging/flatpark-smoke.sh dist/Leaf-0.1.0-alpha.46-flatpark-x86_64.tar.xz 2>&1 | tee dist/flatpark-smoke.log
         grep -q FLATPARK_GNOME51_RELOCATION_OK dist/flatpark-smoke.log
     - uses: actions/upload-artifact@v4
       if: always()

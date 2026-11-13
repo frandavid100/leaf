@@ -1,5 +1,14 @@
 # Leaf roadmap
 
+<!-- candidate-alpha:start -->
+## 13/11/2026 — alpha.46 candidate awaiting David's testing
+
+Code review for speed and clarity: side panels refresh after a typing pause,
+fields and the table of contents are recomputed in the background, autosave
+stops repeating work, diagnostics are gathered in one module and contributor
+documentation is in English. No issues are closed. Publication waits for
+David's approval of this candidate. [Scope, measurements and limits](docs/ALPHA46_REVIEW.md).
+<!-- candidate-alpha:end -->
 
 ## 11/11/2026 — store listing submitted to FlatPark
 
